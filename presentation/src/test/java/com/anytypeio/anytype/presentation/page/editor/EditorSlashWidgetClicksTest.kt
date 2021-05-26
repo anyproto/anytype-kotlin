@@ -7,9 +7,9 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.model.Types
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -202,9 +202,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, block.id)
         )
 
@@ -390,9 +388,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, a.id, b.id)
         )
 

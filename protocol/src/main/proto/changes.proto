@@ -3,8 +3,6 @@ package anytype;
 option go_package = "pb";
 
 import "models.proto";
-import "relation.proto";
-
 import "events.proto";
 import "google/protobuf/struct.proto";
 
@@ -93,12 +91,12 @@ message Change {
     }
 
     message RelationAdd {
-        anytype.relation.Relation relation = 2;
+        anytype.model.Relation relation = 2;
     }
 
     message RelationUpdate {
         message Dict {
-            repeated anytype.relation.Relation.Option dict = 2;
+            repeated anytype.model.Relation.Option dict = 2;
         }
 
         message ObjectTypes {
@@ -107,7 +105,7 @@ message Change {
 
         string key = 1;
         oneof value {
-            anytype.relation.RelationFormat format = 2;
+            anytype.model.RelationFormat format = 2;
             string name = 3;
             google.protobuf.Value defaultValue = 4;
             ObjectTypes objectTypes = 5;

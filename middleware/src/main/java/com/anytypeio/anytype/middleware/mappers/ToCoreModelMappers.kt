@@ -1,11 +1,9 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
-import anytype.SmartBlockType
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.ObjectLinksInfo
-import anytype.relation.RelationFormat
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
 import timber.log.Timber
@@ -89,8 +87,7 @@ fun List<MBlock>.toCoreModels(
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
                 content = Block.Content.Smart(
-                    type = types[block.id]?.toCoreModelsBlock()
-                        ?: throw IllegalStateException("Type missing")
+                    type = types[block.id] ?: throw IllegalStateException("Type missing")
                 )
             )
         }
@@ -202,32 +199,12 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
     )
 }
 
-fun MBlock.toCoreModelsRelationBlock() : Block.Content.RelationBlock {
+fun MBlock.toCoreModelsRelationBlock(): Block.Content.RelationBlock {
     val content = checkNotNull(relation)
     return Block.Content.RelationBlock(
         key = content.key.ifEmpty { null },
         background = backgroundColor
     )
-}
-
-fun SmartBlockType.toCoreModelsBlock(): Block.Content.Smart.Type = when (this) {
-    SmartBlockType.Page -> Block.Content.Smart.Type.PAGE
-    SmartBlockType.Home -> Block.Content.Smart.Type.HOME
-    SmartBlockType.ProfilePage -> Block.Content.Smart.Type.PROFILE
-    SmartBlockType.Archive -> Block.Content.Smart.Type.ARCHIVE
-    SmartBlockType.Breadcrumbs -> Block.Content.Smart.Type.BREADCRUMBS
-    SmartBlockType.Set -> Block.Content.Smart.Type.SET
-    else -> throw IllegalStateException("Unexpected smart block type: $this")
-}
-
-fun SmartBlockType.toCoreModelsEvent(): Event.Command.ShowBlock.Type = when (this) {
-    SmartBlockType.Page -> Event.Command.ShowBlock.Type.PAGE
-    SmartBlockType.Home -> Event.Command.ShowBlock.Type.HOME
-    SmartBlockType.ProfilePage -> Event.Command.ShowBlock.Type.PROFILE_PAGE
-    SmartBlockType.Archive -> Event.Command.ShowBlock.Type.ARCHIVE
-    SmartBlockType.Breadcrumbs -> Event.Command.ShowBlock.Type.BREADCRUMBS
-    SmartBlockType.Set -> Event.Command.ShowBlock.Type.SET
-    else -> throw IllegalStateException("Unexpected smart block type: $this")
 }
 
 fun MBFileState.toCoreModels(): Block.Content.File.State = when (this) {
@@ -435,21 +412,21 @@ fun MRelationDataSource.source(): Relation.Source = when (this) {
     else -> throw IllegalStateException()
 }
 
-fun RelationFormat.format(): Relation.Format = when (this) {
-    RelationFormat.shorttext -> Relation.Format.SHORT_TEXT
-    RelationFormat.longtext -> Relation.Format.LONG_TEXT
-    RelationFormat.number -> Relation.Format.NUMBER
-    RelationFormat.date -> Relation.Format.DATE
-    RelationFormat.file_ -> Relation.Format.FILE
-    RelationFormat.checkbox -> Relation.Format.CHECKBOX
-    RelationFormat.url -> Relation.Format.URL
-    RelationFormat.email -> Relation.Format.EMAIL
-    RelationFormat.phone -> Relation.Format.PHONE
-    RelationFormat.emoji -> Relation.Format.EMOJI
-    RelationFormat.object_ -> Relation.Format.OBJECT
-    RelationFormat.status -> Relation.Format.STATUS
-    RelationFormat.tag -> Relation.Format.TAG
-    RelationFormat.relations -> Relation.Format.RELATIONS
+fun MRelationFormat.format(): Relation.Format = when (this) {
+    MRelationFormat.shorttext -> Relation.Format.SHORT_TEXT
+    MRelationFormat.longtext -> Relation.Format.LONG_TEXT
+    MRelationFormat.number -> Relation.Format.NUMBER
+    MRelationFormat.date -> Relation.Format.DATE
+    MRelationFormat.file_ -> Relation.Format.FILE
+    MRelationFormat.checkbox -> Relation.Format.CHECKBOX
+    MRelationFormat.url -> Relation.Format.URL
+    MRelationFormat.email -> Relation.Format.EMAIL
+    MRelationFormat.phone -> Relation.Format.PHONE
+    MRelationFormat.emoji -> Relation.Format.EMOJI
+    MRelationFormat.object_ -> Relation.Format.OBJECT
+    MRelationFormat.status -> Relation.Format.STATUS
+    MRelationFormat.tag -> Relation.Format.TAG
+    MRelationFormat.relations -> Relation.Format.RELATIONS
 }
 
 fun MRelationOption.option(): Relation.Option = Relation.Option(
@@ -479,16 +456,25 @@ fun ObjectInfo.toCoreModel(): DocumentInfo = DocumentInfo(
     fields = details.toCoreModel(),
     snippet = snippet,
     hasInboundLinks = hasInboundLinks,
-    type = objectType.toCoreModel()
+    smartBlockType = objectType.toCoreModel()
 )
 
-fun ObjectInfo.Type.toCoreModel(): DocumentInfo.Type = when (this) {
-    ObjectInfo.Type.Page -> DocumentInfo.Type.PAGE
-    ObjectInfo.Type.Home -> DocumentInfo.Type.HOME
-    ObjectInfo.Type.ProfilePage -> DocumentInfo.Type.PROFILE_PAGE
-    ObjectInfo.Type.Archive -> DocumentInfo.Type.ARCHIVE
-    ObjectInfo.Type.Set -> DocumentInfo.Type.SET
-    ObjectInfo.Type.File -> DocumentInfo.Type.FILE
-    ObjectInfo.Type.ObjectType -> DocumentInfo.Type.OBJECT_TYPE
-    ObjectInfo.Type.Relation -> DocumentInfo.Type.RELATION
+fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
+    MSmartBlockType.Breadcrumbs -> SmartBlockType.BREADCRUMBS
+    MSmartBlockType.Page -> SmartBlockType.PAGE
+    MSmartBlockType.ProfilePage -> SmartBlockType.PROFILE_PAGE
+    MSmartBlockType.Home -> SmartBlockType.HOME
+    MSmartBlockType.Archive -> SmartBlockType.ARCHIVE
+    MSmartBlockType.Database -> SmartBlockType.DATABASE
+    MSmartBlockType.Set -> SmartBlockType.SET
+    MSmartBlockType.STObjectType -> SmartBlockType.CUSTOM_OBJECT_TYPE
+    MSmartBlockType.File -> SmartBlockType.FILE
+    MSmartBlockType.Template -> SmartBlockType.TEMPLATE
+    MSmartBlockType.MarketplaceType -> SmartBlockType.MARKETPLACE_TYPE
+    MSmartBlockType.MarketplaceRelation -> SmartBlockType.MARKETPLACE_RELATION
+    MSmartBlockType.MarketplaceTemplate -> SmartBlockType.MARKETPLACE_TEMPLATE
+    MSmartBlockType.BundledRelation -> SmartBlockType.BUNDLED_RELATION
+    MSmartBlockType.IndexedRelation -> SmartBlockType.INDEXED_RELATION
+    MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
+    MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
 }

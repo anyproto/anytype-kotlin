@@ -286,9 +286,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(
-                    type = Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(header.id, child)
             ),
             header,
@@ -473,9 +471,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(
-                    type = Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(header.id, child)
             ),
             header,
@@ -566,9 +562,7 @@ open class PageViewModelTest {
         val smart = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(child)
         )
 
@@ -630,9 +624,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(
-                    type = Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(header.id, child)
             ),
             header,
@@ -736,9 +728,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, child)
         )
 
@@ -892,9 +882,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, child)
         )
 
@@ -1052,9 +1040,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(child)
         )
 
@@ -1146,9 +1132,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, child)
         )
 
@@ -1248,7 +1232,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+            content = Block.Content.Smart(),
             children = listOf(child)
         )
 
@@ -1329,7 +1313,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+            content = Block.Content.Smart(),
             children = listOf(child)
         )
 
@@ -1491,9 +1475,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, child)
         )
 
@@ -1662,9 +1644,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, child.id)
         )
 
@@ -1742,9 +1722,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, firstChild.id, secondChild.id)
         )
 
@@ -1851,9 +1829,7 @@ open class PageViewModelTest {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, child.id)
         )
 
@@ -2350,9 +2326,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(
-                    type = Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(child)
             ),
             Block(
@@ -2484,9 +2458,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(
-                    Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, file.id)
             ),
             title,
@@ -2547,7 +2519,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2614,7 +2586,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2668,7 +2640,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2726,7 +2698,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2793,7 +2765,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2853,7 +2825,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2913,7 +2885,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -2978,7 +2950,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -3043,9 +3015,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(
-                    Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(title.id)
             ),
             title
@@ -3099,7 +3069,7 @@ open class PageViewModelTest {
                 fields = Block.Fields(
                     map = mapOf("icon" to "")
                 ),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id)
             ),
             title
@@ -3181,7 +3151,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -3260,7 +3230,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, numbered.id)
             ),
             title,
@@ -3341,7 +3311,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(title.id, paragraph.id)
             ),
             title,
@@ -3402,7 +3372,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(paragraph.id)
             ),
             paragraph
@@ -3520,7 +3490,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -3694,7 +3664,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4038,7 +4008,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4153,9 +4123,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(
-                    type = Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4278,7 +4246,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4421,7 +4389,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4562,9 +4530,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(
-                    Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(header.id) + paragraphs.map { it.id }
             )
         ) + listOf(header, title) + paragraphs
@@ -4697,7 +4663,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = blocks.map { it.id }
             )
         ) + blocks
@@ -4879,7 +4845,7 @@ open class PageViewModelTest {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = blocks.map { it.id }
             )
         ) + blocks

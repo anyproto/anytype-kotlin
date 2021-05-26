@@ -2,16 +2,39 @@ syntax = "proto3";
 package anytype.model;
 option go_package = "pkg/lib/pb/model";
 
-import "relation.proto";
 import "google/protobuf/struct.proto";
 
-// deprecated
 message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
     google.protobuf.Struct details = 2;
     google.protobuf.Struct fileKeys = 3;
-    repeated anytype.relation.Relation extraRelations = 4;
+    repeated Relation extraRelations = 4;
     repeated string objectTypes = 5;
+}
+
+enum SmartBlockType {
+    Breadcrumbs = 0;
+
+    Page = 0x10;
+    ProfilePage = 0x11;
+    Home = 0x20;
+    Archive = 0x30;
+    Database = 0x40;
+    Set = 0x41; // only have dataview simpleblock
+    STObjectType = 0x60; // have relations list
+
+    File = 0x100;
+
+    Template = 0x120;
+
+    MarketplaceType = 0x110;
+    MarketplaceRelation = 0x111;
+    MarketplaceTemplate = 0x112;
+
+    BundledRelation = 0x200;
+    IndexedRelation = 0x201;
+    BundledObjectType = 0x202;
+    AnytypeProfile = 0x203;
 }
 
 message Block {
@@ -204,7 +227,7 @@ message Block {
             string source = 1;
             repeated View views = 2;
             // index 3 is deprecated, was used for schemaURL in old-format sets
-            repeated anytype.relation.Relation relations = 4;
+            repeated model.Relation relations = 4;
             string activeView = 3; // saved within a session
 
             message View {
@@ -377,4 +400,116 @@ message Restrictions {
 }
 
 
+message ObjectType {
+    string url = 1; // leave empty in case you want to create the new one
+    string name = 2; // name of objectType (can be localized for bundled types)
+    repeated Relation relations = 3; // cannot contain more than one Relation with the same RelationType
+    Layout layout = 4;
+    string iconEmoji = 5; // emoji symbol
+    string description = 6;
+    bool hidden = 7;
+    repeated SmartBlockType types = 8;
+
+    enum Layout {
+        basic = 0;
+        profile = 1;
+        todo = 2;
+        set = 3;
+        objectType = 4;
+        relation = 5;
+        file = 6;
+        dashboard = 7;
+        image = 8;
+
+        database = 20; // to be released later
+    }
+}
+
+message Layout {
+    ObjectType.Layout id = 1;
+    string name = 2;
+    repeated Relation requiredRelations = 3; // relations required for this object type
+}
+
+message RelationWithValue {
+    Relation relation = 1;
+    google.protobuf.Value value = 2;
+}
+
+// Relation describe the human-interpreted relation type. It may be something like "Date of creation, format=date" or "Assignee, format=objectId, objectType=person"
+message Relation {
+    // Key under which the value is stored in the map. Must be unique for the object type.
+    // It usually auto-generated bsonid, but also may be something human-readable in case of prebuilt types.
+    string key = 1;
+
+    RelationFormat format = 2; // format of the underlying data
+    string name = 3; // name to show (can be localized for bundled types)
+    google.protobuf.Value defaultValue = 4;
+    DataSource dataSource = 5; // where the data is stored
+
+    bool hidden = 6; // internal, not displayed to user (e.g. coverX, coverY)
+    bool readOnly = 7; // not editable by user
+    bool multi = 8; // allow multiple values (stored in pb list)
+
+    repeated string objectTypes = 9; // URL of object type, empty to allow link to any object
+    // index 10, 11 was used in internal-only builds. Can be reused, but may break some test accounts
+    repeated Option selectDict = 12; // default dictionary with unique values to choose for select/multiSelect format
+    int32 maxCount = 13; // max number of values can be set for this relation. 0 means no limit. 1 means the value can be stored in non-repeated field
+    string description = 14;
+
+    // on-store fields, injected only locally
+    Scope scope = 20; // scope from which this relation have been aggregated
+    string creator = 21; // creator profile id
+
+    message Option {
+        string id = 1; // id generated automatically if omitted
+        string text = 2;
+        string color = 3; // stored
+        Scope scope = 4; // on-store contains only local-scope relations. All others injected on-the-fly
+
+        enum Scope {
+            local = 0; // stored within the object/aggregated from set
+            relation = 1; // aggregated from all relation of this relation's key
+            format = 2; // aggregated from all relations of this relation's format
+        }
+    }
+
+    enum Scope {
+        object = 0; // stored within the object
+        type = 1; // stored within the object type
+        setOfTheSameType = 2; // aggregated from the dataview of sets of the same object type
+        objectsOfTheSameType = 3; // aggregated from the dataview of sets of the same object type
+        library = 4; // aggregated from relations library
+    }
+
+    enum DataSource {
+        details = 0; // default, stored inside the object's details
+        derived = 1; // stored locally, e.g. in badger or generated on the fly
+        account = 2; // stored in the account DB. means existing only for specific anytype account
+    }
+}
+
+// RelationFormat describes how the underlying data is stored in the google.protobuf.Value and how it should be validated/sanitized
+enum RelationFormat {
+    longtext = 0; // string
+    shorttext = 1; // string, usually short enough. May be truncated
+    number = 2; // double
+    status = 3; // string (choose one from a list)
+    tag = 11; // list of string (choose multiple from a list)
+    date = 4; // int64(pb.Value doesn't have int64) or string
+    file = 5; // relation can has objects of specific types: file, image, audio, video
+    checkbox = 6; // boolean
+    url = 7; // string with sanity check
+    email = 8; // string with sanity check
+    phone = 9; // string with sanity check
+    emoji = 10; // one emoji, can contains multiple utf-8 symbols
+
+    object = 100; // relation can has objectType to specify objectType
+    relations = 101; // base64-encoded
+
+}
+
+message Relations {
+    repeated Relation relations = 1;
+}
 

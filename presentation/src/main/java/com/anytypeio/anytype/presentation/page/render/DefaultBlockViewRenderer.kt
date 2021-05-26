@@ -40,7 +40,7 @@ class DefaultBlockViewRenderer(
 
         if (anchor == root.id) {
             root.content.let { cnt ->
-                if (cnt is Content.Smart && cnt.type == Content.Smart.Type.ARCHIVE) {
+                if (cnt is Content.Smart && cnt.type == SmartBlockType.ARCHIVE) {
                     result.add(
                         BlockView.Title.Archive(
                             mode = BlockView.Mode.READ,
@@ -807,7 +807,7 @@ class DefaultBlockViewRenderer(
 
         if (layout == null) {
             // Retrieving layout based on smart block type:
-            layout = if (rootContent.type == Content.Smart.Type.PROFILE)
+            layout = if (rootContent.type == SmartBlockType.PROFILE_PAGE)
                 Layout.PROFILE
             else {
                 // Falling back to default layout if layout is not defined

@@ -46,9 +46,7 @@ class BlockReadModeTest : PageViewModelTest() {
         Block(
             id = root,
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id) + blocks.map { it.id }
         )
     ) + listOf(header, title) + blocks

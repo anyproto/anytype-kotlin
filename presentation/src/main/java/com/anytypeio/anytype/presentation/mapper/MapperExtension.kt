@@ -12,7 +12,6 @@ import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
-import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import timber.log.Timber
 
@@ -273,7 +272,7 @@ fun List<Block>.toDashboardViews(
     when (val content = block.content) {
         is Block.Content.Smart -> {
             when (content.type) {
-                Block.Content.Smart.Type.PROFILE -> {
+                SmartBlockType.PROFILE_PAGE -> {
                     DashboardView.Profile(
                         id = block.id,
                         name = details.details[block.id]?.name.orEmpty(),

@@ -973,7 +973,7 @@ class PageViewModel(
             val content = root.content
             check(content is Content.Smart)
             when (content.type) {
-                Content.Smart.Type.PROFILE -> {
+                SmartBlockType.PROFILE_PAGE -> {
                     val details = orchestrator.stores.details.current().details
                     dispatch(
                         command = Command.OpenProfileMenu(
@@ -1002,7 +1002,7 @@ class PageViewModel(
                         eventName = POPUP_PROFILE_MENU
                     )
                 }
-                Content.Smart.Type.PAGE -> {
+                SmartBlockType.PAGE -> {
                     val details = orchestrator.stores.details.current().details
                     controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(

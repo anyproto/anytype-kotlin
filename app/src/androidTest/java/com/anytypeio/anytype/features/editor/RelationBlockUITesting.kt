@@ -100,9 +100,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, a.id, b.id)
         )
 
@@ -232,9 +230,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id, block1.id, block2.id, block3.id, block4.id, block5.id)
         )
 
@@ -394,9 +390,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id, block1.id, block2.id, block3.id, block4.id, block5.id)
         )
 
@@ -473,9 +467,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, a.id, b.id)
         )
 
@@ -562,9 +554,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, a.id, b.id)
         )
 
@@ -616,9 +606,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id, block.id)
         )
 
@@ -679,9 +667,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -808,9 +794,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -887,9 +871,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -1021,9 +1003,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, paragraph.id, block1.id, block2.id, block3.id, block4.id, block5.id)
         )
 

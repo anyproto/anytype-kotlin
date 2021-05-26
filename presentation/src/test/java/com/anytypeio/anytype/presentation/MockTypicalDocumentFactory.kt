@@ -40,9 +40,7 @@ object MockTypicalDocumentFactory {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, a.id)
         )
         return listOf(page, header, title, a)
@@ -52,9 +50,7 @@ object MockTypicalDocumentFactory {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PROFILE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PROFILE_PAGE),
             children = listOf(header.id, a.id)
         )
         return listOf(page, header, title, a)

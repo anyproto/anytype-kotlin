@@ -4,10 +4,7 @@ import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVViewerRelation
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -108,9 +105,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.SET),
             children = listOf(header.id, dataview.id)
         )
 
@@ -202,9 +197,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.SET),
             children = listOf(header.id, dataview.id)
         )
 
@@ -296,9 +289,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.SET),
             children = listOf(header.id, dataview.id)
         )
 
@@ -390,9 +381,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.SET),
             children = listOf(header.id, dataview.id)
         )
 
@@ -484,9 +473,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.SET),
             children = listOf(header.id, dataview.id)
         )
 
@@ -578,9 +565,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val root = Block(
             id = ctx,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.SET
-            ),
+            content = Block.Content.Smart(SmartBlockType.SET),
             children = listOf(header.id, dataview.id)
         )
 

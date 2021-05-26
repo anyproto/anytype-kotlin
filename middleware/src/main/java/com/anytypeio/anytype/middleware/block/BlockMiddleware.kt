@@ -201,7 +201,7 @@ class BlockMiddleware(
     ): Payload = middleware.setFields(command)
 
     override suspend fun getTemplates(): List<ObjectType> {
-        return middleware.getObjectTypes().map { type -> type.toCoreModels() }
+        return middleware.getObjectTypes().map { it.toCoreModels() }
     }
 
     override suspend fun createTemplate(

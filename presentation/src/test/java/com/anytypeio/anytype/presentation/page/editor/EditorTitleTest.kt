@@ -62,9 +62,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id)
         )
 
@@ -113,9 +111,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id)
         )
 
@@ -182,7 +178,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields.empty(),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id)
             ),
             header,

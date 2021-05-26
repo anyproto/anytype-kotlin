@@ -7,14 +7,10 @@ import anytype.model.Block
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
-import anytype.relation.ObjectType
-import anytype.relation.Relation
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.const.Constants
-import com.anytypeio.anytype.middleware.mappers.toCoreModels
-import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
-import com.anytypeio.anytype.middleware.mappers.toPayload
+import com.anytypeio.anytype.middleware.mappers.*
 import com.anytypeio.anytype.middleware.model.CreateAccountResponse
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.model.SelectAccountResponse
@@ -952,7 +948,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun getObjectTypes(): List<ObjectType> {
+    fun getObjectTypes(): List<MObjectType> {
         val request = Rpc.ObjectType.List.Request()
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectTypeList(request)
@@ -962,11 +958,11 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun objectTypeCreate(prototype: com.anytypeio.anytype.core_models.ObjectType.Prototype): ObjectType {
+    fun objectTypeCreate(prototype: ObjectType.Prototype): MObjectType {
 
         val layout = prototype.layout.toMiddlewareModel()
 
-        val objectType = ObjectType(
+        val objectType = MObjectType(
             name = prototype.name,
             iconEmoji = prototype.emoji,
             layout = layout
@@ -1044,10 +1040,10 @@ class Middleware(
         context: String,
         target: String,
         name: String,
-        format: com.anytypeio.anytype.core_models.Relation.Format
+        format: Relation.Format
     ): Pair<Id, Payload> {
 
-        val relation = Relation(
+        val relation = MRelation(
             name = name,
             format = format.toMiddlewareModel()
         )
@@ -1189,7 +1185,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun relationListAvailable(ctx: Id): List<Relation> {
+    fun relationListAvailable(ctx: Id): List<MRelation> {
         val request = Rpc.Object.RelationListAvailable.Request(
             contextId = ctx
         )
@@ -1233,7 +1229,7 @@ class Middleware(
             blockId = dataview,
             relationKey = relation,
             recordId = record,
-            option = Relation.Option(text = name, color = color)
+            option = MRelationOption(text = name, color = color)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewRecordRelationOptionAdd(request)
@@ -1251,7 +1247,7 @@ class Middleware(
         val request = Rpc.Object.RelationOptionAdd.Request(
             contextId = ctx,
             relationKey = relation,
-            option = Relation.Option(text = name, color = color)
+            option = MRelationOption(text = name, color = color)
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectRelationOptionAdd(request)

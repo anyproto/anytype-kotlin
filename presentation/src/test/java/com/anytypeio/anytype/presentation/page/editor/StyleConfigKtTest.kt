@@ -64,7 +64,7 @@ class StyleConfigKtTest {
         val given = Block(
             id = child,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(type = Block.Content.Smart.Type.HOME),
+            content = Block.Content.Smart(),
             children = emptyList()
         )
 

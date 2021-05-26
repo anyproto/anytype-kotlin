@@ -2,9 +2,11 @@
 
 ## Version 0.2.0
 
+## Version 0.1.11 [WIP]
+
 ### Middleware ⚙
 
-* Updated middleware protocol to `0.15.3` (#1448)
+* Updated middleware protocol to `0.15.4` (#1493)
 
 ## Version 0.1.9
 

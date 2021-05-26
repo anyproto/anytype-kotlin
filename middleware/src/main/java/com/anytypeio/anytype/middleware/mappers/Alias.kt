@@ -33,9 +33,11 @@ typealias MDVRelation = anytype.model.Block.Content.Dataview.Relation
 typealias MDVDateFormat = anytype.model.Block.Content.Dataview.Relation.DateFormat
 typealias MDVTimeFormat = anytype.model.Block.Content.Dataview.Relation.TimeFormat
 
-typealias MObjectType = anytype.relation.ObjectType
-typealias MOTypeLayout = anytype.relation.ObjectType.Layout
-typealias MRelationFormat = anytype.relation.RelationFormat
-typealias MRelationDataSource = anytype.relation.Relation.DataSource
-typealias MRelation = anytype.relation.Relation
-typealias MRelationOption = anytype.relation.Relation.Option
+
+typealias MObjectType = anytype.model.ObjectType
+typealias MSmartBlockType = anytype.model.SmartBlockType
+typealias MOTypeLayout = anytype.model.ObjectType.Layout
+typealias MRelationFormat = anytype.model.RelationFormat
+typealias MRelationDataSource = anytype.model.Relation.DataSource
+typealias MRelation = anytype.model.Relation
+typealias MRelationOption = anytype.model.Relation.Option

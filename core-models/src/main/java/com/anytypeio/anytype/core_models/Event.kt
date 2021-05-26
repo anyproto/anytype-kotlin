@@ -21,13 +21,11 @@ sealed class Event {
             val root: Id,
             val details: Block.Details = Block.Details(emptyMap()),
             val blocks: List<Block>,
-            val type: Type = Type.PAGE,
+            val type: SmartBlockType = SmartBlockType.PAGE,
             val objectTypes: List<ObjectType> = emptyList(),
             val objectTypePerObject: Map<String, String> = emptyMap(),
             val relations: List<Relation> = emptyList()
-        ) : Command() {
-            enum class Type { PAGE, HOME, PROFILE_PAGE, ARCHIVE, BREADCRUMBS, SET }
-        }
+        ) : Command()
 
         data class AddBlock(
             override val context: String,

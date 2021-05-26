@@ -72,9 +72,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, block.id, block2.id)
         )
 
@@ -203,9 +201,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(),
             children = listOf(header.id, block.id, block2.id, block3.id)
         )
 

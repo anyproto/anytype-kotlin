@@ -7,6 +7,5 @@ data class HomeDashboard(
     val blocks: List<Block>,
     val children: List<String>,
     val fields: Block.Fields,
-    val type: Block.Content.Smart.Type,
     val details: Block.Details = Block.Details(emptyMap())
 )

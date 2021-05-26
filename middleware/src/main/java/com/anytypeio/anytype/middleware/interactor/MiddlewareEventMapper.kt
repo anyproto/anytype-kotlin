@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
-import com.anytypeio.anytype.middleware.mappers.toCoreModelsEvent
 
 fun anytype.Event.Message.toCoreModels(
     context: String
@@ -21,12 +20,12 @@ fun anytype.Event.Message.toCoreModels(
     objectShow != null -> {
         val event = objectShow
         checkNotNull(event)
-        val type = event.type.toCoreModelsEvent()
+        val type = event.type.toCoreModel()
         Event.Command.ShowBlock(
             context = context,
             root = event.rootId,
             blocks = event.blocks.toCoreModels(
-                types = mapOf(event.rootId to event.type)
+                types = mapOf(event.rootId to type)
             ),
             details = Block.Details(
                 event.details.associate { details ->

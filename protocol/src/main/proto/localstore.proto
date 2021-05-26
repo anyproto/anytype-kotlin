@@ -3,29 +3,17 @@ package anytype.model;
 option go_package = "pkg/lib/pb/model";
 
 import "google/protobuf/struct.proto";
-import "relation.proto";
+import "models.proto";
 
 message ObjectInfo {
     string id = 1;
     repeated string objectTypeUrls = 2;
     google.protobuf.Struct details = 3;
-    anytype.relation.Relations relations = 4;
+    Relations relations = 4;
 
     string snippet = 5;
     bool hasInboundLinks = 6;
-    Type objectType = 7;
-
-    enum Type {
-        Page = 0;
-        Home = 1;
-        ProfilePage = 2;
-        Archive = 3;
-
-        Set = 5;
-        File = 6;
-        ObjectType = 7;
-        Relation = 8;
-    }
+    SmartBlockType objectType = 7;
 }
 
 message ObjectDetails {

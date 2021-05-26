@@ -1,10 +1,7 @@
 package com.anytypeio.anytype.presentation.home
 
 import MockDataFactory
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -34,9 +31,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
         val profile = Block(
             id = MockDataFactory.randomUuid(),
             children = emptyList(),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PROFILE
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             fields = Block.Fields.empty()
         )
 
@@ -74,9 +69,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val dashboard = Block(
             id = config.home,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.HOME
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             children = pages.map { page -> page.id },
             fields = Block.Fields.empty()
         )
@@ -91,7 +84,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
                         root = config.home,
                         context = config.home,
                         blocks = listOf(dashboard) + profile + pages,
-                        type = Event.Command.ShowBlock.Type.HOME
+                        type = SmartBlockType.HOME
                     )
                 )
             )
@@ -184,9 +177,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val dashboard = Block(
             id = config.home,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.HOME
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             children = pages.map { page -> page.id },
             fields = Block.Fields.empty()
         )
@@ -283,9 +274,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val dashboard = Block(
             id = config.home,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.HOME
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             children = links.map { page -> page.id },
             fields = Block.Fields.empty()
         )
@@ -382,9 +371,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val dashboard = Block(
             id = config.home,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.HOME
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             children = links.map { page -> page.id },
             fields = Block.Fields.empty()
         )
@@ -481,9 +468,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
 
         val dashboard = Block(
             id = config.home,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.HOME
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             children = links.map { page -> page.id },
             fields = Block.Fields.empty()
         )

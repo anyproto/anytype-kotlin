@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation
 
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.SmartBlockType
 
 object MockBlockFactory {
 
@@ -13,9 +14,7 @@ object MockBlockFactory {
         Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(child)
         ),
         Block(

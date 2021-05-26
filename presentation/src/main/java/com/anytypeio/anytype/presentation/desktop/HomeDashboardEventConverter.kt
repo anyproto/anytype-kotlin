@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.desktop
 
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 interface HomeDashboardEventConverter {
@@ -19,7 +20,7 @@ interface HomeDashboardEventConverter {
                 builder = builder
             )
             is Event.Command.ShowBlock -> when (event.type) {
-                Event.Command.ShowBlock.Type.HOME -> {
+                SmartBlockType.HOME -> {
                     HomeDashboardStateMachine.Event.OnShowDashboard(
                         blocks = event.blocks,
                         context = event.context,
@@ -29,7 +30,7 @@ interface HomeDashboardEventConverter {
                         objectTypes = event.objectTypes
                     )
                 }
-                Event.Command.ShowBlock.Type.PROFILE_PAGE -> {
+                SmartBlockType.PROFILE_PAGE -> {
                     HomeDashboardStateMachine.Event.OnShowProfile(
                         blocks = event.blocks,
                         context = event.context,

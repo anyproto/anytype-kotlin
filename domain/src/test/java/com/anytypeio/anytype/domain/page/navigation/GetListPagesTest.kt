@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.domain.page.navigation
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,21 +42,21 @@ class GetListPagesTest {
                     fields = Block.Fields(mapOf("name" to "Alex")),
                     snippet = "Snippet1",
                     hasInboundLinks = false,
-                    type = DocumentInfo.Type.PAGE
+                    smartBlockType = SmartBlockType.PAGE
                 ),
                 DocumentInfo(
                     id = "9876",
                     fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
                     snippet = "Snippet2",
                     hasInboundLinks = false,
-                    type = DocumentInfo.Type.PAGE
+                    smartBlockType = SmartBlockType.PAGE
                 ),
                 DocumentInfo(
                     id = "934",
                     fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
                     snippet = "Snippet3",
                     hasInboundLinks = false,
-                    type = DocumentInfo.Type.PAGE
+                    smartBlockType = SmartBlockType.PAGE
                 )
             )
         }
@@ -72,7 +73,7 @@ class GetListPagesTest {
                                 fields = Block.Fields(mapOf("name" to "Alex")),
                                 snippet = "Snippet1",
                                 hasInboundLinks = false,
-                                type = DocumentInfo.Type.PAGE
+                                smartBlockType = SmartBlockType.PAGE
                             ),
                             DocumentInfo(
                                 id = "9876",
@@ -84,7 +85,7 @@ class GetListPagesTest {
                                 ),
                                 snippet = "Snippet2",
                                 hasInboundLinks = false,
-                                type = DocumentInfo.Type.PAGE
+                                smartBlockType = SmartBlockType.PAGE
                             )
                         ),
                         actual = response.listPages

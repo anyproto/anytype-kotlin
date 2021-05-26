@@ -3,10 +3,7 @@ package com.anytypeio.anytype.presentation.home
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Config
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
@@ -215,9 +212,7 @@ class HomeDashboardViewModelTest {
 
         val dashboard = Block(
             id = config.home,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.HOME
-            ),
+            content = Block.Content.Smart(SmartBlockType.HOME),
             children = listOf(page.id),
             fields = Block.Fields.empty()
         )
@@ -234,7 +229,7 @@ class HomeDashboardViewModelTest {
                         root = config.home,
                         context = config.home,
                         blocks = listOf(dashboard, page),
-                        type = Event.Command.ShowBlock.Type.HOME
+                        type = SmartBlockType.HOME
                     )
                 )
             )

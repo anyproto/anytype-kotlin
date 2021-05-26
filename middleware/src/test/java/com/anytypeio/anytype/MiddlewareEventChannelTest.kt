@@ -1,11 +1,11 @@
 package com.anytypeio.anytype
 
-import anytype.SmartBlockType
 import anytype.model.Block
 import com.anytypeio.anytype.common.MockDataFactory
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
+import com.anytypeio.anytype.middleware.mappers.MSmartBlockType
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -38,7 +38,7 @@ class MiddlewareEventChannelTest {
         val msg = anytype.Event.Object.Show(
             rootId = context,
             blocks = emptyList(),
-            type = SmartBlockType.Page
+            type = MSmartBlockType.Page
         )
 
         val message = anytype.Event.Message(objectShow = msg)
@@ -103,7 +103,7 @@ class MiddlewareEventChannelTest {
         val msg = anytype.Event.Object.Show(
             rootId = context,
             blocks = emptyList(),
-            type = SmartBlockType.Page
+            type = MSmartBlockType.Page
         )
 
         val message = anytype.Event.Message(objectShow = msg)

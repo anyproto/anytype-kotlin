@@ -3,8 +3,6 @@ package anytype;
 option go_package = "pb";
 
 import "models.proto";
-import "relation.proto";
-
 import "google/protobuf/struct.proto";
 
 /*
@@ -115,12 +113,12 @@ message Event {
         message Relations {
             message Set {
                 string id = 1; // context objectId
-                repeated anytype.relation.Relation relations = 2;
+                repeated anytype.model.Relation relations = 2;
             }
 
             message Amend {
                 string id = 1; // context objectId
-                repeated anytype.relation.Relation relations = 2;
+                repeated anytype.model.Relation relations = 2;
             }
 
             message Remove {
@@ -133,7 +131,7 @@ message Event {
             message Set {
                 string id = 1; // context objectId
                 string relationKey = 2;
-                anytype.relation.Relation relation = 3; // missing value means relation should be removed
+                anytype.model.Relation relation = 3; // missing value means relation should be removed
             }
             message Remove {
                 string id = 1; // context objectId
@@ -149,15 +147,15 @@ message Event {
             string rootId = 1; // Root block id
             repeated anytype.model.Block blocks = 2; // dependent simple blocks (descendants)
             repeated Object.Details.Set details = 3; // details for the current and dependent objects
-            SmartBlockType type = 4;
+            model.SmartBlockType type = 4;
 
             message RelationWithValuePerObject {
                 string objectId = 1;
-                repeated anytype.relation.RelationWithValue relations = 2;
+                repeated anytype.model.RelationWithValue relations = 2;
             }
 
-            repeated anytype.relation.ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
-            repeated anytype.relation.Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
+            repeated anytype.model.ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
+            repeated anytype.model.Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
             anytype.model.Restrictions restrictions = 8; // object restrictions
         }
     }
@@ -573,7 +571,7 @@ message Event {
             message RelationSet {
                 string id = 1; // dataview block's id
                 string relationKey = 2; // relation key to update
-                anytype.relation.Relation relation = 3;
+                anytype.model.Relation relation = 3;
             }
 
             // sent when the active view's visible records should be replaced
@@ -722,31 +720,6 @@ message Event {
             }
         }
     }
-}
-
-enum SmartBlockType {
-    Breadcrumbs = 0;
-
-    Page = 0x10;
-    ProfilePage = 0x11;
-    Home = 0x20;
-    Archive = 0x30;
-    Database = 0x40;
-    Set = 0x41; // only have dataview simpleblock
-    ObjectType = 0x60; // have relations list
-
-    File = 0x100;
-
-    Template = 0x120;
-
-    MarketplaceType = 0x110;
-    MarketplaceRelation = 0x111;
-    MarketplaceTemplate = 0x112;
-
-    BundledRelation = 0x200;
-    IndexedRelation = 0x201;
-    BundledObjectType = 0x202;
-    AnytypeProfile = 0x203;
 }
 
 message ResponseEvent {

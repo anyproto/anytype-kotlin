@@ -1,12 +1,7 @@
 package com.anytypeio.anytype.domain.page.navigation
 
-import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.DocumentInfo
-import com.anytypeio.anytype.core_models.MockDataFactory
-import com.anytypeio.anytype.core_models.PageInfoWithLinks
-import com.anytypeio.anytype.core_models.PageLinks
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,7 +42,7 @@ class GetPageInfoWithLinksTest {
                     fields = Block.Fields.empty(),
                     snippet = "Snip",
                     hasInboundLinks = true,
-                    type = DocumentInfo.Type.PAGE
+                    smartBlockType = SmartBlockType.PAGE
                 ),
                 links = PageLinks(
                     inbound = listOf(
@@ -56,21 +51,21 @@ class GetPageInfoWithLinksTest {
                             fields = Block.Fields(mapOf("name" to "Alex")),
                             snippet = "Snippet12",
                             hasInboundLinks = false,
-                            type = DocumentInfo.Type.PAGE
+                            smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "13",
                             fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
                             snippet = "Snippet13",
                             hasInboundLinks = false,
-                            type = DocumentInfo.Type.PAGE
+                            smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "14",
                             fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
                             snippet = "Snippet14",
                             hasInboundLinks = false,
-                            type = DocumentInfo.Type.PAGE
+                            smartBlockType = SmartBlockType.PAGE
                         )
                     ),
                     outbound = listOf(
@@ -79,21 +74,21 @@ class GetPageInfoWithLinksTest {
                             fields = Block.Fields(mapOf("name" to "Teo")),
                             snippet = "Snippet15",
                             hasInboundLinks = false,
-                            type = DocumentInfo.Type.PAGE
+                            smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "16",
                             fields = Block.Fields(mapOf("name" to "Thom", "isArchived" to false)),
                             snippet = "Snippet16",
                             hasInboundLinks = false,
-                            type = DocumentInfo.Type.PAGE
+                            smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "17",
                             fields = Block.Fields(mapOf("name" to "Andrey", "isArchived" to true)),
                             snippet = "Snippet17",
                             hasInboundLinks = false,
-                            type = DocumentInfo.Type.PAGE
+                            smartBlockType = SmartBlockType.PAGE
                         )
                     )
                 )
@@ -114,7 +109,7 @@ class GetPageInfoWithLinksTest {
                                 fields = Block.Fields(mapOf("name" to "Teo")),
                                 snippet = "Snippet15",
                                 hasInboundLinks = false,
-                                type = DocumentInfo.Type.PAGE
+                                smartBlockType = SmartBlockType.PAGE
                             ),
                             DocumentInfo(
                                 id = "16",
@@ -126,7 +121,7 @@ class GetPageInfoWithLinksTest {
                                 ),
                                 snippet = "Snippet16",
                                 hasInboundLinks = false,
-                                type = DocumentInfo.Type.PAGE
+                                smartBlockType = SmartBlockType.PAGE
                             )
                         ),
                         actual = outbound
@@ -138,7 +133,7 @@ class GetPageInfoWithLinksTest {
                                 fields = Block.Fields(mapOf("name" to "Alex")),
                                 snippet = "Snippet12",
                                 hasInboundLinks = false,
-                                type = DocumentInfo.Type.PAGE
+                                smartBlockType = SmartBlockType.PAGE
                             ),
                             DocumentInfo(
                                 id = "13",
@@ -150,7 +145,7 @@ class GetPageInfoWithLinksTest {
                                 ),
                                 snippet = "Snippet13",
                                 hasInboundLinks = false,
-                                type = DocumentInfo.Type.PAGE
+                                smartBlockType = SmartBlockType.PAGE
                             )
                         ),
                         actual = inbound

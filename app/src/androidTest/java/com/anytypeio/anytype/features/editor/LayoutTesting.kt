@@ -6,6 +6,7 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Layout
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
@@ -76,9 +77,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -128,9 +127,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -175,9 +172,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -223,9 +218,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -269,9 +262,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -317,9 +308,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 
@@ -363,9 +352,7 @@ class LayoutTesting : EditorTestSetup() {
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            ),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
             children = listOf(header.id, paragraph.id)
         )
 

@@ -11,10 +11,8 @@ data class DocumentInfo(
     val fields: Block.Fields,
     val snippet: String?,
     val hasInboundLinks: Boolean,
-    val type: Type
-) {
-    enum class Type { PAGE, HOME, PROFILE_PAGE, ARCHIVE, SET, FILE, OBJECT_TYPE, RELATION }
-}
+    val smartBlockType: SmartBlockType
+)
 
 data class PageLinks(val inbound: List<DocumentInfo>, val outbound: List<DocumentInfo>)
 

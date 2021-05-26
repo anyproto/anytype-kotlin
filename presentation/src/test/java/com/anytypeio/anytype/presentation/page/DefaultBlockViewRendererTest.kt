@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.tools.Counter
@@ -132,9 +133,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id, toggle.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            )
+            content = Block.Content.Smart()
         )
 
         val blocks = listOf(page, header, title, paragraph, toggle, checkbox)
@@ -253,9 +252,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id, toggle.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            )
+            content = Block.Content.Smart()
         )
 
         val blocks = listOf(page, header, title, paragraph, toggle, checkbox)
@@ -361,9 +358,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            )
+            content = Block.Content.Smart()
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -445,9 +440,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, paragraph.id),
             fields = Block.Fields.empty(),
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            )
+            content = Block.Content.Smart()
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -540,9 +533,7 @@ class DefaultBlockViewRendererTest {
             id = pageId,
             children = listOf(header.id, paragraph.id),
             fields = fields,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PROFILE
-            )
+            content = Block.Content.Smart(SmartBlockType.PROFILE_PAGE)
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -635,9 +626,7 @@ class DefaultBlockViewRendererTest {
             id = pageId,
             children = listOf(header.id, paragraph.id),
             fields = fields,
-            content = Block.Content.Smart(
-                type = Block.Content.Smart.Type.PAGE
-            )
+            content = Block.Content.Smart()
         )
 
         val blocks = listOf(page, header, title, paragraph)
@@ -820,7 +809,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
+            content = Block.Content.Smart()
         )
 
         val details = mapOf(page.id to fields)
@@ -951,7 +940,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
+            content = Block.Content.Smart()
         )
 
         val details = mapOf(page.id to fields)
@@ -1079,7 +1068,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
+            content = Block.Content.Smart()
         )
 
         val details = mapOf(page.id to fields)
@@ -1219,7 +1208,7 @@ class DefaultBlockViewRendererTest {
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
             fields = fields,
-            content = Block.Content.Smart(type = Block.Content.Smart.Type.PAGE)
+            content = Block.Content.Smart()
         )
 
         val details = mapOf(page.id to fields)

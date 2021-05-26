@@ -66,7 +66,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(Block.Content.Smart.Type.PAGE),
+                content = Block.Content.Smart(),
                 children = listOf(header.id, block.id)
             ),
             header,
@@ -133,9 +133,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             Block(
                 id = root,
                 fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart(
-                    type = Block.Content.Smart.Type.PAGE
-                ),
+                content = Block.Content.Smart(),
                 children = listOf(header.id, block.id)
             ),
             header,

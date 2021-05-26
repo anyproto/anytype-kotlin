@@ -1,0 +1,15 @@
+syntax = "proto3";
+package anytype.storage;
+option go_package = "pkg/lib/pb/storage";
+
+import "models.proto";
+import "file.proto";
+import "google/protobuf/struct.proto";
+
+message SmartBlockSnapshot {
+    map<string, uint64> state = 1;
+    repeated anytype.model.Block blocks = 2;
+    google.protobuf.Struct details = 3;
+    map<string, FileKeys> keysByHash = 4;
+    int64 clientTime = 5;
+}

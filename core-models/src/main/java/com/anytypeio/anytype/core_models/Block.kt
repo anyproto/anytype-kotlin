@@ -65,11 +65,7 @@ data class Block(
         /**
          * Smart block.
          */
-        data class Smart(
-            val type: Type
-        ) : Content() {
-            enum class Type { HOME, PAGE, ARCHIVE, BREADCRUMBS, PROFILE, SET }
-        }
+        data class Smart(val type: SmartBlockType = SmartBlockType.PAGE): Content()
 
         /**
          * Textual block.

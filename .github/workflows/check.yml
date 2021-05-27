@@ -9,5 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: ./middleware.sh ${{ secrets.ANYTYPE_SECRET }}
-      - run: ./gradlew assembleDebug test -Dpre-dex=false
+      - name: Setup middleware dependency
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret
+      - name: Run unit tests
+        run: ./gradlew assembleDebug test -Dpre-dex=false

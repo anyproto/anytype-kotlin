@@ -36,12 +36,22 @@ buildscript {
     }
 }
 
+def githubProperties = new Properties()
+githubProperties.load(new FileInputStream(rootProject.file('github.properties')))
+
 allprojects {
     repositories {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
-        maven { url 'http://dl.bintray.com/ebolo/ebolo-oss' }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/anytypeio/go-anytype-middleware")
+            credentials {
+                username = githubProperties['gpr.usr']
+                password = githubProperties['gpr.key']
+            }
+        }
     }
 }
 

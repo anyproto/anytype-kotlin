@@ -90,6 +90,10 @@ ext {
     amplitude_version = '2.30.0'
     okhttp_version = '4.2.2'
 
+    // Anytype
+
+    middleware_version = '0.15.4'
+
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
@@ -188,5 +192,9 @@ ext {
     analytics = [
             amplitude:       "com.amplitude:android-sdk:$amplitude_version",
             okhttp:          "com.squareup.okhttp3:okhttp:$okhttp_version"
+    ]
+
+    anytype = [
+            middleware:     "com.anytype.library:anytype-mw:$middleware_version"
     ]
 }

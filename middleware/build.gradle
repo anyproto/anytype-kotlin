@@ -29,14 +29,14 @@ dependencies {
     implementation project(':protocol')
     implementation project(':data')
 
-    implementation "io.anytype:middleware-library:1.0.0@aar"
-
     def applicationDependencies = rootProject.ext.mainApplication
+    def anytypeDependencies = rootProject.ext.anytype
     def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.timber
     implementation applicationDependencies.coroutinesAndroid
+    implementation anytypeDependencies.middleware
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

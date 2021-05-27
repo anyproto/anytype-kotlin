@@ -2,6 +2,7 @@
 .gradle
 /local.properties
 /configuration.properties
+/github.properties
 .idea/*
 !.idea/copyright
 .DS_Store

@@ -39,8 +39,8 @@ printf "Done\n"
 
 printf "Preparing files\n"
 
-mkdir -p libs/
-mv /tmp/lib/lib.aar libs/
+mkdir -p libs/io/anytype/middleware-library/1.0.0/
+mv /tmp/lib/lib.aar libs/io/anytype/middleware-library/1.0.0/middleware-library-1.0.0.aar
 
 rm -rf /tmp/lib
 rm -rf $FILE

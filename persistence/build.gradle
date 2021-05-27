@@ -38,6 +38,8 @@ dependencies {
     implementation databaseDependencies.roomKtx
 
     kapt databaseDependencies.annotations
+    // Current workaround for ROOM on MAC M1 issue.
+    kapt("org.xerial:sqlite-jdbc:3.34.0")
 
     implementation applicationDependencies.timber
 

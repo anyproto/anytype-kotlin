@@ -26,14 +26,10 @@ android {
 dependencies {
 
     implementation project(':core-models')
-
-    def props = new Properties()
-    project.rootProject.file('configuration.properties').withDataInputStream { props.load(it) }
-    def libraryPath = project.rootProject.file(props.getProperty('middleware.path'))
-    implementation(files(libraryPath))
-
     implementation project(':protocol')
     implementation project(':data')
+
+    implementation "io.anytype:middleware-library:1.0.0@aar"
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting

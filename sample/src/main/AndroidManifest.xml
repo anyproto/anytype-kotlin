@@ -34,9 +34,6 @@
         <activity android:name=".ScrollAndMove" />
         <activity android:name=".StyleActivity" />
         <activity android:name=".MainActivity" />
-        <activity
-            android:name=".KeyboardActivity"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

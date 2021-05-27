@@ -36,6 +36,10 @@ buildscript {
     }
 }
 
+/**
+ * Create github.properties in root project folder file
+ * with gpr.usr=GITHUB_USER_ID  & gpr.key=PERSONAL_ACCESS_TOKEN
+ */
 def githubProperties = new Properties()
 githubProperties.load(new FileInputStream(rootProject.file('github.properties')))
 

@@ -113,7 +113,6 @@ dependencies {
     implementation project(':clipboard')
     implementation project(':core-utils')
     implementation project(':core-ui')
-    implementation project(':library-kanban-widget')
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
     implementation project(':library-syntax-highlighter')
@@ -149,7 +148,6 @@ dependencies {
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
     implementation applicationDependencies.gson
-    implementation applicationDependencies.tableView
     implementation applicationDependencies.permissionDisp
     implementation applicationDependencies.pickT
     implementation applicationDependencies.emojiCompat

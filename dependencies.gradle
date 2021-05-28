@@ -1,10 +1,3 @@
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
-
 ext {
     // Kotlin
     kotlin_coroutines_version = '1.5.0'
@@ -31,9 +24,9 @@ ext {
     navigation_version = '2.3.0'
 
     // Third party libraries
-    exoplayer_version = '2.11.3'
+    exoplayer_version = '2.14.0'
     glide_version = '4.11.0'
-    blurry_version = '3.0.0'
+    blurry_version = '4.0.0'
     shimmer_layout_version = "0.5.0"
     photo_view_version = '2.3.0'
     dagger_version = '2.35.1'
@@ -43,8 +36,8 @@ ext {
     okhttp_logging_interceptor_version = '3.8.1'
     gson_version = '2.8.6'
     better_link_method_version = '2.2.0'
-    table_view_version = '0.8.9.2'
-    permission_disp_version = '4.6.0'
+    table_view_version = '0.8.9.4'
+    permission_disp_version = '4.8.0'
     pickt_version = "0.1.14"
     zxing_version = "4.1.0"
     urlcleaner_version = "0.4.0"
@@ -56,7 +49,7 @@ ext {
     kluent_version = '1.14'
     timber_junit = '1.0.1'
     coroutine_testing_version = '1.4.3'
-    live_data_testing_version = '1.1.0'
+    live_data_testing_version = '1.2.0'
     mockito_kotlin_version = '3.2.0'
     mockito_android_version = '3.9.0'
 
@@ -129,8 +122,8 @@ ext {
             timber:                     "com.jakewharton.timber:timber:$timber_version",
             tableView:                  "com.evrencoskun.library:tableview:$table_view_version",
             exoPlayer:                  "com.google.android.exoplayer:exoplayer:$exoplayer_version",
-            permissionDisp:             "org.permissionsdispatcher:permissionsdispatcher:$permission_disp_version",
-            permissionDispCompiler:     "org.permissionsdispatcher:permissionsdispatcher-processor:$permission_disp_version",
+            permissionDisp:             "com.github.permissions-dispatcher:permissionsdispatcher:$permission_disp_version",
+            permissionDispCompiler:     "com.github.permissions-dispatcher:permissionsdispatcher-processor:$permission_disp_version",
             pickT:                      "com.github.HBiSoft:PickiT:$pickt_version",
             zxing:                      "com.journeyapps:zxing-android-embedded:$zxing_version",
             urlcleaner:                 "com.shekhargulati.urlcleaner:urlcleaner:$urlcleaner_version",

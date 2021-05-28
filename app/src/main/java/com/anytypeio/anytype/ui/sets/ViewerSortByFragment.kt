@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.dataview.modals.SortByAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -15,7 +16,6 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.sets.ViewerSortByCommand
 import com.anytypeio.anytype.presentation.sets.ViewerSortByViewModel
 import com.anytypeio.anytype.presentation.sets.ViewerSortByViewState
@@ -85,8 +85,7 @@ class ViewerSortByFragment : BaseBottomSheetFragment() {
                     selected = command.old,
                     relations = command.relations,
                     sorts = command.sortingExpression
-                )
-                    .show(childFragmentManager, null)
+                ).show(childFragmentManager, null)
             }
             is ViewerSortByCommand.Modal.ShowSortingTypeList -> {
                 PickSortingTypeFragment.new(

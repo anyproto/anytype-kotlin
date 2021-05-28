@@ -27,14 +27,6 @@ interface MainComponent {
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
-    fun databaseViewComponentBuilder(): TableBoardSubComponent.Builder
-    fun contactsComponentBuilder(): ListBoardSubComponent.Builder
-    fun editDatabaseComponentBuilder(): EditDatabaseSubComponent.Builder
-    fun switchDisplayViewComponentBuilder(): SwitchDisplayViewSubComponent.Builder
-    fun customizeDisplayViewComponentBuilder(): CustomizeDisplayViewSubComponent.Builder
-    fun detailsBuilder(): DetailsSubComponent.Builder
-    fun detailEditBuilder(): DetailEditSubComponent.Builder
-    fun detailsReorderBuilder(): DetailsReorderSubComponent.Builder
     fun pageComponentBuilder(): PageSubComponent.Builder
     fun archiveComponentBuilder(): ArchiveSubComponent.Builder
     fun linkAddComponentBuilder(): LinkSubComponent.Builder

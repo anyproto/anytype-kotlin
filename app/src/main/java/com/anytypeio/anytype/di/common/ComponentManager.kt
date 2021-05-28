@@ -103,13 +103,6 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val databaseViewComponent = Component {
-        main
-            .databaseViewComponentBuilder()
-            .databaseViewModule(TableBoardModule())
-            .build()
-    }
-
     val pageComponent = ComponentMap {
         main
             .pageComponentBuilder()
@@ -121,13 +114,6 @@ class ComponentManager(private val main: MainComponent) {
     val archiveComponent = ComponentMap {
         main.archiveComponentBuilder()
             .module(ArchiveModule)
-            .build()
-    }
-
-    val contactsComponent = Component {
-        main
-            .contactsComponentBuilder()
-            .contactsModule(ListBoardModule())
             .build()
     }
 

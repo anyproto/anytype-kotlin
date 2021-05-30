@@ -97,10 +97,6 @@ android {
     }
 }
 
-ext {
-    android_compat_version = '1.0.0-beta01'
-}
-
 dependencies {
 
     implementation project(':domain')
@@ -121,7 +117,6 @@ dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
     def acceptanceTesting = rootProject.ext.acceptanceTesting
-    def devDependencies = rootProject.ext.development
     def databaseDependencies = rootProject.ext.db
     def analyticsDependencies = rootProject.ext.analytics
     def protobufDependencies = rootProject.ext.protobuf
@@ -159,7 +154,6 @@ dependencies {
 
     implementation applicationDependencies.crashlytics
 
-    implementation devDependencies.stetho
     implementation applicationDependencies.exoPlayer
 
     implementation analyticsDependencies.amplitude

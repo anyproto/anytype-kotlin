@@ -13,7 +13,6 @@ import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.main.ContextModule
 import com.anytypeio.anytype.di.main.DaggerMainComponent
 import com.anytypeio.anytype.di.main.MainComponent
-import com.facebook.stetho.Stetho
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,7 +38,6 @@ class AndroidApplication : Application() {
         setupAnalytics()
         setupEmojiCompat()
         setupTimber()
-        setupStetho()
     }
 
     private fun setupEmojiCompat() {
@@ -58,11 +56,6 @@ class AndroidApplication : Application() {
             Timber.plant(Timber.DebugTree())
         else
             Timber.plant(CrashlyticsTree())
-    }
-
-    private fun setupStetho() {
-        if (BuildConfig.DEBUG)
-            Stetho.initializeWithDefaults(this)
     }
 
     private fun setupAnalytics() {

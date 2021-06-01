@@ -4,10 +4,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.page.editor.model.Types
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +30,11 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         MockitoAnnotations.initMocks(this)
     }
 
+    @After
+    fun after() {
+        coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+
     @Test
     fun `should invoke createObject UseCase on clicked on object type item`() {
         // SETUP
@@ -38,6 +45,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         val type3 = MockTypicalDocumentFactory.objectType("LK")
 
         stubInterceptEvents()
+        stubUpdateText()
         stubGetObjectTypes(listOf(type1, type2, type3))
         stubCreateObject(root, a.id)
         stubOpenDocument(doc)

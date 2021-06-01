@@ -119,6 +119,78 @@ class MarkupExtTest {
     }
 
     @Test
+    fun `should update marks when length is negative`() {
+        val given = listOf(
+            Mark(range = IntRange(0, 4), type = Mark.Type.BOLD),
+            Mark(range = IntRange(5, 15), type = Mark.Type.ITALIC),
+            Mark(range = IntRange(16, 20), type = Mark.Type.LINK, param = "www.anytype.io")
+        )
+
+        val from = 5
+        val length = -4
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Mark(range = IntRange(0, 4), type = Mark.Type.BOLD),
+            Mark(range = IntRange(5, 11), type = Mark.Type.ITALIC),
+            Mark(range = IntRange(12, 16), type = Mark.Type.LINK, param = "www.anytype.io")
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should update marks when length is negative 2`() {
+        val given = listOf(
+            Mark(range = IntRange(0, 8), type = Mark.Type.BOLD),
+        )
+
+        val from = 0
+        val length = -2
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Mark(range = IntRange(0, 6), type = Mark.Type.BOLD)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun `should update marks when length is negative 3`() {
+        val given = emptyList<Mark>()
+
+        val from = 5
+        val length = -4
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = emptyList<Mark>()
+
+        assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
     fun `should sort two bold markups according to their start range`() {
 
         val given = listOf(

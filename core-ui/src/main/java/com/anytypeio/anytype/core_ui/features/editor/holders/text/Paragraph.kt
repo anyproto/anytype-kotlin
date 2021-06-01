@@ -3,10 +3,8 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.text.Editable
 import android.view.View
 import androidx.core.view.updatePadding
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.page.SupportNesting
-import com.anytypeio.anytype.core_ui.features.page.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
@@ -29,7 +27,7 @@ class Paragraph(
 
     fun bind(
         item: BlockView.Text.Paragraph,
-        onTextBlockTextChanged: (BlockView.Text) -> Unit,
+        onTextChanged: (String, Editable) -> Unit,
         onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
@@ -41,13 +39,7 @@ class Paragraph(
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
-        onTextChanged = { _, editable ->
-            item.apply {
-                text = editable.toString()
-                marks = editable.marks()
-            }
-            onTextBlockTextChanged(item)
-        },
+        onTextChanged = onTextChanged,
         onSelectionChanged = onSelectionChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

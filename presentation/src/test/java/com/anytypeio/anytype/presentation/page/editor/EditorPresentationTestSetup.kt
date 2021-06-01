@@ -458,7 +458,7 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubGetObjectTypes(objectTypes: List<ObjectType>) {
+    fun stubGetObjectTypes(objectTypes: List<ObjectType> = listOf()) {
         getObjectTypes.stub {
             onBlocking {
                 invoke(any())

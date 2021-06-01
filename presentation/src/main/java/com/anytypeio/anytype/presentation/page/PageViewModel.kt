@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.mapper.mark
+import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.mapper.toMentionView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -539,7 +540,7 @@ class PageViewModel(
     }
 
     fun onStart(id: Id) {
-        Timber.d("onStart")
+        Timber.d("onStart, id:[$id]")
 
         context = id
 
@@ -619,10 +620,12 @@ class PageViewModel(
     }
 
     fun onAddLinkPressed(blockId: String, link: String, range: IntRange) {
+        Timber.d("onAddLinkPressed, blockId:[$blockId] link:[$link] range:[$range]")
         applyLinkMarkup(blockId, link, range)
     }
 
     fun onSystemBackPressed(editorHasChildrenScreens: Boolean) {
+        Timber.d("onSystemBackPressed, editorHasChildrenScreens:[$editorHasChildrenScreens]")
         if (editorHasChildrenScreens) {
             dispatch(Command.PopBackStack)
         } else {
@@ -652,15 +655,18 @@ class PageViewModel(
     }
 
     fun onDismissBlockActionMenu(editorHasChildrenScreens: Boolean) {
+        Timber.d("onDismissBlockActionMenu, editorHasChildrenScreens:[$editorHasChildrenScreens]")
         onExitActionMode()
         onSystemBackPressed(editorHasChildrenScreens)
     }
 
     fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed, ")
         proceedWithExitingBack()
     }
 
     fun onBottomSheetHidden() {
+        Timber.d("onBottomSheetHidden, ")
         proceedWithExitingToDashboard()
     }
 
@@ -741,6 +747,7 @@ class PageViewModel(
     }
 
     fun navigateToDesktop() {
+        Timber.d("navigateToDesktop, ")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_DASHBOARD
@@ -754,11 +761,13 @@ class PageViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
+        Timber.d("onTextChanged, id:[$id], text:[$text], marks:[$marks]")
         val update = TextUpdate.Default(target = id, text = text, markup = marks)
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
     fun onTitleBlockTextChanged(view: BlockView.Title) {
+        Timber.d("onTitleBlockTextChanged, view:[$view]")
         val new = views.map { if (it.id == view.id) view else it }
         val update = TextUpdate.Default(
             target = view.id,
@@ -770,6 +779,9 @@ class PageViewModel(
     }
 
     fun onDescriptionBlockTextChanged(view: BlockView.Description) {
+
+        Timber.d("onDescriptionBlockTextChanged, view:[$view]")
+
         val new = views.map { if (it.id == view.id) view else it }
         val update = TextUpdate.Default(
             target = view.id,
@@ -782,7 +794,7 @@ class PageViewModel(
 
     fun onTextBlockTextChanged(view: BlockView.Text) {
 
-        Timber.d("Text block's text changed: $view")
+        Timber.d("onTextBlockTextChanged, view:[$view]")
 
         val update = if (view is BlockView.Text.Paragraph) TextUpdate.Pattern(
             target = view.id,
@@ -803,7 +815,7 @@ class PageViewModel(
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
-        Timber.d("onSelection changed: $id [$selection]")
+        Timber.d("onSelectionChanged, id:[$id] selection:[$selection]")
         viewModelScope.launch {
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         }
@@ -818,7 +830,7 @@ class PageViewModel(
     }
 
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
-        Timber.d("Focus changed ($hasFocus): $id")
+        Timber.d("onBlockFocusChanged, id:[$id] hasFocus:[$hasFocus]")
         if (hasFocus) {
             updateFocus(id)
             controlPanelInteractor.onEvent(
@@ -861,6 +873,7 @@ class PageViewModel(
         marks: List<Content.Text.Mark>,
         range: IntRange
     ) {
+        Timber.d("onEnterKeyClicked, target:[$target] text:[$text] marks:[$marks] range:[$range]")
         val focus = orchestrator.stores.focus.current()
         if (!focus.isEmpty && focus.id == target) {
             proceedWithEnterEvent(focus.id, range, text, marks)
@@ -941,7 +954,7 @@ class PageViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
-        Timber.d("On endline enter clicked")
+        Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
         val target = blocks.first { it.id == id }
 
@@ -965,6 +978,7 @@ class PageViewModel(
     }
 
     fun onDocumentMenuClicked() {
+        Timber.d("onDocumentMenuClicked, ")
         proceedWithOpeningObjectMenu()
     }
 
@@ -1040,7 +1054,7 @@ class PageViewModel(
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {
-        Timber.d("onEmptyBlockBackspaceClicked: $id")
+        Timber.d("onEmptyBlockBackspaceClicked, id:[$id]")
         proceedWithUnlinking(target = id)
     }
 
@@ -1049,6 +1063,8 @@ class PageViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
+        Timber.d("onNonEmptyBlockBackspaceClicked, id:[$id] text:[$text] marks:[$marks]")
+
         blocks = blocks.map { block ->
             if (block.id == id) {
                 block.copy(
@@ -1133,7 +1149,6 @@ class PageViewModel(
     }
 
     private fun updateFocus(id: Id) {
-        Timber.d("Updating focus: $id")
         viewModelScope.launch {
             orchestrator.stores.focus.update(
                 Editor.Focus.id(id)
@@ -1162,6 +1177,9 @@ class PageViewModel(
     }
 
     fun onEditorContextMenuStyleClicked(selection: IntRange) {
+
+        Timber.d("onEditorContextMenuStyleClicked, selection:[$selection]")
+
         val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnEditorContextMenuStyleClicked(
@@ -1176,6 +1194,7 @@ class PageViewModel(
     }
 
     fun onStylingToolbarEvent(event: StylingEvent) {
+        Timber.d("onStylingToolbarEvent, event:[$event]")
         val state = controlPanelViewState.value!!
         when (event) {
             is StylingEvent.Coloring.Text -> {
@@ -1235,6 +1254,7 @@ class PageViewModel(
     }
 
     fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
+        Timber.d("onStyleToolbarMarkupAction, type:[$type] param:[$param]")
         viewModelScope.launch {
             markupActionPipeline.send(
                 MarkupAction(
@@ -1271,6 +1291,7 @@ class PageViewModel(
     }
 
     fun onToolbarTextColorAction(id: String, color: String?) {
+        Timber.d("onToolbarTextColorAction, id:[$id] color:[$color]")
         check(color != null)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
         viewModelScope.launch {
@@ -1351,6 +1372,7 @@ class PageViewModel(
     }
 
     fun onSetRelationKeyClicked(blockId: Id, key: Id) {
+        Timber.d("onSetRelationKeyClicked, blockId:[$blockId] key:[$key]")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.SetRelationKey(
@@ -1363,6 +1385,7 @@ class PageViewModel(
     }
 
     fun onActionMenuItemClicked(id: String, action: ActionItemType) {
+        Timber.d("onActionMenuItemClicked, id:[$id] action:[$action]")
         when (action) {
             ActionItemType.AddBelow -> {
                 onExitActionMode()
@@ -1550,6 +1573,7 @@ class PageViewModel(
     }
 
     fun onActionUndoClicked() {
+        Timber.d("onActionUndoClicked, ")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Undo(
@@ -1561,6 +1585,7 @@ class PageViewModel(
     }
 
     fun onActionRedoClicked() {
+        Timber.d("onActionRedoClicked, ")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
@@ -1572,6 +1597,7 @@ class PageViewModel(
     }
 
     fun onEnterSearchModeClicked() {
+        Timber.d("onEnterSearchModeClicked, ")
         mode = EditorMode.Search
         viewModelScope.launch { orchestrator.stores.views.update(views.toReadMode()) }
         viewModelScope.launch { renderCommand.send(Unit) }
@@ -1579,10 +1605,12 @@ class PageViewModel(
     }
 
     fun onDocRelationsClicked() {
+        Timber.d("onDocRelationsClicked, ")
         dispatch(Command.OpenObjectRelationScreen.List(ctx = context, target = null))
     }
 
     fun onSearchToolbarEvent(event: SearchInDocEvent) {
+        Timber.d("onSearchToolbarEvent, event:[$event]")
         if (mode !is EditorMode.Search) return
         when (event) {
             is SearchInDocEvent.Query -> {
@@ -1648,6 +1676,8 @@ class PageViewModel(
 
     fun onAddTextBlockClicked(style: Content.Text.Style) {
 
+        Timber.d("onAddTextBlockClicked, style:[$style]")
+
         val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
 
         val content = target.content
@@ -1684,6 +1714,8 @@ class PageViewModel(
     }
 
     fun onAddLinkToObjectClicked() {
+
+        Timber.d("onAddLinkToObjectClicked, ")
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
 
@@ -1724,6 +1756,9 @@ class PageViewModel(
     }
 
     fun onAddRelationBlockClicked() {
+
+        Timber.d("onAddRelationBlockClicked, ")
+
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
         val replace = content is Content.Text && content.text.isEmpty()
@@ -1751,6 +1786,7 @@ class PageViewModel(
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
+        Timber.d("onTogglePlaceholderClicked, target:[$target]")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
@@ -1766,6 +1802,7 @@ class PageViewModel(
     }
 
     fun onToggleClicked(target: Id) {
+        Timber.d("onToggleClicked, target:[$target]")
         onToggleChanged(target)
         viewModelScope.launch { refresh() }
     }
@@ -1776,6 +1813,7 @@ class PageViewModel(
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
+        Timber.d("onAddFileBlockClicked, type:[$type]")
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
         val content = focused.content
         if (content is Content.Text && content.text.isEmpty()) {
@@ -1828,6 +1866,8 @@ class PageViewModel(
 
     fun onCheckboxClicked(view: BlockView.Text.Checkbox) {
 
+        Timber.d("onCheckboxClicked, view:[$view]")
+
         blocks = blocks.map { block ->
             if (block.id == view.id) {
                 block.copy(
@@ -1866,6 +1906,8 @@ class PageViewModel(
 
     fun onTitleCheckboxClicked(view: BlockView.Title.Todo) {
 
+        Timber.d("onTitleCheckboxClicked, view:[$view]")
+
         blocks = blocks.map { block ->
             if (block.id == view.id) {
                 block.copy(
@@ -1903,6 +1945,7 @@ class PageViewModel(
     }
 
     fun onBlockToolbarStyleClicked() {
+        Timber.d("onBlockToolbarStyleClicked, ")
         val target = orchestrator.stores.focus.current().id
         when (views.first { it.id == target }) {
             is BlockView.Title -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
@@ -1951,6 +1994,7 @@ class PageViewModel(
     }
 
     fun onCloseBlockStyleToolbarClicked() {
+        Timber.d("onCloseBlockStyleToolbarClicked, ")
         if (mode is EditorMode.Styling.Single) {
             val target = (mode as EditorMode.Styling.Single).target
             val cursor = (mode as EditorMode.Styling.Single).cursor
@@ -2009,18 +2053,21 @@ class PageViewModel(
     }
 
     fun onCloseBlockStyleExtraToolbarClicked() {
+        Timber.d("onCloseBlockStyleExtraToolbarClicked, ")
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.StylingToolbar.OnExtraClosed
         )
     }
 
     fun onCloseBlockStyleColorToolbarClicked() {
+        Timber.d("onCloseBlockStyleColorToolbarClicked, ")
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.StylingToolbar.OnColorClosed
         )
     }
 
     fun onBlockToolbarBlockActionsClicked() {
+        Timber.d("onBlockToolbarBlockActionsClicked, ")
         val target = orchestrator.stores.focus.current().id
         val view = views.first { it.id == target }
         if (view is BlockView.Title) {
@@ -2035,11 +2082,13 @@ class PageViewModel(
     }
 
     fun onMeasure(target: Id, dimensions: BlockDimensions) {
+        Timber.d("onMeasure, target:[$target] dimensions:[$dimensions]")
         proceedWithClearingFocus()
         onBlockLongPressedClicked(target, dimensions)
     }
 
     fun onAddBlockToolbarClicked() {
+        Timber.d("onAddBlockToolbarClicked, ")
         dispatch(Command.OpenAddBlockPanel(ctx = context))
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -2052,6 +2101,7 @@ class PageViewModel(
     }
 
     fun onEnterMultiSelectModeClicked() {
+        Timber.d("onEnterMultiSelectModeClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter)
         mode = EditorMode.Select
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
@@ -2070,6 +2120,7 @@ class PageViewModel(
     }
 
     fun onExitMultiSelectModeClicked() {
+        Timber.d("onExitMultiSelectModeClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
         mode = EditorMode.Edit
         clearSelections()
@@ -2085,6 +2136,7 @@ class PageViewModel(
     }
 
     fun onEnterScrollAndMoveClicked() {
+        Timber.d("onEnterScrollAndMoveClicked, ")
         mode = EditorMode.SAM
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnEnter)
         viewModelScope.sendEvent(
@@ -2094,6 +2146,7 @@ class PageViewModel(
     }
 
     fun onExitScrollAndMoveClicked() {
+        Timber.d("onExitScrollAndMoveClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.BTN_SCROLL_MOVE_CANCEL
@@ -2109,6 +2162,7 @@ class PageViewModel(
     }
 
     fun onApplyScrollAndMoveClicked() {
+        Timber.d("onApplyScrollAndMoveClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.BTN_SCROLL_MOVE_MOVE
@@ -2130,6 +2184,7 @@ class PageViewModel(
     }
 
     fun onMultiSelectModeDeleteClicked() {
+        Timber.d("onMultiSelectModeDeleteClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnDelete)
 
         val exclude = mutableSetOf<String>()
@@ -2161,6 +2216,7 @@ class PageViewModel(
     }
 
     fun onMultiSelectCopyClicked() {
+        Timber.d("onMultiSelectCopyClicked, ")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Copy(
@@ -2180,6 +2236,7 @@ class PageViewModel(
     }
 
     fun onMultiSelectModeSelectAllClicked() {
+        Timber.d("onMultiSelectModeSelectAllClicked, ")
         (stateData.value as ViewState.Success).let { state ->
             if (currentSelection().isEmpty()) {
                 onSelectAllClicked(state)
@@ -2218,6 +2275,8 @@ class PageViewModel(
         }
 
     fun onMultiSelectTurnIntoButtonClicked() {
+
+        Timber.d("onMultiSelectTurnIntoButtonClicked, ")
 
         val excludedCategories = mutableListOf<String>()
         val excludedTypes = mutableListOf<String>()
@@ -2266,6 +2325,7 @@ class PageViewModel(
     }
 
     fun onOpenPageNavigationButtonClicked() {
+        Timber.d("onOpenPageNavigationButtonClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_NAVIGATION
@@ -2282,6 +2342,7 @@ class PageViewModel(
     // ----------------- Turn Into -----------------------------------------
 
     fun onTurnIntoMultiSelectBlockClicked(uiBlock: UiBlock) {
+        Timber.d("onTurnIntoMultiSelectBlockClicked, uiBlock:[$uiBlock]")
         proceedUpdateBlockStyle(
             targets = currentSelection().toList(),
             uiBlock = uiBlock,
@@ -2294,6 +2355,7 @@ class PageViewModel(
     }
 
     fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
+        Timber.d("onTurnIntoBlockClicked, taget:[$target] uiBlock:[$uiBlock]")
         proceedUpdateBlockStyle(
             targets = listOf(target),
             uiBlock = uiBlock,
@@ -2303,6 +2365,7 @@ class PageViewModel(
     }
 
     fun onUpdateSingleTextBlockStyle(uiBlock: UiBlock) {
+        Timber.d("onUpdateSingleTextBlockStyle, uiBlock:[$uiBlock]")
         (mode as? EditorMode.Styling.Single)?.let { eMode ->
             proceedUpdateBlockStyle(
                 targets = listOf(eMode.target),
@@ -2313,10 +2376,12 @@ class PageViewModel(
     }
 
     fun onBlockStyleToolbarOtherClicked() {
+        Timber.d("onBlockStyleToolbarOtherClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnExtraClicked)
     }
 
     fun onBlockStyleToolbarColorClicked() {
+        Timber.d("onBlockStyleToolbarColorClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorClicked)
     }
 
@@ -2459,11 +2524,13 @@ class PageViewModel(
     }
 
     fun onAddDividerBlockClicked(style: Content.Divider.Style) {
+        Timber.d("onAddDividerBlockClicked, style:[$style]")
         addDividerBlock(style)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
 
     fun onOutsideClicked() {
+        Timber.d("onOutsideClicked, ")
         if (mode is EditorMode.Styling) {
             onExitBlockStyleToolbarClicked()
             return
@@ -2519,6 +2586,7 @@ class PageViewModel(
     }
 
     fun onHideKeyboardClicked() {
+        Timber.d("onHideKeyboardClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         views.onEach { if (it is Focusable) it.isFocused = false }
@@ -2539,8 +2607,8 @@ class PageViewModel(
 
     private suspend fun refresh() {
         if (BuildConfig.DEBUG) {
-            Timber.d("----------Refreshing Blocks---------------------\n$blocks")
-            Timber.d("----------Finished Refreshing Blocks------------")
+           Timber.d("----------Refreshing Blocks---------------------\n$blocks")
+           Timber.d("----------Finished Refreshing Blocks------------")
         }
         renderizePipeline.send(blocks)
     }
@@ -2617,6 +2685,7 @@ class PageViewModel(
     }
 
     fun onAddNewPageClicked() {
+        Timber.d("onAddNewPageClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         val position: Position
@@ -2670,6 +2739,7 @@ class PageViewModel(
     }
 
     fun onArchiveThisPageClicked() {
+        Timber.d("onArchiveThisPageClicked, ")
         dispatch(command = Command.CloseKeyboard)
         viewModelScope.launch {
             archiveDocument(
@@ -2686,18 +2756,22 @@ class PageViewModel(
     }
 
     fun onAddCoverClicked() {
+        Timber.d("onAddCoverClicked, ")
         dispatch(Command.OpenCoverGallery(context))
     }
 
     fun onLayoutClicked() {
+        Timber.d("onLayoutClicked, ")
         dispatch(Command.OpenObjectLayout(context))
     }
 
     fun onLayoutDialogDismissed() {
+        Timber.d("onLayoutDialogDismissed, ")
         proceedWithOpeningObjectMenu()
     }
 
     fun onDocCoverImagePicked(path: String) {
+        Timber.d("onDocCoverImagePicked, path:[$path]")
         viewModelScope.launch {
             setDocCoverImage(
                 SetDocCoverImage.Params.FromPath(
@@ -2712,6 +2786,7 @@ class PageViewModel(
     }
 
     fun onDocCoverImageSelected(hash: String) {
+        Timber.d("onDocCoverImageSelected, hash:[$hash]")
         viewModelScope.launch {
             setDocCoverImage(
                 SetDocCoverImage.Params.FromHash(
@@ -2732,6 +2807,7 @@ class PageViewModel(
     }
 
     fun onRemoveCover() {
+        Timber.d("onRemoveCover, ")
         viewModelScope.launch {
             removeDocCover(
                 RemoveDocCover.Params(
@@ -2748,6 +2824,7 @@ class PageViewModel(
     }
 
     fun onAddBookmarkBlockClicked() {
+        Timber.d("onAddBookmarkBlockClicked, ")
 
         val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
 
@@ -2795,6 +2872,7 @@ class PageViewModel(
     }
 
     fun onAddBookmarkUrl(target: String, url: String) {
+        Timber.d("onAddBookmarkUrl, target:[$target] url:[$url]")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Bookmark.SetupBookmark(
@@ -2826,6 +2904,7 @@ class PageViewModel(
         dispatch(command = Command.Browse(view.url))
 
     fun onTitleTextInputClicked() {
+        Timber.d("onTitleTextInputClicked, ")
         if (mode is EditorMode.Styling) {
             onExitBlockStyleToolbarClicked()
             return
@@ -2834,6 +2913,7 @@ class PageViewModel(
     }
 
     fun onTextInputClicked(target: Id) {
+        Timber.d("onTextInputClicked, target:[$target]")
         when (mode) {
             is EditorMode.Select -> {
                 onBlockMultiSelectClicked(target)
@@ -2924,6 +3004,7 @@ class PageViewModel(
     fun onPaste(
         range: IntRange
     ) {
+        Timber.d("onPaste, range:[$range]")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Paste(
@@ -2940,6 +3021,8 @@ class PageViewModel(
         target: Id,
         ratio: Float
     ) {
+
+        Timber.d("onApplyScrollAndMove, target:[$target] ratio:[$ratio]")
 
         val ordering = views.mapIndexed { index, view -> view.id to index }.toMap()
 
@@ -3055,6 +3138,7 @@ class PageViewModel(
     fun onCopy(
         range: IntRange?
     ) {
+        Timber.d("onCopy, ")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Copy(
@@ -3067,6 +3151,7 @@ class PageViewModel(
     }
 
     fun onClickListener(clicked: ListenerType) {
+        Timber.d("onClickListener, clicked:[$clicked]")
         if (mode is EditorMode.Styling) {
             onExitBlockStyleToolbarClicked()
             return
@@ -3308,6 +3393,7 @@ class PageViewModel(
     }
 
     fun onPlusButtonPressed() {
+        Timber.d("onPlusButtonPressed, ")
         val startTime = System.currentTimeMillis()
         createPage(
             scope = viewModelScope,
@@ -3332,6 +3418,7 @@ class PageViewModel(
     }
 
     fun onProceedWithFilePath(filePath: String?) {
+        Timber.d("onProceedWithFilePath, filePath:[$filePath]")
         if (filePath == null) {
             Timber.d("Error while getting filePath")
             return
@@ -3349,6 +3436,7 @@ class PageViewModel(
     }
 
     fun onPageIconClicked() {
+        Timber.d("onPageIconClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
         val details = orchestrator.stores.details.current()
         dispatch(
@@ -3375,6 +3463,7 @@ class PageViewModel(
     }
 
     fun onProfileIconClicked() {
+        Timber.d("onProfileIconClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
         val details = orchestrator.stores.details.current()
         dispatch(
@@ -3401,6 +3490,8 @@ class PageViewModel(
 
     fun startDownloadingFile(id: String) {
 
+        Timber.d("startDownloadingFile, id:[$id]")
+
         _toasts.offer("Downloading file in background...")
 
         val block = blocks.first { it.id == id }
@@ -3420,6 +3511,9 @@ class PageViewModel(
     }
 
     fun onPageSearchClicked() {
+
+        Timber.d("onPageSearchClicked, ")
+
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_SEARCH
@@ -3428,6 +3522,7 @@ class PageViewModel(
     }
 
     fun onMentionEvent(mentionEvent: MentionEvent) {
+        Timber.d("onMentionEvent, mentionEvent:[$mentionEvent]")
         when (mentionEvent) {
             is MentionEvent.MentionSuggestText -> {
                 controlPanelInteractor.onEvent(
@@ -3471,6 +3566,7 @@ class PageViewModel(
     }
 
     fun onAddMentionNewPageClicked(name: String) {
+        Timber.d("onAddMentionNewPageClicked, name:[$name]")
 
         val params = CreateNewDocument.Params(
             name = name.removePrefix(Mention.MENTION_PREFIX)
@@ -3513,11 +3609,12 @@ class PageViewModel(
     }
 
     fun onMentionSuggestClick(mention: Mention, mentionTrigger: String) {
+        Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
         onCreateMentionInText(mention, mentionTrigger)
     }
 
     fun onCreateMentionInText(mention: Mention, mentionTrigger: String) {
-        Timber.d("onAddMentionClicked, suggest:$mention, from:$mentionFrom")
+        Timber.d("onCreateMentionInText, mention:[$mention], mentionTrigger:[$mentionFrom]")
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
 
@@ -3588,6 +3685,7 @@ class PageViewModel(
      * Return true, when mention menu is closed, and we need absorb back button click
      */
     fun onBackPressedCallback(): Boolean {
+        Timber.d("onBackPressedCallback, ")
         return controlPanelViewState.value?.let { state ->
             val isVisible = state.mentionToolbar.isVisible
             if (isVisible) {
@@ -3600,6 +3698,7 @@ class PageViewModel(
     }
 
     fun onSelectProgrammingLanguageClicked(target: Id, key: String) {
+        Timber.d("onSelectProgrammingLanguageClicked, target:[$target] key:[$key]")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.UpdateFields(
@@ -3622,6 +3721,7 @@ class PageViewModel(
         value: Any?,
         relationId: Id
     ) {
+        Timber.d("onRelationTextValueChanged, ctx:[$ctx] value:[$value] relationId:[$relationId]")
         viewModelScope.launch {
             updateDetail(
                 UpdateDetail.Params(
@@ -3680,11 +3780,11 @@ class PageViewModel(
         controlPanelInteractor.channel.cancel()
         titleChannel.cancel()
 
-        Timber.d("onCleared")
+        Timber.d("onCleared, ")
     }
 
     fun onStop() {
-        Timber.d("onStop")
+        Timber.d("onStop, ")
         jobs.apply {
             forEach { it.cancel() }
             clear()
@@ -3695,6 +3795,7 @@ class PageViewModel(
 
     //region SLASH WIDGET
     fun onSlashItemClicked(item: SlashItem) {
+        Timber.d("onSlashItemClicked, item:[$item]")
         val target = orchestrator.stores.focus.current()
         if (!target.isEmpty) {
             proceedWithSlashItem(item, target.id)
@@ -3704,8 +3805,10 @@ class PageViewModel(
     }
 
     fun onSlashTextWatcherEvent(event: SlashEvent) {
+        Timber.d("onSlashTextWatcherEvent, event:[$event]")
         when (event) {
             is SlashEvent.Start -> {
+                slashStartIndex = event.slashStart
                 filterSearchEmptyCount = 0
                 val panelEvent = ControlPanelMachine.Event.Slash.OnStart(
                     cursorCoordinate = event.cursorCoordinate,
@@ -3714,6 +3817,7 @@ class PageViewModel(
                 controlPanelInteractor.onEvent(panelEvent)
             }
             is SlashEvent.Filter -> {
+                slashFilter = event.filter.toString()
                 if (event.filter.isEmpty() || event.filter.first() != SLASH_CHAR) {
                     val widgetState = SlashWidgetState.UpdateItems.empty()
                     val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
@@ -3743,6 +3847,8 @@ class PageViewModel(
                         incFilterSearchEmptyCount(widgetState)
                         val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
                             filterSearchEmptyCount = 0
+                            slashStartIndex = 0
+                            slashFilter = ""
                             ControlPanelMachine.Event.Slash.OnStop
                         } else {
                             ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
@@ -3752,6 +3858,8 @@ class PageViewModel(
                 }
             }
             SlashEvent.Stop -> {
+                slashStartIndex = 0
+                slashFilter = ""
                 filterSearchEmptyCount = 0
                 val panelEvent = ControlPanelMachine.Event.Slash.OnStop
                 controlPanelInteractor.onEvent(panelEvent)
@@ -3822,44 +3930,157 @@ class PageViewModel(
                 ))
             }
             is SlashItem.Style.Type -> {
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashStyleTypeItemClicked(item, targetId)
             }
             is SlashItem.Style.Markup -> {
-                onSlashStyleMarkupItemClicked(item, targetId)
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                viewModelScope.launch {
+                    val view = views.find { it.id == targetId }
+                    if (view is BlockView.Text) {
+                        orchestrator.proxies.intents.send(
+                            Intent.Text.UpdateMark(
+                                context = context,
+                                targets = listOf(targetId),
+                                mark = Content.Text.Mark(
+                                    range = IntRange(0, view.text.length),
+                                    type = item.convertToMarkType()
+                                )
+                            )
+                        )
+                    }
+                }
             }
             is SlashItem.Media -> {
-                onSlashMediaItemClicked(item)
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onSlashMediaItemClicked(targetId = targetId, item = item)
             }
             is SlashItem.ObjectType -> {
-                onSlashObjectTypeItemClicked(item)
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onAddNewObjectClicked(
+                    type = item.url,
+                    layout = item.layout
+                )
             }
             is SlashItem.Relation -> {
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashRelationItemClicked(item)
             }
             is SlashItem.Other.Line -> {
-                proceedWithClearingFocus()
+                cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 addDividerBlock(style = Content.Divider.Style.LINE)
             }
             is SlashItem.Other.Dots -> {
-                proceedWithClearingFocus()
+                cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 addDividerBlock(style = Content.Divider.Style.DOTS)
             }
             is SlashItem.Actions -> {
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashActionItemClicked(item, targetId)
             }
             is SlashItem.Alignment -> {
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashAlignmentItemClicked(item, targetId)
             }
             is SlashItem.Color -> {
+                cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashItemColorClicked(item, targetId)
             }
-            SlashItem.Back -> onSlashBackClicked()
-            else -> {
-                Timber.d("PRESSED ON SLASH ITEM : $item")
+            SlashItem.Back -> {
+                onSlashBackClicked()
             }
+            is SlashItem.Subheader -> {
+                Timber.d("Click on Slash Subheader, do nothing")
+            }
+        }
+    }
+
+    private fun cutSlashFilter(targetId: Id) {
+
+        //saving cursor on slash start index
+        setCursorToPosition(targetId = targetId, position = slashStartIndex)
+
+        // cut text from List<BlockView> and rerender views
+        val newBlockView = cutSlashFilterFromViews(targetId)
+
+        // cut text from List<Block> and send TextUpdate Intent
+        if (newBlockView != null) {
+            cutSlashFilterFromBlocksAndSendUpdate(
+                targetId = targetId,
+                text = newBlockView.text,
+                marks = newBlockView.marks.map { it.mark() }
+            )
+        } else {
+            Timber.e("cutSlashFilter error, BlockView is null on targetId:$targetId")
+        }
+    }
+
+    private fun cutSlashFilterFromViews(targetId: Id): BlockView.Text? {
+        val blockView = views.firstOrNull { it.id == targetId }
+        if (blockView is BlockView.Text) {
+            val new = blockView.cutPartOfText(
+                from = slashStartIndex,
+                partLength = slashFilter.length
+            )
+            viewModelScope.launch {
+                orchestrator.stores.views.update(
+                    views.update(blockView)
+                )
+                renderCommand.send(Unit)
+            }
+            return new
+        }
+        return null
+    }
+
+    private fun cutSlashFilterFromBlocksAndSendUpdate(
+        targetId: Id,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        blocks = blocks.updateTextContent(
+            target = targetId,
+            text = text,
+            marks = marks
+        )
+
+        //send new text to Middleware
+        viewModelScope.launch {
+            orchestrator.proxies.saves.send(null)
+            orchestrator.proxies.changes.send(null)
+        }
+
+        val intent = Intent.Text.UpdateText(
+            context = context,
+            target = targetId,
+            text = text,
+            marks = marks
+        )
+
+        proceedWithUpdatingText(intent)
+    }
+
+    private fun setCursorToPosition(targetId: Id, position: Int) {
+        viewModelScope.launch {
+            val cursor = Editor.Cursor.Range(
+                range = IntRange(position, position)
+            )
+            orchestrator.stores.focus.update(
+                t = Editor.Focus(
+                    id = targetId,
+                    cursor = cursor
+                )
+            )
         }
     }
 
@@ -3931,63 +4152,38 @@ class PageViewModel(
         }
     }
 
-    private fun onSlashMediaItemClicked(item: SlashItem.Media) {
+    private fun onSlashMediaItemClicked(item: SlashItem.Media, targetId: Id) {
         when (item) {
             SlashItem.Media.Bookmark -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onAddBookmarkBlockClicked()
-                proceedWithClearingFocus()
             }
             SlashItem.Media.Code -> {
                 onAddTextBlockClicked(style = Content.Text.Style.CODE_SNIPPET)
             }
             SlashItem.Media.File -> {
                 onAddFileBlockClicked(Content.File.Type.FILE)
-                proceedWithClearingFocus()
             }
             SlashItem.Media.Picture -> {
                 onAddFileBlockClicked(Content.File.Type.IMAGE)
-                proceedWithClearingFocus()
             }
             SlashItem.Media.Video -> {
                 onAddFileBlockClicked(Content.File.Type.VIDEO)
-                proceedWithClearingFocus()
             }
         }
     }
 
     private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type, targetId: Id) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-
-        saveTextSelectionPosition(targetId)
-
-        val uiBlock = item.convertToUiBlock()
-        onTurnIntoBlockClicked(
-            target = targetId,
-            uiBlock = uiBlock
-        )
-    }
-
-    private fun onSlashStyleMarkupItemClicked(item: SlashItem.Style.Markup, targetId: Id) {
-
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-
-        saveTextSelectionPosition(targetId)
-
-        val block = blocks.first { it.id == targetId }
-        val range = IntRange(0, block.content.asText().text.length)
-
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.UpdateMark(
-                    context = context,
-                    targets = listOf(targetId),
-                    mark = Content.Text.Mark(
-                        range = range,
-                        type = item.convertToMarkType()
-                    )
+        when (item) {
+            is SlashItem.Style.Type.Callout -> {
+                _toasts.offer("Callout not implemented")
+            }
+            else -> {
+                val uiBlock = item.convertToUiBlock()
+                onTurnIntoBlockClicked(
+                    target = targetId,
+                    uiBlock = uiBlock
                 )
-            )
+            }
         }
     }
 
@@ -4009,11 +4205,11 @@ class PageViewModel(
     private fun onSlashActionItemClicked(item: SlashItem.Actions, targetId: Id) {
         when (item) {
             SlashItem.Actions.CleanStyle -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                proceedWithClearStyle(targetId)
+                viewModelScope.launch {
+                    _toasts.offer("CleanStyle not implemented")
+                }
             }
             SlashItem.Actions.Copy -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onCopy(range = null)
             }
             SlashItem.Actions.Paste -> {
@@ -4022,11 +4218,9 @@ class PageViewModel(
                 onPaste(range = range)
             }
             SlashItem.Actions.Delete -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 proceedWithUnlinking(targetId)
             }
             SlashItem.Actions.Duplicate -> {
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 duplicateBlock(targetId)
             }
             SlashItem.Actions.Move -> {
@@ -4050,18 +4244,6 @@ class PageViewModel(
         select(targetId)
         val descendants = blocks.asMap().descendants(parent = targetId)
         descendants.forEach { child -> select(child) }
-    }
-
-    private fun proceedWithClearStyle(targetId: Id) {
-        val targetBlock = blocks.first { it.id == targetId }
-        proceedWithUpdatingText(
-            Intent.Text.UpdateText(
-                context = context,
-                target = targetId,
-                text = targetBlock.content.asText().text,
-                marks = emptyList()
-            )
-        )
     }
 
     private fun onSlashAlignmentItemClicked(item: SlashItem.Alignment, targetId: Id) {
@@ -4095,6 +4277,8 @@ class PageViewModel(
     }
 
     private var filterSearchEmptyCount = 0
+    private var slashStartIndex = 0
+    private var slashFilter = ""
 
     private fun incFilterSearchEmptyCount(widgetState: SlashWidgetState.UpdateItems) {
         if (SlashExtensions.isSlashWidgetEmpty(widgetState)) {
@@ -4102,23 +4286,15 @@ class PageViewModel(
         }
     }
 
-    private fun onSlashObjectTypeItemClicked(item: SlashItem.ObjectType) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-
-        onAddNewObjectClicked(
-            type = item.url,
-            layout = item.layout
-        )
-    }
-
     private fun onSlashRelationItemClicked(item: SlashItem.Relation) {
-        Timber.d("On Pick Relation:${item.relation}")
     }
     //endregion
 
     //region MARKUP TOOLBAR
 
     fun onMarkupUrlClicked() {
+
+        Timber.d("onMarkupUrlClicked, ")
 
         val target = orchestrator.stores.focus.current().id
         val selection = orchestrator.stores.textSelection.current().selection!!
@@ -4146,6 +4322,7 @@ class PageViewModel(
     }
 
     fun onSetLink(url: String) {
+        Timber.d("onSetLink, url:[$url]")
         val range = orchestrator.stores.textSelection.current().selection
         if (range != null) {
             val target = orchestrator.stores.focus.current().id
@@ -4168,6 +4345,7 @@ class PageViewModel(
     }
 
     fun onBlockerClicked() {
+        Timber.d("onBlockerClicked, ")
         val target = orchestrator.stores.focus.current().id
         val update = views.map { view ->
             if (view.id == target) {
@@ -4189,6 +4367,7 @@ class PageViewModel(
     }
 
     fun onUnlinkPressed(blockId: String, range: IntRange) {
+        Timber.d("onUnlinkPressed, blockId:[$blockId] range:[$range]")
 
         val target = blocks.first { it.id == blockId }
         val content = target.content<Content.Text>()
@@ -4220,12 +4399,14 @@ class PageViewModel(
     }
 
     fun onMarkupColorToggleClicked() {
+        Timber.d("onMarkupColorToggleClicked, ")
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MarkupToolbar.OnMarkupColorToggleClicked
         )
     }
 
     fun onMarkupHighlightToggleClicked() {
+        Timber.d("onMarkupHighlightToggleClicked, ")
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MarkupToolbar.OnMarkupHighlightToggleClicked
         )

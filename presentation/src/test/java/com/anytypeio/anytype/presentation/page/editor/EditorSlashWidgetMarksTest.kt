@@ -4,19 +4,25 @@ import MockDataFactory
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.domain.block.interactor.UpdateBlocksMark
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.page.editor.model.Types
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,6 +49,12 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         MockitoAnnotations.initMocks(this)
     }
 
+    @After
+    fun after() {
+        coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+
+
     /**
      * Testing clicks on Slash Style Markups
      * 1.1 Click on BOLD -> should hide slash widget
@@ -62,12 +74,14 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     //region {1}
     @Test
-    fun `should hide slash widget event when clicked on BOLD `() {
+    fun `should hide slash widget when clicked on BOLD `() {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubUpdateBlocksMark()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
@@ -101,8 +115,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         assertFalse(state.slashWidget.isVisible)
     }
 
-    @Test
-    fun `should save selection and focus when clicked on BOLD`() {
+    fun `should invoke update markup Bold command`() {
+
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -111,7 +125,137 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Text(
-                text = "Anytype is a next generation software",
+                text = "FooBar",
+                marks = listOf(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, block.id)
+        )
+
+        val doc = listOf(page, header, title, block)
+
+        stubInterceptEvents()
+        stubUpdateBlocksMark()
+        stubOpenDocument(document = doc)
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onSelectionChanged(
+                id = block.id,
+                selection = IntRange(3, 3)
+            )
+            onBlockFocusChanged(
+                id = block.id,
+                hasFocus = true
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Start(
+                    cursorCoordinate = 820,
+                    slashStart = 3
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
+                )
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block.id,
+                    text = "Foo/Bar",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
+                )
+            )
+            onSelectionChanged(
+                id = block.id,
+                selection = IntRange(4, 4)
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/b",
+                    viewType = 0
+                )
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block.id,
+                    text = "Foo/bBar",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
+                )
+            )
+            onSelectionChanged(
+                id = block.id,
+                selection = IntRange(5, 5)
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/bo",
+                    viewType = 0
+                )
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block.id,
+                    text = "Foo/boBar",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
+                )
+            )
+            onSelectionChanged(
+                id = block.id,
+                selection = IntRange(6, 6)
+            )
+        }
+
+        //TESTING
+
+        vm.onSlashItemClicked(
+            item = SlashItem.Style.Markup.Bold
+        )
+
+        val params = UpdateBlocksMark.Params(
+            context = root,
+            targets = listOf(block.id),
+            mark = Block.Content.Text.Mark(
+                range = IntRange(0, block.content.asText().text.length),
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        verifyBlocking(updateBlocksMark, times(1)) { invoke(params) }
+    }
+
+    @Test
+    fun `should save selection and focus on slash start index when clicked on BOLD`() {
+        val header = MockTypicalDocumentFactory.header
+        val title = MockTypicalDocumentFactory.title
+
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Update block with BOLD",
                 marks = listOf(),
                 style = Block.Content.Text.Style.P
             )
@@ -150,6 +294,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -169,7 +315,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 7
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -239,6 +391,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -258,7 +412,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 7
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -289,6 +449,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -307,6 +469,12 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -370,6 +538,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -389,7 +559,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 11
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -443,6 +619,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -462,7 +640,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 7
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -493,6 +677,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -574,6 +760,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -593,7 +781,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 5
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -647,6 +841,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -666,7 +862,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 7
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -697,6 +899,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -715,6 +919,12 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -778,6 +988,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -797,7 +1009,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 15
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -851,6 +1069,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBlocksMark()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -870,7 +1090,13 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 7
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
                 )
             )
         }
@@ -891,55 +1117,4 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         verifyBlocking(updateBlocksMark, times(1)) { invoke(params) }
     }
     //endregion
-
-    @Test
-    fun `should save empty focus when selection is null`() {
-        val doc = MockTypicalDocumentFactory.page(root)
-        val block = MockTypicalDocumentFactory.a
-
-        stubInterceptEvents()
-        stubUpdateBlocksMark()
-        stubOpenDocument(document = doc)
-        val vm = buildViewModel()
-
-        vm.onStart(root)
-
-        vm.apply {
-            onSelectionChanged(
-                id = block.id,
-                selection = IntRange(0, 0)
-            )
-            onBlockFocusChanged(
-                id = block.id,
-                hasFocus = true
-            )
-            onSlashTextWatcherEvent(
-                SlashEvent.Start(
-                    cursorCoordinate = 100,
-                    slashStart = 0
-                )
-            )
-            onBlockFocusChanged(
-                id = block.id,
-                hasFocus = false
-            )
-        }
-
-        // TESTING
-
-        runBlocking {
-            orchestrator.stores.textSelection.update(
-                Editor.TextSelection(
-                    id = block.id,
-                    selection = null
-                )
-            )
-
-            vm.onSlashItemClicked(SlashItem.Style.Markup.Breakthrough)
-
-            val focus = orchestrator.stores.focus.current()
-
-            assertEquals(Editor.Focus.empty(), focus)
-        }
-    }
 }

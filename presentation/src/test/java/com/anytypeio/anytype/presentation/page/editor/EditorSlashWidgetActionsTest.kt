@@ -11,18 +11,19 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import net.lachlanmckee.timberjunit.TimberTestRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -35,17 +36,22 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    @get:Rule
-    val timberTestRule: TimberTestRule = TimberTestRule.builder()
-        .minPriority(Log.DEBUG)
-        .showThread(true)
-        .showTimestamp(false)
-        .onlyLogWhenTestFails(true)
-        .build()
+//    @get:Rule
+//    val timberTestRule: TimberTestRule = TimberTestRule.builder()
+//        .minPriority(Log.DEBUG)
+//        .showThread(true)
+//        .showTimestamp(false)
+//        .onlyLogWhenTestFails(true)
+//        .build()
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+    }
+
+    @After
+    fun after() {
+        coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     //region {Action DELETE}
@@ -56,6 +62,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -91,6 +99,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -117,6 +127,9 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
             context = root,
             targets = listOf(block.id)
         )
+
+        stubUnlinkBlocks(params = params)
+
         verifyBlocking(unlinkBlocks, times(1)) { invoke(params) }
     }
 
@@ -160,6 +173,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -202,6 +217,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -273,6 +290,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -346,6 +365,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val block = MockTypicalDocumentFactory.a
 
         stubInterceptEvents()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -379,6 +400,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
             range = IntRange(3, 3),
             focus = focus
         )
+
 
         verifyBlocking(paste, times(1)) { invoke(params) }
     }
@@ -549,7 +571,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send UpdateText UseCase after action Clean Style`() {
+    fun `should not send UpdateText UseCase after action Clean Style`() {
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -592,6 +614,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(document = doc)
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         val vm = buildViewModel()
 
         vm.onStart(root)
@@ -617,10 +641,11 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
             context = root,
             target = block.id,
             text = block.content.asText().text,
-            marks = emptyList()
+            marks = block.content.asText().marks
         )
 
         verifyBlocking(updateText, times(1)) { invoke(params) }
+        verifyNoMoreInteractions(updateText)
     }
     //endregion
 }

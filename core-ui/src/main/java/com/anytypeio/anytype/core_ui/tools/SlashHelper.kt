@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.tools
 
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher.Companion.NO_SLASH_POSITION
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher.Companion.SLASH_CHAR
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 
 object SlashHelper {
 
@@ -31,31 +30,5 @@ object SlashHelper {
         }
     } catch (e: Exception) {
         filter
-    }
-
-    /**
-     * return subsequence from [startIndex] to end of sequence with limit [takeNumber]
-     */
-    fun getSubSequenceFromStartWithLimit(
-        s: CharSequence,
-        startIndex: Int,
-        takeNumber: Int
-    ): CharSequence = s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
-
-    fun filterSlashItems(
-        filter: String,
-        viewType: Int
-    ): List<SlashItem> {
-        return emptyList()
-//        when (viewType) {
-//            HOLDER_PARAGRAPH -> {
-//                val styleItems = styleTypeList.filter {
-//                    it.javaClass.simpleName.contains(filter, ignoreCase = true)
-//                }
-//
-//                return styleSubheader + styleItems
-//            }
-//            else -> TODO()
-//        }
     }
 }

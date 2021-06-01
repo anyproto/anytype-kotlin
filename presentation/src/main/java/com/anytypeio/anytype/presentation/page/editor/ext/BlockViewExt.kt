@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.editor.ext
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.presentation.extension.shift
+import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
@@ -812,7 +813,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
 fun BlockView.Text.cutPartOfText(
     from: Int,
     partLength: Int
-): BlockView {
+): BlockView.Text {
     check(from >= 0) { Timber.e("From should be positive or zero") }
     check(partLength >= 0) { Timber.e("partLength should be positive or zero") }
     val empty = ""
@@ -937,4 +938,8 @@ fun BlockView.Text.cutPartOfText(
             )
         }
     }
+}
+
+fun List<BlockView>.update(blockView: BlockView) = this.map {
+    if (it.id == blockView.id) blockView else it
 }

@@ -1,8 +1,5 @@
 package com.anytypeio.anytype.utils
 
-import android.support.annotation.DimenRes
-import android.support.annotation.IntegerRes
-import android.support.annotation.StringRes
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
@@ -34,11 +31,11 @@ fun ViewInteraction.checkHasText(text: String) {
     check(matches(ViewMatchers.withText(text)))
 }
 
-fun ViewInteraction.checkHasMarginStart(@DimenRes dimen: Int, coefficient: Int) {
+fun ViewInteraction.checkHasMarginStart(dimen: Int, coefficient: Int) {
     check(matches(WithMarginStart(dimen, coefficient)))
 }
 
-fun ViewInteraction.checkHasPaddingLeft(@DimenRes dimen: Int, coefficient: Int) {
+fun ViewInteraction.checkHasPaddingLeft(dimen: Int, coefficient: Int) {
     check(matches(WithPaddingLeft(dimen, coefficient)))
 }
 
@@ -58,7 +55,7 @@ fun ViewInteraction.checkIsNotSelected() {
     check(matches(not(ViewMatchers.isSelected())))
 }
 
-fun ViewInteraction.checkHasText(@StringRes resId: Int) {
+fun ViewInteraction.checkHasText(resId: Int) {
     check(matches(ViewMatchers.withText(resId)))
 }
 
@@ -82,14 +79,14 @@ fun Int.rVMatcher(): RecyclerViewMatcher = RecyclerViewMatcher(this)
 
 fun Int.checkRecyclerItemCount(expected: Int) = matchView().check(RecyclerViewItemCountAssertion(expected))
 
-fun RecyclerViewMatcher.onItemView(pos: Int, @IntegerRes target: Int): ViewInteraction {
+fun RecyclerViewMatcher.onItemView(pos: Int,target: Int): ViewInteraction {
     return onView(atPositionOnView(pos, target))
 }
 
 fun ViewInteraction.checkHasChildViewWithText(
     pos: Int,
     text: String,
-    @IntegerRes target: Int
+    target: Int
 ) : ViewInteraction {
     return check(matches(HasChildViewWithText(pos, text, target)))
 }

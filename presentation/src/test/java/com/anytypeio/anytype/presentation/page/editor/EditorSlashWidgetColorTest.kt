@@ -9,10 +9,12 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,6 +41,11 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+    }
+
+    @After
+    fun after() {
+        coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     //region {TEXT COLOR}
@@ -383,6 +390,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateTextColor()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -456,6 +465,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBackground()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -541,6 +552,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBackground()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -626,6 +639,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBackground()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -682,6 +697,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBackground()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -726,6 +743,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBackground()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -762,6 +781,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubUpdateBackground()
+        stubUpdateText()
+        stubGetObjectTypes(objectTypes = listOf())
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 

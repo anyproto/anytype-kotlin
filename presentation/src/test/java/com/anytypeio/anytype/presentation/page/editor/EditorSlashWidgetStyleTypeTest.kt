@@ -7,10 +7,12 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import net.lachlanmckee.timberjunit.TimberTestRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,6 +42,11 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+    }
+
+    @After
+    fun after() {
+        coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -80,6 +87,8 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubTurnIntoStyle()
+        stubUpdateText()
+        stubGetObjectTypes()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -99,7 +108,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 7
                 )
             )
         }
@@ -123,6 +132,9 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubTurnIntoStyle()
+        stubUpdateText()
+        stubUpdateText()
+        stubGetObjectTypes()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
@@ -209,6 +221,8 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubTurnIntoStyle()
+        stubUpdateText()
+        stubGetObjectTypes()
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 

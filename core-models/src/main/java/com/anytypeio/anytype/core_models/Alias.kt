@@ -23,4 +23,6 @@ typealias DVDateFormat = Block.Content.DataView.DateFormat
 typealias DVTimeFormat = Block.Content.DataView.TimeFormat
 typealias DVViewerRelation = Block.Content.DataView.Viewer.ViewerRelation
 
+typealias RelationFormat = Relation.Format
+
 typealias DVRecord = Map<String, Any?>

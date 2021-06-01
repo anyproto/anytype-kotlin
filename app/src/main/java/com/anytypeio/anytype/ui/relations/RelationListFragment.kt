@@ -74,6 +74,9 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                 }
             )
         }
+        btnPlus.setOnClickListener {
+            RelationAddFragment.new(ctx).show(childFragmentManager, null)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -642,6 +642,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun objectRelationAdd(request: Object.RelationAdd.Request): Object.RelationAdd.Response {
+        val encoded = Service.objectRelationAdd(
+            Object.RelationAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Object.RelationAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.RelationAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun debugSync(request: Debug.Sync.Request): Debug.Sync.Response {
         val encoded = Service.debugSync(Debug.Sync.Request.ADAPTER.encode(request))
         val response = Debug.Sync.Response.ADAPTER.decode(encoded)

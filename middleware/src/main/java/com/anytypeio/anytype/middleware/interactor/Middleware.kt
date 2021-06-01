@@ -1318,4 +1318,17 @@ class Middleware(
         val message = "<=== " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)
     }
+
+    fun addRelationToObject(ctx: Id, relation: Id) : Payload {
+        val request = Rpc.Object.RelationAdd.Request(
+            contextId = ctx,
+            relation = MRelation(
+                key = relation
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
 }

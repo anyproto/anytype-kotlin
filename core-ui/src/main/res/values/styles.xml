@@ -678,4 +678,15 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="DefaultRelationTitleStyle">
+        <item name="android:hint">@string/untitled</item>
+        <item name="singleLine">true</item>
+        <item name="maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
 </resources>

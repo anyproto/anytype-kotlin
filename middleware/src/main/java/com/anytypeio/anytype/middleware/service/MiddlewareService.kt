@@ -166,6 +166,9 @@ interface MiddlewareService {
     fun relationListAvailable(request: Object.RelationListAvailable.Request): Object.RelationListAvailable.Response
 
     @Throws(Exception::class)
+    fun objectRelationAdd(request: Object.RelationAdd.Request) : Object.RelationAdd.Response
+
+    @Throws(Exception::class)
     fun debugSync(request: Debug.Sync.Request) : Debug.Sync.Response
 
     @Throws(Exception::class)

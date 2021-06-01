@@ -384,5 +384,6 @@
     <string name="title">Title</string>
     <string name="heading">Heading</string>
     <string name="subheading">Subheading</string>
+    <string name="create_from_scratch">Create from scratch</string>
 
 </resources>

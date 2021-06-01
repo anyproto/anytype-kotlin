@@ -16,9 +16,6 @@ abstract class BaseBottomSheetFragment(
 
     protected val jobs = mutableListOf<Job>()
 
-    abstract fun injectDependencies()
-    abstract fun releaseDependencies()
-
     abstract override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,4 +47,7 @@ abstract class BaseBottomSheetFragment(
             }
         }
     }
+
+    abstract fun injectDependencies()
+    abstract fun releaseDependencies()
 }

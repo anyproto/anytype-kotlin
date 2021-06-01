@@ -155,6 +155,7 @@ interface BlockRemote {
     ): List<Map<String, Any?>>
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
+    suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
 
     suspend fun debugSync(): String
 

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.relations.RelationAddModule
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
@@ -465,6 +466,14 @@ class ComponentManager(private val main: MainComponent) {
             .get(ctx)
             .uploadDocCoverImageComponentBuilder()
             .module(UploadDocCoverImageModule)
+            .build()
+    }
+
+    val relationAddComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .relationAddSubComponentBuilder()
+            .module(RelationAddModule)
             .build()
     }
 

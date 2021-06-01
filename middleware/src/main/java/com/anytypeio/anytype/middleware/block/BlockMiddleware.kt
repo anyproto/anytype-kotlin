@@ -344,8 +344,13 @@ class BlockMiddleware(
         limit = limit
     )
 
-    override suspend fun relationListAvailable(ctx: Id): List<Relation> =
-        middleware.relationListAvailable(ctx).map { it.toCoreModels() }
+    override suspend fun relationListAvailable(
+        ctx: Id
+    ): List<Relation> = middleware.relationListAvailable(ctx).map { it.toCoreModels() }
+
+    override suspend fun addRelationToObject(
+        ctx: Id, relation: Id
+    ) : Payload = middleware.addRelationToObject(ctx, relation)
 
     override suspend fun debugSync(): String = middleware.debugSync()
 

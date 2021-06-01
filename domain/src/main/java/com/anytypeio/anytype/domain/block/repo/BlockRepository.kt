@@ -205,6 +205,8 @@ interface BlockRepository {
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
 
+    suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
+
     suspend fun debugSync(): String
 
     suspend fun turnInto(

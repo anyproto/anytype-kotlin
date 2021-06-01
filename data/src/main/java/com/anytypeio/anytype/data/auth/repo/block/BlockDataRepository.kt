@@ -402,8 +402,11 @@ class BlockDataRepository(
         limit = limit
     )
 
-    override suspend fun relationListAvailable(ctx: Id): List<Relation> =
-        factory.remote.relationListAvailable(ctx)
+    override suspend fun relationListAvailable(ctx: Id) = factory.remote.relationListAvailable(ctx)
+
+    override suspend fun addRelationToObject(
+        ctx: Id, relation: Id
+    ) : Payload = factory.remote.addRelationToObject(ctx, relation)
 
     override suspend fun debugSync(): String = factory.remote.debugSync()
 

@@ -385,5 +385,7 @@
     <string name="heading">Heading</string>
     <string name="subheading">Subheading</string>
     <string name="create_from_scratch">Create from scratch</string>
+    <string name="name">Name</string>
+    <string name="name_is_required">Name is required</string>
 
 </resources>

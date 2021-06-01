@@ -150,6 +150,7 @@ interface BlockDataStore {
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
     suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
+    suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat) : Payload
 
     suspend fun debugSync(): String
 

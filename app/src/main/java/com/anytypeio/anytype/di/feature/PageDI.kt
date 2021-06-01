@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.di.feature.relations.RelationAddSubComponent
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchSubComponent
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
@@ -71,6 +72,7 @@ interface PageSubComponent {
 
     fun documentRelationSubComponent(): DocumentRelationSubComponent.Builder
     fun relationAddSubComponentBuilder() : RelationAddSubComponent.Builder
+    fun relationCreateFromScratchComponentBuilder() : RelationCreateFromScratchSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder

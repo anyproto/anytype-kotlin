@@ -331,6 +331,16 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         relation: Id
     ) : Payload = remote.addRelationToObject(ctx, relation)
 
+    override suspend fun addNewRelationToObject(
+        ctx: Id,
+        name: String,
+        format: RelationFormat
+    ): Payload = remote.addNewRelationToObject(
+        ctx = ctx,
+        format = format,
+        name = name
+    )
+
     override suspend fun debugSync(): String = remote.debugSync()
 
     override suspend fun turnInto(

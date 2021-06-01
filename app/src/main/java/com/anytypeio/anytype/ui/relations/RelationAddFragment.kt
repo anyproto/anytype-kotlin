@@ -32,7 +32,9 @@ class RelationAddFragment : BaseBottomSheetFragment() {
 
     private val ctx get() = arg<Id>(CTX_KEY)
 
-    private val createFromScratchAdapter = RelationAddHeaderAdapter()
+    private val createFromScratchAdapter = RelationAddHeaderAdapter {
+        RelationCreateFromScratchFragment.new(ctx).show(childFragmentManager, null)
+    }
 
     private val relationAdapter = RelationAddAdapter { relation ->
         vm.onRelationSelected(ctx = ctx, relation = relation.id)

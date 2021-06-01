@@ -13,5 +13,8 @@ sealed class RelationView {
         override val format: RelationFormat
     ) : RelationView()
 
-    data class Prototype(override val format: RelationFormat) : RelationView()
+    data class CreateFromScratch(
+        override val format: RelationFormat,
+        val isSelected: Boolean = false
+    ) : RelationView()
 }

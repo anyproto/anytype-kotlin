@@ -1331,4 +1331,18 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
+
+    fun addNewRelationToObject(ctx: Id, format: RelationFormat, name: String): Payload {
+        val request = Rpc.Object.RelationAdd.Request(
+            contextId = ctx,
+            relation = MRelation(
+                format = format.toMiddlewareModel(),
+                name = name
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
 }

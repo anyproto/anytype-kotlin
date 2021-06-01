@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.common
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
 import com.anytypeio.anytype.di.feature.relations.RelationAddModule
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchModule
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
@@ -474,6 +475,14 @@ class ComponentManager(private val main: MainComponent) {
             .get(ctx)
             .relationAddSubComponentBuilder()
             .module(RelationAddModule)
+            .build()
+    }
+
+    val relationCreateFromScratchComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .relationCreateFromScratchComponentBuilder()
+            .module(RelationCreateFromScratchModule)
             .build()
     }
 

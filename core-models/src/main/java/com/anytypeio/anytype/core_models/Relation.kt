@@ -20,21 +20,21 @@ data class Relation(
     val defaultValue: Any? = null
 ) {
 
-    enum class Format {
-        SHORT_TEXT,
-        LONG_TEXT,
-        NUMBER,
-        STATUS,
-        TAG,
-        DATE,
-        FILE,
-        CHECKBOX,
-        URL,
-        EMAIL,
-        PHONE,
-        EMOJI,
-        OBJECT,
-        RELATIONS
+    enum class Format(val prettyName: String) {
+        SHORT_TEXT("Short text"),
+        LONG_TEXT("Long text"),
+        NUMBER("Number"),
+        STATUS("Status"),
+        TAG("Tag"),
+        DATE("Date"),
+        FILE("File"),
+        CHECKBOX("Checkbox"),
+        URL("URL"),
+        EMAIL("Email"),
+        PHONE("Phone number"),
+        EMOJI("Emoji"),
+        OBJECT("Object"),
+        RELATIONS("Relations")
     }
 
     enum class Source {

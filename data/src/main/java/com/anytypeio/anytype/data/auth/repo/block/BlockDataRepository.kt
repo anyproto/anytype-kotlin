@@ -408,6 +408,16 @@ class BlockDataRepository(
         ctx: Id, relation: Id
     ) : Payload = factory.remote.addRelationToObject(ctx, relation)
 
+    override suspend fun addNewRelationToObject(
+        ctx: Id,
+        name: String,
+        format: RelationFormat
+    ): Payload = factory.remote.addNewRelationToObject(
+        ctx = ctx,
+        format = format,
+        name = name
+    )
+
     override suspend fun debugSync(): String = factory.remote.debugSync()
 
     override suspend fun updateDetail(

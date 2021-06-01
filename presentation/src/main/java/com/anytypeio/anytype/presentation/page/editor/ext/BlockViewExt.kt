@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.presentation.page.editor.ext
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
+import com.anytypeio.anytype.presentation.extension.shift
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
+import timber.log.Timber
 
 fun List<BlockView>.singleStylingMode(
     target: Id
@@ -758,6 +761,180 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                     }
                 }
             }
+        }
+    }
+}
+
+fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
+    is BlockView.Text.Paragraph -> copy(isSelected = newSelection)
+    is BlockView.Text.Header.One -> copy(isSelected = newSelection)
+    is BlockView.Text.Header.Two -> copy(isSelected = newSelection)
+    is BlockView.Text.Header.Three -> copy(isSelected = newSelection)
+    is BlockView.Text.Highlight -> copy(isSelected = newSelection)
+    is BlockView.Text.Checkbox -> copy(isSelected = newSelection)
+    is BlockView.Text.Bulleted -> copy(isSelected = newSelection)
+    is BlockView.Text.Numbered -> copy(isSelected = newSelection)
+    is BlockView.Text.Toggle -> copy(isSelected = newSelection)
+    is BlockView.Media.File -> copy(isSelected = newSelection)
+    is BlockView.Upload.File -> copy(isSelected = newSelection)
+    is BlockView.MediaPlaceholder.File -> copy(isSelected = newSelection)
+    is BlockView.Error.File -> copy(isSelected = newSelection)
+    is BlockView.Media.Video -> copy(isSelected = newSelection)
+    is BlockView.Upload.Video -> copy(isSelected = newSelection)
+    is BlockView.MediaPlaceholder.Video -> copy(isSelected = newSelection)
+    is BlockView.Error.Video -> copy(isSelected = newSelection)
+    is BlockView.Page -> copy(isSelected = newSelection)
+    is BlockView.PageArchive -> copy(isSelected = newSelection)
+    is BlockView.MediaPlaceholder.Bookmark -> copy(isSelected = newSelection)
+    is BlockView.Media.Bookmark -> copy(isSelected = newSelection)
+    is BlockView.Error.Bookmark -> copy(isSelected = newSelection)
+    is BlockView.Media.Picture -> copy(isSelected = newSelection)
+    is BlockView.MediaPlaceholder.Picture -> copy(isSelected = newSelection)
+    is BlockView.Error.Picture -> copy(isSelected = newSelection)
+    is BlockView.Upload.Picture -> copy(isSelected = newSelection)
+    is BlockView.DividerLine -> copy(isSelected = newSelection)
+    is BlockView.DividerDots -> copy(isSelected = newSelection)
+    is BlockView.Code -> copy(isSelected = newSelection)
+    is BlockView.Relation.Related -> copy(isSelected = newSelection)
+    is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
+    else -> this.also {
+        if (this is BlockView.Selectable)
+            Timber.e("Error when change selection for Selectable BlockView $this")
+    }
+}
+
+/**
+ *  Cut part of the text and shift marks in Text BlockView
+ *  @param from cut text starting from this position, should be positive or zero
+ *  @param partLength length of the cut text, should be positive or zero
+ *  For tests see BlockViewCutTextTest
+ */
+fun BlockView.Text.cutPartOfText(
+    from: Int,
+    partLength: Int
+): BlockView {
+    check(from >= 0) { Timber.e("From should be positive or zero") }
+    check(partLength >= 0) { Timber.e("partLength should be positive or zero") }
+    val empty = ""
+    val to = from + partLength
+    val length = -partLength
+    return when (this) {
+        is BlockView.Text.Bulleted -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Checkbox -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Header.One -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Header.Three -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Header.Two -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Highlight -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Numbered -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Paragraph -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
+        }
+        is BlockView.Text.Toggle -> {
+            this.copy(
+                text = text.replaceRangeWithWord(
+                    replace = empty,
+                    from = from,
+                    to = to
+                ),
+                marks = marks.shift(
+                    from = from,
+                    length = length
+                )
+            )
         }
     }
 }

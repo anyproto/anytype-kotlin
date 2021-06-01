@@ -147,3 +147,33 @@ fun Overlap.inside(): Boolean =
     this == Overlap.INNER_LEFT ||
     this == Overlap.INNER_RIGHT ||
     this == Overlap.EQUAL
+
+/**
+ * Recalculate marks ranges
+ *
+ * @param from start position for shifting markup ranges
+ * @param length defines the number of positions to shift, could be negative
+ * @return shifted Marks
+ */
+fun List<Markup.Mark>.shift(from: Int, length: Int): List<Markup.Mark> {
+    val updated = arrayListOf<Markup.Mark>()
+    this.map { mark ->
+        var newFrom = mark.from
+        var newTo = mark.to
+        if ((newFrom <= from) && (newTo > from)) {
+            newTo += length
+        } else {
+            if (newFrom >= from) {
+                newFrom += length
+                newTo += length
+            }
+        }
+        updated.add(
+            mark.copy(
+                from = newFrom,
+                to = newTo
+            )
+        )
+    }
+    return updated
+}

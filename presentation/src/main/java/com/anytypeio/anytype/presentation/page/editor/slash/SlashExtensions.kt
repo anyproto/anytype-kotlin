@@ -109,11 +109,7 @@ object SlashExtensions {
 
     fun getSlashWidgetColorItems(code: String?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->
-            val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
-                true
-            } else {
-                themeColor.title == code
-            }
+            val isSelected = if (code == null) false else themeColor.title == code
             SlashItem.Color.Text(
                 code = themeColor.title,
                 isSelected = isSelected
@@ -122,11 +118,7 @@ object SlashExtensions {
 
     fun getSlashWidgetBackgroundItems(code: String?): List<SlashItem.Color.Background> =
         ThemeColor.values().map { themeColor ->
-            val isSelected = if (themeColor.title == ThemeColor.DEFAULT.title && code == null) {
-                true
-            } else {
-                themeColor.title == code
-            }
+            val isSelected = if (code == null) false else themeColor.title == code
             SlashItem.Color.Background(
                 code = themeColor.title,
                 isSelected = isSelected

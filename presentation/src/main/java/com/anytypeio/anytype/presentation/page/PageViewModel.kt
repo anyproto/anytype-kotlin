@@ -3688,12 +3688,16 @@ class PageViewModel(
         Timber.d("onBackPressedCallback, ")
         return controlPanelViewState.value?.let { state ->
             val isVisible = state.mentionToolbar.isVisible
+            val isSlashWidgetVisible = state.slashWidget.isVisible
             if (isVisible) {
                 onMentionEvent(MentionEvent.MentionSuggestStop)
-                true
-            } else {
-                false
+                return true
             }
+            if (isSlashWidgetVisible) {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                return true
+            }
+            return false
         } ?: run { false }
     }
 
@@ -3912,8 +3916,10 @@ class PageViewModel(
             }
             is SlashItem.Main.Color -> {
                 val block = blocks.first { it.id == targetId }
+                val blockColor = block.content.asText().color
+                val color = blockColor ?: ThemeColor.DEFAULT.title
                 val items = listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getSlashWidgetColorItems(
-                    code = block.content.asText().color
+                    code = color
                 )
                 onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     colorItems = items
@@ -3921,9 +3927,11 @@ class PageViewModel(
             }
             is SlashItem.Main.Background -> {
                 val block = blocks.first { it.id == targetId }
+                val blockBackground = block.content.asText().backgroundColor
+                val background = blockBackground ?: ThemeColor.DEFAULT.title
                 val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
                         SlashExtensions.getSlashWidgetBackgroundItems(
-                    code = block.content.asText().backgroundColor
+                    code = background
                 )
                 onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     backgroundItems = items
@@ -4214,7 +4222,6 @@ class PageViewModel(
             }
             SlashItem.Actions.Paste -> {
                 val range = orchestrator.stores.textSelection.current().selection ?: Paste.DEFAULT_RANGE
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onPaste(range = range)
             }
             SlashItem.Actions.Delete -> {

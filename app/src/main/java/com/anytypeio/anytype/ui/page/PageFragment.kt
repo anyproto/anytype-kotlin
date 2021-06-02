@@ -44,7 +44,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
-import com.anytypeio.anytype.core_ui.extensions.*
+import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
+import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
+import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.DefaultScrollAndMoveTargetDescriptor
@@ -940,7 +943,7 @@ open class PageFragment :
                     fr.show(childFragmentManager, null)
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
-                    findFocus()?.let { child: View? ->
+                    recycler.findFocus()?.let { child: View? ->
                         if (child is TextInputWidget) {
                             child.text?.insert(child.selectionStart, "/")
                         }

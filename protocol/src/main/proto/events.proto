@@ -87,7 +87,7 @@ message Event {
 
     message Object {
         message Details {
-            // Amend existing state
+            // Amend (i.e. add a new key-value pair or update an existing key-value pair) existing state
             message Amend {
                 message KeyValue {
                     string key = 1;

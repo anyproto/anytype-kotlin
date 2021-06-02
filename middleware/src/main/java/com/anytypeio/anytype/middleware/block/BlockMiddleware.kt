@@ -396,4 +396,7 @@ class BlockMiddleware(
 
     override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
         middleware.blockListSetTextMarkup(command)
+
+    override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload=
+        middleware.addRelationToBlock(command)
 }

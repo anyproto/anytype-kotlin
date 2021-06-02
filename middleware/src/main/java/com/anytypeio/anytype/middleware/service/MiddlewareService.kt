@@ -175,6 +175,9 @@ interface MiddlewareService {
     fun relationSetKey(request: Block.Relation.SetKey.Request) : Block.Relation.SetKey.Response
 
     @Throws(Exception::class)
+    fun blockAddRelation(request: Block.Relation.Add.Request) : Block.Relation.Add.Response
+
+    @Throws(Exception::class)
     fun blockListTurnInto(request: BlockList.TurnInto.Request): BlockList.TurnInto.Response
 
     @Throws(Exception::class)

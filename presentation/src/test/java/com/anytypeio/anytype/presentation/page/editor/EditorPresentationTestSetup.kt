@@ -419,6 +419,17 @@ open class EditorPresentationTestSetup {
         }
     }
 
+    fun stubReplaceBlock() {
+        replaceBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    MockDataFactory.randomUuid(),
+                    Payload(context = root, events = emptyList())
+                )
+            )
+        }
+    }
+
     fun stubSplitBlock() {
         splitBlock.stub {
             onBlocking {

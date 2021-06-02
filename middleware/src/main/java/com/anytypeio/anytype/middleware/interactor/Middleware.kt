@@ -1210,7 +1210,21 @@ class Middleware(
         return response.relations
     }
 
+    @Throws(Exception::class)
+    fun addRelationToBlock(command: Command.AddRelationToBlock): Payload {
+        val request = Rpc.Block.Relation.Add.Request(
+            contextId = command.contextId,
+            blockId = command.blockId,
+            relation = command.relation.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockAddRelation(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     fun setRelationKey(command: Command.SetRelationKey): Payload {
+        Rpc.Block.Relation.Add
         val request = Rpc.Block.Relation.SetKey.Request(
             contextId = command.contextId,
             blockId = command.blockId,

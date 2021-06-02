@@ -225,4 +225,6 @@ interface BlockRepository {
     ): Payload
 
     suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload
+
+    suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload
 }

@@ -248,6 +248,12 @@ sealed class Command {
         val key: Id
     )
 
+    data class AddRelationToBlock(
+        val contextId: Id,
+        val blockId: Id,
+        val relation: Relation
+    )
+
     /**
      * Command for setting document's emoji icon
      * @property emoji emoji's unicode

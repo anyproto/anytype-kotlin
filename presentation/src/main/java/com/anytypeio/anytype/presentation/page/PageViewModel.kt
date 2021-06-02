@@ -52,7 +52,6 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.mapper.mark
-import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.mapper.toMentionView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -3986,9 +3985,9 @@ class PageViewModel(
                 )
             }
             is SlashItem.Relation -> {
-                cutSlashFilter(targetId = targetId)
+                val isBlockEmpty = cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                onSlashRelationItemClicked(item)
+                onSlashRelationItemClicked(item, targetId, isBlockEmpty)
             }
             is SlashItem.Other.Line -> {
                 cutSlashFilter(targetId = targetId)
@@ -4024,7 +4023,7 @@ class PageViewModel(
         }
     }
 
-    private fun cutSlashFilter(targetId: Id) {
+    private fun cutSlashFilter(targetId: Id): Boolean {
 
         //saving cursor on slash start index
         setCursorToPosition(targetId = targetId, position = slashStartIndex)
@@ -4042,6 +4041,8 @@ class PageViewModel(
         } else {
             Timber.e("cutSlashFilter error, BlockView is null on targetId:$targetId")
         }
+
+        return newBlockView?.text?.isEmpty() ?: false
     }
 
     private fun cutSlashFilterFromViews(targetId: Id): BlockView.Text? {
@@ -4305,7 +4306,26 @@ class PageViewModel(
         }
     }
 
-    private fun onSlashRelationItemClicked(item: SlashItem.Relation) {
+    private fun onSlashRelationItemClicked(
+        item: SlashItem.Relation, targetId: Id, isBlockEmpty: Boolean
+    ) {
+        val intent = if (isBlockEmpty) {
+            Intent.CRUD.Replace(
+                context = context,
+                target = targetId,
+                prototype = Prototype.Relation(key = item.relation.view.relationId)
+            )
+        } else {
+            Intent.CRUD.Create(
+                context = context,
+                target = targetId,
+                position = Position.BOTTOM,
+                prototype = Prototype.Relation(key = item.relation.view.relationId)
+            )
+        }
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(intent)
+        }
     }
     //endregion
 

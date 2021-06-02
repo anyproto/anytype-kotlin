@@ -442,4 +442,7 @@ class BlockDataRepository(
 
     override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
         factory.remote.updateBlocksMark(command)
+
+    override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
+        factory.remote.addRelationToBlock(command)
 }

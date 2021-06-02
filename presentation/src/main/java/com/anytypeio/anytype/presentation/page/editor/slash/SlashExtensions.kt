@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.editor.slash
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.page.editor.model.Types
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 
@@ -55,7 +56,7 @@ object SlashExtensions {
         SlashItem.Main.Background,
     )
 
-    fun getSlashWidgetStyleItems() = listOf(
+    fun getSlashWidgetStyleItems(viewType: Int) = listOf(
         SlashItem.Style.Type.Text,
         SlashItem.Style.Type.Title,
         SlashItem.Style.Type.Heading,
@@ -65,12 +66,24 @@ object SlashExtensions {
         SlashItem.Style.Type.Checkbox,
         SlashItem.Style.Type.Bulleted,
         SlashItem.Style.Type.Numbered,
-        SlashItem.Style.Type.Toggle,
-        SlashItem.Style.Markup.Bold,
-        SlashItem.Style.Markup.Italic,
-        SlashItem.Style.Markup.Breakthrough,
-        SlashItem.Style.Markup.Code
-    )
+        SlashItem.Style.Type.Toggle
+    ) + getSlashWidgetMarkupItems(viewType)
+
+    private fun getSlashWidgetMarkupItems(viewType: Int) =
+        when (viewType) {
+            Types.HOLDER_HEADER_ONE,
+            Types.HOLDER_HEADER_TWO,
+            Types.HOLDER_HEADER_THREE -> listOf(
+                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Code
+            )
+            else -> listOf(
+                SlashItem.Style.Markup.Bold,
+                SlashItem.Style.Markup.Italic,
+                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Code
+            )
+        }
 
     fun getSlashWidgetMediaItems() = listOf(
         SlashItem.Media.File,
@@ -95,11 +108,22 @@ object SlashExtensions {
         SlashItem.Actions.CleanStyle
     )
 
-    fun getSlashWidgetAlignmentItems() = listOf(
-        SlashItem.Alignment.Left,
-        SlashItem.Alignment.Center,
-        SlashItem.Alignment.Right
-    )
+    fun getSlashWidgetAlignmentItems(viewType: Int) =
+        when (viewType) {
+            Types.HOLDER_CHECKBOX,
+            Types.HOLDER_BULLET,
+            Types.HOLDER_NUMBERED,
+            Types.HOLDER_TOGGLE -> listOf()
+            Types.HOLDER_HIGHLIGHT -> listOf(
+                SlashItem.Alignment.Left,
+                SlashItem.Alignment.Right
+            )
+            else -> listOf(
+                SlashItem.Alignment.Left,
+                SlashItem.Alignment.Center,
+                SlashItem.Alignment.Right
+            )
+        }
 
     fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
         listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
@@ -127,20 +151,30 @@ object SlashExtensions {
     //endregion
 
     fun getUpdatedSlashWidgetState(
+        viewType: Int,
         text: CharSequence,
         objectTypes: List<SlashItem.ObjectType>,
         relations: List<RelationListViewModel.Model.Item>
     ): SlashWidgetState.UpdateItems {
         val filter = text.subSequence(1, text.length).toString()
         return SlashWidgetState.UpdateItems.empty().copy(
-            styleItems = filterSlashItems(filter = filter, items = getSlashWidgetStyleItems()),
+            styleItems = filterSlashItems(
+                filter = filter,
+                items = getSlashWidgetStyleItems(viewType = viewType)
+            ),
             mediaItems = filterSlashItems(filter = filter, items = getSlashWidgetMediaItems()),
             objectItems = filterObjectTypes(filter = filter, items = objectTypes),
             relationItems = filterRelations(filter = filter, items = relations),
             otherItems = filterSlashItems(filter = filter, items = getSlashWidgetOtherItems()),
             actionsItems = filterSlashItems(filter = filter, items = getSlashWidgetActionItems()),
-            alignmentItems = filterAlignItems(filter = filter, items = getSlashWidgetAlignmentItems()),
-            colorItems = filterColor(filter = filter, items = getSlashWidgetColorItems(code = null)),
+            alignmentItems = filterAlignItems(
+                filter = filter,
+                items = getSlashWidgetAlignmentItems(viewType = viewType)
+            ),
+            colorItems = filterColor(
+                filter = filter,
+                items = getSlashWidgetColorItems(code = null)
+            ),
             backgroundItems = filterBackground(
                 filter = filter,
                 items = getSlashWidgetBackgroundItems(code = null)

@@ -6,7 +6,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
@@ -765,7 +767,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
         // TESTING
 
-        val event = SlashEvent.Filter(filter = "/r", viewType = HOLDER_NUMBERED)
+        val event = SlashEvent.Filter(filter = "/r", viewType = HOLDER_PARAGRAPH)
         vm.onSlashTextWatcherEvent(event = event)
         val state = vm.controlPanelViewState.value
         val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
@@ -1047,7 +1049,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
         // TESTING
 
-        val event = SlashEvent.Filter(filter = "/align r", viewType = HOLDER_NUMBERED)
+        val event = SlashEvent.Filter(filter = "/align r", viewType = HOLDER_HEADER_TWO)
         vm.onSlashTextWatcherEvent(event = event)
         val state = vm.controlPanelViewState.value
         val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems

@@ -84,6 +84,8 @@ import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.*
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashExtensions.SLASH_CHAR
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashExtensions.SLASH_EMPTY_SEARCH_MAX
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashExtensions.getSlashWidgetAlignmentItems
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashExtensions.getSlashWidgetStyleItems
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
@@ -3822,6 +3824,7 @@ class PageViewModel(
             }
             is SlashEvent.Filter -> {
                 slashFilter = event.filter.toString()
+                slashViewType = event.viewType
                 if (event.filter.isEmpty() || event.filter.first() != SLASH_CHAR) {
                     val widgetState = SlashWidgetState.UpdateItems.empty()
                     val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
@@ -3846,13 +3849,15 @@ class PageViewModel(
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
                             objectTypes = objectTypes.toView(),
-                            relations = relations
+                            relations = relations,
+                            viewType = slashViewType
                         )
                         incFilterSearchEmptyCount(widgetState)
                         val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
                             filterSearchEmptyCount = 0
                             slashStartIndex = 0
                             slashFilter = ""
+                            slashViewType = 0
                             ControlPanelMachine.Event.Slash.OnStop
                         } else {
                             ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
@@ -3864,6 +3869,7 @@ class PageViewModel(
             SlashEvent.Stop -> {
                 slashStartIndex = 0
                 slashFilter = ""
+                slashViewType = 0
                 filterSearchEmptyCount = 0
                 val panelEvent = ControlPanelMachine.Event.Slash.OnStop
                 controlPanelInteractor.onEvent(panelEvent)
@@ -3875,7 +3881,7 @@ class PageViewModel(
         when (item) {
             is SlashItem.Main.Style -> {
                 val items =
-                    listOf(SlashItem.Subheader.StyleWithBack) + SlashExtensions.getSlashWidgetStyleItems()
+                    listOf(SlashItem.Subheader.StyleWithBack) + getSlashWidgetStyleItems(slashViewType)
                 onSlashWidgetStateChanged(
                     SlashWidgetState.UpdateItems.empty().copy(
                         styleItems = items
@@ -3909,7 +3915,8 @@ class PageViewModel(
                 ))
             }
             is SlashItem.Main.Alignment -> {
-                val items = listOf(SlashItem.Subheader.AlignmentWithBack) + SlashExtensions.getSlashWidgetAlignmentItems()
+                val items =
+                    listOf(SlashItem.Subheader.AlignmentWithBack) + getSlashWidgetAlignmentItems(slashViewType)
                 onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
                     alignmentItems = items
                 ))
@@ -4286,6 +4293,7 @@ class PageViewModel(
     private var filterSearchEmptyCount = 0
     private var slashStartIndex = 0
     private var slashFilter = ""
+    private var slashViewType = 0
 
     private fun incFilterSearchEmptyCount(widgetState: SlashWidgetState.UpdateItems) {
         if (SlashExtensions.isSlashWidgetEmpty(widgetState)) {

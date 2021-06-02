@@ -39,12 +39,14 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
      * specifically for Actions see [EditorSlashWidgetActionsTest]
      * for Color & Background see [EditorSlashWidgetColorTest]
      * 1. Click on Style -> return sub header + back + style items
+     * 9. Click on Style with view type Header -> return sub header + back + style items without bold and italic
      * 2. Click on Media -> return sub header + back + media items
      * 3. Click on Objects -> return sub header + back + object type items
      * 4. Click on Relations -> return sub header + back + relation items
      * 5. Click on Other -> return sub header + back + other items
      * 6. Click on Actions -> return sub header + back + actions items
      * 7. Click on Alignment -> return sub header + back + alignment items
+     * 8. Click on Alignment Numbers-> return sub header + back + alignment items empty
      */
 
     //region {STYLE}
@@ -103,6 +105,74 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 SlashItem.Style.Type.Toggle,
                 SlashItem.Style.Markup.Bold,
                 SlashItem.Style.Markup.Italic,
+                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Code
+            ),
+            mediaItems = emptyList(),
+            objectItems = emptyList(),
+            relationItems = emptyList(),
+            otherItems = emptyList(),
+            actionsItems = emptyList(),
+            alignmentItems = emptyList(),
+            colorItems = emptyList(),
+            backgroundItems = emptyList()
+        )
+        assertEquals(expected = expected, actual = stateWidget)
+    }
+
+    @Test
+    fun `should return Update command with style items without bold and italic`() {
+
+        val doc = MockTypicalDocumentFactory.page(root)
+        val block = MockTypicalDocumentFactory.a
+
+        stubInterceptEvents()
+        stubUpdateText()
+        stubOpenDocument(document = doc)
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = block.id,
+                hasFocus = true
+            )
+            onSlashTextWatcherEvent(
+                SlashEvent.Start(
+                    cursorCoordinate = 100,
+                    slashStart = 0
+                )
+            )
+        }
+
+        // TESTING
+
+        val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_HEADER_TWO)
+
+        vm.onSlashTextWatcherEvent(event = event)
+        vm.onSlashItemClicked(SlashItem.Main.Style)
+
+        val state = vm.controlPanelViewState.value
+
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        assertNotNull(stateWidget)
+
+        val expected = SlashWidgetState.UpdateItems(
+            mainItems = emptyList(),
+            styleItems = listOf(
+                SlashItem.Subheader.StyleWithBack,
+                SlashItem.Style.Type.Text,
+                SlashItem.Style.Type.Title,
+                SlashItem.Style.Type.Heading,
+                SlashItem.Style.Type.Subheading,
+                SlashItem.Style.Type.Highlighted,
+                SlashItem.Style.Type.Callout,
+                SlashItem.Style.Type.Checkbox,
+                SlashItem.Style.Type.Bulleted,
+                SlashItem.Style.Type.Numbered,
+                SlashItem.Style.Type.Toggle,
                 SlashItem.Style.Markup.Breakthrough,
                 SlashItem.Style.Markup.Code
             ),
@@ -630,7 +700,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         // TESTING
 
-        val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
+        val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_PARAGRAPH)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Alignment)
@@ -646,6 +716,64 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Alignment.Left,
             SlashItem.Alignment.Center,
             SlashItem.Alignment.Right
+        )
+
+        val expected = SlashWidgetState.UpdateItems(
+            mainItems = emptyList(),
+            styleItems = emptyList(),
+            mediaItems = emptyList(),
+            objectItems = emptyList(),
+            relationItems = emptyList(),
+            otherItems = emptyList(),
+            actionsItems = emptyList(),
+            alignmentItems = expectedAlignmentItems,
+            colorItems = emptyList(),
+            backgroundItems = emptyList()
+        )
+        assertEquals(expected = expected, actual = stateWidget)
+    }
+
+    @Test
+    fun `should return Update command with no alignment items when click on alignment item for numbers views`() {
+
+        val doc = MockTypicalDocumentFactory.page(root)
+        val block = MockTypicalDocumentFactory.a
+
+        stubInterceptEvents()
+        stubUpdateText()
+        stubOpenDocument(document = doc)
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = block.id,
+                hasFocus = true
+            )
+            onSlashTextWatcherEvent(
+                SlashEvent.Start(
+                    cursorCoordinate = 100,
+                    slashStart = 0
+                )
+            )
+        }
+
+        // TESTING
+
+        val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
+
+        vm.onSlashTextWatcherEvent(event = event)
+        vm.onSlashItemClicked(SlashItem.Main.Alignment)
+
+        val state = vm.controlPanelViewState.value
+
+        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        assertNotNull(stateWidget)
+
+        val expectedAlignmentItems = listOf(
+            SlashItem.Subheader.AlignmentWithBack
         )
 
         val expected = SlashWidgetState.UpdateItems(

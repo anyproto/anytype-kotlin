@@ -21,19 +21,19 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchBaseViewModel
+import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_relation_create_from_scratch.*
 import javax.inject.Inject
 
-class RelationCreateFromScratchFragment : BaseBottomSheetFragment() {
+abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment() {
 
-    @Inject
-    lateinit var factory: RelationCreateFromScratchForObjectViewModel.Factory
-    val vm: RelationCreateFromScratchForObjectViewModel by viewModels { factory }
+    abstract val vm: RelationCreateFromScratchBaseViewModel
 
-    private val ctx get() = arg<Id>(CTX_KEY)
+    protected val ctx get() = arg<Id>(CTX_KEY)
 
     private val nameInputAdapter = RelationNameInputAdapter {
         vm.onNameChanged(it)
@@ -49,18 +49,19 @@ class RelationCreateFromScratchFragment : BaseBottomSheetFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_relation_create_from_scratch, container, false).apply {
-        dialog?.setOnShowListener { dg ->
-            val bottomSheet = (dg as? BottomSheetDialog)?.findViewById<FrameLayout>(
-                com.google.android.material.R.id.design_bottom_sheet
-            )
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
+    ): View? =
+        inflater.inflate(R.layout.fragment_relation_create_from_scratch, container, false).apply {
+            dialog?.setOnShowListener { dg ->
+                val bottomSheet = (dg as? BottomSheetDialog)?.findViewById<FrameLayout>(
+                    com.google.android.material.R.id.design_bottom_sheet
+                )
+                bottomSheet?.let {
+                    val behavior = BottomSheetBehavior.from(it)
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    behavior.skipCollapsed = true
+                }
             }
         }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,9 +74,7 @@ class RelationCreateFromScratchFragment : BaseBottomSheetFragment() {
                 }
             )
         }
-        btnAction.setOnClickListener {
-            vm.onCreateRelationClicked(ctx)
-        }
+        btnAction.setOnClickListener { onCreateRelationClicked() }
 
         with(lifecycleScope) {
             subscribe(vm.views) { relationAdapter.submitList(it) }
@@ -93,18 +92,63 @@ class RelationCreateFromScratchFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun injectDependencies() {
-        componentManager().relationCreateFromScratchComponent.get(ctx).inject(this)
-    }
-    override fun releaseDependencies() {
-        componentManager().relationCreateFromScratchComponent.release(ctx)
-    }
+    abstract fun onCreateRelationClicked()
 
     companion object {
-        fun new(ctx: Id) : RelationCreateFromScratchFragment = RelationCreateFromScratchFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
-        }
         const val CTX_KEY = "arg.relation-create-from-scratch.ctx"
     }
 
+}
+
+class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBaseFragment() {
+
+    @Inject
+    lateinit var factory: RelationCreateFromScratchForObjectViewModel.Factory
+    override val vm: RelationCreateFromScratchForObjectViewModel by viewModels { factory }
+
+    override fun onCreateRelationClicked() {
+        vm.onCreateRelationClicked(ctx)
+    }
+
+    override fun injectDependencies() {
+        componentManager().relationCreateFromScratchForObjectComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().relationCreateFromScratchForObjectComponent.release(ctx)
+    }
+
+    companion object {
+        fun new(ctx: Id) = RelationCreateFromScratchForObjectFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx)
+        }
+    }
+}
+
+class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBaseFragment() {
+
+    private val dv get() = arg<Id>(DV_KEY)
+
+    @Inject
+    lateinit var factory: RelationCreateFromScratchForDataViewViewModel.Factory
+    override val vm: RelationCreateFromScratchForDataViewViewModel by viewModels { factory }
+
+    override fun onCreateRelationClicked() {
+        vm.onCreateRelationClicked(ctx = ctx, dv = dv)
+    }
+
+    override fun injectDependencies() {
+        componentManager().relationCreateFromScratchForDataViewComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().relationCreateFromScratchForDataViewComponent.release(ctx)
+    }
+
+    companion object {
+        fun new(ctx: Id, dv: Id) = RelationCreateFromScratchForDataViewFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv)
+        }
+        const val DV_KEY = "arg.relation-create-from-scratch-for-data-view.ctx"
+    }
 }

@@ -33,7 +33,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
     protected val ctx get() = arg<Id>(CTX_KEY)
 
     private val createFromScratchAdapter = RelationAddHeaderAdapter {
-        RelationCreateFromScratchFragment.new(ctx).show(childFragmentManager, null)
+        onCreateFromScratchClicked()
     }
 
     private val relationAdapter = RelationAddAdapter { relation ->
@@ -72,6 +72,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
     }
 
     abstract fun onRelationSelected(ctx: Id, relation: Id)
+    abstract fun onCreateFromScratchClicked()
 
     companion object {
         const val CTX_KEY = "arg.relation-add.ctx"
@@ -86,6 +87,10 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
     override fun onRelationSelected(ctx: Id, relation: Id) {
         vm.onRelationSelected(ctx = ctx, relation = relation)
+    }
+
+    override fun onCreateFromScratchClicked() {
+        RelationCreateFromScratchForObjectFragment.new(ctx).show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {
@@ -111,6 +116,17 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToDataViewViewModel.Factory
     override val vm: RelationAddToDataViewViewModel by viewModels { factory }
 
+    override fun onRelationSelected(ctx: Id, relation: Id) {
+        vm.onRelationSelected(ctx = ctx, relation = relation, dv = dv)
+    }
+
+    override fun onCreateFromScratchClicked() {
+        RelationCreateFromScratchForDataViewFragment.new(
+            ctx = ctx,
+            dv = dv
+        ).show(childFragmentManager, null)
+    }
+
     override fun injectDependencies() {
         componentManager().relationAddToDataViewComponent.get(ctx).inject(this)
     }
@@ -119,14 +135,12 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
         componentManager().relationAddToDataViewComponent.release(ctx)
     }
 
-    override fun onRelationSelected(ctx: Id, relation: Id) {
-        vm.onRelationSelected(ctx = ctx, relation = relation, dv = dv)
-    }
-
     companion object {
-        fun new(ctx: Id, dv: Id, viewer: Id): RelationAddToDataViewFragment = RelationAddToDataViewFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, VIEWER_KEY to viewer)
-        }
+        fun new(ctx: Id, dv: Id, viewer: Id): RelationAddToDataViewFragment =
+            RelationAddToDataViewFragment().apply {
+                arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, VIEWER_KEY to viewer)
+            }
+
         private const val DV_KEY = "arg.relation-add-to-data-view.dv"
         private const val VIEWER_KEY = "arg.relation-add-to-data-view.viewer"
     }

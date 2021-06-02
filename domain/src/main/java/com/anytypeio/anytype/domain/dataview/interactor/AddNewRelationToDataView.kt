@@ -13,7 +13,7 @@ class AddNewRelationToDataView(
 
     override suspend fun run(params: Params) = safe {
         repo.addNewRelationToDataView(
-            context = params.context,
+            context = params.ctx,
             target = params.target,
             name = params.name,
             format = params.format
@@ -21,13 +21,13 @@ class AddNewRelationToDataView(
     }
 
     /**
-     * @property [context] operation context
+     * @property [ctx] operation context
      * @property [target] data view's block id
      * @property [name] name for the new relation
      * @property [format] relation's format
      */
     class Params(
-        val context: Id,
+        val ctx: Id,
         val target: Id,
         val name: String,
         val format: Relation.Format

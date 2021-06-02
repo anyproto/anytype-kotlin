@@ -81,7 +81,8 @@ class ObjectSetViewModel(
             reducer.state.filter { it.isInitialized }.collect { set ->
                 Timber.d("Set updated!")
                 _viewerTabs.value = set.tabs(session.currentViewerId)
-                val viewerIndex = reducer.state.value.viewers.indexOfFirst { it.id == session.currentViewerId }
+                val viewerIndex =
+                    reducer.state.value.viewers.indexOfFirst { it.id == session.currentViewerId }
                 set.render(viewerIndex, context, urlBuilder).let { vs ->
                     _viewerGrid.value = vs.viewer
                     _header.value = vs.title
@@ -211,7 +212,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             addDataViewRelation(
                 AddNewRelationToDataView.Params(
-                    context = context,
+                    ctx = context,
                     target = target,
                     name = name,
                     format = format

@@ -240,6 +240,10 @@ open class PageFragment :
 
     private fun searchScrollAndMoveTarget() {
 
+        recycler.findFocus().let { child ->
+            if (child is TextInputWidget) child.text
+        }
+
         val centerX = screen.x / 2f
 
         val centerY = (targeter.y + (targeter.height / 2f)) - scrollAndMoveTopMargin

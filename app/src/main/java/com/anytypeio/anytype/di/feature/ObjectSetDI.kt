@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewSubComponent
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
@@ -50,6 +51,7 @@ interface ObjectSetSubComponent {
     fun manageViewerComponent(): ManageViewerSubComponent.Builder
     fun viewerRelationsComponent(): ViewerRelationsSubComponent.Builder
     fun relationAddToDataViewComponent() : RelationAddToDataViewSubComponent.Builder
+    fun relationCreateFromScratchForDataViewComponent() : RelationCreateFromScratchForDataViewSubComponent.Builder
     fun dataviewViewerActionComponent(): DataViewViewerActionSubComponent.Builder
     fun selectSortRelationComponent(): SelectSortRelationSubComponent.Builder
     fun selectFilterRelationComponent(): SelectFilterRelationSubComponent.Builder

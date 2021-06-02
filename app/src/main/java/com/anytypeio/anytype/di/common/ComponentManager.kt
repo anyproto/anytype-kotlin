@@ -4,7 +4,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
-import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchModule
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewModule
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectModule
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
@@ -487,11 +488,19 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val relationCreateFromScratchComponent = DependentComponentMap { ctx ->
+    val relationCreateFromScratchForObjectComponent = DependentComponentMap { ctx ->
         pageComponent
             .get(ctx)
-            .relationCreateFromScratchComponentBuilder()
-            .module(RelationCreateFromScratchModule)
+            .relationCreateFromScratchForObjectComponent()
+            .module(RelationCreateFromScratchForObjectModule)
+            .build()
+    }
+
+    val relationCreateFromScratchForDataViewComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .relationCreateFromScratchForDataViewComponent()
+            .module(RelationCreateFromScratchForDataViewModule)
             .build()
     }
 

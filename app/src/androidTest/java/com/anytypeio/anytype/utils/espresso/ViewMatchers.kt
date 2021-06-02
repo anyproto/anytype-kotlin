@@ -3,13 +3,20 @@ package com.anytypeio.anytype.utils
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import com.anytypeio.anytype.core_utils.ext.dimen
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
 
@@ -133,12 +140,27 @@ class WithTextColorRes(private val expectedColorRes: Int) : BoundedMatcher<View,
     }
 }
 
-class TextLineCountMatcher(private val lines : Int): TypeSafeMatcher<View>() {
+class TextLineCountMatcher(private val lines: Int) : TypeSafeMatcher<View>() {
     override fun describeTo(description: Description?) {
         description?.appendText("isTextInLines")
     }
 
     override fun matchesSafely(item: View?): Boolean {
         return (item as TextView).lineCount == lines
+    }
+}
+
+class SetEditTextSelectionAction(private val selection: Int) : ViewAction {
+
+    override fun getConstraints(): Matcher<View> {
+        return allOf(isDisplayed(), isAssignableFrom(EditText::class.java))
+    }
+
+    override fun getDescription(): String {
+        return "set selection to $selection"
+    }
+
+    override fun perform(uiController: UiController, view: View) {
+        (view as EditText).setSelection(selection)
     }
 }

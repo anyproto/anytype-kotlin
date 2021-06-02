@@ -94,6 +94,8 @@ class SlashWidgetTesting : EditorTestSetup() {
      * 11.show MAIN items | click MEDIA | click VIDEO | no focus, slash widget is invisible, add video block | +
      * 12.show MAIN items | click MEDIA | click BOOKMARK | no focus, slash widget is invisible, add bookmark block | +
      * 13.show MAIN items | click OTHERS | show SH + OTHERS items, BACK visible | +
+     * 14 click on SLASH BUTTON | add slash char to block
+     * 15 click on SLASH BUTTON | show MAIN items
      */
 
     //region {Test 1}
@@ -1009,6 +1011,104 @@ class SlashWidgetTesting : EditorTestSetup() {
         }
 
         onView(withId(R.id.flBack)).checkIsDisplayed()
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 14}
+    @Test
+    fun shouldAddSlashToTextOnSlashButtonClicked() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+        }
+
+        onView(withId(R.id.slashWidgetButton)).performClick()
+
+        //TESTING
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).checkHasText("FooBar/")
+        }
+
+        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+    //endregion
+
+    //region {Test 15}
+    @Test
+    fun shouldShowSlashWidgetOnSlashButtonClicked() {
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "FooBar",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id)
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubUpdateText()
+        stubOpenDocument(document, defaultDetails)
+
+        launchFragment(args)
+
+        with(R.id.recycler.rVMatcher()) {
+            onItemView(1, R.id.textContent).perform(ViewActions.click())
+            onItemView(1, R.id.textContent).perform(SetEditTextSelectionAction(selection = 3))
+
+        }
+
+        onView(withId(R.id.slashWidgetButton)).performClick()
+
+        //TESTING
+
+        with(R.id.rvSlash.rVMatcher()) {
+            onItemView(0, R.id.textMain).checkHasText(R.string.slash_widget_main_style)
+            onItemView(1, R.id.textMain).checkHasText(R.string.slash_widget_main_media)
+            onItemView(2, R.id.textMain).checkHasText(R.string.slash_widget_main_objects)
+
+            checkIsRecyclerSize(9)
+        }
 
         advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }

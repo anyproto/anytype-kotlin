@@ -103,4 +103,6 @@ sealed class Command {
             data class Date(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
         }
     }
+
+    object AddSlashWidgetTriggerToFocusedBlock: Command()
 }

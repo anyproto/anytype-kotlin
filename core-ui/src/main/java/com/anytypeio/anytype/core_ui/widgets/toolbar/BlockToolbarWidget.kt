@@ -29,7 +29,7 @@ class BlockToolbarWidget : ConstraintLayout {
 
     fun hideKeyboardClicks() = hideKeyboardButton.clicks()
     fun enterMultiSelectModeClicks() = multiSelectModeButton.clicks()
-    fun addBlockClicks() = addBlockButton.clicks()
+    fun openSlashWidgetClicks() = slashWidgetButton.clicks()
     fun changeStyleClicks() = changeStyleButton.clicks()
     fun openBlockActionClicks() = blockActionsButton.clicks()
 

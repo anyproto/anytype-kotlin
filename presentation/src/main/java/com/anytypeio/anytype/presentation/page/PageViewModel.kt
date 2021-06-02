@@ -2091,6 +2091,7 @@ class PageViewModel(
 
     fun onAddBlockToolbarClicked() {
         Timber.d("onAddBlockToolbarClicked, ")
+
         dispatch(Command.OpenAddBlockPanel(ctx = context))
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -3800,6 +3801,9 @@ class PageViewModel(
     enum class Session { IDLE, OPEN, ERROR }
 
     //region SLASH WIDGET
+    fun onStartSlashWidgetClicked() {
+        dispatch(Command.AddSlashWidgetTriggerToFocusedBlock)
+    }
     fun onSlashItemClicked(item: SlashItem) {
         Timber.d("onSlashItemClicked, item:[$item]")
         val target = orchestrator.stores.focus.current()

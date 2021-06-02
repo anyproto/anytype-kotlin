@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.tools
 
 import android.text.Editable
 import android.text.TextWatcher
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import timber.log.Timber
 
 
@@ -54,7 +53,6 @@ class SlashTextWatcher(
      */
     private fun proceedWithStart(text: CharSequence, start: Int, count: Int) {
         if (SlashHelper.isSlashCharAdded(text = text, start = start, count = count)) {
-            Timber.d("Send Start event")
             slashCharPosition = start
             filter = ""
             proceedWithState(SlashTextWatcherState.Start(start = start))
@@ -89,7 +87,6 @@ class SlashTextWatcher(
                 slashPosition = slashCharPosition
             )
         ) {
-            Timber.d("Send Stop event")
             stopSlashWatcher()
         }
     }
@@ -101,9 +98,10 @@ class SlashTextWatcher(
 
     private fun proceedWithState(state: SlashTextWatcherState) {
         if (!locked) {
+            Timber.d("proceedWithState, state:[$state]")
             onSlashEvent(state)
         } else {
-            Timber.d("Locked slash text watcher. Skipping event...")
+            Timber.d("proceedWithState, Locked slash text watcher. Skipping event...")
         }
     }
 

@@ -35,12 +35,10 @@
         android:id="@+id/editBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_medium"
         android:paddingStart="@dimen/dp_16"
-        android:paddingEnd="32dp"
+        android:paddingEnd="16dp"
         android:text="@string/edit"
-        android:textColor="@color/dark_amber"
-        android:textSize="17sp"
+        style="@style/DefaultCellInteractionTextButtonStyle"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title"
@@ -50,12 +48,10 @@
         android:id="@+id/doneBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_medium"
         android:paddingStart="@dimen/dp_16"
-        android:paddingEnd="32dp"
+        android:paddingEnd="16dp"
         android:text="@string/done"
-        android:textColor="@color/dark_amber"
-        android:textSize="17sp"
+        style="@style/DefaultCellInteractionTextButtonStyle"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,6 +79,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title"
-        app:srcCompat="@drawable/ic_add_new_relation" />
+        android:src="@drawable/ic_default_plus" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,7 +22,6 @@ import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.relations.tabs
 import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.shekhargulati.urlcleaner.UrlCleaner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -34,7 +33,7 @@ class ObjectSetViewModel(
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
     private val setActiveViewer: SetActiveViewer,
-    private val addDataViewRelation: AddDataViewRelation,
+    private val addDataViewRelation: AddNewRelationToDataView,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val createDataViewRecord: CreateDataViewRecord,
@@ -211,7 +210,7 @@ class ObjectSetViewModel(
     ) {
         viewModelScope.launch {
             addDataViewRelation(
-                AddDataViewRelation.Params(
+                AddNewRelationToDataView.Params(
                     context = context,
                     target = target,
                     name = name,
@@ -503,9 +502,19 @@ class ObjectSetViewModel(
     }
 
     fun onViewerRelationsClicked() {
-        dispatch(
-            ObjectSetCommand.Modal.ModifyViewerRelationOrder(ctx = context)
-        )
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            val block = set.dataview
+            val dv = block.content as DV
+            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            dispatch(
+                ObjectSetCommand.Modal.ModifyViewerRelationOrder(
+                    ctx = context,
+                    dv = block.id,
+                    viewer = viewer.id
+                )
+            )
+        }
     }
 
     fun onViewerFiltersClicked() {

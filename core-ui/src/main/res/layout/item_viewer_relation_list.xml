@@ -6,10 +6,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
-    <ImageView
+    <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
         android:id="@+id/iconRelation"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_12"
         android:layout_gravity="center_vertical"
         tools:src="@drawable/ic_relation_text_32" />

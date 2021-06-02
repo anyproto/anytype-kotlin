@@ -33,7 +33,7 @@ open class ObjectSetViewModelTestSetup {
     lateinit var closeBlock: CloseBlock
 
     @Mock
-    lateinit var addDataViewRelation: AddDataViewRelation
+    lateinit var addDataViewRelation: AddNewRelationToDataView
 
     @Mock
     lateinit var updateDataViewViewer: UpdateDataViewViewer

@@ -30,7 +30,7 @@ import org.mockito.kotlin.stub
 abstract class TestObjectSetSetup {
 
     private lateinit var openObjectSet: OpenObjectSet
-    private lateinit var addDataViewRelation: AddDataViewRelation
+    private lateinit var addDataViewRelation: AddNewRelationToDataView
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var updateDataViewRecord: UpdateDataViewRecord
     private lateinit var updateText: UpdateText
@@ -78,7 +78,7 @@ abstract class TestObjectSetSetup {
     open fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        addDataViewRelation = AddDataViewRelation(repo)
+        addDataViewRelation = AddNewRelationToDataView(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo)
         createDataViewRecord = CreateDataViewRecord(repo)

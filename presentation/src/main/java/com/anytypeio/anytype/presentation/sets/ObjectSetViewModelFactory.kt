@@ -16,7 +16,7 @@ class ObjectSetViewModelFactory(
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
     private val setActiveViewer: SetActiveViewer,
-    private val addDataViewRelation: AddDataViewRelation,
+    private val addDataViewRelation: AddNewRelationToDataView,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val createDataViewRecord: CreateDataViewRecord,

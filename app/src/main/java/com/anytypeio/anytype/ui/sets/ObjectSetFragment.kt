@@ -291,7 +291,9 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.ModifyViewerRelationOrder -> {
                 val fr = ViewerRelationsFragment.new(
-                    ctx = command.ctx
+                    ctx = command.ctx,
+                    dv = command.dv,
+                    viewer = command.viewer
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }

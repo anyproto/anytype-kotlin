@@ -1036,7 +1036,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun addDataViewRelation(
+    fun addNewRelationToDataView(
         context: String,
         target: String,
         name: String,
@@ -1058,6 +1058,21 @@ class Middleware(
         val response = service.blockDataViewRelationAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return Pair(response.relationKey, response.event.toPayload())
+    }
+
+    @Throws(Exception::class)
+    fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload {
+        val request = Rpc.Block.Dataview.RelationAdd.Request(
+            contextId = ctx,
+            blockId = dv,
+            relation = MRelation(
+                key = relation
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)

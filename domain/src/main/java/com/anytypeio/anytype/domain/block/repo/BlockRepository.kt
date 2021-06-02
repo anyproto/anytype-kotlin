@@ -138,12 +138,14 @@ interface BlockRepository {
         limit: Int
     ): Payload
 
-    suspend fun addDataViewRelation(
+    suspend fun addNewRelationToDataView(
         context: Id,
         target: Id,
         name: String,
         format: Relation.Format
     ): Pair<Id, Payload>
+
+    suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
 
     suspend fun updateDataViewViewer(
         context: Id,

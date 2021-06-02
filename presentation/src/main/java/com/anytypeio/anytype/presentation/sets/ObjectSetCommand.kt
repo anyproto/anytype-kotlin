@@ -23,7 +23,9 @@ sealed class ObjectSetCommand {
         data class ManageViewer(val ctx: Id, val dataview: Id) : Modal()
 
         data class ModifyViewerRelationOrder(
-            val ctx: Id
+            val ctx: Id,
+            val dv: Id,
+            val viewer: Id
         ) : Modal()
 
         data class ModifyViewerFilters(

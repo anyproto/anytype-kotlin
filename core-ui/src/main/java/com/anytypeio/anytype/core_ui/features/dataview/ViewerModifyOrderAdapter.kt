@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
@@ -69,7 +68,7 @@ class ViewerModifyOrderAdapter(
                 itemView.iconDrag.visible()
             }
             itemView.title.text = item.title
-            itemView.iconRelation.setBackgroundResource(item.format.relationIcon())
+            itemView.iconRelation.bind(item.format)
             itemView.iconMore.setOnClickListener {
                 onMoreClick(item)
             }

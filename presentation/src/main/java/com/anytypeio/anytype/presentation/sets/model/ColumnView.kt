@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Block
 import kotlinx.android.parcel.Parcelize
 
+@Deprecated("To be deleted")
 @Parcelize
 data class ColumnView(
     val key: String,

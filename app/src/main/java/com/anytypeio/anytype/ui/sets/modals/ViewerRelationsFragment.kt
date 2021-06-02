@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ViewerRelationsViewModel
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
 import kotlinx.android.synthetic.main.fragment_viewer_relations_list.*
 import javax.inject.Inject
 
@@ -33,7 +34,9 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     lateinit var factory: ViewerRelationsViewModel.Factory
     private val vm: ViewerRelationsViewModel by viewModels { factory }
 
-    private val ctx get() = arg<String>(CONTEXT_KEY)
+    private val ctx get() = arg<String>(CTX_KEY)
+    private val viewer get() = arg<String>(VIEWER_KEY)
+    private val dv get() = arg<String>(DV_KEY)
 
     private val listAdapter by lazy {
         ViewerRelationsAdapter(
@@ -74,7 +77,13 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
         with(lifecycleScope) {
             subscribe(editBtn.clicks()) { vm.onEditButtonClicked() }
             subscribe(doneBtn.clicks()) { vm.onDoneButtonClicked() }
-            subscribe(iconAdd.clicks()) { toast("Not implemented yet")}
+            subscribe(iconAdd.clicks()) {
+                RelationAddToDataViewFragment.new(
+                    ctx = ctx,
+                    dv = dv,
+                    viewer = viewer
+                ).show(childFragmentManager, null)
+            }
         }
     }
 
@@ -140,13 +149,12 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     }
 
     companion object {
-
-        fun new(ctx: Id) = ViewerRelationsFragment().apply {
-            arguments = bundleOf(
-                CONTEXT_KEY to ctx
-            )
+        fun new(ctx: Id, dv: Id, viewer: Id) = ViewerRelationsFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, VIEWER_KEY to viewer)
         }
 
-        private const val CONTEXT_KEY = "arg.viewer-relation-list.ctx"
+        private const val CTX_KEY = "arg.viewer-relation-list.ctx"
+        private const val DV_KEY = "arg.viewer-relation-list.dv"
+        private const val VIEWER_KEY = "arg.viewer-relation-list.viewer"
     }
 }

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
@@ -48,6 +49,7 @@ interface ObjectSetSubComponent {
     fun objectRelationValueComponent(): ObjectSetObjectRelationValueSubComponent.Builder
     fun manageViewerComponent(): ManageViewerSubComponent.Builder
     fun viewerRelationsComponent(): ViewerRelationsSubComponent.Builder
+    fun relationAddToDataViewComponent() : RelationAddToDataViewSubComponent.Builder
     fun dataviewViewerActionComponent(): DataViewViewerActionSubComponent.Builder
     fun selectSortRelationComponent(): SelectSortRelationSubComponent.Builder
     fun selectFilterRelationComponent(): SelectFilterRelationSubComponent.Builder
@@ -69,7 +71,7 @@ object ObjectSetModule {
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
         setActiveViewer: SetActiveViewer,
-        addDataViewRelation: AddDataViewRelation,
+        addDataViewRelation: AddNewRelationToDataView,
         updateDataViewViewer: UpdateDataViewViewer,
         updateDataViewRecord: UpdateDataViewRecord,
         updateText: UpdateText,
@@ -114,7 +116,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideAddDataViewRelationUseCase(
         repo: BlockRepository
-    ): AddDataViewRelation = AddDataViewRelation(repo = repo)
+    ): AddNewRelationToDataView = AddNewRelationToDataView(repo = repo)
 
     @JvmStatic
     @Provides

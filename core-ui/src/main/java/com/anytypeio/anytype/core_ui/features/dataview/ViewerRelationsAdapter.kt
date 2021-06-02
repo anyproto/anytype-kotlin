@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -51,7 +50,7 @@ class ViewerRelationsAdapter(
             } else {
                 itemView.switchView.visible()
             }
-            itemView.iconRelation.setBackgroundResource(item.format.relationIcon())
+            itemView.iconRelation.bind(item.format)
             itemView.title.text = item.title
             itemView.switchView.isChecked = item.isVisible
             itemView.switchView.setOnCheckedChangeListener { _, isChecked ->

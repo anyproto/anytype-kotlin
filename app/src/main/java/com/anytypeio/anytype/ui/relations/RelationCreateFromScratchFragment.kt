@@ -84,7 +84,7 @@ class RelationCreateFromScratchFragment : BaseBottomSheetFragment() {
                 if (isDismissed) {
                     // Refact parent dismissing
                     parentFragment?.let { parent ->
-                        if (parent is RelationAddFragment) parent.dismiss()
+                        if (parent is RelationAddBaseFragment) parent.dismiss()
                     }
                     dismiss()
                 }

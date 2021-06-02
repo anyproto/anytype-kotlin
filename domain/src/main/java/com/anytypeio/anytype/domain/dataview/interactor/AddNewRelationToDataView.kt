@@ -5,14 +5,14 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelation.Params
+import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView.Params
 
-class AddDataViewRelation(
+class AddNewRelationToDataView(
     private val repo: BlockRepository
 ) : BaseUseCase<Pair<Id, Payload>, Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.addDataViewRelation(
+        repo.addNewRelationToDataView(
             context = params.context,
             target = params.target,
             name = params.name,

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -41,8 +42,6 @@ abstract class RelationAddBaseViewModel(
         }
     }
 
-    abstract fun onRelationSelected(ctx: Id, relation: Id)
-
     companion object {
         const val ERROR_MESSAGE = "Error while adding relation to object"
     }
@@ -54,7 +53,7 @@ class RelationAddToObjectViewModel(
     objectRelationList: ObjectRelationList
 ) : RelationAddBaseViewModel(objectRelationList = objectRelationList) {
 
-    override fun onRelationSelected(ctx: Id, relation: Id) {
+    fun onRelationSelected(ctx: Id, relation: Id) {
         viewModelScope.launch {
             addRelationToObject(
                 AddRelationToObject.Params(
@@ -80,6 +79,46 @@ class RelationAddToObjectViewModel(
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return RelationAddToObjectViewModel(
                 addRelationToObject = addRelationToObject,
+                objectRelationList = objectRelationList,
+                dispatcher = dispatcher
+            ) as T
+        }
+    }
+}
+
+class RelationAddToDataViewViewModel(
+    private val addRelationToDataView: AddRelationToDataView,
+    private val dispatcher: Dispatcher<Payload>,
+    objectRelationList: ObjectRelationList
+) : RelationAddBaseViewModel(objectRelationList = objectRelationList) {
+
+    fun onRelationSelected(ctx: Id, relation: Id, dv: Id) {
+        viewModelScope.launch {
+            addRelationToDataView(
+                AddRelationToDataView.Params(
+                    ctx = ctx,
+                    relation = relation,
+                    dv = dv
+                )
+            ).process(
+                success = { dispatcher.send(it).also { isDismissed.value = true } },
+                failure = {
+                    Timber.e(it, ERROR_MESSAGE)
+                    _toasts.emit("$ERROR_MESSAGE: ${it.localizedMessage}")
+                }
+            )
+        }
+    }
+
+    class Factory(
+        private val objectRelationList: ObjectRelationList,
+        private val addRelationToDataView: AddRelationToDataView,
+        private val dispatcher: Dispatcher<Payload>
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return RelationAddToDataViewViewModel(
+                addRelationToDataView = addRelationToDataView,
                 objectRelationList = objectRelationList,
                 dispatcher = dispatcher
             ) as T

@@ -75,7 +75,7 @@ open class RelationListFragment : BaseBottomSheetFragment(),
             )
         }
         btnPlus.setOnClickListener {
-            RelationAddFragment.new(ctx).show(childFragmentManager, null)
+            RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
         }
     }
 

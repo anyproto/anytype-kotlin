@@ -2,7 +2,8 @@ package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
-import com.anytypeio.anytype.di.feature.relations.RelationAddModule
+import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
+import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchModule
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
@@ -470,11 +471,19 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val relationAddComponent = DependentComponentMap { ctx ->
+    val relationAddToObjectComponent = DependentComponentMap { ctx ->
         pageComponent
             .get(ctx)
-            .relationAddSubComponentBuilder()
-            .module(RelationAddModule)
+            .relationAddToObjectComponent()
+            .module(RelationAddToObjectModule)
+            .build()
+    }
+
+    val relationAddToDataViewComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .relationAddToDataViewComponent()
+            .module(RelationAddToDataViewModule)
             .build()
     }
 

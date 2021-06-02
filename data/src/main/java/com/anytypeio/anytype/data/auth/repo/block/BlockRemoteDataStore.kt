@@ -210,16 +210,26 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         limit = limit
     )
 
-    override suspend fun addDataViewRelation(
+    override suspend fun addNewRelationToDataView(
         context: Id,
         target: Id,
         name: String,
         format: Relation.Format
-    ): Pair<Id, Payload> = remote.addDataViewRelation(
+    ): Pair<Id, Payload> = remote.addNewRelationToDataView(
         context = context,
         target = target,
         name = name,
         format = format
+    )
+
+    override suspend fun addRelationToDataView(
+        ctx: Id,
+        dv: Id,
+        relation: Id
+    ): Payload = remote.addRelationToDataView(
+        ctx = ctx,
+        dv = dv,
+        relation = relation
     )
 
     override suspend fun updateDataViewViewer(

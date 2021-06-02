@@ -231,16 +231,26 @@ class BlockMiddleware(
         limit = limit
     )
 
-    override suspend fun addDataViewRelation(
+    override suspend fun addNewRelationToDataView(
         context: String,
         target: String,
         name: String,
         format: Relation.Format
-    ): Pair<Id, Payload> = middleware.addDataViewRelation(
+    ): Pair<Id, Payload> = middleware.addNewRelationToDataView(
         context = context,
         target = target,
         format = format,
         name = name
+    )
+
+    override suspend fun addRelationToDataView(
+        ctx: Id,
+        dv: Id,
+        relation: Id
+    ): Payload = middleware.addRelationToDataView(
+        ctx = ctx,
+        dv = dv,
+        relation = relation
     )
 
     override suspend fun updateDataViewViewer(

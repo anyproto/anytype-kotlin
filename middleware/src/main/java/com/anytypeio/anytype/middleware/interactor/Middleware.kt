@@ -1210,12 +1210,13 @@ class Middleware(
         return response.relations
     }
 
+    //todo Add Relation mapping
     @Throws(Exception::class)
     fun addRelationToBlock(command: Command.AddRelationToBlock): Payload {
         val request = Rpc.Block.Relation.Add.Request(
             contextId = command.contextId,
             blockId = command.blockId,
-            relation = command.relation.toMiddlewareModel()
+            relation = null
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockAddRelation(request)

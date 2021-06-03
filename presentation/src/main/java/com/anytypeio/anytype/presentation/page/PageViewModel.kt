@@ -816,6 +816,7 @@ class PageViewModel(
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
+        if (mode != EditorMode.Edit) return
         Timber.d("onSelectionChanged, id:[$id] selection:[$selection]")
         viewModelScope.launch {
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))

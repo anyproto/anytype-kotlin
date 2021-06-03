@@ -147,7 +147,7 @@ abstract class Text(
                 EditorLongClickListener(
                     t = item.id,
                     click = {
-                        // TODO do not call this methed directly, ask permission from vm
+                        // TODO do not call this method directly, ask permission from vm
                         enableReadMode()
                         onBlockLongClick(root, it, clicked)
                     }
@@ -160,9 +160,9 @@ abstract class Text(
                 }
             )
 
-            selectionWatcher = {
-                onSelectionChanged(item.id, it)
-            }
+//            selectionWatcher = {
+//                onSelectionChanged(item.id, it)
+//            }
 
             backButtonWatcher = onBackPressedCallback
         }

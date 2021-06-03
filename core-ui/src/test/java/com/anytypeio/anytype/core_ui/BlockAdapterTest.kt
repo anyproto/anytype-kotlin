@@ -1628,8 +1628,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -1780,8 +1778,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -1984,8 +1980,6 @@ class BlockAdapterTest {
             actual = h1Holder.content.isTextSelectable
         )
 
-        assertNull(h1Holder.content.selectionWatcher)
-
         assertEquals(
             expected = InputType.TYPE_NULL,
             actual = h2Holder.content.inputType
@@ -1996,8 +1990,6 @@ class BlockAdapterTest {
             actual = h2Holder.content.isTextSelectable
         )
 
-        assertNull(h2Holder.content.selectionWatcher)
-
         assertEquals(
             expected = InputType.TYPE_NULL,
             actual = h3Holder.content.inputType
@@ -2007,8 +1999,6 @@ class BlockAdapterTest {
             expected = false,
             actual = h3Holder.content.isTextSelectable
         )
-
-        assertNull(h3Holder.content.selectionWatcher)
     }
 
     @Test
@@ -2403,8 +2393,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2571,8 +2559,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2612,8 +2598,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2720,8 +2704,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2761,8 +2743,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2869,8 +2849,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -2911,8 +2889,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3021,8 +2997,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3064,8 +3038,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3178,8 +3150,6 @@ class BlockAdapterTest {
             expected = false,
             actual = holder.content.isTextSelectable
         )
-
-        assertNull(holder.content.selectionWatcher)
     }
 
     @Test
@@ -3323,58 +3293,6 @@ class BlockAdapterTest {
 
         assertTrue { holder.itemView.isSelected }
     }
-
-
-//    Turned off the test, because Robolectric is not working with MateralCardView
-//    @Test
-//    fun `should update selected state for bookmark`() {
-//
-//        // Setup
-//
-//        val bookmark = BlockView.Bookmark.View(
-//            id = MockDataFactory.randomString(),
-//            description = MockDataFactory.randomString(),
-//            faviconUrl = MockDataFactory.randomString(),
-//            imageUrl = MockDataFactory.randomString(),
-//            indent = MockDataFactory.randomInt(),
-//            title = MockDataFactory.randomString(),
-//            url = MockDataFactory.randomString(),
-//            isSelected = false
-//        )
-//
-//        val updated = bookmark.copy(isSelected = true)
-//
-//        val views = listOf(bookmark)
-//
-//        val adapter = buildAdapter(views)
-//
-//        val recycler = RecyclerView(context).apply {
-//            layoutManager = LinearLayoutManager(context)
-//            this.adapter = adapter
-//        }
-//
-//        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK)
-//
-//        adapter.onBindViewHolder(holder, 0)
-//
-//        check(holder is BlockViewHolder.Bookmark)
-//
-//        // Testing
-//
-//        assertTrue { !holder.itemView.isSelected }
-//
-//        adapter.updateWithDiffUtil(
-//            items = listOf(updated)
-//        )
-//
-//        val changes: MutableList<Any> = mutableListOf(
-//            BlockViewDiffUtil.Payload(changes = listOf(SELECTION_CHANGED))
-//        )
-//
-//        adapter.onBindViewHolder(holder, 0, changes)
-//
-//        assertTrue { holder.itemView.isSelected }
-//    }
 
     private fun buildAdapter(
         views: List<BlockView>,

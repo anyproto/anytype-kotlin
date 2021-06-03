@@ -176,7 +176,7 @@ sealed class BlockView : ViewType, Parcelable {
         abstract override val color: String?
         abstract override val backgroundColor: String?
         abstract override val mode: Mode
-        abstract override val cursor: Int?
+        abstract override var cursor: Int?
         abstract override val alignment: Alignment?
 
         /**
@@ -199,7 +199,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val alignment: Alignment? = null,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: @RawValue IntRange? = null
         ) : Text() {
@@ -228,7 +228,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val mode: Mode = Mode.EDIT,
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
-                override val cursor: Int? = null,
+                override var cursor: Int? = null,
                 override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: @RawValue IntRange? = null
             ) : Header() {
@@ -255,7 +255,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val mode: Mode = Mode.EDIT,
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
-                override val cursor: Int? = null,
+                override var cursor: Int? = null,
                 override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: @RawValue IntRange? = null
             ) : Header() {
@@ -282,7 +282,7 @@ sealed class BlockView : ViewType, Parcelable {
                 override val mode: Mode = Mode.EDIT,
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
-                override val cursor: Int? = null,
+                override var cursor: Int? = null,
                 override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: @RawValue IntRange? = null
             ) : Header() {
@@ -308,7 +308,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var marks: List<Markup.Mark> = emptyList(),
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: @RawValue IntRange? = null
@@ -335,7 +335,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: @RawValue IntRange? = null
@@ -362,7 +362,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: @RawValue IntRange? = null
@@ -389,7 +389,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: @RawValue IntRange? = null,
@@ -417,7 +417,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: @RawValue IntRange? = null,
@@ -462,7 +462,7 @@ sealed class BlockView : ViewType, Parcelable {
             val emoji: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
@@ -484,7 +484,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var coverGradient: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
@@ -505,7 +505,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
             override val mode: Mode = Mode.EDIT,
-            override val cursor: Int? = null,
+            override var cursor: Int? = null,
             override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
             var isChecked: Boolean = false,
         ) : Title(), Searchable {
@@ -528,7 +528,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
             override val mode: Mode = Mode.READ,
-            override val cursor: Int? = null
+            override var cursor: Int? = null
         ) : Title() {
             override fun getViewType() = HOLDER_ARCHIVE_TITLE
         }

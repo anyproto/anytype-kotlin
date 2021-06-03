@@ -546,6 +546,16 @@ class BlockAdapter(
                     }
                 }
             }
+            holder.content.selectionWatcher = { selection ->
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val view = views[pos]
+                    if (view is BlockView.Text) {
+                        view.cursor = selection.last
+                    }
+                    onSelectionChanged(view.id, selection)
+                }
+            }
         }
 
         return holder

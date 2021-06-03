@@ -53,4 +53,10 @@ interface Editor {
             val range: IntRange,
         ) : Restore()
     }
+
+    sealed class Event {
+        sealed class Text : Event() {
+            data class OnSelectionChanged(val id: Id, val selection: IntRange) : Text()
+        }
+    }
 }

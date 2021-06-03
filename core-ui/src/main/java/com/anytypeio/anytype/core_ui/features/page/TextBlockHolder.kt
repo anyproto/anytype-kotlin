@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.features.page
 import android.text.Editable
 import android.text.Spannable
 import android.widget.TextView
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_ui.common.*
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
@@ -327,7 +326,7 @@ interface TextBlockHolder : TextHolder {
                         onMentionEvent = onMentionEvent,
                         onSlashEvent = onSlashEvent
                     )
-                    content.selectionWatcher = { onSelectionChanged(item.id, it) }
+                    //content.selectionWatcher = { onSelectionChanged(item.id, it) }
                     enableEditMode()
                 } else {
                     enableReadMode()

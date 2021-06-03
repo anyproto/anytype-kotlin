@@ -63,7 +63,7 @@ interface TextHolder {
 
     fun enableReadMode() {
         content.enableReadMode()
-        content.selectionWatcher = null
+        //content.selectionWatcher = null
         content.clearTextWatchers()
     }
 

@@ -37,7 +37,6 @@ import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
@@ -2600,6 +2599,7 @@ class PageViewModel(
         }
     }
 
+    //Todo this method need refactoring
     fun onHideKeyboardClicked() {
         Timber.d("onHideKeyboardClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
@@ -3778,6 +3778,7 @@ class PageViewModel(
             "Opening style panel for title currently not supported"
         const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =
             "Opening style panel for code block currently not supported"
+        const val FLAVOUR_EXPERIMENTAL = "experimental"
     }
 
     data class MarkupAction(
@@ -3852,37 +3853,62 @@ class PageViewModel(
                     return
                 }
                 if (event.filter.length == 1) {
+                    val mainItems = if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+                        SlashExtensions.getExperimentalSlashWidgetMainItems()
+                    } else {
+                        SlashExtensions.getStableSlashWidgetMainItems()
+                    }
                     val widgetState = SlashWidgetState.UpdateItems.empty()
-                        .copy(
-                            mainItems = SlashExtensions.getSlashWidgetMainItems()
-                        )
+                        .copy(mainItems = mainItems)
                     val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
                         widgetState = widgetState
                     )
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                getObjectTypes { objectTypes ->
-                    getRelations { relations ->
-                        val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
-                            text = event.filter,
-                            objectTypes = objectTypes.toView(),
-                            relations = relations,
-                            viewType = slashViewType
-                        )
-                        incFilterSearchEmptyCount(widgetState)
-                        val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
-                            filterSearchEmptyCount = 0
-                            slashStartIndex = 0
-                            slashFilter = ""
-                            slashViewType = 0
-                            ControlPanelMachine.Event.Slash.OnStop
-                        } else {
-                            ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+
+                if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+                    getObjectTypes { objectTypes ->
+                        getRelations { relations ->
+                            val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
+                                text = event.filter,
+                                objectTypes = objectTypes.toView(),
+                                relations = relations,
+                                viewType = slashViewType
+                            )
+                            incFilterSearchEmptyCount(widgetState)
+                            val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
+                                filterSearchEmptyCount = 0
+                                slashStartIndex = 0
+                                slashFilter = ""
+                                slashViewType = 0
+                                ControlPanelMachine.Event.Slash.OnStop
+                            } else {
+                                ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+                            }
+                            controlPanelInteractor.onEvent(panelEvent)
                         }
-                        controlPanelInteractor.onEvent(panelEvent)
                     }
+                } else {
+                    val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
+                        text = event.filter,
+                        objectTypes = emptyList(),
+                        relations = emptyList(),
+                        viewType = slashViewType
+                    )
+                    incFilterSearchEmptyCount(widgetState)
+                    val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
+                        filterSearchEmptyCount = 0
+                        slashStartIndex = 0
+                        slashFilter = ""
+                        slashViewType = 0
+                        ControlPanelMachine.Event.Slash.OnStop
+                    } else {
+                        ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+                    }
+                    controlPanelInteractor.onEvent(panelEvent)
                 }
+
             }
             SlashEvent.Stop -> {
                 slashStartIndex = 0
@@ -4007,7 +4033,7 @@ class PageViewModel(
             is SlashItem.Media -> {
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                onSlashMediaItemClicked(targetId = targetId, item = item)
+                onSlashMediaItemClicked(item = item)
             }
             is SlashItem.ObjectType -> {
                 cutSlashFilter(targetId = targetId)
@@ -4025,11 +4051,13 @@ class PageViewModel(
             is SlashItem.Other.Line -> {
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onHideKeyboardClicked()
                 addDividerBlock(style = Content.Divider.Style.LINE)
             }
             is SlashItem.Other.Dots -> {
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onHideKeyboardClicked()
                 addDividerBlock(style = Content.Divider.Style.DOTS)
             }
             is SlashItem.Actions -> {
@@ -4059,7 +4087,7 @@ class PageViewModel(
     private fun cutSlashFilter(targetId: Id): Boolean {
 
         //saving cursor on slash start index
-        setCursorToPosition(targetId = targetId, position = slashStartIndex)
+        setPendingCursorToPosition(targetId = targetId, position = slashStartIndex)
 
         // cut text from List<BlockView> and rerender views
         val newBlockView = cutSlashFilterFromViews(targetId)
@@ -4085,10 +4113,9 @@ class PageViewModel(
                 from = slashStartIndex,
                 partLength = slashFilter.length
             )
+            val update = views.update(new)
             viewModelScope.launch {
-                orchestrator.stores.views.update(
-                    views.update(blockView)
-                )
+                orchestrator.stores.views.update(update)
                 renderCommand.send(Unit)
             }
             return new
@@ -4123,17 +4150,16 @@ class PageViewModel(
         proceedWithUpdatingText(intent)
     }
 
-    private fun setCursorToPosition(targetId: Id, position: Int) {
+    private fun setPendingCursorToPosition(targetId: Id, position: Int) {
+        val cursor = Editor.Cursor.Range(
+            range = IntRange(position, position)
+        )
+        val focus = Editor.Focus(
+            id = targetId,
+            cursor = cursor
+        )
         viewModelScope.launch {
-            val cursor = Editor.Cursor.Range(
-                range = IntRange(position, position)
-            )
-            orchestrator.stores.focus.update(
-                t = Editor.Focus(
-                    id = targetId,
-                    cursor = cursor
-                )
-            )
+            orchestrator.stores.focus.update(focus)
         }
     }
 
@@ -4182,8 +4208,6 @@ class PageViewModel(
 
     private fun onSlashItemColorClicked(item: SlashItem.Color, targetId: Id) {
 
-        saveTextSelectionPosition(targetId)
-
         val intent = when (item) {
             is SlashItem.Color.Background -> {
                 Intent.Text.UpdateBackgroundColor(
@@ -4205,21 +4229,26 @@ class PageViewModel(
         }
     }
 
-    private fun onSlashMediaItemClicked(item: SlashItem.Media, targetId: Id) {
+    private fun onSlashMediaItemClicked(item: SlashItem.Media) {
         when (item) {
             SlashItem.Media.Bookmark -> {
+                onHideKeyboardClicked()
                 onAddBookmarkBlockClicked()
             }
             SlashItem.Media.Code -> {
+                onHideKeyboardClicked()
                 onAddTextBlockClicked(style = Content.Text.Style.CODE_SNIPPET)
             }
             SlashItem.Media.File -> {
+                onHideKeyboardClicked()
                 onAddFileBlockClicked(Content.File.Type.FILE)
             }
             SlashItem.Media.Picture -> {
+                onHideKeyboardClicked()
                 onAddFileBlockClicked(Content.File.Type.IMAGE)
             }
             SlashItem.Media.Video -> {
+                onHideKeyboardClicked()
                 onAddFileBlockClicked(Content.File.Type.VIDEO)
             }
         }
@@ -4240,21 +4269,6 @@ class PageViewModel(
         }
     }
 
-    private fun saveTextSelectionPosition(targetId: Id) {
-        val selection = orchestrator.stores.textSelection.current().selection
-        val focus = if (selection != null) {
-            Editor.Focus(
-                id = targetId,
-                cursor = Editor.Cursor.Range(selection)
-            )
-        } else {
-            Editor.Focus.empty()
-        }
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(focus)
-        }
-    }
-
     private fun onSlashActionItemClicked(item: SlashItem.Actions, targetId: Id) {
         when (item) {
             SlashItem.Actions.CleanStyle -> {
@@ -4263,12 +4277,27 @@ class PageViewModel(
                 }
             }
             SlashItem.Actions.Copy -> {
-                onCopy(range = null)
+                val block = blocks.first { it.id == targetId }
+                val intent = Intent.Clipboard.Copy(
+                    context = context,
+                    range = null,
+                    blocks = listOf(block)
+                )
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(intent)
+                }
             }
             SlashItem.Actions.Paste -> {
-                val range =
-                    orchestrator.stores.textSelection.current().selection ?: Paste.DEFAULT_RANGE
-                onPaste(range = range)
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(
+                        Intent.Clipboard.Paste(
+                            context = context,
+                            focus = targetId,
+                            range = IntRange(slashStartIndex, slashStartIndex),
+                            selected = emptyList()
+                        )
+                    )
+                }
             }
             SlashItem.Actions.Delete -> {
                 proceedWithUnlinking(targetId)
@@ -4278,6 +4307,7 @@ class PageViewModel(
             }
             SlashItem.Actions.Move -> {
                 viewModelScope.launch {
+                    blocks.forEach { unselect(it.id) }
                     mode = EditorMode.SAM
                     selectWithDescendants(targetId)
                     val updated = views.enterSAM(currentSelection())
@@ -4323,7 +4353,11 @@ class PageViewModel(
     }
 
     private fun onSlashBackClicked() {
-        val items = SlashExtensions.getSlashWidgetMainItems()
+        val items = if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+            SlashExtensions.getExperimentalSlashWidgetMainItems()
+        } else {
+            SlashExtensions.getStableSlashWidgetMainItems()
+        }
         val widgetState = SlashWidgetState.UpdateItems.empty().copy(
             mainItems = items
         )

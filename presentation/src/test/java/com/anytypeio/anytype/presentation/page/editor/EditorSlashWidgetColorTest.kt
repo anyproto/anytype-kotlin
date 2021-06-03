@@ -330,7 +330,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 4
                 )
             )
         }
@@ -719,7 +719,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 4
                 )
             )
         }

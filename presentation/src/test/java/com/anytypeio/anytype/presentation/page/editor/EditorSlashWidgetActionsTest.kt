@@ -384,7 +384,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
-                    slashStart = 0
+                    slashStart = 3
                 )
             )
         }
@@ -400,7 +400,6 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
             range = IntRange(3, 3),
             focus = focus
         )
-
 
         verifyBlocking(paste, times(1)) { invoke(params) }
     }

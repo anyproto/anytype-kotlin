@@ -418,10 +418,23 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
-                    viewType = 0
+                    viewType = Types.HOLDER_BULLET
+                )
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block2.id,
+                    text = "Anytype/ is a next generation software",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
                 )
             )
         }
+
+        coroutineTestRule.advanceTime(300)
 
         //TESTING
 
@@ -649,6 +662,17 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                     viewType = 0
                 )
             )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block2.id,
+                    text = "Anytype/ is a next generation software",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
+                )
+            )
         }
 
         //TESTING
@@ -869,6 +893,17 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
+                )
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block.id,
+                    text = "Anytype/ is a next generation software",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
                 )
             )
         }
@@ -1097,6 +1132,17 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
+                )
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Paragraph(
+                    id = block.id,
+                    text = "Anytype/ is a next generation software",
+                    marks = listOf(),
+                    isFocused = true,
+                    mode = BlockView.Mode.EDIT,
+                    isSelected = false,
+                    cursor = null
                 )
             )
         }

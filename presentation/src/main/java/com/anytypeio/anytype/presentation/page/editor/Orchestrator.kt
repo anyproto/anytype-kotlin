@@ -27,16 +27,16 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_TITLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPLOAD
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
@@ -89,7 +89,7 @@ class Orchestrator(
 
     private val defaultOnSuccessWithEvent: suspend (Triple<Id, Payload, EventAnalytics.Anytype>) -> Unit =
         { (id, payload, event) ->
-            stores.focus.update(Focus.id(id))
+            stores.focus.update(Focus.id(id = id))
             proxies.payloads.send(payload)
             sendEvent(event)
         }

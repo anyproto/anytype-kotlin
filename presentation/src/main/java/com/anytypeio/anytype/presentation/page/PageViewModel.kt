@@ -150,8 +150,8 @@ class PageViewModel(
 
     private val views: List<BlockView> get() = orchestrator.stores.views.current()
 
-    val pending : Queue<Restore> = LinkedList()
-    val restore : Queue<Restore> = LinkedList()
+    val pending: Queue<Restore> = LinkedList()
+    val restore: Queue<Restore> = LinkedList()
 
     private val jobs = mutableListOf<Job>()
 
@@ -228,11 +228,23 @@ class PageViewModel(
 
     private fun startProcessingFocusChanges() {
         viewModelScope.launch {
-            orchestrator.stores.focus.stream().collect {
-                if (it.isEmpty) {
+            orchestrator.stores.focus.stream().collect { focus ->
+                if (focus.isEmpty) {
                     orchestrator.stores.textSelection.update(Editor.TextSelection.empty())
+                } else {
+                    if (!focus.isPending) {
+                        controlPanelInteractor.onEvent(
+                            ControlPanelMachine.Event.OnFocusChanged(
+                                id = focus.id,
+                                style = if (focus.id == context)
+                                    Content.Text.Style.TITLE
+                                else
+                                    blocks.first { it.id == focus.id }.textStyle()
+                            )
+                        )
+                    }
                 }
-                _focus.postValue(it.id)
+                _focus.postValue(focus.id)
             }
         }
     }
@@ -605,11 +617,11 @@ class PageViewModel(
                             val title = event.blocks.title()
                             val focus = Editor.Focus(id = title.id, cursor = Editor.Cursor.End)
                             viewModelScope.launch { orchestrator.stores.focus.update(focus) }
-                            controlPanelInteractor.onEvent(
-                                ControlPanelMachine.Event.OnFocusChanged(
-                                    id = title.id, style = Content.Text.Style.TITLE
-                                )
-                            )
+//                            controlPanelInteractor.onEvent(
+//                                ControlPanelMachine.Event.OnFocusChanged(
+//                                    id = title.id, style = Content.Text.Style.TITLE
+//                                )
+//                            )
                         } catch (e: Throwable) {
                             Timber.e(e, "Error while initial focusing")
                         }
@@ -834,16 +846,20 @@ class PageViewModel(
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
         Timber.d("onBlockFocusChanged, id:[$id] hasFocus:[$hasFocus]")
         if (hasFocus) {
-            updateFocus(id)
-            controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.OnFocusChanged(
-                    id = id,
-                    style = if (id == context)
-                        Content.Text.Style.TITLE
-                    else
-                        blocks.first { it.id == id }.textStyle()
+            viewModelScope.launch {
+                orchestrator.stores.focus.update(
+                    Editor.Focus.id(id = id, isPending = false)
                 )
-            )
+            }
+//            controlPanelInteractor.onEvent(
+//                ControlPanelMachine.Event.OnFocusChanged(
+//                    id = id,
+//                    style = if (id == context)
+//                        Content.Text.Style.TITLE
+//                    else
+//                        blocks.first { it.id == id }.textStyle()
+//                )
+//            )
         }
     }
 
@@ -1146,14 +1162,6 @@ class PageViewModel(
                     position = position,
                     prototype = Prototype.Text(style = style)
                 )
-            )
-        }
-    }
-
-    private fun updateFocus(id: Id) {
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(
-                Editor.Focus.id(id)
             )
         }
     }
@@ -2012,7 +2020,11 @@ class PageViewModel(
                     Editor.TextSelection(target, cursor?.let { it..it })
                 )
                 val focused = !orchestrator.stores.focus.current().isEmpty
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnClose(focused))
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.StylingToolbar.OnClose(
+                        focused
+                    )
+                )
                 orchestrator.stores.views.update(
                     views.exitSingleStylingMode(
                         target = target,
@@ -2610,8 +2622,8 @@ class PageViewModel(
 
     private suspend fun refresh() {
         if (BuildConfig.DEBUG) {
-           Timber.d("----------Refreshing Blocks---------------------\n$blocks")
-           Timber.d("----------Finished Refreshing Blocks------------")
+            Timber.d("----------Refreshing Blocks---------------------\n$blocks")
+            Timber.d("----------Finished Refreshing Blocks------------")
         }
         renderizePipeline.send(blocks)
     }
@@ -3332,7 +3344,8 @@ class PageViewModel(
                 when (mode) {
                     EditorMode.Edit -> {
                         val relation = (clicked.value as BlockView.Relation.Related).view.relationId
-                        when (orchestrator.stores.relations.current().first { it.key == relation }.format) {
+                        when (orchestrator.stores.relations.current()
+                            .first { it.key == relation }.format) {
                             Relation.Format.SHORT_TEXT,
                             Relation.Format.LONG_TEXT,
                             Relation.Format.URL,
@@ -3804,6 +3817,7 @@ class PageViewModel(
     fun onStartSlashWidgetClicked() {
         dispatch(Command.AddSlashWidgetTriggerToFocusedBlock)
     }
+
     fun onSlashItemClicked(item: SlashItem) {
         Timber.d("onSlashItemClicked, item:[$item]")
         val target = orchestrator.stores.focus.current()
@@ -3885,7 +3899,9 @@ class PageViewModel(
         when (item) {
             is SlashItem.Main.Style -> {
                 val items =
-                    listOf(SlashItem.Subheader.StyleWithBack) + getSlashWidgetStyleItems(slashViewType)
+                    listOf(SlashItem.Subheader.StyleWithBack) + getSlashWidgetStyleItems(
+                        slashViewType
+                    )
                 onSlashWidgetStateChanged(
                     SlashWidgetState.UpdateItems.empty().copy(
                         styleItems = items
@@ -3893,7 +3909,8 @@ class PageViewModel(
                 )
             }
             is SlashItem.Main.Media -> {
-                val items = listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getSlashWidgetMediaItems()
+                val items =
+                    listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getSlashWidgetMediaItems()
                 onSlashWidgetStateChanged(
                     SlashWidgetState.UpdateItems.empty().copy(
                         mediaItems = items
@@ -3907,34 +3924,47 @@ class PageViewModel(
                 getObjectTypes { proceedWithObjectTypes(it) }
             }
             is SlashItem.Main.Other -> {
-                val items = listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getSlashWidgetOtherItems()
-                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
-                    otherItems = items
-                ))
+                val items =
+                    listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getSlashWidgetOtherItems()
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
+                        otherItems = items
+                    )
+                )
             }
             is SlashItem.Main.Actions -> {
-                val items = listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getSlashWidgetActionItems()
-                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
-                    actionsItems = items
-                ))
+                val items =
+                    listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getSlashWidgetActionItems()
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
+                        actionsItems = items
+                    )
+                )
             }
             is SlashItem.Main.Alignment -> {
                 val items =
-                    listOf(SlashItem.Subheader.AlignmentWithBack) + getSlashWidgetAlignmentItems(slashViewType)
-                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
-                    alignmentItems = items
-                ))
+                    listOf(SlashItem.Subheader.AlignmentWithBack) + getSlashWidgetAlignmentItems(
+                        slashViewType
+                    )
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
+                        alignmentItems = items
+                    )
+                )
             }
             is SlashItem.Main.Color -> {
                 val block = blocks.first { it.id == targetId }
                 val blockColor = block.content.asText().color
                 val color = blockColor ?: ThemeColor.DEFAULT.title
-                val items = listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getSlashWidgetColorItems(
-                    code = color
+                val items =
+                    listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getSlashWidgetColorItems(
+                        code = color
+                    )
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
+                        colorItems = items
+                    )
                 )
-                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
-                    colorItems = items
-                ))
             }
             is SlashItem.Main.Background -> {
                 val block = blocks.first { it.id == targetId }
@@ -3942,11 +3972,13 @@ class PageViewModel(
                 val background = blockBackground ?: ThemeColor.DEFAULT.title
                 val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
                         SlashExtensions.getSlashWidgetBackgroundItems(
-                    code = background
+                            code = background
+                        )
+                onSlashWidgetStateChanged(
+                    SlashWidgetState.UpdateItems.empty().copy(
+                        backgroundItems = items
+                    )
                 )
-                onSlashWidgetStateChanged(SlashWidgetState.UpdateItems.empty().copy(
-                    backgroundItems = items
-                ))
             }
             is SlashItem.Style.Type -> {
                 cutSlashFilter(targetId = targetId)
@@ -4234,7 +4266,8 @@ class PageViewModel(
                 onCopy(range = null)
             }
             SlashItem.Actions.Paste -> {
-                val range = orchestrator.stores.textSelection.current().selection ?: Paste.DEFAULT_RANGE
+                val range =
+                    orchestrator.stores.textSelection.current().selection ?: Paste.DEFAULT_RANGE
                 onPaste(range = range)
             }
             SlashItem.Actions.Delete -> {
@@ -4250,7 +4283,11 @@ class PageViewModel(
                     val updated = views.enterSAM(currentSelection())
                     orchestrator.stores.views.update(updated)
                     renderCommand.send(Unit)
-                    controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(currentSelection().size))
+                    controlPanelInteractor.onEvent(
+                        ControlPanelMachine.Event.SAM.OnQuickStart(
+                            currentSelection().size
+                        )
+                    )
                 }
             }
             SlashItem.Actions.MoveTo -> {

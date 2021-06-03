@@ -8,18 +8,23 @@ interface Editor {
      * @property id id of the focused block
      * @property cursor optional cursor/carriage associated with this focus
      * @property isEmpty defines whether focus has target or not
+     * @property isPending focus is pending if we do not know whether the target widget has gained focus.
      */
     data class Focus(
         val id: String,
-        val cursor: Cursor?
+        val cursor: Cursor?,
+        val isPending: Boolean = true
     ) : Editor {
 
         val isEmpty: Boolean get() = id == EMPTY_FOCUS
 
         companion object {
             fun empty() = Focus("", null)
-            fun id(id: Id) = Focus(id, null)
-
+            fun id(id: Id, isPending: Boolean = true) = Focus(
+                id = id,
+                cursor = null,
+                isPending = isPending
+            )
             const val EMPTY_FOCUS = ""
         }
     }

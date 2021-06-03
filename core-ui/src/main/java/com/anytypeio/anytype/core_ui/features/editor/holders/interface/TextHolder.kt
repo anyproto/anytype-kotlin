@@ -88,7 +88,7 @@ interface TextHolder {
         content.apply {
             // Sheduling a runnable that shows the keyboard in the next UI loop.
             post {
-                content.pauseFocusChangeListener {
+                content.apply {
                     if (!hasFocus()) {
                         if (requestFocus()) {
                             context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)

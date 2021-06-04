@@ -51,6 +51,8 @@ class TextInputWidget : AppCompatEditText {
      */
     var backButtonWatcher: (() -> Boolean)? = null
 
+    var isSelectionWatcherBlocked = false
+
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         setup()
@@ -124,6 +126,12 @@ class TextInputWidget : AppCompatEditText {
         unlockTextWatchers()
     }
 
+    fun pauseSelectionWatcher(block: () -> Unit) = synchronized(this) {
+        isSelectionWatcherBlocked = true
+        block()
+        isSelectionWatcherBlocked = false
+    }
+
     fun pauseFocusChangeListener(block: () -> Unit) = synchronized(this) {
         val listener = onFocusChangeListener
         if (listener is LockableFocusChangeListener) {
@@ -153,9 +161,11 @@ class TextInputWidget : AppCompatEditText {
      * Send selection event only for blocks in focus state
      */
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
-        if (isFocused) {
+        if (isFocused && !isSelectionWatcherBlocked) {
             Timber.d("New selection: $selStart - $selEnd")
             selectionWatcher?.invoke(selStart..selEnd)
+        } else {
+            Timber.d("Ignored selection change: focused: $isFocused, watcherBlocked: $isSelectionWatcherBlocked")
         }
         super.onSelectionChanged(selStart, selEnd)
     }
@@ -167,7 +177,7 @@ class TextInputWidget : AppCompatEditText {
 
         var consumed = false
 
-        when(id) {
+        when (id) {
             R.id.paste -> {
                 if (clipboardInterceptor != null) {
                     clipboardInterceptor?.onClipboardAction(

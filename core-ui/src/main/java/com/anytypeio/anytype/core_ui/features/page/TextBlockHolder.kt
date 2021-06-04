@@ -269,13 +269,15 @@ interface TextBlockHolder : TextHolder {
         Timber.d("Processing $payload for new view:\n$item")
 
         if (payload.textChanged()) {
-            content.pauseTextWatchers {
-                setBlockText(
-                    text = item.text,
-                    markup = item,
-                    clicked = clicked,
-                    textColor = item.getBlockTextColor()
-                )
+            content.pauseSelectionWatcher {
+                content.pauseTextWatchers {
+                    setBlockText(
+                        text = item.text,
+                        markup = item,
+                        clicked = clicked,
+                        textColor = item.getBlockTextColor()
+                    )
+                }
             }
             if (item is Checkable) {
                 applyCheckedCheckboxColorSpan(item.isChecked)

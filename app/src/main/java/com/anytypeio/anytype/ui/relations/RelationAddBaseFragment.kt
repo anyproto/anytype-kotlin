@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.ui.relations
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +16,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddHeaderAdapter
+import com.anytypeio.anytype.core_ui.reactive.focusChanges
+import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -23,6 +27,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationAddBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_relation_add.*
 import javax.inject.Inject
 
@@ -50,6 +55,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupFullHeight()
         relationAddRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = concatAdapter
@@ -60,10 +66,22 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
             )
         }
         with(lifecycleScope) {
-            subscribe(vm.views) { relationAdapter.submitList(it) }
+            subscribe(searchRelationInput.focusChanges()) { hasFocus -> if (hasFocus) expand(view) }
+            subscribe(searchRelationInput.textChanges()) { vm.onQueryChanged(it.toString()) }
+            subscribe(vm.results) { relationAdapter.submitList(it) }
             subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
             subscribe(vm.toasts) { toast(it) }
         }
+    }
+
+    private fun setupFullHeight() {
+        val lp = (root.layoutParams as LinearLayout.LayoutParams)
+        lp.height = Resources.getSystem().displayMetrics.heightPixels
+        root.layoutParams = lp
+    }
+
+    private fun expand(root: View) {
+        BottomSheetBehavior.from(root.parent as View).state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun onStart() {

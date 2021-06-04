@@ -16,8 +16,7 @@ import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,8 +27,20 @@ abstract class RelationAddBaseViewModel(
     private val objectRelationList: ObjectRelationList,
 ) : BaseViewModel() {
 
+    private val userInput = MutableStateFlow(DEFAULT_INPUT)
+    private val searchQuery = userInput.take(1).onCompletion {
+        emitAll(userInput.debounce(DEBOUNCE_DURATION).distinctUntilChanged())
+    }
+
     val views = MutableStateFlow<List<RelationView.Existing>>(emptyList())
     val isDismissed = MutableStateFlow(false)
+
+    val results = combine(searchQuery, views) { query, views ->
+        if (query.isEmpty())
+            views
+        else
+            views.filter { view -> view.name.contains(query, true) }
+    }
 
     fun onStart(ctx: Id) {
         viewModelScope.launch {
@@ -48,8 +59,14 @@ abstract class RelationAddBaseViewModel(
         }
     }
 
+    fun onQueryChanged(input: String) {
+        userInput.value = input
+    }
+
     companion object {
         const val ERROR_MESSAGE = "Error while adding relation to object"
+        const val DEBOUNCE_DURATION = 300L
+        const val DEFAULT_INPUT = ""
     }
 }
 

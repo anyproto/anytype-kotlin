@@ -5,7 +5,9 @@ import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
+import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.FLAVOUR_EXPERIMENTAL
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PARAGRAPH
@@ -178,8 +180,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
         assertNotNull(command)
 
-        val expected = SlashWidgetState.UpdateItems(
-            mainItems = listOf(
+        val mainItems = if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+            listOf(
                 SlashItem.Main.Style,
                 SlashItem.Main.Media,
                 SlashItem.Main.Objects,
@@ -189,7 +191,21 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
                 SlashItem.Main.Alignment,
                 SlashItem.Main.Color,
                 SlashItem.Main.Background,
-            ),
+            )
+        } else {
+            listOf(
+                SlashItem.Main.Style,
+                SlashItem.Main.Media,
+                SlashItem.Main.Other,
+                SlashItem.Main.Actions,
+                SlashItem.Main.Alignment,
+                SlashItem.Main.Color,
+                SlashItem.Main.Background,
+            )
+        }
+
+        val expected = SlashWidgetState.UpdateItems(
+            mainItems = mainItems,
             styleItems = emptyList(),
             mediaItems = emptyList(),
             objectItems = emptyList(),
@@ -378,61 +394,62 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
         assertEquals(expected = expectedItems, actual = command.mediaItems)
     }
 
-    @Test
-    fun `should return Update command with filtered object items `() {
-        // SETUP
-        val doc = MockTypicalDocumentFactory.page(root)
-        val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val value1 = MockDataFactory.randomString()
-        val value2 = MockDataFactory.randomString()
-        val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
-        val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
-        val customDetails = Block.Details(mapOf(root to fields))
-
-        stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
-
-        val vm = buildViewModel()
-        vm.onStart(root)
-        vm.apply {
-            onBlockFocusChanged(a.id, true)
-            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
-        }
-
-        // TESTING
-
-        val event = SlashEvent.Filter(filter = "/d", viewType = HOLDER_NUMBERED)
-        vm.onSlashTextWatcherEvent(event = event)
-        val state = vm.controlPanelViewState.value
-        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
-
-        assertNotNull(command)
-        val expectedItems = listOf(
-            SlashItem.Subheader.ObjectType,
-            SlashItem.ObjectType(
-                url = type1.url,
-                name = type1.name,
-                emoji = type1.emoji,
-                description = type1.description,
-                layout = type1.layout
-            ),
-            SlashItem.ObjectType(
-                url = type2.url,
-                name = type2.name,
-                emoji = type2.emoji,
-                description = type2.description,
-                layout = type2.layout
-            )
-        )
-        assertEquals(expected = expectedItems, actual = command.objectItems)
-    }
+    //Todo Not valid for Stable release
+//    @Test
+//    fun `should return Update command with filtered object items `() {
+//        // SETUP
+//        val doc = MockTypicalDocumentFactory.page(root)
+//        val a = MockTypicalDocumentFactory.a
+//        val r1 = MockTypicalDocumentFactory.relation("Ad")
+//        val r2 = MockTypicalDocumentFactory.relation("De")
+//        val r3 = MockTypicalDocumentFactory.relation("HJ")
+//        val value1 = MockDataFactory.randomString()
+//        val value2 = MockDataFactory.randomString()
+//        val value3 = MockDataFactory.randomString()
+//        val type1 = MockTypicalDocumentFactory.objectType("Hd")
+//        val type2 = MockTypicalDocumentFactory.objectType("Df")
+//        val type3 = MockTypicalDocumentFactory.objectType("LK")
+//        val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
+//        val customDetails = Block.Details(mapOf(root to fields))
+//
+//        stubInterceptEvents()
+//        stubGetObjectTypes(listOf(type1, type2, type3))
+//        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+//
+//        val vm = buildViewModel()
+//        vm.onStart(root)
+//        vm.apply {
+//            onBlockFocusChanged(a.id, true)
+//            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+//        }
+//
+//        // TESTING
+//
+//        val event = SlashEvent.Filter(filter = "/d", viewType = HOLDER_NUMBERED)
+//        vm.onSlashTextWatcherEvent(event = event)
+//        val state = vm.controlPanelViewState.value
+//        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+//
+//        assertNotNull(command)
+//        val expectedItems = listOf(
+//            SlashItem.Subheader.ObjectType,
+//            SlashItem.ObjectType(
+//                url = type1.url,
+//                name = type1.name,
+//                emoji = type1.emoji,
+//                description = type1.description,
+//                layout = type1.layout
+//            ),
+//            SlashItem.ObjectType(
+//                url = type2.url,
+//                name = type2.name,
+//                emoji = type2.emoji,
+//                description = type2.description,
+//                layout = type2.layout
+//            )
+//        )
+//        assertEquals(expected = expectedItems, actual = command.objectItems)
+//    }
 
     @Test
     fun `should return Update command with empty filtered object items `() {
@@ -474,61 +491,62 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
         assertEquals(expected = expectedItems, actual = command.objectItems)
     }
 
-    @Test
-    fun `should return Update command with filtered relation items `() {
-        // SETUP
-        val doc = MockTypicalDocumentFactory.page(root)
-        val a = MockTypicalDocumentFactory.a
-        val r1 = MockTypicalDocumentFactory.relation("Ad")
-        val r2 = MockTypicalDocumentFactory.relation("De")
-        val r3 = MockTypicalDocumentFactory.relation("HJ")
-        val value1 = MockDataFactory.randomString()
-        val value2 = MockDataFactory.randomString()
-        val value3 = MockDataFactory.randomString()
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
-        val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
-        val customDetails = Block.Details(mapOf(root to fields))
-
-        stubInterceptEvents()
-        stubGetObjectTypes(listOf(type1, type2, type3))
-        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
-
-        val vm = buildViewModel()
-        vm.onStart(root)
-        vm.apply {
-            onBlockFocusChanged(a.id, true)
-            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
-        }
-
-        // TESTING
-
-        val event = SlashEvent.Filter(filter = "/d", viewType = HOLDER_NUMBERED)
-        vm.onSlashTextWatcherEvent(event = event)
-        val state = vm.controlPanelViewState.value
-        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
-
-        assertNotNull(command)
-        val expectedItems = listOf(
-            RelationListViewModel.Model.Section.SlashWidget.Subheader,
-            RelationListViewModel.Model.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r1.key,
-                    name = r1.name,
-                    value = value1
-                )
-            ),
-            RelationListViewModel.Model.Item(
-                view = DocumentRelationView.Default(
-                    relationId = r2.key,
-                    name = r2.name,
-                    value = value2.toString()
-                )
-            ),
-        )
-        assertEquals(expected = expectedItems, actual = command.relationItems)
-    }
+    //Todo Not valid for Stable release
+//    @Test
+//    fun `should return Update command with filtered relation items `() {
+//        // SETUP
+//        val doc = MockTypicalDocumentFactory.page(root)
+//        val a = MockTypicalDocumentFactory.a
+//        val r1 = MockTypicalDocumentFactory.relation("Ad")
+//        val r2 = MockTypicalDocumentFactory.relation("De")
+//        val r3 = MockTypicalDocumentFactory.relation("HJ")
+//        val value1 = MockDataFactory.randomString()
+//        val value2 = MockDataFactory.randomString()
+//        val value3 = MockDataFactory.randomString()
+//        val type1 = MockTypicalDocumentFactory.objectType("Hd")
+//        val type2 = MockTypicalDocumentFactory.objectType("Df")
+//        val type3 = MockTypicalDocumentFactory.objectType("LK")
+//        val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
+//        val customDetails = Block.Details(mapOf(root to fields))
+//
+//        stubInterceptEvents()
+//        stubGetObjectTypes(listOf(type1, type2, type3))
+//        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+//
+//        val vm = buildViewModel()
+//        vm.onStart(root)
+//        vm.apply {
+//            onBlockFocusChanged(a.id, true)
+//            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+//        }
+//
+//        // TESTING
+//
+//        val event = SlashEvent.Filter(filter = "/d", viewType = HOLDER_NUMBERED)
+//        vm.onSlashTextWatcherEvent(event = event)
+//        val state = vm.controlPanelViewState.value
+//        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+//
+//        assertNotNull(command)
+//        val expectedItems = listOf(
+//            RelationListViewModel.Model.Section.SlashWidget.Subheader,
+//            RelationListViewModel.Model.Item(
+//                view = DocumentRelationView.Default(
+//                    relationId = r1.key,
+//                    name = r1.name,
+//                    value = value1
+//                )
+//            ),
+//            RelationListViewModel.Model.Item(
+//                view = DocumentRelationView.Default(
+//                    relationId = r2.key,
+//                    name = r2.name,
+//                    value = value2.toString()
+//                )
+//            ),
+//        )
+//        assertEquals(expected = expectedItems, actual = command.relationItems)
+//    }
 
     @Test
     fun `should return Update command with empty filtered relation items `() {

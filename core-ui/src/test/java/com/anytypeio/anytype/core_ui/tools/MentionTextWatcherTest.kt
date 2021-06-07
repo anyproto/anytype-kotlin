@@ -405,6 +405,82 @@ class MentionTextWatcherTest {
         )
     }
 
+    @Test
+    fun `should not emit Stop event`() {
+
+        val events: MutableList<MentionTextWatcher.MentionTextWatcherState> = mutableListOf()
+
+        val watcher = buildMentionWatcher { state -> events.add(state) }
+
+        watcher.onTextChanged("t @", 2, 0, 1)
+        watcher.onTextChanged("t @", 2, 1, 1)
+
+        assertEquals(
+            expected = listOf(
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 2),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 2),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@")
+            ),
+            actual = events
+        )
+    }
+
+    @Test
+    fun `should emit Stop event`() {
+
+        val events: MutableList<MentionTextWatcher.MentionTextWatcherState> = mutableListOf()
+
+        val watcher = buildMentionWatcher { state -> events.add(state) }
+
+        watcher.onTextChanged("t @", 2, 0, 1)
+        watcher.onTextChanged("t @", 2, 1, 1)
+        watcher.onTextChanged("t 5@", 2, 0, 1)
+
+        assertEquals(
+            expected = listOf(
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 2),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 2),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Stop
+            ),
+            actual = events
+        )
+    }
+
+    @Test
+    fun `should send Mention Text updates`() {
+
+        val events: MutableList<MentionTextWatcher.MentionTextWatcherState> = mutableListOf()
+
+        val watcher = buildMentionWatcher { state -> events.add(state) }
+
+        watcher.onTextChanged("t", 0, 0, 1)
+        watcher.onTextChanged("te", 0, 1, 2)
+        watcher.onTextChanged("tes", 0, 2, 3)
+        watcher.onTextChanged("test", 0, 3, 4)
+        watcher.onTextChanged("test ", 0, 4, 5)
+        watcher.onTextChanged("test @", 5, 0, 1)
+        watcher.onTextChanged("test @", 5, 1, 1)
+        watcher.onTextChanged("test @m", 6, 0, 1)
+        watcher.onTextChanged("test @me", 7, 0, 1)
+        watcher.onTextChanged("test @men", 8, 0, 1)
+
+        assertEquals(
+            expected = listOf(
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 5),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 5),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@m"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@me"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@men")
+            ),
+            actual = events
+        )
+    }
+
     private fun buildMentionWatcher(
         onMentionEvent: (MentionTextWatcher.MentionTextWatcherState) -> Unit
     ): MentionTextWatcher {

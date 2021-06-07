@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.core_ui.tools
 
+import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher.Companion.MENTION_CHAR
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher.Companion.NO_MENTION_POSITION
+import timber.log.Timber
 
 
 object MentionHelper {
@@ -24,8 +26,16 @@ object MentionHelper {
         return false
     }
 
-    fun isMentionDeleted(start: Int, mentionPosition: Int): Boolean =
-        mentionPosition != NO_MENTION_POSITION && start <= mentionPosition
+    fun isMentionDeleted(text: CharSequence, start: Int, mentionPosition: Int, before: Int, count: Int): Boolean {
+        if (mentionPosition == NO_MENTION_POSITION) {
+            return false
+        }
+        if (start == mentionPosition) {
+            return !(before == 1 && count == 1 && text.getOrNull(start) == MENTION_CHAR)
+        }
+        return start < mentionPosition
+    }
+
 
     /**
      * return subsequence from [startIndex] to end of sequence with limit [takeNumber]
@@ -41,25 +51,61 @@ object MentionHelper {
         else
             s.subSequence(startIndex = startIndex, endIndex = s.length).take(takeNumber)
     }
+}
 
-    /**
-     * Replace char sequence range in [mention] with start index [replacementStart]
-     * by new [replacement] char sequence
-     * @property before See TextWatcher.onTextChanged property before
-     */
-    fun getUpdatedMention(
-        replacement: CharSequence,
-        replacementStart: Int,
-        before: Int,
-        mention: String
-    ): String = try {
-        val range = replacementStart until replacementStart + before
-        if (range.first > mention.length) {
-            mention
+/**
+ * Within [text], the [count] characters beginning at [start]
+ * have just replaced old text that had length [before].
+ * So we need to properly update mention [this] with start position [mentionStart]
+ */
+fun String.updateMentionWhenTextChanged(
+    text: CharSequence,
+    start: Int,
+    before: Int,
+    count: Int,
+    mentionStart: Int
+): String {
+    if (text.isTextUpdateInRange(start, count)) {
+
+        val replace = text.substring(startIndex = start, endIndex = start + count)
+
+        if (count < before) {
+            val startIndex = start - mentionStart
+            val endIndex = startIndex + before
+            return if (
+                startIndex in 0..length &&
+                endIndex in 0..length &&
+                endIndex >= startIndex
+            ) {
+                replaceRange(
+                    startIndex = startIndex,
+                    endIndex = endIndex,
+                    replacement = replace
+                )
+            } else {
+                this
+            }
         } else {
-            mention.replaceRange(range = range, replacement = replacement)
+            val from = start - mentionStart
+            val to = length
+            return if (
+                from in 0..length &&
+                to in 0..length
+            ) {
+                replaceRangeWithWord(
+                    from = from,
+                    to = to,
+                    replace = replace
+                )
+            } else {
+                this
+            }
         }
-    } catch (e: Exception) {
-        mention
+    } else {
+        Timber.e("Text update is not in range, text:$text, start:$start, count:$count")
+        return ""
     }
 }
+
+private fun CharSequence.isTextUpdateInRange(start: Int, count: Int): Boolean =
+    start in 0..length && (start + count) in 0..length

@@ -173,14 +173,68 @@ class MentionHelperTest {
     }
 
     @Test
-    fun `should be deleted mention char when start equal mentionPosition`() {
+    fun `should isMentionDeleted be true when delete mention trigger`() {
+
+        val start = 0
+        val mentionPosition = 0
+
+        val result = MentionHelper.isMentionDeleted(
+            text = "",
+            start = start,
+            mentionPosition = mentionPosition,
+            before = 1,
+            count = 0,
+        )
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should isMentionDeleted be true when changes before mention position`() {
+
+        val start = 11
+        val mentionPosition = 12
+
+        val result = MentionHelper.isMentionDeleted(
+            text = "Add mention@",
+            start = start,
+            mentionPosition = mentionPosition,
+            before = 1,
+            count = 0,
+        )
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should isMentionDeleted be false when mention trigger is replaced by same char`() {
 
         val start = 12
         val mentionPosition = 12
 
         val result = MentionHelper.isMentionDeleted(
+            text = "Add mention @",
             start = start,
-            mentionPosition = mentionPosition
+            mentionPosition = mentionPosition,
+            before = 1,
+            count = 1,
+        )
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should isMentionDeleted be true when mention trigger is replaced by same other char`() {
+
+        val start = 12
+        val mentionPosition = 12
+
+        val result = MentionHelper.isMentionDeleted(
+            text = "Add mention $",
+            start = start,
+            mentionPosition = mentionPosition,
+            before = 1,
+            count = 1,
         )
 
         assertTrue(result)
@@ -189,12 +243,15 @@ class MentionHelperTest {
     @Test
     fun `should be deleted mention char when start smaller then mentionPosition`() {
 
-        val start = 11
-        val mentionPosition = 12
+        val start = 5
+        val mentionPosition = 6
 
         val result = MentionHelper.isMentionDeleted(
+            text = "text@",
             start = start,
-            mentionPosition = mentionPosition
+            mentionPosition = mentionPosition,
+            before = 0,
+            count = 1
         )
 
         assertTrue(result)
@@ -207,8 +264,11 @@ class MentionHelperTest {
         val mentionPosition = 12
 
         val result = MentionHelper.isMentionDeleted(
+            text = "@",
             start = start,
-            mentionPosition = mentionPosition
+            mentionPosition = mentionPosition,
+            before = 0,
+            count = 1
         )
 
         assertFalse(result)
@@ -217,12 +277,15 @@ class MentionHelperTest {
     @Test
     fun `should not delete mention char when start bigger then mentionPosition and after 0`() {
 
-        val start = 13
-        val mentionPosition = 12
+        val start = 7
+        val mentionPosition = 6
 
         val result = MentionHelper.isMentionDeleted(
+            text = "text @ t",
             start = start,
-            mentionPosition = mentionPosition
+            mentionPosition = mentionPosition,
+            before = 0,
+            count = 1
         )
 
         assertFalse(result)
@@ -268,6 +331,66 @@ class MentionHelperTest {
                 message = "Test failed on Condition:$condition"
             )
         }
+    }
+
+    @Test
+    fun `should isMentionSuggestTriggered be false 1`() {
+
+        val  s = "text $"
+        val start = 5
+        val count = 1
+
+        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should isMentionSuggestTriggered be false 2`() {
+
+        val  s = "text $@@"
+        val start = 5
+        val count = 3
+
+        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should isMentionSuggestTriggered be false 3`() {
+
+        val  s = "text@"
+        val start = 4
+        val count = 1
+
+        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should isMentionSuggestTriggered be false 4`() {
+
+        val  s = "text @t"
+        val start = 5
+        val count = 2
+
+        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should isMentionSuggestTriggered be true 1`() {
+
+        val  s = "text @"
+        val start = 5
+        val count = 1
+
+        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+
+        assertTrue(result)
     }
 
     data class TextChanged(
@@ -603,4 +726,325 @@ class MentionHelperTest {
             )
         )
     }
+
+    //region {should not happened case}
+    @org.junit.Test
+    fun `mention add error 1`() {
+
+        val text = "test "
+        val start = 5
+        val before = 0
+        val count = 1
+
+        val mentionStartPosition = 5
+        val mention = ""
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = ""
+
+        assertEquals(expected = expected, actual = result)
+    }
+    //endregion
+
+    //region {add}
+    @org.junit.Test
+    fun `mention add 1`() {
+
+        val text = "test @"
+        val start = 5
+        val before = 0
+        val count = 1
+
+        val mentionStartPosition = 5
+        val mention = ""
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention add 2`() {
+
+        val text = "test @m"
+        val start = 6
+        val before = 0
+        val count = 1
+
+        val mentionStartPosition = 5
+        val mention = "@"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@m"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention add 3`() {
+
+        val text = "test @mention"
+        val start = 7
+        val before = 0
+        val count = 6
+
+        val mentionStartPosition = 5
+        val mention = "@m"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@mention"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention add 4`() {
+
+        val text = "start @mention add end"
+        val start = 17
+        val before = 0
+        val count = 3
+
+        val mentionStartPosition = 7
+        val mention = "@mention"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@mention"
+
+        assertEquals(expected = expected, actual = result)
+    }
+    //endregion
+
+    //region {update}
+    @org.junit.Test
+    fun `mention update 1`() {
+
+        val text = "test @"
+        val start = 5
+        val before = 1
+        val count = 1
+
+        val mentionStartPosition = 5
+        val mention = "@"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention update 2`() {
+
+        val text = "test @"
+        val start = 5
+        val before = 1
+        val count = 1
+
+        val mentionStartPosition = 5
+        val mention = ""
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention update 3`() {
+
+        val text = "test @xyz"
+        val start = 7
+        val before = 2
+        val count = 2
+
+        val mentionStartPosition = 5
+        val mention = "@xpr"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@xyz"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention update 4`() {
+
+        val text = "test @qwerty"
+        val start = 6
+        val before = 3
+        val count = 6
+
+        val mentionStartPosition = 5
+        val mention = "@xpr"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@qwerty"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention update 5`() {
+
+        val text = "test @qwerty end"
+        val start = 6
+        val before = 3
+        val count = 6
+
+        val mentionStartPosition = 5
+        val mention = "@xpr"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@qwerty"
+
+        assertEquals(expected = expected, actual = result)
+    }
+    //endregion
+
+    //region {delete}
+    @org.junit.Test
+    fun `mention delete 1`() {
+
+        val text = "test "
+        val start = 5
+        val before = 1
+        val count = 0
+
+        val mentionStartPosition = 5
+        val mention = "@"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = ""
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention delete 2`() {
+
+        val text = "test @xyz"
+        val start = 6
+        val before = 3
+        val count = 0
+
+        val mentionStartPosition = 5
+        val mention = "@xyz"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @org.junit.Test
+    fun `mention delete 3`() {
+
+        val text = "start @xyz "
+        val start = 11
+        val before = 3
+        val count = 0
+
+        val mentionStartPosition = 7
+        val mention = "@xyz"
+
+        val result = mention.updateMentionWhenTextChanged(
+            text = text,
+            start = start,
+            before = before,
+            count = count,
+            mentionStart = mentionStartPosition
+        )
+
+        val expected = "@xyz"
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    //endregion
 }

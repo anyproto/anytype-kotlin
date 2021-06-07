@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention.Companion.MENTION_PREFIX
+import com.anytypeio.anytype.presentation.page.editor.mention.filterMentionsBy
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_mention.view.*
@@ -21,6 +21,8 @@ class MentionAdapter(
     private val clicked: (Mention, String) -> Unit,
     private val newClicked: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private val filteredData = mutableListOf<Mention>()
 
     fun setData(mentions: List<Mention>) {
         if (mentions.isEmpty()) {
@@ -34,15 +36,11 @@ class MentionAdapter(
 
     fun updateFilter(filter: String) {
         mentionFilter = filter
+        filteredData.clear()
+        val filteredMentions = data.filterMentionsBy(text = mentionFilter)
+        filteredData.addAll(filteredMentions)
         notifyDataSetChanged()
     }
-
-    /**
-     * Filter all mentions by mentionFilter without symbol @
-     *
-     */
-    private fun getFilteredData(): List<Mention> =
-        data.filterBy(mentionFilter.removePrefix(MENTION_PREFIX))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -65,7 +63,7 @@ class MentionAdapter(
         }
     }
 
-    override fun getItemCount(): Int = getFilteredData().size + 1
+    override fun getItemCount(): Int = filteredData.size + 1
 
     override fun getItemViewType(position: Int): Int = when (position) {
         POSITION_NEW_PAGE -> TYPE_NEW_PAGE
@@ -78,7 +76,7 @@ class MentionAdapter(
                 newClicked(mentionFilter)
             }
             TYPE_MENTION -> (holder as MentionViewHolder).bind(
-                getFilteredData()[position - 1],
+                filteredData[position - 1],
                 clicked,
                 mentionFilter
             )
@@ -133,8 +131,3 @@ class MentionAdapter(
         const val TYPE_MENTION = 2
     }
 }
-
-fun List<Mention>.filterBy(text: String): List<Mention> =
-    if (text.isNotEmpty()) filter { it.isContainsText(text) } else this
-
-fun Mention.isContainsText(text: String): Boolean = title.contains(text, true)

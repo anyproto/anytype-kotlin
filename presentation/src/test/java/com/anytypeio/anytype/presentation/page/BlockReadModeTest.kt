@@ -183,7 +183,7 @@ class BlockReadModeTest : PageViewModelTest() {
     }
 
     @Test
-    fun `should enter edit mode after action menu is closed by action item style`() {
+    fun `should enter read mode with one selected block after action menu is closed by action item style`() {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
@@ -207,11 +207,27 @@ class BlockReadModeTest : PageViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val initial = blockViewsEditMode
-
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(titleEditModeView) + initial
+                blocks = listOf(titleReadModeView) + listOf<BlockView>(
+                    blocks[0].let { p ->
+                        BlockView.Text.Paragraph(
+                            id = p.id,
+                            marks = emptyList(),
+                            text = p.content<Block.Content.Text>().text,
+                            mode = BlockView.Mode.READ
+                        )
+                    },
+                    blocks[1].let { p ->
+                        BlockView.Text.Paragraph(
+                            id = p.id,
+                            isSelected = true,
+                            marks = emptyList(),
+                            text = p.content<Block.Content.Text>().text,
+                            mode = BlockView.Mode.READ
+                        )
+                    }
+                )
             )
         )
     }

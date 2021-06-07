@@ -1449,7 +1449,7 @@ class PageViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Rename -> {
-                _toasts.offer("Rename not implemented")
+                _toasts.trySend("Rename not implemented")
             }
             ActionItemType.MoveTo -> {
                 onExitActionMode()
@@ -1457,20 +1457,7 @@ class PageViewModel(
                 proceedWithMoveTo(id)
             }
             ActionItemType.Style -> {
-                val textSelection = orchestrator.stores.textSelection.current()
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                        target = blocks.first { it.id == id },
-                        focused = textSelection.isNotEmpty,
-                        selection = textSelection.selection
-                    )
-                )
-                onExitActionMode()
-                dispatch(Command.PopBackStack)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = POPUP_STYLE
-                )
+                viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
             }
             ActionItemType.Download -> {
                 viewModelScope.launch {
@@ -1499,6 +1486,44 @@ class PageViewModel(
             }
             else -> Timber.d("Action ignored: $action")
         }
+    }
+
+    private fun proceedWithOpeningStyleToolbarFromActionMenu(id: String) {
+        val target = id
+
+        val lastKnownSelection = orchestrator.stores.textSelection.current().takeIf { value ->
+            value.id == target
+        }
+
+        val lastKnownCursor = lastKnownSelection?.selection
+
+        val isFocused = lastKnownSelection?.isNotEmpty ?: false
+
+        mode = EditorMode.Styling.Single(
+            target = target,
+            cursor = lastKnownCursor?.first
+        )
+
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            orchestrator.stores.views.update(views.singleStylingMode(target))
+            renderCommand.send(Unit)
+        }
+
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                target = blocks.first { it.id == target },
+                focused = isFocused,
+                selection = lastKnownCursor
+            )
+        )
+
+        dispatch(Command.PopBackStack)
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_STYLE
+        )
     }
 
     private fun proceedWithMoveTo(id: String) {
@@ -1987,7 +2012,7 @@ class PageViewModel(
         val textSelection = orchestrator.stores.textSelection.current()
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                target = blocks.first { it.id == orchestrator.stores.focus.current().id },
+                target = blocks.first { it.id == target },
                 focused = textSelection.isNotEmpty,
                 selection = textSelection.selection
             )

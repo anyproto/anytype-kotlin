@@ -4,14 +4,13 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.reactive.afterTextChanges
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
+import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import com.anytypeio.anytype.core_utils.ext.imm
 import kotlinx.android.synthetic.main.widget_doc_search_engine_toolbar.view.*
 import kotlinx.coroutines.flow.*
 import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent as Event
@@ -33,6 +32,16 @@ class SearchToolbarWidget : ConstraintLayout {
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr) {
         inflate()
+        setupFocusListener()
+    }
+
+    private fun setupFocusListener() {
+//        docSearchInputField.setOnFocusChangeListener { v, hasFocus ->
+//            if (hasFocus) {
+//                Timber.d("View has focus!")
+//                context.imm().showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
+//            }
+//        }
     }
 
     fun events(): Flow<Event> {
@@ -56,13 +65,8 @@ class SearchToolbarWidget : ConstraintLayout {
         clearSearchInput()
     }
 
-    fun focus(context: Context) {
-        docSearchInputField.apply {
-            post {
-                requestFocus()
-                context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
-            }
-        }
+    fun focus() {
+        docSearchInputField.focusAndShowKeyboard()
     }
 
     private fun clearSearchInput() {

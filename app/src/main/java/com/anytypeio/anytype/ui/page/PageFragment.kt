@@ -1208,7 +1208,7 @@ open class PageFragment :
         state.searchToolbar.apply {
             if (isVisible) {
                 searchToolbar.visible()
-                searchToolbar.focus(requireContext())
+                searchToolbar.focus()
             } else {
                 searchToolbar.gone()
             }

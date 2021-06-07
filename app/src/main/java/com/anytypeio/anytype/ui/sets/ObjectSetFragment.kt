@@ -47,6 +47,7 @@ import com.anytypeio.anytype.ui.sets.modals.*
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import kotlinx.android.synthetic.main.fragment_object_set.*
 import kotlinx.coroutines.flow.filterNotNull
+import timber.log.Timber
 import javax.inject.Inject
 
 open class ObjectSetFragment :
@@ -373,6 +374,17 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { observeHeader(it) }
         jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
+        jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading ->
+            Timber.d("isLoading: $isLoading")
+            if (isLoading) {
+                dvProgressBar.show()
+                logoProgressBar.show()
+            }
+            else {
+                dvProgressBar.hide()
+                logoProgressBar.hide()
+            }
+        }
         vm.onStart(ctx)
     }
 

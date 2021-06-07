@@ -70,6 +70,8 @@ class ObjectSetViewModel(
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
 
+    val isLoading = MutableStateFlow(false)
+
     private lateinit var context: Id
 
     init {
@@ -139,9 +141,13 @@ class ObjectSetViewModel(
                 .collect { events -> reducer.dispatch(events) }
         }
         viewModelScope.launch {
+            isLoading.value = true
             openObjectSet(ctx).process(
-                success = defaultPayloadConsumer,
-                failure = { Timber.e(it, "Error while opening object set: $ctx") }
+                success = { defaultPayloadConsumer(it).also { isLoading.value = false } },
+                failure = {
+                    isLoading.value = false
+                    Timber.e(it, "Error while opening object set: $ctx")
+                }
             )
         }
     }

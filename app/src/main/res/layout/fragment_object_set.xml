@@ -9,6 +9,16 @@
     android:focusableInTouchMode="true"
     app:layoutDescription="@xml/fragment_object_set_scene">
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/dvProgressBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/gridContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:indeterminate="true"
+        app:indicatorColor="@color/gray" />
+
     <ImageView
         android:id="@+id/icBack"
         android:layout_width="wrap_content"
@@ -28,6 +38,17 @@
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topToolbar" />
+
+    <ProgressBar
+        android:id="@+id/logoProgressBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:theme="@style/GreyLightProgressBar"
+        app:layout_constraintBottom_toBottomOf="@+id/objectSetIcon"
+        app:layout_constraintEnd_toEndOf="@+id/objectSetIcon"
+        app:layout_constraintStart_toStartOf="@+id/objectSetIcon"
+        app:layout_constraintTop_toTopOf="@+id/objectSetIcon" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
@@ -69,9 +90,9 @@
         android:layout_marginTop="16dp"
         android:drawablePadding="2dp"
         android:fontFamily="@font/inter_bold"
-        android:textSize="17sp"
         android:gravity="center_vertical"
         android:textColor="@color/black"
+        android:textSize="17sp"
         app:drawableEndCompat="@drawable/ic_arrow_expand_dv_viewer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
@@ -79,13 +100,13 @@
 
     <include
         android:id="@+id/gridContainer"
+        layout="@layout/item_viewer_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
-        layout="@layout/item_viewer_container"/>
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
 
     <ImageView
         android:id="@+id/addNewButton"
@@ -112,11 +133,11 @@
         android:id="@+id/titleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:ellipsize="end"
+        android:focusable="false"
         android:fontFamily="@font/graphik_regular"
         android:lines="1"
-        android:clickable="false"
-        android:focusable="false"
         android:textColor="#6C6A5F"
         android:textSize="15sp"
         tools:layout_editor_absoluteX="64dp"
@@ -129,8 +150,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"

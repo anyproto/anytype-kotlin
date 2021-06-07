@@ -31,6 +31,10 @@
         <item name="colorAccent">#ACA996</item>
     </style>
 
+    <style name="GreyLightProgressBar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">#66ACA996</item>
+    </style>
+
     <style name="UploadImageProgressBar" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorAccent">#D5D4D4</item>
     </style>

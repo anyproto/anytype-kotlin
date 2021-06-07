@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.presentation.relations.AddObjectRelationValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.relation_option_value_add_fragment.*
 
 abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
@@ -106,9 +107,14 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
             subscribe(vm.isAddButtonVisible) { isVisible ->
                 if (!isVisible) btnAddContainer.gone() else btnAddContainer.visible()
             }
-            subscribe(vm.isDimissed) { isDismissed ->
+            subscribe(vm.isDismissed) { isDismissed ->
                 if (isDismissed) {
-                    proceedWithExiting()
+                    proceedWithExiting(dismissParent = false)
+                }
+            }
+            subscribe(vm.isParentDismissed) { isParentDismissed ->
+                if (isParentDismissed) {
+                    proceedWithExiting(dismissParent = true)
                 }
             }
             subscribe(vm.isMultiple) { isMultiple ->
@@ -127,12 +133,16 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
         }
     }
 
-    open fun proceedWithExiting() {
+    open fun proceedWithExiting(dismissParent: Boolean = false) {
         filterInput.apply {
             clearFocus()
             hideKeyboard()
         }
-        dismiss()
+        if (dismissParent) {
+            (parentFragment as? BottomSheetDialogFragment)?.dismiss()
+        } else {
+            dismiss()
+        }
     }
 
     override fun onStart() {

@@ -46,7 +46,9 @@ abstract class AddObjectRelationValueViewModel(
     val ui = MutableStateFlow(listOf<RelationValueView>())
     val isAddButtonVisible = MutableStateFlow(true)
     val counter = MutableStateFlow(0)
-    val isDimissed = MutableStateFlow(false)
+    val isDismissed = MutableStateFlow(false)
+    val isParentDismissed = MutableStateFlow(false)
+
     val isMultiple = MutableStateFlow(true)
 
     init {
@@ -324,7 +326,7 @@ class RelationOptionValueDVAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding tag") },
-                success = { isDimissed.value = true }
+                success = { isParentDismissed.value = true }
             )
         }
     }
@@ -374,7 +376,7 @@ class RelationOptionValueDVAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding tag") },
-                success = { isDimissed.value = true }
+                success = { isDismissed.value = true }
             )
         }
     }
@@ -448,7 +450,7 @@ class RelationOptionValueAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding tag") },
-                success = { dispatcher.send(it).also { isDimissed.value = true } }
+                success = { dispatcher.send(it).also { isParentDismissed.value = true } }
             )
         }
     }
@@ -496,7 +498,7 @@ class RelationOptionValueAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding tag") },
-                success = { dispatcher.send(it).also { isDimissed.value = true } }
+                success = { dispatcher.send(it).also { isDismissed.value = true } }
             )
         }
     }

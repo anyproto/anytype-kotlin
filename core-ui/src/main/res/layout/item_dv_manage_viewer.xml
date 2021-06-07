@@ -22,16 +22,16 @@
 
     </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:gravity="center_vertical">
 
         <TextView
+            android:layout_gravity="center_vertical"
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,18 +43,7 @@
             android:textSize="15sp"
             tools:text="@string/default_text_placeholder" />
 
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:text="@string/unknown_number_of_objects"
-            android:textColor="#6C6A5F"
-            android:textSize="13sp" />
-
-    </LinearLayout>
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/btnActionMore"

@@ -10,7 +10,6 @@ class TestRelationOptionValueDVAddFragment : RelationOptionValueDVAddFragment() 
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
-    override fun proceedWithExiting() {}
 
     companion object {
         lateinit var testVmFactory: RelationOptionValueDVAddViewModel.Factory

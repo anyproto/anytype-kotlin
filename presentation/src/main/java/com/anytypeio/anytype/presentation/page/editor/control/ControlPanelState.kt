@@ -107,7 +107,7 @@ data class ControlPanelState(
             val config: StyleConfig? = null,
             val props: Props? = null,
             val mode: StylingMode? = null,
-            val style: TextStyle = TextStyle.P
+            val style: TextStyle? = TextStyle.P
         ) : Toolbar() {
 
             companion object {

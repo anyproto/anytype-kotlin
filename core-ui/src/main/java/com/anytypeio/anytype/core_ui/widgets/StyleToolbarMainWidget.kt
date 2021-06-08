@@ -49,7 +49,7 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
     val other = dots.clicks()
     val colors = markupColors.clicks()
 
-    fun setSelectedStyle(style: TextStyle) {
+    fun setSelectedStyle(style: TextStyle?) {
         when (style) {
             TextStyle.P -> select(tvStyleText.id)
             TextStyle.H1 -> select(tvStyleTitle.id)

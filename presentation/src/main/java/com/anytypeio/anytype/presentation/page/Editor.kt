@@ -21,7 +21,7 @@ interface Editor {
                 val target: Id,
                 val cursor: Int?
             ) : Styling()
-            object Multi : Styling()
+            data class Multi(val targets: Set<Id>) : Styling()
         }
     }
 

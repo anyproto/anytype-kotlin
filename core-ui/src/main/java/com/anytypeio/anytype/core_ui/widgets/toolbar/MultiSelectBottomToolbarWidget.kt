@@ -44,6 +44,7 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
     fun doneClicks() = done.clicks()
     fun deleteClicks() = delete.clicks()
     fun turnIntoClicks() = turnInto.clicks()
+    fun styleClicks() = multiStyle.clicks()
     fun copyClicks() = copy.clicks()
 
     fun enterScrollAndMove() = enterScrollAndMove.clicks()

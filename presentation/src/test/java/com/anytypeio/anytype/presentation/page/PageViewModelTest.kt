@@ -2078,7 +2078,7 @@ open class PageViewModelTest {
 
         val color = MockDataFactory.randomString()
 
-        vm.onToolbarTextColorAction(color = color, id = child)
+        vm.onToolbarTextColorAction(color = color, targets= listOf(child))
 
         runBlockingTest {
             verify(updateTextColor, times(1)).invoke(

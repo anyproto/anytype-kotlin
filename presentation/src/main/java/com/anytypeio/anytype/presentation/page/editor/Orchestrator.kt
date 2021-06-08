@@ -451,7 +451,7 @@ class Orchestrator(
                     updateAlignment(
                         params = UpdateAlignment.Params(
                             context = intent.context,
-                            targets = listOf(intent.target),
+                            targets = intent.targets,
                             alignment = intent.alignment
                         )
                     ).proceed(

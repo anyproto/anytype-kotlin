@@ -134,6 +134,8 @@ sealed class ControlPanelMachine {
             val selection: IntRange?
         ) : Event()
 
+        object OnMultiSelectStyleClicked : Event()
+
         sealed class SearchToolbar : Event() {
             object OnEnterSearchMode : SearchToolbar()
             object OnExitSearchMode : SearchToolbar()
@@ -157,6 +159,7 @@ sealed class ControlPanelMachine {
             object OnExtraClosed : StylingToolbar()
             object OnColorClosed : StylingToolbar()
             data class OnClose(val focused: Boolean) : StylingToolbar()
+            object OnCloseMulti : StylingToolbar()
             object OnExit : StylingToolbar()
         }
 
@@ -449,6 +452,25 @@ sealed class ControlPanelMachine {
                     )
                 )
             }
+            // TODO move it somewhere in appropriate group
+            is Event.OnMultiSelectStyleClicked -> {
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = true,
+                        mode = null,
+                        target = null,
+                        style = null,
+                        config = null,
+                        props = null
+                    ),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = false
+                    )
+                )
+            }
             is Event.OnRefresh.StyleToolbar -> {
                 handleRefreshForMarkupLevelStyling(state, event)
             }
@@ -681,6 +703,11 @@ sealed class ControlPanelMachine {
                 } else {
                     init()
                 }
+            }
+            is Event.StylingToolbar.OnCloseMulti -> {
+                state.copy(
+                    stylingToolbar = Toolbar.Styling.reset()
+                )
             }
             is Event.StylingToolbar.OnExit -> {
                 state.copy(
@@ -1012,7 +1039,9 @@ sealed class ControlPanelMachine {
                         marks = content.marks()
                     )
                 }
-                else -> throw IllegalArgumentException("Unexpected block content type for Style Toolbar")
+                else -> {
+                    throw IllegalArgumentException("Unexpected content type for style toolbar: ${block.content::class.java.simpleName}")
+                }
             }
 
         private fun logState(text: String, state: ControlPanelState) {

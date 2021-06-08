@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
@@ -346,11 +347,26 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Divider -> {
                     counter.reset()
-                    result.add(divider(id = block.id, content = content, indent = indent))
+                    result.add(
+                        divider(
+                            id = block.id,
+                            content = content,
+                            indent = indent,
+                            mode = mode
+                        )
+                    )
                 }
                 is Content.Link -> {
                     counter.reset()
-                    result.add(toPages(block, content, indent, details))
+                    result.add(
+                        toPages(
+                            block = block,
+                            content = content,
+                            indent = indent,
+                            details = details,
+                            mode = mode
+                        )
+                    )
                 }
                 is Content.File -> {
                     counter.reset()
@@ -429,11 +445,7 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun description(
@@ -464,11 +476,7 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun headerTwo(
@@ -489,11 +497,7 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun headerOne(
@@ -514,11 +518,7 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun checkbox(
@@ -539,11 +539,7 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         indent = indent,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun bulleted(
@@ -563,11 +559,7 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun code(
@@ -585,11 +577,7 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         indent = indent,
         lang = block.fields.lang,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun highlight(
@@ -609,11 +597,7 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun toggle(
@@ -636,11 +620,7 @@ class DefaultBlockViewRenderer(
         toggled = toggleStateHolder.isToggled(block.id),
         isEmpty = isEmpty,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun numbered(
@@ -662,11 +642,7 @@ class DefaultBlockViewRenderer(
         indent = indent,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = if (mode is EditorMode.Styling.Single) {
-            mode.target == block.id
-        } else {
-            false
-        }
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun bookmark(
@@ -684,34 +660,48 @@ class DefaultBlockViewRenderer(
                 imageUrl = content.image?.let { urlBuilder.image(it) },
                 faviconUrl = content.favicon?.let { urlBuilder.image(it) },
                 indent = indent,
-                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                isSelected = checkIfSelected(mode, block)
             )
         } else {
             BlockView.Error.Bookmark(
                 id = block.id,
                 url = url,
                 indent = indent,
-                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+                mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                isSelected = checkIfSelected(mode, block)
             )
         }
     } ?: BlockView.MediaPlaceholder.Bookmark(
         id = block.id,
         indent = indent,
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun divider(
         id: Id,
         content: Content.Divider,
-        indent: Int
+        indent: Int,
+        mode: EditorMode
     ): BlockView = when (content.style) {
         Content.Divider.Style.LINE -> BlockView.DividerLine(
             id = id,
-            indent = indent
+            indent = indent,
+            isSelected = when (mode) {
+                is EditorMode.Styling.Single -> mode.target == id
+                is EditorMode.Styling.Multi -> mode.targets.contains(id)
+                else -> false
+            }
         )
         Content.Divider.Style.DOTS -> BlockView.DividerDots(
             id = id,
-            indent = indent
+            indent = indent,
+            isSelected = when (mode) {
+                is EditorMode.Styling.Single -> mode.target == id
+                is EditorMode.Styling.Multi -> mode.targets.contains(id)
+                else -> false
+            }
         )
     }
 
@@ -725,25 +715,29 @@ class DefaultBlockViewRenderer(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            isSelected = checkIfSelected(mode, block)
         )
         Content.File.Type.FILE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            isSelected = checkIfSelected(mode, block)
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            isSelected = checkIfSelected(mode, block)
         )
         Content.File.Type.NONE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            isSelected = checkIfSelected(mode, block)
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }
@@ -815,7 +809,7 @@ class DefaultBlockViewRenderer(
             }
         }
 
-        return when(layout) {
+        return when (layout) {
             Layout.BASIC -> {
                 BlockView.Title.Basic(
                     mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -878,17 +872,31 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Link,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        mode: EditorMode
     ): BlockView {
         val isArchived = details.details[content.target]?.isArchived
         return if (isArchived == true) {
-            pageArchive(block, content, indent, details)
+            pageArchive(
+                block = block,
+                content = content,
+                indent = indent,
+                details = details,
+                mode = mode
+            )
         } else {
-            page(block, content, indent, details)
+            page(
+                block = block,
+                content = content,
+                indent = indent,
+                details = details,
+                mode = mode
+            )
         }
     }
 
     private fun page(
+        mode: Editor.Mode,
         block: Block,
         content: Content.Link,
         indent: Int,
@@ -910,14 +918,16 @@ class DefaultBlockViewRenderer(
         },
         text = details.details[content.target]?.name,
         indent = indent,
-        isLoading = !details.details.containsKey(content.target)
+        isLoading = !details.details.containsKey(content.target),
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun pageArchive(
         block: Block,
         content: Content.Link,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        mode: EditorMode
     ): BlockView.PageArchive = BlockView.PageArchive(
         id = block.id,
         isEmpty = true,
@@ -934,7 +944,8 @@ class DefaultBlockViewRenderer(
                 null
         },
         text = details.details[content.target]?.name,
-        indent = indent
+        indent = indent,
+        isSelected = checkIfSelected(mode, block)
     )
 
     private fun setCursor(
@@ -1002,5 +1013,14 @@ class DefaultBlockViewRenderer(
                 }
             }
         )
+    }
+
+    private fun checkIfSelected(
+        mode: Editor.Mode,
+        block: Block
+    ) = when (mode) {
+        is EditorMode.Styling.Single -> mode.target == block.id
+        is EditorMode.Styling.Multi -> mode.targets.contains(block.id)
+        else -> false
     }
 }

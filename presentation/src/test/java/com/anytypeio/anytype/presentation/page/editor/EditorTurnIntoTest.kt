@@ -17,6 +17,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoMoreInteractions
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -255,7 +256,7 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should open turn-into panel with restrictions for one text block and one file block in multi-select mode`() {
+    fun `should invoke turnIntoDocument on for one text block and one file block in multi-select mode`() {
 
         // SETUP
 
@@ -307,6 +308,13 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         // TESTING
+
+        val params = TurnIntoDocument.Params(
+            context = root,
+            targets = listOf(child1.id, child2.id)
+        )
+
+        stubTurnIntoDocument(params = params)
 
         vm.apply {
             onStart(root)
@@ -320,37 +328,11 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
             onMultiSelectTurnIntoButtonClicked()
         }
 
-        val result = vm.commands.value?.peekContent()
-
-        val expectedExcludedTypes = listOf(
-            UiBlock.LINE_DIVIDER.name,
-            UiBlock.THREE_DOTS.name,
-            UiBlock.BOOKMARK.name,
-            UiBlock.LINK_TO_OBJECT.name,
-            UiBlock.FILE.name,
-            UiBlock.VIDEO.name,
-            UiBlock.IMAGE.name,
-            UiBlock.RELATION.name
-        )
-
-        check(result is Command.OpenMultiSelectTurnIntoPanel) { "Wrong command" }
-
-        assertEquals(
-            expected = listOf(UiBlock.RELATION.name),
-            actual = result.excludedCategories
-        )
-
-        assertTrue {
-            result.excludedTypes.size == expectedExcludedTypes.size
-        }
-
-        assertTrue {
-            result.excludedTypes.containsAll(expectedExcludedTypes)
-        }
+        verifyBlocking(turnIntoDocument, times(1)) { invoke(params) }
     }
 
     @Test
-    fun `should not open turn-into panel with restrictions for file in multi-select mode`() {
+    fun `should not invoke turnIntoDocument for file in multi-select mode`() {
 
         // SETUP
 
@@ -403,6 +385,13 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
 
         // TESTING
 
+        val params = TurnIntoDocument.Params(
+            context = root,
+            targets = listOf(child1.id, child2.id)
+        )
+
+        stubTurnIntoDocument(params = params)
+
         vm.apply {
             onStart(root)
             onBlockFocusChanged(id = child1.id, hasFocus = true)
@@ -414,6 +403,7 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
 
         // Verify there was no command for opening turn-into panel.
 
+        verifyNoMoreInteractions(turnIntoDocument)
         vm.commands.test().assertNoValue()
     }
 }

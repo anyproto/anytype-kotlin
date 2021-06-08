@@ -147,7 +147,7 @@ sealed class Intent {
 
         class Align(
             val context: Id,
-            val target: Id,
+            val targets: List<Id>,
             val alignment: Block.Align
         ) : Text()
 

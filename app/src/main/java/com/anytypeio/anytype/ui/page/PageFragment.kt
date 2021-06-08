@@ -485,6 +485,11 @@ open class PageFragment :
             .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
             .launchIn(lifecycleScope)
 
+        bottomMenu
+            .styleClicks()
+            .onEach { vm.onMultiSelectStyleButtonClicked() }
+            .launchIn(lifecycleScope)
+
         select
             .clicks()
             .onEach { vm.onMultiSelectModeSelectAllClicked() }
@@ -569,7 +574,7 @@ open class PageFragment :
         }.launchIn(lifecycleScope)
 
         lifecycleScope.subscribe(styleToolbarMain.styles) {
-            vm.onUpdateSingleTextBlockStyle(it)
+            vm.onUpdateTextBlockStyle(it)
         }
 
         lifecycleScope.subscribe(styleToolbarMain.other) {

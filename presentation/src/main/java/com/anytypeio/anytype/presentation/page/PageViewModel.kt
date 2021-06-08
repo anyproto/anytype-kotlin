@@ -647,17 +647,14 @@ class PageViewModel(
                 state.stylingToolbar.isVisible -> {
                     onCloseBlockStyleToolbarClicked()
                 }
-                state.multiSelect.isVisible -> {
-                    onExitMultiSelectModeClicked()
-                }
-                state.stylingToolbar.isVisible -> {
-                    onCloseBlockStyleToolbarClicked()
-                }
                 state.styleColorToolbar.isVisible -> {
                     onCloseBlockStyleColorToolbarClicked()
                 }
                 state.styleExtraToolbar.isVisible -> {
                     onCloseBlockStyleExtraToolbarClicked()
+                }
+                state.multiSelect.isVisible -> {
+                    onExitMultiSelectModeClicked()
                 }
                 else -> {
                     proceedWithExitingBack()
@@ -1207,35 +1204,95 @@ class PageViewModel(
         val state = controlPanelViewState.value!!
         when (event) {
             is StylingEvent.Coloring.Text -> {
-                proceedWithStylingEvent(state, Markup.Type.TEXT_COLOR, event.color.title)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    onToolbarTextColorAction(currentMode.targets.toList(), event.color.title)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.TEXT_COLOR, event.color.title)
+                }
             }
             is StylingEvent.Coloring.Background -> {
-                proceedWithStylingEvent(state, Markup.Type.BACKGROUND_COLOR, event.color.title)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    onBlockBackgroundColorAction(currentMode.targets.toList(), event.color.title)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.BACKGROUND_COLOR, event.color.title)
+                }
             }
             is StylingEvent.Markup.Bold -> {
-                proceedWithStylingEvent(state, Markup.Type.BOLD, null)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.BOLD, null)
+                }
             }
             is StylingEvent.Markup.Italic -> {
-                proceedWithStylingEvent(state, Markup.Type.ITALIC, null)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.ITALIC, null)
+                }
             }
             is StylingEvent.Markup.StrikeThrough -> {
-                proceedWithStylingEvent(state, Markup.Type.STRIKETHROUGH, null)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.STRIKETHROUGH, null)
+                }
             }
             is StylingEvent.Markup.Code -> {
-                proceedWithStylingEvent(state, Markup.Type.KEYBOARD, null)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.KEYBOARD, null)
+                }
             }
             is StylingEvent.Markup.Link -> {
-                proceedWithStylingEvent(state, Markup.Type.LINK, null)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                } else {
+                    proceedWithStylingEvent(state, Markup.Type.LINK, null)
+                }
             }
             is StylingEvent.Alignment.Left -> {
-                onBlockAlignmentActionClicked(Alignment.START)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    proceedWithAlignmentUpdate(
+                        targets = currentMode.targets.toList(),
+                        alignment = Block.Align.AlignLeft
+                    )
+                } else {
+                    onBlockAlignmentActionClicked(Alignment.START)
+                }
             }
             is StylingEvent.Alignment.Center -> {
-                onBlockAlignmentActionClicked(Alignment.CENTER)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    proceedWithAlignmentUpdate(
+                        targets = currentMode.targets.toList(),
+                        alignment = Block.Align.AlignCenter
+                    )
+                } else {
+                    onBlockAlignmentActionClicked(Alignment.CENTER)
+                }
             }
             is StylingEvent.Alignment.Right -> {
-                onBlockAlignmentActionClicked(Alignment.END)
+                val currentMode = mode
+                if (currentMode is EditorMode.Styling.Multi) {
+                    proceedWithAlignmentUpdate(
+                        targets = currentMode.targets.toList(),
+                        alignment = Block.Align.AlignRight
+                    )
+                } else {
+                    onBlockAlignmentActionClicked(Alignment.END)
+                }
             }
+            else -> Timber.d("Ignoring styling toolbar event: $event")
         }
     }
 
@@ -1252,8 +1309,8 @@ class PageViewModel(
                     Markup.Type.ITALIC -> onBlockStyleMarkupActionClicked(id, type)
                     Markup.Type.BOLD -> onBlockStyleMarkupActionClicked(id, type)
                     Markup.Type.STRIKETHROUGH -> onBlockStyleMarkupActionClicked(id, type)
-                    Markup.Type.TEXT_COLOR -> onToolbarTextColorAction(id, param)
-                    Markup.Type.BACKGROUND_COLOR -> onBlockBackgroundColorAction(id, param)
+                    Markup.Type.TEXT_COLOR -> onToolbarTextColorAction(listOf(id), param)
+                    Markup.Type.BACKGROUND_COLOR -> onBlockBackgroundColorAction(listOf(id), param)
                     Markup.Type.LINK -> onBlockStyleLinkClicked(id)
                     Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
                     Markup.Type.MENTION -> Unit
@@ -1277,7 +1334,7 @@ class PageViewModel(
     private fun onBlockAlignmentActionClicked(alignment: Alignment) {
         controlPanelViewState.value?.stylingToolbar?.target?.id?.let { id ->
             proceedWithAlignmentUpdate(
-                id = id,
+                targets = listOf(id),
                 alignment = when (alignment) {
                     Alignment.START -> Block.Align.AlignLeft
                     Alignment.CENTER -> Block.Align.AlignCenter
@@ -1287,41 +1344,41 @@ class PageViewModel(
         }
     }
 
-    private fun proceedWithAlignmentUpdate(id: String, alignment: Block.Align) {
+    private fun proceedWithAlignmentUpdate(targets: List<Id>, alignment: Block.Align) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.Align(
                     context = context,
-                    target = id,
+                    targets = targets,
                     alignment = alignment
                 )
             )
         }
     }
 
-    fun onToolbarTextColorAction(id: String, color: String?) {
-        Timber.d("onToolbarTextColorAction, id:[$id] color:[$color]")
+    fun onToolbarTextColorAction(targets: List<Id>, color: String?) {
+        Timber.d("onToolbarTextColorAction, ids:[$targets] color:[$color]")
         check(color != null)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockTextColorSelected)
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateColor(
                     context = context,
-                    targets = listOf(id),
+                    targets = targets,
                     color = color
                 )
             )
         }
     }
 
-    private fun onBlockBackgroundColorAction(id: String, color: String?) {
+    private fun onBlockBackgroundColorAction(targets: List<Id>, color: String?) {
         check(color != null)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockBackgroundColorSelected)
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateBackgroundColor(
                     context = context,
-                    targets = listOf(id),
+                    targets = targets,
                     color = color
                 )
             )
@@ -2032,6 +2089,19 @@ class PageViewModel(
         )
     }
 
+    private fun proceedWithMultiStyleToolbarEvent() {
+        mode = EditorMode.Styling.Multi(currentSelection())
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectStyleClicked)
+//        viewModelScope.sendEvent(
+//            analytics = analytics,
+//            eventName = EventsDictionary.BTN_STYLE_MENU
+//        )
+//        viewModelScope.sendEvent(
+//            analytics = analytics,
+//            eventName = POPUP_STYLE
+//        )
+    }
+
     fun onCloseBlockStyleToolbarClicked() {
         Timber.d("onCloseBlockStyleToolbarClicked, ")
         if (mode is EditorMode.Styling.Single) {
@@ -2062,7 +2132,14 @@ class PageViewModel(
                 )
                 renderCommand.send(Unit)
             }
+        } else if (mode is EditorMode.Styling.Multi) {
+            exitMultiStylingMode()
         }
+    }
+
+    private fun exitMultiStylingMode() {
+        mode = EditorMode.Select
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnCloseMulti)
     }
 
     /**
@@ -2092,6 +2169,8 @@ class PageViewModel(
                 )
                 renderCommand.send(Unit)
             }
+        } else if (mode is EditorMode.Styling.Multi) {
+            exitMultiStylingMode()
         }
     }
 
@@ -2318,47 +2397,33 @@ class PageViewModel(
             stateData.postValue(ViewState.Success(it))
         }
 
+    fun onMultiSelectStyleButtonClicked() {
+        proceedWithMultiStyleToolbarEvent()
+    }
+
     fun onMultiSelectTurnIntoButtonClicked() {
-
         Timber.d("onMultiSelectTurnIntoButtonClicked, ")
-
-        val excludedCategories = mutableListOf<String>()
-        val excludedTypes = mutableListOf<String>()
 
         val targets = currentSelection()
 
         val blocks = blocks.filter { targets.contains(it.id) }
 
         val hasTextBlocks = blocks.any { it.content is Content.Text }
-        val hasDividerBlocks = blocks.any { it.content is Content.Divider }
 
         when {
             hasTextBlocks -> {
-                excludedTypes.apply {
-                    add(UiBlock.FILE.name)
-                    add(UiBlock.IMAGE.name)
-                    add(UiBlock.VIDEO.name)
-                    add(UiBlock.BOOKMARK.name)
-                    add(UiBlock.LINE_DIVIDER.name)
-                    add(UiBlock.THREE_DOTS.name)
-                    add(UiBlock.LINK_TO_OBJECT.name)
-                    add(UiBlock.RELATION.name)
-                }
-                excludedCategories.add(UiBlock.Category.RELATION.name)
-                dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
-            }
-            hasDividerBlocks -> {
-                excludedCategories.apply {
-                    add(UiBlock.Category.TEXT.name)
-                    add(UiBlock.Category.LIST.name)
-                    add(UiBlock.Category.OBJECT.name)
-                    add(UiBlock.Category.RELATION.name)
-                }
-                excludedTypes.add(UiBlock.CODE.name)
-                dispatch(Command.OpenMultiSelectTurnIntoPanel(excludedCategories, excludedTypes))
+                proceedUpdateBlockStyle(
+                    targets = currentSelection().toList(),
+                    uiBlock = UiBlock.PAGE,
+                    action = {
+                        clearSelections()
+                        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
+                    },
+                    errorAction = { _toasts.offer("Cannot convert selected blocks to PAGE") }
+                )
             }
             else -> {
-                _toasts.offer("Cannot turn selected blocks into other blocks")
+                _toasts.offer("Cannot turn selected blocks into page")
             }
         }
 
@@ -2408,11 +2473,18 @@ class PageViewModel(
         dispatch(Command.PopBackStack)
     }
 
-    fun onUpdateSingleTextBlockStyle(uiBlock: UiBlock) {
+    fun onUpdateTextBlockStyle(uiBlock: UiBlock) {
         Timber.d("onUpdateSingleTextBlockStyle, uiBlock:[$uiBlock]")
         (mode as? EditorMode.Styling.Single)?.let { eMode ->
             proceedUpdateBlockStyle(
                 targets = listOf(eMode.target),
+                uiBlock = uiBlock,
+                errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
+            )
+        }
+        (mode as? EditorMode.Styling.Multi)?.let {
+            proceedUpdateBlockStyle(
+                targets = currentSelection().toList(),
                 uiBlock = uiBlock,
                 errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
             )
@@ -2461,6 +2533,7 @@ class PageViewModel(
             UiBlock.IMAGE -> errorAction?.invoke()
             UiBlock.VIDEO -> errorAction?.invoke()
             UiBlock.BOOKMARK -> errorAction?.invoke()
+            else -> Timber.e("Unexpected style update")
         }
     }
 
@@ -2963,7 +3036,7 @@ class PageViewModel(
             is EditorMode.Select -> {
                 onBlockMultiSelectClicked(target)
             }
-            is EditorMode.Styling.Single -> {
+            is EditorMode.Styling -> {
                 onExitBlockStyleToolbarClicked()
             }
             else -> {
@@ -3809,6 +3882,8 @@ class PageViewModel(
         const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =
             "Opening style panel for code block currently not supported"
         const val FLAVOUR_EXPERIMENTAL = "experimental"
+
+        const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
     }
 
     data class MarkupAction(
@@ -4370,7 +4445,7 @@ class PageViewModel(
             SlashItem.Alignment.Right -> Block.Align.AlignRight
         }
         proceedWithAlignmentUpdate(
-            id = targetId,
+            targets = listOf(targetId),
             alignment = alignment
         )
     }

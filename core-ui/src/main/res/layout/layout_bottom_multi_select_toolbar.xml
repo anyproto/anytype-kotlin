@@ -57,7 +57,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_multi_select_turn_into" />
+            android:src="@drawable/ic_action_export" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/multiStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/turnInto"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_block_style" />
 
     </FrameLayout>
 
@@ -69,7 +88,7 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/turnInto"
+        app:layout_constraintStart_toEndOf="@+id/multiStyle"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -105,7 +124,7 @@
         android:id="@+id/controls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="copy,turnInto,delete,enterScrollAndMove" />
+        app:constraint_referenced_ids="copy,turnInto,multiStyle,delete,enterScrollAndMove" />
 
     <FrameLayout
         android:id="@+id/title"

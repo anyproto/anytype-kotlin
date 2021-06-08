@@ -167,13 +167,13 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
-    override fun blockSetTextColor(request: Block.Set.Text.Color.Request): Block.Set.Text.Color.Response {
-        val encoded = Service.blockSetTextColor(
-            Block.Set.Text.Color.Request.ADAPTER.encode(request)
+    override fun blockSetTextColor(request: BlockList.Set.Text.Color.Request): BlockList.Set.Text.Color.Response {
+        val encoded = Service.blockListSetTextColor(
+            BlockList.Set.Text.Color.Request.ADAPTER.encode(request)
         )
-        val response = Block.Set.Text.Color.Response.ADAPTER.decode(encoded)
+        val response = BlockList.Set.Text.Color.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Block.Set.Text.Color.Response.Error.Code.NULL) {
+        if (error != null && error.code != BlockList.Set.Text.Color.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -421,7 +421,8 @@ class MiddlewareServiceImplementation : MiddlewareService {
     }
 
     override fun listObjects(request: Navigation.ListObjects.Request): Navigation.ListObjects.Response {
-        val encoded = Service.navigationListObjects(Navigation.ListObjects.Request.ADAPTER.encode(request))
+        val encoded =
+            Service.navigationListObjects(Navigation.ListObjects.Request.ADAPTER.encode(request))
         val response = Navigation.ListObjects.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Navigation.ListObjects.Response.Error.Code.NULL) {

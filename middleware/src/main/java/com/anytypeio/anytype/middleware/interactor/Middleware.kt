@@ -299,10 +299,10 @@ class Middleware(
 
     @Throws(Exception::class)
     fun updateTextColor(command: Command.UpdateTextColor): Payload {
-        val request = Rpc.Block.Set.Text.Color.Request(
+        val request = BlockList.Set.Text.Color.Request(
             contextId = command.context,
             color = command.color,
-            blockId = command.target
+            blockIds = command.targets
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockSetTextColor(request)

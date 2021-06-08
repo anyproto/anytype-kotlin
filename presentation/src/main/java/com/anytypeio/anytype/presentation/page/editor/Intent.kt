@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Position
 
 sealed class Intent {
 
@@ -96,7 +96,7 @@ sealed class Intent {
 
         class UpdateColor(
             val context: Id,
-            val target: Id,
+            val targets: List<Id>,
             val color: String
         ) : Text()
 

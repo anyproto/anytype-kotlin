@@ -419,11 +419,11 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val params = UpdateTextColor.Params(
             context = root,
-            target = block.id,
+            targets = listOf(block.id),
             color = code
         )
 
-        coroutineTestRule.advanceTime(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
         verifyBlocking(updateTextColor, times(1)) { invoke(params) }
     }
     //endregion

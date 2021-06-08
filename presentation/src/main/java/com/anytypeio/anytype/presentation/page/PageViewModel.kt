@@ -1307,7 +1307,7 @@ class PageViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateColor(
                     context = context,
-                    target = id,
+                    targets = listOf(id),
                     color = color
                 )
             )
@@ -4244,7 +4244,7 @@ class PageViewModel(
             is SlashItem.Color.Text -> {
                 Intent.Text.UpdateColor(
                     context = context,
-                    target = targetId,
+                    targets = listOf(targetId),
                     color = item.code
                 )
             }

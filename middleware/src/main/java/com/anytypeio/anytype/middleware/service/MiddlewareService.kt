@@ -49,7 +49,7 @@ interface MiddlewareService {
     fun blockSetTextChecked(request: Block.Set.Text.Checked.Request): Block.Set.Text.Checked.Response
 
     @Throws(Exception::class)
-    fun blockSetTextColor(request: Block.Set.Text.Color.Request): Block.Set.Text.Color.Response
+    fun blockSetTextColor(request: BlockList.Set.Text.Color.Request): BlockList.Set.Text.Color.Response
 
     @Throws(Exception::class)
     fun blockListSetBackgroundColor(request: BlockList.Set.BackgroundColor.Request): BlockList.Set.BackgroundColor.Response

@@ -2085,7 +2085,7 @@ open class PageViewModelTest {
                 params = eq(
                     UpdateTextColor.Params(
                         context = root,
-                        target = child,
+                        targets = listOf(child),
                         color = color
                     )
                 )

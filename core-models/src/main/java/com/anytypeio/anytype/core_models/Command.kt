@@ -66,12 +66,12 @@ sealed class Command {
     /**
      * Command for updating the whole block's text color.
      * @property context context id
-     * @property target id of the target block, whose color we need to update.
+     * @property targets id of the target blocks, whose color we need to update.
      * @property color new color (hex)
      */
     data class UpdateTextColor(
         val context: Id,
-        val target: Id,
+        val targets: List<Id>,
         val color: String
     )
 

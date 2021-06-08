@@ -289,7 +289,7 @@ class Orchestrator(
                     updateTextColor(
                         params = UpdateTextColor.Params(
                             context = intent.context,
-                            target = intent.target,
+                            targets = intent.targets,
                             color = intent.color
                         )
                     ).proceed(

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.page.editor.actions
 
 sealed class ActionItemType {
     object AddBelow : ActionItemType()
+    object TurnIntoPage : ActionItemType()
     object TurnInto : ActionItemType()
     object Delete : ActionItemType()
     object Duplicate : ActionItemType()

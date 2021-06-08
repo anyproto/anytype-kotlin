@@ -478,7 +478,7 @@ abstract class BlockActionToolbar : Fragment() {
         val TEXT = listOf(
             ActionItemType.AddBelow,
             ActionItemType.DividerExtended,
-            ActionItemType.TurnInto,
+            ActionItemType.TurnIntoPage,
             ActionItemType.Divider,
             ActionItemType.Delete,
             ActionItemType.Divider,
@@ -494,7 +494,7 @@ abstract class BlockActionToolbar : Fragment() {
         val CHECKBOX_CHECKED = listOf(
             ActionItemType.AddBelow,
             ActionItemType.DividerExtended,
-            ActionItemType.TurnInto,
+            ActionItemType.TurnIntoPage,
             ActionItemType.Divider,
             ActionItemType.Delete,
             ActionItemType.Divider,
@@ -550,7 +550,7 @@ abstract class BlockActionToolbar : Fragment() {
         val CODE = listOf(
             ActionItemType.AddBelow,
             ActionItemType.DividerExtended,
-            ActionItemType.TurnInto,
+            ActionItemType.TurnIntoPage,
             ActionItemType.Divider,
             ActionItemType.Delete,
             ActionItemType.Divider,
@@ -566,8 +566,6 @@ abstract class BlockActionToolbar : Fragment() {
         val DIVIDER = listOf(
             ActionItemType.AddBelow,
             ActionItemType.DividerExtended,
-            ActionItemType.TurnInto,
-            ActionItemType.Divider,
             ActionItemType.Delete,
             ActionItemType.Divider,
             ActionItemType.Duplicate,

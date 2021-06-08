@@ -206,6 +206,7 @@
     </string-array>
     <string name="action_bar_add_below">Add block below</string>
     <string name="action_bar_turn_into">Turn into</string>
+    <string name="action_bar_turn_into_page">Turn into Page</string>
     <string name="action_bar_delete">Delete</string>
     <string name="action_bar_duplicate">Duplicate</string>
     <string name="action_bar_move_to">Move to</string>

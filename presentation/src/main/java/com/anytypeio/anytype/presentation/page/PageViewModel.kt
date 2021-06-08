@@ -1484,6 +1484,11 @@ class PageViewModel(
             ActionItemType.Divider -> {
                 _toasts.offer("not implemented")
             }
+            ActionItemType.TurnIntoPage -> {
+                proceedWithTurningIntoDocument(targets = listOf(id))
+                onExitActionMode()
+                dispatch(Command.PopBackStack)
+            }
             else -> Timber.d("Action ignored: $action")
         }
     }

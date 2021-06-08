@@ -66,6 +66,10 @@ class BlockActionBarItem @JvmOverloads constructor(
                 R.string.action_bar_sam,
                 R.drawable.ic_action_sam
             )
+            ActionItemType.TurnIntoPage -> updateContent(
+                R.string.action_bar_turn_into_page,
+                R.drawable.ic_action_turn_into
+            )
             else -> throw RuntimeException("Unknown action item type:$itemType")
         }
     }

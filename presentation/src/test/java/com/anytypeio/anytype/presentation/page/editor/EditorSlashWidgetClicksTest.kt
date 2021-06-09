@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.model.Types
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
@@ -255,6 +256,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
     //region {OBJECTS}
     @Test
     fun `should return Update command with only Page object type item when click on Objects item`() {
+
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -360,20 +362,24 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         )
 
-        val expected = SlashWidgetState.UpdateItems(
-            mainItems = emptyList(),
-            styleItems = emptyList(),
-            mediaItems = emptyList(),
-            objectItems = expectedObjectItems,
-            relationItems = emptyList(),
-            otherItems = emptyList(),
-            actionsItems = emptyList(),
-            alignmentItems = emptyList(),
-            colorItems = emptyList(),
-            backgroundItems = emptyList()
-        )
-        assertEquals(expected = expected, actual = stateWidget)
+        if (BuildConfig.FLAVOR == "stable") {
+            val expected = SlashWidgetState.UpdateItems(
+                mainItems = emptyList(),
+                styleItems = emptyList(),
+                mediaItems = emptyList(),
+                objectItems = expectedObjectItems,
+                relationItems = emptyList(),
+                otherItems = emptyList(),
+                actionsItems = emptyList(),
+                alignmentItems = emptyList(),
+                colorItems = emptyList(),
+                backgroundItems = emptyList()
+            )
 
+            assertEquals(expected = expected, actual = stateWidget)
+        } else {
+            // TODO add test for experimental flavor
+        }
     }
     //endregion
 

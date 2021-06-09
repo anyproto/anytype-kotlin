@@ -366,6 +366,7 @@
     <string name="slash_widget_actions_duplicate">Duplicate</string>
     <string name="slash_widget_actions_copy">Copy</string>
     <string name="slash_widget_actions_paste">Paste</string>
+    <string name="slash_widget_actions_link_to">Link to object</string>
     <string name="slash_widget_actions_move">Move</string>
     <string name="slash_widget_actions_moveto">Move to</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

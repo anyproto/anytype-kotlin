@@ -6,8 +6,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatCreateFromScratchBinding
+import kotlinx.android.synthetic.main.item_relation_format_create_from_scratch.view.*
 
 class DefaultRelationViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(
@@ -17,14 +16,12 @@ class DefaultRelationViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     )
 ) {
 
-    val binding = ItemRelationFormatBinding.bind(itemView)
-
     fun bind(
         name: String,
         format: Relation.Format
     ) = with(itemView) {
-        binding.ivRelationFormat.bind(format)
-        binding.tvRelationName.text = name
+        ivRelationFormat.bind(format)
+        tvRelationName.text = name
     }
 }
 
@@ -36,19 +33,17 @@ class DefaultRelationFormatViewHolder(parent: ViewGroup) : RecyclerView.ViewHold
     )
 ) {
 
-    val binding = ItemRelationFormatCreateFromScratchBinding.bind(itemView)
-
     fun bind(
         name: String,
         format: Relation.Format,
         isSelected: Boolean
-    ) = with(binding) {
-        ivRelationFormat.bind(format)
-        tvRelationName.text = name
-        selectionIcon.isVisible = isSelected
+    ) {
+        itemView.ivRelationFormat.bind(format)
+        itemView.tvRelationName.text = name
+        itemView.selectionIcon.isVisible = isSelected
     }
 
     fun setIsSelected(isSelected: Boolean) {
-        binding.selectionIcon.isVisible = isSelected
+        itemView.selectionIcon.isVisible = isSelected
     }
 }

@@ -59,6 +59,7 @@ object SlashExtensions {
     fun getStableSlashWidgetMainItems() = listOf(
         SlashItem.Main.Style,
         SlashItem.Main.Media,
+        SlashItem.Main.Objects,
         SlashItem.Main.Other,
         SlashItem.Main.Actions,
         SlashItem.Main.Alignment,
@@ -115,7 +116,8 @@ object SlashExtensions {
         SlashItem.Actions.Paste,
         SlashItem.Actions.Move,
         SlashItem.Actions.MoveTo,
-        SlashItem.Actions.CleanStyle
+        SlashItem.Actions.LinkTo
+        //, SlashItem.Actions.CleanStyle
     )
 
     fun getSlashWidgetAlignmentItems(viewType: Int) =

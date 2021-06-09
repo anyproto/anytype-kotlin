@@ -121,7 +121,6 @@ class SlashWidget @JvmOverloads constructor(
     fun onStateChanged(widgetState: SlashWidgetState) {
         when (widgetState) {
             is SlashWidgetState.UpdateItems -> {
-                rvSlash.smoothScrollToPosition(0)
 
                 mainAdapter.update(widgetState.mainItems)
                 styleAdapter.update(widgetState.styleItems)

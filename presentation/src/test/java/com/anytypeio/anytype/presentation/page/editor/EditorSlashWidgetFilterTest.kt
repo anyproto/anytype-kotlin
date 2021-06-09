@@ -196,6 +196,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
             listOf(
                 SlashItem.Main.Style,
                 SlashItem.Main.Media,
+                SlashItem.Main.Objects,
                 SlashItem.Main.Other,
                 SlashItem.Main.Actions,
                 SlashItem.Main.Alignment,

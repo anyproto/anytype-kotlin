@@ -29,6 +29,10 @@ data class ObjectType(
         val layout: Layout,
         val emoji: String
     )
+
+    companion object {
+        const val PAGE_URL = "_otpage"
+    }
 }
 
 typealias Template = ObjectType

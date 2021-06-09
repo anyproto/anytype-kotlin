@@ -3995,23 +3995,26 @@ class PageViewModel(
                         }
                     }
                 } else {
-                    val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
-                        text = event.filter,
-                        objectTypes = emptyList(),
-                        relations = emptyList(),
-                        viewType = slashViewType
-                    )
-                    incFilterSearchEmptyCount(widgetState)
-                    val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
-                        filterSearchEmptyCount = 0
-                        slashStartIndex = 0
-                        slashFilter = ""
-                        slashViewType = 0
-                        ControlPanelMachine.Event.Slash.OnStop
-                    } else {
-                        ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+                    getObjectTypes{ objectTypes ->
+                        val filter = objectTypes.filter { it.url == ObjectType.PAGE_URL }
+                        val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
+                            text = event.filter,
+                            objectTypes = filter.toView(),
+                            relations = emptyList(),
+                            viewType = slashViewType
+                        )
+                        incFilterSearchEmptyCount(widgetState)
+                        val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
+                            filterSearchEmptyCount = 0
+                            slashStartIndex = 0
+                            slashFilter = ""
+                            slashViewType = 0
+                            ControlPanelMachine.Event.Slash.OnStop
+                        } else {
+                            ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
+                        }
+                        controlPanelInteractor.onEvent(panelEvent)
                     }
-                    controlPanelInteractor.onEvent(panelEvent)
                 }
 
             }
@@ -4296,11 +4299,20 @@ class PageViewModel(
     }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectType>) {
-        onSlashWidgetStateChanged(
-            SlashWidgetState.UpdateItems.empty().copy(
-                objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
+        if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+            onSlashWidgetStateChanged(
+                SlashWidgetState.UpdateItems.empty().copy(
+                    objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
+                )
             )
-        )
+        } else {
+            val filter = objectTypes.filter { it.url == ObjectType.PAGE_URL }
+            onSlashWidgetStateChanged(
+                SlashWidgetState.UpdateItems.empty().copy(
+                    objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = filter)
+                )
+            )
+        }
     }
 
     private fun proceedWithRelations(relations: List<RelationListViewModel.Model>) {
@@ -4428,6 +4440,9 @@ class PageViewModel(
             SlashItem.Actions.MoveTo -> {
                 onHideKeyboardClicked()
                 proceedWithMoveTo(targetId)
+            }
+            SlashItem.Actions.LinkTo -> {
+                onAddLinkToObjectClicked()
             }
         }
     }

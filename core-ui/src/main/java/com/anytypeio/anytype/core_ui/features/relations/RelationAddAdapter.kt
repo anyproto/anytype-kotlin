@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchNameInputBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationFormatViewHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationViewHolder
 import com.anytypeio.anytype.presentation.relations.model.RelationView
+import kotlinx.android.synthetic.main.item_relation_create_from_scratch_name_input.view.*
 
 class RelationAddAdapter(
     val onItemClick: (RelationView.Existing) -> Unit
@@ -116,9 +116,10 @@ class RelationNameInputAdapter(
     val onTextInputChanged: (String) -> Unit
 ) : RecyclerView.Adapter<RelationNameInputAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent).apply {
-        binding.textInputField.doAfterTextChanged { onTextInputChanged(it.toString()) }
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        ViewHolder(parent).apply {
+            itemView.textInputField.doAfterTextChanged { onTextInputChanged(it.toString()) }
+        }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {}
 
@@ -130,7 +131,6 @@ class RelationNameInputAdapter(
             false
         )
     ) {
-        val binding = ItemRelationCreateFromScratchNameInputBinding.bind(itemView)
     }
 }
 

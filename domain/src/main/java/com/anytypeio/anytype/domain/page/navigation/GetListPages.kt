@@ -28,6 +28,8 @@ open class GetListPages(
                     || document.smartBlockType == SmartBlockType.INDEXED_RELATION
                     || document.smartBlockType == SmartBlockType.DATABASE
                     || document.smartBlockType == SmartBlockType.ANYTYPE_PROFILE
+                    || (document.smartBlockType == SmartBlockType.PROFILE_PAGE
+                    && document.id == ANYTYPE_PROFILE_ID)
         }
         Response(pages)
     }

@@ -138,6 +138,7 @@ sealed class SlashItem {
         object Move: Actions()
         object MoveTo: Actions()
         object CleanStyle: Actions()
+        object LinkTo: Actions()
     }
     //endregion
 

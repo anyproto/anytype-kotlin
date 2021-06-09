@@ -41,7 +41,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
      * 1. Click on Style -> return sub header + back + style items
      * 9. Click on Style with view type Header -> return sub header + back + style items without bold and italic
      * 2. Click on Media -> return sub header + back + media items
-     * 3. Click on Objects -> return sub header + back + object type items
+     * 3. Click on Objects -> return sub header + back + page object type item(Because of Stable Build)
      * 4. Click on Relations -> return sub header + back + relation items
      * 5. Click on Other -> return sub header + back + other items
      * 6. Click on Actions -> return sub header + back + actions items
@@ -254,7 +254,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {OBJECTS}
     @Test
-    fun `should return Update command with object type items when click on Objects item`() {
+    fun `should return Update command with only Page object type item when click on Objects item`() {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -294,7 +294,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         )
 
         val type2 = ObjectType(
-            url = MockDataFactory.randomUuid(),
+            url = ObjectType.PAGE_URL,
             name = MockDataFactory.randomString(),
             relations = emptyList(),
             layout = ObjectType.Layout.values().random(),
@@ -352,25 +352,11 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val expectedObjectItems = listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
             SlashItem.ObjectType(
-                url = type1.url,
-                name = type1.name,
-                emoji = type1.emoji,
-                description = type1.description,
-                layout = type1.layout
-            ),
-            SlashItem.ObjectType(
                 url = type2.url,
                 name = type2.name,
                 emoji = type2.emoji,
                 description = type2.description,
                 layout = type2.layout
-            ),
-            SlashItem.ObjectType(
-                url = type3.url,
-                name = type3.name,
-                emoji = type3.emoji,
-                description = type3.description,
-                layout = type3.layout
             )
         )
 
@@ -606,7 +592,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {ACTIONS}
     @Test
-    fun `should return Update command with actions items when click on Action item`() {
+    fun `should return Update command with actions items when click on Action item(Stable Build)`() {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -652,7 +638,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.Actions.Paste,
             SlashItem.Actions.Move,
             SlashItem.Actions.MoveTo,
-            SlashItem.Actions.CleanStyle
+            SlashItem.Actions.LinkTo
         )
 
         val expected = SlashWidgetState.UpdateItems(

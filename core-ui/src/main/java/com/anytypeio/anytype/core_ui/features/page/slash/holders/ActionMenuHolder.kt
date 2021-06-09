@@ -46,6 +46,11 @@ class ActionMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
                 ivIcon.setImageResource(R.drawable.ic_slash_actions_clean_style)
                 tvSubtitle.gone()
             }
+            SlashItem.Actions.LinkTo -> {
+                tvTitle.setText(R.string.slash_widget_actions_link_to)
+                ivIcon.setImageResource(R.drawable.ic_slash_actions_link_to)
+                tvSubtitle.gone()
+            }
         }
     }
 }

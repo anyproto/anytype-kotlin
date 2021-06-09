@@ -82,7 +82,11 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
     }
 
     private fun version(version: String) {
-        tvVersion.text = "Android v${BuildConfig.VERSION_NAME}-alpha ($version)"
+        if (version.isEmpty()) {
+            tvVersion.text = "Android v${BuildConfig.VERSION_NAME}-alpha"
+        } else {
+            tvVersion.text = "Android v${BuildConfig.VERSION_NAME}-alpha ($version)"
+        }
     }
 
     override fun injectDependencies() {

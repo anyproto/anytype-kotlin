@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ProfileViewModel(
+open class ProfileViewModel(
     private val getCurrentAccount: GetCurrentAccount,
     private val logout: Logout,
     private val analytics: Analytics,
@@ -40,7 +40,7 @@ class ProfileViewModel(
 
     private var target = ""
 
-    protected val libVersion = MutableLiveData<String>()
+    private val libVersion = MutableLiveData("")
     val version: LiveData<String> = libVersion
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -68,7 +68,7 @@ class ProfileViewModel(
         navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
     }
 
-    fun onDebugSettingsClicked(){
+    fun onDebugSettingsClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenDebugSettingsScreen))
     }
 
@@ -95,9 +95,7 @@ class ProfileViewModel(
         getLibraryVersion.invoke(scope = viewModelScope, params = BaseUseCase.None) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while getting middleware version") },
-                fnR = { version ->
-                    libVersion.postValue(version)
-                }
+                fnR = { version -> libVersion.postValue(version) }
             )
         }
     }

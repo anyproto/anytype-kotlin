@@ -1,12 +1,23 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.0
+## Version 0.1.11
 
-## Version 0.1.11 [WIP]
+### New features & enhancements 🚀
 
-### Middleware ⚙
+* New slash widget: boosting content creation (#1524)
 
-* Updated middleware protocol to `0.15.4` (#1493)
+### Design & UX 🔳
+
+* New style toolbar: changing text style on the fly (#1529)
+* New markup toolbar (#1421)
+* New set-link-as-markup toolbar (#1424)
+* Description block (#1414)
+
+### Fixes & tech 🚒
+
+* Show soft input when focusing in filter in navigation screen (#1475)
+* Show soft input when focusing search-on-page input field (#1531)
+* Search in emoji picker works again 🙏💕👉😌🔥🤔 (#1473)
 
 ## Version 0.1.9
 

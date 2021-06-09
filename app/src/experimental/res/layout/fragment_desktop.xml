@@ -1,31 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dashboardRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_dashboard_cover">
+    android:background="@color/default_dashboard_background_color"
+    app:layoutDescription="@xml/fragment_desktop_scene">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_gravity="end"
-        android:layout_margin="32dp"
-        android:id="@+id/createSetButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp" />
+    <TextView
+        android:id="@+id/tvGreeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/graphik_semibold"
+        android:text="Hi, User"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/desktopRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="64dp"
-        tools:listitem="@layout/item_desktop_page" />
+    <ImageView
+        android:id="@+id/ivSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/ic_dashboard_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
+        android:id="@+id/avatarContainer"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/circle_blue"
+        android:backgroundTint="#80F5F5F5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvGreeting"
+        app:text_size="28sp" />
+
+    <FrameLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/background_dashboard_button"
+        app:layout_constraintEnd_toStartOf="@+id/btnMarketplace"
+        app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dashboard_search" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnMarketplace"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/background_dashboard_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dashboard_marketplace" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnAddDoc"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/background_dashboard_button"
+        app:layout_constraintStart_toEndOf="@+id/btnMarketplace"
+        app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dashboard_add_doc" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/bottomSheet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="58dp"
+        android:background="@drawable/background_desktop_bottom_sheet"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bottomToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/desktopRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="16dp" />
+
+    </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.toolbar.DesktopBottomToolbar
         android:id="@+id/bottomToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingConstraints" />
 
-</FrameLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

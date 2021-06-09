@@ -5,7 +5,6 @@ import android.view.View
 import android.view.View.OVER_SCROLL_NEVER
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.anytypeio.anytype.R
@@ -33,6 +32,8 @@ import javax.inject.Inject
 class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop) {
 
     private val vm by viewModels<HomeDashboardViewModel> { factory }
+
+    var motionProgress = 0f // 0f being initial state
 
     private val dndBehavior by lazy {
         DashboardDragAndDropBehavior(
@@ -72,27 +73,20 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         )
     }
 
-    private val profileAdapter by lazy {
-        DashboardProfileAdapter(
-            data = mutableListOf(),
-            onProfileClicked = { vm.onProfileClicked() }
-        )
-    }
-
-    private val concatAdapter by lazy {
-        ConcatAdapter(ProfileContainerAdapter(profileAdapter), dashboardAdapter)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
-
+        dashboardRoot.progress = motionProgress
         with(vm) {
             state.observe(viewLifecycleOwner, this@HomeDashboardFragment)
             navigation.observe(viewLifecycleOwner, navObserver)
         }
-
         parseIntent()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        motionProgress = dashboardRoot.progress
     }
 
     private fun parseIntent() {
@@ -117,7 +111,19 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                     val profile = views.filterIsInstance<DashboardView.Profile>()
                     val links = views.filterByNotArchivedPages()
                     if (profile.isNotEmpty()) {
-                        profileAdapter.update(profile)
+                        val view = profile.first()
+                        avatarContainer.bind(
+                            name = view.name,
+                            color = context?.getColor(R.color.dashboard_default_avatar_circle_color)
+                        )
+                        view.avatar?.let { avatar ->
+                            avatarContainer.icon(avatar)
+                        }
+                        if (view.name.isNotEmpty()) {
+                            tvGreeting.text = getString(R.string.greet, view.name)
+                        } else {
+                            tvGreeting.text = getText(R.string.greet_user)
+                        }
                     }
                     dashboardAdapter.update(links)
                 }
@@ -138,19 +144,8 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
         desktopRecycler.apply {
             overScrollMode = OVER_SCROLL_NEVER
-            layoutManager = GridLayoutManager(context, 2).apply {
-                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        return if (position == 0) {
-                            2
-                        } else {
-                            1
-                        }
-                    }
-                }
-            }
-
-            adapter = concatAdapter
+            layoutManager = GridLayoutManager(context, COLUMN_COUNT)
+            adapter = dashboardAdapter
             ItemTouchHelper(dndBehavior).attachToRecyclerView(this)
             addItemDecoration(decoration)
             setHasFixedSize(true)
@@ -161,19 +156,24 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             .onEach { vm.onPageNavigationClicked() }
             .launchIn(lifecycleScope)
 
-        bottomToolbar
-            .addPageClick()
+        btnAddDoc
+            .clicks()
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
 
-        bottomToolbar
-            .searchClicks()
+        btnSearch
+            .clicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
-        createSetButton
+        btnMarketplace
             .clicks()
-            .onEach { vm.onCreateNewObjectSetClicked() }
+            .onEach { toast(getString(R.string.coming_soon)) }
+            .launchIn(lifecycleScope)
+
+        ivSettings
+            .clicks()
+            .onEach { vm.onProfileClicked() }
             .launchIn(lifecycleScope)
     }
 

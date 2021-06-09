@@ -90,6 +90,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
 
     <string name="greet">Hi, %1$s</string>
+    <string name="greet_user">Hi, User</string>
     <string name="enter_your_code">Enter your invitation code</string>
     <string name="organize_everything">Welcome to Anytype</string>
     <string name="setting_up_the_wallet">Setting up the wallet…</string>

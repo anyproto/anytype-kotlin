@@ -122,4 +122,6 @@
     <color name="default_filter_status_text_color">@color/black</color>
     <color name="data_view_divider_color">#DFDDD0</color>
 
+    <color name="dashboard_default_avatar_circle_color">#80F5F5F5</color>
+
 </resources>

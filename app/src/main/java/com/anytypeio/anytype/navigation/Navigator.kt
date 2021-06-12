@@ -5,8 +5,8 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
@@ -119,10 +119,6 @@ class Navigator : AppNavigation {
             Bundle().apply { putString(Keys.PIN_CODE_KEY, pin) }
         )
         */
-    }
-
-    override fun openKanban() {
-        navController?.navigate(R.id.action_desktopScreen_to_kanbanBoardFragment)
     }
 
     override fun openGoals() {

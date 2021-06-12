@@ -48,7 +48,6 @@ abstract class NavigationFragment(
             is Command.OpenSwitchDisplayView -> navigation.openSwitchDisplayView()
             is Command.OpenCustomizeDisplayView -> navigation.openCustomizeDisplayView()
             is Command.Exit -> navigation.exit()
-            is Command.OpenKanbanScreen -> navigation.openKanban()
             is Command.OpenGoalsScreen -> navigation.openGoals()
             is Command.ExitToDesktop -> navigation.exitToDesktop()
             is Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()

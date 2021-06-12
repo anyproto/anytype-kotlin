@@ -24,18 +24,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_desktopScreen_to_databaseViewFragment"
-            app:destination="@id/databaseViewFragment" />
-        <action
-            android:id="@+id/action_desktopScreen_to_addViewModalFragment"
-            app:destination="@id/addViewModalFragment" />
-        <action
-            android:id="@+id/action_desktopScreen_to_editDatabaseFragment"
-            app:destination="@id/editDatabaseFragment" />
-        <action
-            android:id="@+id/action_desktopScreen_to_kanbanBoardFragment"
-            app:destination="@id/kanbanBoardFragment" />
-        <action
             android:id="@+id/action_desktopScreen_to_goalsFragment"
             app:destination="@id/goalsFragment" />
         <action
@@ -279,7 +267,7 @@
             app:popUpToInclusive="true" />
         <fragment
             android:id="@+id/choosePinCodeScreen"
-            android:name="com.anytypeio.anytype.feature_login.ui.login.presentation.ui.pin.ChoosePinCodeFragment"
+            android:name="com.anytypeio.anytype.ui.auth.pin.ChoosePinCodeFragment"
             android:label="StartLoginFragment"
             tools:layout="@layout/fragment_choose_pin_code" />
         <fragment
@@ -301,23 +289,6 @@
                 app:popExitAnim="@anim/slide_out_right" />
         </fragment>
     </navigation>
-    <fragment
-        android:id="@+id/databaseViewFragment"
-        android:name="com.anytypeio.anytype.ui.database.table.DatabaseViewFragment"
-        android:label="DatabaseViewFragment" />
-    <dialog
-        android:id="@+id/addViewModalFragment"
-        android:name="com.anytypeio.anytype.ui.database.modals.AddDisplayFragment"
-        android:label="AddViewModalFragment" />
-    <dialog
-        android:id="@+id/editDatabaseFragment"
-        android:name="com.anytypeio.anytype.ui.database.modals.EditDatabaseFragment"
-        android:label="EditDatabaseFragment" />
-
-    <fragment
-        android:id="@+id/kanbanBoardFragment"
-        android:name="com.anytypeio.anytype.ui.database.kanban.KanbanBoardFragment"
-        android:label="KanbanBoardFragment" />
 
     <fragment
         android:id="@+id/goalsFragment"

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.navigation
 
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 
 interface AppNavigation {
@@ -34,7 +34,6 @@ interface AppNavigation {
     fun openEditDatabase()
     fun openSwitchDisplayView()
     fun openCustomizeDisplayView()
-    fun openKanban()
     fun openGoals()
     fun exit()
     fun exitToDesktop()
@@ -79,7 +78,6 @@ interface AppNavigation {
         object OpenEditDatabase : Command()
         object OpenSwitchDisplayView : Command()
         object OpenCustomizeDisplayView : Command()
-        object OpenKanbanScreen : Command()
         object OpenGoalsScreen : Command()
         object OpenDebugSettingsScreen: Command()
 

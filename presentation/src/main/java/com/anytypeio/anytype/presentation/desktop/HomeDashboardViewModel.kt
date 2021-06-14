@@ -9,21 +9,21 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_PROFILE
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
@@ -53,6 +53,9 @@ class HomeDashboardViewModel(
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
+    private val isProfileNavigationEnabled = MutableStateFlow(false)
+    val toasts = MutableSharedFlow<String>()
+
     private val machine = Interactor(scope = viewModelScope)
 
     private val movementChannel = Channel<Movement>()
@@ -62,7 +65,8 @@ class HomeDashboardViewModel(
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
-    private var ctx = ""
+    private var ctx: Id = ""
+    private var profile: Id = ""
 
     init {
         startProcessingState()
@@ -90,6 +94,8 @@ class HomeDashboardViewModel(
             result.either(
                 fnR = { config ->
                     ctx = config.home
+                    profile = config.profile
+                    isProfileNavigationEnabled.value = true
                     startInterceptingEvents(context = config.home)
                     processDragAndDrop(context = config.home)
                 },
@@ -286,6 +292,16 @@ class HomeDashboardViewModel(
             proceedWithOpeningDocument(target)
         else
             Timber.d("Skipping on-document click due to loading state")
+    }
+
+    fun onAvatarClicked() {
+        if (isProfileNavigationEnabled.value) {
+            proceedWithOpeningDocument(profile)
+        } else {
+            viewModelScope.launch {
+                toasts.emit("Profile is not ready yet. Please, try again later.")
+            }
+        }
     }
 
     fun onArchivedClicked(target: Id) {

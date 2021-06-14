@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.EqualSpacingItemDecoration
@@ -82,6 +83,11 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             navigation.observe(viewLifecycleOwner, navObserver)
         }
         parseIntent()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.subscribe(vm.toasts) { toast(it) }
     }
 
     override fun onPause() {
@@ -174,6 +180,11 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         ivSettings
             .clicks()
             .onEach { vm.onProfileClicked() }
+            .launchIn(lifecycleScope)
+
+        avatarContainer
+            .clicks()
+            .onEach { vm.onAvatarClicked() }
             .launchIn(lifecycleScope)
     }
 

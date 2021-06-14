@@ -2,6 +2,10 @@
 
 ## Version 0.1.12 (WIP)
 
+### Design & UX 🔳
+
+* Redesigned dashboard (#1538, #1545)
+
 ### Fixes & tech 🚒
 
 * Do not crash when failing to parse path for avatar image during sign-up flow (#1544)

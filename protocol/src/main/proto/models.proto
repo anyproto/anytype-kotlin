@@ -26,6 +26,7 @@ enum SmartBlockType {
     File = 0x100;
 
     Template = 0x120;
+    BundledTemplate = 0x121;
 
     MarketplaceType = 0x110;
     MarketplaceRelation = 0x111;
@@ -374,14 +375,18 @@ message Restrictions {
     repeated DataviewRestrictions dataview = 2;
 
     enum ObjectRestriction {
+        None = 0;
         // restricts delete
-        Delete = 0;
+        Delete = 1;
         // restricts work with relations
-        Relation = 1;
-        // restricts edit a header (title, description, etc.)
-        Header = 2;
-        // restricts create a new block
-        CreateBlock = 3;
+        Relations = 2;
+        // restricts work with blocks
+        Blocks = 3;
+        // restricts work with details
+        Details = 4;
+        TypeChange = 5;
+        LayoutChange = 6;
+        Template = 7;
     }
 
 
@@ -391,11 +396,10 @@ message Restrictions {
     }
 
     enum DataviewRestriction {
-        CreateView = 0;
-        Filters = 1;
-        CreateRelation = 2;
-        CreateObject = 3;
-        EditObject = 4;
+        DVNone = 0;
+        DVRelation = 1;
+        DVCreateObject = 2;
+        DVViews = 3;
     }
 }
 

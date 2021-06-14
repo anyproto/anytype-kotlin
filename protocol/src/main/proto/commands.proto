@@ -1406,6 +1406,7 @@ message Rpc {
                     string contextId = 1;
                     string blockId = 2;
                     google.protobuf.Struct record = 3;
+                    string templateId = 4;
                 }
 
                 message Response {
@@ -1731,6 +1732,32 @@ message Rpc {
                 }
             }
         }
+
+        message Show {
+            message Request {
+                string contextId = 1; // id of the context blo1k
+                string blockId = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
+                        // ...
+                    }
+                }
+            }
+        }
+
 
         message GetPublicWebURL {
             message Request {
@@ -3088,9 +3115,36 @@ message Rpc {
         }
 
         enum Format {
-            MD = 0;
+            Markdown = 0;
+            Protobuf = 1;
         }
     }
+
+    message ExportTemplates {
+        message Request {
+            // the path where export files will place
+            string path = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            string path = 2;
+            ResponseEvent event = 3;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    // ...
+                }
+            }
+        }
+    }
+
 
     message MakeTemplate {
         message Request {
@@ -3115,7 +3169,80 @@ message Rpc {
                 }
             }
         }
+    }
 
+    message MakeTemplateByObjectType {
+        message Request {
+            // id of desired object type
+            string objectType = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            // created template id
+            string id = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    // ...
+                }
+            }
+        }
+    }
+
+    message CloneTemplate {
+        message Request {
+            // id of template block for cloning
+            string contextId = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            // created template id
+            string id = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    // ...
+                }
+            }
+        }
+    }
+
+    message ApplyTemplate {
+        message Request {
+            string contextId = 1;
+            // id of template
+            string templateId = 2;
+        }
+
+        message Response {
+            Error error = 1;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    // ...
+                }
+            }
+        }
     }
 
     message Debug {

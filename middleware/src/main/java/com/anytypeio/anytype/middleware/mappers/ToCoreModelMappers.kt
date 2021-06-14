@@ -481,27 +481,31 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.IndexedRelation -> SmartBlockType.INDEXED_RELATION
     MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
     MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
+    MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
 }
 
 // ---------------------- RESTRICTIONS ------------------------
-fun MObjectRestriction.toCoreModel(): ObjectRestriction = when (this) {
+fun MObjectRestriction.toCoreModel(): ObjectRestriction? = when (this) {
     MObjectRestriction.Delete -> ObjectRestriction.DELETE
-    MObjectRestriction.Relation -> ObjectRestriction.RELATION
-    MObjectRestriction.Header -> ObjectRestriction.DETAILS
-    MObjectRestriction.CreateBlock -> ObjectRestriction.CREATE_BLOCK
+    MObjectRestriction.Relations -> ObjectRestriction.RELATIONS
+    MObjectRestriction.Details -> ObjectRestriction.DETAILS
+    MObjectRestriction.Blocks -> ObjectRestriction.BLOCKS
+    MObjectRestriction.TypeChange -> ObjectRestriction.TYPE_CHANGE
+    MObjectRestriction.LayoutChange -> ObjectRestriction.LAYOUT_CHANGE
+    MObjectRestriction.Template -> ObjectRestriction.TEMPLATE
+    MObjectRestriction.None -> null
 }
 
 fun MDVRestrictions.toCoreModel(): DataViewRestrictions {
     return DataViewRestrictions(
         block = this.blockId,
-        restrictions = this.restrictions.map { it.toCoreModel() }
+        restrictions = this.restrictions.mapNotNull { it.toCoreModel() }
     )
 }
 
-fun MDVRestriction.toCoreModel(): DataViewRestriction = when (this) {
-    Restrictions.DataviewRestriction.CreateView -> DataViewRestriction.CREATE_VIEW
-    Restrictions.DataviewRestriction.Filters -> DataViewRestriction.FILTERS
-    Restrictions.DataviewRestriction.CreateRelation -> DataViewRestriction.CREATE_RELATION
-    Restrictions.DataviewRestriction.CreateObject -> DataViewRestriction.CREATE_OBJECT
-    Restrictions.DataviewRestriction.EditObject -> DataViewRestriction.EDIT_OBJECT
+fun MDVRestriction.toCoreModel(): DataViewRestriction? = when (this) {
+    Restrictions.DataviewRestriction.DVViews -> DataViewRestriction.VIEWS
+    Restrictions.DataviewRestriction.DVRelation -> DataViewRestriction.RELATION
+    Restrictions.DataviewRestriction.DVCreateObject -> DataViewRestriction.CREATE_OBJECT
+    Restrictions.DataviewRestriction.DVNone -> null
 }

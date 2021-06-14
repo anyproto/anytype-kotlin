@@ -56,4 +56,5 @@ message ObjectStoreChecksums {
     int32 filesForceReindexCounter = 5; // increased in order to fully reindex all objects
     int32 idxRebuildCounter = 6; // increased in order to remove indexes and reindex everything. Automatically triggers objects and files reindex(one time only)
     int32 fulltextRebuild = 7; // increased in order to perform fulltext indexing for all type of objects (useful when we change fulltext config)
+    string bundledTemplates = 8;
 }

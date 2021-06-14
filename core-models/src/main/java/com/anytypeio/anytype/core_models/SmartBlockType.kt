@@ -17,5 +17,6 @@ enum class SmartBlockType {
     BUNDLED_RELATION,
     INDEXED_RELATION,
     ANYTYPE_PROFILE,
-    DATABASE
+    DATABASE,
+    BUNDLED_TEMPLATE
 }

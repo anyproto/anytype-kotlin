@@ -13,17 +13,17 @@ enum class ObjectRestriction {
     /**
      * restricts work with relations
      */
-    RELATION,
+    RELATIONS,
 
     /**
-     * restricts edit details
+     * restricts work with details
      */
     DETAILS,
 
     /**
-     * restricts create a new block
+     * restricts work with blocks
      */
-    CREATE_BLOCK,
+    BLOCKS,
 
     /**
      * restricts changing type
@@ -33,6 +33,8 @@ enum class ObjectRestriction {
     /**
      * restricts changing layout
      */
-    LAYOUT_CHANGE
+    LAYOUT_CHANGE,
+
+    TEMPLATE
 
 }

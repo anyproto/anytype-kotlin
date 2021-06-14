@@ -7,6 +7,10 @@
 * Do not crash when failing to parse path for avatar image during sign-up flow (#1544)
 * Do not crash when opening action menu for archived page without icon (#1544)
 
+### Sets & relations 📚
+
+* Do not exit edit mode when deleting one of the values from relation's file list (#1543)
+
 ## Version 0.1.11
 
 ### New features & enhancements 🚀

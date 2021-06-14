@@ -140,19 +140,23 @@ abstract class RelationValueBaseViewModel(
             }
             Relation.Format.FILE -> {
                 relationFormat = Relation.Format.FILE
+                val isRemoveable = isEditing.value
                 val value = record.getOrDefault(relationId, null)
-                check(value is List<*>) { "Unexpected file data format" }
-                value.typeOf<Id>().forEach { id ->
-                    val detail = details.provide()[id]
-                    items.add(
-                        RelationValueView.File(
-                            id = id,
-                            name = detail?.name.orEmpty(),
-                            mime = detail?.fileMimeType.orEmpty(),
-                            ext = detail?.fileExt.orEmpty(),
-                            image = detail?.iconImage
+                if (value != null) {
+                    check(value is List<*>) { "Unexpected file data format" }
+                    value.typeOf<Id>().forEach { id ->
+                        val detail = details.provide()[id]
+                        items.add(
+                            RelationValueView.File(
+                                id = id,
+                                name = detail?.name.orEmpty(),
+                                mime = detail?.fileMimeType.orEmpty(),
+                                ext = detail?.fileExt.orEmpty(),
+                                image = detail?.iconImage,
+                                removeable = isRemoveable
+                            )
                         )
-                    )
+                    }
                 }
             }
             else -> throw IllegalStateException("Unsupported format: ${relation.format}")

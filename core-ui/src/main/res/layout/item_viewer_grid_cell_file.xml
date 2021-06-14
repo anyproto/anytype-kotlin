@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/viewer_grid_header_width"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
         android:id="@+id/file0"

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
@@ -128,12 +129,14 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                 fr.show(childFragmentManager, null)
             }
             is Command.EditRelationValue -> {
-                val fr = RelationValueFragment.new(
-                    ctx = ctx,
-                    relation = command.relation,
-                    target = command.target
+                findNavController().navigate(
+                    R.id.objectRelationValueScreen,
+                    bundleOf(
+                        RelationValueBaseFragment.CTX_KEY to command.ctx,
+                        RelationValueBaseFragment.TARGET_KEY to command.target,
+                        RelationValueBaseFragment.RELATION_KEY to command.relation
+                    )
                 )
-                fr.show(childFragmentManager, null)
             }
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {

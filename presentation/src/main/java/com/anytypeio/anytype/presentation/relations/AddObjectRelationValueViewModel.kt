@@ -148,7 +148,8 @@ abstract class AddObjectRelationValueViewModel(
                             RelationValueView.Object(
                                 id = id,
                                 name = detail?.name.orEmpty(),
-                                type = objectType?.name,
+                                typeName = objectType?.name,
+                                type = objectType?.url,
                                 emoji = detail?.iconEmoji?.ifEmpty { null },
                                 image = detail?.iconImage?.let {
                                     if (it.isEmpty()) null else urlBuilder.thumbnail(it)
@@ -165,7 +166,8 @@ abstract class AddObjectRelationValueViewModel(
                         RelationValueView.Object(
                             id = value,
                             name = detail?.name.orEmpty(),
-                            type = objectType?.name,
+                            typeName = objectType?.name,
+                            type = objectType?.url,
                             emoji = detail?.iconEmoji?.ifEmpty { null },
                             image = detail?.iconImage?.let {
                                 if (it.isEmpty()) null else urlBuilder.thumbnail(it)

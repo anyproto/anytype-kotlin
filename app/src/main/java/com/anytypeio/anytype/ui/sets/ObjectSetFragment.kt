@@ -12,10 +12,12 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.core.view.marginBottom
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
@@ -42,7 +44,7 @@ import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
-import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
+import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.sets.modals.*
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import kotlinx.android.synthetic.main.fragment_object_set.*
@@ -255,14 +257,16 @@ open class ObjectSetFragment :
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditRelationCell -> {
-                val fr = RelationValueDVFragment.new(
-                    ctx = command.ctx,
-                    target = command.target,
-                    dataview = command.dataview,
-                    relation = command.relation,
-                    viewer = command.viewer
+                findNavController().navigate(
+                    R.id.dataViewRelationValueScreen,
+                    bundleOf(
+                        RelationValueBaseFragment.CTX_KEY to command.ctx,
+                        RelationValueBaseFragment.TARGET_KEY to command.target,
+                        RelationValueBaseFragment.DATAVIEW_KEY to command.dataview,
+                        RelationValueBaseFragment.RELATION_KEY to command.relation,
+                        RelationValueBaseFragment.VIEWER_KEY to command.viewer
+                    )
                 )
-                fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ViewerCustomizeScreen -> {
                 val fr = ViewerBottomSheetRootFragment.new(
@@ -379,8 +383,7 @@ open class ObjectSetFragment :
             if (isLoading) {
                 dvProgressBar.show()
                 logoProgressBar.show()
-            }
-            else {
+            } else {
                 dvProgressBar.hide()
                 logoProgressBar.hide()
             }

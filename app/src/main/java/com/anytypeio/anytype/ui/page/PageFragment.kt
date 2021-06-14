@@ -25,11 +25,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.ChangeBounds
@@ -916,13 +918,14 @@ open class PageFragment :
                 }
                 is Command.OpenObjectRelationScreen.List -> {
                     hideKeyboard()
-                    RelationListFragment
-                        .new(
-                            ctx = command.ctx,
-                            target = command.target,
-                            mode = RelationListFragment.MODE_LIST
+                    findNavController().navigate(
+                        R.id.objectRelationListScreen,
+                        bundleOf(
+                            RelationListFragment.ARG_CTX to command.ctx,
+                            RelationListFragment.ARG_TARGET to command.target,
+                            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
                         )
-                        .show(childFragmentManager, null)
+                    )
                 }
                 is Command.OpenObjectRelationScreen.Value.Default -> {
                     hideKeyboard()

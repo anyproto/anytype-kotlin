@@ -76,7 +76,7 @@ class Navigator : AppNavigation {
 
     override fun openDocument(id: String, editorSettings: EditorSettings?) {
         navController?.navigate(
-            R.id.pageScreen,
+            R.id.objectNavigation,
             Bundle().apply {
                 putString(PageFragment.ID_KEY, id)
                 editorSettings?.let {
@@ -88,7 +88,7 @@ class Navigator : AppNavigation {
 
     override fun launchDocument(id: String) {
         navController?.navigate(
-            R.id.pageScreen,
+            R.id.objectNavigation,
             bundleOf(PageFragment.ID_KEY to id),
             navOptions {
                 popUpTo = R.id.desktopScreen
@@ -200,7 +200,7 @@ class Navigator : AppNavigation {
 
     override fun openObjectSet(target: String) {
         navController?.navigate(
-            R.id.objectSetScreen,
+            R.id.dataViewNavigation,
             bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
         )
     }

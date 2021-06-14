@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,9 +23,12 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
+import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import kotlinx.android.synthetic.main.fragment_relation_value.*
 import javax.inject.Inject
 
@@ -32,8 +36,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     OnStartDragListener,
     RelationObjectValueAddFragment.ObjectValueAddReceiver,
     FileActionsFragment.FileActionReceiver,
-    RelationFileValueAddFragment.FileValueAddReceiver
-{
+    RelationFileValueAddFragment.FileValueAddReceiver {
 
     protected val ctx get() = argString(CTX_KEY)
     protected val relation get() = argString(RELATION_KEY)
@@ -50,8 +53,14 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             onItemMoved = { from, to -> editCellTagAdapter.onItemMove(from, to) },
             onItemDropped = { onItemDropped() }
         ) {
-            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                if (viewHolder is DragAndDropViewHolder) return super.getMovementFlags(recyclerView, viewHolder)
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                if (viewHolder is DragAndDropViewHolder) return super.getMovementFlags(
+                    recyclerView,
+                    viewHolder
+                )
                 return makeMovementFlags(0, 0)
             }
         }
@@ -64,7 +73,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             onStatusClicked = {},
             onRemoveStatusClicked = { status -> onRemoveStatusClicked(status) },
             onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
-            onObjectClicked = {},
+            onObjectClicked = { o -> vm.onObjectClicked(o.id, o.type) },
             onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
             onFileClicked = {},
             onRemoveFileClicked = { file -> onRemoveFileClicked(file) }
@@ -104,8 +113,27 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.isFilterVisible) {
             if (it) filterInputContainer.visible() else filterInputContainer.gone()
         }
+        jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         super.onStart()
         vm.onStart(relationId = relation, objectId = target)
+    }
+
+    private fun navigate(command: AppNavigation.Command) {
+        when (command) {
+            is AppNavigation.Command.OpenObjectSet -> {
+                findNavController().navigate(
+                    R.id.objectSetScreen,
+                    bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.target)
+                )
+            }
+            is AppNavigation.Command.OpenPage -> {
+                findNavController().navigate(
+                    R.id.objectNavigation,
+                    bundleOf(PageFragment.ID_KEY to command.id)
+                )
+            }
+            else -> toast("Unexpected nav command: $command")
+        }
     }
 
     override fun onStop() {

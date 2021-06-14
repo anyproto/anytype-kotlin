@@ -11,8 +11,8 @@ class ObjectRelationObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(item: RelationValueView.Object) = with(itemView) {
         tvTitle.text = item.name
-        if (item.type != null) {
-            tvSubtitle.text = item.type
+        if (item.typeName != null) {
+            tvSubtitle.text = item.typeName
         } else {
             tvSubtitle.setText(R.string.unknown_object_type)
         }

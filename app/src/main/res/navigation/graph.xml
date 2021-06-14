@@ -5,11 +5,36 @@
     android:id="@+id/main_navigation"
     app:startDestination="@id/splashScreen">
 
-    <fragment
-        android:id="@+id/pageScreen"
-        android:name="com.anytypeio.anytype.ui.page.PageFragment"
-        android:label="Page screen"
-        tools:layout="@layout/fragment_page" />
+    <navigation
+        android:id="@+id/objectNavigation"
+        app:startDestination="@id/pageScreen">
+        <fragment
+            android:id="@+id/pageScreen"
+            android:name="com.anytypeio.anytype.ui.page.PageFragment"
+            android:label="Page screen"
+            tools:layout="@layout/fragment_page" />
+        <dialog
+            android:id="@+id/objectRelationListScreen"
+            android:name="com.anytypeio.anytype.ui.relations.RelationListFragment"
+            android:label="Object-Relation-List-Screen" />
+        <dialog
+            android:id="@+id/objectRelationValueScreen"
+            android:name="com.anytypeio.anytype.ui.relations.RelationValueFragment"
+            android:label="Object-Relation-Value-Screen" />
+    </navigation>
+
+    <navigation
+        android:id="@+id/dataViewNavigation"
+        app:startDestination="@id/objectSetScreen">
+        <fragment
+            android:id="@+id/objectSetScreen"
+            android:name="com.anytypeio.anytype.ui.sets.ObjectSetFragment"
+            android:label="ObjectSetScreen" />
+        <dialog
+            android:id="@+id/dataViewRelationValueScreen"
+            android:name="com.anytypeio.anytype.ui.relations.RelationValueDVFragment"
+            android:label="DV-Relation-Value-Screen" />
+    </navigation>
 
     <fragment
         android:id="@+id/desktopScreen"
@@ -328,10 +353,6 @@
         android:id="@+id/archiveFragment"
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
         android:label="ArchiveFragment" />
-    <fragment
-        android:id="@+id/objectSetScreen"
-        android:name="com.anytypeio.anytype.ui.sets.ObjectSetFragment"
-        android:label="ObjectSetScreen" />
     <fragment
         android:id="@+id/fullScreenImageFragment"
         android:name="com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment"

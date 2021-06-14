@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataView
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
@@ -31,6 +32,8 @@ abstract class RelationValueBaseViewModel(
     private val types: ObjectTypeProvider,
     private val urlBuilder: UrlBuilder
 ) : ViewModel() {
+
+    val navigation = MutableSharedFlow<AppNavigation.Command>()
 
     private val jobs = mutableListOf<Job>()
     private var relationFormat: Relation.Format? = null
@@ -110,7 +113,8 @@ abstract class RelationValueBaseViewModel(
                             RelationValueView.Object(
                                 id = id,
                                 name = detail?.name.orEmpty(),
-                                type = objectType?.name,
+                                typeName = objectType?.name,
+                                type = objectType?.url,
                                 emoji = detail?.iconEmoji?.ifEmpty { null },
                                 image = detail?.iconImage?.let {
                                     if (it.isEmpty()) null else urlBuilder.thumbnail(it)
@@ -127,7 +131,8 @@ abstract class RelationValueBaseViewModel(
                         RelationValueView.Object(
                             id = value,
                             name = detail?.name.orEmpty(),
-                            type = objectType?.name,
+                            typeName = objectType?.name,
+                            type = objectType?.url,
                             emoji = detail?.iconEmoji?.ifEmpty { null },
                             image = detail?.iconImage?.let {
                                 if (it.isEmpty()) null else urlBuilder.thumbnail(it)
@@ -221,12 +226,26 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
-    fun onFileValueActionUploadFromGalleryClicked() {
+    fun onFileValueActionUploadFromGalleryClicked() {}
 
-    }
+    fun onFileValueActionUploadFromStorageClicked() {}
 
-    fun onFileValueActionUploadFromStorageClicked() {
-
+    fun onObjectClicked(id: Id, type: String?) {
+        types.provide().find { it.url == type }?.let { targetType ->
+            when (targetType.layout) {
+                ObjectType.Layout.PAGE, ObjectType.Layout.PROFILE -> {
+                    viewModelScope.launch {
+                        navigation.emit(AppNavigation.Command.OpenPage(id))
+                    }
+                }
+                ObjectType.Layout.SET -> {
+                    viewModelScope.launch {
+                        navigation.emit(AppNavigation.Command.OpenObjectSet(id))
+                    }
+                }
+                else -> Timber.d("Unexpected layout: ${targetType.layout}")
+            }
+        }
     }
 
     sealed class ObjectRelationValueCommand {
@@ -264,6 +283,7 @@ abstract class RelationValueBaseViewModel(
         data class Object(
             val id: Id,
             val name: String,
+            val typeName: String?,
             val type: String?,
             val removeable: Boolean,
             val emoji: String?,

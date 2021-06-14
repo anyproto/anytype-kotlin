@@ -140,10 +140,11 @@ class RelationObjectValueAddViewModel(
                         if (id !in ids) {
                             RelationValueView.Object(
                                 id = id,
-                                type = type?.substringAfterLast(
+                                typeName = type?.substringAfterLast(
                                     delimiter = "/",
                                     missingDelimiterValue = ""
                                 ) ?: "",
+                                type = type,
                                 name = name.orEmpty(),
                                 image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(
                                     image

@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -56,7 +56,7 @@ interface Store<T> {
         override fun cancel() = channel.cancel()
     }
 
-    class Focus : Conflated<Editor.Focus>(Editor.Focus.empty()) {
+    class Focus : State<Editor.Focus>(Editor.Focus.empty()) {
         override suspend fun update(t: Editor.Focus) {
             Timber.d("Update focus in store: $t")
             super.update(t)
@@ -66,7 +66,7 @@ interface Store<T> {
     class Context : Conflated<String>("")
     class Screen : State<List<BlockView>>(emptyList())
 
-    class Details : Conflated<Block.Details>(Block.Details()) {
+    class Details : State<Block.Details>(Block.Details()) {
         suspend fun add(target: Id, fields: Block.Fields) {
             update(current().copy(details = current().details + mapOf(target to fields)))
         }
@@ -75,5 +75,5 @@ interface Store<T> {
     class Relations : State<List<Relation>>(emptyList())
     class ObjectTypes : State<List<ObjectType>>(emptyList())
 
-    class TextSelection : Conflated<Editor.TextSelection>(Editor.TextSelection.empty())
+    class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }

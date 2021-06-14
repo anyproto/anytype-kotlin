@@ -6,6 +6,7 @@
 
 * Do not crash when failing to parse path for avatar image during sign-up flow (#1544)
 * Do not crash when opening action menu for archived page without icon (#1544)
+* Do not crash when navigating back in case of navigation stack containing more than one copy of the same document (ScreenA-ScreenB-ScreenA scenario) (#1541)
 
 ### Sets & relations 📚
 

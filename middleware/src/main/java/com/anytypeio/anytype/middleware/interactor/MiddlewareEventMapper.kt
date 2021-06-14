@@ -34,7 +34,9 @@ fun anytype.Event.Message.toCoreModels(
             ),
             type = type,
             objectTypes = event.objectTypes.map { it.toCoreModels() },
-            relations = event.relations.map { it.toCoreModels() }
+            relations = event.relations.map { it.toCoreModels() },
+            objectRestrictions = event.restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
+            dataViewRestrictions = event.restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
         )
     }
     blockSetText != null -> {

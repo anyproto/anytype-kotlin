@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Block.Content.Text
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 
 sealed class Event {
 
@@ -24,7 +26,9 @@ sealed class Event {
             val type: SmartBlockType = SmartBlockType.PAGE,
             val objectTypes: List<ObjectType> = emptyList(),
             val objectTypePerObject: Map<String, String> = emptyMap(),
-            val relations: List<Relation> = emptyList()
+            val relations: List<Relation> = emptyList(),
+            val objectRestrictions: List<ObjectRestriction> = emptyList(),
+            val dataViewRestrictions: List<DataViewRestrictions> = emptyList()
         ) : Command()
 
         data class AddBlock(

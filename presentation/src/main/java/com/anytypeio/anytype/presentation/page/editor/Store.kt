@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.editor
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
@@ -74,6 +75,7 @@ interface Store<T> {
 
     class Relations : State<List<Relation>>(emptyList())
     class ObjectTypes : State<List<ObjectType>>(emptyList())
+    class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
 
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }

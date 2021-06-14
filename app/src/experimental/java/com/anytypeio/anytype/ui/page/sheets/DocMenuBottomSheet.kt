@@ -25,6 +25,9 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     private val image get() = arg<String?>(IMAGE_KEY)
     private val emoji get() = arg<String?>(EMOJI_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
+    private val isDeleteAllowed get() = arg<Boolean>(IS_DELETE_ALLOWED)
+    private val isLayoutAllowed get() = arg<Boolean>(IS_LAYOUT_ALLOWED)
+    private val isAddCoverAllowed get() = arg<Boolean>(IS_DETAILS_ALLOWED)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,26 +48,41 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             }
             .launchIn(lifecycleScope)
 
-        archiveContainer
-            .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onArchiveClicked() }.also { dismiss() }
-            }
-            .launchIn(lifecycleScope)
+        if (isDeleteAllowed) {
+            archiveContainer.alpha = 1.0F
+            archiveContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onArchiveClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
+        } else {
+            archiveContainer.alpha = 0.4F
+        }
 
-        addCoverContainer
-            .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onAddCoverClicked() }.also { dismiss() }
-            }
-            .launchIn(lifecycleScope)
+        if (isAddCoverAllowed) {
+            addCoverContainer.alpha = 1.0F
+            addCoverContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onAddCoverClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
+        } else {
+            addCoverContainer.alpha = 0.4F
+        }
 
-        setLayoutContainer
-            .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onLayoutClicked() }.also { dismiss() }
-            }
-            .launchIn(lifecycleScope)
+        if (isLayoutAllowed) {
+            setLayoutContainer.alpha = 1.0F
+            setLayoutContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onLayoutClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
+        } else {
+            setLayoutContainer.alpha = 0.4F
+        }
 
         relationContainer
             .clicks()
@@ -84,7 +102,6 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                     requireContext().avatarColor(it)
                 }
             )
-            archiveContainer.gone()
             addCoverContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_bottom)
             searchOnPageContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_top)
         }
@@ -139,14 +156,20 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             status: SyncStatus,
             image: Url?,
             emoji: String?,
-            isProfile: Boolean = false
+            isProfile: Boolean = false,
+            isDeleteAllowed: Boolean,
+            isLayoutAllowed: Boolean,
+            isAddCoverAllowed: Boolean
         ) = DocMenuBottomSheet().apply {
             arguments = bundleOf(
                 TITLE_KEY to title,
                 STATUS_KEY to status.name,
                 IMAGE_KEY to image,
                 EMOJI_KEY to emoji,
-                IS_PROFILE_KEY to isProfile
+                IS_PROFILE_KEY to isProfile,
+                IS_DELETE_ALLOWED to isDeleteAllowed,
+                IS_LAYOUT_ALLOWED to isLayoutAllowed,
+                IS_DETAILS_ALLOWED to isAddCoverAllowed
             )
         }
 
@@ -155,6 +178,9 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         private const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
         private const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
         private const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
+        private const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
+        private const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
+        private const val IS_DETAILS_ALLOWED = "arg.doc-menu-bottom-sheet.is-details-allowed"
     }
 
     interface DocumentMenuActionReceiver {

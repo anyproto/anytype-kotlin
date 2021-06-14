@@ -70,14 +70,20 @@ sealed class Command {
         val status: SyncStatus,
         val title: String?,
         val emoji: String?,
-        val image: String?
+        val image: String?,
+        val isDeleteAllowed: Boolean,
+        val isLayoutAllowed: Boolean,
+        val isDetailsAllowed: Boolean
     ) : Command()
 
     data class OpenProfileMenu(
         val status: SyncStatus,
         val title: String?,
         val emoji: String?,
-        val image: String?
+        val image: String?,
+        val isDeleteAllowed: Boolean,
+        val isLayoutAllowed: Boolean,
+        val isDetailsAllowed: Boolean
     ) : Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()

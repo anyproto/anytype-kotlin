@@ -41,3 +41,6 @@ typealias MRelationFormat = anytype.model.RelationFormat
 typealias MRelationDataSource = anytype.model.Relation.DataSource
 typealias MRelation = anytype.model.Relation
 typealias MRelationOption = anytype.model.Relation.Option
+typealias MObjectRestriction = anytype.model.Restrictions.ObjectRestriction
+typealias MDVRestrictions = anytype.model.Restrictions.DataviewRestrictions
+typealias MDVRestriction = anytype.model.Restrictions.DataviewRestriction

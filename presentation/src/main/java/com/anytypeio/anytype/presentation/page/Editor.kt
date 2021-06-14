@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.page
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.presentation.page.editor.Proxy
@@ -32,6 +33,7 @@ interface Editor {
         val relations: Store.Relations = Store.Relations()
         val objectTypes: Store.ObjectTypes = Store.ObjectTypes()
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
+        val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
     }
 
     class Proxer(

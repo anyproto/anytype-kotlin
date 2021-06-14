@@ -25,6 +25,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     private val image get() = arg<String?>(IMAGE_KEY)
     private val emoji get() = arg<String?>(EMOJI_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
+    private val isDeleteAllowed get() = arg<Boolean>(IS_DELETE_ALLOWED)
+    private val isAddCoverAllowed get() = arg<Boolean>(IS_ADD_COVER_ALLOWED)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,19 +47,29 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             }
             .launchIn(lifecycleScope)
 
-        archiveContainer
-            .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onArchiveClicked() }.also { dismiss() }
-            }
-            .launchIn(lifecycleScope)
+        if (isDeleteAllowed) {
+            archiveContainer.alpha = 1.0F
+            archiveContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onArchiveClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
+        } else {
+            archiveContainer.alpha = 0.4F
+        }
 
-        addCoverContainer
-            .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onAddCoverClicked() }.also { dismiss() }
-            }
-            .launchIn(lifecycleScope)
+        if (isAddCoverAllowed) {
+            addCoverContainer.alpha = 1.0F
+            addCoverContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onAddCoverClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
+        } else {
+            addCoverContainer.alpha = 0.4F
+        }
 
         if (image != null && !isProfile) icon.setImageOrNull(image)
         if (emoji != null && !isProfile) icon.setEmojiOrNull(emoji)
@@ -125,14 +137,19 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             status: SyncStatus,
             image: Url?,
             emoji: String?,
-            isProfile: Boolean = false
+            isProfile: Boolean = false,
+            isDeleteAllowed: Boolean = true,
+            isLayoutAllowed: Boolean = true,
+            isAddCoverAllowed: Boolean = true
         ) = DocMenuBottomSheet().apply {
             arguments = bundleOf(
                 TITLE_KEY to title,
                 STATUS_KEY to status.name,
                 IMAGE_KEY to image,
                 EMOJI_KEY to emoji,
-                IS_PROFILE_KEY to isProfile
+                IS_PROFILE_KEY to isProfile,
+                IS_DELETE_ALLOWED to isDeleteAllowed,
+                IS_ADD_COVER_ALLOWED to isAddCoverAllowed
             )
         }
 
@@ -141,6 +158,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         private const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
         private const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
         private const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
+        private const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
+        private const val IS_ADD_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-add-cover-allowed"
     }
 
     interface DocumentMenuActionReceiver {

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.editor
 import MockDataFactory
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
@@ -272,7 +273,8 @@ open class EditorPresentationTestSetup {
     fun stubOpenDocument(
         document: List<Block> = emptyList(),
         details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList()
+        relations: List<Relation> = emptyList(),
+        objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -285,7 +287,8 @@ open class EditorPresentationTestSetup {
                                 root = root,
                                 details = details,
                                 relations = relations,
-                                blocks = document
+                                blocks = document,
+                                objectRestrictions = objectRestrictions
                             )
                         )
                     )

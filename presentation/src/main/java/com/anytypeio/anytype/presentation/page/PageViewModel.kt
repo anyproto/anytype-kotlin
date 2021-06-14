@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
 import com.anytypeio.anytype.core_models.ext.*
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -303,6 +304,7 @@ class PageViewModel(
                 orchestrator.stores.details.update(event.details)
                 orchestrator.stores.relations.update(event.relations)
                 orchestrator.stores.objectTypes.update(event.objectTypes)
+                orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
             }
             if (event is Event.Command.Details) {
                 orchestrator.stores.details.apply { update(current().process(event)) }
@@ -1007,6 +1009,7 @@ class PageViewModel(
             when (content.type) {
                 SmartBlockType.PROFILE_PAGE -> {
                     val details = orchestrator.stores.details.current().details
+                    val restrictions = orchestrator.stores.objectRestrictions.current()
                     dispatch(
                         command = Command.OpenProfileMenu(
                             status = syncStatus.value ?: SyncStatus.UNKNOWN,
@@ -1026,7 +1029,10 @@ class PageViewModel(
                                     urlBuilder.image(name)
                                 else
                                     null
-                            }
+                            },
+                            isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
+                            isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
+                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
                         )
                     )
                     viewModelScope.sendEvent(
@@ -1036,6 +1042,7 @@ class PageViewModel(
                 }
                 SmartBlockType.PAGE -> {
                     val details = orchestrator.stores.details.current().details
+                    val restrictions = orchestrator.stores.objectRestrictions.current()
                     controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(
                         command = Command.OpenDocumentMenu(
@@ -1056,7 +1063,10 @@ class PageViewModel(
                                     urlBuilder.image(name)
                                 else
                                     null
-                            }
+                            },
+                            isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
+                            isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
+                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
                         )
                     )
                     viewModelScope.sendEvent(

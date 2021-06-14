@@ -4,7 +4,11 @@ import anytype.ResponseEvent
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.ObjectLinksInfo
+import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
 import timber.log.Timber
 
@@ -477,4 +481,27 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.IndexedRelation -> SmartBlockType.INDEXED_RELATION
     MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
     MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
+}
+
+// ---------------------- RESTRICTIONS ------------------------
+fun MObjectRestriction.toCoreModel(): ObjectRestriction = when (this) {
+    MObjectRestriction.Delete -> ObjectRestriction.DELETE
+    MObjectRestriction.Relation -> ObjectRestriction.RELATION
+    MObjectRestriction.Header -> ObjectRestriction.DETAILS
+    MObjectRestriction.CreateBlock -> ObjectRestriction.CREATE_BLOCK
+}
+
+fun MDVRestrictions.toCoreModel(): DataViewRestrictions {
+    return DataViewRestrictions(
+        block = this.blockId,
+        restrictions = this.restrictions.map { it.toCoreModel() }
+    )
+}
+
+fun MDVRestriction.toCoreModel(): DataViewRestriction = when (this) {
+    Restrictions.DataviewRestriction.CreateView -> DataViewRestriction.CREATE_VIEW
+    Restrictions.DataviewRestriction.Filters -> DataViewRestriction.FILTERS
+    Restrictions.DataviewRestriction.CreateRelation -> DataViewRestriction.CREATE_RELATION
+    Restrictions.DataviewRestriction.CreateObject -> DataViewRestriction.CREATE_OBJECT
+    Restrictions.DataviewRestriction.EditObject -> DataViewRestriction.EDIT_OBJECT
 }

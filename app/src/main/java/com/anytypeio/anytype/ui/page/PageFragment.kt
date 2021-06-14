@@ -857,7 +857,10 @@ open class PageFragment :
                         title = command.title,
                         status = command.status,
                         image = command.image,
-                        emoji = command.emoji
+                        emoji = command.emoji,
+                        isDeleteAllowed = command.isDeleteAllowed,
+                        isLayoutAllowed = command.isLayoutAllowed,
+                        isAddCoverAllowed = command.isDetailsAllowed
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -868,7 +871,10 @@ open class PageFragment :
                         status = command.status,
                         image = command.image,
                         emoji = command.emoji,
-                        isProfile = true
+                        isProfile = true,
+                        isDeleteAllowed = command.isDeleteAllowed,
+                        isLayoutAllowed = command.isLayoutAllowed,
+                        isAddCoverAllowed = command.isDetailsAllowed
                     )
                     fr.show(childFragmentManager, null)
                 }

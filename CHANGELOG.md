@@ -1,5 +1,12 @@
 # Change log for Android @Anytype app.
 
+## Version 0.1.12 (WIP)
+
+### Fixes & tech 🚒
+
+* Do not crash when failing to parse path for avatar image during sign-up flow (#1544)
+* Do not crash when opening action menu for archived page without icon (#1544)
+
 ## Version 0.1.11
 
 ### New features & enhancements 🚀

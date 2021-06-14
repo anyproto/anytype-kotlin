@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.FileUriExposedException
 import android.provider.Browser
 import android.text.Annotation
 import android.text.TextPaint
@@ -34,6 +35,8 @@ interface Span {
             } catch (e: ActivityNotFoundException) {
                 e.timber()
                 normalizeUrl(widget.context, url)
+            } catch (e: FileUriExposedException) {
+                e.timber()
             }
         }
 

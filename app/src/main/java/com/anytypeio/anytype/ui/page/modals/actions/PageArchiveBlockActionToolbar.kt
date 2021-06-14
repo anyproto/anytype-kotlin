@@ -36,6 +36,7 @@ class PageArchiveBlockActionToolbar : BlockActionToolbar() {
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
 
         image = view.findViewById(R.id.linkImage)
+        icon = view.findViewById(R.id.pageIcon)
         emoji = view.findViewById(R.id.linkEmoji)
         title = view.findViewById(R.id.pageTitle)
 

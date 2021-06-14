@@ -232,15 +232,19 @@ class PageViewModel(
                     orchestrator.stores.textSelection.update(Editor.TextSelection.empty())
                 } else {
                     if (!focus.isPending) {
-                        controlPanelInteractor.onEvent(
-                            ControlPanelMachine.Event.OnFocusChanged(
-                                id = focus.id,
-                                style = if (focus.id == context)
-                                    Content.Text.Style.TITLE
-                                else
-                                    blocks.first { it.id == focus.id }.textStyle()
+                        try {
+                            controlPanelInteractor.onEvent(
+                                ControlPanelMachine.Event.OnFocusChanged(
+                                    id = focus.id,
+                                    style = if (focus.id == context)
+                                        Content.Text.Style.TITLE
+                                    else
+                                        blocks.first { it.id == focus.id }.textStyle()
+                                )
                             )
-                        )
+                        } catch (e: NoSuchElementException) {
+                            Timber.e(e, "Could not found focused block. Doc size: ${blocks.size}")
+                        }
                     }
                 }
                 _focus.postValue(focus.id)
@@ -3995,7 +3999,7 @@ class PageViewModel(
                         }
                     }
                 } else {
-                    getObjectTypes{ objectTypes ->
+                    getObjectTypes { objectTypes ->
                         val filter = objectTypes.filter { it.url == ObjectType.PAGE_URL }
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,

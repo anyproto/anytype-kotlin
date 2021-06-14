@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFac
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_create_account.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -69,23 +70,34 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        proceedWithGettingAvatarPathFromDevice(resultCode, requestCode, data)
+    }
 
-        if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
-            data?.data?.let { uri ->
+    private fun proceedWithGettingAvatarPathFromDevice(
+        resultCode: Int,
+        requestCode: Int,
+        data: Intent?
+    ) {
+        try {
+            if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
+                data?.data?.let { uri ->
 
-                profileIcon.apply {
-                    visible()
-                    Glide
-                        .with(this)
-                        .load(uri)
-                        .circleCrop()
-                        .into(this)
+                    profileIcon.apply {
+                        visible()
+                        Glide
+                            .with(this)
+                            .load(uri)
+                            .circleCrop()
+                            .into(this)
+                    }
+
+                    profileIconPlaceholder.invisible()
+
+                    vm.onAvatarSet(uri.parsePath(requireContext()))
                 }
-
-                profileIconPlaceholder.invisible()
-
-                vm.onAvatarSet(uri.parsePath(requireContext()))
             }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while setting avatar")
         }
     }
 

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.relations.holders
 import android.text.InputType
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
@@ -14,7 +15,7 @@ class RelationTextHolder(view: View) : RelationBaseHolder(view) {
     fun bind(view: RelationTextValueView.Text) = with(itemView) {
         textInputField.setText(view.value)
         if (view.value.isNullOrEmpty()) {
-            textInputField.requestFocus()
+            textInputField.focusAndShowKeyboard()
         }
         textInputField.setHint(R.string.dv_cell_description_hint)
         textInputField.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
@@ -28,7 +29,7 @@ class RelationTextShortHolder(view: View) : RelationBaseHolder(view) {
     fun bind(view: RelationTextValueView.TextShort) = with(itemView) {
         textInputField.setText(view.value)
         if (view.value.isNullOrEmpty()) {
-            textInputField.requestFocus()
+            textInputField.focusAndShowKeyboard()
         }
         textInputField.setHint(R.string.dv_cell_description_hint)
         textInputField.inputType = InputType.TYPE_CLASS_TEXT
@@ -43,7 +44,7 @@ class RelationPhoneHolder(view: View) : RelationBaseHolder(view) {
         with(itemView) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
-                textInputField.requestFocus()
+                textInputField.focusAndShowKeyboard()
             }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_CLASS_PHONE
@@ -61,7 +62,7 @@ class RelationEmailHolder(view: View) : RelationBaseHolder(view) {
         with(itemView) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
-                textInputField.requestFocus()
+                textInputField.focusAndShowKeyboard()
             }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -79,7 +80,7 @@ class RelationUrlHolder(view: View) : RelationBaseHolder(view) {
         with(itemView) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
-                textInputField.requestFocus()
+                textInputField.focusAndShowKeyboard()
             }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_URI
@@ -96,7 +97,7 @@ class RelationNumberHolder(view: View) : RelationBaseHolder(view) {
     fun bind(view: RelationTextValueView.Number) = with(itemView) {
         textInputField.setText(view.value)
         if (view.value.isNullOrEmpty()) {
-            textInputField.requestFocus()
+            textInputField.focusAndShowKeyboard()
         }
         textInputField.setHint(R.string.dv_cell_number_hint)
         textInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED

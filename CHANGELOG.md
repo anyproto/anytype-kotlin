@@ -9,6 +9,7 @@
 
 ### Sets & relations 📚
 
+* Show the Android keyboard reliably for text-based relations with empty value (#1542)
 * Do not exit edit mode when deleting one of the values from relation's file list (#1543)
 
 ## Version 0.1.11

@@ -114,7 +114,6 @@ open class ObjectSetViewModelTestSetup {
                             details = details,
                             relations = relations,
                             objectTypes = objectTypes,
-                            objectTypePerObject = objectTypePerObject,
                             dataViewRestrictions = dataViewRestrictions
                         )
                     ) + additionalEvents

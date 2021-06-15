@@ -25,7 +25,6 @@ sealed class Event {
             val blocks: List<Block>,
             val type: SmartBlockType = SmartBlockType.PAGE,
             val objectTypes: List<ObjectType> = emptyList(),
-            val objectTypePerObject: Map<String, String> = emptyMap(),
             val relations: List<Relation> = emptyList(),
             val objectRestrictions: List<ObjectRestriction> = emptyList(),
             val dataViewRestrictions: List<DataViewRestrictions> = emptyList()

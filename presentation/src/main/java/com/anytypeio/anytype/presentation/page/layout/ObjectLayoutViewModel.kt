@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Layout
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.layout.SetObjectLayout
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -24,13 +24,13 @@ class ObjectLayoutViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    val layout = MutableStateFlow(Layout.BASIC)
+    val layout = MutableStateFlow<ObjectType.Layout>(ObjectType.Layout.BASIC)
 
     fun onStart(ctx: Id) {
         jobs += viewModelScope.launch {
             storage.details.stream().collect { details ->
                 val code = details.details[ctx]?.layout?.toInt()
-                layout.value = Layout.values().find { it.code == code } ?: Layout.BASIC
+                layout.value = ObjectType.Layout.values().find { it.code == code } ?: ObjectType.Layout.BASIC
             }
         }
     }
@@ -42,9 +42,9 @@ class ObjectLayoutViewModel(
         }
     }
 
-    fun onLayouClicked(
+    fun onLayoutClicked(
         ctx: Id,
-        layout: Layout
+        layout: ObjectType.Layout
     ) {
         viewModelScope.launch {
             setObjectLayout(

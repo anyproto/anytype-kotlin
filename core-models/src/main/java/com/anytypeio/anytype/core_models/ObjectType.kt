@@ -18,17 +18,17 @@ data class ObjectType(
     val description: String?,
     val isHidden: Boolean
 ) {
-    enum class Layout {
-        BASIC,
-        PROFILE,
-        TODO,
-        SET,
-        OBJECT_TYPE,
-        RELATION,
-        FILE,
-        DASHBOARD,
-        IMAGE,
-        DATABASE,
+    enum class Layout(val code: Int) {
+        BASIC(0),
+        PROFILE(1),
+        TODO(2),
+        SET(3),
+        OBJECT_TYPE(4),
+        RELATION(5),
+        FILE(6),
+        DASHBOARD(7),
+        IMAGE(8),
+        DATABASE(20),
     }
 
     /**

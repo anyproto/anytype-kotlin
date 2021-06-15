@@ -281,8 +281,7 @@ fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Con
 fun List<Block>.toDashboardViews(
     details: Block.Details = Block.Details(),
     builder: UrlBuilder,
-    objectTypes: List<ObjectType> = emptyList(),
-    objectTypePerObject: Map<String, String> = emptyMap()
+    objectTypes: List<ObjectType> = emptyList()
 ): List<DashboardView> = this.mapNotNull { block ->
     when (val content = block.content) {
         is Block.Content.Smart -> {
@@ -301,7 +300,14 @@ fun List<Block>.toDashboardViews(
             }
         }
         is Block.Content.Link -> {
-            val type = objectTypePerObject[content.target]
+            val targetDetails = details.details[content.target]
+            val type = targetDetails?.type
+            val layoutCode = targetDetails?.layout?.toInt()
+            val layout = layoutCode?.let { code ->
+                ObjectType.Layout.values().find { layout ->
+                    layout.code == code
+                }
+            }
             if (type != null) {
                 val value = objectTypes.find { it.url == type }
                 if (value != null) {
@@ -482,7 +488,7 @@ fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
     DVFilterCondition.NOT_LIKE -> Viewer.Filter.Condition.Text.NotLike()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Text.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Text.NotEmpty()
-    else ->  throw IllegalStateException("Unexpected filter condition $this for Text relations")
+    else -> throw IllegalStateException("Unexpected filter condition $this for Text relations")
 }
 
 fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (this) {
@@ -492,7 +498,7 @@ fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (thi
     DVFilterCondition.LESS -> Viewer.Filter.Condition.Number.Less()
     DVFilterCondition.GREATER_OR_EQUAL -> Viewer.Filter.Condition.Number.GreaterOrEqual()
     DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Number.LessOrEqual()
-    else ->  throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
+    else -> throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
 }
 
 fun DVFilterCondition.toSelectedView(): Viewer.Filter.Condition.Selected = when (this) {
@@ -502,13 +508,13 @@ fun DVFilterCondition.toSelectedView(): Viewer.Filter.Condition.Selected = when 
     DVFilterCondition.NOT_IN -> Viewer.Filter.Condition.Selected.NotIn()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Selected.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Selected.NotEmpty()
-    else ->  throw IllegalStateException("Unexpected filter condition $this for Selected relations")
+    else -> throw IllegalStateException("Unexpected filter condition $this for Selected relations")
 }
 
 fun DVFilterCondition.toCheckboxView(): Viewer.Filter.Condition.Checkbox = when (this) {
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Checkbox.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Checkbox.NotEqual()
-    else ->  throw IllegalStateException("Unexpected filter condition $this for Checkbox relations")
+    else -> throw IllegalStateException("Unexpected filter condition $this for Checkbox relations")
 }
 
 fun SortingExpression.toDomain(): DVSort = DVSort(

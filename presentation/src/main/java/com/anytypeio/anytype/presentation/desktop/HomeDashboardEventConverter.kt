@@ -26,7 +26,6 @@ interface HomeDashboardEventConverter {
                         context = event.context,
                         details = event.details,
                         builder = builder,
-                        objectTypePerObject = event.objectTypePerObject,
                         objectTypes = event.objectTypes
                     )
                 }

@@ -10,10 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Layout
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.page.layout.ObjectLayoutViewModel
@@ -42,39 +43,40 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
         lifecycleScope.launch {
             subscribe(vm.layout) { layout ->
                 when(layout) {
-                    Layout.BASIC -> {
+                    ObjectType.Layout.BASIC -> {
                         basic.isSelected = true
                         profile.isSelected = false
                         todo.isSelected = false
                     }
-                    Layout.PROFILE -> {
+                    ObjectType.Layout.PROFILE -> {
                         basic.isSelected = false
                         profile.isSelected = true
                         todo.isSelected = false
                     }
-                    Layout.TODO -> {
+                    ObjectType.Layout.TODO -> {
                         basic.isSelected = false
                         profile.isSelected = false
                         todo.isSelected = true
                     }
+                    else -> toast("Unexpected layout: $layout")
                 }
             }
             subscribe(profile.clicks()) {
-                vm.onLayouClicked(
+                vm.onLayoutClicked(
                     ctx = ctx,
-                    layout = Layout.PROFILE
+                    layout = ObjectType.Layout.PROFILE
                 )
             }
             subscribe(basic.clicks()) {
-                vm.onLayouClicked(
+                vm.onLayoutClicked(
                     ctx = ctx,
-                    layout = Layout.BASIC
+                    layout = ObjectType.Layout.BASIC
                 )
             }
             subscribe(todo.clicks()) {
-                vm.onLayouClicked(
+                vm.onLayoutClicked(
                     ctx = ctx,
-                    layout = Layout.TODO
+                    layout = ObjectType.Layout.TODO
                 )
             }
         }

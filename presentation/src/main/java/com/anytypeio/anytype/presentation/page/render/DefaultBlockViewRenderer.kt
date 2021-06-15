@@ -797,20 +797,20 @@ class DefaultBlockViewRenderer(
 
         val layoutCode = details.details[root.id]?.layout?.toInt()
 
-        var layout = Layout.values().find { it.code == layoutCode }
+        var layout = ObjectType.Layout.values().find { it.code == layoutCode }
 
         if (layout == null) {
             // Retrieving layout based on smart block type:
             layout = if (rootContent.type == SmartBlockType.PROFILE_PAGE)
-                Layout.PROFILE
+                ObjectType.Layout.PROFILE
             else {
                 // Falling back to default layout if layout is not defined
-                Layout.BASIC
+                ObjectType.Layout.BASIC
             }
         }
 
         return when (layout) {
-            Layout.BASIC -> {
+            ObjectType.Layout.BASIC -> {
                 BlockView.Title.Basic(
                     mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
@@ -834,7 +834,7 @@ class DefaultBlockViewRenderer(
                     coverGradient = coverGradient,
                 )
             }
-            Layout.TODO -> {
+            ObjectType.Layout.TODO -> {
                 BlockView.Title.Todo(
                     mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
@@ -847,7 +847,7 @@ class DefaultBlockViewRenderer(
                     isChecked = content.isChecked == true
                 )
             }
-            Layout.PROFILE -> {
+            ObjectType.Layout.PROFILE -> {
                 BlockView.Title.Profile(
                     mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     id = block.id,
@@ -865,6 +865,7 @@ class DefaultBlockViewRenderer(
                     coverGradient = coverGradient
                 )
             }
+            else -> throw IllegalStateException("Unexpected layout")
         }
     }
 

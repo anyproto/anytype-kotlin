@@ -66,8 +66,7 @@ sealed class HomeDashboardStateMachine {
             val blocks: List<Block>,
             val details: Block.Details,
             val builder: UrlBuilder,
-            val objectTypes: List<ObjectType>,
-            val objectTypePerObject: Map<String, String>
+            val objectTypes: List<ObjectType>
         ) : Event()
 
         data class OnShowProfile(
@@ -143,8 +142,7 @@ sealed class HomeDashboardStateMachine {
                     val new = event.blocks.toDashboardViews(
                         details = event.details,
                         builder = event.builder,
-                        objectTypes = event.objectTypes,
-                        objectTypePerObject = event.objectTypePerObject
+                        objectTypes = event.objectTypes
                     )
 
                     val childrenIdsList = event.blocks.getChildrenIdsList(

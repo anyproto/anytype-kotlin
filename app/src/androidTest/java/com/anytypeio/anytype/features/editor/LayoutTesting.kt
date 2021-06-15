@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Layout
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.cover.CoverType
@@ -88,7 +88,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.TODO.code.toDouble()
+                        "layout" to ObjectType.Layout.TODO.code.toDouble()
                     )
                 )
             )
@@ -138,7 +138,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.TODO.code.toDouble()
+                        "layout" to ObjectType.Layout.TODO.code.toDouble()
                     )
                 )
             )
@@ -183,7 +183,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.TODO.code.toDouble(),
+                        "layout" to ObjectType.Layout.TODO.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
@@ -229,7 +229,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.PROFILE.code.toDouble()
+                        "layout" to ObjectType.Layout.PROFILE.code.toDouble()
                     )
                 )
             )
@@ -273,7 +273,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.PROFILE.code.toDouble(),
+                        "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
@@ -319,7 +319,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.BASIC.code.toDouble()
+                        "layout" to ObjectType.Layout.BASIC.code.toDouble()
                     )
                 )
             )
@@ -363,7 +363,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to Layout.BASIC.code.toDouble(),
+                        "layout" to ObjectType.Layout.BASIC.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )

@@ -55,6 +55,7 @@
     </LinearLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
+        tools:visibility="invisible"
         android:id="@+id/shimmer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

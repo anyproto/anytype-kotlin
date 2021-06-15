@@ -129,8 +129,7 @@ open class ObjectSetFragment :
                 vm.onViewerRelationsClicked()
             }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnSort).clicks()) {
-                val fr = ViewerSortFragment.new(ctx)
-                fr.show(childFragmentManager, EMPTY_TAG)
+                vm.onViewerSortsClicked()
             }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnGroup).clicks()) {
                 toast(getString(R.string.coming_soon))
@@ -346,6 +345,10 @@ open class ObjectSetFragment :
                 val fr = ViewerFilterFragment.new(
                     ctx = command.ctx
                 )
+                fr.show(childFragmentManager, EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.ModifyViewerSorts -> {
+                val fr = ViewerSortFragment.new(ctx)
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
         }

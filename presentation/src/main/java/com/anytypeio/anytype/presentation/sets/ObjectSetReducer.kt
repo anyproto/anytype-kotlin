@@ -62,7 +62,8 @@ class ObjectSetReducer {
                 state.copy(
                     blocks = event.blocks,
                     details = state.details.updateFields(event.details.details),
-                    objectTypes = event.objectTypes
+                    objectTypes = event.objectTypes,
+                    restrictions = event.dataViewRestrictions
                 )
             }
             is Command.DataView.SetView -> {

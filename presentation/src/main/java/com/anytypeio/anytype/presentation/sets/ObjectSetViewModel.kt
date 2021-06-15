@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.interactor.*
@@ -429,19 +430,23 @@ class ObjectSetViewModel(
     }
 
     fun onCreateNewRecord() {
-        viewModelScope.launch {
-            createDataViewRecord(
-                CreateDataViewRecord.Params(
-                    context = context,
-                    target = reducer.state.value.dataview.id
+        if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
+            toast(NOT_ALLOWED)
+        } else {
+            viewModelScope.launch {
+                createDataViewRecord(
+                    CreateDataViewRecord.Params(
+                        context = context,
+                        target = reducer.state.value.dataview.id
+                    )
+                ).process(
+                    failure = { Timber.e(it, "Error while creating new record") },
+                    success = { record ->
+                        objectSetRecordCache.map[context] = record
+                        dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
+                    }
                 )
-            ).process(
-                failure = { Timber.e(it, "Error while creating new record") },
-                success = { record ->
-                    objectSetRecordCache.map[context] = record
-                    dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
-                }
-            )
+            }
         }
     }
 
@@ -469,12 +474,17 @@ class ObjectSetViewModel(
     }
 
     fun onExpandViewerMenuClicked() {
-        dispatch(
-            ObjectSetCommand.Modal.ManageViewer(
-                ctx = context,
-                dataview = reducer.state.value.dataview.id
+        if (isRestrictionPresent(DataViewRestriction.VIEWS)
+        ) {
+            toast(NOT_ALLOWED)
+        } else {
+            dispatch(
+                ObjectSetCommand.Modal.ManageViewer(
+                    ctx = context,
+                    dataview = reducer.state.value.dataview.id
+                )
             )
-        )
+        }
     }
 
     fun onViewerEditClicked() {
@@ -509,25 +519,44 @@ class ObjectSetViewModel(
     }
 
     fun onViewerRelationsClicked() {
-        val set = reducer.state.value
-        if (set.isInitialized) {
-            val block = set.dataview
-            val dv = block.content as DV
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-            dispatch(
-                ObjectSetCommand.Modal.ModifyViewerRelationOrder(
-                    ctx = context,
-                    dv = block.id,
-                    viewer = viewer.id
+        if (isRestrictionPresent(DataViewRestriction.RELATION)) {
+            toast(NOT_ALLOWED)
+        } else {
+            val set = reducer.state.value
+            if (set.isInitialized) {
+                val block = set.dataview
+                val dv = block.content as DV
+                val viewer =
+                    dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                dispatch(
+                    ObjectSetCommand.Modal.ModifyViewerRelationOrder(
+                        ctx = context,
+                        dv = block.id,
+                        viewer = viewer.id
+                    )
                 )
-            )
+            }
         }
     }
 
     fun onViewerFiltersClicked() {
-        dispatch(
-            ObjectSetCommand.Modal.ModifyViewerFilters(ctx = context)
-        )
+        if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
+            toast(NOT_ALLOWED)
+        } else {
+            dispatch(
+                ObjectSetCommand.Modal.ModifyViewerFilters(ctx = context)
+            )
+        }
+    }
+
+    fun onViewerSortsClicked() {
+        if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
+            toast(NOT_ALLOWED)
+        } else {
+            dispatch(
+                ObjectSetCommand.Modal.ModifyViewerSorts(ctx = context)
+            )
+        }
     }
 
     private fun dispatch(command: ObjectSetCommand) {
@@ -542,6 +571,13 @@ class ObjectSetViewModel(
         viewModelScope.launch { toasts.send(toast) }
     }
 
+    private fun isRestrictionPresent(restriction: DataViewRestriction): Boolean {
+        val set = reducer.state.value
+        val block = set.dataview
+        val dVRestrictions = set.restrictions.firstOrNull { it.block == block.id }
+        return dVRestrictions != null && dVRestrictions.restrictions.any { it == restriction }
+    }
+
     override fun onCleared() {
         super.onCleared()
         titleUpdateChannel.cancel()
@@ -550,5 +586,6 @@ class ObjectSetViewModel(
 
     companion object {
         const val TITLE_CHANNEL_DISPATCH_DELAY = 300L
+        const val NOT_ALLOWED = "Not allowed for this set"
     }
 }

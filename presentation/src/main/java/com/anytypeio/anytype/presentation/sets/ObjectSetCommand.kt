@@ -32,6 +32,10 @@ sealed class ObjectSetCommand {
             val ctx: Id
         ) : Modal()
 
+        data class ModifyViewerSorts(
+            val ctx: Id
+        ) : Modal()
+
         data class EditGridTextCell(
             val ctx: Id,
             val relationId: Id,

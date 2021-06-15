@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets.main
 
 import MockDataFactory
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.config.Gateway
@@ -96,7 +97,8 @@ open class ObjectSetViewModelTestSetup {
         objectTypes: List<ObjectType> = emptyList(),
         objectTypePerObject: Map<String, String> = emptyMap(),
         relations: List<Relation> = emptyList(),
-        additionalEvents: List<Event> = emptyList()
+        additionalEvents: List<Event> = emptyList(),
+        dataViewRestrictions: List<DataViewRestrictions> = emptyList()
     ) {
         openObjectSet.stub {
             onBlocking {
@@ -112,7 +114,8 @@ open class ObjectSetViewModelTestSetup {
                             details = details,
                             relations = relations,
                             objectTypes = objectTypes,
-                            objectTypePerObject = objectTypePerObject
+                            objectTypePerObject = objectTypePerObject,
+                            dataViewRestrictions = dataViewRestrictions
                         )
                     ) + additionalEvents
                 )

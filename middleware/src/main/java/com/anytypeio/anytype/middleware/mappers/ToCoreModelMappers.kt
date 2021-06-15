@@ -397,11 +397,11 @@ fun MObjectType.toCoreModels(): ObjectType = ObjectType(
 )
 
 fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
-    MOTypeLayout.basic -> ObjectType.Layout.PAGE
+    MOTypeLayout.basic -> ObjectType.Layout.BASIC
     MOTypeLayout.profile -> ObjectType.Layout.PROFILE
     MOTypeLayout.todo -> ObjectType.Layout.TODO
     MOTypeLayout.set_ -> ObjectType.Layout.SET
-    MOTypeLayout.objectType -> ObjectType.Layout.OBJECT
+    MOTypeLayout.objectType -> ObjectType.Layout.OBJECT_TYPE
     MOTypeLayout.file_ -> ObjectType.Layout.FILE
     MOTypeLayout.relation -> ObjectType.Layout.RELATION
     MOTypeLayout.dashboard -> ObjectType.Layout.DASHBOARD

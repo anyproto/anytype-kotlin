@@ -18,7 +18,18 @@ data class ObjectType(
     val description: String?,
     val isHidden: Boolean
 ) {
-    enum class Layout { PAGE, PROFILE, TODO, SET, OBJECT, FILE, RELATION, DASHBOARD, DATABASE, IMAGE }
+    enum class Layout {
+        BASIC,
+        PROFILE,
+        TODO,
+        SET,
+        OBJECT_TYPE,
+        RELATION,
+        FILE,
+        DASHBOARD,
+        IMAGE,
+        DATABASE,
+    }
 
     /**
      * Template prototype (for creating new templates)

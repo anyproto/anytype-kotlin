@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.domain.block.interactor.sets
 
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 
@@ -23,7 +23,7 @@ class CreateObjectType(
     }
 
     private fun getLayout(layout: Int): ObjectType.Layout = when (layout) {
-        ObjectType.Layout.PAGE.ordinal -> ObjectType.Layout.PAGE
+        ObjectType.Layout.BASIC.ordinal -> ObjectType.Layout.BASIC
         ObjectType.Layout.PROFILE.ordinal -> ObjectType.Layout.PROFILE
         ObjectType.Layout.TODO.ordinal -> ObjectType.Layout.TODO
         ObjectType.Layout.SET.ordinal -> ObjectType.Layout.SET

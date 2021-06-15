@@ -349,7 +349,7 @@ class ObjectSetViewModel(
             return
         }
         when (objectType.layout) {
-            ObjectType.Layout.PAGE -> {
+            ObjectType.Layout.BASIC -> {
                 navigate(
                     EventWrapper(
                         AppNavigation.Command.OpenPage(

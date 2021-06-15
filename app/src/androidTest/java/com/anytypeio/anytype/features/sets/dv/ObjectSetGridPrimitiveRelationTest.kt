@@ -46,7 +46,7 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
             url = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
             emoji = MockDataFactory.randomString(),
-            layout = ObjectType.Layout.PAGE,
+            layout = ObjectType.Layout.BASIC,
             relations = emptyList(),
             description = "",
             isHidden = false

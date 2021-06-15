@@ -306,7 +306,7 @@ fun List<Block>.toDashboardViews(
                 val value = objectTypes.find { it.url == type }
                 if (value != null) {
                     when (value.layout) {
-                        ObjectType.Layout.PAGE -> content.toPageView(block.id, details, builder)
+                        ObjectType.Layout.BASIC -> content.toPageView(block.id, details, builder)
                         ObjectType.Layout.SET -> content.toSetView(block.id, details)
                         else -> null
                     }

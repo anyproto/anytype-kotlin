@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.presentation.sets
 
 import androidx.lifecycle.*
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -31,8 +31,8 @@ class CreateObjectSetViewModel(
 
     private val typeLayouts = arrayListOf(
         CreateObjectTypeView(
-            name = ObjectType.Layout.PAGE.name,
-            layout = ObjectType.Layout.PAGE.ordinal,
+            name = ObjectType.Layout.BASIC.name,
+            layout = ObjectType.Layout.BASIC.ordinal,
             isSelected = true
         ),
         CreateObjectTypeView(

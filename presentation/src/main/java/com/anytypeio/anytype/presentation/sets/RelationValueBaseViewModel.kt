@@ -233,7 +233,7 @@ abstract class RelationValueBaseViewModel(
     fun onObjectClicked(id: Id, type: String?) {
         types.provide().find { it.url == type }?.let { targetType ->
             when (targetType.layout) {
-                ObjectType.Layout.PAGE, ObjectType.Layout.PROFILE -> {
+                ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
                     viewModelScope.launch {
                         navigation.emit(AppNavigation.Command.OpenPage(id))
                     }

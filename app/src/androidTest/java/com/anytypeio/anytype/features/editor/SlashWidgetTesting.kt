@@ -535,7 +535,7 @@ class SlashWidgetTesting : EditorTestSetup() {
                 url = MockDataFactory.randomUuid(),
                 name = MockDataFactory.randomString(),
                 emoji = MockDataFactory.randomString(),
-                layout = ObjectType.Layout.PAGE,
+                layout = ObjectType.Layout.BASIC,
                 relations = emptyList(),
                 description = MockDataFactory.randomString(),
                 isHidden = false
@@ -544,7 +544,7 @@ class SlashWidgetTesting : EditorTestSetup() {
                 url = MockDataFactory.randomUuid(),
                 name = MockDataFactory.randomString(),
                 emoji = MockDataFactory.randomString(),
-                layout = ObjectType.Layout.PAGE,
+                layout = ObjectType.Layout.BASIC,
                 relations = emptyList(),
                 description = MockDataFactory.randomString(),
                 isHidden = false

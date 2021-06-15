@@ -63,7 +63,7 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
             name = "Film",
             relations = emptyList(),
             emoji = MockDataFactory.randomString(),
-            layout = ObjectType.Layout.PAGE,
+            layout = ObjectType.Layout.BASIC    ,
             description = "",
             isHidden = false
         )

@@ -301,11 +301,11 @@ fun Block.Content.DataView.Viewer.ViewerRelation.toMiddlewareModel(): MDVRelatio
 
 // ---------------------- OBJECT & RELATIONS ------------------------
 fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
-    ObjectType.Layout.PAGE -> MOTypeLayout.basic
+    ObjectType.Layout.BASIC -> MOTypeLayout.basic
     ObjectType.Layout.PROFILE -> MOTypeLayout.profile
     ObjectType.Layout.TODO -> MOTypeLayout.todo
     ObjectType.Layout.SET -> MOTypeLayout.set_
-    ObjectType.Layout.OBJECT -> MOTypeLayout.objectType
+    ObjectType.Layout.OBJECT_TYPE -> MOTypeLayout.objectType
     ObjectType.Layout.FILE -> MOTypeLayout.file_
     ObjectType.Layout.RELATION -> MOTypeLayout.relation
     ObjectType.Layout.DASHBOARD -> MOTypeLayout.dashboard

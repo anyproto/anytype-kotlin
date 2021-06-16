@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
@@ -32,25 +32,51 @@ class DashboardAdapter(
         const val VIEW_TYPE_ARCHIVE = 1
         const val VIEW_TYPE_SET = 2
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
-        const val EMPTY_EMOJI = ""
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_DOCUMENT -> {
-                inflater.inflate(R.layout.item_desktop_page, parent, false).let {
-                    ViewHolder.DocumentHolder(it)
+                ViewHolder.DocumentHolder(
+                    inflater.inflate(R.layout.item_desktop_page, parent, false)
+                ).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.Document)
+                            onDocumentClicked(item.target, item.isLoading)
+                        }
+                    }
                 }
             }
             VIEW_TYPE_ARCHIVE -> {
-                inflater.inflate(R.layout.item_desktop_archive, parent, false).let {
-                    ViewHolder.ArchiveHolder(it)
+                ViewHolder.ArchiveHolder(
+                    inflater.inflate(R.layout.item_desktop_archive, parent, false)
+                ).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.Archive)
+                            onArchiveClicked(item.target)
+                        }
+                    }
                 }
             }
             VIEW_TYPE_SET -> {
-                inflater.inflate(R.layout.item_desktop_object_set, parent, false).let {
-                    ViewHolder.ObjectSetHolder(it)
+                ViewHolder.ObjectSetHolder(
+                    inflater.inflate(R.layout.item_desktop_object_set, parent, false)
+                ).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.ObjectSet)
+                            onObjectSetClicked(item.target)
+                        }
+                    }
                 }
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
@@ -71,12 +97,8 @@ class DashboardAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.DocumentHolder -> {
+                val item = data[position] as DashboardView.Document
                 with(holder) {
-                    val item = data[position] as DashboardView.Document
-                    bindClick(item.target) { id ->
-                        val d = data[bindingAdapterPosition] as DashboardView.Document
-                        onDocumentClicked(id, d.isLoading)
-                    }
                     bindTitle(item.title)
                     bindEmoji(item.emoji)
                     bindImage(item.image)
@@ -86,7 +108,6 @@ class DashboardAdapter(
             is ViewHolder.ObjectSetHolder -> {
                 with(holder) {
                     val item = data[position] as DashboardView.ObjectSet
-                    bindClick(item.target, onObjectSetClicked)
                     bindTitle(item.title)
                     bindEmoji(item.emoji)
                 }
@@ -95,7 +116,6 @@ class DashboardAdapter(
                 with(holder) {
                     val item = data[position] as DashboardView.Archive
                     bindTitle(item.title)
-                    bindClick(item.target, onArchiveClicked)
                 }
             }
         }
@@ -113,6 +133,7 @@ class DashboardAdapter(
                     is ViewHolder.DocumentHolder -> {
                         bindByPayloads(holder, position, payload)
                     }
+                    else -> Timber.d("Skipping payload update.")
                 }
             }
         }
@@ -125,9 +146,6 @@ class DashboardAdapter(
     ) {
         with(holder) {
             val item = data[position] as DashboardView.Archive
-            if (payload.targetChanged()) {
-                bindClick(item.target, onArchiveClicked)
-            }
             if (payload.titleChanged()) {
                 bindTitle(item.title)
             }
@@ -141,12 +159,6 @@ class DashboardAdapter(
     ) {
         with(holder) {
             val item = data[position] as DashboardView.Document
-            if (payload.targetChanged()) {
-                bindClick(item.target) { id ->
-                    val d = data[bindingAdapterPosition] as DashboardView.Document
-                    onDocumentClicked(id, d.isLoading)
-                }
-            }
             if (payload.titleChanged()) {
                 bindTitle(item.title)
             }
@@ -171,13 +183,6 @@ class DashboardAdapter(
                     itemView.archiveTitle.text = title
                 }
             }
-
-            fun bindClick(
-                target: Id,
-                onClick: (Id) -> Unit
-            ) {
-                itemView.setOnClickListener { onClick(target) }
-            }
         }
 
         class DocumentHolder(itemView: View) : ViewHolder(itemView) {
@@ -186,13 +191,6 @@ class DashboardAdapter(
             private val ivEmoji = itemView.emojiIcon
             private val ivImage = itemView.image
             private val shimmer = itemView.shimmer
-
-            fun bindClick(
-                target: Id,
-                onClick: (Id) -> Unit
-            ) {
-                itemView.setOnClickListener { onClick(target) }
-            }
 
             fun bindTitle(title: String?) {
                 if (title.isNullOrEmpty())
@@ -243,13 +241,6 @@ class DashboardAdapter(
 
             private val tvTitle = itemView.title
             private val ivEmoji = itemView.emojiIcon
-
-            fun bindClick(
-                target: Id,
-                onClick: (Id) -> Unit
-            ) {
-                itemView.setOnClickListener { onClick(target) }
-            }
 
             fun bindTitle(title: String?) {
                 if (title.isNullOrEmpty())

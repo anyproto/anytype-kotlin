@@ -1032,7 +1032,8 @@ class PageViewModel(
                             },
                             isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
                             isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
-                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
+                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
+                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS }
                         )
                     )
                     viewModelScope.sendEvent(
@@ -1066,7 +1067,8 @@ class PageViewModel(
                             },
                             isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
                             isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
-                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
+                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
+                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS }
                         )
                     )
                     viewModelScope.sendEvent(
@@ -3570,25 +3572,31 @@ class PageViewModel(
 
     fun onPageIconClicked() {
         Timber.d("onPageIconClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-        val details = orchestrator.stores.details.current()
-        dispatch(
-            Command.OpenDocumentIconActionMenu(
-                target = context,
-                emoji = details.details[context]?.iconEmoji?.let { name ->
-                    if (name.isNotEmpty())
-                        name
-                    else
-                        null
-                },
-                image = details.details[context]?.iconImage?.let { name ->
-                    if (name.isNotEmpty())
-                        urlBuilder.image(name)
-                    else
-                        null
-                }
+        val restrictions = orchestrator.stores.objectRestrictions.current()
+        val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
+        if (isDetailsAllowed) {
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
+            val details = orchestrator.stores.details.current()
+            dispatch(
+                Command.OpenDocumentIconActionMenu(
+                    target = context,
+                    emoji = details.details[context]?.iconEmoji?.let { name ->
+                        if (name.isNotEmpty())
+                            name
+                        else
+                            null
+                    },
+                    image = details.details[context]?.iconImage?.let { name ->
+                        if (name.isNotEmpty())
+                            urlBuilder.image(name)
+                        else
+                            null
+                    }
+                )
             )
-        )
+        } else {
+            _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+        }
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = POPUP_DOCUMENT_ICON_MENU
@@ -3898,6 +3906,7 @@ class PageViewModel(
         const val FLAVOUR_EXPERIMENTAL = "experimental"
 
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
+        const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
     }
 
     data class MarkupAction(

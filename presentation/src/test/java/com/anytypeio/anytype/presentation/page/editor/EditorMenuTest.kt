@@ -58,7 +58,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 image = null,
                 isDeleteAllowed = true,
                 isLayoutAllowed = true,
-                isDetailsAllowed = true
+                isDetailsAllowed = true,
+                isRelationsAllowed = true
             )
         }
     }
@@ -116,7 +117,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 image = null,
                 isDeleteAllowed = true,
                 isLayoutAllowed = true,
-                isDetailsAllowed = true
+                isDetailsAllowed = true,
+                isRelationsAllowed = true
             )
         }
     }
@@ -153,7 +155,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 image = null,
                 isDeleteAllowed = false,
                 isLayoutAllowed = false,
-                isDetailsAllowed = true
+                isDetailsAllowed = true,
+                isRelationsAllowed = true
             )
         }
     }

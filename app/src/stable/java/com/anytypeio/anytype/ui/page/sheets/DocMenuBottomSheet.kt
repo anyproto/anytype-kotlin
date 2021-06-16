@@ -140,7 +140,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             isProfile: Boolean = false,
             isDeleteAllowed: Boolean = true,
             isLayoutAllowed: Boolean = true,
-            isAddCoverAllowed: Boolean = true
+            isAddCoverAllowed: Boolean = true,
+            isRelationsAllowed: Boolean = true
         ) = DocMenuBottomSheet().apply {
             arguments = bundleOf(
                 TITLE_KEY to title,

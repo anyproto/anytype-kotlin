@@ -860,7 +860,8 @@ open class PageFragment :
                         emoji = command.emoji,
                         isDeleteAllowed = command.isDeleteAllowed,
                         isLayoutAllowed = command.isLayoutAllowed,
-                        isAddCoverAllowed = command.isDetailsAllowed
+                        isAddCoverAllowed = command.isDetailsAllowed,
+                        isRelationsAllowed = command.isRelationsAllowed
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -874,7 +875,8 @@ open class PageFragment :
                         isProfile = true,
                         isDeleteAllowed = command.isDeleteAllowed,
                         isLayoutAllowed = command.isLayoutAllowed,
-                        isAddCoverAllowed = command.isDetailsAllowed
+                        isAddCoverAllowed = command.isDetailsAllowed,
+                        isRelationsAllowed = command.isRelationsAllowed
                     )
                     fr.show(childFragmentManager, null)
                 }

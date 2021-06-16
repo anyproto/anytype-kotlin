@@ -11,7 +11,10 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.*
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.domain.status.SyncStatus
 import kotlinx.android.synthetic.experimental.fragment_doc_menu_bottom_sheet.*
@@ -27,7 +30,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
     private val isDeleteAllowed get() = arg<Boolean>(IS_DELETE_ALLOWED)
     private val isLayoutAllowed get() = arg<Boolean>(IS_LAYOUT_ALLOWED)
-    private val isAddCoverAllowed get() = arg<Boolean>(IS_DETAILS_ALLOWED)
+    private val isAddCoverAllowed get() = arg<Boolean>(IS_COVER_ALLOWED)
+    private val isRelationsAllowed get() = arg<Boolean>(IS_RELATIONS_ALLOWED)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,12 +88,17 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             setLayoutContainer.alpha = 0.4F
         }
 
-        relationContainer
-            .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onDocRelationsClicked() }.also { dismiss() }
-            }
-            .launchIn(lifecycleScope)
+        if (isRelationsAllowed) {
+            relationContainer.alpha = 1.0F
+            relationContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onDocRelationsClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
+        } else {
+            relationContainer.alpha = 0.4F
+        }
 
         if (image != null && !isProfile) icon.setImageOrNull(image)
         if (emoji != null && !isProfile) icon.setEmojiOrNull(emoji)
@@ -159,7 +168,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             isProfile: Boolean = false,
             isDeleteAllowed: Boolean,
             isLayoutAllowed: Boolean,
-            isAddCoverAllowed: Boolean
+            isAddCoverAllowed: Boolean,
+            isRelationsAllowed: Boolean
         ) = DocMenuBottomSheet().apply {
             arguments = bundleOf(
                 TITLE_KEY to title,
@@ -169,7 +179,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 IS_PROFILE_KEY to isProfile,
                 IS_DELETE_ALLOWED to isDeleteAllowed,
                 IS_LAYOUT_ALLOWED to isLayoutAllowed,
-                IS_DETAILS_ALLOWED to isAddCoverAllowed
+                IS_COVER_ALLOWED to isAddCoverAllowed,
+                IS_RELATIONS_ALLOWED to isRelationsAllowed
             )
         }
 
@@ -180,7 +191,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         private const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
         private const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
         private const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
-        private const val IS_DETAILS_ALLOWED = "arg.doc-menu-bottom-sheet.is-details-allowed"
+        private const val IS_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-cover-allowed"
+        private const val IS_RELATIONS_ALLOWED = "arg.doc-menu-bottom-sheet.is-relations-allowed"
     }
 
     interface DocumentMenuActionReceiver {

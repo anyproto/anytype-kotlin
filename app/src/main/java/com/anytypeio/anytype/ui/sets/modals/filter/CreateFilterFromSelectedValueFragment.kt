@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment.DatePickerReceiver
@@ -66,12 +65,6 @@ open class CreateFilterFromSelectedValueFragment :
             subscribe(btnBottomAction.clicks()) {
                 vm.onCreateFilterFromSelectedValueClicked(ctx = ctx, relation = relation)
             }
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
             subscribe(vm.relationState.filterNotNull()) {
                 tvRelationName.text = it.title
                 ivRelationIcon.setImageResource(it.format.relationIcon(true))
@@ -96,6 +89,7 @@ open class CreateFilterFromSelectedValueFragment :
             subscribe(views) { createFilterAdapter.update(it) }
             subscribe(vm.commands) { observeCommands(it) }
         }
+        vm.onStart(relationId = relation, filterIndex = FILTER_INDEX_EMPTY)
     }
 
     private fun observeCommands(commands: FilterViewModel.Commands) {
@@ -126,11 +120,6 @@ open class CreateFilterFromSelectedValueFragment :
 
     override fun onPickDate(timeInSeconds: Long) {
         vm.onExactDayPicked(timeInSeconds)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        vm.onStart(relationId = relation, filterIndex = FILTER_INDEX_EMPTY)
     }
 
     override fun injectDependencies() {

@@ -114,17 +114,9 @@ open class FilterViewModel(
                     viewModelScope.launch { commands.emit(Commands.HideInput) }
                 }
             }
-            Relation.Format.STATUS -> {
-                if (condition.hasValue()) {
-                    viewModelScope.launch { commands.emit(Commands.ShowSearchbar) }
-                    viewModelScope.launch { commands.emit(Commands.HideCount) }
-                } else {
-                    viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
-                    viewModelScope.launch { commands.emit(Commands.HideCount) }
-                }
-            }
             Relation.Format.TAG,
             Relation.Format.OBJECT,
+            Relation.Format.STATUS,
             Relation.Format.FILE -> {
                 if (condition.hasValue()) {
                     viewModelScope.launch { commands.emit(Commands.ShowSearchbar) }
@@ -294,11 +286,8 @@ open class FilterViewModel(
             }
             is CreateFilterView.Status -> {
                 filterValueListState.value = filterValueListState.value.map { view ->
-                    if (view is CreateFilterView.Status) {
-                        if (view.id == item.id)
-                            view.copy(isSelected = true)
-                        else
-                            view.copy(isSelected = false)
+                    if (view is CreateFilterView.Status && view.id == item.id) {
+                        view.copy(isSelected = !view.isSelected)
                     } else {
                         view
                     }

@@ -71,12 +71,6 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             subscribe(btnBottomAction.clicks()) {
                 vm.onModifyApplyClicked(ctx = ctx)
             }
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
             subscribe(vm.relationState.filterNotNull()) {
                 if (it.format == ColumnView.Format.DATE) {
                     searchBar.gone()
@@ -101,6 +95,7 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             subscribe(views) { createFilterAdapter.update(it) }
             subscribe(vm.commands) { observeCommands(it) }
         }
+        vm.onStart(relation, index)
     }
 
     private fun observeCommands(commands: FilterViewModel.Commands) {
@@ -135,7 +130,6 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(relation, index)
         expand()
     }
 

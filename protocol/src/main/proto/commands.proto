@@ -3062,7 +3062,10 @@ message Rpc {
                 string fullText = 3;
                 int32 offset = 4;
                 int32 limit = 5;
+                // additional filter by objectTypes
                 repeated string objectTypeFilter = 6;
+                // needed keys in details for return, when empty - will return all
+                repeated string keys = 7;
             }
 
             message Response {

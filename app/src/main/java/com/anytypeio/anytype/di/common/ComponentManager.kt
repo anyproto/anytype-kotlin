@@ -218,12 +218,6 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val createDataViewRelationComponent = Component {
-        main.createDataViewRelationBuilder()
-            .module(CreateDataViewRelationModule)
-            .build()
-    }
-
     val relationTextValueDVComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)

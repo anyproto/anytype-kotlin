@@ -174,15 +174,6 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onAddNewDataViewRelation() {
-        dispatch(
-            ObjectSetCommand.Modal.CreateDataViewRelation(
-                ctx = context,
-                target = reducer.state.value.dataview.id
-            )
-        )
-    }
-
     fun onCreateNewViewerClicked() {
         dispatch(
             ObjectSetCommand.Modal.CreateViewer(

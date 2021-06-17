@@ -11,20 +11,14 @@ import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import kotlinx.android.synthetic.main.viewer_cell.view.*
 import timber.log.Timber
 
-class ViewerGridHeaderAdapter(
-    val onCreateNewColumnClicked: () -> Unit,
-) : ListAdapter<ColumnView, ViewerGridHeaderAdapter.HeaderViewHolder>(ColumnHeaderDiffCallback) {
+class ViewerGridHeaderAdapter() :
+    ListAdapter<ColumnView, ViewerGridHeaderAdapter.HeaderViewHolder>(ColumnHeaderDiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): HeaderViewHolder = when (viewType) {
         HEADER_TYPE -> HeaderViewHolder.DefaultHolder.create(parent)
-        PLUS_TYPE -> HeaderViewHolder.PlusHolder.create(parent).apply {
-            itemView.setOnClickListener {
-                onCreateNewColumnClicked()
-            }
-        }
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 
@@ -32,13 +26,13 @@ class ViewerGridHeaderAdapter(
         if (holder is HeaderViewHolder.DefaultHolder) holder.bind(getItem(position))
     }
 
-    override fun getItemViewType(position: Int) = if (position == super.getItemCount()) {
-        PLUS_TYPE
-    } else {
-        HEADER_TYPE
-    }
+//    override fun getItemViewType(position: Int) = if (position == super.getItemCount()) {
+//        PLUS_TYPE
+//    } else {
+//        HEADER_TYPE
+//    }
 
-    override fun getItemCount(): Int = if (super.getItemCount() == 0) 0 else super.getItemCount() + 1
+//    override fun getItemCount(): Int = if (super.getItemCount() == 0) 0 else super.getItemCount() + 1
 
     sealed class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class DefaultHolder(view: View) : HeaderViewHolder(view) {
@@ -59,6 +53,7 @@ class ViewerGridHeaderAdapter(
                 )
             }
         }
+
         class PlusHolder(view: View) : HeaderViewHolder(view) {
             companion object {
                 fun create(
@@ -79,6 +74,7 @@ class ViewerGridHeaderAdapter(
             oldItem: ColumnView,
             newItem: ColumnView
         ): Boolean = oldItem.key == newItem.key
+
         override fun areContentsTheSame(
             oldItem: ColumnView,
             newItem: ColumnView

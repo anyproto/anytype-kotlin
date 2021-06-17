@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.extensions.setImageOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
@@ -38,8 +37,6 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.relations.CreateDataViewRelationFragment
-import com.anytypeio.anytype.ui.relations.CreateDataViewRelationFragment.OnAddDataViewRelationRequestReceiver
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -54,7 +51,6 @@ import javax.inject.Inject
 
 open class ObjectSetFragment :
     NavigationFragment(R.layout.fragment_object_set),
-    OnAddDataViewRelationRequestReceiver,
     TextValueEditReceiver,
     DateValueEditReceiver {
 
@@ -79,11 +75,8 @@ open class ObjectSetFragment :
         GestureDetector(context, swipeListener)
     }
 
-    private val viewerGridHeaderAdapter by lazy {
-        ViewerGridHeaderAdapter(
-            onCreateNewColumnClicked = { vm.onAddNewDataViewRelation() }
-        )
-    }
+    private val viewerGridHeaderAdapter by lazy { ViewerGridHeaderAdapter() }
+
     private val viewerGridAdapter by lazy {
         ViewerGridAdapter(
             onCellClicked = vm::onGridCellClicked,
@@ -230,13 +223,6 @@ open class ObjectSetFragment :
 
     private fun observeCommands(command: ObjectSetCommand) {
         when (command) {
-            is ObjectSetCommand.Modal.CreateDataViewRelation -> {
-                val fr = CreateDataViewRelationFragment.new(
-                    ctx = command.ctx,
-                    target = command.target
-                )
-                fr.show(childFragmentManager, EMPTY_TAG)
-            }
             is ObjectSetCommand.Modal.EditGridTextCell -> {
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
@@ -413,18 +399,6 @@ open class ObjectSetFragment :
             }
         }
     }
-
-    override fun onAddDataViewRelationRequest(
-        context: String,
-        target: Id,
-        name: String,
-        format: Relation.Format
-    ) = vm.onRelationPrototypeCreated(
-        context = context,
-        target = target,
-        name = name,
-        format = format
-    )
 
     fun onViewerNewSortsRequest(sorts: List<SortingExpression>) {
         vm.onUpdateViewerSorting(sorts)

@@ -6,8 +6,6 @@ sealed class ObjectSetCommand {
 
     sealed class Modal : ObjectSetCommand() {
 
-        data class CreateDataViewRelation(val ctx: String, val target: String) : Modal()
-
         data class CreateViewer(
             val ctx: String,
             val target: Id

@@ -40,5 +40,4 @@ interface MainComponent {
     fun createSetComponentBuilder(): CreateSetSubComponent.Builder
     fun createObjectTypeComponentBuilder(): CreateObjectTypeSubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
-    fun createDataViewRelationBuilder(): CreateDataViewRelationSubComponent.Builder
 }

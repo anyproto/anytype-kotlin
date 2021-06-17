@@ -5,6 +5,7 @@
 ### Design & UX 🔳
 
 * Redesigned dashboard (#1538, #1545)
+* Do not focus an empty document's title on start if the title is not empty (#1559)
 
 ### Fixes & tech 🚒
 

@@ -620,13 +620,12 @@ class PageViewModel(
                     if (content is Content.Layout && content.type == Content.Layout.Type.HEADER) {
                         try {
                             val title = event.blocks.title()
-                            val focus = Editor.Focus(id = title.id, cursor = Editor.Cursor.End)
-                            viewModelScope.launch { orchestrator.stores.focus.update(focus) }
-//                            controlPanelInteractor.onEvent(
-//                                ControlPanelMachine.Event.OnFocusChanged(
-//                                    id = title.id, style = Content.Text.Style.TITLE
-//                                )
-//                            )
+                            if (title.content<Content.Text>().text.isEmpty()) {
+                                val focus = Editor.Focus(id = title.id, cursor = Editor.Cursor.End)
+                                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                            } else {
+                                Timber.d("Skipping initial focusing. Title is not empty.")
+                            }
                         } catch (e: Throwable) {
                             Timber.e(e, "Error while initial focusing")
                         }

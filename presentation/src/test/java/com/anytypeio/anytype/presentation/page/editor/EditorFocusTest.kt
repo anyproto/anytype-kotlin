@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.editor
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.model.Focusable
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -103,6 +104,88 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         testFocusObserver.assertValue(block.id)
 
         vm.onHideKeyboardClicked()
+
+        testFocusObserver.assertValue(PageViewModel.EMPTY_FOCUS_ID)
+    }
+
+    @Test
+    fun `should focus on start if title is empty`() {
+
+        // SETUP
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(),
+                children = listOf(header.id)
+            ),
+            header,
+            title.copy(
+                content = title.content<Block.Content.Text>().copy(
+                    text = ""
+                )
+            )
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenDocument(page)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        val testViewStateObserver = vm.state.test()
+        val testFocusObserver = vm.focus.test()
+
+        testViewStateObserver.assertValue { value ->
+            check(value is ViewState.Success)
+            val last = value.blocks.last()
+            check(last is Focusable)
+            last.isFocused
+        }
+
+        testFocusObserver.assertValue(title.id)
+    }
+
+    @Test
+    fun `should not focus on start if title is not empty`() {
+
+        // SETUP
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(),
+                children = listOf(header.id)
+            ),
+            header,
+            title
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenDocument(page)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        val testViewStateObserver = vm.state.test()
+        val testFocusObserver = vm.focus.test()
+
+        testViewStateObserver.assertValue { value ->
+            check(value is ViewState.Success)
+            val last = value.blocks.last()
+            check(last is Focusable)
+            !last.isFocused
+        }
 
         testFocusObserver.assertValue(PageViewModel.EMPTY_FOCUS_ID)
     }

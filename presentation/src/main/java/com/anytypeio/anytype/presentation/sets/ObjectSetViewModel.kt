@@ -569,6 +569,18 @@ class ObjectSetViewModel(
         return dVRestrictions != null && dVRestrictions.restrictions.any { it == restriction }
     }
 
+    //region {PAGINATION LOGIC}
+
+    fun onPaginatorToolbarNumberClicked(number: Int, isSelected: Boolean) {
+        if (isSelected) {
+            Timber.d("This page is already selected")
+        } else {
+            // TODO proceed with pagination logic.
+        }
+    }
+
+    //endregion
+
     override fun onCleared() {
         super.onCleared()
         titleUpdateChannel.cancel()

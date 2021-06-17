@@ -130,6 +130,10 @@ open class ObjectSetFragment :
 
             subscribe(bottomPanel.touches()) { swipeDetector.onTouchEvent(it) }
         }
+
+        paginatorToolbar.onNumberClickCallback = { (num, isSelected) ->
+            vm.onPaginatorToolbarNumberClicked(num, isSelected)
+        }
     }
 
     private fun setupGridAdapters(view: View) {

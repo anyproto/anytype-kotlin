@@ -2,8 +2,8 @@ package com.anytypeio.anytype.presentation.sets
 
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Relation
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -202,8 +202,10 @@ class ObjectSetReducerTest {
             children = listOf()
         )
 
-        val expected =
-            ObjectSetReducer.Transformation(ObjectSet(blocks = listOf(title, expectedDataView)))
+        val expected = ObjectSetReducer.Transformation(
+            state = ObjectSet(blocks = listOf(title, expectedDataView)),
+            effects = listOf(ObjectSetReducer.SideEffect.ResetOffset(event.offset))
+        )
 
         assertEquals(expected, result)
     }
@@ -356,8 +358,10 @@ class ObjectSetReducerTest {
             children = listOf()
         )
 
-        val expected =
-            ObjectSetReducer.Transformation(ObjectSet(blocks = listOf(title, expectedDataView)))
+        val expected = ObjectSetReducer.Transformation(
+            state = ObjectSet(blocks = listOf(title, expectedDataView)),
+            effects = listOf(ObjectSetReducer.SideEffect.ResetOffset(event.offset))
+        )
 
         assertEquals(expected, result)
     }

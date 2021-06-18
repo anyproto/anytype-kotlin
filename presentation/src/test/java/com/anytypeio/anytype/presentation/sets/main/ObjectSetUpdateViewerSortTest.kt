@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -74,7 +75,7 @@ class ObjectSetUpdateViewerSortTest : ObjectSetViewModelTestSetup() {
                     context = root,
                     block = doc.dv.id,
                     view = doc.viewer2.id,
-                    limit = 0,
+                    limit = ObjectSetConfig.DEFAULT_LIMIT,
                     offset = 0
                 )
             )

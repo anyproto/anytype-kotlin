@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.extension.updateFields
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -13,15 +11,9 @@ import timber.log.Timber
 class ObjectSetReducer {
 
     private val eventChannel: Channel<List<Event>> = Channel()
-    private val effectChannel: Channel<List<SideEffect>> = Channel()
 
     val state = MutableStateFlow(ObjectSet.init())
-
-    val effects = effectChannel
-        .consumeAsFlow()
-        .filter { it.isNotEmpty() }
-        .flatMapConcat { it.asFlow() }
-        .distinctUntilChanged()
+    val effects = MutableSharedFlow<List<SideEffect>>()
 
     suspend fun run() {
         eventChannel
@@ -34,7 +26,7 @@ class ObjectSetReducer {
             }
             .collect { transformation ->
                 state.value = transformation.state
-                effectChannel.send(transformation.effects)
+                effects.emit(transformation.effects)
             }
     }
 
@@ -67,6 +59,7 @@ class ObjectSetReducer {
                 )
             }
             is Command.DataView.SetView -> {
+                effects.add(SideEffect.ResetOffset(event.offset))
                 state.copy(
                     blocks = state.blocks.map { block ->
                         if (block.id == event.target) {
@@ -179,14 +172,10 @@ class ObjectSetReducer {
     }
 
     sealed class SideEffect {
-        data class ViewerUpdate(
-            val target: Id,
-            val viewer: DVViewer
-        ) : SideEffect()
+        data class ResetOffset(val offset: Int) : SideEffect()
     }
 
     fun clear() {
         eventChannel.close()
-        effectChannel.close()
     }
 }

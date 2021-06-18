@@ -158,7 +158,6 @@
         app:layout_constraintTop_toBottomOf="parent" />
 
     <com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewPaginatorToolbar
-        android:visibility="invisible"
         android:id="@+id/paginatorToolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -20,7 +20,9 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    var onNumberClickCallback :  (Pair<Int, Boolean>) -> Unit = {}
+    var onNumberClickCallback: (Pair<Int, Boolean>) -> Unit = {}
+    var onNext: () -> Unit = {}
+    var onPrevious: () -> Unit = {}
 
     private val paginatorAdapter = Adapter { onNumberClickCallback(it) }
 
@@ -29,31 +31,50 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
         setBackgroundColor(Color.WHITE)
         rvPaginator.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            val spacing = resources.getDimension(R.dimen.dp_12).toInt()
             addItemDecoration(
                 SpacingItemDecoration(
-                    spacingStart = resources.getDimension(R.dimen.dp_12).toInt(),
-                    spacingEnd = resources.getDimension(R.dimen.dp_12).toInt()
+                    spacingStart = spacing,
+                    spacingEnd = spacing,
+                    firstItemSpacingStart = spacing * 2,
+                    lastItemSpacingEnd = spacing * 2
                 )
             )
             adapter = paginatorAdapter
         }
+        ivNextPage.setOnClickListener { onNext() }
+        ivPreviousPage.setOnClickListener { onPrevious() }
     }
 
     fun set(count: Int, index: Int) {
         val update = mutableListOf<Pair<Int, Boolean>>()
         repeat(count) {
-            val number = it.inc()
+            val number = it
             update.add(
                 Pair(number, index == number)
             )
         }
         paginatorAdapter.submitList(update)
         if (index > 0) rvPaginator.smoothScrollToPosition(index)
+        if (index == 0) {
+            ivPreviousPage.isEnabled = false
+            ivPreviousPage.alpha = 0.2f
+        } else {
+            ivPreviousPage.isEnabled = true
+            ivPreviousPage.alpha = 1.0f
+        }
+        if (index == count - 1) {
+            ivNextPage.isEnabled = false
+            ivNextPage.alpha = 0.2f
+        } else {
+            ivNextPage.isEnabled = true
+            ivNextPage.alpha = 1f
+        }
     }
 
     class Adapter(
         private val onNumberClicked: (Pair<Int, Boolean>) -> Unit
-    ): ListAdapter<Pair<Int, Boolean>, Adapter.ViewHolder>(PageNumberDiffer) {
+    ) : ListAdapter<Pair<Int, Boolean>, Adapter.ViewHolder>(PageNumberDiffer) {
 
         override fun onCreateViewHolder(
             parent: ViewGroup, viewType: Int
@@ -79,7 +100,7 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
         ) {
             fun bind(item: Pair<Int, Boolean>) {
                 val (num, isSelected) = item
-                itemView.tvNumber.text = num.toString()
+                itemView.tvNumber.text = num.inc().toString()
                 itemView.tvNumber.isSelected = isSelected
             }
         }
@@ -90,6 +111,7 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
             oldItem: Pair<Int, Boolean>,
             newItem: Pair<Int, Boolean>
         ): Boolean = newItem.first == oldItem.first
+
         override fun areContentsTheSame(
             oldItem: Pair<Int, Boolean>,
             newItem: Pair<Int, Boolean>

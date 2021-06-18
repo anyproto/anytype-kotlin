@@ -3,7 +3,11 @@ package com.anytypeio.anytype.presentation.sets.main
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -12,6 +16,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -54,17 +60,54 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 )
             )
         )
-        stubSetActiveViewer(
-            events = listOf(
-                Event.Command.DataView.SetRecords(
+
+        setActiveViewer.stub {
+            onBlocking { invoke(
+                SetActiveViewer.Params(
                     context = root,
-                    id = doc.dv.id,
-                    view = doc.viewer2.id,
-                    records = updatedRecords,
-                    total = MockDataFactory.randomInt()
+                    block = doc.dv.id,
+                    view = doc.viewer1.id,
+                    limit = ObjectSetConfig.DEFAULT_LIMIT
+                )
+            ) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = listOf(
+                        Event.Command.DataView.SetRecords(
+                            context = root,
+                            view = doc.viewer1.id,
+                            id = doc.dv.id,
+                            total = MockDataFactory.randomInt(),
+                            records = doc.initialRecords
+                        )
+                    )
                 )
             )
-        )
+        }
+
+        setActiveViewer.stub {
+            onBlocking { invoke(
+                SetActiveViewer.Params(
+                    context = root,
+                    block = doc.dv.id,
+                    view = doc.viewer2.id,
+                    limit = ObjectSetConfig.DEFAULT_LIMIT
+                )
+            ) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = listOf(
+                        Event.Command.DataView.SetRecords(
+                            context = root,
+                            id = doc.dv.id,
+                            view = doc.viewer2.id,
+                            records = updatedRecords,
+                            total = MockDataFactory.randomInt()
+                        )
+                    )
+                )
+            )
+        }
 
         val vm = buildViewModel()
 

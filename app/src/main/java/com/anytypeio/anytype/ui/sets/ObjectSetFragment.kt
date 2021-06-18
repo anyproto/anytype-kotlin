@@ -131,8 +131,12 @@ open class ObjectSetFragment :
             subscribe(bottomPanel.touches()) { swipeDetector.onTouchEvent(it) }
         }
 
-        paginatorToolbar.onNumberClickCallback = { (num, isSelected) ->
-            vm.onPaginatorToolbarNumberClicked(num, isSelected)
+        with(paginatorToolbar) {
+            onNumberClickCallback = { (num, isSelected) ->
+                vm.onPaginatorToolbarNumberClicked(num, isSelected)
+            }
+            onNext = { vm.onPaginatorNextElsePrevious(true) }
+            onPrevious = { vm.onPaginatorNextElsePrevious(false) }
         }
     }
 
@@ -371,6 +375,15 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { observeHeader(it) }
         jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
+        jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
+            paginatorToolbar.set(count = count, index = index)
+            if (count > 1) {
+                paginatorToolbar.visible()
+            }
+            else {
+                paginatorToolbar.gone()
+            }
+        }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading ->
             Timber.d("isLoading: $isLoading")
             if (isLoading) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
@@ -28,6 +29,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.math.ceil
 
 class ObjectSetViewModel(
     private val reducer: ObjectSetReducer,
@@ -45,6 +47,16 @@ class ObjectSetViewModel(
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
+
+
+    private val total = MutableStateFlow(0)
+    private val offset = MutableStateFlow(0)
+
+    val pagination = total.combine(offset) { t, o ->
+        val idx = ceil(o.toDouble() / ObjectSetConfig.DEFAULT_LIMIT).toInt()
+        val pages = ceil(t.toDouble() / ObjectSetConfig.DEFAULT_LIMIT).toInt()
+        Pair(idx, pages)
+    }
 
     private val _viewerTabs = MutableStateFlow<List<ViewerTabView>>(emptyList())
     val viewerTabs = _viewerTabs.asStateFlow()
@@ -84,29 +96,29 @@ class ObjectSetViewModel(
             reducer.state.filter { it.isInitialized }.collect { set ->
                 Timber.d("Set updated!")
                 _viewerTabs.value = set.tabs(session.currentViewerId)
-                val viewerIndex =
-                    reducer.state.value.viewers.indexOfFirst { it.id == session.currentViewerId }
+                val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
                 set.render(viewerIndex, context, urlBuilder).let { vs ->
                     _viewerGrid.value = vs.viewer
                     _header.value = vs.title
+                }
+                if (set.viewers.isNotEmpty()) {
+                    val viewer = if (viewerIndex != -1)
+                        set.viewers[viewerIndex]
+                    else
+                        set.viewers.first()
+                    val db = set.viewerDb[viewer.id]
+                    total.value = db?.total ?: 0
                 }
             }
         }
 
         viewModelScope.launch {
-            reducer.effects.collect { effect ->
-                when (effect) {
-                    is ObjectSetReducer.SideEffect.ViewerUpdate -> {
-                        updateDataViewViewer(
-                            UpdateDataViewViewer.Params(
-                                context = context,
-                                target = effect.target,
-                                viewer = effect.viewer
-                            )
-                        ).process(
-                            success = defaultPayloadConsumer,
-                            failure = { Timber.e(it, "Error while updating data view's viewer") }
-                        )
+            reducer.effects.collect { effects ->
+                effects.forEach { effect ->
+                    when (effect) {
+                        is ObjectSetReducer.SideEffect.ResetOffset -> {
+                            offset.value = effect.offset
+                        }
                     }
                 }
             }
@@ -144,7 +156,10 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             isLoading.value = true
             openObjectSet(ctx).process(
-                success = { defaultPayloadConsumer(it).also { isLoading.value = false } },
+                success = { payload ->
+                    defaultPayloadConsumer(payload).also { isLoading.value = false }
+                    proceedWithStartupPaging()
+                },
                 failure = {
                     isLoading.value = false
                     Timber.e(it, "Error while opening object set: $ctx")
@@ -191,7 +206,7 @@ class ObjectSetViewModel(
                     context = context,
                     block = reducer.state.value.dataview.id,
                     view = viewer,
-                    limit = 0,
+                    limit = ObjectSetConfig.DEFAULT_LIMIT,
                     offset = 0
                 )
             ).process(
@@ -569,14 +584,59 @@ class ObjectSetViewModel(
         return dVRestrictions != null && dVRestrictions.restrictions.any { it == restriction }
     }
 
-    //region {PAGINATION LOGIC}
+    //region { PAGINATION LOGIC }
+
+    private suspend fun proceedWithStartupPaging() {
+        val set = reducer.state.value.dataview
+        val dv = set.content<Block.Content.DataView>()
+        val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+        proceedWithViewerPaging(set = set, viewer = viewer.id)
+    }
 
     fun onPaginatorToolbarNumberClicked(number: Int, isSelected: Boolean) {
         if (isSelected) {
             Timber.d("This page is already selected")
         } else {
-            // TODO proceed with pagination logic.
+            viewModelScope.launch {
+                offset.value = number * ObjectSetConfig.DEFAULT_LIMIT
+                val set = reducer.state.value.dataview
+                val dv = set.content<Block.Content.DataView>()
+                val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                proceedWithViewerPaging(set = set, viewer = viewer.id)
+            }
         }
+    }
+
+    fun onPaginatorNextElsePrevious(next: Boolean) {
+        viewModelScope.launch {
+            offset.value = if (next) {
+                offset.value + ObjectSetConfig.DEFAULT_LIMIT
+            } else {
+                offset.value - ObjectSetConfig.DEFAULT_LIMIT
+            }
+            val set = reducer.state.value.dataview
+            val dv = set.content<Block.Content.DataView>()
+            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            proceedWithViewerPaging(set = set, viewer = viewer.id)
+        }
+    }
+
+    private suspend fun proceedWithViewerPaging(
+        set: Block,
+        viewer: Id
+    ) {
+        setActiveViewer(
+            SetActiveViewer.Params(
+                context = context,
+                block = set.id,
+                view = viewer,
+                limit = ObjectSetConfig.DEFAULT_LIMIT,
+                offset = offset.value
+            )
+        ).process(
+            success = { payload -> defaultPayloadConsumer(payload) },
+            failure = { Timber.e(it, "Error while setting view during pagination") }
+        )
     }
 
     //endregion

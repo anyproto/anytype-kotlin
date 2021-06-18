@@ -37,6 +37,8 @@ object ObjectSetConfig {
     const val FILE_EXT_KEY = "fileExt"
 
     const val FILE_MIME_KEY = "fileMimeType"
+
+    const val DEFAULT_LIMIT = 50
 }
 
 val Map<String, Any?>.type: String

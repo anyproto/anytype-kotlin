@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView 
+    <ImageView
         android:id="@+id/ivPreviousPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="12dp"
-        android:src="@drawable/ic_paginator_arrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    
+        android:src="@drawable/ic_paginator_arrow" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:overScrollMode="never"
-        android:scrollbars="none"
         android:id="@+id/rvPaginator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="36dp"
         android:layout_marginEnd="36dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:overScrollMode="never"
+        android:scrollbars="none" />
 
     <ImageView
-        android:rotation="180"
         android:id="@+id/ivNextPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:layout_marginEnd="12dp"
-        android:src="@drawable/ic_paginator_arrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:rotation="180"
+        android:src="@drawable/ic_paginator_arrow" />
 
 </merge>

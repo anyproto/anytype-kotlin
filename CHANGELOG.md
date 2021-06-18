@@ -18,6 +18,7 @@
 * Navigate to objects from data view or relation-value screens (#1539)
 * Show the Android keyboard reliably for text-based relations with empty value (#1542)
 * Do not exit edit mode when deleting one of the values from relation's file list (#1543)
+* Data view pagination (#1561)
 
 ## Version 0.1.11
 

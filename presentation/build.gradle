@@ -48,6 +48,11 @@ android {
     androidExtensions {
         experimental = true
     }
+
+    lintOptions {
+        // https://issuetracker.google.com/issues/169249668#comment8
+        disable 'NullSafeMutableLiveData'
+    }
 }
 
 dependencies {

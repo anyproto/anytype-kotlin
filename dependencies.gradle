@@ -25,7 +25,7 @@ ext {
     navigation_version = '2.3.0'
 
     // Third party libraries
-    exoplayer_version = '2.14.0'
+    exoplayer_version = '2.14.1'
     glide_version = '4.12.0'
     blurry_version = '4.0.0'
     shimmer_layout_version = "0.5.0"

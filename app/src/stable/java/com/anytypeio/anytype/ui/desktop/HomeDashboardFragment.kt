@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.desktop
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.View.OVER_SCROLL_NEVER
@@ -34,7 +35,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private val vm by viewModels<HomeDashboardViewModel> { factory }
 
-    var motionProgress = 0f // 0f being initial state
+    private var motionProgress = 0f // 0f being initial state
 
     private val dndBehavior by lazy {
         DashboardDragAndDropBehavior(
@@ -149,6 +150,8 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             bottomSpacing = 0,
             displayMode = GRID
         )
+
+        avatarContainer.setInitialColor(Color.parseColor("#0066C3"))
 
         desktopRecycler.apply {
             overScrollMode = OVER_SCROLL_NEVER

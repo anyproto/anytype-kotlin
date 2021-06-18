@@ -59,6 +59,10 @@ class AvatarWidget : FrameLayout {
         backgroundTintList = ColorStateList.valueOf(color ?: randomColor(name))
     }
 
+    fun setInitialColor(color: Int) {
+        initials.setTextColor(color)
+    }
+
     private fun randomColor(name: String): Int {
         var hash = 0
 

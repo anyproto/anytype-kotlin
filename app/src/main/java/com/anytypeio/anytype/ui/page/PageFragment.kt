@@ -340,7 +340,11 @@ open class PageFragment :
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun openGallery(type: String) {
-        startActivityForResult(getVideoFileIntent(type), REQUEST_FILE_CODE)
+        try {
+            startActivityForResult(getVideoFileIntent(type), REQUEST_FILE_CODE)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to open gallery")
+        }
     }
 
     @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)

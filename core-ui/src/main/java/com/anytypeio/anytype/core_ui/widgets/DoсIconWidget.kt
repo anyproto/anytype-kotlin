@@ -34,8 +34,6 @@ class DocIconWidget @JvmOverloads constructor(
     }
 
     fun setEmoji(unicode: String?) {
-        // TODO there may be an issue with threading. Check it!
-        Timber.e("Thread while setting emoji: ${Thread.currentThread().name}")
         try {
             if (unicode != null) {
                 Glide

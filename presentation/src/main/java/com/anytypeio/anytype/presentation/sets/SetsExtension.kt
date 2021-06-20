@@ -284,12 +284,3 @@ fun Any?.filterIdsById(filter: Id): List<Id> {
     }
     return remaining.toList()
 }
-
-fun Any?.addIds(ids: List<Id>): List<Id> {
-    val remaining = mutableListOf<Id>()
-    if (this is List<*>) {
-        remaining.addAll(typeOf())
-        remaining.addAll(ids)
-    }
-    return remaining.toList()
-}

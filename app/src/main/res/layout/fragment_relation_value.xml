@@ -62,6 +62,14 @@
                 android:contentDescription="@string/content_description_plus_button"
                 android:src="@drawable/ic_dv_modal_plus" />
 
+            <ProgressBar
+                android:id="@+id/refresh"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:theme="@style/GreyProgressBar"/>
+
         </FrameLayout>
 
     </LinearLayout>

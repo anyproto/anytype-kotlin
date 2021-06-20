@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.presentation.relations.providers.*
 import com.anytypeio.anytype.presentation.sets.*
@@ -231,4 +232,11 @@ object ObjectSetModule {
     fun provideUpdateDetailUseCase(
         repository: BlockRepository
     ) : UpdateDetail = UpdateDetail(repository)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddFileToRecordUseCase(
+        repo: BlockRepository
+    ): AddFileToRecord = AddFileToRecord(repo = repo)
 }

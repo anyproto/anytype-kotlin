@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
@@ -709,4 +710,11 @@ object EditorUseCaseModule {
     fun provideGetObjectTypesUseCase(
         repository: BlockRepository
     ) : GetObjectTypes = GetObjectTypes(repository)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddFileToObjectUseCase(
+        repo: BlockRepository
+    ): AddFileToObject = AddFileToObject(repo = repo)
 }

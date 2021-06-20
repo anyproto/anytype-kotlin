@@ -6,6 +6,8 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.AddFileToObject
+import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
@@ -85,6 +87,7 @@ object ObjectRelationValueModule {
 
 @Module
 object ObjectSetObjectRelationValueModule {
+
     @JvmStatic
     @Provides
     @PerModal
@@ -97,7 +100,8 @@ object ObjectSetObjectRelationValueModule {
         removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
-        updateDataViewRecord: UpdateDataViewRecord
+        updateDataViewRecord: UpdateDataViewRecord,
+        addFileToRecord: AddFileToRecord
     ): RelationValueDVViewModel.Factory = RelationValueDVViewModel.Factory(
         relations = relations,
         values = values,
@@ -107,12 +111,14 @@ object ObjectSetObjectRelationValueModule {
         removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
         urlBuilder = urlBuilder,
         dispatcher = dispatcher,
-        updateDataViewRecord = updateDataViewRecord
+        updateDataViewRecord = updateDataViewRecord,
+        addFileToRecord = addFileToRecord
     )
 }
 
 @Module
 object ObjectObjectRelationValueModule {
+
     @JvmStatic
     @Provides
     @PerModal
@@ -124,6 +130,7 @@ object ObjectObjectRelationValueModule {
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
+        addFileToObject: AddFileToObject
     ): RelationValueViewModel.Factory = RelationValueViewModel.Factory(
         relations = relations,
         values = values,
@@ -131,6 +138,7 @@ object ObjectObjectRelationValueModule {
         types = types,
         urlBuilder = urlBuilder,
         dispatcher = dispatcher,
-        updateDetail = updateDetail
+        updateDetail = updateDetail,
+        addFileToObject = addFileToObject
     )
 }

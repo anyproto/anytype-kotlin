@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.AddFileToObject
+import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -44,6 +47,7 @@ abstract class RelationValueBaseViewModel(
     val name = MutableStateFlow("")
     val views = MutableStateFlow(listOf<RelationValueView>())
     val commands = MutableSharedFlow<ObjectRelationValueCommand>(replay = 0)
+    val isLoading = MutableStateFlow<Boolean>(false)
 
     fun onStart(objectId: Id, relationId: Id) {
         jobs += viewModelScope.launch {
@@ -224,6 +228,7 @@ abstract class RelationValueBaseViewModel(
         viewModelScope.launch {
             commands.emit(ObjectRelationValueCommand.ShowAddFileScreen)
         }
+
     }
 
     fun onFileValueActionUploadFromGalleryClicked() {}
@@ -315,7 +320,8 @@ class RelationValueDVViewModel(
     private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val dispatcher: Dispatcher<Payload>,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val addFileToRecord: AddFileToRecord
 ) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
@@ -374,6 +380,38 @@ class RelationValueDVViewModel(
             ).process(
                 failure = { Timber.e(it, "Error while removing status") },
                 success = { Timber.d("Successfully removed status") }
+            )
+        }
+    }
+
+    fun onAddFileToRecord(
+        ctx: Id,
+        dataview: Id,
+        record: Id,
+        relation: Id,
+        filePath: String
+    ) {
+        viewModelScope.launch {
+            isLoading.emit(true)
+            val value = values.get(record)
+            addFileToRecord(
+                params = AddFileToRecord.Params(
+                    context = ctx,
+                    target = dataview,
+                    record = record,
+                    relation = relation,
+                    value = value,
+                    path = filePath
+                )
+            ).process(
+                failure = {
+                    isLoading.emit(false)
+                    Timber.e(it, "Error while adding new file to record")
+                },
+                success = {
+                    isLoading.emit(false)
+                    Timber.d("Successfully add new file to record")
+                }
             )
         }
     }
@@ -484,7 +522,8 @@ class RelationValueDVViewModel(
         private val updateDataViewRecord: UpdateDataViewRecord,
         private val removeTagFromRecord: RemoveTagFromDataViewRecord,
         private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val addFileToRecord: AddFileToRecord
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T = RelationValueDVViewModel(
@@ -496,7 +535,8 @@ class RelationValueDVViewModel(
             removeTagFromDataViewRecord = removeTagFromRecord,
             removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
-            updateDataViewRecord = updateDataViewRecord
+            updateDataViewRecord = updateDataViewRecord,
+            addFileToRecord = addFileToRecord
         ) as T
     }
 }
@@ -508,7 +548,8 @@ class RelationValueViewModel(
     private val types: ObjectTypeProvider,
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val addFileToObject: AddFileToObject
 ) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
@@ -646,6 +687,36 @@ class RelationValueViewModel(
         }
     }
 
+    fun onAddFileToObject(
+        ctx: Id,
+        target: Id,
+        relation: Id,
+        filePath: String
+    ) {
+        viewModelScope.launch {
+            isLoading.emit(true)
+            val obj = values.get(target)
+            addFileToObject(
+                params = AddFileToObject.Params(
+                    ctx = ctx,
+                    relation = relation,
+                    obj = obj,
+                    path = filePath
+                )
+            ).process(
+                failure = {
+                    isLoading.emit(false)
+                    Timber.e(it, "Error while adding new file to object")
+                },
+                success = {
+                    isLoading.emit(false)
+                    Timber.d("Successfully add new file to object")
+                    dispatcher.send(it)
+                }
+            )
+        }
+    }
+
     class Factory(
         private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
@@ -653,7 +724,8 @@ class RelationValueViewModel(
         private val details: ObjectDetailProvider,
         private val types: ObjectTypeProvider,
         private val updateDetail: UpdateDetail,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val addFileToObject: AddFileToObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T = RelationValueViewModel(
@@ -663,7 +735,8 @@ class RelationValueViewModel(
             types = types,
             dispatcher = dispatcher,
             updateDetail = updateDetail,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            addFileToObject = addFileToObject
         ) as T
     }
 }

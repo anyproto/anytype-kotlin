@@ -2057,20 +2057,25 @@ class PageViewModel(
 
     fun onBlockToolbarStyleClicked() {
         Timber.d("onBlockToolbarStyleClicked, ")
-        val target = orchestrator.stores.focus.current().id
-        when (views.first { it.id == target }) {
-            is BlockView.Title -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
-            is BlockView.Code -> {
-                val selection = orchestrator.stores.textSelection.current().selection
-                if (selection != null && selection.first != selection.last) {
-                    _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
-                } else {
+        val focus = orchestrator.stores.focus.current()
+        val target = focus.id
+        if (target.isNotEmpty()) {
+            when (views.find { it.id == target }) {
+                is BlockView.Title -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
+                is BlockView.Code -> {
+                    val selection = orchestrator.stores.textSelection.current().selection
+                    if (selection != null && selection.first != selection.last) {
+                        _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
+                    } else {
+                        proceedWithStyleToolbarEvent()
+                    }
+                }
+                else -> {
                     proceedWithStyleToolbarEvent()
                 }
             }
-            else -> {
-                proceedWithStyleToolbarEvent()
-            }
+        } else {
+            Timber.e("Unknown focus for style toolbar: $focus")
         }
     }
 
@@ -4175,7 +4180,6 @@ class PageViewModel(
             }
             is SlashItem.Relation -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onSlashRelationItemClicked(item, targetId, isBlockEmpty)
             }
             is SlashItem.Other.Line -> {
@@ -4523,6 +4527,7 @@ class PageViewModel(
     private fun onSlashRelationItemClicked(
         item: SlashItem.Relation, targetId: Id, isBlockEmpty: Boolean
     ) {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStopAndClearFocus)
         val intent = if (isBlockEmpty) {
             Intent.CRUD.Replace(
                 context = context,

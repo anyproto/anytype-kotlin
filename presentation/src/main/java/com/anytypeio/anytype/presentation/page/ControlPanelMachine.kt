@@ -214,6 +214,7 @@ sealed class ControlPanelMachine {
             ) : Slash()
 
             object OnStop : Slash()
+            object OnStopAndClearFocus: Slash()
         }
 
         sealed class OnRefresh : Event() {
@@ -829,15 +830,13 @@ sealed class ControlPanelMachine {
                 )
             }
             Event.Slash.OnStop -> {
+                state.copy(slashWidget = Toolbar.SlashWidget.reset())
+            }
+            is Event.Slash.OnStopAndClearFocus -> {
                 state.copy(
-                    slashWidget = state.slashWidget.copy(
-                        isVisible = false,
-                        from = null,
-                        filter = null,
-                        cursorCoordinate = null,
-                        updateList = false,
-                        items = emptyList()
-                    )
+                    slashWidget = Toolbar.SlashWidget.reset(),
+                    mainToolbar = state.mainToolbar.copy(isVisible = false),
+                    navigationToolbar = state.navigationToolbar.copy(isVisible = true)
                 )
             }
             is Event.Slash.OnFilterChange -> {

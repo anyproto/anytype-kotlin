@@ -4,6 +4,7 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
@@ -270,5 +271,34 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
                 else -> throw IllegalStateException()
             }
         }
+    }
+
+    @Test
+    fun `should not create a new paragraph on outside-clicked event if object has restriction BLOCKS`() {
+
+        // SETUP
+
+        val firstChild = MockDataFactory.randomUuid()
+        val secondChild = MockDataFactory.randomUuid()
+
+        val page = MockBlockFactory.makeOnePageWithTitleAndOnePageLinkBlock(
+            rootId = root,
+            titleBlockId = firstChild,
+            pageBlockId = secondChild
+        )
+
+        stubInterceptEvents()
+        stubOpenDocument(document = page, objectRestrictions = listOf(ObjectRestriction.BLOCKS))
+        stubCreateBlock(root)
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.onOutsideClicked()
+
+        verifyZeroInteractions(createBlock)
     }
 }

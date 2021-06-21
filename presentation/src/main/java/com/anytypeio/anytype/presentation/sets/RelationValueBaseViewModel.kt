@@ -253,6 +253,12 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
+    fun onFileClicked(id: Id) {
+        viewModelScope.launch {
+            navigation.emit(AppNavigation.Command.OpenPage(id))
+        }
+    }
+
     sealed class ObjectRelationValueCommand {
         object ShowAddStatusOrTagScreen : ObjectRelationValueCommand()
         object ShowAddObjectScreen : ObjectRelationValueCommand()

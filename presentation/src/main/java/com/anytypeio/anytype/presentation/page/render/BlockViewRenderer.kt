@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.page.render
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
@@ -26,6 +27,7 @@ interface BlockViewRenderer {
         anchor: Id,
         indent: Int,
         details: Block.Details = Block.Details(emptyMap()),
-        relations: List<Relation>
+        relations: List<Relation>,
+        restrictions: List<ObjectRestriction>
     ): List<BlockView>
 }

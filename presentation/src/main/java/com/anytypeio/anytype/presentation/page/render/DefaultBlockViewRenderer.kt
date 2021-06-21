@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.page.render
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Block.Content
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
@@ -32,7 +33,8 @@ class DefaultBlockViewRenderer(
         anchor: Id,
         indent: Int,
         details: Block.Details,
-        relations: List<Relation>
+        relations: List<Relation>,
+        restrictions: List<ObjectRestriction>
     ): List<BlockView> {
 
         val children = getValue(anchor)
@@ -68,7 +70,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     root = root,
-                                    details = details
+                                    details = details,
+                                    restrictions = restrictions
                                 )
                             )
                         }
@@ -93,7 +96,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -120,7 +124,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -147,7 +152,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -173,7 +179,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -199,7 +206,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -225,7 +233,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -251,7 +260,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -277,7 +287,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -291,7 +302,8 @@ class DefaultBlockViewRenderer(
                                     description(
                                         block = block,
                                         content = content,
-                                        mode = mode
+                                        mode = mode,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -317,7 +329,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -334,7 +347,8 @@ class DefaultBlockViewRenderer(
                                         anchor = block.id,
                                         root = root,
                                         details = details,
-                                        relations = relations
+                                        relations = relations,
+                                        restrictions = restrictions
                                     )
                                 )
                             }
@@ -382,7 +396,8 @@ class DefaultBlockViewRenderer(
                             anchor = block.id,
                             root = root,
                             details = details,
-                            relations = relations
+                            relations = relations,
+                            restrictions = restrictions
                         )
                     )
                 }
@@ -452,11 +467,19 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         mode: EditorMode,
-    ): BlockView.Description = BlockView.Description(
-        id = block.id,
-        description = content.text.ifEmpty { null },
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
-    )
+        restrictions: List<ObjectRestriction>
+    ): BlockView.Description {
+        val blockMode = if (restrictions.contains(ObjectRestriction.RELATIONS)) {
+            BlockView.Mode.READ
+        } else {
+            if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+        }
+        return BlockView.Description(
+            id = block.id,
+            description = content.text.ifEmpty { null },
+            mode = blockMode
+        )
+    }
 
     private fun headerThree(
         mode: EditorMode,
@@ -748,7 +771,8 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         root: Block,
         focus: Focus,
-        details: Block.Details
+        details: Block.Details,
+        restrictions: List<ObjectRestriction>
     ): BlockView.Title {
 
         val cursor: Int? = if (focus.id == block.id) {
@@ -809,10 +833,16 @@ class DefaultBlockViewRenderer(
             }
         }
 
+        val blockMode = if (restrictions.contains(ObjectRestriction.DETAILS)) {
+            BlockView.Mode.READ
+        } else {
+            if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+        }
+
         return when (layout) {
             ObjectType.Layout.BASIC -> {
                 BlockView.Title.Basic(
-                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    mode = blockMode,
                     id = block.id,
                     text = content.text,
                     emoji = details.details[root.id]?.iconEmoji?.let { name ->
@@ -836,7 +866,7 @@ class DefaultBlockViewRenderer(
             }
             ObjectType.Layout.TODO -> {
                 BlockView.Title.Todo(
-                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    mode = blockMode,
                     id = block.id,
                     text = content.text,
                     isFocused = block.id == focus.id,
@@ -849,9 +879,34 @@ class DefaultBlockViewRenderer(
             }
             ObjectType.Layout.PROFILE -> {
                 BlockView.Title.Profile(
-                    mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+                    mode = blockMode,
                     id = block.id,
                     text = content.text,
+                    image = details.details[root.id]?.iconImage?.let { name ->
+                        if (name.isNotEmpty())
+                            urlBuilder.thumbnail(name)
+                        else
+                            null
+                    },
+                    isFocused = block.id == focus.id,
+                    cursor = cursor,
+                    coverColor = coverColor,
+                    coverImage = coverImage,
+                    coverGradient = coverGradient
+                )
+            }
+            ObjectType.Layout.FILE, ObjectType.Layout.IMAGE -> {
+
+                BlockView.Title.Basic(
+                    mode = blockMode,
+                    id = block.id,
+                    text = content.text,
+                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
+                        if (name.isNotEmpty())
+                            name
+                        else
+                            null
+                    },
                     image = details.details[root.id]?.iconImage?.let { name ->
                         if (name.isNotEmpty())
                             urlBuilder.thumbnail(name)

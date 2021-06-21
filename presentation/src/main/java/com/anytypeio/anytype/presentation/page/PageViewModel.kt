@@ -470,7 +470,8 @@ class PageViewModel(
                     focus = focus,
                     root = models.first { it.id == context },
                     details = details,
-                    relations = orchestrator.stores.relations.current()
+                    relations = orchestrator.stores.relations.current(),
+                    restrictions = orchestrator.stores.objectRestrictions.current()
                 )
             }
             .catch { emit(emptyList()) }
@@ -1006,7 +1007,7 @@ class PageViewModel(
             val content = root.content
             check(content is Content.Smart)
             when (content.type) {
-                SmartBlockType.PROFILE_PAGE -> {
+                SmartBlockType.PROFILE_PAGE, SmartBlockType.FILE -> {
                     val details = orchestrator.stores.details.current().details
                     val restrictions = orchestrator.stores.objectRestrictions.current()
                     dispatch(
@@ -1180,6 +1181,33 @@ class PageViewModel(
     private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
         val views = orchestrator.stores.views.current()
         val view = views.find { it.id == target }
+
+        val restrictions = orchestrator.stores.objectRestrictions.current()
+        if (restrictions.isNotEmpty()) {
+            when (view) {
+                is BlockView.Code, is BlockView.Text,
+                is BlockView.Media, is BlockView.MediaPlaceholder,
+                is BlockView.Upload -> {
+                    if (restrictions.contains(ObjectRestriction.BLOCKS)) {
+                        _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                        return
+                    }
+                }
+                is BlockView.Relation, is BlockView.FeaturedRelation -> {
+                    if (restrictions.contains(ObjectRestriction.RELATIONS)) {
+                        _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                        return
+                    }
+                }
+                is BlockView.Title -> {
+                    if (restrictions.contains(ObjectRestriction.DETAILS)) {
+                        _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                        return
+                    }
+                }
+            }
+        }
+
         if (view != null) {
             onEnterActionMode()
             dispatch(
@@ -2673,6 +2701,12 @@ class PageViewModel(
             return
         }
 
+        val restrictions = orchestrator.stores.objectRestrictions.current()
+        if (restrictions.contains(ObjectRestriction.BLOCKS)) {
+            Timber.d("Object contains restriction BLOCKS, can't create blocks")
+            return
+        }
+
         val root = blocks.find { it.id == context } ?: return
 
         if (root.children.isEmpty()) {
@@ -3464,6 +3498,12 @@ class PageViewModel(
                 }
             }
             is ListenerType.Relation.Related -> {
+                val restrictions = orchestrator.stores.objectRestrictions.current()
+                if (restrictions.contains(ObjectRestriction.RELATIONS)) {
+                    _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                    Timber.d("No interaction allowed with this relation")
+                    return
+                }
                 when (mode) {
                     EditorMode.Edit -> {
                         val relation = (clicked.value as BlockView.Relation.Related).view.relationId

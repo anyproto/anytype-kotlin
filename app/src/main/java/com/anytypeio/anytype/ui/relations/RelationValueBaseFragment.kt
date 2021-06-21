@@ -92,7 +92,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
             onObjectClicked = { o -> vm.onObjectClicked(o.id, o.type) },
             onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
-            onFileClicked = {},
+            onFileClicked = { o -> vm.onFileClicked(o.id) },
             onRemoveFileClicked = { file -> onRemoveFileClicked(file) }
         )
     }

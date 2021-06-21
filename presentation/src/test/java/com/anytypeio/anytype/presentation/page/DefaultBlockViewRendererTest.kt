@@ -6,6 +6,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
@@ -29,7 +31,8 @@ class DefaultBlockViewRendererTest {
 
     class BlockViewRenderWrapper(
         private val blocks: Map<Id, List<Block>>,
-        private val renderer: BlockViewRenderer
+        private val renderer: BlockViewRenderer,
+        private val restrictions: List<ObjectRestriction> = emptyList()
     ) : BlockViewRenderer by renderer {
         suspend fun render(
             root: Block,
@@ -43,7 +46,8 @@ class DefaultBlockViewRendererTest {
             focus = focus,
             indent = indent,
             details = details,
-            relations = emptyList()
+            relations = emptyList(),
+            restrictions = restrictions
         )
     }
 
@@ -1278,6 +1282,141 @@ class DefaultBlockViewRendererTest {
                 color = d.content<Block.Content.Text>().color,
                 text = d.content<Block.Content.Text>().text,
                 number = 2
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render title with read mode when restriction details present`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val fields = Block.Fields.empty()
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id),
+            fields = fields,
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to fields)
+
+        val blocks = listOf(page, header, title)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer,
+            restrictions = listOf(ObjectRestriction.DETAILS)
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details),
+
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null,
+                mode = BlockView.Mode.READ
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render title with edit mode when restriction details is not present`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val fields = Block.Fields.empty()
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id),
+            fields = fields,
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to fields)
+
+        val blocks = listOf(page, header, title)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer,
+            restrictions = listOf(ObjectRestriction.RELATIONS)
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null,
+                mode = BlockView.Mode.EDIT
             )
         )
 

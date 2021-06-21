@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -61,6 +62,7 @@ class DisplayRelationStatusValueTest {
     private lateinit var updateDataViewRecord: UpdateDataViewRecord
     private lateinit var updateDetail: UpdateDetail
     private lateinit var urlBuilder: UrlBuilder
+    private lateinit var addFileToRecord: AddFileToRecord
 
     @get:Rule
     val animationsRule = DisableAnimationsRule()
@@ -82,6 +84,7 @@ class DisplayRelationStatusValueTest {
         removeStatusFromDataViewRecord = RemoveStatusFromDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
+        addFileToRecord = AddFileToRecord(repo)
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
@@ -95,7 +98,8 @@ class DisplayRelationStatusValueTest {
             removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
-            updateDataViewRecord = updateDataViewRecord
+            updateDataViewRecord = updateDataViewRecord,
+            addFileToRecord = addFileToRecord
         )
     }
 

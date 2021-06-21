@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.markup
 
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
-import com.anytypeio.anytype.core_models.MockDataFactory
+import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.ext.*
 import com.anytypeio.anytype.core_models.misc.Overlap
 import org.junit.Test

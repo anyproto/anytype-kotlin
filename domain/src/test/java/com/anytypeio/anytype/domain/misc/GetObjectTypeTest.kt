@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.misc
 
 import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.MockDataFactory
+import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository

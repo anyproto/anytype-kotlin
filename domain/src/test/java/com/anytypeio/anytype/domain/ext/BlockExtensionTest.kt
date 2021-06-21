@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.ext
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.MockDataFactory
+import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.ext.*
 import org.junit.Test
 import kotlin.test.assertEquals

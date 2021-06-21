@@ -47,19 +47,3 @@ inline fun <reified T> List<*>.typeOf(): List<T> {
     }
     return retlist
 }
-
-fun DVRecord.addIds(key:Id, ids: List<Id>): DVRecord {
-    return this.mapValues { entry->
-        if (entry.key == key) {
-            val value: Any? = entry.value
-            val remaining = mutableListOf<Id>()
-            if (value is List<*>) {
-                remaining.addAll(value.typeOf())
-                remaining.addAll(ids)
-            }
-            remaining
-        } else {
-            entry
-        }
-    }
-}

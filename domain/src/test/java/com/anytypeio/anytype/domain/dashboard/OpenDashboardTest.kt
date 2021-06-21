@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.dashboard
 
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.MockDataFactory
+import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.nhaarman.mockitokotlin2.*

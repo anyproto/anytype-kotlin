@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.core_models.MockDataFactory
+import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.core_models.Event

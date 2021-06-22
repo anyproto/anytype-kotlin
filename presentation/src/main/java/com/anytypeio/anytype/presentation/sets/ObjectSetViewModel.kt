@@ -101,14 +101,6 @@ class ObjectSetViewModel(
                     _viewerGrid.value = vs.viewer
                     _header.value = vs.title
                 }
-                if (set.viewers.isNotEmpty()) {
-                    val viewer = if (viewerIndex != -1)
-                        set.viewers[viewerIndex]
-                    else
-                        set.viewers.first()
-                    val db = set.viewerDb[viewer.id]
-                    total.value = db?.total ?: 0
-                }
             }
         }
 
@@ -118,6 +110,9 @@ class ObjectSetViewModel(
                     when (effect) {
                         is ObjectSetReducer.SideEffect.ResetOffset -> {
                             offset.value = effect.offset
+                        }
+                        is ObjectSetReducer.SideEffect.ResetCount -> {
+                            total.value = effect.count
                         }
                     }
                 }
@@ -448,6 +443,7 @@ class ObjectSetViewModel(
                 ).process(
                     failure = { Timber.e(it, "Error while creating new record") },
                     success = { record ->
+                        total.value = total.value.inc()
                         objectSetRecordCache.map[context] = record
                         dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
                     }

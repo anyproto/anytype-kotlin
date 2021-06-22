@@ -110,6 +110,7 @@ class ObjectSetReducer {
                 )
             }
             is Command.DataView.SetRecords -> {
+                effects.add(SideEffect.ResetCount(event.total))
                 val current = state.viewerDb.toMutableMap().apply { clear() }
                 val result = current.apply {
                     put(
@@ -173,6 +174,7 @@ class ObjectSetReducer {
 
     sealed class SideEffect {
         data class ResetOffset(val offset: Int) : SideEffect()
+        data class ResetCount(val count: Int) : SideEffect()
     }
 
     fun clear() {

@@ -189,7 +189,7 @@ fun MBlock.toCoreModelsBookmark(): Block.Content.Bookmark {
         url = content.url.ifEmpty { null },
         title = content.title.ifEmpty { null },
         description = content.description.ifEmpty { null },
-        image = content.description.ifEmpty { null },
+        image = content.imageHash.ifEmpty { null },
         favicon = content.faviconHash.ifEmpty { null }
     )
 }

@@ -219,6 +219,8 @@ class DashboardAdapter(
                             .load(Emojifier.uri(unicode))
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(ivEmoji)
+                    } ?: run {
+                        ivEmoji.setImageDrawable(null)
                     }
                 } catch (e: Throwable) {
                     Timber.e(e, "Could not set emoji icon")
@@ -233,6 +235,8 @@ class DashboardAdapter(
                         .centerInside()
                         .circleCrop()
                         .into(ivImage)
+                } ?: run {
+                    ivImage.setImageDrawable(null)
                 }
             }
         }

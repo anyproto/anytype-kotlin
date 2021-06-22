@@ -8,6 +8,7 @@
 * Fix split title issue (#1572)
 * Do not crash when failed to parse path for profile image (#1574)
 * Do not crash when failed to parse layout for dashboard link (#1574)
+* Fix loading state inconsistencies on dashboard (#1575)
 
 ## Version 0.1.12
 

@@ -34,7 +34,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private val vm by viewModels<HomeDashboardViewModel> { factory }
 
-    var motionProgress = 0f // 0f being initial state
+    private var motionProgress = 0f // 0f being initial state
 
     private val dndBehavior by lazy {
         DashboardDragAndDropBehavior(

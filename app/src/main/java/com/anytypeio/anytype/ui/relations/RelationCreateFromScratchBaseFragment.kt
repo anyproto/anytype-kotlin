@@ -34,6 +34,7 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
     abstract val vm: RelationCreateFromScratchBaseViewModel
 
     protected val ctx get() = arg<Id>(CTX_KEY)
+    protected val query get() = arg<Id>(QUERY_KEY)
 
     private val nameInputAdapter = RelationNameInputAdapter {
         vm.onNameChanged(it)
@@ -65,6 +66,7 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        nameInputAdapter.query = query
         rvCreateRelationFromScratch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = concatAdapter
@@ -75,6 +77,7 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
             )
         }
         btnAction.setOnClickListener { onCreateRelationClicked() }
+
 
         with(lifecycleScope) {
             subscribe(vm.views) { relationAdapter.submitList(it) }
@@ -96,6 +99,7 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
 
     companion object {
         const val CTX_KEY = "arg.relation-create-from-scratch.ctx"
+        const val QUERY_KEY = "arg.relation-create-from-scratch.query"
     }
 
 }
@@ -119,8 +123,8 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
     }
 
     companion object {
-        fun new(ctx: Id) = RelationCreateFromScratchForObjectFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, query: String) = RelationCreateFromScratchForObjectFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, QUERY_KEY to query)
         }
     }
 }
@@ -146,9 +150,10 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
     }
 
     companion object {
-        fun new(ctx: Id, dv: Id) = RelationCreateFromScratchForDataViewFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv)
+        fun new(ctx: Id, dv: Id, query: String) = RelationCreateFromScratchForDataViewFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, QUERY_KEY to query)
         }
+
         const val DV_KEY = "arg.relation-create-from-scratch-for-data-view.ctx"
     }
 }

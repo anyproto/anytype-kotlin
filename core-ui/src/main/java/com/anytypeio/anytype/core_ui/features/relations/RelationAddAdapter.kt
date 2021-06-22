@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationFormatViewHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationViewHolder
 import com.anytypeio.anytype.presentation.relations.model.RelationView
+import kotlinx.android.synthetic.main.item_relation_create_from_scratch.view.*
 import kotlinx.android.synthetic.main.item_relation_create_from_scratch_name_input.view.*
 
 class RelationAddAdapter(
@@ -27,7 +28,7 @@ class RelationAddAdapter(
     }
 
     override fun onBindViewHolder(holder: DefaultRelationViewHolder, position: Int) {
-       getItem(position).apply { holder.bind(name = name, format = format) }
+        getItem(position).apply { holder.bind(name = name, format = format) }
     }
 
     override fun getItemViewType(position: Int): Int = R.layout.item_relation_format
@@ -37,6 +38,7 @@ class RelationAddAdapter(
             oldItem: RelationView.Existing,
             newItem: RelationView.Existing
         ): Boolean = oldItem.id == newItem.id
+
         override fun areContentsTheSame(
             oldItem: RelationView.Existing,
             newItem: RelationView.Existing
@@ -84,7 +86,8 @@ class RelationFormatAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int = R.layout.item_relation_format_create_from_scratch
+    override fun getItemViewType(position: Int): Int =
+        R.layout.item_relation_format_create_from_scratch
 
     object Differ : DiffUtil.ItemCallback<RelationView.CreateFromScratch>() {
         override fun areItemsTheSame(
@@ -116,14 +119,26 @@ class RelationNameInputAdapter(
     val onTextInputChanged: (String) -> Unit
 ) : RecyclerView.Adapter<RelationNameInputAdapter.ViewHolder>() {
 
+    var query: String = ""
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(parent).apply {
-            itemView.textInputField.doAfterTextChanged { onTextInputChanged(it.toString()) }
+            itemView.textInputField.doAfterTextChanged {
+                query = it.toString()
+                onTextInputChanged(it.toString())
+            }
         }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {}
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(query)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        holder.bind(query)
+    }
 
     override fun getItemCount(): Int = 1
+
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.item_relation_create_from_scratch_name_input,
@@ -131,16 +146,35 @@ class RelationNameInputAdapter(
             false
         )
     ) {
+        fun bind(query: String) {
+            itemView.textInputField.setText(query)
+        }
     }
 }
 
 class RelationAddHeaderAdapter(
     val onItemClick: () -> Unit
 ) : RecyclerView.Adapter<RelationAddHeaderAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(parent).apply {
-        itemView.setOnClickListener { onItemClick() }
+
+    var query: String = EMPTY_QUERY
+        set(value) {
+            field = value
+            notifyItemChanged(0, query)
+        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(parent).apply {
+            itemView.setOnClickListener { onItemClick() }
+        }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(query)
     }
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {}
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        holder.bind(query)
+    }
+
     override fun getItemCount(): Int = 1
 
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -149,6 +183,18 @@ class RelationAddHeaderAdapter(
             parent,
             false
         )
-    )
+    ) {
+        fun bind(query: String) = with(itemView) {
+            if (query.isEmpty()) {
+                tvCreateFromScratch.setText(R.string.create_from_scratch)
+            } else {
+                tvCreateFromScratch.text = context.getString(R.string.create_relation_with_name, query)
+            }
+        }
+    }
+
+    companion object {
+        const val EMPTY_QUERY = ""
+    }
 }
 

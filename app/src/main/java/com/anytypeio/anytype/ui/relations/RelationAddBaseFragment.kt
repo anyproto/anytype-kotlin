@@ -37,7 +37,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     protected val ctx get() = arg<Id>(CTX_KEY)
 
-    private val createFromScratchAdapter = RelationAddHeaderAdapter {
+    protected val createFromScratchAdapter = RelationAddHeaderAdapter {
         onCreateFromScratchClicked()
     }
 
@@ -67,7 +67,10 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
         }
         with(lifecycleScope) {
             subscribe(searchRelationInput.focusChanges()) { hasFocus -> if (hasFocus) expand(view) }
-            subscribe(searchRelationInput.textChanges()) { vm.onQueryChanged(it.toString()) }
+            subscribe(searchRelationInput.textChanges()) {
+                createFromScratchAdapter.query = it.toString()
+                vm.onQueryChanged(it.toString())
+            }
             subscribe(vm.results) { relationAdapter.submitList(it) }
             subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
             subscribe(vm.toasts) { toast(it) }
@@ -108,7 +111,12 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     }
 
     override fun onCreateFromScratchClicked() {
-        RelationCreateFromScratchForObjectFragment.new(ctx).show(childFragmentManager, null)
+        RelationCreateFromScratchForObjectFragment
+            .new(
+                ctx = ctx,
+                query = createFromScratchAdapter.query
+            )
+            .show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {
@@ -139,10 +147,13 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     }
 
     override fun onCreateFromScratchClicked() {
-        RelationCreateFromScratchForDataViewFragment.new(
-            ctx = ctx,
-            dv = dv
-        ).show(childFragmentManager, null)
+        RelationCreateFromScratchForDataViewFragment
+            .new(
+                ctx = ctx,
+                dv = dv,
+                query = createFromScratchAdapter.query
+            )
+            .show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {
@@ -156,7 +167,11 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     companion object {
         fun new(ctx: Id, dv: Id, viewer: Id): RelationAddToDataViewFragment =
             RelationAddToDataViewFragment().apply {
-                arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, VIEWER_KEY to viewer)
+                arguments = bundleOf(
+                    CTX_KEY to ctx,
+                    DV_KEY to dv,
+                    VIEWER_KEY to viewer
+                )
             }
 
         private const val DV_KEY = "arg.relation-add-to-data-view.dv"

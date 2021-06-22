@@ -3502,15 +3502,20 @@ class PageViewModel(
             is ListenerType.Relation.Related -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
                 if (restrictions.contains(ObjectRestriction.RELATIONS)) {
-                    _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                    _toasts.offer(NOT_ALLOWED_FOR_RELATION)
                     Timber.d("No interaction allowed with this relation")
                     return
                 }
                 when (mode) {
                     EditorMode.Edit -> {
-                        val relation = (clicked.value as BlockView.Relation.Related).view.relationId
-                        when (orchestrator.stores.relations.current()
-                            .first { it.key == relation }.format) {
+                        val relationId = (clicked.value as BlockView.Relation.Related).view.relationId
+                        val relation = orchestrator.stores.relations.current().first { it.key == relationId }
+                        if (relation.isReadOnly) {
+                            _toasts.offer(NOT_ALLOWED_FOR_RELATION)
+                            Timber.d("No interaction allowed with this relation")
+                            return
+                        }
+                        when (relation.format) {
                             Relation.Format.SHORT_TEXT,
                             Relation.Format.LONG_TEXT,
                             Relation.Format.URL,
@@ -3521,19 +3526,19 @@ class PageViewModel(
                                     Command.OpenObjectRelationScreen.Value.Text(
                                         ctx = context,
                                         target = context,
-                                        relation = relation
+                                        relation = relationId
                                     )
                                 )
                             }
                             Relation.Format.CHECKBOX -> {
-                                proceedWithTogglingBlockRelationCheckbox(clicked.value, relation)
+                                proceedWithTogglingBlockRelationCheckbox(clicked.value, relationId)
                             }
                             Relation.Format.DATE -> {
                                 dispatch(
                                     Command.OpenObjectRelationScreen.Value.Date(
                                         ctx = context,
                                         target = context,
-                                        relation = relation
+                                        relation = relationId
                                     )
                                 )
                             }
@@ -3542,7 +3547,7 @@ class PageViewModel(
                                     Command.OpenObjectRelationScreen.Value.Default(
                                         ctx = context,
                                         target = context,
-                                        relation = relation
+                                        relation = relationId
                                     )
                                 )
                             }
@@ -3953,6 +3958,7 @@ class PageViewModel(
 
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
+        const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
     }
 
     data class MarkupAction(

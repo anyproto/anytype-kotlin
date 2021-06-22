@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.page.editor.Proxy
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -124,6 +125,11 @@ class RelationListViewModel(
     private fun onRelationClickedListMode(ctx: Id, view: DocumentRelationView) {
         viewModelScope.launch {
             val relation = stores.relations.current().first { it.key == view.relationId }
+            if (relation.isReadOnly) {
+                _toasts.emit(NOT_ALLOWED_FOR_RELATION)
+                Timber.d("No interaction allowed with this relation")
+                return@launch
+            }
             when (relation.format) {
                 Relation.Format.SHORT_TEXT,
                 Relation.Format.LONG_TEXT,
@@ -279,5 +285,6 @@ class RelationListViewModel(
     companion object {
         const val MAX_FEATURED_RELATION_COUNT = 5
         const val MAX_FEATURED_RELATION_COUNT_ERROR = "Currently you cannot create more than $MAX_FEATURED_RELATION_COUNT featured relations"
+        const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
     }
 }

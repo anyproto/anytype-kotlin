@@ -53,3 +53,8 @@ fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 
 fun DV.getRelation(relationKey: Id): Relation? = relations.firstOrNull { it.key == relationKey }
+
+fun DV.isRelationReadOnly(relationKey: Id): Boolean {
+    val relation = getRelation(relationKey)
+    return relation != null && relation.isReadOnly
+}

@@ -278,11 +278,18 @@ class ObjectSetViewModel(
     }
 
     fun onGridCellClicked(cell: CellView) {
+        Timber.d("onGridCellClicked, cell:[$cell]")
         val state = reducer.state.value
         val block = state.dataview
         val dv = block.content as DV
         val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id
             ?: dv.viewers.first().id
+
+        if (dv.isRelationReadOnly(relationKey = cell.key)) {
+            Timber.d("onGridCellClicked, relation is ReadOnly")
+            toast(NOT_ALLOWED_CELL)
+            return
+        }
 
         when (cell) {
             is CellView.Description, is CellView.Number, is CellView.Email,
@@ -646,5 +653,6 @@ class ObjectSetViewModel(
     companion object {
         const val TITLE_CHANNEL_DISPATCH_DELAY = 300L
         const val NOT_ALLOWED = "Not allowed for this set"
+        const val NOT_ALLOWED_CELL = "Not allowed for this cell"
     }
 }

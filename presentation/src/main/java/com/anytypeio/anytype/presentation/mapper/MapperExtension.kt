@@ -302,12 +302,6 @@ fun List<Block>.toDashboardViews(
         is Block.Content.Link -> {
             val targetDetails = details.details[content.target]
             val type = targetDetails?.type
-            val layoutCode = targetDetails?.layout?.toInt()
-            val layout = layoutCode?.let { code ->
-                ObjectType.Layout.values().find { layout ->
-                    layout.code == code
-                }
-            }
             if (type != null) {
                 val value = objectTypes.find { it.url == type }
                 if (value != null) {
@@ -344,7 +338,7 @@ fun List<Block>.toDashboardViews(
 fun Block.Content.Link.toArchiveView(
     id: String,
     details: Block.Details
-): DashboardView.Archive? {
+): DashboardView.Archive {
     return DashboardView.Archive(
         id = id,
         target = target,

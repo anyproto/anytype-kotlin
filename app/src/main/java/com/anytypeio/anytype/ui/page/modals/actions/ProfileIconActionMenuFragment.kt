@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuView
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.action_toolbar_profile_icon.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profile_icon),
@@ -194,14 +195,19 @@ class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profi
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
-            data?.data?.let { uri ->
-                val path = uri.parsePath(requireContext())
-                vm.onEvent(
-                    DocumentIconActionMenuViewModel.Contract.Event.OnImagePickedFromGallery(
-                        context = target,
-                        path = path
+            try {
+                data?.data?.let { uri ->
+                    val path = uri.parsePath(requireContext())
+                    vm.onEvent(
+                        DocumentIconActionMenuViewModel.Contract.Event.OnImagePickedFromGallery(
+                            context = target,
+                            path = path
+                        )
                     )
-                )
+                }
+            } catch (e: Exception) {
+                Timber.e(e, PARSE_PATH_ERROR)
+                toast(PARSE_PATH_ERROR)
             }
         }
     }
@@ -245,5 +251,7 @@ class ProfileIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_profi
         private const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
         private const val ARG_CONTEXT_ID_KEY = "arg.picker.target.context"
         private const val MISSING_TARGET_ERROR = "Missing target id"
+
+        private const val PARSE_PATH_ERROR = "Failed to parse path for image"
     }
 }

@@ -908,7 +908,9 @@ class PageViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
-        if (context == target) {
+        val block = blocks.first { it.id == target }
+        val content = block.content.asText()
+        if (content.style == Content.Text.Style.TITLE) {
             onEndLineEnterTitleClicked()
         } else {
             if (text.isEndLineClick(range)) {

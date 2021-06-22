@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.page.editor
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.page.PageViewModel
@@ -17,6 +19,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyZeroInteractions
 import kotlin.test.assertEquals
@@ -221,5 +224,64 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 )
             )
         }
+    }
+
+    @Test
+    fun `should send create block intent when split happens in title`() {
+        // SETUP
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id)
+        )
+
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomUuid(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.values().random()
+            )
+        )
+
+        val document = listOf(page, header, title, block)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubCreateBlock(root)
+        stubInterceptEvents(InterceptEvents.Params(context = root))
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+        
+        // TESTING
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        val text = MockDataFactory.randomString()
+
+        vm.onEnterKeyClicked(
+            target = title.id,
+            text = text,
+            marks = emptyList(),
+            range = 2..2
+        )
+
+        verifyBlocking(createBlock, times(1)) { invoke(
+            params = CreateBlock.Params(
+                context = root,
+                target = header.id,
+                position = Position.TOP,
+                prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+            )
+        )}
     }
 }

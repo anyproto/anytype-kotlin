@@ -37,18 +37,21 @@ interface Span {
                 normalizeUrl(widget.context, url)
             } catch (e: FileUriExposedException) {
                 e.timber()
+            } catch (e: NullPointerException) {
+                e.timber()
+                widget.context.toast("Url was null or empty")
             }
         }
 
         private fun normalizeUrl(context: Context, url: String) {
             try {
-                val normilizedUrl = UrlCleaner.normalizeUrl(url)
-                val intent = createIntent(context, normilizedUrl)
+                val normalizedUrl = UrlCleaner.normalizeUrl(url)
+                val intent = createIntent(context, normalizedUrl)
                 try {
                     context.startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
                     e.timber()
-                    context.toast("Couldn't open url:$normilizedUrl")
+                    context.toast("Couldn't open url:$normalizedUrl")
                 }
             } catch (e: UrlCleanerException) {
                 e.timber()

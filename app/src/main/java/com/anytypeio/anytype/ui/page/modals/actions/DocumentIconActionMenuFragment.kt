@@ -245,11 +245,16 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
     }
 
     private fun openGallery() {
-        Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.INTERNAL_CONTENT_URI
-        ).let { intent ->
-            startActivityForResult(intent, SELECT_IMAGE_CODE)
+        try {
+            Intent(
+                Intent.ACTION_PICK,
+                MediaStore.Images.Media.INTERNAL_CONTENT_URI
+            ).let { intent ->
+                startActivityForResult(intent, SELECT_IMAGE_CODE)
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to open gallery")
+            toast("Failed to open gallery. Please, try again later.")
         }
     }
 

@@ -1,10 +1,15 @@
 # Change log for Android @Anytype app.
 
-## Version 0.1.13
+## Version 0.1.14
 
 ### Fixes & tech 🚒
 
 * Fix bookmark image loading (#1570)
+
+## Version 0.1.13
+
+### Fixes & tech 🚒
+
 * Fix split title issue (#1572)
 * Do not crash when failed to parse path for profile image (#1574)
 * Do not crash when failed to parse layout for dashboard link (#1574)

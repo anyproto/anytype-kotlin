@@ -78,7 +78,6 @@ interface AppNavigation {
         object OpenEditDatabase : Command()
         object OpenSwitchDisplayView : Command()
         object OpenCustomizeDisplayView : Command()
-        object OpenGoalsScreen : Command()
         object OpenDebugSettingsScreen: Command()
 
         data class OpenPageNavigationScreen(val target: String) : Command()

@@ -219,6 +219,15 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         toast(getString(R.string.permission_read_never_ask_again))
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
+    }
+
     private fun showRationaleDialog(@StringRes messageResId: Int, request: PermissionRequest) {
         AlertDialog.Builder(requireContext())
             .setPositiveButton(R.string.button_allow) { _, _ -> request.proceed() }

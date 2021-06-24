@@ -3,10 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVViewerRelation
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -46,13 +43,7 @@ abstract class RelationAddBaseViewModel(
         viewModelScope.launch {
             objectRelationList(ObjectRelationList.Params(ctx)).process(
                 success = { relations ->
-                    views.value = relations.map { relation ->
-                        RelationView.Existing(
-                            id = relation.key,
-                            name = relation.name,
-                            format = relation.format
-                        )
-                    }
+                    views.value = toNotHiddenRelationViews(relations)
                 },
                 failure = { Timber.e(it, "Error while fetching list of available relations") }
             )
@@ -61,6 +52,17 @@ abstract class RelationAddBaseViewModel(
 
     fun onQueryChanged(input: String) {
         userInput.value = input
+    }
+
+    private fun toNotHiddenRelationViews(relations: List<Relation>): List<RelationView.Existing> {
+        return relations.filter { !it.isHidden }
+            .map {
+                RelationView.Existing(
+                    id = it.key,
+                    name = it.name,
+                    format = it.format
+                )
+            }
     }
 
     companion object {

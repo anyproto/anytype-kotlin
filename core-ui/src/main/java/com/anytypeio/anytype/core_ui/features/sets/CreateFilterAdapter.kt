@@ -39,7 +39,10 @@ class CreateFilterAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
-                        onItemClicked(views[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onItemClicked(views[pos])
+                        }
                     }
                 }
             }
@@ -48,7 +51,10 @@ class CreateFilterAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
-                        onItemClicked(views[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onItemClicked(views[pos])
+                        }
                     }
                 }
             }
@@ -57,7 +63,10 @@ class CreateFilterAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
-                        onItemClicked(views[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onItemClicked(views[pos])
+                        }
                     }
                 }
             }
@@ -66,7 +75,10 @@ class CreateFilterAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
-                        onItemClicked(views[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onItemClicked(views[pos])
+                        }
                     }
                 }
             }
@@ -75,7 +87,10 @@ class CreateFilterAdapter(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
-                        onItemClicked(views[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onItemClicked(views[pos])
+                        }
                     }
                 }
             }

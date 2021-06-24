@@ -35,8 +35,11 @@ class ViewerGridAdapter(
         }
         return RecordHolder(view).apply {
             itemView.headerContainer.setOnClickListener {
-                val item = getItem(bindingAdapterPosition)
-                onObjectHeaderClicked(item.id, item.type)
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = getItem(pos)
+                    onObjectHeaderClicked(item.id, item.type)
+                }
             }
         }
     }

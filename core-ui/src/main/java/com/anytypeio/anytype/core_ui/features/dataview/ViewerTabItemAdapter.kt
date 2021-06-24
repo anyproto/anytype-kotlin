@@ -42,7 +42,10 @@ class ViewerTabItemAdapter(
                 val view = inflater.inflate(R.layout.item_dv_viewer_tab, parent, false)
                 TabHolder(view).apply {
                     itemView.setOnClickListener {
-                        onViewerTabClicked(tabs[bindingAdapterPosition].id)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onViewerTabClicked(tabs[pos].id)
+                        }
                     }
                 }
             }

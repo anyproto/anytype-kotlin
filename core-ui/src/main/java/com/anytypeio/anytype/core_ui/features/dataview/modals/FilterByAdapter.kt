@@ -43,10 +43,16 @@ class FilterByAdapter(
                 val view = inflater.inflate(R.layout.item_dv_viewer_filter_text, parent, false)
                 FilterTextViewHolder(view).apply {
                     itemView.iconRemoveText.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }
@@ -55,10 +61,16 @@ class FilterByAdapter(
                     inflater.inflate(R.layout.item_dv_viewer_filter_number, parent, false)
                 FilterNumberViewHolder(view).apply {
                     itemView.iconRemoveNumber.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }
@@ -66,10 +78,16 @@ class FilterByAdapter(
                 val view = inflater.inflate(R.layout.item_dv_viewer_filter_status, parent, false)
                 FilterStatusViewHolder(view).apply {
                     itemView.iconRemoveStatus.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }
@@ -77,10 +95,16 @@ class FilterByAdapter(
                 val view = inflater.inflate(R.layout.item_dv_viewer_filter_tag, parent, false)
                 FilterTagViewHolder(view).apply {
                     itemView.iconRemoveTag.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }
@@ -88,7 +112,10 @@ class FilterByAdapter(
                 val view = inflater.inflate(R.layout.item_dv_viewer_filter_add, parent, false)
                 FilterAddViewHolder(view).apply {
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }
@@ -96,10 +123,16 @@ class FilterByAdapter(
                 val views = inflater.inflate(R.layout.item_dv_viewer_filter_date, parent, false)
                 FilterDateViewHolder(views).apply {
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                     itemView.iconRemoveDate.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                 }
             }
@@ -107,10 +140,16 @@ class FilterByAdapter(
                 val views = inflater.inflate(R.layout.item_dv_viewer_filter_object, parent, false)
                 FilterObjectViewHolder(views).apply {
                     itemView.iconRemoveObject.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }
@@ -118,10 +157,16 @@ class FilterByAdapter(
                 val views = inflater.inflate(R.layout.item_dv_viewer_filter_checkbox, parent, false)
                 FilterCheckboxViewHolder(views).apply {
                     itemView.iconRemoveCheckbox.setOnClickListener {
-                        click(FilterClick.Remove(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Remove(pos))
+                        }
                     }
                     itemView.setOnClickListener {
-                        click(FilterClick.Value(bindingAdapterPosition))
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
                     }
                 }
             }

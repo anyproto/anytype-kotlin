@@ -36,7 +36,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -49,7 +52,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -62,7 +68,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -75,7 +84,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -88,7 +100,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -101,7 +116,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -114,7 +132,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -123,7 +144,10 @@ class ViewerGridCellsAdapter(
                     view = inflater.inflate(R.layout.item_viewer_grid_cell_tag, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -136,7 +160,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -149,7 +176,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }
@@ -162,7 +192,10 @@ class ViewerGridCellsAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onCellClicked(cells[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onCellClicked(cells[pos])
+                        }
                     }
                 }
             }

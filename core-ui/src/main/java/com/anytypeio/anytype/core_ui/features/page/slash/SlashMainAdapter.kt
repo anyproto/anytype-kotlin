@@ -35,7 +35,10 @@ class SlashMainAdapter(
             view = inflater.inflate(R.layout.item_slash_widget_main, parent, false)
         ).apply {
             itemView.setOnClickListener {
-                clicks(items[bindingAdapterPosition])
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    clicks(items[pos])
+                }
             }
         }
     }

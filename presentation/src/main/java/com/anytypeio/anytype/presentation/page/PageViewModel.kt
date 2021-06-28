@@ -1009,7 +1009,7 @@ class PageViewModel(
             val content = root.content
             check(content is Content.Smart)
             when (content.type) {
-                SmartBlockType.PROFILE_PAGE, SmartBlockType.FILE -> {
+                SmartBlockType.PROFILE_PAGE -> {
                     val details = orchestrator.stores.details.current().details
                     val restrictions = orchestrator.stores.objectRestrictions.current()
                     dispatch(
@@ -1035,7 +1035,8 @@ class PageViewModel(
                             isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
                             isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
                             isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
-                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS }
+                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
+                            isDownloadAllowed = false
                         )
                     )
                     viewModelScope.sendEvent(
@@ -1070,7 +1071,44 @@ class PageViewModel(
                             isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
                             isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
                             isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
-                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS }
+                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
+                            isDownloadAllowed = false
+                        )
+                    )
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = POPUP_DOCUMENT_MENU
+                    )
+                }
+                SmartBlockType.FILE -> {
+                    val details = orchestrator.stores.details.current().details
+                    val restrictions = orchestrator.stores.objectRestrictions.current()
+                    controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
+                    dispatch(
+                        command = Command.OpenDocumentMenu(
+                            status = syncStatus.value ?: SyncStatus.UNKNOWN,
+                            title = try {
+                                blocks.title().content<Content.Text>().text
+                            } catch (e: Throwable) {
+                                null
+                            },
+                            emoji = details[context]?.iconEmoji?.let { name ->
+                                if (name.isNotEmpty())
+                                    name
+                                else
+                                    null
+                            },
+                            image = details[context]?.iconImage?.let { name ->
+                                if (name.isNotEmpty())
+                                    urlBuilder.image(name)
+                                else
+                                    null
+                            },
+                            isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
+                            isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
+                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
+                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
+                            isDownloadAllowed = true
                         )
                     )
                     viewModelScope.sendEvent(
@@ -2937,6 +2975,16 @@ class PageViewModel(
     fun onLayoutClicked() {
         Timber.d("onLayoutClicked, ")
         dispatch(Command.OpenObjectLayout(context))
+    }
+
+    fun onDownloadClicked() {
+        Timber.d("onDownloadClicked, ")
+        val block = blocks.firstOrNull { it.content is Content.File }
+        if (block != null) {
+            dispatch(Command.RequestDownloadPermission(block.id))
+        } else {
+            Timber.e("onDownloadClicked, file not found in object")
+        }
     }
 
     fun onLayoutDialogDismissed() {

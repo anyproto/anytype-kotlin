@@ -74,7 +74,8 @@ sealed class Command {
         val isDeleteAllowed: Boolean,
         val isLayoutAllowed: Boolean,
         val isDetailsAllowed: Boolean,
-        val isRelationsAllowed: Boolean
+        val isRelationsAllowed: Boolean,
+        val isDownloadAllowed: Boolean
     ) : Command()
 
     data class OpenProfileMenu(
@@ -85,7 +86,8 @@ sealed class Command {
         val isDeleteAllowed: Boolean,
         val isLayoutAllowed: Boolean,
         val isDetailsAllowed: Boolean,
-        val isRelationsAllowed: Boolean
+        val isRelationsAllowed: Boolean,
+        val isDownloadAllowed: Boolean
     ) : Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()

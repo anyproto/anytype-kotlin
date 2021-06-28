@@ -865,7 +865,8 @@ open class PageFragment :
                         isDeleteAllowed = command.isDeleteAllowed,
                         isLayoutAllowed = command.isLayoutAllowed,
                         isAddCoverAllowed = command.isDetailsAllowed,
-                        isRelationsAllowed = command.isRelationsAllowed
+                        isRelationsAllowed = command.isRelationsAllowed,
+                        isDownloadAllowed = command.isDownloadAllowed
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -880,7 +881,8 @@ open class PageFragment :
                         isDeleteAllowed = command.isDeleteAllowed,
                         isLayoutAllowed = command.isLayoutAllowed,
                         isAddCoverAllowed = command.isDetailsAllowed,
-                        isRelationsAllowed = command.isRelationsAllowed
+                        isRelationsAllowed = command.isRelationsAllowed,
+                        isDownloadAllowed = command.isDownloadAllowed
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -1642,6 +1644,10 @@ open class PageFragment :
 
     override fun onLayoutClicked() {
         vm.onLayoutClicked()
+    }
+
+    override fun onDownloadClicked() {
+        vm.onDownloadClicked()
     }
 
     override fun onImagePicked(path: String) {

@@ -59,7 +59,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isDeleteAllowed = true,
                 isLayoutAllowed = true,
                 isDetailsAllowed = true,
-                isRelationsAllowed = true
+                isRelationsAllowed = true,
+                isDownloadAllowed = false
             )
         }
     }
@@ -118,7 +119,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isDeleteAllowed = true,
                 isLayoutAllowed = true,
                 isDetailsAllowed = true,
-                isRelationsAllowed = true
+                isRelationsAllowed = true,
+                isDownloadAllowed = false
             )
         }
     }
@@ -156,7 +158,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isDeleteAllowed = false,
                 isLayoutAllowed = false,
                 isDetailsAllowed = true,
-                isRelationsAllowed = true
+                isRelationsAllowed = true,
+                isDownloadAllowed = false
             )
         }
     }

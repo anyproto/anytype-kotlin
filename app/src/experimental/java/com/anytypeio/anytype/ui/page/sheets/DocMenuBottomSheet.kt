@@ -32,6 +32,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     private val isLayoutAllowed get() = arg<Boolean>(IS_LAYOUT_ALLOWED)
     private val isAddCoverAllowed get() = arg<Boolean>(IS_COVER_ALLOWED)
     private val isRelationsAllowed get() = arg<Boolean>(IS_RELATIONS_ALLOWED)
+    private val isDownloadAllowed get() = arg<Boolean>(IS_DOWNLOAD_ALLOWED)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -98,6 +99,16 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 .launchIn(lifecycleScope)
         } else {
             relationContainer.alpha = 0.4F
+        }
+
+        if (isDownloadAllowed) {
+            downloadContainer.visible()
+            downloadContainer
+                .clicks()
+                .onEach {
+                    withParent<DocumentMenuActionReceiver> { onDownloadClicked() }.also { dismiss() }
+                }
+                .launchIn(lifecycleScope)
         }
 
         if (image != null && !isProfile) icon.setImageOrNull(image)
@@ -169,7 +180,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             isDeleteAllowed: Boolean,
             isLayoutAllowed: Boolean,
             isAddCoverAllowed: Boolean,
-            isRelationsAllowed: Boolean
+            isRelationsAllowed: Boolean,
+            isDownloadAllowed: Boolean
         ) = DocMenuBottomSheet().apply {
             arguments = bundleOf(
                 TITLE_KEY to title,
@@ -180,7 +192,8 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 IS_DELETE_ALLOWED to isDeleteAllowed,
                 IS_LAYOUT_ALLOWED to isLayoutAllowed,
                 IS_COVER_ALLOWED to isAddCoverAllowed,
-                IS_RELATIONS_ALLOWED to isRelationsAllowed
+                IS_RELATIONS_ALLOWED to isRelationsAllowed,
+                IS_DOWNLOAD_ALLOWED to isDownloadAllowed
             )
         }
 
@@ -193,6 +206,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         private const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
         private const val IS_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-cover-allowed"
         private const val IS_RELATIONS_ALLOWED = "arg.doc-menu-bottom-sheet.is-relations-allowed"
+        private const val IS_DOWNLOAD_ALLOWED = "arg.doc-menu-bottom-sheet.is-download-allowed"
     }
 
     interface DocumentMenuActionReceiver {
@@ -201,5 +215,6 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         fun onDocRelationsClicked()
         fun onAddCoverClicked()
         fun onLayoutClicked()
+        fun onDownloadClicked()
     }
 }

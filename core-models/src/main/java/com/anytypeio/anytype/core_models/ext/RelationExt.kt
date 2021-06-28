@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_models.ext
 
-import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
@@ -30,12 +29,13 @@ fun List<Relation>.remove(keys: List<Id>) : List<Relation> {
 }
 
 fun Any?.addIds(ids: List<Id>): List<Id> {
-    val remaining = mutableListOf<Id>()
-    if (this is List<*>) {
-        remaining.addAll(typeOf())
-        remaining.addAll(ids)
+    val new = mutableListOf<Id>()
+    when (this) {
+        is List<*> -> new.addAll(typeOf())
+        is Id -> new.add(this)
     }
-    return remaining.toList()
+    new.addAll(ids)
+    return new
 }
 
 inline fun <reified T> List<*>.typeOf(): List<T> {

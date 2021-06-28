@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for updating data-view record.

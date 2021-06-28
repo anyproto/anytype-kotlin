@@ -28,12 +28,13 @@ class SelectDocCoverViewModel(
     val isDismissed = MutableSharedFlow<Boolean>()
 
     init {
-        viewModelScope.launch {
-            getCoverImageCollection(Unit).proceed(
-                failure = { Timber.e(it, "Error while getting cover collection") },
-                success = { images -> render(images) }
-            )
-        }
+//        viewModelScope.launch {
+//            getCoverImageCollection(Unit).proceed(
+//                failure = { Timber.e(it, "Error while getting cover collection") },
+//                success = { images -> render(images) }
+//            )
+//        }
+        render(images = listOf())
     }
 
     private fun render(images: List<CoverImage>) {
@@ -44,15 +45,15 @@ class SelectDocCoverViewModel(
                 DocCoverGalleryView.Color(it)
             }
         )
-        val grouped = images.groupBy { it.group }
-        grouped.forEach { (group, img) ->
-            result.add(DocCoverGalleryView.Section.Collection(group))
-            result.addAll(
-                img.map {
-                    DocCoverGalleryView.Image(url = urlBuilder.thumbnail(it.hash), hash = it.hash)
-                }
-            )
-        }
+//        val grouped = images.groupBy { it.group }
+//        grouped.forEach { (group, img) ->
+//            result.add(DocCoverGalleryView.Section.Collection(group))
+//            result.addAll(
+//                img.map {
+//                    DocCoverGalleryView.Image(url = urlBuilder.thumbnail(it.hash), hash = it.hash)
+//                }
+//            )
+//        }
         result.add(DocCoverGalleryView.Section.Gradient)
         result.addAll(
             getCoverGradientCollection.provide().map {

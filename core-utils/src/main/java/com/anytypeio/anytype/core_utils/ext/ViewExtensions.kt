@@ -2,9 +2,9 @@ package com.anytypeio.anytype.core_utils.ext
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -48,3 +48,10 @@ fun Activity.hideSoftInput() {
 }
 
 fun Fragment.hideSoftInput() = requireActivity().hideSoftInput()
+
+val Activity.statusBarHeight : Int
+    get() {
+        val rectangle = Rect()
+        window.decorView.getWindowVisibleDisplayFrame(rectangle)
+        return rectangle.top
+    }

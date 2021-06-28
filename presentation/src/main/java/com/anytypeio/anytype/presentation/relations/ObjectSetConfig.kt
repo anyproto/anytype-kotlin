@@ -38,6 +38,8 @@ object ObjectSetConfig {
 
     const val FILE_MIME_KEY = "fileMimeType"
 
+    const val LAST_OPENED_DATE_KEY = "lastOpenedDate"
+
     const val DEFAULT_LIMIT = 50
 }
 

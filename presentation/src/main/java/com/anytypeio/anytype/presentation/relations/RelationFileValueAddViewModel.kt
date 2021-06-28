@@ -115,8 +115,8 @@ class RelationFileValueAddViewModel(
         val filters = relation.searchObjectsFilter()
         val sorts = arrayListOf(
             DVSort(
-                relationKey = ObjectSetConfig.NAME_KEY,
-                type = Block.Content.DataView.Sort.Type.ASC
+                relationKey = ObjectSetConfig.LAST_OPENED_DATE_KEY,
+                type = Block.Content.DataView.Sort.Type.DESC
             )
         )
         viewModelScope.launch {

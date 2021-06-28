@@ -170,5 +170,6 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         fun onDocRelationsClicked()
         fun onAddCoverClicked()
         fun onLayoutClicked()
+        fun onDownloadClicked()
     }
 }

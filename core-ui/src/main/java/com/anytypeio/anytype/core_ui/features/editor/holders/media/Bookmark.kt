@@ -9,7 +9,10 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.removeSpans
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
@@ -54,7 +57,7 @@ class Bookmark(view: View) : Media(view) {
             dataSource: DataSource?,
             isFirstResource: Boolean
         ): Boolean {
-            error.invisible()
+            error.gone()
             return false
         }
     }
@@ -76,10 +79,7 @@ class Bookmark(view: View) : Media(view) {
         }
         if (item.faviconUrl != null) {
             logo.visible()
-            Glide.with(logo)
-                .load(item.faviconUrl)
-                .listener(listener)
-                .into(logo)
+            Glide.with(logo).load(item.faviconUrl).into(logo)
         } else {
             logo.gone()
         }

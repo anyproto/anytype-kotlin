@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.domain.relations
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.addIds
@@ -16,7 +15,7 @@ class AddFileToRecord(
         val hash = repo.uploadFile(
             command = Command.UploadFile(
                 path = params.path,
-                type = Block.Content.File.Type.FILE
+                type = null
             )
         )
         val updated = params.value.toMutableMap()

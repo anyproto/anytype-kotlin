@@ -4,7 +4,7 @@ sealed class Command {
 
     class UploadFile(
         val path: String,
-        val type: Block.Content.File.Type
+        val type: Block.Content.File.Type?
     )
 
     /**

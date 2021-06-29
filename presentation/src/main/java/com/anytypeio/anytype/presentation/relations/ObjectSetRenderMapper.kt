@@ -79,7 +79,13 @@ fun ObjectSet.render(
                 rows = rows
             )
         }
-        else -> TODO("Unexpected viewer type: ${viewer.type}")
+        else -> {
+            Viewer.Unsupported(
+                id = viewer.id,
+                title = viewer.name,
+                error = "Unsupported viewer: ${viewer.type.name}"
+            )
+        }
     }
 
     return ObjectSetViewState(

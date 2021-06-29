@@ -32,9 +32,10 @@ class ViewerTypeAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemViewType(position: Int): Int = when (items[position]) {
+    override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
         is Viewer.GridView -> HOLDER_GRID
         is Viewer.ListView -> HOLDER_LIST
+        else -> throw IllegalStateException("Unsupported type: $item")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

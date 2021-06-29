@@ -5,23 +5,27 @@ import com.anytypeio.anytype.core_models.Url
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
-sealed class Viewer : Parcelable {
+sealed class Viewer {
 
     abstract val id: String
     abstract val title: String
 
-    @Parcelize
+    data class Unsupported(
+        override val id: String,
+        override val title: String,
+        val error: String
+    ) : Viewer()
+
     data class GridView(
         override val id: String,
         val source: String,
         val name: String,
         val columns: List<ColumnView>,
         val rows: @RawValue List<Row> = listOf()
-    ) : Viewer(), Parcelable {
+    ) : Viewer() {
 
         override val title: String get() = name
 
-        @Parcelize
         data class Row(
             val id: String,
             val name: String? = null,
@@ -29,7 +33,7 @@ sealed class Viewer : Parcelable {
             val emoji: String? = null,
             val type: String,
             val cells: List<CellView> = emptyList()
-        ) : Parcelable
+        )
 
         companion object {
 
@@ -43,21 +47,19 @@ sealed class Viewer : Parcelable {
         }
     }
 
-    @Parcelize
     data class ListView(
         override val id: String,
         override val title: String = "",
         val source: String,
         val name: String,
         val columns: List<ColumnView>,
-        val rows: @RawValue List<Row> = listOf()
-    ) : Viewer(), Parcelable {
+        val rows: List<Row> = listOf()
+    ) : Viewer() {
 
-        @Parcelize
         data class Row(
             val name: String,
             val cells: List<CellView>
-        ) : Parcelable
+        )
 
         companion object {
 
@@ -155,7 +157,14 @@ sealed class Viewer : Parcelable {
 
                 companion object {
                     fun numberConditions() =
-                        listOf(Equal(), NotEqual(), Greater(), Less(), GreaterOrEqual(), LessOrEqual())
+                        listOf(
+                            Equal(),
+                            NotEqual(),
+                            Greater(),
+                            Less(),
+                            GreaterOrEqual(),
+                            LessOrEqual()
+                        )
                 }
 
             }

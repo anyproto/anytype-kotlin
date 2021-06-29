@@ -6,7 +6,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.Either
@@ -15,8 +14,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
-import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -65,6 +63,15 @@ open class DashboardTestSetup {
     lateinit var searchArchivedObjects: SearchArchivedObjects
 
     @Mock
+    lateinit var searchObjectSets: SearchObjectSets
+
+    @Mock
+    lateinit var searchRecentObjects: SearchRecentObjects
+
+    @Mock
+    lateinit var searchInboxObjects: SearchInboxObjects
+
+    @Mock
     lateinit var move: Move
 
     @Mock
@@ -94,7 +101,10 @@ open class DashboardTestSetup {
         eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
         getDebugSettings = getDebugSettings,
         analytics = analytics,
-        searchArchivedObjects = searchArchivedObjects
+        searchArchivedObjects = searchArchivedObjects,
+        searchRecentObjects = searchRecentObjects,
+        searchInboxObjects = searchInboxObjects,
+        searchObjectSets = searchObjectSets
     )
 
     fun stubGetConfig(response: Either.Right<Config>) {

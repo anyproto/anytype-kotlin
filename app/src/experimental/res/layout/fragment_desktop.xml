@@ -97,47 +97,79 @@
     </FrameLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:id="@+id/bottomSheet"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="58dp"
         android:background="@drawable/background_desktop_bottom_sheet"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/bottomToolbar"
         app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
 
-        <LinearLayout
-            android:layout_marginTop="24dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:orientation="horizontal"
+        <HorizontalScrollView
+            android:id="@+id/dashboardTabToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginTop="24dp">
 
-            <TextView
-                android:id="@+id/tabFavourite"
-                android:text="Favorites"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/DashboardTabTextStyle" />
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
-            <TextView
-                android:id="@+id/tabBin"
-                android:layout_marginStart="20dp"
-                android:text="Bin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/DashboardTabTextStyle"/>
+                <TextView
+                    android:id="@+id/tabFavourite"
+                    style="@style/DashboardTabTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/favorites" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tabRecent"
+                    style="@style/DashboardTabTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/recent" />
+
+                <TextView
+                    android:id="@+id/tabInbox"
+                    style="@style/DashboardTabTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/inbox" />
+
+                <TextView
+                    android:id="@+id/tabSets"
+                    style="@style/DashboardTabTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/sets" />
+
+                <TextView
+                    android:id="@+id/tabBin"
+                    style="@style/DashboardTabTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/archive" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
 
         <androidx.viewpager2.widget.ViewPager2
-            android:overScrollMode="never"
             android:id="@+id/dashboardPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
 
     </LinearLayout>
 

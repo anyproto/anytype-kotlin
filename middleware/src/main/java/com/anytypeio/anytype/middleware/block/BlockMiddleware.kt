@@ -345,13 +345,15 @@ class BlockMiddleware(
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        objectTypeFilter: List<Id>
     ): List<Map<String, Any?>> = middleware.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
         offset = offset,
-        limit = limit
+        limit = limit,
+        objectTypeFilter = objectTypeFilter
     )
 
     override suspend fun relationListAvailable(

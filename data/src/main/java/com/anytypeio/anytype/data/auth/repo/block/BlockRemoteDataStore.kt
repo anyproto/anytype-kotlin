@@ -324,13 +324,15 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        objectTypeFilter: List<Id>
     ): List<Map<String, Any?>> = remote.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
         offset = offset,
-        limit = limit
+        limit = limit,
+        objectTypeFilter = objectTypeFilter
     )
 
     override suspend fun relationListAvailable(ctx: Id): List<Relation> =
@@ -339,7 +341,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun addRelationToObject(
         ctx: Id,
         relation: Id
-    ) : Payload = remote.addRelationToObject(ctx, relation)
+    ): Payload = remote.addRelationToObject(ctx, relation)
 
     override suspend fun addNewRelationToObject(
         ctx: Id,

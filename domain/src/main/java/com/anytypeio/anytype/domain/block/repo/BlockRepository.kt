@@ -202,13 +202,14 @@ interface BlockRepository {
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        objectTypeFilter: List<Id> = emptyList()
     ): List<Map<String, Any?>>
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>
 
-    suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
-    suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat) : Payload
+    suspend fun addRelationToObject(ctx: Id, relation: Id): Payload
+    suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat): Payload
 
     suspend fun debugSync(): String
 

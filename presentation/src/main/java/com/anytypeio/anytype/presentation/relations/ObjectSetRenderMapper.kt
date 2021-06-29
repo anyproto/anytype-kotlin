@@ -79,7 +79,7 @@ fun ObjectSet.render(
                 rows = rows
             )
         }
-        else -> TODO()
+        else -> TODO("Unexpected viewer type: ${viewer.type}")
     }
 
     return ObjectSetViewState(

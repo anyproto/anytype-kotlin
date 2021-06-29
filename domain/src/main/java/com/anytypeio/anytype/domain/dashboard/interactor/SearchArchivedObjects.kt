@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.`object`
+package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -13,7 +13,7 @@ class SearchArchivedObjects(
         val sorts = listOf(
             DVSort(
                 relationKey = Relations.NAME,
-                type = Block.Content.DataView.Sort.Type.ASC
+                type = DVSortType.ASC
             )
         )
         val filters = listOf(

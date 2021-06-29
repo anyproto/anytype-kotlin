@@ -209,5 +209,9 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
     <string name="new_relation">New relation</string>
+    <string name="favorites">Favorites</string>
+    <string name="recent">Recent</string>
+    <string name="sets">Sets</string>
+    <string name="inbox">Inbox</string>
 
 </resources>

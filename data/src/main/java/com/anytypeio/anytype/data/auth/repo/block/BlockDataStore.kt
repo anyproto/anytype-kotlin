@@ -147,7 +147,8 @@ interface BlockDataStore {
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        objectTypeFilter: List<Id> = emptyList()
     ): List<Map<String, Any?>>
 
     suspend fun relationListAvailable(ctx: Id): List<Relation>

@@ -8,4 +8,6 @@ object Relations {
     const val LAYOUT = "layout"
     const val NAME = "name"
     const val IS_ARCHIVED = "isArchived"
+    const val LAST_OPENED_DATE = "lastOpenedDate"
+    const val TYPE = "type"
 }

@@ -5,7 +5,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
-import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -13,8 +12,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
-import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -62,6 +60,15 @@ class HomeDashboardViewModelTest {
     lateinit var searchArchivedObjects: SearchArchivedObjects
 
     @Mock
+    lateinit var searchObjectSets: SearchObjectSets
+
+    @Mock
+    lateinit var searchRecentObjects: SearchRecentObjects
+
+    @Mock
+    lateinit var searchInboxObjects: SearchInboxObjects
+
+    @Mock
     lateinit var interceptEvents: InterceptEvents
 
     @Mock
@@ -103,7 +110,10 @@ class HomeDashboardViewModelTest {
             eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
             getDebugSettings = getDebugSettings,
             analytics = analytics,
-            searchArchivedObjects = searchArchivedObjects
+            searchArchivedObjects = searchArchivedObjects,
+            searchRecentObjects = searchRecentObjects,
+            searchInboxObjects = searchInboxObjects,
+            searchObjectSets = searchObjectSets
         )
     }
 

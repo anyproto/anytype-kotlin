@@ -403,20 +403,22 @@ class BlockDataRepository(
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        objectTypeFilter: List<Id>
     ): List<Map<String, Any?>> = factory.remote.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
         offset = offset,
-        limit = limit
+        limit = limit,
+        objectTypeFilter = objectTypeFilter
     )
 
     override suspend fun relationListAvailable(ctx: Id) = factory.remote.relationListAvailable(ctx)
 
     override suspend fun addRelationToObject(
         ctx: Id, relation: Id
-    ) : Payload = factory.remote.addRelationToObject(ctx, relation)
+    ): Payload = factory.remote.addRelationToObject(ctx, relation)
 
     override suspend fun addNewRelationToObject(
         ctx: Id,

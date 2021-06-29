@@ -68,6 +68,33 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         )
     }
 
+    private val dashboardRecentAdapter by lazy {
+        DashboardAdapter(
+            data = mutableListOf(),
+            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onArchiveClicked = {},
+            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+        )
+    }
+
+    private val dashboardInboxAdapter by lazy {
+        DashboardAdapter(
+            data = mutableListOf(),
+            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onArchiveClicked = {},
+            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+        )
+    }
+
+    private val dashboardSetsAdapter by lazy {
+        DashboardAdapter(
+            data = mutableListOf(),
+            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onArchiveClicked = {},
+            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+        )
+    }
+
     private val dashboardArchiveAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
@@ -78,7 +105,14 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     }
 
     private val dashboardPagerAdapter by lazy {
-        DashboardPager(dashboardDefaultAdapter, dashboardArchiveAdapter, dndBehavior)
+        DashboardPager(
+            defaultAdapter = dashboardDefaultAdapter,
+            recentAdapter = dashboardRecentAdapter,
+            inboxAdapter = dashboardInboxAdapter,
+            setsAdapter = dashboardSetsAdapter,
+            archiveAdapter = dashboardArchiveAdapter,
+            dndBehavior = dndBehavior
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,6 +129,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     override fun onStart() {
         super.onStart()
         lifecycleScope.subscribe(vm.toasts) { toast(it) }
+        lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
+        lifecycleScope.subscribe(vm.inbox) { dashboardInboxAdapter.update(it) }
+        lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
         lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
     }
 
@@ -156,12 +193,27 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 tabFavourite.isSelected = position == INDEX_FAVORITES
+                tabRecent.isSelected = position == INDEX_RECENT
+                tabInbox.isSelected = position == INDEX_INBOX
+                tabSets.isSelected = position == INDEX_SETS
                 tabBin.isSelected = position == INDEX_BIN
             }
         }
 
         tabFavourite.setOnClickListener {
             dashboardPager.setCurrentItem(INDEX_FAVORITES, true)
+        }
+
+        tabRecent.setOnClickListener {
+            dashboardPager.setCurrentItem(INDEX_RECENT, true)
+        }
+
+        tabInbox.setOnClickListener {
+            dashboardPager.setCurrentItem(INDEX_INBOX, true)
+        }
+
+        tabSets.setOnClickListener {
+            dashboardPager.setCurrentItem(INDEX_SETS, true)
         }
 
         tabBin.setOnClickListener {
@@ -214,6 +266,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     companion object {
         const val INDEX_FAVORITES = 0
-        const val INDEX_BIN = 1
+        const val INDEX_RECENT = 1
+        const val INDEX_INBOX = 2
+        const val INDEX_SETS = 3
+        const val INDEX_BIN = 4
     }
 }

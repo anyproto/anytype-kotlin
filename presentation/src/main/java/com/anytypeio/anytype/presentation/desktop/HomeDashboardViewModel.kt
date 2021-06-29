@@ -16,14 +16,12 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
-import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -50,7 +48,10 @@ class HomeDashboardViewModel(
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
-    private val searchArchivedObjects: SearchArchivedObjects
+    private val searchArchivedObjects: SearchArchivedObjects,
+    private val searchRecentObjects: SearchRecentObjects,
+    private val searchInboxObjects: SearchInboxObjects,
+    private val searchObjectSets: SearchObjectSets
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -71,6 +72,9 @@ class HomeDashboardViewModel(
     private var profile: Id = ""
 
     val archived = MutableStateFlow(emptyList<DashboardView.Document>())
+    val recent = MutableStateFlow(emptyList<DashboardView>())
+    val inbox = MutableStateFlow(emptyList<DashboardView>())
+    val sets = MutableStateFlow(emptyList<DashboardView>())
 
     init {
         startProcessingState()
@@ -353,7 +357,7 @@ class HomeDashboardViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 
-    private fun proceedWithSearchingForArchivedPages() {
+    private fun proceedWithObjectSearch() {
         viewModelScope.launch {
             searchArchivedObjects(Unit).process(
                 success = { objects ->
@@ -377,6 +381,74 @@ class HomeDashboardViewModel(
                 failure = { Timber.e(it, "Error while searching for archived objects") }
             )
         }
+        viewModelScope.launch {
+            searchRecentObjects(Unit).process(
+                success = { objects -> Timber.d("Found ${objects.size} recent objects")
+                    recent.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
+                        val id = obj.id
+                        if (id != null) {
+                            DashboardView.Document(
+                                id = id,
+                                target = id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                emoji = obj.iconEmoji,
+                                image = obj.iconImage
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                },
+                failure = { Timber.e(it, "Error while searching for recent objects") }
+            )
+        }
+        viewModelScope.launch {
+            searchInboxObjects(Unit).process(
+                success = { objects ->
+                    inbox.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
+                        val id = obj.id
+                        if (id != null) {
+                            DashboardView.Document(
+                                id = id,
+                                target = id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                emoji = obj.iconEmoji,
+                                image = obj.iconImage
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                },
+                failure = { Timber.e(it, "Error while searching for inbox objects") }
+            )
+        }
+        viewModelScope.launch {
+            searchObjectSets(Unit).process(
+                success = { objects ->
+                    sets.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
+                        val id = obj.id
+                        if (id != null) {
+                            DashboardView.ObjectSet(
+                                id = id,
+                                target = id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                emoji = obj.iconEmoji
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                },
+                failure = { Timber.e(it, "Error while searching for sets") }
+            )
+        }
     }
 
     fun onCreateNewObjectSetClicked() {
@@ -389,7 +461,7 @@ class HomeDashboardViewModel(
     }
 
     fun onResume() {
-        proceedWithSearchingForArchivedPages()
+        proceedWithObjectSearch()
     }
 
     /**

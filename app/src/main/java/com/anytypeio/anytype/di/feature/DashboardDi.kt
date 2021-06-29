@@ -2,15 +2,13 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
-import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
-import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
@@ -58,6 +56,9 @@ object HomeDashboardModule {
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
         searchArchivedObjects: SearchArchivedObjects,
+        searchRecentObjects: SearchRecentObjects,
+        searchInboxObjects: SearchInboxObjects,
+        searchObjectSets: SearchObjectSets
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -69,6 +70,9 @@ object HomeDashboardModule {
         eventConverter = eventConverter,
         getDebugSettings = getDebugSettings,
         searchArchivedObjects = searchArchivedObjects,
+        searchRecentObjects = searchRecentObjects,
+        searchInboxObjects = searchInboxObjects,
+        searchObjectSets = searchObjectSets,
         analytics = analytics
     )
 
@@ -160,6 +164,33 @@ object HomeDashboardModule {
     fun provideSearchArchivedObjectsUseCase(
         repo: BlockRepository
     ) : SearchArchivedObjects = SearchArchivedObjects(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchRecentObjectsUseCase(
+        repo: BlockRepository
+    ) : SearchRecentObjects = SearchRecentObjects(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchInboxObjectsUseCase(
+        repo: BlockRepository
+    ) : SearchInboxObjects = SearchInboxObjects(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchObjectSetsUseCase(
+        repo: BlockRepository
+    ) : SearchObjectSets = SearchObjectSets(
         repo = repo
     )
 }

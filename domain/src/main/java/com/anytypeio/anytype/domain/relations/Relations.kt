@@ -6,4 +6,6 @@ package com.anytypeio.anytype.domain.relations
 object Relations {
     const val DESCRIPTION = "description"
     const val LAYOUT = "layout"
+    const val NAME = "name"
+    const val IS_ARCHIVED = "isArchived"
 }

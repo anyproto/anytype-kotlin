@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.desktop
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -22,7 +23,8 @@ class HomeDashboardViewModelFactory(
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val searchArchivedObjects: SearchArchivedObjects
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -37,7 +39,8 @@ class HomeDashboardViewModelFactory(
             interceptEvents = interceptEvents,
             eventConverter = eventConverter,
             getDebugSettings = getDebugSettings,
-            analytics = analytics
+            analytics = analytics,
+            searchArchivedObjects = searchArchivedObjects
         ) as T
     }
 }

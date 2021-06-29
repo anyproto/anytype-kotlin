@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -55,7 +56,8 @@ object HomeDashboardModule {
         interceptEvents: InterceptEvents,
         eventConverter: HomeDashboardEventConverter,
         getDebugSettings: GetDebugSettings,
-        analytics: Analytics
+        analytics: Analytics,
+        searchArchivedObjects: SearchArchivedObjects,
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -66,6 +68,7 @@ object HomeDashboardModule {
         interceptEvents = interceptEvents,
         eventConverter = eventConverter,
         getDebugSettings = getDebugSettings,
+        searchArchivedObjects = searchArchivedObjects,
         analytics = analytics
     )
 
@@ -148,6 +151,15 @@ object HomeDashboardModule {
     fun provideGetDebugSettings(
         repo: InfrastructureRepository
     ) : GetDebugSettings = GetDebugSettings(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchArchivedObjectsUseCase(
+        repo: BlockRepository
+    ) : SearchArchivedObjects = SearchArchivedObjects(
         repo = repo
     )
 }

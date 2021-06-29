@@ -29,8 +29,8 @@ class SearchObjects(
     )
 
     companion object {
-        val EMPTY_TEXT = ""
-        val LIMIT = 1000
-        val INIT_OFFSET = 0
+        const val EMPTY_TEXT = ""
+        const val LIMIT = 1000
+        const val INIT_OFFSET = 0
     }
 }

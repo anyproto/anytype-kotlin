@@ -96,7 +96,8 @@
 
     </FrameLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/bottomSheet"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -107,17 +108,38 @@
         app:layout_constraintStart_toEndOf="@+id/bottomToolbar"
         app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/desktopRecycler"
+        <LinearLayout
+            android:layout_marginTop="24dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:clipToPadding="false"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="16dp" />
+            android:layout_height="wrap_content">
 
-    </FrameLayout>
+            <TextView
+                android:id="@+id/tabFavourite"
+                android:text="Favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/DashboardTabTextStyle" />
+
+            <TextView
+                android:id="@+id/tabBin"
+                android:layout_marginStart="20dp"
+                android:text="Bin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/DashboardTabTextStyle"/>
+
+        </LinearLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:overScrollMode="never"
+            android:id="@+id/dashboardPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.toolbar.DesktopBottomToolbar
         android:id="@+id/bottomToolbar"

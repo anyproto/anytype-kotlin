@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -48,7 +49,8 @@ class HomeDashboardViewModel(
     private val interceptEvents: InterceptEvents,
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val searchArchivedObjects: SearchArchivedObjects
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -68,11 +70,12 @@ class HomeDashboardViewModel(
     private var ctx: Id = ""
     private var profile: Id = ""
 
+    val archived = MutableStateFlow(emptyList<DashboardView.Document>())
+
     init {
         startProcessingState()
         proceedWithGettingConfig()
     }
-
 
     private fun startProcessingState() {
         viewModelScope.launch { machine.state().collect { stateData.postValue(it) } }
@@ -294,6 +297,13 @@ class HomeDashboardViewModel(
             Timber.d("Skipping on-document click due to loading state")
     }
 
+    fun onArchivedDocumentClicked(target: Id, isLoading: Boolean) {
+        if (!isLoading)
+            proceedWithOpeningDocument(target)
+        else
+            Timber.d("Skipping on-document click due to loading state")
+    }
+
     fun onAvatarClicked() {
         if (isProfileNavigationEnabled.value) {
             proceedWithOpeningDocument(profile)
@@ -343,6 +353,32 @@ class HomeDashboardViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 
+    private fun proceedWithSearchingForArchivedPages() {
+        viewModelScope.launch {
+            searchArchivedObjects(Unit).process(
+                success = { objects ->
+                    archived.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
+                        val id = obj.id
+                        if (id != null) {
+                            DashboardView.Document(
+                                id = id,
+                                target = id,
+                                title = obj.name,
+                                isArchived = true,
+                                isLoading = false,
+                                emoji = obj.iconEmoji,
+                                image = obj.iconImage
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                },
+                failure = { Timber.e(it, "Error while searching for archived objects") }
+            )
+        }
+    }
+
     fun onCreateNewObjectSetClicked() {
         closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
@@ -350,6 +386,10 @@ class HomeDashboardViewModel(
                 fnR = { navigate(EventWrapper(AppNavigation.Command.OpenCreateSetScreen(ctx))) }
             )
         }
+    }
+
+    fun onResume() {
+        proceedWithSearchingForArchivedPages()
     }
 
     /**

@@ -268,4 +268,10 @@
         <item name="android:background">@drawable/circle_solid_default</item>
     </style>
 
+    <style name="DashboardTabTextStyle">
+        <item name="android:textColor">@color/selector_dashboard_page_tab</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
 </resources>

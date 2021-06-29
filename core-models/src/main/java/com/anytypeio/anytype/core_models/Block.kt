@@ -37,6 +37,7 @@ data class Block(
         val fileMimeType: String? by default
         val type: String? by default
         val layout: Double? by default
+        val id: Id? by default
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())

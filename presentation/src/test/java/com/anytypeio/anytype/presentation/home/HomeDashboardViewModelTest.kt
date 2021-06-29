@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
+import com.anytypeio.anytype.domain.`object`.SearchArchivedObjects
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -58,6 +59,9 @@ class HomeDashboardViewModelTest {
     lateinit var createPage: CreatePage
 
     @Mock
+    lateinit var searchArchivedObjects: SearchArchivedObjects
+
+    @Mock
     lateinit var interceptEvents: InterceptEvents
 
     @Mock
@@ -98,7 +102,8 @@ class HomeDashboardViewModelTest {
             interceptEvents = interceptEvents,
             eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
             getDebugSettings = getDebugSettings,
-            analytics = analytics
+            analytics = analytics,
+            searchArchivedObjects = searchArchivedObjects
         )
     }
 

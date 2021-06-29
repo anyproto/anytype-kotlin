@@ -2,26 +2,20 @@ package com.anytypeio.anytype.ui.desktop
 
 import android.os.Bundle
 import android.view.View
-import android.view.View.OVER_SCROLL_NEVER
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.viewpager2.widget.ViewPager2
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ui.EqualSpacingItemDecoration
-import com.anytypeio.anytype.core_utils.ui.EqualSpacingItemDecoration.Companion.GRID
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModel
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModelFactory
-import com.anytypeio.anytype.presentation.extension.filterByNotArchivedPages
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.page.PageFragment
 import kotlinx.android.synthetic.experimental.fragment_desktop.*
@@ -39,11 +33,11 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val dndBehavior by lazy {
         DashboardDragAndDropBehavior(
             onItemMoved = { from, to ->
-                dashboardAdapter
+                dashboardDefaultAdapter
                     .onItemMove(from, to)
                     .also {
                         vm.onItemMoved(
-                            views = dashboardAdapter.provideAdapterData(),
+                            views = dashboardDefaultAdapter.provideAdapterData(),
                             from = from,
                             to = to
                         )
@@ -51,7 +45,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             },
             onItemDropped = { index ->
                 try {
-                    vm.onItemDropped(dashboardAdapter.provideAdapterData()[index])
+                    vm.onItemDropped(dashboardDefaultAdapter.provideAdapterData()[index])
                 } catch (e: Exception) {
                     Timber.e(e, "Error while dropping item at index: $index")
                 }
@@ -65,13 +59,26 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     @Inject
     lateinit var builder: UrlBuilder
 
-    private val dashboardAdapter by lazy {
+    private val dashboardDefaultAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
             onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
             onArchiveClicked = { vm.onArchivedClicked(it) },
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
+    }
+
+    private val dashboardArchiveAdapter by lazy {
+        DashboardAdapter(
+            data = mutableListOf(),
+            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onArchiveClicked = {},
+            onObjectSetClicked = {}
+        )
+    }
+
+    private val dashboardPagerAdapter by lazy {
+        DashboardPager(dashboardDefaultAdapter, dashboardArchiveAdapter, dndBehavior)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,6 +95,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     override fun onStart() {
         super.onStart()
         lifecycleScope.subscribe(vm.toasts) { toast(it) }
+        lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
     }
 
     override fun onPause() {
@@ -95,11 +103,15 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         motionProgress = dashboardRoot.progress
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
     private fun parseIntent() {
         val deepLinkPage = arguments?.getString(PageFragment.ID_KEY, null)
         if (deepLinkPage != null) {
             arguments?.remove(PageFragment.ID_KEY)
-
             vm.onNavigationDeepLink(deepLinkPage)
         } else {
             vm.onViewCreated()
@@ -115,7 +127,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                 bottomToolbar.visible()
                 state.blocks.let { views ->
                     val profile = views.filterIsInstance<DashboardView.Profile>()
-                    val links = views.filterByNotArchivedPages()
+                    val links = views.filter { it !is DashboardView.Profile && it !is DashboardView.Archive }.groupBy { it.isArchived }
                     if (profile.isNotEmpty()) {
                         val view = profile.first()
                         avatarContainer.bind(
@@ -131,7 +143,8 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
                             tvGreeting.text = getText(R.string.greet_user)
                         }
                     }
-                    dashboardAdapter.update(links)
+                    // TODO refact (no need to filter anything in fragment)
+                    dashboardDefaultAdapter.update(links[false] ?: emptyList())
                 }
             }
         }
@@ -139,22 +152,25 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private fun setup() {
 
-        val spacing = requireContext().dimen(R.dimen.default_dashboard_item_spacing).toInt()
-        val decoration = EqualSpacingItemDecoration(
-            topSpacing = spacing,
-            leftSpacing = spacing,
-            rightSpacing = spacing,
-            bottomSpacing = 0,
-            displayMode = GRID
-        )
+        val callback = object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                tabFavourite.isSelected = position == INDEX_FAVORITES
+                tabBin.isSelected = position == INDEX_BIN
+            }
+        }
 
-        desktopRecycler.apply {
-            overScrollMode = OVER_SCROLL_NEVER
-            layoutManager = GridLayoutManager(context, COLUMN_COUNT)
-            adapter = dashboardAdapter
-            ItemTouchHelper(dndBehavior).attachToRecyclerView(this)
-            addItemDecoration(decoration)
-            setHasFixedSize(true)
+        tabFavourite.setOnClickListener {
+            dashboardPager.setCurrentItem(INDEX_FAVORITES, true)
+        }
+
+        tabBin.setOnClickListener {
+            dashboardPager.setCurrentItem(INDEX_BIN, true)
+        }
+
+        dashboardPager.apply {
+            adapter = dashboardPagerAdapter
+            registerOnPageChangeCallback(callback)
         }
 
         bottomToolbar
@@ -197,6 +213,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     }
 
     companion object {
-        const val COLUMN_COUNT = 2
+        const val INDEX_FAVORITES = 0
+        const val INDEX_BIN = 1
     }
 }

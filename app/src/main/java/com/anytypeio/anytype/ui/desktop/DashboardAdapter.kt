@@ -84,11 +84,11 @@ class DashboardAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (data[position]) {
+        return when (val item = data[position]) {
             is DashboardView.Document -> VIEW_TYPE_DOCUMENT
             is DashboardView.Archive -> VIEW_TYPE_ARCHIVE
             is DashboardView.ObjectSet -> VIEW_TYPE_SET
-            else -> throw IllegalStateException(UNEXPECTED_TYPE_ERROR_MESSAGE)
+            else -> throw IllegalStateException("$UNEXPECTED_TYPE_ERROR_MESSAGE:\n$item")
         }
     }
 

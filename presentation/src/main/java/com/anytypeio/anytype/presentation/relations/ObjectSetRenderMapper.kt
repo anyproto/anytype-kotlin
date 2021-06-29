@@ -83,7 +83,7 @@ fun ObjectSet.render(
             Viewer.Unsupported(
                 id = viewer.id,
                 title = viewer.name,
-                error = "Unsupported viewer: ${viewer.type.name}"
+                error = "This view type (${viewer.type.name.lowercase()}) is not supported on Android. Coming soon..."
             )
         }
     }

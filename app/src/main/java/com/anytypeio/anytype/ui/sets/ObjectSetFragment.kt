@@ -213,6 +213,9 @@ open class ObjectSetFragment :
             is Viewer.ListView -> {
                 // TODO
             }
+            is Viewer.Unsupported -> {
+                tvError.text = viewer.error
+            }
         }
     }
 

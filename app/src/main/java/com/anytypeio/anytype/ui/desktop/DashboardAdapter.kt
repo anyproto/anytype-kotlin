@@ -310,9 +310,6 @@ class DashboardAdapter(
                         .load(url)
                         .centerInside()
                         .circleCrop()
-                        .into(ivImage)
-                } ?: run {
-                    ivImage.setImageDrawable(null)
                         .into(circleImage)
                 } ?: run { circleImage.setImageDrawable(null) }
             }

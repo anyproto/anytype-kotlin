@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <FrameLayout
+        android:id="@+id/coverAndIconContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="176dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_document_cover"
-            android:visibility="gone" />
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            tools:background="@color/orange" />
 
         <FrameLayout
-            android:id="@+id/documentIconContainer"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:id="@+id/docEmojiIconContainer"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="bottom"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/rectangle_default_page_logo_background"
-            android:transitionName="@string/logo_transition">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/background_layout_icon_basic"
+            android:transitionName="@string/logo_transition"
+            >
 
             <ImageView
                 android:id="@+id/emojiIcon"
@@ -36,21 +40,49 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center" />
 
-            <ImageView
-                android:id="@+id/imageIcon"
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/docImageIconContainer"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/background_layout_icon_basic_image"
+            android:visibility="gone">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/docImageIconCard"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:transitionName="@string/logo_transition"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/imageIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true" />
+
+            </androidx.cardview.widget.CardView>
 
         </FrameLayout>
 
     </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:hint="@string/hint_title"
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="20dp"
+        android:hint="@string/hint_title"
+        android:paddingTop="0dp"
+        android:layout_marginBottom="6dp"
         tools:text="Title" />
 
 </LinearLayout>

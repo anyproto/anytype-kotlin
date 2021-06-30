@@ -16,7 +16,6 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
@@ -84,8 +83,6 @@ import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.page.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
-import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
-import com.anytypeio.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
 import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet
 import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -728,48 +725,48 @@ open class PageFragment :
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
                 is Command.OpenDocumentIconActionMenu -> {
-                    hideSoftInput()
-                    recycler.smoothScrollToPosition(0)
-                    val title = recycler.getChildAt(0)
-                    val shared = title.findViewById<FrameLayout>(R.id.documentIconContainer)
-                    val fr = DocumentIconActionMenuFragment.new(
-                        y = shared.y + dimen(R.dimen.dp_48),
-                        emoji = command.emoji,
-                        target = command.target,
-                        ctx = ctx,
-                        image = command.image
-                    ).apply {
-                        enterTransition = Fade()
-                        exitTransition = Fade()
-                        sharedElementEnterTransition = ChangeBounds()
-                    }
-                    childFragmentManager.beginTransaction()
-                        .add(R.id.root, fr)
-                        .addToBackStack(null)
-                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
-                        .commit()
+//                    hideSoftInput()
+//                    recycler.smoothScrollToPosition(0)
+//                    val title = recycler.getChildAt(0)
+//                    val shared = title.findViewById<FrameLayout>(R.id.docEmojiIconContainer)
+//                    val fr = DocumentIconActionMenuFragment.new(
+//                        y = shared.y + dimen(R.dimen.dp_48),
+//                        emoji = command.emoji,
+//                        target = command.target,
+//                        ctx = ctx,
+//                        image = command.image
+//                    ).apply {
+//                        enterTransition = Fade()
+//                        exitTransition = Fade()
+//                        sharedElementEnterTransition = ChangeBounds()
+//                    }
+//                    childFragmentManager.beginTransaction()
+//                        .add(R.id.root, fr)
+//                        .addToBackStack(null)
+//                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
+//                        .commit()
                 }
                 is Command.OpenProfileIconActionMenu -> {
-                    hideSoftInput()
-                    recycler.smoothScrollToPosition(0)
-                    val title = recycler.getChildAt(0)
-                    val shared = title.findViewById<FrameLayout>(R.id.documentIconContainer)
-                    val fr = ProfileIconActionMenuFragment.new(
-                        y = shared.y + dimen(R.dimen.dp_48),
-                        target = command.target,
-                        ctx = ctx,
-                        image = command.image,
-                        name = command.name
-                    ).apply {
-                        enterTransition = Fade()
-                        exitTransition = Fade()
-                        sharedElementEnterTransition = ChangeBounds()
-                    }
-                    childFragmentManager.beginTransaction()
-                        .add(R.id.root, fr)
-                        .addToBackStack(null)
-                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
-                        .commit()
+//                    hideSoftInput()
+//                    recycler.smoothScrollToPosition(0)
+//                    val title = recycler.getChildAt(0)
+//                    val shared = title.findViewById<FrameLayout>(R.id.documentIconContainer)
+//                    val fr = ProfileIconActionMenuFragment.new(
+//                        y = shared.y + dimen(R.dimen.dp_48),
+//                        target = command.target,
+//                        ctx = ctx,
+//                        image = command.image,
+//                        name = command.name
+//                    ).apply {
+//                        enterTransition = Fade()
+//                        exitTransition = Fade()
+//                        sharedElementEnterTransition = ChangeBounds()
+//                    }
+//                    childFragmentManager.beginTransaction()
+//                        .add(R.id.root, fr)
+//                        .addToBackStack(null)
+//                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
+//                        .commit()
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
                     DocumentEmojiIconPickerFragment.new(

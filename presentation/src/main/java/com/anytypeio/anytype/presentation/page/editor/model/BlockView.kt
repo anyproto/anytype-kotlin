@@ -466,6 +466,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
+            val hasCover get() = coverColor != null || coverImage != null || coverGradient != null
         }
 
         /**

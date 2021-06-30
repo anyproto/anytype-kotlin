@@ -7,12 +7,14 @@ import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 
 sealed class Command {
 
+    @Deprecated("Obsolete screen. To be deleted.")
     data class OpenDocumentIconActionMenu(
         val target: String,
         val image: String?,
         val emoji: String?
     ) : Command()
 
+    @Deprecated("Obsolete screen. To be deleted.")
     data class OpenProfileIconActionMenu(
         val target: String,
         val image: String?,

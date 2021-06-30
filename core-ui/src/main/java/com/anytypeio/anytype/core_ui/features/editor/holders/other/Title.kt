@@ -1,18 +1,18 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
-import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.Spannable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.postDelayed
+import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
-import com.anytypeio.anytype.core_ui.extensions.avatarColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder
@@ -26,7 +26,7 @@ import com.anytypeio.anytype.presentation.page.cover.CoverGradient
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_block_title.view.documentIconContainer
+import kotlinx.android.synthetic.main.item_block_title.view.*
 import kotlinx.android.synthetic.main.item_block_title.view.emojiIcon
 import kotlinx.android.synthetic.main.item_block_title.view.imageIcon
 import kotlinx.android.synthetic.main.item_block_title.view.title
@@ -153,8 +153,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             Glide
                 .with(image)
                 .load(url)
-                .centerInside()
-                .circleCrop()
+                .centerCrop()
                 .into(image)
         } ?: apply { image.setImageDrawable(null) }
     }
@@ -215,7 +214,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Document(view: View) : Title(view) {
 
-        override val icon: FrameLayout = itemView.documentIconContainer
+        override val icon: FrameLayout = itemView.docEmojiIconContainer
         override val image: ImageView = itemView.imageIcon
         private val emoji: ImageView = itemView.emojiIcon
 
@@ -247,6 +246,39 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
+            setupIconVisibility(item)
+        }
+
+        private fun setupIconVisibility(item: BlockView.Title.Basic) {
+            when {
+                item.image != null -> {
+                    itemView.docImageIconContainer.visible()
+                    itemView.docEmojiIconContainer.gone()
+                    itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_12)
+                    }
+                }
+                item.emoji != null -> {
+                    itemView.docImageIconContainer.gone()
+                    itemView.docEmojiIconContainer.visible()
+                    itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_8)
+                    }
+                }
+                else -> {
+                    itemView.docImageIconContainer.gone()
+                    itemView.docEmojiIconContainer.gone()
+                    if (!item.hasCover) {
+                        itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                            topMargin = dimen(R.dimen.dp_48)
+                        }
+                    } else {
+                        itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                            topMargin = dimen(R.dimen.dp_8)
+                        }
+                    }
+                }
+            }
         }
 
         override fun processPayloads(
@@ -259,6 +291,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isTitleIconChanged) {
                         setEmoji(item)
                         setImage(item)
+                        setupIconVisibility(item)
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
@@ -290,7 +323,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Archive(view: View) : Title(view) {
 
-        override val icon: FrameLayout = itemView.documentIconContainer
+        override val icon: FrameLayout = itemView.docEmojiIconContainer
         override val image: ImageView = itemView.imageIcon
 
         override val root: View = itemView
@@ -322,7 +355,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Profile(view: View) : Title(view) {
 
-        override val icon: FrameLayout = itemView.documentIconContainer
+        override val icon: FrameLayout = itemView.docProfileIconContainer
         override val image: ImageView = itemView.imageIcon
         override val content: TextInputWidget = itemView.title
 
@@ -366,7 +399,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     .into(image)
             } ?: apply {
                 val pos = item.text?.firstDigitByHash() ?: 0
-                icon.backgroundTintList = ColorStateList.valueOf(itemView.context.avatarColor(pos))
                 setIconText(item.text)
                 image.setImageDrawable(null)
             }

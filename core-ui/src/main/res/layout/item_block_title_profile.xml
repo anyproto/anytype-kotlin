@@ -13,22 +13,21 @@
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="176dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="24dp"
             android:contentDescription="@string/content_description_document_cover"
             android:visibility="gone" />
 
         <FrameLayout
-            android:id="@+id/documentIconContainer"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="20dp"
+            android:id="@+id/docProfileIconContainer"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginTop="16dp"
             android:background="@drawable/circle_profile_icon"
             android:transitionName="@string/logo_transition">
 
             <ImageView
+                android:layout_margin="4dp"
                 android:id="@+id/imageIcon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -38,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:fontFamily="@font/graphik_medium"
+                android:fontFamily="@font/inter_medium"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="44sp"
@@ -53,15 +52,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="13dp"
         android:background="@null"
+        android:textAlignment="center"
         android:fontFamily="@font/graphik_semibold"
         android:hint="@string/hint_profile_title"
         android:textColor="@color/black"
         android:textColorHint="#ACA996"
-        android:textSize="34sp"
+        android:textSize="28sp"
         tools:text="Title" />
 
 </LinearLayout>

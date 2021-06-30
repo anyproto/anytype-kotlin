@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/default_dashboard_card_height"
     app:cardBackgroundColor="@color/white"
     app:cardElevation="0dp"
     app:cardCornerRadius="12dp">
@@ -19,8 +19,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/circle_default">
+            android:layout_marginTop="16dp">
 
             <TextView
                 android:id="@+id/emoji"
@@ -31,8 +30,8 @@
 
             <ImageView
                 android:id="@+id/emojiIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -44,9 +43,19 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
             tools:text="Movies"
             style="@style/DashboardDocumentTitleStyle" />
+
+        <TextView
+            android:text="@string/set"
+            android:hint="@string/unknown_type"
+            android:id="@+id/typeTitle"
+            style="@style/DashboardDocumentSubtitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="16dp" />
 
     </LinearLayout>
 

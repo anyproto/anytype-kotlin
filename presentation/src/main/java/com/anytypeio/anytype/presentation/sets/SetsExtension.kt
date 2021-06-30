@@ -200,7 +200,8 @@ fun Map<String, Any?>.buildObjectViews(
                 emoji = details[value]?.iconEmoji,
                 image = details[value]?.iconImage?.let {
                     if (it.isEmpty()) null else builder.thumbnail(it)
-                }
+                },
+                type = details[value]?.type
             )
         )
     } else if (value is List<*>) {
@@ -212,7 +213,8 @@ fun Map<String, Any?>.buildObjectViews(
                     emoji = details[id]?.iconEmoji,
                     image = details[id]?.iconImage?.let {
                         if (it.isEmpty()) null else builder.thumbnail(it)
-                    }
+                    },
+                    type = details[id]?.type
                 )
             )
         }

@@ -286,9 +286,25 @@ class ObjectSetViewModel(
             ?: dv.viewers.first().id
 
         if (dv.isRelationReadOnly(relationKey = cell.key)) {
-            Timber.d("onGridCellClicked, relation is ReadOnly")
-            toast(NOT_ALLOWED_CELL)
-            return
+            val relation = dv.relations.first { it.key == cell.key }
+            if (relation.format == Relation.Format.OBJECT) {
+                // TODO terrible workaround, which must be removed in the future!
+                if (cell is CellView.Object && cell.objects.isNotEmpty()) {
+                    val obj = cell.objects.first()
+                    onObjectClicked(
+                        id = obj.id,
+                        type = obj.type
+                    )
+                    return
+                } else {
+                    toast(NOT_ALLOWED_CELL)
+                    return
+                }
+            } else {
+                Timber.d("onGridCellClicked, relation is ReadOnly")
+                toast(NOT_ALLOWED_CELL)
+                return
+            }
         }
 
         when (cell) {
@@ -346,6 +362,22 @@ class ObjectSetViewModel(
                 }
             }
             else -> toast("Not implemented")
+        }
+    }
+
+    fun onObjectClicked(id: Id, type: String?) {
+        reducer.state.value.objectTypes.find { it.url == type }?.let { targetType ->
+            when (targetType.layout) {
+                ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
+                    navigate(EventWrapper(AppNavigation.Command.OpenPage(id)))
+                }
+                ObjectType.Layout.SET -> {
+                    viewModelScope.launch {
+                        navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(id)))
+                    }
+                }
+                else -> Timber.d("Unexpected layout: ${targetType.layout}")
+            }
         }
     }
 
@@ -604,7 +636,8 @@ class ObjectSetViewModel(
                 offset.value = number * ObjectSetConfig.DEFAULT_LIMIT
                 val set = reducer.state.value.dataview
                 val dv = set.content<Block.Content.DataView>()
-                val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                val viewer =
+                    dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
                 proceedWithViewerPaging(set = set, viewer = viewer.id)
             }
         }

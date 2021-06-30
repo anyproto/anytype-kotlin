@@ -13,7 +13,8 @@ data class ObjectView(
     val id: String,
     val name: String,
     val emoji: String?,
-    val image: String?
+    val image: String?,
+    val type: String? = null
 ) : Parcelable
 
 @Parcelize

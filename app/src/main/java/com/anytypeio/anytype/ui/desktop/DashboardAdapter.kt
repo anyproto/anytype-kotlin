@@ -3,10 +3,12 @@ package com.anytypeio.anytype.ui.desktop
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.facebook.shimmer.ShimmerFrameLayout
 import kotlinx.android.synthetic.main.item_desktop_archive.view.*
 import kotlinx.android.synthetic.main.item_desktop_page.view.*
 import timber.log.Timber
@@ -29,8 +32,10 @@ class DashboardAdapter(
 
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
-        const val VIEW_TYPE_ARCHIVE = 1
-        const val VIEW_TYPE_SET = 2
+        const val VIEW_TYPE_DOCUMENT_WITHOUT_ICON = 1
+        const val VIEW_TYPE_ARCHIVE = 2
+        const val VIEW_TYPE_SET = 3
+
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
     }
 
@@ -41,6 +46,18 @@ class DashboardAdapter(
                 ViewHolder.DocumentHolder(
                     inflater.inflate(R.layout.item_desktop_page, parent, false)
                 ).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.Document)
+                            onDocumentClicked(item.target, item.isLoading)
+                        }
+                    }
+                }
+            }
+            VIEW_TYPE_DOCUMENT_WITHOUT_ICON -> {
+                ViewHolder.DocumentWithoutIconViewHolder(parent).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -85,7 +102,12 @@ class DashboardAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (val item = data[position]) {
-            is DashboardView.Document -> VIEW_TYPE_DOCUMENT
+            is DashboardView.Document -> {
+                if (item.hasIcon || item.layout == ObjectType.Layout.PROFILE)
+                    VIEW_TYPE_DOCUMENT
+                else
+                    VIEW_TYPE_DOCUMENT_WITHOUT_ICON
+            }
             is DashboardView.Archive -> VIEW_TYPE_ARCHIVE
             is DashboardView.ObjectSet -> VIEW_TYPE_SET
             else -> throw IllegalStateException("$UNEXPECTED_TYPE_ERROR_MESSAGE:\n$item")
@@ -100,10 +122,17 @@ class DashboardAdapter(
                 val item = data[position] as DashboardView.Document
                 with(holder) {
                     bindTitle(item.title)
+                    bindSubtitle(item.typeName)
                     bindEmoji(item.emoji)
-                    bindImage(item.image)
+                    bindImage(item.image, item.layout, item.title)
                     bindLoading(item.isLoading)
                 }
+            }
+            is ViewHolder.DocumentWithoutIconViewHolder -> {
+                val item = data[position] as DashboardView.Document
+                holder.bindTitle(item.title)
+                holder.bindSubtitle(item.typeName)
+                holder.bindLoading(item.isLoading)
             }
             is ViewHolder.ObjectSetHolder -> {
                 with(holder) {
@@ -131,6 +160,9 @@ class DashboardAdapter(
                         bindByPayloads(holder, position, payload)
                     }
                     is ViewHolder.DocumentHolder -> {
+                        bindByPayloads(holder, position, payload)
+                    }
+                    is ViewHolder.DocumentWithoutIconViewHolder -> {
                         bindByPayloads(holder, position, payload)
                     }
                     else -> Timber.d("Skipping payload update.")
@@ -166,7 +198,23 @@ class DashboardAdapter(
                 bindEmoji(item.emoji)
             }
             if (payload.imageChanged()) {
-                bindImage(item.image)
+                bindImage(item.image, item.layout, item.title)
+            }
+            if (payload.isLoadingChanged) {
+                bindLoading(item.isLoading)
+            }
+        }
+    }
+
+    private fun bindByPayloads(
+        holder: ViewHolder.DocumentWithoutIconViewHolder,
+        position: Int,
+        payload: DesktopDiffUtil.Payload
+    ) {
+        with(holder) {
+            val item = data[position] as DashboardView.Document
+            if (payload.titleChanged()) {
+                bindTitle(item.title)
             }
             if (payload.isLoadingChanged) {
                 bindLoading(item.isLoading)
@@ -188,8 +236,11 @@ class DashboardAdapter(
         class DocumentHolder(itemView: View) : ViewHolder(itemView) {
 
             private val tvTitle = itemView.title
+            private val tvSubtitle = itemView.typeTitle
             private val ivEmoji = itemView.emojiIcon
-            private val ivImage = itemView.image
+            private val circleImage = itemView.circleImage
+            private val rectangleImage = itemView.rectangleImage
+            private val avatar = itemView.avatar
             private val shimmer = itemView.shimmer
 
             fun bindTitle(title: String?) {
@@ -197,6 +248,10 @@ class DashboardAdapter(
                     tvTitle.setText(R.string.untitled)
                 else
                     tvTitle.text = title
+            }
+
+            fun bindSubtitle(subtitle: String?) {
+                tvSubtitle.text = subtitle
             }
 
             fun bindLoading(isLoading: Boolean) {
@@ -227,16 +282,84 @@ class DashboardAdapter(
                 }
             }
 
-            fun bindImage(image: String?) {
+            fun bindImage(
+                image: String?,
+                layout: ObjectType.Layout?,
+                name: String?
+            ) {
+                when (layout) {
+                    ObjectType.Layout.BASIC -> bindRectangleImage(image)
+                    ObjectType.Layout.PROFILE -> {
+                        if (image != null) {
+                            avatar.invisible()
+                            bindCircleImage(image)
+                        } else {
+                            rectangleImage.invisible()
+                            avatar.visible()
+                            avatar.bind(name.orEmpty())
+                        }
+                    }
+                    else -> Timber.d("Skipping image bound")
+                }
+            }
+
+            private fun bindCircleImage(image: String?) {
                 image?.let { url ->
                     Glide
-                        .with(ivImage)
+                        .with(circleImage)
                         .load(url)
                         .centerInside()
                         .circleCrop()
                         .into(ivImage)
                 } ?: run {
                     ivImage.setImageDrawable(null)
+                        .into(circleImage)
+                } ?: run { circleImage.setImageDrawable(null) }
+            }
+
+            private fun bindRectangleImage(image: String?) {
+                Timber.d("Binding rectangle image: $image")
+                image?.let { url ->
+                    Glide
+                        .with(rectangleImage)
+                        .load(url)
+                        .centerCrop()
+                        .into(rectangleImage)
+                } ?: run { rectangleImage.setImageDrawable(null) }
+            }
+        }
+
+        class DocumentWithoutIconViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_desktop_page_without_icon,
+                parent,
+                false
+            )
+        ) {
+
+            private val tvTitle = itemView.findViewById<TextView>(R.id.tvDocTitle)
+            private val tvSubtitle = itemView.findViewById<TextView>(R.id.tvDocTypeName)
+            private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+
+            fun bindTitle(title: String?) {
+                tvTitle.text = title
+            }
+
+            fun bindSubtitle(type: String?) {
+                tvSubtitle.text = type
+            }
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    tvSubtitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                    tvSubtitle.visible()
                 }
             }
         }

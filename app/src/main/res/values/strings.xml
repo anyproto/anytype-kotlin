@@ -213,5 +213,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="recent">Recent</string>
     <string name="sets">Sets</string>
     <string name="inbox">Inbox</string>
+    <string name="unknown_type">Unknown type</string>
 
 </resources>

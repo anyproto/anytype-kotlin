@@ -141,11 +141,27 @@
     </style>
 
     <style name="DashboardDocumentTitleStyle">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="singleLine">true</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="DashboardDocAlternativeTitleStyle">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="DashboardDocumentSubtitleStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#929082</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="KeychainDialogTitleStyle">

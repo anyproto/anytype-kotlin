@@ -301,33 +301,38 @@ fun List<Block>.toDashboardViews(
         }
         is Block.Content.Link -> {
             val targetDetails = details.details[content.target]
-            val type = targetDetails?.type
-            if (type != null) {
-                val value = objectTypes.find { it.url == type }
-                if (value != null) {
-                    when (value.layout) {
-                        ObjectType.Layout.BASIC -> content.toPageView(block.id, details, builder)
-                        ObjectType.Layout.SET -> content.toSetView(block.id, details)
-                        else -> null
-                    }
-                } else {
+            val typeUrl = targetDetails?.type
+            val type = objectTypes.find { it.url == typeUrl }
+            val layoutCode = targetDetails?.layout?.toInt()
+            val layout = layoutCode?.let { code ->
+                ObjectType.Layout.values().find { layout ->
+                    layout.code == code
+                }
+            }
+            when(layout) {
+                ObjectType.Layout.BASIC -> content.toPageView(
+                    id = block.id,
+                    details = details,
+                    builder = builder,
+                    type = type?.url,
+                    typeName = type?.name,
+                    layout = layout
+                )
+                ObjectType.Layout.SET -> content.toSetView(block.id, details)
+                else -> {
                     when (content.type) {
                         Block.Content.Link.Type.PAGE -> content.toPageView(
-                            block.id,
-                            details,
-                            builder
+                            id = block.id,
+                            details = details,
+                            builder = builder,
+                            type = type?.url,
+                            typeName = type?.name,
+                            layout = layout
                         )
                         Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details)
                         Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
                         else -> null
                     }
-                }
-            } else {
-                when (content.type) {
-                    Block.Content.Link.Type.PAGE -> content.toPageView(block.id, details, builder)
-                    Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details)
-                    Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
-                    else -> null
                 }
             }
         }
@@ -349,7 +354,10 @@ fun Block.Content.Link.toArchiveView(
 fun Block.Content.Link.toPageView(
     id: String,
     details: Block.Details,
-    builder: UrlBuilder
+    builder: UrlBuilder,
+    layout: ObjectType.Layout?,
+    typeName: String?,
+    type: String?
 ): DashboardView.Document {
     return DashboardView.Document(
         id = id,
@@ -362,7 +370,10 @@ fun Block.Content.Link.toPageView(
             if (name.isNotEmpty()) builder.image(name) else null
         },
         isArchived = details.details[target]?.isArchived ?: false,
-        isLoading = !details.details.containsKey(target)
+        isLoading = !details.details.containsKey(target),
+        typeName = typeName,
+        type = type,
+        layout = layout
     )
 }
 

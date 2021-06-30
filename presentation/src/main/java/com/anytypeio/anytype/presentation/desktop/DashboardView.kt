@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.desktop
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
 
 sealed class DashboardView {
@@ -23,9 +24,14 @@ sealed class DashboardView {
         val title: String? = null,
         val emoji: String? = null,
         val image: String? = null,
+        val layout: ObjectType.Layout? = null,
+        val typeName: String? = null,
+        val type: String? = null,
         override val isArchived: Boolean,
         override val isLoading: Boolean = false
-    ) : DashboardView()
+    ) : DashboardView() {
+        val hasIcon = emoji != null || image != null
+    }
 
     data class Archive(
         override val id: Id,

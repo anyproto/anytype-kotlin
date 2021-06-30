@@ -84,6 +84,8 @@ interface PageSubComponent {
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
 
     fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
+
+    fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
 }
 
 

@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.model.Types
@@ -292,7 +293,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             layout = ObjectType.Layout.values().random(),
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean()
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(SmartBlockType.PAGE)
         )
 
         val type2 = ObjectType(
@@ -302,7 +304,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             layout = ObjectType.Layout.values().random(),
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean()
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(SmartBlockType.PAGE)
         )
 
         val type3 = ObjectType(
@@ -312,7 +315,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             layout = ObjectType.Layout.values().random(),
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean()
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(SmartBlockType.PAGE)
         )
 
         stubInterceptEvents()

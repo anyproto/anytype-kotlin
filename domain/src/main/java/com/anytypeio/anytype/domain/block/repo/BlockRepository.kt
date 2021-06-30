@@ -119,7 +119,7 @@ interface BlockRepository {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    suspend fun getTemplates(): List<Template>
+    suspend fun getObjectTypes(): List<Template>
 
     suspend fun createTemplate(prototype: ObjectType.Prototype): Template
 

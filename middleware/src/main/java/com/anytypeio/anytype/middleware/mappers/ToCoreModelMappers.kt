@@ -393,7 +393,8 @@ fun MObjectType.toCoreModels(): ObjectType = ObjectType(
     description = description,
     isHidden = hidden,
     relations = relations.map { it.toCoreModels() },
-    layout = layout.toCoreModels()
+    layout = layout.toCoreModels(),
+    smartBlockTypes = types.map { it.toCoreModel() }
 )
 
 fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {

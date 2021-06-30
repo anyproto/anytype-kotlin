@@ -11,5 +11,5 @@ class GetObjectTypes(
 
     override suspend fun run(
         params: Unit
-    ): Either<Throwable, List<ObjectType>> = safe { repo.getTemplates() }
+    ): Either<Throwable, List<ObjectType>> = safe { repo.getObjectTypes() }
 }

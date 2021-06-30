@@ -70,6 +70,7 @@ object MockTypicalDocumentFactory {
         layout = ObjectType.Layout.values().random(),
         emoji = MockDataFactory.randomString(),
         description = MockDataFactory.randomString(),
-        isHidden = MockDataFactory.randomBoolean()
+        isHidden = MockDataFactory.randomBoolean(),
+        smartBlockTypes = listOf(SmartBlockType.PAGE)
     )
 }

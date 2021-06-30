@@ -2,9 +2,11 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.`object`.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.sets.model.*
 
@@ -283,4 +285,15 @@ fun Any?.filterIdsById(filter: Id): List<Id> {
         }
     }
     return remaining.toList()
+}
+
+fun List<ObjectType>.toObjectTypeViews(): List<ObjectTypeView.Item> {
+    return this.map { objectType ->
+        ObjectTypeView.Item(
+            id = objectType.url,
+            name = objectType.name,
+            emoji = objectType.emoji,
+            description = objectType.description
+        )
+    }
 }

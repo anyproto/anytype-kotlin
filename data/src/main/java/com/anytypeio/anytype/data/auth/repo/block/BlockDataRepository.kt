@@ -242,8 +242,8 @@ class BlockDataRepository(
         style = style
     )
 
-    override suspend fun getTemplates(): List<Template> {
-        return factory.remote.getTemplates()
+    override suspend fun getObjectTypes(): List<Template> {
+        return factory.remote.getObjectTypes()
     }
 
     override suspend fun createTemplate(

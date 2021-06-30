@@ -179,7 +179,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.SetFields
     ): Payload = remote.setFields(command)
 
-    override suspend fun getTemplates(): List<ObjectType> = remote.getTemplates()
+    override suspend fun getObjectTypes(): List<ObjectType> = remote.getObjectTypes()
     override suspend fun createTemplate(
         prototype: ObjectType.Prototype
     ): ObjectType = remote.createTemplate(prototype)

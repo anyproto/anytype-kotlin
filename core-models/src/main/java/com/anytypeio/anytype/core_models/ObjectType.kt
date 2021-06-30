@@ -16,7 +16,8 @@ data class ObjectType(
     val layout: Layout,
     val emoji: String,
     val description: String?,
-    val isHidden: Boolean
+    val isHidden: Boolean,
+    val smartBlockTypes: List<SmartBlockType>
 ) {
     enum class Layout(val code: Int) {
         BASIC(0),

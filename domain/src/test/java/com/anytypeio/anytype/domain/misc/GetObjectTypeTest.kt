@@ -46,13 +46,14 @@ class GetObjectTypeTest {
             layout = ObjectType.Layout.values().random(),
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
-            isHidden = MockDataFactory.randomBoolean()
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf()
         )
 
         runBlocking {
 
             usecase.stub {
-                onBlocking { repo.getTemplates() } doReturn listOf(type)
+                onBlocking { repo.getObjectTypes() } doReturn listOf(type)
             }
 
             val firstTimeResult = usecase.invoke(params = Unit)
@@ -68,7 +69,7 @@ class GetObjectTypeTest {
             val secondTimeResult = usecase.invoke(params = Unit)
             assertEquals(firstTimeResult, secondTimeResult)
 
-            verify(repo, times(1)).getTemplates()
+            verify(repo, times(1)).getObjectTypes()
         }
     }
 }

@@ -498,6 +498,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val objectTypeChangeComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .objectTypeChangeComponent()
+            .module(ObjectTypeChangeModule)
+            .build()
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

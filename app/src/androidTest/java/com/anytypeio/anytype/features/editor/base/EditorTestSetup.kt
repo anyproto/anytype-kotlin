@@ -375,7 +375,7 @@ open class EditorTestSetup {
 
     fun stubGetObjectTypes(objectTypes: List<ObjectType>) {
         repo.stub {
-            onBlocking { getTemplates() } doReturn objectTypes
+            onBlocking { getObjectTypes() } doReturn objectTypes
         }
     }
 

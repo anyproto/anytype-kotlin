@@ -41,7 +41,8 @@ class SearchObjectSets(
             filters = filters,
             fulltext = EMPTY_TEXT,
             offset = INIT_OFFSET,
-            limit = LIMIT
+            limit = LIMIT,
+            objectTypeFilter = listOf(ObjectTypes.SET)
         )
     }
 

@@ -32,6 +32,7 @@ data class Block(
         val coverType: Double? by default
         val iconImage: String? by default
         val isArchived: Boolean? by default
+        val done: Boolean? by default
         val lang: String? by default
         val fileExt: String? by default
         val fileMimeType: String? by default

@@ -46,7 +46,8 @@ sealed class HomeDashboardStateMachine {
         val isLoading: Boolean,
         val error: String?,
         val blocks: List<DashboardView> = emptyList(),
-        val childrenIdsList: List<String> = emptyList()
+        val childrenIdsList: List<String> = emptyList(),
+        val objectTypes: List<ObjectType> = emptyList()
     ) : HomeDashboardStateMachine() {
         companion object {
             fun init() = State(
@@ -154,7 +155,8 @@ sealed class HomeDashboardStateMachine {
                         isLoading = false,
                         error = null,
                         blocks = current.addAndSortByIds(childrenIdsList, new),
-                        childrenIdsList = childrenIdsList
+                        childrenIdsList = childrenIdsList,
+                        objectTypes = event.objectTypes
                     )
                 }
                 is Event.OnShowProfile -> {

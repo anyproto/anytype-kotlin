@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.settings.EditorSettings
@@ -301,7 +302,7 @@ fun List<Block>.toDashboardViews(
         }
         is Block.Content.Link -> {
             val targetDetails = details.details[content.target]
-            val typeUrl = targetDetails?.type
+            val typeUrl = targetDetails?.map?.type
             val type = objectTypes.find { it.url == typeUrl }
             val layoutCode = targetDetails?.layout?.toInt()
             val layout = layoutCode?.let { code ->
@@ -373,7 +374,8 @@ fun Block.Content.Link.toPageView(
         isLoading = !details.details.containsKey(target),
         typeName = typeName,
         type = type,
-        layout = layout
+        layout = layout,
+        done = details.details[target]?.done
     )
 }
 

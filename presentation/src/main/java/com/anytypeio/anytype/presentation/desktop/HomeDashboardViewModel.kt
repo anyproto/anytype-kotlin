@@ -153,7 +153,7 @@ class HomeDashboardViewModel(
 
         viewModelScope.launch {
             openDashboard(params = null).either(
-                fnR = { payload -> processEvents(payload.events) },
+                fnR = { payload -> processEvents(payload.events).also { proceedWithObjectSearch() } },
                 fnL = { Timber.e(it, "Error while opening home dashboard") }
             )
         }
@@ -362,21 +362,23 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchArchivedObjects(Unit).process(
                 success = { objects ->
-                    archived.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
-                        val id = obj.id
-                        if (id != null) {
-                            DashboardView.Document(
-                                id = id,
-                                target = id,
-                                title = obj.name,
-                                isArchived = true,
-                                isLoading = false,
-                                emoji = obj.iconEmoji,
-                                image = obj.iconImage
-                            )
-                        } else {
-                            null
+                    archived.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
+                        val oType = stateData.value?.let { state ->
+                            state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
                         }
+                        DashboardView.Document(
+                            id = obj.id,
+                            target = obj.id,
+                            title = obj.name,
+                            isArchived = true,
+                            isLoading = false,
+                            emoji = obj.iconEmoji,
+                            image = obj.iconImage,
+                            type = obj.type.firstOrNull(),
+                            typeName = oType?.name,
+                            layout = obj.layout,
+                            done = obj.done
+                        )
                     }
                 },
                 failure = { Timber.e(it, "Error while searching for archived objects") }
@@ -386,6 +388,9 @@ class HomeDashboardViewModel(
             searchRecentObjects(Unit).process(
                 success = { objects -> Timber.d("Found ${objects.size} recent objects")
                     recent.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
+                        val oType = stateData.value?.let { state ->
+                            state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
+                        }
                         DashboardView.Document(
                             id = obj.id,
                             target = obj.id,
@@ -393,7 +398,11 @@ class HomeDashboardViewModel(
                             isArchived = obj.isArchived ?: false,
                             isLoading = false,
                             emoji = obj.iconEmoji,
-                            image = obj.iconImage
+                            image = obj.iconImage,
+                            type = obj.type.firstOrNull(),
+                            typeName = oType?.name,
+                            layout = obj.layout,
+                            done = obj.done
                         )
                     }
                 },
@@ -404,6 +413,9 @@ class HomeDashboardViewModel(
             searchInboxObjects(Unit).process(
                 success = { objects ->
                     inbox.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
+                        val oType = stateData.value?.let { state ->
+                            state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
+                        }
                         DashboardView.Document(
                             id = obj.id,
                             target = obj.id,
@@ -411,7 +423,11 @@ class HomeDashboardViewModel(
                             isArchived = obj.isArchived ?: false,
                             isLoading = false,
                             emoji = obj.iconEmoji,
-                            image = obj.iconImage
+                            image = obj.iconImage,
+                            type = obj.type.firstOrNull(),
+                            typeName = oType?.name,
+                            layout = obj.layout,
+                            done = obj.done
                         )
                     }
                 },
@@ -446,9 +462,7 @@ class HomeDashboardViewModel(
         }
     }
 
-    fun onResume() {
-        proceedWithObjectSearch()
-    }
+    fun onResume() {}
 
     /**
      * Represents movements of blocks during block dragging action.

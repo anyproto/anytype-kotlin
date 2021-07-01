@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.desktop
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -33,8 +34,9 @@ class DashboardAdapter(
     companion object {
         const val VIEW_TYPE_DOCUMENT = 0
         const val VIEW_TYPE_DOCUMENT_WITHOUT_ICON = 1
-        const val VIEW_TYPE_ARCHIVE = 2
-        const val VIEW_TYPE_SET = 3
+        const val VIEW_TYPE_DOCUMENT_TASK = 2
+        const val VIEW_TYPE_ARCHIVE = 3
+        const val VIEW_TYPE_SET = 4
 
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
     }
@@ -58,6 +60,18 @@ class DashboardAdapter(
             }
             VIEW_TYPE_DOCUMENT_WITHOUT_ICON -> {
                 ViewHolder.DocumentWithoutIconViewHolder(parent).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.Document)
+                            onDocumentClicked(item.target, item.isLoading)
+                        }
+                    }
+                }
+            }
+            VIEW_TYPE_DOCUMENT_TASK -> {
+                ViewHolder.DocumentTaskViewHolder(parent).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -102,11 +116,10 @@ class DashboardAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (val item = data[position]) {
-            is DashboardView.Document -> {
-                if (item.hasIcon || item.layout == ObjectType.Layout.PROFILE)
-                    VIEW_TYPE_DOCUMENT
-                else
-                    VIEW_TYPE_DOCUMENT_WITHOUT_ICON
+            is DashboardView.Document -> when {
+                item.layout == ObjectType.Layout.TODO -> VIEW_TYPE_DOCUMENT_TASK
+                item.hasIcon || item.layout == ObjectType.Layout.PROFILE -> VIEW_TYPE_DOCUMENT
+                else -> VIEW_TYPE_DOCUMENT_WITHOUT_ICON
             }
             is DashboardView.Archive -> VIEW_TYPE_ARCHIVE
             is DashboardView.ObjectSet -> VIEW_TYPE_SET
@@ -133,6 +146,13 @@ class DashboardAdapter(
                 holder.bindTitle(item.title)
                 holder.bindSubtitle(item.typeName)
                 holder.bindLoading(item.isLoading)
+            }
+            is ViewHolder.DocumentTaskViewHolder -> {
+                val item = data[position] as DashboardView.Document
+                holder.bindTitle(item.title)
+                holder.bindSubtitle(item.typeName)
+                holder.bindLoading(item.isLoading)
+                holder.bindDone(item.done)
             }
             is ViewHolder.ObjectSetHolder -> {
                 with(holder) {
@@ -357,6 +377,50 @@ class DashboardAdapter(
                     shimmer.invisible()
                     tvTitle.visible()
                     tvSubtitle.visible()
+                }
+            }
+        }
+
+        class DocumentTaskViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_desktop_page_task,
+                parent,
+                false
+            )
+        ) {
+
+            private val tvTitle = itemView.findViewById<TextView>(R.id.tvDocTitle)
+            private val tvSubtitle = itemView.findViewById<TextView>(R.id.tvDocTypeName)
+            private val checkbox = itemView.findViewById<ImageView>(R.id.ivCheckbox)
+            private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+
+            fun bindTitle(title: String?) {
+                tvTitle.text = title
+            }
+
+            fun bindSubtitle(type: String?) {
+                tvSubtitle.text = type
+            }
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    tvSubtitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                    tvSubtitle.visible()
+                }
+            }
+
+            fun bindDone(done: Boolean?) {
+                if (done == true) {
+                    checkbox.setImageResource(R.drawable.ic_dashboard_task_checkbox_checked)
+                } else {
+                    checkbox.setImageResource(R.drawable.ic_dashboard_task_checkbox_not_checked)
                 }
             }
         }

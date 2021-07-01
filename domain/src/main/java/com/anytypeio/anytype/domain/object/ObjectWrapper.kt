@@ -51,5 +51,7 @@ sealed class ObjectWrapper {
             }
 
         val id: Id by default
+
+        val done: Boolean? by default
     }
 }

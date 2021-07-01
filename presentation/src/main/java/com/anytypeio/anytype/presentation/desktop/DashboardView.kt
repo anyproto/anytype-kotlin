@@ -27,6 +27,7 @@ sealed class DashboardView {
         val layout: ObjectType.Layout? = null,
         val typeName: String? = null,
         val type: String? = null,
+        val done: Boolean? = null,
         override val isArchived: Boolean,
         override val isLoading: Boolean = false
     ) : DashboardView() {

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.`object`.ObjectWrapper
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -384,21 +385,16 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchRecentObjects(Unit).process(
                 success = { objects -> Timber.d("Found ${objects.size} recent objects")
-                    recent.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
-                        val id = obj.id
-                        if (id != null) {
-                            DashboardView.Document(
-                                id = id,
-                                target = id,
-                                title = obj.name,
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                emoji = obj.iconEmoji,
-                                image = obj.iconImage
-                            )
-                        } else {
-                            null
-                        }
+                    recent.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
+                        DashboardView.Document(
+                            id = obj.id,
+                            target = obj.id,
+                            title = obj.name,
+                            isArchived = obj.isArchived ?: false,
+                            isLoading = false,
+                            emoji = obj.iconEmoji,
+                            image = obj.iconImage
+                        )
                     }
                 },
                 failure = { Timber.e(it, "Error while searching for recent objects") }
@@ -407,21 +403,16 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchInboxObjects(Unit).process(
                 success = { objects ->
-                    inbox.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
-                        val id = obj.id
-                        if (id != null) {
-                            DashboardView.Document(
-                                id = id,
-                                target = id,
-                                title = obj.name,
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                emoji = obj.iconEmoji,
-                                image = obj.iconImage
-                            )
-                        } else {
-                            null
-                        }
+                    inbox.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
+                        DashboardView.Document(
+                            id = obj.id,
+                            target = obj.id,
+                            title = obj.name,
+                            isArchived = obj.isArchived ?: false,
+                            isLoading = false,
+                            emoji = obj.iconEmoji,
+                            image = obj.iconImage
+                        )
                     }
                 },
                 failure = { Timber.e(it, "Error while searching for inbox objects") }
@@ -430,20 +421,15 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchObjectSets(Unit).process(
                 success = { objects ->
-                    sets.value = objects.map { Block.Fields(it) }.mapNotNull { obj ->
-                        val id = obj.id
-                        if (id != null) {
-                            DashboardView.ObjectSet(
-                                id = id,
-                                target = id,
-                                title = obj.name,
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                emoji = obj.iconEmoji
-                            )
-                        } else {
-                            null
-                        }
+                    sets.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
+                        DashboardView.ObjectSet(
+                            id = obj.id,
+                            target = obj.id,
+                            title = obj.name,
+                            isArchived = obj.isArchived ?: false,
+                            isLoading = false,
+                            emoji = obj.iconEmoji
+                        )
                     }
                 },
                 failure = { Timber.e(it, "Error while searching for sets") }

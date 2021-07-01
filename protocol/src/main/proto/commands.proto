@@ -309,7 +309,7 @@ message Rpc {
             message Align {
                 message Request {
                     string contextId = 1;
-                    repeated string blockIds = 2;
+                    repeated string blockIds = 2; // when empty - align will be applied as layoutAlign
                     anytype.model.Block.Align align = 3;
                 }
 
@@ -3120,6 +3120,7 @@ message Rpc {
         enum Format {
             Markdown = 0;
             Protobuf = 1;
+            JSON = 2;
         }
     }
 

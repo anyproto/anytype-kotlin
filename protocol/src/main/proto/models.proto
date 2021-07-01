@@ -452,7 +452,9 @@ message Relation {
     DataSource dataSource = 5; // where the data is stored
 
     bool hidden = 6; // internal, not displayed to user (e.g. coverX, coverY)
-    bool readOnly = 7; // not editable by user
+    bool readOnly = 7; // value not editable by user tobe renamed to readonlyValue
+    bool readOnlyRelation = 15; // relation metadata, eg name and format is not editable by user
+
     bool multi = 8; // allow multiple values (stored in pb list)
 
     repeated string objectTypes = 9; // URL of object type, empty to allow link to any object

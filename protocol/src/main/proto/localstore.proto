@@ -9,7 +9,7 @@ message ObjectInfo {
     string id = 1;
     repeated string objectTypeUrls = 2;
     google.protobuf.Struct details = 3;
-    Relations relations = 4;
+    repeated Relation relations = 4;
 
     string snippet = 5;
     bool hasInboundLinks = 6;
@@ -57,4 +57,5 @@ message ObjectStoreChecksums {
     int32 idxRebuildCounter = 6; // increased in order to remove indexes and reindex everything. Automatically triggers objects and files reindex(one time only)
     int32 fulltextRebuild = 7; // increased in order to perform fulltext indexing for all type of objects (useful when we change fulltext config)
     string bundledTemplates = 8;
+    int32 bundledObjects = 9; // anytypeProfile and maybe some others in the feature
 }

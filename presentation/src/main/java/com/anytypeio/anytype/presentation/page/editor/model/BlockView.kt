@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_HEADER_
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_HIGHLIGHT
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PAGE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PAGE_ARCHIVE
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PARAGRAPH
@@ -928,6 +929,7 @@ sealed class BlockView : ViewType, Parcelable {
                 is DocumentRelationView.Tags -> HOLDER_RELATION_TAGS
                 is DocumentRelationView.Object -> HOLDER_RELATION_OBJECT
                 is DocumentRelationView.File -> HOLDER_RELATION_FILE
+                is DocumentRelationView.ObjectType -> HOLDER_OBJECT_TYPE
             }
         }
     }

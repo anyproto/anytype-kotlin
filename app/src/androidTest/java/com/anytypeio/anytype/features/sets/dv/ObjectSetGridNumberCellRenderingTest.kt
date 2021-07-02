@@ -59,7 +59,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -151,7 +152,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -243,7 +245,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -335,7 +338,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -427,7 +431,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -519,7 +524,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val record1: Map<String, Any?> = mapOf(

@@ -58,6 +58,7 @@ class FeaturedRelationAdapter(
         is DocumentRelationView.Checkbox -> TODO()
         is DocumentRelationView.File -> TODO()
         is DocumentRelationView.Object -> TODO()
+        is DocumentRelationView.ObjectType -> R.layout.item_featured_relation_default
     }
 
     fun update(items: List<DocumentRelationView>) {

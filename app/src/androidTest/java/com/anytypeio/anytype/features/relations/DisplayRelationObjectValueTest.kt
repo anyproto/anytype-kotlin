@@ -328,7 +328,8 @@ class DisplayRelationObjectValueTest {
             emoji = "",
             layout = ObjectType.Layout.values().random(),
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val objectType2 = ObjectType(
@@ -338,7 +339,8 @@ class DisplayRelationObjectValueTest {
             emoji = "",
             layout = ObjectType.Layout.values().random(),
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relationId = MockDataFactory.randomUuid()
@@ -444,7 +446,8 @@ class DisplayRelationObjectValueTest {
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val objectType2 = ObjectType(
@@ -454,7 +457,8 @@ class DisplayRelationObjectValueTest {
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relationName = "Cast"
@@ -562,7 +566,8 @@ class DisplayRelationObjectValueTest {
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val objectType2 = ObjectType(
@@ -572,7 +577,8 @@ class DisplayRelationObjectValueTest {
             emoji = "",
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relationId = MockDataFactory.randomUuid()

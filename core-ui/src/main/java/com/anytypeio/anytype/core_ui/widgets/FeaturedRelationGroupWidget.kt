@@ -49,7 +49,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             when(relation) {
                 is DocumentRelationView.Default -> {
                     val view = TextView(context).apply {
-                        id = View.generateViewId()
+                        id = generateViewId()
                         text = relation.value
                         isSingleLine = true
                         maxLines = 1
@@ -61,7 +61,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 }
                 is DocumentRelationView.Checkbox -> {
                     val view = View(context).apply {
-                        id = View.generateViewId()
+                        id = generateViewId()
                         val size = context.dimen(R.dimen.dp_16).toInt()
                         layoutParams = LayoutParams(size, size)
                         setBackgroundResource(R.drawable.ic_relation_checkbox_selector)
@@ -73,7 +73,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.File -> {
                     relation.files.forEach { file ->
                         val view = TextView(context).apply {
-                            id = View.generateViewId()
+                            id = generateViewId()
                             text = file.name
                             isSingleLine = true
                             maxLines = 1
@@ -87,7 +87,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.Object -> {
                     relation.objects.forEach { obj ->
                         val view = TextView(context).apply {
-                            id = View.generateViewId()
+                            id = generateViewId()
                             text = obj.name
                             isSingleLine = true
                             maxLines = 1
@@ -102,7 +102,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     relation.status.forEach { status ->
                         val color = ThemeColor.values().find { v -> v.title == status.color }
                         val view = TextView(context).apply {
-                            id = View.generateViewId()
+                            id = generateViewId()
                             text = status.status
                             isSingleLine = true
                             maxLines = 1
@@ -120,7 +120,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     relation.tags.forEach { tag ->
                         val color = ThemeColor.values().find { v -> v.title == tag.color }
                         val view = TextView(context).apply {
-                            id = View.generateViewId()
+                            id = generateViewId()
                             text = tag.tag
                             isSingleLine = true
                             maxLines = 1
@@ -134,6 +134,18 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         addView(view)
                         ids.add(view.id)
                     }
+                }
+                is DocumentRelationView.ObjectType -> {
+                    val view = TextView(context).apply {
+                        id = generateViewId()
+                        text = relation.name
+                        isSingleLine = true
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
+                        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                    }
+                    addView(view)
+                    ids.add(view.id)
                 }
             }
 

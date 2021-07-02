@@ -49,7 +49,8 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.BASIC,
             relations = emptyList(),
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relation1 = Relation(

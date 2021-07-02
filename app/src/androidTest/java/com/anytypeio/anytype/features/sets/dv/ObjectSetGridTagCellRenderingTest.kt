@@ -65,7 +65,8 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.BASIC    ,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relationId = MockDataFactory.randomUuid()

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.page.cover.CoverColor
 import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.page.Editor.Mode as EditorMode
@@ -421,8 +422,7 @@ class DefaultBlockViewRenderer(
                         ctx = root.id,
                         block = block,
                         relations = relations,
-                        details = details,
-                        urlBuilder = urlBuilder
+                        details = details
                     )
                     if (featured.relations.isNotEmpty()) {
                         result.add(
@@ -430,8 +430,7 @@ class DefaultBlockViewRenderer(
                                 ctx = root.id,
                                 block = block,
                                 relations = relations,
-                                details = details,
-                                urlBuilder = urlBuilder
+                                details = details
                             )
                         )
                     }
@@ -1050,25 +1049,50 @@ class DefaultBlockViewRenderer(
         ctx: Id,
         block: Block,
         details: Block.Details,
-        relations: List<Relation>,
-        urlBuilder: UrlBuilder
+        relations: List<Relation>
     ): BlockView.FeaturedRelation {
         val featured = details.details[ctx]?.featuredRelations ?: emptyList()
+        val views = mutableListOf<DocumentRelationView>()
+        views.addAll(
+            mapFeaturedRelations(
+                ctx = ctx,
+                ids = featured,
+                details = details,
+                relations = relations
+            )
+        )
         return BlockView.FeaturedRelation(
             id = block.id,
-            relations = featured.mapNotNull { id ->
-                if (id != Relations.DESCRIPTION) {
-                    val relation = relations.first { it.key == id }
-                    relation.view(
-                        details = details,
-                        values = details.details[ctx]?.map ?: emptyMap(),
-                        urlBuilder = urlBuilder
-                    )
-                } else {
-                    null
-                }
-            }
+            relations = views
         )
+    }
+
+    private fun mapFeaturedRelations(
+        ctx: Id,
+        ids: List<String>,
+        details: Block.Details,
+        relations: List<Relation>
+    ): List<DocumentRelationView> = ids.mapNotNull { id ->
+        when (id) {
+            Relations.DESCRIPTION -> null
+            Relations.TYPE -> {
+                val objectTypeId = details.details[ctx]?.type
+                DocumentRelationView.ObjectType(
+                    relationId = objectTypeId.orEmpty(),
+                    name = details.details[objectTypeId]?.name.orEmpty(),
+                    isFeatured = true
+                )
+            }
+            else -> {
+                val relation = relations.first { it.key == id }
+                relation.view(
+                    details = details,
+                    values = details.details[ctx]?.map ?: emptyMap(),
+                    urlBuilder = urlBuilder,
+                    isFeatured = true
+                )
+            }
+        }
     }
 
     private fun checkIfSelected(

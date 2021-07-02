@@ -63,7 +63,8 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relationId = MockDataFactory.randomUuid()
@@ -189,7 +190,8 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             emoji = MockDataFactory.randomString(),
             layout = ObjectType.Layout.PROFILE,
             description = "",
-            isHidden = false
+            isHidden = false,
+            smartBlockTypes = listOf()
         )
 
         val relationId = MockDataFactory.randomUuid()

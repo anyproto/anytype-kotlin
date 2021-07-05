@@ -42,22 +42,26 @@ class TagAndStatusTests {
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag1",
-                color = "000"
+                color = "000",
+                scope = Relation.OptionScope.LOCAL
             ),
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag2",
-                color = "111"
+                color = "111",
+                scope = Relation.OptionScope.LOCAL
             ),
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag3",
-                color = "222"
+                color = "222",
+                scope = Relation.OptionScope.LOCAL
             ),
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Tag4",
-                color = "333"
+                color = "333",
+                scope = Relation.OptionScope.LOCAL
             )
         )
 
@@ -184,22 +188,26 @@ class TagAndStatusTests {
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Status1",
-                color = "000"
+                color = "000",
+                scope = Relation.OptionScope.LOCAL
             ),
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Status2",
-                color = "111"
+                color = "111",
+                scope = Relation.OptionScope.LOCAL
             ),
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Status3",
-                color = "222"
+                color = "222",
+                scope = Relation.OptionScope.LOCAL
             ),
             Relation.Option(
                 id = MockDataFactory.randomUuid(),
                 text = "Status4",
-                color = "333"
+                color = "333",
+                scope = Relation.OptionScope.LOCAL
             )
         )
 

@@ -44,6 +44,11 @@ data class Relation(
     data class Option(
         val id: String,
         val text: String,
-        val color: String
+        val color: String,
+        val scope: OptionScope
     )
+
+    enum class OptionScope {
+        LOCAL, RELATION, FORMAT
+    }
 }

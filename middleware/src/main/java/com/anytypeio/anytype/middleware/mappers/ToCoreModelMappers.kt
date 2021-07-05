@@ -437,8 +437,15 @@ fun MRelationFormat.format(): Relation.Format = when (this) {
 fun MRelationOption.option(): Relation.Option = Relation.Option(
     id = id,
     text = text,
-    color = color
+    color = color,
+    scope = scope.scope()
 )
+
+fun MRelationOptionScope.scope(): Relation.OptionScope = when (this) {
+    MRelationOptionScope.local -> Relation.OptionScope.LOCAL
+    MRelationOptionScope.relation -> Relation.OptionScope.RELATION
+    MRelationOptionScope.format -> Relation.OptionScope.FORMAT
+}
 
 // ---------------------- NAVIGATION & SEARCH ------------------------
 fun ObjectInfoWithLinks.toCoreModel(): PageInfoWithLinks {

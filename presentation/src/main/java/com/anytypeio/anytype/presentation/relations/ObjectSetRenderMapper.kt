@@ -141,7 +141,9 @@ fun Relation.toCreateFilterCheckboxView(isSelected: Boolean? = null): List<Creat
 }
 
 fun Relation.toCreateFilterTagView(ids: List<*>? = null): List<CreateFilterView.Tag> =
-    selections.map { option ->
+    selections
+        .filter { it.scope == Relation.OptionScope.LOCAL }
+        .map { option ->
         CreateFilterView.Tag(
             id = option.id,
             name = option.text,
@@ -151,7 +153,9 @@ fun Relation.toCreateFilterTagView(ids: List<*>? = null): List<CreateFilterView.
     }
 
 fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterView.Status> =
-    selections.map { option ->
+    selections
+        .filter { it.scope == Relation.OptionScope.LOCAL }
+        .map { option ->
         CreateFilterView.Status(
             id = option.id,
             name = option.text,

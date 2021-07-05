@@ -1,8 +1,12 @@
 package com.anytypeio.anytype.presentation.desktop
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
+import com.anytypeio.anytype.core_models.ext.set
+import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.*
@@ -39,7 +43,7 @@ sealed class HomeDashboardStateMachine {
      * @property isInitialized whether this state is initialized
      * @property isLoading whether the data is being loaded to prepare a new state
      * @property error if present, represents an error occured in this state machine
-     * @property dashboard current dashboard data state that should be rendered
+     * @property blocks current dashboard data state that should be rendered
      */
     data class State(
         val isInitialzed: Boolean,
@@ -47,7 +51,8 @@ sealed class HomeDashboardStateMachine {
         val error: String?,
         val blocks: List<DashboardView> = emptyList(),
         val childrenIdsList: List<String> = emptyList(),
-        val objectTypes: List<ObjectType> = emptyList()
+        val objectTypes: List<ObjectType> = emptyList(),
+        val details: Block.Details = Block.Details()
     ) : HomeDashboardStateMachine() {
         companion object {
             fun init() = State(
@@ -81,6 +86,20 @@ sealed class HomeDashboardStateMachine {
             val context: String,
             val target: String,
             val details: Block.Fields,
+            val builder: UrlBuilder
+        ) : Event()
+
+        data class OnDetailsAmended(
+            val context: String,
+            val target: String,
+            val slice: Map<Id, Any?>,
+            val builder: UrlBuilder
+        ) : Event()
+
+        data class OnDetailsUnset(
+            val context: String,
+            val target: String,
+            val keys: List<Id>,
             val builder: UrlBuilder
         ) : Event()
 
@@ -156,7 +175,8 @@ sealed class HomeDashboardStateMachine {
                         error = null,
                         blocks = current.addAndSortByIds(childrenIdsList, new),
                         childrenIdsList = childrenIdsList,
-                        objectTypes = event.objectTypes
+                        objectTypes = event.objectTypes,
+                        details = event.details
                     )
                 }
                 is Event.OnShowProfile -> {
@@ -213,6 +233,38 @@ sealed class HomeDashboardStateMachine {
                             event.target,
                             event.details,
                             event.builder
+                        ),
+                        details = state.details.set(
+                            target = event.target,
+                            fields = event.details
+                        )
+                    )
+                }
+                is Event.OnDetailsAmended -> {
+                    val updated = state.details.amend(
+                        target = event.target,
+                        slice = event.slice
+                    )
+                    state.copy(
+                        details = updated,
+                        blocks = state.blocks.updateDetails(
+                            target = event.target,
+                            details = updated.details[event.target] ?: Block.Fields.empty(),
+                            builder = event.builder
+                        )
+                    )
+                }
+                is Event.OnDetailsUnset -> {
+                    val updated = state.details.unset(
+                        target = event.target,
+                        keys = event.keys
+                    )
+                    state.copy(
+                        details = updated,
+                        blocks = state.blocks.updateDetails(
+                            target = event.target,
+                            details = updated.details[event.target] ?: Block.Fields.empty(),
+                            builder = event.builder
                         )
                     )
                 }

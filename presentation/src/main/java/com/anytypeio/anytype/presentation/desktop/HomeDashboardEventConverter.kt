@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.desktop
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import timber.log.Timber
 
 interface HomeDashboardEventConverter {
 
@@ -58,7 +59,26 @@ interface HomeDashboardEventConverter {
                     builder = builder
                 )
             }
-            else -> null
+            is Event.Command.Details.Amend -> {
+                HomeDashboardStateMachine.Event.OnDetailsAmended(
+                    context = event.context,
+                    target = event.target,
+                    slice = event.details,
+                    builder = builder
+                )
+            }
+            is Event.Command.Details.Unset -> {
+                HomeDashboardStateMachine.Event.OnDetailsUnset(
+                    context = event.context,
+                    target = event.target,
+                    keys = event.keys,
+                    builder = builder
+                )
+            }
+            else -> {
+                Timber.d("Ignored event: $event")
+                null
+            }
         }
     }
 }

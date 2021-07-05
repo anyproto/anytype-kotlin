@@ -27,11 +27,11 @@ class ObjectTypeChangeViewModel(
             views.filter { view -> view.name.contains(query, true) }
     }
 
-    init {
+    fun onStart(smartBlockType: SmartBlockType) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
-                    smartBlockType = SmartBlockType.PAGE
+                    smartBlockType = smartBlockType
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },

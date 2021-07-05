@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.page
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -3619,7 +3618,18 @@ class PageViewModel(
                 }
             }
             is ListenerType.Relation.ObjectType -> {
-                dispatch(Command.OpenChangeObjectTypeScreen(ctx = context))
+                val block = blocks.firstOrNull { it.id == context }
+                val smartBlockType = if (block?.content is Content.Smart) {
+                    block.content<Content.Smart>().type
+                } else {
+                    SmartBlockType.PAGE
+                }
+                dispatch(
+                    Command.OpenChangeObjectTypeScreen(
+                        ctx = context,
+                        smartBlockType = smartBlockType
+                    )
+                )
             }
         }
     }

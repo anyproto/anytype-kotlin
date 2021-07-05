@@ -9,12 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.`object`.ObjectTypeBaseAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.`object`.ObjectTypeChangeViewModel
@@ -27,6 +25,7 @@ import javax.inject.Inject
 class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
 
     private val ctx: String get() = argString(ARG_CTX)
+    private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
 
     private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
 
@@ -71,6 +70,7 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
             }
         }
         super.onStart()
+        vm.onStart(smartBlockType = smartBlockType)
     }
 
     override fun injectDependencies() {
@@ -82,12 +82,14 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     }
 
     companion object {
-        fun new(ctx: String) = ObjectTypeChangeFragment().apply {
+        fun new(ctx: String, smartBlockType: SmartBlockType) = ObjectTypeChangeFragment().apply {
             arguments = bundleOf(
-                ARG_CTX to ctx
+                ARG_CTX to ctx,
+                ARG_SMART_BLOCK_TYPE to smartBlockType
             )
         }
 
         const val ARG_CTX = "arg.object-type.ctx"
+        const val ARG_SMART_BLOCK_TYPE = "arg.object-type.smart-block-type"
     }
 }

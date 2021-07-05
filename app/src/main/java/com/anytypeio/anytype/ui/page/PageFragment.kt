@@ -980,7 +980,10 @@ open class PageFragment :
                     }
                 }
                 is Command.OpenChangeObjectTypeScreen -> {
-                    val fr = ObjectTypeChangeFragment.new(ctx = command.ctx)
+                    val fr = ObjectTypeChangeFragment.new(
+                        ctx = command.ctx,
+                        smartBlockType = command.smartBlockType
+                    )
                     fr.show(childFragmentManager, null)
                 }
             }

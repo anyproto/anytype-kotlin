@@ -9,10 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_PROFILE
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -391,19 +388,30 @@ class HomeDashboardViewModel(
                         val oType = stateData.value?.let { state ->
                             state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
                         }
-                        DashboardView.Document(
-                            id = obj.id,
-                            target = obj.id,
-                            title = obj.name,
-                            isArchived = obj.isArchived ?: false,
-                            isLoading = false,
-                            emoji = obj.iconEmoji,
-                            image = obj.iconImage,
-                            type = obj.type.firstOrNull(),
-                            typeName = oType?.name,
-                            layout = obj.layout,
-                            done = obj.done
-                        )
+                        if (oType?.layout == ObjectType.Layout.SET) {
+                            DashboardView.ObjectSet(
+                                id = obj.id,
+                                target = obj.id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                emoji = obj.iconEmoji
+                            )
+                        } else {
+                            DashboardView.Document(
+                                id = obj.id,
+                                target = obj.id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                emoji = obj.iconEmoji,
+                                image = obj.iconImage,
+                                type = obj.type.firstOrNull(),
+                                typeName = oType?.name,
+                                layout = obj.layout,
+                                done = obj.done
+                            )
+                        }
                     }
                 },
                 failure = { Timber.e(it, "Error while searching for recent objects") }

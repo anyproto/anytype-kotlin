@@ -231,6 +231,7 @@ object EditorSessionModule {
         updateAlignment: UpdateAlignment,
         setupBookmark: SetupBookmark,
         turnIntoDocument: TurnIntoDocument,
+        setObjectType: SetObjectType,
         matcher: DefaultPatternMatcher,
         move: Move,
         copy: Copy,
@@ -276,7 +277,8 @@ object EditorSessionModule {
         analytics = analytics,
         updateFields = updateFields,
         turnIntoStyle = turnInto,
-        updateBlocksMark = updateBlocksMark
+        updateBlocksMark = updateBlocksMark,
+        setObjectType = setObjectType
     )
 }
 
@@ -719,4 +721,11 @@ object EditorUseCaseModule {
     fun provideAddFileToObjectUseCase(
         repo: BlockRepository
     ): AddFileToObject = AddFileToObject(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetObjectType(
+        repo: BlockRepository
+    ): SetObjectType = SetObjectType(repo)
 }

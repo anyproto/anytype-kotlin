@@ -75,6 +75,7 @@ class Orchestrator(
     private val redo: Redo,
     private val setRelationKey: SetRelationKey,
     private val updateBlocksMark: UpdateBlocksMark,
+    private val setObjectType: SetObjectType,
     val memory: Editor.Memory,
     val stores: Editor.Storage,
     val proxies: Editor.Proxer,
@@ -751,6 +752,17 @@ class Orchestrator(
                             contextId = intent.context,
                             blockId = intent.blockId,
                             key = intent.key
+                        )
+                    ).process(
+                        failure = defaultOnError,
+                        success = { payload -> defaultPayload(payload) }
+                    )
+                }
+                is Intent.Document.SetObjectType -> {
+                    setObjectType(
+                        params = SetObjectType.Params(
+                            context = intent.context,
+                            typeId = intent.typeId
                         )
                     ).process(
                         failure = defaultOnError,

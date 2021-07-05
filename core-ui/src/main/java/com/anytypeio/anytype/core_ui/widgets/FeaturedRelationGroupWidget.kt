@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 
@@ -28,7 +29,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     private val defaultTextSize : Float = context.dimen(R.dimen.sp_13)
     private val dividerSize : Int = context.dimen(R.dimen.dp_4).toInt()
 
-    fun set(item: BlockView.FeaturedRelation) {
+    fun set(item: BlockView.FeaturedRelation, click: (ListenerType) -> Unit) {
         removeAllViews()
 
         val flow = Flow(context).apply {
@@ -143,6 +144,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                    }
+                    view.setOnClickListener {
+                        click.invoke(ListenerType.Relation.ObjectType(type = relation.relationId))
                     }
                     addView(view)
                     ids.add(view.id)

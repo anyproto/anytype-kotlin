@@ -288,14 +288,3 @@ fun Any?.filterIdsById(filter: Id): List<Id> {
     }
     return remaining.toList()
 }
-
-fun List<ObjectType>.toObjectTypeViews(): List<ObjectTypeView.Item> {
-    return this.map { objectType ->
-        ObjectTypeView.Item(
-            id = objectType.url,
-            name = objectType.name,
-            emoji = objectType.emoji,
-            description = objectType.description
-        )
-    }
-}

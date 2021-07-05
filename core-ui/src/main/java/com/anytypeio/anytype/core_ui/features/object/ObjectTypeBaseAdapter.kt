@@ -9,14 +9,14 @@ import com.anytypeio.anytype.core_ui.features.`object`.holders.ObjectTypeHolder
 import com.anytypeio.anytype.presentation.`object`.ObjectTypeView
 
 class ObjectTypeBaseAdapter(
-    private val onItemClick: (ObjectTypeView) -> Unit
+    private val onItemClick: (String) -> Unit
 ) : ListAdapter<ObjectTypeView.Item, ObjectTypeHolder>(Differ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectTypeHolder =
         ObjectTypeHolder(parent).apply {
             itemView.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
-                    onItemClick(getItem(bindingAdapterPosition))
+                    onItemClick(getItem(bindingAdapterPosition).id)
             }
         }
 

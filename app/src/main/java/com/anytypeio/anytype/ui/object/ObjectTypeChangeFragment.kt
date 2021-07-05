@@ -10,21 +10,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.`object`.ObjectTypeBaseAdapter
+import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.argStringOrNull
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.`object`.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.`object`.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.presentation.`object`.ObjectTypeView
+import com.anytypeio.anytype.ui.page.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_object_type_change.*
 import javax.inject.Inject
 
 class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
 
     private val ctx: String get() = argString(ARG_CTX)
-    private val target: String? get() = argStringOrNull(ARG_TARGET)
 
     private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
 
@@ -33,7 +35,13 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
 
     private val objectTypeAdapter by lazy {
         ObjectTypeBaseAdapter(
-            onItemClick = { item -> }
+            onItemClick = { id ->
+                withParent<OnFragmentInteractionListener> {
+                    onObjectTypePicked(id)
+                }
+                view?.rootView?.hideKeyboard()
+                dismiss()
+            }
         )
     }
 
@@ -57,7 +65,10 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         with(lifecycleScope) {
-            jobs += subscribe(vm.views) { observeViews(it) }
+            jobs += subscribe(vm.results) { observeViews(it) }
+            jobs += subscribe(searchObjectTypeInput.textChanges()) {
+                vm.onQueryChanged(it.toString())
+            }
         }
         super.onStart()
     }
@@ -71,14 +82,12 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     }
 
     companion object {
-        fun new(ctx: String, target: String) = ObjectTypeChangeFragment().apply {
+        fun new(ctx: String) = ObjectTypeChangeFragment().apply {
             arguments = bundleOf(
-                ARG_CTX to ctx,
-                ARG_TARGET to target
+                ARG_CTX to ctx
             )
         }
 
         const val ARG_CTX = "arg.object-type.ctx"
-        const val ARG_TARGET = "arg.object-type.target"
     }
 }

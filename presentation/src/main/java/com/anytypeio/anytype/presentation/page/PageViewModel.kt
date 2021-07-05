@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.page
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -474,7 +475,10 @@ class PageViewModel(
                     restrictions = orchestrator.stores.objectRestrictions.current()
                 )
             }
-            .catch { emit(emptyList()) }
+            .catch { error ->
+                Timber.e(error, "Get error in renderizePipeline")
+                emit(emptyList())
+            }
             .onEach { views ->
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)
@@ -3604,6 +3608,9 @@ class PageViewModel(
                     else -> onBlockMultiSelectClicked(clicked.value.id)
                 }
             }
+            is ListenerType.Relation.ObjectType -> {
+                dispatch(Command.OpenChangeObjectTypeScreen(ctx = context))
+            }
         }
     }
 
@@ -3976,6 +3983,18 @@ class PageViewModel(
             ).process(
                 success = { dispatcher.send(it) },
                 failure = { Timber.e(it, "Error while updating relation values") }
+            )
+        }
+    }
+
+    fun onObjectTypeChanged(id: Id) {
+        Timber.d("onObjectTypeChanged, typeId:[$id]")
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.SetObjectType(
+                    context = context,
+                    typeId = id
+                )
             )
         }
     }

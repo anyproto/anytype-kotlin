@@ -717,4 +717,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun blockSetObjectType(request: Block.ObjectType.Set.Request): Block.ObjectType.Set.Response {
+        val encoded = Service.blockObjectTypeSet(
+            Block.ObjectType.Set.Request.ADAPTER.encode(request)
+        )
+        val response = Block.ObjectType.Set.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.ObjectType.Set.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

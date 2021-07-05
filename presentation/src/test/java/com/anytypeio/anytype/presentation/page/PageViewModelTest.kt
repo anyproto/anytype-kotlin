@@ -213,6 +213,9 @@ open class PageViewModelTest {
     @Mock
     lateinit var repo: BlockRepository
 
+    @Mock
+    lateinit var setObjectType: SetObjectType
+
     private lateinit var updateDetail: UpdateDetail
 
     lateinit var vm: PageViewModel
@@ -3954,7 +3957,8 @@ open class PageViewModelTest {
                 updateFields = updateFields,
                 setRelationKey = setRelationKey,
                 turnIntoStyle = turnIntoStyle,
-                updateBlocksMark = updateBlocksMark
+                updateBlocksMark = updateBlocksMark,
+                setObjectType = setObjectType
             ),
             dispatcher = Dispatcher.Default(),
             setDocCoverImage = setDocCoverImage,

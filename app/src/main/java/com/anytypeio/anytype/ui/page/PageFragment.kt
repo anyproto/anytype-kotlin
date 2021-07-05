@@ -75,6 +75,7 @@ import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.page.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.presentation.page.markup.MarkupColorView
+import com.anytypeio.anytype.ui.`object`.ObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.page.cover.DocCoverAction
@@ -721,6 +722,10 @@ open class PageFragment :
         vm.onSetRelationKeyClicked(blockId = blockId, key = key)
     }
 
+    override fun onObjectTypePicked(id: Id) {
+        vm.onObjectTypeChanged(id)
+    }
+
     private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
@@ -971,6 +976,10 @@ open class PageFragment :
                             child.text?.insert(child.selectionStart, "/")
                         }
                     }
+                }
+                is Command.OpenChangeObjectTypeScreen -> {
+                    val fr = ObjectTypeChangeFragment.new(ctx = command.ctx)
+                    fr.show(childFragmentManager, null)
                 }
             }
         }
@@ -1729,4 +1738,5 @@ interface OnFragmentInteractionListener {
     fun onAddBookmarkUrlClicked(target: String, url: String)
     fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)
+    fun onObjectTypePicked(id: Id)
 }

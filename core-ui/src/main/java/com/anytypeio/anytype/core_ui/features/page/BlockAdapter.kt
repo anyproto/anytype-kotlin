@@ -1250,7 +1250,10 @@ class BlockAdapter(
                 container.isSelected = item.isSelected
             }
             is FeaturedRelationListViewHolder -> {
-                holder.bind(blocks[position] as BlockView.FeaturedRelation)
+                holder.bind(
+                    item = blocks[position] as BlockView.FeaturedRelation,
+                    click = onClickListener
+                )
             }
         }
 

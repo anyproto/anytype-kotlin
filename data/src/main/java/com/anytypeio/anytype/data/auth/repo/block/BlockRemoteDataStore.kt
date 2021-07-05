@@ -380,4 +380,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
         remote.addRelationToBlock(command)
+
+    override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
+        remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
 }

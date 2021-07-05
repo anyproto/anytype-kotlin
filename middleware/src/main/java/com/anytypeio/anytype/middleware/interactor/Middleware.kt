@@ -1341,6 +1341,19 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun setObjectType(ctx: Id, typeId: Id): Payload {
+
+        val request = Rpc.Block.ObjectType.Set.Request(
+            contextId = ctx,
+            objectTypeUrl = typeId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetObjectType(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

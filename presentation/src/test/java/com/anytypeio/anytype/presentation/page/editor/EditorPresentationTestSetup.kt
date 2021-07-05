@@ -184,6 +184,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
+    @Mock
+    lateinit var setObjectType: SetObjectType
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -235,7 +238,8 @@ open class EditorPresentationTestSetup {
             updateFields = updateFields,
             setRelationKey = setRelationKey,
             turnIntoStyle = turnIntoStyle,
-            updateBlocksMark = updateBlocksMark
+            updateBlocksMark = updateBlocksMark,
+            setObjectType = setObjectType
         )
 
         return PageViewModel(

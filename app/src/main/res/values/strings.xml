@@ -196,6 +196,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="cover_size">Cover size</string>
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Gallery</string>
+    <string name="change_type">Change type</string>
 
     <string name="remove">Remove</string>
     <string name="choose_options">Choose options</string>

@@ -1029,19 +1029,27 @@ class DefaultBlockViewRenderer(
                 indent = indent
             )
         } else {
-            val relation = relations.first { it.key == content.key }
-            val view = relation.view(
-                details = details,
-                values = details.details[ctx]?.map ?: emptyMap(),
-                urlBuilder = urlBuilder
-            )
-            checkNotNull(view) { "Format not supported: ${relation.format} or some data missing" }
-            return BlockView.Relation.Related(
-                id = block.id,
-                view = view,
-                indent = indent,
-                background = content.background
-            )
+            val relation = relations.firstOrNull { it.key == content.key }
+
+            if (relation != null) {
+                val view = relation.view(
+                    details = details,
+                    values = details.details[ctx]?.map ?: emptyMap(),
+                    urlBuilder = urlBuilder
+                )
+                checkNotNull(view) { "Format not supported: ${relation.format} or some data missing" }
+                return BlockView.Relation.Related(
+                    id = block.id,
+                    view = view,
+                    indent = indent,
+                    background = content.background
+                )
+            } else {
+                return BlockView.Relation.Placeholder(
+                    id = block.id,
+                    indent = indent
+                )
+            }
         }
     }
 
@@ -1084,8 +1092,8 @@ class DefaultBlockViewRenderer(
                 )
             }
             else -> {
-                val relation = relations.first { it.key == id }
-                relation.view(
+                val relation = relations.firstOrNull { it.key == id }
+                relation?.view(
                     details = details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder,

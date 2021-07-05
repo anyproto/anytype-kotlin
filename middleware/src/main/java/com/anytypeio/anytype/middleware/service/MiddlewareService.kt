@@ -182,4 +182,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockListSetTextMark(request: BlockList.Set.Text.Mark.Request): BlockList.Set.Text.Mark.Response
+
+    @Throws(Exception::class)
+    fun blockSetObjectType(request: Block.ObjectType.Set.Request): Block.ObjectType.Set.Response
 }

@@ -52,5 +52,6 @@ sealed class ListenerType {
     sealed class Relation : ListenerType() {
         data class Placeholder(val target: Id) : Relation()
         data class Related(val value: BlockView.Relation) : Relation()
+        data class ObjectType(val type: String) : Relation()
     }
 }

@@ -119,6 +119,7 @@ open class EditorTestSetup {
     lateinit var updateFields: UpdateFields
     lateinit var turnIntoDocument: TurnIntoDocument
     lateinit var turnIntoStyle: TurnIntoStyle
+    lateinit var setObjectType: SetObjectType
 
     @Mock
     lateinit var updateDivider: UpdateDivider
@@ -190,6 +191,7 @@ open class EditorTestSetup {
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)
+        setObjectType = SetObjectType(repo)
         createNewDocument = CreateNewDocument(repo, documentEmojiIconProvider)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadFile = DownloadFile(
@@ -273,7 +275,8 @@ open class EditorTestSetup {
                 updateFields = updateFields,
                 turnIntoDocument = turnIntoDocument,
                 turnIntoStyle = turnIntoStyle,
-                updateBlocksMark = updateBlocksMark
+                updateBlocksMark = updateBlocksMark,
+                setObjectType = setObjectType
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,

@@ -117,4 +117,6 @@ sealed class Command {
     }
 
     object AddSlashWidgetTriggerToFocusedBlock: Command()
+
+    data class OpenChangeObjectTypeScreen(val ctx: Id): Command()
 }

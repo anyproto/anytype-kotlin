@@ -28,6 +28,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     private val image get() = arg<String?>(IMAGE_KEY)
     private val emoji get() = arg<String?>(EMOJI_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
+    private val isArchived get() = arg<Boolean>(IS_ARCHIVED)
     private val isDeleteAllowed get() = arg<Boolean>(IS_DELETE_ALLOWED)
     private val isLayoutAllowed get() = arg<Boolean>(IS_LAYOUT_ALLOWED)
     private val isAddCoverAllowed get() = arg<Boolean>(IS_COVER_ALLOWED)
@@ -54,19 +55,29 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             .launchIn(lifecycleScope)
 
         if (isDeleteAllowed) {
-            archiveContainer.alpha = 1.0F
+            tvArchive.alpha = 1.0F
+            ivArchive.alpha = 1.0F
             archiveContainer
                 .clicks()
                 .onEach {
-                    withParent<DocumentMenuActionReceiver> { onArchiveClicked() }.also { dismiss() }
+                    withParent<DocumentMenuActionReceiver> {
+                        if (isArchived) onRestoreFromArchiveClicked() else onArchiveClicked()
+                    }.also { dismiss() }
                 }
                 .launchIn(lifecycleScope)
         } else {
-            archiveContainer.alpha = 0.4F
+            tvArchive.alpha = 0.4F
+            ivArchive.alpha = 0.4F
         }
 
+        if (isArchived)
+            tvArchive.setText(R.string.restore_from_archive)
+        else
+            tvArchive.setText(R.string.archive)
+
         if (isAddCoverAllowed) {
-            addCoverContainer.alpha = 1.0F
+            tvSetCover.alpha = 1.0F
+            ivSetCover.alpha = 1.0F
             addCoverContainer
                 .clicks()
                 .onEach {
@@ -74,11 +85,13 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 }
                 .launchIn(lifecycleScope)
         } else {
-            addCoverContainer.alpha = 0.4F
+            tvSetCover.alpha = 0.4F
+            ivSetCover.alpha = 0.4F
         }
 
         if (isLayoutAllowed) {
-            setLayoutContainer.alpha = 1.0F
+            tvSetLayout.alpha = 1.0F
+            ivSetLayout.alpha = 1.0F
             setLayoutContainer
                 .clicks()
                 .onEach {
@@ -86,11 +99,12 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 }
                 .launchIn(lifecycleScope)
         } else {
-            setLayoutContainer.alpha = 0.4F
+            tvSetLayout.alpha = 0.4F
+            ivSetLayout.alpha = 0.4F
         }
 
         if (isRelationsAllowed) {
-            relationContainer.alpha = 1.0F
+            tvRelations.alpha = 1.0F
             relationContainer
                 .clicks()
                 .onEach {
@@ -98,7 +112,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 }
                 .launchIn(lifecycleScope)
         } else {
-            relationContainer.alpha = 0.4F
+            tvRelations.alpha = 0.4F
         }
 
         if (isDownloadAllowed) {
@@ -177,6 +191,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             image: Url?,
             emoji: String?,
             isProfile: Boolean = false,
+            isArchived: Boolean,
             isDeleteAllowed: Boolean,
             isLayoutAllowed: Boolean,
             isAddCoverAllowed: Boolean,
@@ -188,6 +203,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 STATUS_KEY to status.name,
                 IMAGE_KEY to image,
                 EMOJI_KEY to emoji,
+                IS_ARCHIVED to isArchived,
                 IS_PROFILE_KEY to isProfile,
                 IS_DELETE_ALLOWED to isDeleteAllowed,
                 IS_LAYOUT_ALLOWED to isLayoutAllowed,
@@ -201,6 +217,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         private const val IMAGE_KEY = "arg.doc-menu-bottom-sheet.image"
         private const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
         private const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
+        private const val IS_ARCHIVED = "arg.doc-menu-bottom-sheet.is-archived"
         private const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
         private const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
         private const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
@@ -211,6 +228,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
 
     interface DocumentMenuActionReceiver {
         fun onArchiveClicked()
+        fun onRestoreFromArchiveClicked()
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()

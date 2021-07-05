@@ -3044,7 +3044,7 @@ open class PageViewModelTest {
 
         // TESTING
 
-        vm.onArchiveThisPageClicked()
+        vm.onArchiveThisObjectClicked()
 
         runBlockingTest {
             verify(archiveDocument, times(1)).invoke(
@@ -3105,7 +3105,7 @@ open class PageViewModelTest {
 
         // TESTING
 
-        vm.onArchiveThisPageClicked()
+        vm.onArchiveThisObjectClicked()
 
         runBlockingTest {
             verify(archiveDocument, times(1)).invoke(

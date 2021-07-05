@@ -216,5 +216,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Unknown type</string>
     <string name="set">Set</string>
+    <string name="layout">Layout</string>
+    <string name="restore_from_archive">Restore from archive</string>
 
 </resources>

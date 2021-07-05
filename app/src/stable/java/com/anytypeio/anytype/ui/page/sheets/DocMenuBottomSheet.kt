@@ -138,6 +138,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             image: Url?,
             emoji: String?,
             isProfile: Boolean = false,
+            isArchived: Boolean,
             isDeleteAllowed: Boolean = true,
             isLayoutAllowed: Boolean = true,
             isAddCoverAllowed: Boolean = true,
@@ -166,6 +167,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
 
     interface DocumentMenuActionReceiver {
         fun onArchiveClicked()
+        fun onRestoreFromArchiveClicked()
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()

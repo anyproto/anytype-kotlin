@@ -120,7 +120,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isLayoutAllowed = true,
                 isDetailsAllowed = true,
                 isRelationsAllowed = true,
-                isDownloadAllowed = false
+                isDownloadAllowed = false,
+                isArchived = false
             )
         }
     }
@@ -159,7 +160,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isLayoutAllowed = false,
                 isDetailsAllowed = true,
                 isRelationsAllowed = true,
-                isDownloadAllowed = false
+                isDownloadAllowed = false,
+                isArchived = false
             )
         }
     }

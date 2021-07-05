@@ -76,6 +76,7 @@ sealed class Command {
         val isDeleteAllowed: Boolean,
         val isLayoutAllowed: Boolean,
         val isDetailsAllowed: Boolean,
+        val isArchived: Boolean,
         val isRelationsAllowed: Boolean,
         val isDownloadAllowed: Boolean
     ) : Command()

@@ -864,6 +864,7 @@ open class PageFragment :
                         status = command.status,
                         image = command.image,
                         emoji = command.emoji,
+                        isArchived = command.isArchived,
                         isDeleteAllowed = command.isDeleteAllowed,
                         isLayoutAllowed = command.isLayoutAllowed,
                         isAddCoverAllowed = command.isDetailsAllowed,
@@ -884,7 +885,8 @@ open class PageFragment :
                         isLayoutAllowed = command.isLayoutAllowed,
                         isAddCoverAllowed = command.isDetailsAllowed,
                         isRelationsAllowed = command.isRelationsAllowed,
-                        isDownloadAllowed = command.isDownloadAllowed
+                        isDownloadAllowed = command.isDownloadAllowed,
+                        isArchived = false
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -1633,7 +1635,11 @@ open class PageFragment :
     }
 
     override fun onArchiveClicked() {
-        vm.onArchiveThisPageClicked()
+        vm.onArchiveThisObjectClicked()
+    }
+
+    override fun onRestoreFromArchiveClicked() {
+        vm.onRestoreThisObjectFromArchive()
     }
 
     override fun onSearchOnPageClicked() {

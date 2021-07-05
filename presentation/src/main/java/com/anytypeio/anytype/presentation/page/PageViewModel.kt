@@ -1076,6 +1076,7 @@ class PageViewModel(
                             isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
                             isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
                             isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
+                            isArchived = details[context]?.isArchived ?: false,
                             isDownloadAllowed = false
                         )
                     )
@@ -1112,6 +1113,7 @@ class PageViewModel(
                             isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
                             isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
                             isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
+                            isArchived = details[context]?.isArchived ?: false,
                             isDownloadAllowed = true
                         )
                     )
@@ -2954,15 +2956,23 @@ class PageViewModel(
         }
     }
 
-    fun onArchiveThisPageClicked() {
+    fun onArchiveThisObjectClicked() {
+        proceedWithChangingIsArchivedStatus(isArchived = true)
+    }
+
+    fun onRestoreThisObjectFromArchive() {
+        proceedWithChangingIsArchivedStatus(isArchived = false)
+    }
+
+    private fun proceedWithChangingIsArchivedStatus(isArchived: Boolean) {
         Timber.d("onArchiveThisPageClicked, ")
         dispatch(command = Command.CloseKeyboard)
         viewModelScope.launch {
             archiveDocument(
                 ArchiveDocument.Params(
                     context = context,
-                    targets = listOf<String>(context),
-                    isArchived = true
+                    targets = listOf(context),
+                    isArchived = isArchived
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while archiving page") },

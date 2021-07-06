@@ -2,11 +2,7 @@ package com.anytypeio.anytype.presentation.sets.main
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVViewer
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
@@ -46,7 +42,7 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test

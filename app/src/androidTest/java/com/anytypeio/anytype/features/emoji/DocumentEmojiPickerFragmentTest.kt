@@ -53,7 +53,7 @@ class DocumentEmojiPickerFragmentTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         setEmojiIcon = SetDocumentEmojiIcon(repo = repo)
         TestDocumentEmojiPickerFragment.testViewModelFactory =
             DocumentEmojiIconPickerViewModelFactory(

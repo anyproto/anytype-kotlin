@@ -29,7 +29,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     val title = Block(

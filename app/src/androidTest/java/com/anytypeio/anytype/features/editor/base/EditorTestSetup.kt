@@ -174,7 +174,7 @@ open class EditorTestSetup {
     )
 
     open fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         splitBlock = SplitBlock(repo)
         createPage = CreatePage(repo, documentEmojiIconProvider)

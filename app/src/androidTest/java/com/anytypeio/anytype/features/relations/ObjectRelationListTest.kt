@@ -72,7 +72,7 @@ class ObjectRelationListTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
         objectRelationList = ObjectRelationList(repo)
         updateDetail = UpdateDetail(repo)

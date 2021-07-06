@@ -27,7 +27,7 @@ class AuthDataRepositoryTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         repo = AuthDataRepository(
             factory = AuthDataStoreFactory(
                 cache = AuthCacheDataStore(

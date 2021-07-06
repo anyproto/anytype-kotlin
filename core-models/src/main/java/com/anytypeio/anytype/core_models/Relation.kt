@@ -45,7 +45,7 @@ data class Relation(
         val id: String,
         val text: String,
         val color: String,
-        val scope: OptionScope
+        val scope: OptionScope = OptionScope.LOCAL
     )
 
     enum class OptionScope {

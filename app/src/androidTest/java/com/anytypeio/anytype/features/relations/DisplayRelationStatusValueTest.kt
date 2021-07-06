@@ -76,7 +76,7 @@ class DisplayRelationStatusValueTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         addRelationOption = AddDataViewRelationOption(repo)
         addTagToDataViewRecord = AddTagToDataViewRecord(repo)
         updateDataViewRecord = UpdateDataViewRecord(repo)

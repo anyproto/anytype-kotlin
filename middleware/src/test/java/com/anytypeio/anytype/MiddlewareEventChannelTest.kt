@@ -26,7 +26,7 @@ class MiddlewareEventChannelTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         channel = MiddlewareEventChannel(proxy)
     }
 

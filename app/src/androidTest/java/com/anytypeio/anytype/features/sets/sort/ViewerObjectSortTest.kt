@@ -56,7 +56,7 @@ class ViewerObjectSortTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         TestViewerSortFragment.testVmFactory = ViewerSortViewModel.Factory(
             state = state,

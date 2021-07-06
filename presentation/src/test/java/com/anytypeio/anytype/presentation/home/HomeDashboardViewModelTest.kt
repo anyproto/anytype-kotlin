@@ -95,7 +95,7 @@ class HomeDashboardViewModelTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     private fun buildViewModel(): HomeDashboardViewModel {

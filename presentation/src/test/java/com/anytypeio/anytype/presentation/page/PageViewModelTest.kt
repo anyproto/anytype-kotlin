@@ -246,7 +246,7 @@ open class PageViewModelTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
     }
 

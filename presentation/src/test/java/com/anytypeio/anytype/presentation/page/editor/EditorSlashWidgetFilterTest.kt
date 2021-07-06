@@ -4,17 +4,15 @@ import MockDataFactory
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.FLAVOUR_EXPERIMENTAL
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.page.editor.model.Types.HOLDER_PARAGRAPH
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.Before
@@ -40,7 +38,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     /**

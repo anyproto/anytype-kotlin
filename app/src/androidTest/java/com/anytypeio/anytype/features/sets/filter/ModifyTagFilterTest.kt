@@ -62,7 +62,7 @@ class ModifyTagFilterTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         searchObjects = SearchObjects(repo)
         urlBuilder = UrlBuilder(gateway)

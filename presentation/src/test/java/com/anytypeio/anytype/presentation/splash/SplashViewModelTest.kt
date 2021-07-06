@@ -45,7 +45,7 @@ class SplashViewModelTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         vm = SplashViewModel(
             checkAuthorizationStatus = checkAuthorizationStatus,
             launchAccount = launchAccount,

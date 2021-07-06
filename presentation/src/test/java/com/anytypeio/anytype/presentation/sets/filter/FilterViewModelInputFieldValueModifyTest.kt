@@ -1,7 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
+import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -154,7 +158,7 @@ class FilterViewModelInputFieldValueModifyTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
         viewModel = FilterViewModel(
             objectSetState = state,

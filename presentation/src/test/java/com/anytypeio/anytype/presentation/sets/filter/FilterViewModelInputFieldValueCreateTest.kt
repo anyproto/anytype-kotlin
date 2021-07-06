@@ -150,7 +150,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
         viewModel = FilterViewModel(
             objectSetState = state,

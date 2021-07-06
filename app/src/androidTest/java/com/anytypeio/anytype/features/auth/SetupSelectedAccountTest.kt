@@ -59,7 +59,7 @@ class SetupSelectedAccountTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
             repository = authRepository
         )

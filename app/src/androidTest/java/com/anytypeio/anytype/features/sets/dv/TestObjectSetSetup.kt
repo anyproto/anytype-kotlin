@@ -76,7 +76,7 @@ abstract class TestObjectSetSetup {
     )
 
     open fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         addDataViewRelation = AddNewRelationToDataView(repo)
         updateText = UpdateText(repo)

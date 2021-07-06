@@ -29,7 +29,7 @@ class ObjectSetUpdateViewerSortTest : ObjectSetViewModelTestSetup() {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     val doc = TypicalTwoRecordObjectSet()

@@ -3007,6 +3007,11 @@ class PageViewModel(
 
     fun onDocCoverImagePicked(path: String) {
         Timber.d("onDocCoverImagePicked, path:[$path]")
+        if (path.endsWith(FORMAT_WEBP, true)) {
+            _toasts.trySend(ERROR_UNSUPPORTED_WEBP)
+            Timber.d("onDocCoverImagePicked, not allowed to add WEBP format")
+            return
+        }
         viewModelScope.launch {
             setDocCoverImage(
                 SetDocCoverImage.Params.FromPath(
@@ -3690,6 +3695,11 @@ class PageViewModel(
             Timber.d("Error while getting filePath")
             return
         }
+        if (filePath.endsWith(FORMAT_WEBP, true)) {
+            _toasts.trySend(ERROR_UNSUPPORTED_WEBP)
+            Timber.d("onProceedWithFilePath, not allowed to add WEBP format")
+            return
+        }
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Media.Upload(
@@ -4034,6 +4044,7 @@ class PageViewModel(
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE = 300L
         const val INITIAL_INDENT = 0
+        const val FORMAT_WEBP = "webp"
         const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
@@ -4052,6 +4063,7 @@ class PageViewModel(
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
+        const val ERROR_UNSUPPORTED_WEBP = "Currently WEBP format is unsupported"
     }
 
     data class MarkupAction(

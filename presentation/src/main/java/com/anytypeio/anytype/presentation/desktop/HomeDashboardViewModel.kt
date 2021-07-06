@@ -299,9 +299,15 @@ class HomeDashboardViewModel(
             )
         }
 
-    fun onDocumentClicked(target: Id, isLoading: Boolean) {
+    fun onTabObjectClicked(target: Id, isLoading: Boolean, tab: TAB = TAB.FAVOURITE) {
         if (!isLoading) {
-            val view = views.find { it is DashboardView.Document && it.target == target }
+            val view = when(tab) {
+                TAB.FAVOURITE -> views.find { it is DashboardView.Document && it.target == target }
+                TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
+                TAB.INBOX -> inbox.value.find { it is DashboardView.Document && it.target == target }
+                TAB.ARCHIVE -> archived.value.find { it.target == target }
+                else -> null
+            }
             if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
                 if (view.type != ObjectTypes.TEMPLATE) {
                     proceedWithOpeningDocument(target)
@@ -506,4 +512,6 @@ class HomeDashboardViewModel(
             ObjectType.Layout.FILE
         )
     }
+
+    enum class TAB { FAVOURITE, RECENT, INBOX, SETS, ARCHIVE }
 }

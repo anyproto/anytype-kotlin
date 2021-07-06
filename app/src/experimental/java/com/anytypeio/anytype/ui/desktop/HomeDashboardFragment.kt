@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModel
+import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.page.PageFragment
@@ -62,7 +63,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val dashboardDefaultAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.FAVOURITE) },
             onArchiveClicked = { vm.onArchivedClicked(it) },
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -71,7 +72,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val dashboardRecentAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.RECENT) },
             onArchiveClicked = {},
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -80,7 +81,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val dashboardInboxAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.INBOX) },
             onArchiveClicked = {},
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -89,7 +90,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val dashboardSetsAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onDocumentClicked = { _, _ -> },
             onArchiveClicked = {},
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -98,7 +99,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     private val dashboardArchiveAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onDocumentClicked(target, isLoading) },
+            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.ARCHIVE) },
             onArchiveClicked = {},
             onObjectSetClicked = {}
         )

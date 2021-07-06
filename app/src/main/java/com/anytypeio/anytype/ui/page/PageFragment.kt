@@ -1657,6 +1657,16 @@ open class PageFragment :
         vm.onAddCoverClicked()
     }
 
+    override fun onSetIconClicked() {
+        findNavController().navigate(
+            R.id.objectIconPickerScreen,
+            bundleOf(
+                DocumentEmojiIconPickerFragment.ARG_CONTEXT_ID_KEY to ctx,
+                DocumentEmojiIconPickerFragment.ARG_TARGET_ID_KEY to ctx,
+            )
+        )
+    }
+
     override fun onLayoutClicked() {
         vm.onLayoutClicked()
     }

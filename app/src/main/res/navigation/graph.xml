@@ -21,6 +21,10 @@
             android:id="@+id/objectRelationValueScreen"
             android:name="com.anytypeio.anytype.ui.relations.RelationValueFragment"
             android:label="Object-Relation-Value-Screen" />
+        <dialog
+            android:id="@+id/objectIconPickerScreen"
+            android:name="com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment"
+            android:label="Object-Icon-Picker-Screen" />
     </navigation>
 
     <navigation

@@ -49,9 +49,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
 
         searchOnPageContainer
             .clicks()
-            .onEach {
-                withParent<DocumentMenuActionReceiver> { onSearchOnPageClicked() }.also { dismiss() }
-            }
+            .onEach { withParent<DocumentMenuActionReceiver> { onSearchOnPageClicked() }.also { dismiss() } }
             .launchIn(lifecycleScope)
 
         if (isDeleteAllowed) {
@@ -80,23 +78,24 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             ivSetCover.alpha = 1.0F
             addCoverContainer
                 .clicks()
-                .onEach {
-                    withParent<DocumentMenuActionReceiver> { onAddCoverClicked() }.also { dismiss() }
-                }
+                .onEach { withParent<DocumentMenuActionReceiver> { onAddCoverClicked() } }
                 .launchIn(lifecycleScope)
         } else {
             tvSetCover.alpha = 0.4F
             ivSetCover.alpha = 0.4F
         }
 
+        setIconContainer
+            .clicks()
+            .onEach { withParent<DocumentMenuActionReceiver> { onSetIconClicked() } }
+            .launchIn(lifecycleScope)
+
         if (isLayoutAllowed) {
             tvSetLayout.alpha = 1.0F
             ivSetLayout.alpha = 1.0F
             setLayoutContainer
                 .clicks()
-                .onEach {
-                    withParent<DocumentMenuActionReceiver> { onLayoutClicked() }.also { dismiss() }
-                }
+                .onEach { withParent<DocumentMenuActionReceiver> { onLayoutClicked() } }
                 .launchIn(lifecycleScope)
         } else {
             tvSetLayout.alpha = 0.4F
@@ -107,9 +106,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             tvRelations.alpha = 1.0F
             relationContainer
                 .clicks()
-                .onEach {
-                    withParent<DocumentMenuActionReceiver> { onDocRelationsClicked() }.also { dismiss() }
-                }
+                .onEach { withParent<DocumentMenuActionReceiver> { onDocRelationsClicked() } }
                 .launchIn(lifecycleScope)
         } else {
             tvRelations.alpha = 0.4F
@@ -119,9 +116,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             downloadContainer.visible()
             downloadContainer
                 .clicks()
-                .onEach {
-                    withParent<DocumentMenuActionReceiver> { onDownloadClicked() }.also { dismiss() }
-                }
+                .onEach { withParent<DocumentMenuActionReceiver> { onDownloadClicked() }.also { dismiss() } }
                 .launchIn(lifecycleScope)
         }
 
@@ -232,6 +227,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()
+        fun onSetIconClicked()
         fun onLayoutClicked()
         fun onDownloadClicked()
     }

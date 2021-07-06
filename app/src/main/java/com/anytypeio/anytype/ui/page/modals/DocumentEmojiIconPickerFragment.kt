@@ -159,10 +159,11 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         private const val EMPTY_FILTER_TEXT = ""
         private const val PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT = 6
         private const val EMOJI_RECYCLER_ITEM_VIEW_CACHE_SIZE = 2000
-        private const val ARG_CONTEXT_ID_KEY = "arg.picker.context.id"
-        private const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
         private const val MISSING_TARGET_ERROR = "Missing target id"
         private const val MISSING_CONTEXT_ERROR = "Missing context id"
         private const val UNEXPECTED_VIEW_TYPE_MESSAGE = "Unexpected view type"
+
+        const val ARG_CONTEXT_ID_KEY = "arg.picker.context.id"
+        const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
     }
 }

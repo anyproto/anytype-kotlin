@@ -171,6 +171,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()
+        fun onSetIconClicked()
         fun onLayoutClicked()
         fun onDownloadClicked()
     }

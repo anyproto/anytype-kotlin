@@ -142,6 +142,7 @@ class ObjectSetViewModel(
     }
 
     fun onStart(ctx: Id) {
+        Timber.d("onStart, ctx:[$ctx]")
         context = ctx
         jobs += viewModelScope.launch {
             interceptEvents
@@ -164,14 +165,17 @@ class ObjectSetViewModel(
     }
 
     fun onStop() {
+        Timber.d("onStop, ")
         jobs.forEach { it.cancel() }
     }
 
     fun onSystemBackPressed() {
+        Timber.d("onSystemBackPressed, ")
         proceedWithExiting()
     }
 
     fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed, ")
         proceedWithExiting()
     }
 
@@ -185,6 +189,7 @@ class ObjectSetViewModel(
     }
 
     fun onCreateNewViewerClicked() {
+        Timber.d("onCreateNewViewerClicked, ")
         dispatch(
             ObjectSetCommand.Modal.CreateViewer(
                 ctx = context,
@@ -194,6 +199,7 @@ class ObjectSetViewModel(
     }
 
     fun onViewerTabClicked(viewer: Id) {
+        Timber.d("onViewerTabClicked, viewer:[$viewer]")
         viewModelScope.launch {
             session.currentViewerId = viewer
             setActiveViewer(
@@ -217,6 +223,7 @@ class ObjectSetViewModel(
         name: String,
         format: Relation.Format
     ) {
+        Timber.d("onRelationPrototypeCreated, context:[$context], target:[$target], name:[$name], format:[$format]")
         viewModelScope.launch {
             addDataViewRelation(
                 AddNewRelationToDataView.Params(
@@ -264,6 +271,7 @@ class ObjectSetViewModel(
     }
 
     fun onTitleChanged(txt: String) {
+        Timber.d("onTitleChanged, txt:[$txt]")
         val target = header.value?.id
         checkNotNull(target) { "Title block was missing or not ready" }
         viewModelScope.launch {
@@ -366,6 +374,7 @@ class ObjectSetViewModel(
     }
 
     fun onObjectClicked(id: Id, type: String?) {
+        Timber.d("onObjectClicked, id:[$id], type:[$type]")
         reducer.state.value.objectTypes.find { it.url == type }?.let { targetType ->
             when (targetType.layout) {
                 ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
@@ -382,6 +391,7 @@ class ObjectSetViewModel(
     }
 
     fun onObjectHeaderClicked(id: Id, type: String) {
+        Timber.d("onObjectHeaderClicked, id:[$id], type:[$type]")
         val set = reducer.state.value
         val objectType = set.objectTypes.find { it.url == type }
         if (objectType == null) {
@@ -408,6 +418,7 @@ class ObjectSetViewModel(
         objectId: Id,
         relationKey: Id
     ) {
+        Timber.d("onRelationTextValueChanged, ctx:[$ctx], value:[$value], objectId:[$objectId], relationKey:[$relationKey]")
         val block = reducer.state.value.dataview
         val dv = block.content as DV
         val records = reducer.state.value.viewerDb[dv.viewers.first().id] ?: return
@@ -434,6 +445,7 @@ class ObjectSetViewModel(
     }
 
     fun onUpdateViewerSorting(sorts: List<SortingExpression>) {
+        Timber.d("onUpdateViewerSorting, sorts:[$sorts]")
         viewModelScope.launch {
             val block = reducer.state.value.dataview
             val dv = block.content as DV
@@ -452,6 +464,7 @@ class ObjectSetViewModel(
     }
 
     fun onUpdateViewerFilters(filters: List<FilterExpression>) {
+        Timber.d("onUpdateViewerFilters, filters:[$filters]")
         viewModelScope.launch {
             val block = reducer.state.value.dataview
             val dv = block.content as DV
@@ -470,6 +483,7 @@ class ObjectSetViewModel(
     }
 
     fun onCreateNewRecord() {
+        Timber.d("onCreateNewRecord, ")
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -492,14 +506,17 @@ class ObjectSetViewModel(
     }
 
     fun onViewerCustomizeButtonClicked() {
+        Timber.d("onViewerCustomizeButtonClicked, ")
         isCustomizeViewPanelVisible.value = !isCustomizeViewPanelVisible.value
     }
 
     fun onHideViewerCustomizeSwiped() {
+        Timber.d("onHideViewerCustomizeSwiped, ")
         isCustomizeViewPanelVisible.value = false
     }
 
     fun onViewerCustomizeClicked() {
+        Timber.d("onViewerCustomizeClicked, ")
         val set = reducer.state.value
         if (set.isInitialized) {
             val block = set.dataview
@@ -515,6 +532,7 @@ class ObjectSetViewModel(
     }
 
     fun onExpandViewerMenuClicked() {
+        Timber.d("onExpandViewerMenuClicked, ")
         if (isRestrictionPresent(DataViewRestriction.VIEWS)
         ) {
             toast(NOT_ALLOWED)
@@ -529,6 +547,7 @@ class ObjectSetViewModel(
     }
 
     fun onViewerEditClicked() {
+        Timber.d("onViewerEditClicked, ")
         val set = reducer.state.value
         if (set.isInitialized) {
             val block = set.dataview
@@ -546,6 +565,7 @@ class ObjectSetViewModel(
     }
 
     fun onIconClicked() {
+        Timber.d("onIconClicked, ")
         val set = reducer.state.value
         if (set.isInitialized) {
             val header = _header.value
@@ -560,6 +580,7 @@ class ObjectSetViewModel(
     }
 
     fun onViewerRelationsClicked() {
+        Timber.d("onViewerRelationsClicked, ")
         if (isRestrictionPresent(DataViewRestriction.RELATION)) {
             toast(NOT_ALLOWED)
         } else {
@@ -581,6 +602,7 @@ class ObjectSetViewModel(
     }
 
     fun onViewerFiltersClicked() {
+        Timber.d("onViewerFiltersClicked, ")
         if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
             toast(NOT_ALLOWED)
         } else {
@@ -591,6 +613,7 @@ class ObjectSetViewModel(
     }
 
     fun onViewerSortsClicked() {
+        Timber.d("onViewerSortsClicked, ")
         if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
             toast(NOT_ALLOWED)
         } else {
@@ -629,6 +652,7 @@ class ObjectSetViewModel(
     }
 
     fun onPaginatorToolbarNumberClicked(number: Int, isSelected: Boolean) {
+        Timber.d("onPaginatorToolbarNumberClicked, number:[$number], isSelected:[$isSelected]")
         if (isSelected) {
             Timber.d("This page is already selected")
         } else {
@@ -644,6 +668,7 @@ class ObjectSetViewModel(
     }
 
     fun onPaginatorNextElsePrevious(next: Boolean) {
+        Timber.d("onPaginatorNextElsePrevious, next:[$next]")
         viewModelScope.launch {
             offset.value = if (next) {
                 offset.value + ObjectSetConfig.DEFAULT_LIMIT

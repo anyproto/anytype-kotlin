@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.`object`.ObjectTypes
 import com.anytypeio.anytype.domain.`object`.ObjectWrapper
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -73,6 +74,12 @@ class HomeDashboardViewModel(
     val recent = MutableStateFlow(emptyList<DashboardView>())
     val inbox = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
+
+    private val objectTypes : List<ObjectType>
+    get() = stateData.value?.objectTypes ?: emptyList()
+
+    private val views : List<DashboardView>
+    get() = stateData.value?.blocks ?: emptyList()
 
     init {
         startProcessingState()
@@ -293,26 +300,28 @@ class HomeDashboardViewModel(
         }
 
     fun onDocumentClicked(target: Id, isLoading: Boolean) {
-        if (!isLoading)
-            proceedWithOpeningDocument(target)
-        else
-            Timber.d("Skipping on-document click due to loading state")
-    }
-
-    fun onArchivedDocumentClicked(target: Id, isLoading: Boolean) {
-        if (!isLoading)
-            proceedWithOpeningDocument(target)
-        else
-            Timber.d("Skipping on-document click due to loading state")
+        if (!isLoading) {
+            val view = views.find { it is DashboardView.Document && it.target == target }
+            if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
+                if (view.type != ObjectTypes.TEMPLATE) {
+                    proceedWithOpeningDocument(target)
+                } else {
+                    toast("Can't open a template on Android. Coming soon")
+                }
+            } else {
+                toast("Currently unsupported layout on Android")
+            }
+        }
+        else {
+            toast("This object is still syncing.")
+        }
     }
 
     fun onAvatarClicked() {
         if (isProfileNavigationEnabled.value) {
             proceedWithOpeningDocument(profile)
         } else {
-            viewModelScope.launch {
-                toasts.emit("Profile is not ready yet. Please, try again later.")
-            }
+            toast("Profile is not ready yet. Please, try again later.")
         }
     }
 
@@ -470,6 +479,10 @@ class HomeDashboardViewModel(
         }
     }
 
+    private fun toast(msg: String) {
+        viewModelScope.launch { toasts.emit(msg) }
+    }
+
     fun onResume() {}
 
     /**
@@ -484,4 +497,13 @@ class HomeDashboardViewModel(
         val target: String,
         val direction: Position
     )
+
+    companion object {
+        val supportedLayouts = listOf(
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.FILE
+        )
+    }
 }

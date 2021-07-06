@@ -6,4 +6,5 @@ package com.anytypeio.anytype.domain.`object`
 object ObjectTypes {
     const val PAGE = "_otpage"
     const val SET = "_otset"
+    const val TEMPLATE = "_ottemplate"
 }

@@ -394,7 +394,8 @@ fun MObjectType.toCoreModels(): ObjectType = ObjectType(
     isHidden = hidden,
     relations = relations.map { it.toCoreModels() },
     layout = layout.toCoreModels(),
-    smartBlockTypes = types.map { it.toCoreModel() }
+    smartBlockTypes = types.map { it.toCoreModel() },
+    isArchived = false // TODO add property mapping when middleware is ready
 )
 
 fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {

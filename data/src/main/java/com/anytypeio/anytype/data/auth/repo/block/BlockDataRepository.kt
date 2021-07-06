@@ -242,13 +242,13 @@ class BlockDataRepository(
         style = style
     )
 
-    override suspend fun getObjectTypes(): List<Template> {
-        return factory.remote.getObjectTypes()
+    override suspend fun getObjectTypes(isArchived: Boolean): List<ObjectType> {
+        return factory.remote.getObjectTypes(isArchived)
     }
 
     override suspend fun createTemplate(
         prototype: ObjectType.Prototype
-    ): Template = factory.remote.createTemplate(
+    ): ObjectType = factory.remote.createObjectType(
         ObjectType.Prototype(
             name = prototype.name,
             emoji = prototype.emoji,

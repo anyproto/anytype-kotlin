@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.presentation.`object`.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.`object`.ObjectTypeChangeFragment
@@ -24,13 +23,6 @@ interface ObjectTypeChangeSubComponent {
 
 @Module
 object ObjectTypeChangeModule {
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideGetCompatibleObjectTypesUseCase(
-        repository: BlockRepository
-    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
 
     @JvmStatic
     @Provides

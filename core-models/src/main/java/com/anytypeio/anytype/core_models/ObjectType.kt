@@ -17,6 +17,7 @@ data class ObjectType(
     val emoji: String,
     val description: String?,
     val isHidden: Boolean,
+    val isArchived: Boolean = false,
     val smartBlockTypes: List<SmartBlockType>
 ) {
     enum class Layout(val code: Int) {
@@ -46,5 +47,3 @@ data class ObjectType(
         const val PAGE_URL = "_otpage"
     }
 }
-
-typealias Template = ObjectType

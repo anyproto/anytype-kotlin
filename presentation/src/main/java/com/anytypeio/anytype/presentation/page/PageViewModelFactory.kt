@@ -9,9 +9,9 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.*
@@ -46,7 +46,7 @@ open class PageViewModelFactory(
     private val dispatcher: Dispatcher<Payload>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
-    private val getObjectTypes: GetObjectTypes
+    private val getCompatibleObjectTypes: GetCompatibleObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -74,7 +74,7 @@ open class PageViewModelFactory(
             dispatcher = dispatcher,
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
-            getObjectTypes = getObjectTypes
+            getCompatibleObjectTypes = getCompatibleObjectTypes
         ) as T
     }
 }

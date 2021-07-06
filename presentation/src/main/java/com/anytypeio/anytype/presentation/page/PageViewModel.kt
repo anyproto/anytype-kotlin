@@ -37,9 +37,9 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -130,7 +130,7 @@ class PageViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
-    private val getObjectTypes: GetObjectTypes
+    private val getCompatibleObjectTypes: GetCompatibleObjectTypes
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -4434,7 +4434,11 @@ class PageViewModel(
 
     private fun getObjectTypes(action: (List<ObjectType>) -> Unit) {
         viewModelScope.launch {
-            getObjectTypes.invoke(Unit).proceed(
+            getCompatibleObjectTypes.invoke(
+                GetCompatibleObjectTypes.Params(
+                    smartBlockType = blocks.first { it.id == context }.content<Content.Smart>().type
+                )
+            ).proceed(
                 failure = {
                     Timber.e(it, "Error while getting object types")
                 },

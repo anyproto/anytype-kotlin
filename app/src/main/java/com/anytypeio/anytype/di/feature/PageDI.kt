@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
@@ -140,7 +141,7 @@ object EditorSessionModule {
         dispatcher: Dispatcher<Payload>,
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
-        getObjectTypes: GetObjectTypes
+        getCompatibleObjectTypes: GetCompatibleObjectTypes
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -164,7 +165,7 @@ object EditorSessionModule {
         dispatcher = dispatcher,
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
-        getObjectTypes = getObjectTypes
+        getCompatibleObjectTypes = getCompatibleObjectTypes
     )
 
     @JvmStatic
@@ -728,4 +729,11 @@ object EditorUseCaseModule {
     fun provideSetObjectType(
         repo: BlockRepository
     ): SetObjectType = SetObjectType(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetCompatibleObjectTypesUseCase(
+        repository: BlockRepository
+    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
 }

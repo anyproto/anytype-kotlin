@@ -119,9 +119,9 @@ interface BlockRepository {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    suspend fun getObjectTypes(): List<Template>
+    suspend fun getObjectTypes(isArchived: Boolean = false): List<ObjectType>
 
-    suspend fun createTemplate(prototype: ObjectType.Prototype): Template
+    suspend fun createTemplate(prototype: ObjectType.Prototype): ObjectType
 
     suspend fun createSet(
         context: Id,

@@ -65,8 +65,8 @@ interface BlockDataStore {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    suspend fun getObjectTypes(): List<ObjectType>
-    suspend fun createTemplate(prototype: ObjectType.Prototype): ObjectType
+    suspend fun getObjectTypes(isArchived: Boolean): List<ObjectType>
+    suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType
 
     suspend fun createSet(
         contextId: String,

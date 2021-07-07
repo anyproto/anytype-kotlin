@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:contentDescription="@string/content_description_modal_icon"
             android:src="@drawable/sheet_top"
             app:layout_constraintEnd_toEndOf="parent"
@@ -24,9 +24,9 @@
 
         <FrameLayout
             android:id="@+id/btnFilter"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="14dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rect_data_view_customize_view_button"
             app:layout_constraintEnd_toStartOf="@+id/btnGroup"
             app:layout_constraintHorizontal_bias="0.5"
@@ -43,9 +43,9 @@
 
         <FrameLayout
             android:id="@+id/btnRelations"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="14dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rect_data_view_customize_view_button"
             app:layout_constraintEnd_toStartOf="@+id/btnSort"
             app:layout_constraintHorizontal_bias="0.5"
@@ -62,9 +62,9 @@
 
         <FrameLayout
             android:id="@+id/btnSort"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="14dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rect_data_view_customize_view_button"
             app:layout_constraintEnd_toStartOf="@+id/btnFilter"
             app:layout_constraintHorizontal_bias="0.5"
@@ -81,9 +81,9 @@
 
         <FrameLayout
             android:id="@+id/btnGroup"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="14dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rect_data_view_customize_view_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

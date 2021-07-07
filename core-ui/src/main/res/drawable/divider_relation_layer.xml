@@ -2,6 +2,6 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/divider_relations"
-        android:left="56dp"
+        android:left="12dp"
         android:right="12dp" />
 </layer-list>

@@ -454,8 +454,9 @@
     </style>
 
     <style name="DataViewCustomizePanelTextStyle">
-        <item name="android:textColor">#6C6A5F</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#929082</item>
+        <item name="android:textSize">11sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="DefaultCellInteractionTextButtonStyle">

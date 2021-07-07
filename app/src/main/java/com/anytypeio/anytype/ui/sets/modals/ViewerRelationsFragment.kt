@@ -46,7 +46,12 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     private val editAdapter by lazy {
         ViewerModifyOrderAdapter(
             dragListener = this,
-            onMoreClick = { navigateToOptions(it) }
+            onItemClick = {
+                toast("Not implemented yet")
+            },
+            onDeleteClick = {
+                toast("Not implemented yet")
+            }
         )
     }
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
@@ -57,6 +62,9 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
         )
     }
 
+    private lateinit var itemDivider: DividerVerticalItemDecoration
+    private lateinit var itemDividerEdit: DividerVerticalItemDecoration
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,14 +73,16 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        itemDivider = DividerVerticalItemDecoration(
+            divider = requireContext().drawable(R.drawable.divider_relation_layer),
+            isShowInLastItem = false
+        )
+        itemDividerEdit = DividerVerticalItemDecoration(
+            divider = requireContext().drawable(R.drawable.divider_relation_layer_edit),
+            isShowInLastItem = false
+        )
         recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(
-                DividerVerticalItemDecoration(
-                    divider = requireContext().drawable(R.drawable.divider_relation_layer),
-                    isShowInLastItem = false
-                )
-            )
         }
         with(lifecycleScope) {
             subscribe(editBtn.clicks()) { vm.onEditButtonClicked() }
@@ -110,6 +120,8 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
                 doneBtn.invisible()
                 recycler.apply {
                     adapter = listAdapter
+                    removeItemDecoration(itemDividerEdit)
+                    addItemDecoration(itemDivider)
                 }
             }
             ViewerRelationsViewModel.ScreenState.EDIT -> {
@@ -121,6 +133,8 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
                 editBtn.invisible()
                 recycler.apply {
                     adapter = editAdapter
+                    removeItemDecoration(itemDivider)
+                    addItemDecoration(itemDividerEdit)
                 }
             }
         }

@@ -19,7 +19,8 @@ import kotlinx.android.synthetic.main.item_modify_viewer_relation_order.view.*
 
 class ViewerModifyOrderAdapter(
     private val dragListener: OnStartDragListener,
-    private val onMoreClick: (SimpleRelationView) -> Unit
+    private val onItemClick: (SimpleRelationView) -> Unit,
+    private val onDeleteClick: (SimpleRelationView) -> Unit
 ) : RecyclerView.Adapter<ViewerModifyOrderAdapter.Holder>(), SupportDragAndDropBehavior {
 
     val order: List<String> get() = items.map { it.key }
@@ -39,11 +40,23 @@ class ViewerModifyOrderAdapter(
                 if (event.action == ACTION_DOWN) dragListener.onStartDrag(this)
                 false
             }
+            itemView.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemClick(items[pos])
+                }
+            }
+            itemView.iconDelete.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onDeleteClick(items[pos])
+                }
+            }
         }
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(items[position], onMoreClick)
+        holder.bind(items[position])
     }
 
     override fun getItemCount(): Int = items.size
@@ -61,7 +74,7 @@ class ViewerModifyOrderAdapter(
 
     class Holder(view: View) : RecyclerView.ViewHolder(view), ItemTouchHelperViewHolder {
 
-        fun bind(item: SimpleRelationView, onMoreClick: (SimpleRelationView) -> Unit) {
+        fun bind(item: SimpleRelationView) {
             if (item.key == ObjectSetConfig.NAME_KEY) {
                 itemView.iconDrag.invisible()
             } else {
@@ -69,9 +82,6 @@ class ViewerModifyOrderAdapter(
             }
             itemView.title.text = item.title
             itemView.iconRelation.bind(item.format)
-            itemView.iconMore.setOnClickListener {
-                onMoreClick(item)
-            }
         }
 
         override fun onItemSelected() {

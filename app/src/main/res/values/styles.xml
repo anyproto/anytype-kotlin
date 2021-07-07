@@ -229,7 +229,7 @@
     </style>
 
     <style name="DefaultDataViewModalHeaderStyle">
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/black</item>
     </style>

@@ -40,6 +40,9 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
         )
     }
 
+    private lateinit var dividerItem : DividerItemDecoration
+    private lateinit var dividerItemEdit: DividerItemDecoration
+
     private fun navigateToSelectSort() {
         val fr = SelectSortRelationFragment.new(ctx)
         fr.show(parentFragmentManager, null)
@@ -58,14 +61,16 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+            setDrawable(drawable(R.drawable.decoration_viewer_sort))
+        }
+        dividerItemEdit = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+            setDrawable(drawable(R.drawable.decoration_viewer_sort_edit))
+        }
         viewerSortRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewerSortAdapter
-            addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(drawable(R.drawable.decoration_viewer_sort))
-                }
-            )
+
         }
         with(lifecycleScope) {
             subscribe(btnResetSort.clicks()) { vm.onResetClicked(ctx) }
@@ -86,10 +91,18 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
                     Mode.READ -> {
                         btnEditSortOrDone.setText(R.string.edit)
                         btnResetSort.visible()
+                        viewerSortRecycler.apply {
+                            removeItemDecoration(dividerItemEdit)
+                            addItemDecoration(dividerItem)
+                        }
                     }
                     Mode.EDIT -> {
                         btnEditSortOrDone.setText(R.string.done)
                         btnResetSort.invisible()
+                        viewerSortRecycler.apply {
+                            removeItemDecoration(dividerItem)
+                            addItemDecoration(dividerItemEdit)
+                        }
                     }
                 }
             }

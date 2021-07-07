@@ -685,4 +685,14 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
+    <style name="DataViewGridColumnHeaderTextStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">#929082</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
 </resources>

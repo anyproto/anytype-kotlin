@@ -37,6 +37,7 @@
             android:fontFamily="@font/inter_medium"
             android:textColor="@color/black"
             android:hint="@string/untitled"
+            android:textColorHint="#929082"
             android:textSize="15sp"
             tools:text="Name" />
         

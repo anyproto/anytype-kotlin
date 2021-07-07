@@ -13,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
@@ -50,16 +51,19 @@ class DocumentEmojiPickerFragmentTest {
     lateinit var repo: BlockRepository
 
     private lateinit var setEmojiIcon: SetDocumentEmojiIcon
+    private lateinit var removeDocumentIcon: RemoveDocumentIcon
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         setEmojiIcon = SetDocumentEmojiIcon(repo = repo)
+        removeDocumentIcon = RemoveDocumentIcon(repo = repo)
         TestDocumentEmojiPickerFragment.testViewModelFactory =
             DocumentEmojiIconPickerViewModelFactory(
                 emojiProvider = provider,
                 emojiSuggester = suggester,
                 setEmojiIcon = setEmojiIcon,
+                removeDocumentIcon = removeDocumentIcon,
                 dispatcher = Dispatcher.Default(),
                 details = detailModificationManager
             )
@@ -332,7 +336,7 @@ class DocumentEmojiPickerFragmentTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestDocumentEmojiPickerFragment> {
-        return launchFragmentInContainer<TestDocumentEmojiPickerFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

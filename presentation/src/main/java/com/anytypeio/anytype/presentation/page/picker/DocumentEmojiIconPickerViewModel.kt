@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
@@ -20,6 +21,7 @@ import timber.log.Timber
 
 class DocumentEmojiIconPickerViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
+    private val removeDocumentIcon: RemoveDocumentIcon,
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
     private val dispatcher: Dispatcher<Payload>,
@@ -132,7 +134,20 @@ class DocumentEmojiIconPickerViewModel(
                 failure = { Timber.e(it, "Error while setting emoji") },
                 success = { payload ->
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    details.setEmojiIcon(unicode = unicode, target = target).also { state.value = ViewState.Exit }
+                    details.setEmojiIcon(unicode = unicode, target = target)
+                        .also { state.value = ViewState.Exit }
+                }
+            )
+        }
+    }
+
+    fun onRemoveClicked(ctx: Id) {
+        viewModelScope.launch {
+            removeDocumentIcon(RemoveDocumentIcon.Params(ctx = ctx)).process(
+                failure = { Timber.e(it, "Error while setting emoji") },
+                success = { payload ->
+                    if (payload.events.isNotEmpty()) dispatcher.send(payload)
+                    state.value = ViewState.Exit
                 }
             )
         }

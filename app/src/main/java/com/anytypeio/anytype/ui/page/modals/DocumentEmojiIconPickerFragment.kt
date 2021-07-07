@@ -78,6 +78,7 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
             clearSearchText.invisible()
         }
         filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
+        btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(context) }
     }
 
     private fun setupRecycler() {

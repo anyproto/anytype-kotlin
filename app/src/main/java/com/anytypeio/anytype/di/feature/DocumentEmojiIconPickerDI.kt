@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
@@ -34,11 +35,13 @@ class DocumentEmojiIconPickerModule {
     @PerModal
     fun provideDocumentEmojiIconPickerViewModel(
         setEmojiIcon: SetDocumentEmojiIcon,
+        removeDocumentIcon: RemoveDocumentIcon,
         emojiSuggester: EmojiSuggester,
         dispatcher: Dispatcher<Payload>,
         details: DetailModificationManager
     ): DocumentEmojiIconPickerViewModelFactory = DocumentEmojiIconPickerViewModelFactory(
         setEmojiIcon = setEmojiIcon,
+        removeDocumentIcon = removeDocumentIcon,
         emojiSuggester = emojiSuggester,
         emojiProvider = Emoji,
         dispatcher = dispatcher,
@@ -50,6 +53,14 @@ class DocumentEmojiIconPickerModule {
     fun provideSetDocumentEmojiIconUseCase(
         repo: BlockRepository
     ): SetDocumentEmojiIcon = SetDocumentEmojiIcon(
+        repo = repo
+    )
+
+    @Provides
+    @PerModal
+    fun provideRemoveDocumentIconUseCase(
+        repo: BlockRepository
+    ): RemoveDocumentIcon = RemoveDocumentIcon(
         repo = repo
     )
 }

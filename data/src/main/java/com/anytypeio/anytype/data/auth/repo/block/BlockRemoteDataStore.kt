@@ -117,6 +117,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx: String
     ): Payload = remote.removeDocumentCover(ctx)
 
+    override suspend fun removeDocumentIcon(
+        ctx: Id
+    ): Payload = remote.removeDocumentIcon(ctx)
+
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
     ): Payload = remote.setupBookmark(command)

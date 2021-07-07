@@ -136,6 +136,10 @@ class BlockMiddleware(
         ctx: String
     ): Payload = middleware.removeDocumentCover(ctx)
 
+    override suspend fun removeDocumentIcon(
+        ctx: Id
+    ): Payload = middleware.removeDocumentIcon(ctx)
+
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
     ): Payload = middleware.setupBookmark(command)

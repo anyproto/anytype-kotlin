@@ -3,7 +3,7 @@
     android:id="@+id/sheet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rectangle_debug_background"
+    android:background="@drawable/default_bottom_sheet_background"
     android:orientation="vertical">
 
     <FrameLayout
@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="16dp">
 
         <View
             android:id="@+id/dragger"
@@ -23,12 +23,43 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/headerToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_toolbar_height">
+
+        <TextView
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:textSize="17sp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/black"
+            android:text="Change icon"
+            android:id="@+id/tvHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_marginEnd="16dp"
+            android:gravity="center_vertical"
+            android:text="@string/remove"
+            android:layout_gravity="end"
+            android:textSize="17sp"
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/anytype_text_red"
+            android:id="@+id/btnRemoveIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/page_icon_picker_filter_background">
 
         <ImageView
@@ -95,8 +126,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/dp_8"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:clipToPadding="false"
         android:paddingBottom="165dp"
         android:minHeight="300dp" />

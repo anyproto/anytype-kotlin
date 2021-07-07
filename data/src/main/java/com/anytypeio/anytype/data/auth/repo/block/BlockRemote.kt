@@ -37,6 +37,7 @@ interface BlockRemote {
     suspend fun setDocumentCoverGradient(ctx: String, gradient: String): Payload
     suspend fun setDocumentCoverImage(ctx: String, hash: String): Payload
     suspend fun removeDocumentCover(ctx: String): Payload
+    suspend fun removeDocumentIcon(ctx: Id): Payload
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark) : Payload
     suspend fun undo(command: Command.Undo) : Payload

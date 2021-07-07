@@ -687,6 +687,28 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun removeDocumentIcon(ctx: String): Payload {
+        val imageDetail = Rpc.Block.Set.Details.Detail(
+            key = iconImageKey,
+            value = null
+        )
+        val emojiDetail = Rpc.Block.Set.Details.Detail(
+            key = iconEmojiKey,
+            value = null
+        )
+
+        val request = Rpc.Block.Set.Details.Request(
+            contextId = ctx,
+            details = listOf(imageDetail, emojiDetail)
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
     fun setupBookmark(command: Command.SetupBookmark): Payload {
         val request: Rpc.Block.Bookmark.Fetch.Request = Rpc.Block.Bookmark.Fetch.Request(
             contextId = command.context,

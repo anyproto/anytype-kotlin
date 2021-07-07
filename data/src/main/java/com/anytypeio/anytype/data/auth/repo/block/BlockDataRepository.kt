@@ -152,6 +152,10 @@ class BlockDataRepository(
         ctx: String
     ): Payload = factory.remote.removeDocumentCover(ctx)
 
+    override suspend fun removeDocumentIcon(
+        ctx: Id
+    ): Payload = factory.remote.removeDocumentIcon(ctx)
+
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
     ): Payload = factory.remote.setupBookmark(command)

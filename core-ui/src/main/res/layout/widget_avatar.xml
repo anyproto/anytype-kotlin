@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:fontFamily="@font/inter_medium"
+        android:fontFamily="@font/inter_semibold"
         android:textColor="@color/white" />
 
     <ImageView

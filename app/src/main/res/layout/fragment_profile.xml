@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle"
+    android:background="@color/default_dashboard_background_color"
     android:scrollbars="none">
 
     <FrameLayout
@@ -27,6 +27,7 @@
     </FrameLayout>
 
     <androidx.cardview.widget.CardView
+        android:visibility="invisible"
         android:id="@+id/profileCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -253,7 +254,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/inter_regular"
             android:text="@string/log_out"
-            android:textColor="#ACA996"
+            android:textColor="@color/anytype_text_red"
             android:textSize="17sp" />
 
         <ProgressBar
@@ -275,6 +276,7 @@
         android:layout_marginBottom="16dp"
         android:fontFamily="monospace"
         android:textSize="11sp"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

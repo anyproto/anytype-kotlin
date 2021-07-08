@@ -1,11 +1,9 @@
 package com.anytypeio.anytype.ui.page.modals
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -22,8 +20,6 @@ import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerVie
 import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -64,12 +60,6 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_page_icon_picker, container, false)
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-        setModalToFullScreenState(dialog)
-        return dialog
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycler()
@@ -79,6 +69,8 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         }
         filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
         btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(context) }
+        tvTabRandom.setOnClickListener { vm.onRandomEmoji(ctx = context, target = target) }
+        expand()
     }
 
     private fun setupRecycler() {
@@ -132,21 +124,6 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().documentEmojiIconPickerComponent.release(context)
     }
-
-    private fun setModalToFullScreenState(dialog: BottomSheetDialog) =
-        dialog.setOnShowListener { dialogInterface ->
-            (dialogInterface as? BottomSheetDialog)?.let { bottomSheetDialog ->
-                bottomSheetDialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
-                    ?.let { bottomSheetView ->
-                        BottomSheetBehavior.from(bottomSheetView).apply {
-                            val lp = bottomSheetView.layoutParams
-                            lp.height = activity?.window?.decorView?.measuredHeight ?: 0
-                            bottomSheetView.layoutParams = lp
-                            state = BottomSheetBehavior.STATE_EXPANDED
-                        }
-                    }
-            }
-        }
 
     companion object {
 

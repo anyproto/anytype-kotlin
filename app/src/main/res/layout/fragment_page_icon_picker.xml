@@ -29,27 +29,27 @@
         android:layout_height="@dimen/default_toolbar_height">
 
         <TextView
-            android:gravity="center"
-            android:layout_gravity="center_horizontal"
-            android:textSize="17sp"
-            android:fontFamily="@font/inter_semibold"
-            android:textColor="@color/black"
-            android:text="Change icon"
             android:id="@+id/tvHeader"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/inter_semibold"
+            android:gravity="center"
+            android:text="Change icon"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
 
         <TextView
-            android:layout_marginEnd="16dp"
-            android:gravity="center_vertical"
-            android:text="@string/remove"
-            android:layout_gravity="end"
-            android:textSize="17sp"
-            android:fontFamily="@font/inter_regular"
-            android:textColor="@color/anytype_text_red"
             android:id="@+id/btnRemoveIcon"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center_vertical"
+            android:text="@string/remove"
+            android:textColor="@color/anytype_text_red"
+            android:textSize="17sp" />
 
     </FrameLayout>
 
@@ -96,13 +96,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:visibility="invisible"
             android:id="@+id/clearSearchText"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_clear_text"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -125,11 +125,53 @@
         android:id="@+id/pickerRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_8"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="@dimen/dp_8"
         android:layout_marginEnd="16dp"
+        android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="165dp"
-        android:minHeight="300dp" />
+        android:minHeight="300dp"
+        android:paddingBottom="165dp" />
+
+    <LinearLayout
+        android:id="@+id/bottomToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_toolbar_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvTabEmoji"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center"
+            android:text="Emoji"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvTabRandom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center"
+            android:text="Random"
+            android:textColor="#ACA996"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvTabUpload"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center"
+            android:text="Upload"
+            android:textColor="#ACA996"
+            android:textSize="17sp" />
+
+    </LinearLayout>
 
 </LinearLayout>

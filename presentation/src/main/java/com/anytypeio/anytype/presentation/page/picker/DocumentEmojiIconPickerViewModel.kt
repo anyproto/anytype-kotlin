@@ -141,6 +141,24 @@ class DocumentEmojiIconPickerViewModel(
         }
     }
 
+    fun onRandomEmoji(ctx: Id, target: Id) {
+        viewModelScope.launch {
+            setEmojiIcon(
+                params = SetDocumentEmojiIcon.Params(
+                    emoji = provider.emojis.random().random(),
+                    target = target,
+                    context = ctx
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while setting emoji") },
+                success = { payload ->
+                    if (payload.events.isNotEmpty()) dispatcher.send(payload)
+                    state.value = ViewState.Exit
+                }
+            )
+        }
+    }
+
     fun onRemoveClicked(ctx: Id) {
         viewModelScope.launch {
             removeDocumentIcon(RemoveDocumentIcon.Params(ctx = ctx)).process(

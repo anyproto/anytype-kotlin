@@ -1,9 +1,15 @@
 package com.anytypeio.anytype.ui.page.modals
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -11,6 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.parsePath
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -23,6 +31,7 @@ import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import javax.inject.Inject
 
 open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
@@ -70,6 +79,7 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
         btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(context) }
         tvTabRandom.setOnClickListener { vm.onRandomEmoji(ctx = context, target = target) }
+        tvTabUpload.setOnClickListener { proceedWithImagePick() }
         expand()
     }
 
@@ -107,6 +117,10 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
                     clearSearchText.invisible()
                     progressBar.visible()
                 }
+                is ViewState.Init -> {
+                    clearSearchText.visible()
+                    progressBar.invisible()
+                }
                 is ViewState.Exit -> dismiss()
             }
         }.launchIn(lifecycleScope)
@@ -115,6 +129,57 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
     override fun onDestroyView() {
         dialog?.setOnShowListener(null)
         super.onDestroyView()
+    }
+
+    private fun proceedWithImagePick() {
+        if (!hasExternalStoragePermission())
+            requestExternalStoragePermission()
+        else
+            openGallery()
+    }
+
+    private fun requestExternalStoragePermission() {
+        requestPermissions(
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            REQUEST_PERMISSION_CODE
+        )
+    }
+
+    private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
+        requireActivity(),
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    ).let { result -> result == PackageManager.PERMISSION_GRANTED }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
+            data?.data?.let { uri ->
+                try {
+                    val path = uri.parsePath(requireContext())
+                    vm.onPickedFromDevice(
+                        ctx = context,
+                        path = path
+                    )
+                } catch (e: Exception) {
+                    Timber.e(COULD_NOT_PARSE_PATH_ERROR)
+                    toast(COULD_NOT_PARSE_PATH_ERROR)
+                }
+            }
+        }
+    }
+
+    private fun openGallery() {
+        try {
+            Intent(
+                Intent.ACTION_PICK,
+                MediaStore.Images.Media.INTERNAL_CONTENT_URI
+            ).let { intent ->
+                startActivityForResult(intent, SELECT_IMAGE_CODE)
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to open gallery")
+            toast("Failed to open gallery. Please, try again later.")
+        }
     }
 
     override fun injectDependencies() {
@@ -143,5 +208,9 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
 
         const val ARG_CONTEXT_ID_KEY = "arg.picker.context.id"
         const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
+
+        private const val SELECT_IMAGE_CODE = 1
+        private const val COULD_NOT_PARSE_PATH_ERROR = "Could not parse path to your image"
+        private const val REQUEST_PERMISSION_CODE = 2
     }
 }

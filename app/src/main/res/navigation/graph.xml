@@ -25,6 +25,10 @@
             android:id="@+id/objectIconPickerScreen"
             android:name="com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment"
             android:label="Object-Icon-Picker-Screen" />
+        <dialog
+            android:id="@+id/objectMainMenuScreen"
+            android:name="com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet"
+            android:label="Doc-Menu-Bottom-Sheet-Screen"/>
     </navigation>
 
     <navigation

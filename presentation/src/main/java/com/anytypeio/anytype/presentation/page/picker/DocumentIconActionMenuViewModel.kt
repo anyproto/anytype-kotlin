@@ -16,6 +16,7 @@ import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@Deprecated("To be deleted")
 class DocumentIconActionMenuViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
     private val setImageIcon: SetDocumentImageIcon,

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
@@ -51,18 +52,21 @@ class DocumentEmojiPickerFragmentTest {
     lateinit var repo: BlockRepository
 
     private lateinit var setEmojiIcon: SetDocumentEmojiIcon
+    private lateinit var setImageIcon: SetDocumentImageIcon
     private lateinit var removeDocumentIcon: RemoveDocumentIcon
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         setEmojiIcon = SetDocumentEmojiIcon(repo = repo)
+        setImageIcon = SetDocumentImageIcon(repo = repo)
         removeDocumentIcon = RemoveDocumentIcon(repo = repo)
         TestDocumentEmojiPickerFragment.testViewModelFactory =
             DocumentEmojiIconPickerViewModelFactory(
                 emojiProvider = provider,
                 emojiSuggester = suggester,
                 setEmojiIcon = setEmojiIcon,
+                setImageIcon = setImageIcon,
                 removeDocumentIcon = removeDocumentIcon,
                 dispatcher = Dispatcher.Default(),
                 details = detailModificationManager

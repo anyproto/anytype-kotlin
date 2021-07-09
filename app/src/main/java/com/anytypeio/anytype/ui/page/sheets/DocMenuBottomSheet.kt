@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.domain.status.SyncStatus
-import kotlinx.android.synthetic.experimental.fragment_doc_menu_bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_doc_menu_bottom_sheet.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -208,17 +208,17 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             )
         }
 
-        private const val TITLE_KEY = "arg.doc-menu-bottom-sheet.title"
-        private const val IMAGE_KEY = "arg.doc-menu-bottom-sheet.image"
-        private const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
-        private const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
-        private const val IS_ARCHIVED = "arg.doc-menu-bottom-sheet.is-archived"
-        private const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
-        private const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
-        private const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
-        private const val IS_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-cover-allowed"
-        private const val IS_RELATIONS_ALLOWED = "arg.doc-menu-bottom-sheet.is-relations-allowed"
-        private const val IS_DOWNLOAD_ALLOWED = "arg.doc-menu-bottom-sheet.is-download-allowed"
+        const val TITLE_KEY = "arg.doc-menu-bottom-sheet.title"
+        const val IMAGE_KEY = "arg.doc-menu-bottom-sheet.image"
+        const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
+        const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
+        const val IS_ARCHIVED = "arg.doc-menu-bottom-sheet.is-archived"
+        const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
+        const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
+        const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
+        const val IS_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-cover-allowed"
+        const val IS_RELATIONS_ALLOWED = "arg.doc-menu-bottom-sheet.is-relations-allowed"
+        const val IS_DOWNLOAD_ALLOWED = "arg.doc-menu-bottom-sheet.is-download-allowed"
     }
 
     interface DocumentMenuActionReceiver {

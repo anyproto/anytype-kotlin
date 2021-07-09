@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
@@ -21,6 +22,7 @@ import timber.log.Timber
 
 class DocumentEmojiIconPickerViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
+    private val setImageIcon: SetDocumentImageIcon,
     private val removeDocumentIcon: RemoveDocumentIcon,
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
@@ -166,6 +168,25 @@ class DocumentEmojiIconPickerViewModel(
                 success = { payload ->
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
                     state.value = ViewState.Exit
+                }
+            )
+        }
+    }
+
+    fun onPickedFromDevice(ctx: Id, path: String) {
+        viewModelScope.launch {
+            state.value = ViewState.Loading
+            setImageIcon(
+                SetDocumentImageIcon.Params(
+                    context = ctx,
+                    path = path
+                )
+            ).proceed(
+                failure = {
+                    Timber.e("Error while setting image icon").also { state.value = ViewState.Init }
+                },
+                success = { (payload, _) ->
+                    dispatcher.send(payload).also { state.value = ViewState.Exit }
                 }
             )
         }

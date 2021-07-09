@@ -43,6 +43,7 @@ import kotlinx.android.synthetic.main.action_toolbar_page_icon.*
 import timber.log.Timber
 import javax.inject.Inject
 
+@Deprecated("To be deleted")
 class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page_icon),
     Observer<ViewState> {
 

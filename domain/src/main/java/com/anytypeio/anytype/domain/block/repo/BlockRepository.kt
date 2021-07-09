@@ -122,7 +122,7 @@ interface BlockRepository {
 
     suspend fun getObjectTypes(isArchived: Boolean = false): List<ObjectType>
 
-    suspend fun createTemplate(prototype: ObjectType.Prototype): ObjectType
+    suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType
 
     suspend fun createSet(
         context: Id,

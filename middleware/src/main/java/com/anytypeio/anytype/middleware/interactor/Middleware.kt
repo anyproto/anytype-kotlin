@@ -976,8 +976,8 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectTypeList(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.objectTypes
+        // TODO do not use this flag directly, put it into request when it's ready
+        return response.objectTypes.filter { it.isArchived == isArchived }
     }
 
     @Throws(Exception::class)

@@ -250,7 +250,7 @@ class BlockDataRepository(
         return factory.remote.getObjectTypes(isArchived)
     }
 
-    override suspend fun createTemplate(
+    override suspend fun createObjectType(
         prototype: ObjectType.Prototype
     ): ObjectType = factory.remote.createObjectType(
         ObjectType.Prototype(

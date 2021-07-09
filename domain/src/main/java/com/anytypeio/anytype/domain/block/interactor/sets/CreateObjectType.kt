@@ -19,7 +19,7 @@ class CreateObjectType(
             layout = getLayout(params.layout),
             emoji = documentEmojiProvider.random()
         )
-        repo.createTemplate(type)
+        repo.createObjectType(type)
     }
 
     private fun getLayout(layout: Int): ObjectType.Layout = when (layout) {

@@ -11,7 +11,8 @@ class EqualSpacingItemDecoration(
     private val leftSpacing: Int,
     private val rightSpacing: Int,
     private val bottomSpacing: Int,
-    private var displayMode: Int = -1
+    private var displayMode: Int = -1,
+    private val ignoreGridEdgesTop: Boolean = false
 ) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
@@ -58,7 +59,13 @@ class EqualSpacingItemDecoration(
 
                 outRect.left = leftSpacing
                 outRect.right = if (position % cols == cols - 1) rightSpacing else 0
-                outRect.top = topSpacing
+                if (ignoreGridEdgesTop) {
+                    if (position >= cols) {
+                        outRect.top = topSpacing
+                    }
+                } else {
+                    outRect.top = topSpacing
+                }
                 outRect.bottom = if (position / cols == rows - 1) bottomSpacing else 0
             }
         }

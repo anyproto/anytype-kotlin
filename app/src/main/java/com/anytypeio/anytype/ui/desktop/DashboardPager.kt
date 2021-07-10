@@ -38,7 +38,8 @@ class DashboardPager(
                         leftSpacing = spacing,
                         rightSpacing = spacing,
                         bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID
+                        displayMode = EqualSpacingItemDecoration.GRID,
+                        ignoreGridEdgesTop = true
                     )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
@@ -58,7 +59,8 @@ class DashboardPager(
                         leftSpacing = spacing,
                         rightSpacing = spacing,
                         bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID
+                        displayMode = EqualSpacingItemDecoration.GRID,
+                        ignoreGridEdgesTop = true
                     )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
@@ -77,7 +79,8 @@ class DashboardPager(
                         leftSpacing = spacing,
                         rightSpacing = spacing,
                         bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID
+                        displayMode = EqualSpacingItemDecoration.GRID,
+                        ignoreGridEdgesTop = true
                     )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
@@ -96,7 +99,8 @@ class DashboardPager(
                         leftSpacing = spacing,
                         rightSpacing = spacing,
                         bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID
+                        displayMode = EqualSpacingItemDecoration.GRID,
+                        ignoreGridEdgesTop = true
                     )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
@@ -115,7 +119,8 @@ class DashboardPager(
                         leftSpacing = spacing,
                         rightSpacing = spacing,
                         bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID
+                        displayMode = EqualSpacingItemDecoration.GRID,
+                        ignoreGridEdgesTop = true
                     )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER

@@ -5,9 +5,9 @@
     </declare-styleable>
     <declare-styleable name="ObjectIconWidget">
 
-        <attr name="emojiSize" format="dimension"/>
-        <attr name="imageSize" format="dimension"/>
-        <attr name="checkboxSize" format="dimension"/>
+        <attr name="emojiSize" format="dimension" />
+        <attr name="imageSize" format="dimension" />
+        <attr name="checkboxSize" format="dimension" />
         <attr name="hasEmojiCircleBackground" format="boolean" />
         <attr name="hasEmojiRounded12Background" format="boolean" />
         <attr name="hasEmojiRounded8Background" format="boolean" />
@@ -16,8 +16,8 @@
 
     </declare-styleable>
     <declare-styleable name="ObjectIconTextWidget">
-        <attr name="nameTextSize" format="dimension"/>
-        <attr name="nameTextColor" format="color"/>
+        <attr name="nameTextSize" format="dimension" />
+        <attr name="nameTextColor" format="color" />
     </declare-styleable>
     <declare-styleable name="IconWidget">
         <attr name="emoji_size" format="dimension" />
@@ -30,7 +30,7 @@
         <attr name="innerStrokeColor" format="color" />
         <attr name="innerRadius" format="dimension" />
         <attr name="outerStrokeWidth" format="dimension" />
-        <attr name="outerStrokeColor" format="color"/>
+        <attr name="outerStrokeColor" format="color" />
     </declare-styleable>
     <declare-styleable name="HighlightDrawer">
         <attr name="roundedTextHorizontalPadding" format="dimension" />
@@ -39,5 +39,10 @@
         <attr name="roundedTextDrawableLeft" format="reference" />
         <attr name="roundedTextDrawableMid" format="reference" />
         <attr name="roundedTextDrawableRight" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="ObjectMenuItemWidget">
+        <attr name="title" format="string" />
+        <attr name="subtitle" format="string" />
+        <attr name="icon" format="reference" />
     </declare-styleable>
 </resources>

@@ -80,6 +80,7 @@ interface PageSubComponent {
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
 
     fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
+    fun objectCoverPickerComponent() : ObjectCoverPickerComponent.Builder
     fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder
 
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder

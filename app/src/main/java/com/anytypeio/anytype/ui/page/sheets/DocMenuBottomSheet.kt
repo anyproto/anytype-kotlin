@@ -7,22 +7,27 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_ui.extensions.*
+import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
-import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.domain.status.SyncStatus
+import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
+import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
+import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.android.synthetic.main.fragment_doc_menu_bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_object_menu.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class DocMenuBottomSheet : BaseBottomSheetFragment() {
 
+    private val ctx get() = arg<String>(CTX_KEY)
     private val title get() = arg<String?>(TITLE_KEY)
     private val status get() = SyncStatus.valueOf(arg(STATUS_KEY))
     private val image get() = arg<String?>(IMAGE_KEY)
@@ -39,101 +44,138 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_doc_menu_bottom_sheet, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_object_menu, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindTitle()
-        bindSyncStatus(status)
-        closeButton.clicks().onEach { dismiss() }.launchIn(lifecycleScope)
+//        bindTitle()
+//        bindSyncStatus(status)
+//        closeButton.clicks().onEach { dismiss() }.launchIn(lifecycleScope)
+//
+//        searchOnPageContainer
+//            .clicks()
+//            .onEach { withParent<DocumentMenuActionReceiver> { onSearchOnPageClicked() }.also { dismiss() } }
+//            .launchIn(lifecycleScope)
+//
+//        if (isDeleteAllowed) {
+//            tvArchive.alpha = 1.0F
+//            ivArchive.alpha = 1.0F
+//            archiveContainer
+//                .clicks()
+//                .onEach {
+//                    withParent<DocumentMenuActionReceiver> {
+//                        if (isArchived) onRestoreFromArchiveClicked() else onArchiveClicked()
+//                    }.also { dismiss() }
+//                }
+//                .launchIn(lifecycleScope)
+//        } else {
+//            tvArchive.alpha = 0.4F
+//            ivArchive.alpha = 0.4F
+//        }
+//
+//        if (isArchived)
+//            tvArchive.setText(R.string.restore_from_archive)
+//        else
+//            tvArchive.setText(R.string.archive)
+//
+//        if (isAddCoverAllowed) {
+//            tvSetCover.alpha = 1.0F
+//            ivSetCover.alpha = 1.0F
+//            addCoverContainer
+//                .clicks()
+//                .onEach { withParent<DocumentMenuActionReceiver> { onAddCoverClicked() } }
+//                .launchIn(lifecycleScope)
+//        } else {
+//            tvSetCover.alpha = 0.4F
+//            ivSetCover.alpha = 0.4F
+//        }
+//
+//        setIconContainer
+//            .clicks()
+//            .onEach { withParent<DocumentMenuActionReceiver> { onSetIconClicked() } }
+//            .launchIn(lifecycleScope)
+//
+//        if (isLayoutAllowed) {
+//            tvSetLayout.alpha = 1.0F
+//            ivSetLayout.alpha = 1.0F
+//            setLayoutContainer
+//                .clicks()
+//                .onEach { withParent<DocumentMenuActionReceiver> { onLayoutClicked() } }
+//                .launchIn(lifecycleScope)
+//        } else {
+//            tvSetLayout.alpha = 0.4F
+//            ivSetLayout.alpha = 0.4F
+//        }
+//
+//        if (isRelationsAllowed) {
+//            tvRelations.alpha = 1.0F
+//            relationContainer
+//                .clicks()
+//                .onEach { withParent<DocumentMenuActionReceiver> { onDocRelationsClicked() } }
+//                .launchIn(lifecycleScope)
+//        } else {
+//            tvRelations.alpha = 0.4F
+//        }
+//
+//        if (isDownloadAllowed) {
+//            downloadContainer.visible()
+//            downloadContainer
+//                .clicks()
+//                .onEach { withParent<DocumentMenuActionReceiver> { onDownloadClicked() }.also { dismiss() } }
+//                .launchIn(lifecycleScope)
+//        }
+//
+//        if (image != null && !isProfile) icon.setImageOrNull(image)
+//        if (emoji != null && !isProfile) icon.setEmojiOrNull(emoji)
+//
+//        if (isProfile) {
+//            avatar.visible()
+//            image?.let { avatar.icon(it) } ?: avatar.bind(
+//                name = title.orEmpty(),
+//                color = title.orEmpty().firstDigitByHash().let {
+//                    requireContext().avatarColor(it)
+//                }
+//            )
+//            addCoverContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_bottom)
+//            searchOnPageContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_top)
+//        }
 
-        searchOnPageContainer
+        optionIcon
             .clicks()
-            .onEach { withParent<DocumentMenuActionReceiver> { onSearchOnPageClicked() }.also { dismiss() } }
+            .onEach {
+                findNavController().navigate(
+                    R.id.objectIconPickerScreen,
+                    bundleOf(
+                        DocumentEmojiIconPickerFragment.ARG_CONTEXT_ID_KEY to ctx,
+                        DocumentEmojiIconPickerFragment.ARG_TARGET_ID_KEY to ctx,
+                    )
+                )
+            }
             .launchIn(lifecycleScope)
 
-        if (isDeleteAllowed) {
-            tvArchive.alpha = 1.0F
-            ivArchive.alpha = 1.0F
-            archiveContainer
-                .clicks()
-                .onEach {
-                    withParent<DocumentMenuActionReceiver> {
-                        if (isArchived) onRestoreFromArchiveClicked() else onArchiveClicked()
-                    }.also { dismiss() }
-                }
-                .launchIn(lifecycleScope)
-        } else {
-            tvArchive.alpha = 0.4F
-            ivArchive.alpha = 0.4F
-        }
-
-        if (isArchived)
-            tvArchive.setText(R.string.restore_from_archive)
-        else
-            tvArchive.setText(R.string.archive)
-
-        if (isAddCoverAllowed) {
-            tvSetCover.alpha = 1.0F
-            ivSetCover.alpha = 1.0F
-            addCoverContainer
-                .clicks()
-                .onEach { withParent<DocumentMenuActionReceiver> { onAddCoverClicked() } }
-                .launchIn(lifecycleScope)
-        } else {
-            tvSetCover.alpha = 0.4F
-            ivSetCover.alpha = 0.4F
-        }
-
-        setIconContainer
+        optionRelations
             .clicks()
-            .onEach { withParent<DocumentMenuActionReceiver> { onSetIconClicked() } }
+            .onEach {
+                findNavController().navigate(
+                    R.id.objectRelationListScreen,
+                    bundleOf(
+                        RelationListFragment.ARG_CTX to ctx,
+                        RelationListFragment.ARG_TARGET to null,
+                        RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+                    )
+                )
+            }
             .launchIn(lifecycleScope)
 
-        if (isLayoutAllowed) {
-            tvSetLayout.alpha = 1.0F
-            ivSetLayout.alpha = 1.0F
-            setLayoutContainer
-                .clicks()
-                .onEach { withParent<DocumentMenuActionReceiver> { onLayoutClicked() } }
-                .launchIn(lifecycleScope)
-        } else {
-            tvSetLayout.alpha = 0.4F
-            ivSetLayout.alpha = 0.4F
-        }
-
-        if (isRelationsAllowed) {
-            tvRelations.alpha = 1.0F
-            relationContainer
-                .clicks()
-                .onEach { withParent<DocumentMenuActionReceiver> { onDocRelationsClicked() } }
-                .launchIn(lifecycleScope)
-        } else {
-            tvRelations.alpha = 0.4F
-        }
-
-        if (isDownloadAllowed) {
-            downloadContainer.visible()
-            downloadContainer
-                .clicks()
-                .onEach { withParent<DocumentMenuActionReceiver> { onDownloadClicked() }.also { dismiss() } }
-                .launchIn(lifecycleScope)
-        }
-
-        if (image != null && !isProfile) icon.setImageOrNull(image)
-        if (emoji != null && !isProfile) icon.setEmojiOrNull(emoji)
-
-        if (isProfile) {
-            avatar.visible()
-            image?.let { avatar.icon(it) } ?: avatar.bind(
-                name = title.orEmpty(),
-                color = title.orEmpty().firstDigitByHash().let {
-                    requireContext().avatarColor(it)
-                }
-            )
-            addCoverContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_bottom)
-            searchOnPageContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_top)
-        }
+        optionCover
+            .clicks()
+            .onEach {
+                findNavController().navigate(
+                    R.id.objectCoverScreen,
+                    bundleOf(DocCoverSliderFragment.CTX_KEY to ctx)
+                )
+            }
+            .launchIn(lifecycleScope)
     }
 
     private fun bindTitle() {
@@ -181,6 +223,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
 
     companion object {
         fun new(
+            ctx: Id,
             title: String?,
             status: SyncStatus,
             image: Url?,
@@ -194,6 +237,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             isDownloadAllowed: Boolean
         ) = DocMenuBottomSheet().apply {
             arguments = bundleOf(
+                CTX_KEY to ctx,
                 TITLE_KEY to title,
                 STATUS_KEY to status.name,
                 IMAGE_KEY to image,
@@ -208,6 +252,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             )
         }
 
+        const val CTX_KEY = "arg.doc-menu-bottom-sheet.ctx"
         const val TITLE_KEY = "arg.doc-menu-bottom-sheet.title"
         const val IMAGE_KEY = "arg.doc-menu-bottom-sheet.image"
         const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"

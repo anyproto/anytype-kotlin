@@ -860,6 +860,7 @@ open class PageFragment :
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
                     val fr = DocMenuBottomSheet.new(
+                        ctx = ctx,
                         title = command.title,
                         status = command.status,
                         image = command.image,
@@ -876,6 +877,7 @@ open class PageFragment :
                 is Command.OpenProfileMenu -> {
                     hideKeyboard()
                     val fr = DocMenuBottomSheet.new(
+                        ctx = ctx,
                         title = command.title,
                         status = command.status,
                         image = command.image,

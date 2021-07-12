@@ -218,5 +218,14 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="set">Set</string>
     <string name="layout">Layout</string>
     <string name="restore_from_archive">Restore from archive</string>
+    <string name="icon">Icon</string>
+    <string name="icon_description">Emoji or image for object</string>
+    <string name="cover">Cover</string>
+    <string name="cover_description">Background picture</string>
+    <string name="layout_description">Arrangement of objects on a canvas</string>
+    <string name="relations">Relations</string>
+    <string name="relations_description">List of related objects</string>
+    <string name="history_description">All version of object</string>
+    <string name="history">History</string>
 
 </resources>

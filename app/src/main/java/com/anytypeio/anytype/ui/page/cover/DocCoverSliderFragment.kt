@@ -6,21 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.`object`.ObjectCoverPickerViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_doc_cover_slider.*
+import javax.inject.Inject
 
 class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
 
-    val ctx get() = arg<String>(CTX_KEY)
+    private val ctx get() = arg<String>(CTX_KEY)
+
+    @Inject
+    lateinit var factory: ObjectCoverPickerViewModel.Factory
+    private val vm by viewModels<ObjectCoverPickerViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,34 +46,21 @@ class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
             }
         }.attach()
         lifecycleScope.subscribe(btnRemove.clicks()) { onRemoveCover() }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        expand()
-    }
-
-    override fun injectDependencies() {}
-    override fun releaseDependencies() {}
-
-    companion object {
-        fun new(ctx: Id): DocCoverSliderFragment = DocCoverSliderFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        lifecycleScope.subscribe(vm.isDismissed) { isDismissed ->
+            if (isDismissed) findNavController().popBackStack()
         }
-
-        const val CTX_KEY = "arg.doc-cover-slider.ctx"
     }
 
     override fun onImagePicked(path: String) {
-        withParent<DocCoverAction> { onImagePicked(path) }.also { dismiss() }
+        vm.onImagePicked(ctx = ctx, path = path)
     }
 
     override fun onImageSelected(hash: String) {
-        withParent<DocCoverAction> { onImageSelected(hash) }.also { dismiss() }
+        vm.onImageSelected(ctx = ctx, hash = hash)
     }
 
     override fun onRemoveCover() {
-        withParent<DocCoverAction> { onRemoveCover().also { dismiss() } }
+        vm.onRemoveCover(ctx = ctx)
     }
 
     private inner class SliderAdapter(
@@ -83,6 +78,22 @@ class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
                 else -> throw IllegalStateException()
             }
         }
+    }
+
+    override fun injectDependencies() {
+        componentManager().objectCoverPickerComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectCoverPickerComponent.release(ctx)
+    }
+
+    companion object {
+        fun new(ctx: Id): DocCoverSliderFragment = DocCoverSliderFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx)
+        }
+
+        const val CTX_KEY = "arg.doc-cover-slider.ctx"
     }
 }
 

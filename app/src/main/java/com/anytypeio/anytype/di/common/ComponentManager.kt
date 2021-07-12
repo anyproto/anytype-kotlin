@@ -458,6 +458,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val objectCoverPickerComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .objectCoverPickerComponent()
+            .module(ObjectCoverPickerModule)
+            .build()
+    }
+
     val uploadDocCoverImageComponent = DependentComponentMap { ctx ->
         pageComponent
             .get(ctx)

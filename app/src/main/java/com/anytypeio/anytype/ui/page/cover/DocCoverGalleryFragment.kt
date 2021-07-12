@@ -6,9 +6,11 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.page.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -16,9 +18,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.page.cover.SelectDocCoverViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_doc_cover_gallery.*
 import javax.inject.Inject
 
@@ -86,7 +86,9 @@ class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         lifecycleScope.subscribe(vm.views) { docCoverGalleryAdapter.views = it }
-        lifecycleScope.subscribe(vm.isDismissed) { if (it) withParent<BottomSheetDialogFragment> { dismiss() } }
+        lifecycleScope.subscribe(vm.isDismissed) {
+            if (it) findNavController().popBackStack()
+        }
     }
 
     override fun injectDependencies() {

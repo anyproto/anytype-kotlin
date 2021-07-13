@@ -391,5 +391,7 @@
     <string name="create_relation_with_name">Create relation \"%1$s\"</string>
     <string name="name">Name</string>
     <string name="name_is_required">Name is required</string>
+    <string name="favourite">Favorite</string>
+    <string name="template">Template</string>
 
 </resources>

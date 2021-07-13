@@ -6,17 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.tint
+import com.anytypeio.anytype.core_ui.features.`object`.ObjectActionAdapter
+import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.status.SyncStatus
+import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
@@ -24,8 +32,9 @@ import kotlinx.android.synthetic.main.fragment_doc_menu_bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_object_menu.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
-class DocMenuBottomSheet : BaseBottomSheetFragment() {
+class ObjectMenuFragment : BaseBottomSheetFragment() {
 
     private val ctx get() = arg<String>(CTX_KEY)
     private val title get() = arg<String?>(TITLE_KEY)
@@ -39,6 +48,14 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
     private val isAddCoverAllowed get() = arg<Boolean>(IS_COVER_ALLOWED)
     private val isRelationsAllowed get() = arg<Boolean>(IS_RELATIONS_ALLOWED)
     private val isDownloadAllowed get() = arg<Boolean>(IS_DOWNLOAD_ALLOWED)
+
+    @Inject
+    lateinit var factory: ObjectMenuViewModel.Factory
+    private val vm by viewModels<ObjectMenuViewModel> { factory }
+
+    private val actionAdapter by lazy {
+        ObjectActionAdapter { action -> vm.onActionClick(ctx, action) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -176,6 +193,26 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
                 )
             }
             .launchIn(lifecycleScope)
+
+        rvActions.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = actionAdapter
+            addItemDecoration(
+                SpacingItemDecoration(
+                    spacingStart = resources.getDimension(R.dimen.dp_20).toInt(),
+                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_16).toInt()
+                )
+            )
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        with(lifecycleScope) {
+            subscribe(vm.actions) { actionAdapter.items = it }
+            subscribe(vm.toasts) { toast(it) }
+            subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+        }
     }
 
     private fun bindTitle() {
@@ -218,8 +255,13 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
         }
     }
 
-    override fun injectDependencies() {}
-    override fun releaseDependencies() {}
+    override fun injectDependencies() {
+        componentManager().objectMenuComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectMenuComponent.release(ctx)
+    }
 
     companion object {
         fun new(
@@ -235,7 +277,7 @@ class DocMenuBottomSheet : BaseBottomSheetFragment() {
             isAddCoverAllowed: Boolean,
             isRelationsAllowed: Boolean,
             isDownloadAllowed: Boolean
-        ) = DocMenuBottomSheet().apply {
+        ) = ObjectMenuFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TITLE_KEY to title,

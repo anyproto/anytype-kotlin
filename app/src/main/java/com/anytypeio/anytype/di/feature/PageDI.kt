@@ -81,6 +81,7 @@ interface PageSubComponent {
 
     fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
     fun objectCoverPickerComponent() : ObjectCoverPickerComponent.Builder
+    fun objectMenuComponent() : ObjectMenuComponent.Builder
     fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder
 
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder

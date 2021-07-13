@@ -84,8 +84,8 @@ import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.page.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
-import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet
-import com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet.DocumentMenuActionReceiver
+import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -859,7 +859,7 @@ open class PageFragment :
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
-                    val fr = DocMenuBottomSheet.new(
+                    val fr = ObjectMenuFragment.new(
                         ctx = ctx,
                         title = command.title,
                         status = command.status,
@@ -876,7 +876,7 @@ open class PageFragment :
                 }
                 is Command.OpenProfileMenu -> {
                     hideKeyboard()
-                    val fr = DocMenuBottomSheet.new(
+                    val fr = ObjectMenuFragment.new(
                         ctx = ctx,
                         title = command.title,
                         status = command.status,

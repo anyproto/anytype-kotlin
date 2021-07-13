@@ -27,7 +27,7 @@
             android:label="Object-Icon-Picker-Screen" />
         <dialog
             android:id="@+id/objectMainMenuScreen"
-            android:name="com.anytypeio.anytype.ui.page.sheets.DocMenuBottomSheet"
+            android:name="com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment"
             android:label="Doc-Menu-Bottom-Sheet-Screen"/>
         <fragment
             android:id="@+id/objectCoverScreen"

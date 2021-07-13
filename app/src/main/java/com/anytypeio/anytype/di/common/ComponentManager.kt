@@ -466,6 +466,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val objectMenuComponent = DependentComponentMap { ctx ->
+        pageComponent
+            .get(ctx)
+            .objectMenuComponent()
+            .module(ObjectMenuModule)
+            .build()
+    }
+
     val uploadDocCoverImageComponent = DependentComponentMap { ctx ->
         pageComponent
             .get(ctx)

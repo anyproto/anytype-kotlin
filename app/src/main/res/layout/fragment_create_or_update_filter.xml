@@ -7,7 +7,7 @@
     android:clickable="true"
     android:focusable="true"
     android:layout_gravity="bottom"
-    android:background="@color/white"
+    android:background="@drawable/rounded_dialog"
     android:transitionName="checkoutTransition"
     android:layout_height="wrap_content">
 

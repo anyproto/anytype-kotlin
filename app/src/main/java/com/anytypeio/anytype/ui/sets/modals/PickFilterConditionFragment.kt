@@ -9,7 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.sets.PickFilterConditionAdapter
+import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -64,6 +66,12 @@ class PickFilterConditionFragment : DialogFragment() {
                     picked = screenState.picked,
                     conditions = screenState.conditions,
                     click = this@PickFilterConditionFragment::click
+                )
+                recycler.addItemDecoration(
+                    DividerVerticalItemDecoration(
+                        divider = requireContext().drawable(R.drawable.divider_relations),
+                        isShowInLastItem = false
+                    )
                 )
             }
         }

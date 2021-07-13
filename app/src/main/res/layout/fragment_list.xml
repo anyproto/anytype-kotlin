@@ -9,7 +9,7 @@
     android:layout_marginEnd="@dimen/dp_16"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="8dp">
+    app:cardCornerRadius="16dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
@@ -17,8 +17,6 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/dp_16"
         android:paddingBottom="@dimen/dp_16"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="10"
         tools:listitem="@layout/item_list_base" />

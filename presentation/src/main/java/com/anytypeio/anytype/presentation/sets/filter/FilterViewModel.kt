@@ -174,7 +174,8 @@ open class FilterViewModel(
                 relation.toFilterValue(null, objectSet.details, urlBuilder)
             proceedWithFilterValueList(
                 relation = relation,
-                filter = null
+                filter = null,
+                objecttypes = objectSet.objectTypes
             )
         } else {
             val filter = viewer.filters[index]
@@ -183,14 +184,16 @@ open class FilterViewModel(
                 relation.toFilterValue(filter.value, objectSet.details, urlBuilder)
             proceedWithFilterValueList(
                 relation = relation,
-                filter = filter
+                filter = filter,
+                objecttypes = objectSet.objectTypes
             )
         }
     }
 
     private fun proceedWithFilterValueList(
         relation: Relation,
-        filter: DVFilter?
+        filter: DVFilter?,
+        objecttypes: List<ObjectType>
     ) = when (relation.format) {
         Relation.Format.DATE -> {
             val timestamp = (filter?.value as? Double)?.toLong() ?: EMPTY_TIMESTAMP
@@ -212,7 +215,11 @@ open class FilterViewModel(
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
-            proceedWithSearchObjects(ids, relation)
+            proceedWithSearchObjects(
+                ids = ids,
+                relation = relation,
+                objectTypes = objecttypes
+            )
         }
         Relation.Format.CHECKBOX -> {
             filterValueListState.value =
@@ -224,7 +231,11 @@ open class FilterViewModel(
         }
     }
 
-    private fun proceedWithSearchObjects(ids: List<*>? = null, relation: Relation) {
+    private fun proceedWithSearchObjects(
+        ids: List<*>? = null,
+        relation: Relation,
+        objectTypes: List<ObjectType>
+    ) {
         val filters = relation.searchObjectsFilter()
         val sorts = arrayListOf(
             DVSort(
@@ -244,7 +255,11 @@ open class FilterViewModel(
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },
                 success = {
-                    filterValueListState.value = it.toCreateFilterObjectView(ids, urlBuilder).also {
+                    filterValueListState.value = it.toCreateFilterObjectView(
+                        ids = ids,
+                        urlBuilder = urlBuilder,
+                        objectTypes = objectTypes
+                    ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }
                 }

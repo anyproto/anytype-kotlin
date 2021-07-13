@@ -166,7 +166,8 @@ fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterVi
 
 fun List<Map<String, Any?>>.toCreateFilterObjectView(
     ids: List<*>? = null,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectType>
 ): List<CreateFilterView.Object> =
     this.map { record ->
         val id = record[ObjectSetConfig.ID_KEY] as String
@@ -176,7 +177,7 @@ fun List<Map<String, Any?>>.toCreateFilterObjectView(
         val image = record[ObjectSetConfig.IMAGE_KEY] as String?
         CreateFilterView.Object(
             id = id,
-            type = type.substringAfterLast(delimiter = "/", missingDelimiterValue = ""),
+            type = objectTypes.getTypePrettyName(type),
             name = name.orEmpty(),
             image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(image),
             emoji = emoji,
@@ -567,3 +568,5 @@ fun Relation.toFilterValue(
         Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
         else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
     }
+
+fun List<ObjectType>.getTypePrettyName(type: String): String? = firstOrNull { it.url == type }?.name

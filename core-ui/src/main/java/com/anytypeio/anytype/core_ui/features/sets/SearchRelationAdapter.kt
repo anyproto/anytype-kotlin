@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.AbstractAdapter
 import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
+import com.anytypeio.anytype.core_ui.extensions.relationIconSmall
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import kotlinx.android.synthetic.main.item_search_relation.view.*
 
@@ -20,9 +20,14 @@ class SearchRelationAdapter(
     }
 
     class ViewHolder(view: View) : AbstractViewHolder<SimpleRelationView>(view) {
-        override fun bind(item: SimpleRelationView) {
-            itemView.ivRelation.setImageResource(item.format.relationIcon())
-            itemView.tvRelationName.text = item.title
+        override fun bind(item: SimpleRelationView) = with(itemView) {
+            val icon: Int? = item.format.relationIconSmall()
+            if (icon != null) {
+                ivRelation.setImageResource(icon)
+            } else {
+                ivRelation.setImageDrawable(null)
+            }
+            tvRelationName.text = item.title
         }
     }
 }

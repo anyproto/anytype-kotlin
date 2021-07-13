@@ -128,6 +128,24 @@ fun ColumnView.Format.relationIcon(isMedium: Boolean = false): Int = when (this)
     }
 }
 
+//todo Add proper URL, EMAIL, PHONE icons
+fun ColumnView.Format.relationIconSmall() : Int? = when(this) {
+    ColumnView.Format.SHORT_TEXT -> R.drawable.ic_relation_name_24
+    ColumnView.Format.LONG_TEXT -> R.drawable.ic_relation_desc_24
+    ColumnView.Format.NUMBER -> R.drawable.ic_relation_number_24
+    ColumnView.Format.STATUS -> R.drawable.ic_relation_status_24
+    ColumnView.Format.DATE -> R.drawable.ic_relation_date_24
+    ColumnView.Format.FILE -> R.drawable.ic_relation_attachment_24
+    ColumnView.Format.CHECKBOX -> R.drawable.ic_relation_checkbox_24
+    ColumnView.Format.URL -> null
+    ColumnView.Format.EMAIL -> null
+    ColumnView.Format.PHONE -> null
+    ColumnView.Format.EMOJI -> null
+    ColumnView.Format.OBJECT -> R.drawable.ic_relation_object_24
+    ColumnView.Format.TAG -> R.drawable.ic_relation_tag_24
+    ColumnView.Format.RELATIONS -> null
+}
+
 fun Relation.Format.icon(isMedium: Boolean = false): Int = when (this) {
     Relation.Format.SHORT_TEXT, Relation.Format.LONG_TEXT -> {
         if (isMedium)

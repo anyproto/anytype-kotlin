@@ -1084,12 +1084,16 @@ class DefaultBlockViewRenderer(
         when (id) {
             Relations.DESCRIPTION -> null
             Relations.TYPE -> {
-                val objectTypeId = details.details[ctx]?.type
-                DocumentRelationView.ObjectType(
-                    relationId = objectTypeId.orEmpty(),
-                    name = details.details[objectTypeId]?.name.orEmpty(),
-                    isFeatured = true
-                )
+                val objectTypeId = details.details[ctx]?.type?.firstOrNull()
+                if (objectTypeId != null) {
+                    DocumentRelationView.ObjectType(
+                        relationId = objectTypeId.orEmpty(),
+                        name = details.details[objectTypeId]?.name.orEmpty(),
+                        isFeatured = true
+                    )
+                } else {
+                    null
+                }
             }
             else -> {
                 val relation = relations.firstOrNull { it.key == id }

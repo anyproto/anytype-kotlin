@@ -300,7 +300,7 @@ open class PageViewModelTest {
         stubOpenPage(
             context = root,
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     root = root,
                     blocks = page,
                     context = root
@@ -498,7 +498,7 @@ open class PageViewModelTest {
                 delay(100)
                 emit(
                     listOf(
-                        Event.Command.ShowBlock(
+                        Event.Command.ShowObject(
                             root = root,
                             blocks = page,
                             context = root
@@ -583,7 +583,7 @@ open class PageViewModelTest {
         stubOpenPage(
             context = root,
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     context = root,
                     blocks = listOf(smart, paragraph),
                     root = root
@@ -642,7 +642,7 @@ open class PageViewModelTest {
                 delay(100)
                 emit(
                     listOf(
-                        Event.Command.ShowBlock(
+                        Event.Command.ShowObject(
                             root = root,
                             blocks = page,
                             context = root
@@ -747,7 +747,7 @@ open class PageViewModelTest {
                 delay(100)
                 emit(
                     listOf(
-                        Event.Command.ShowBlock(
+                        Event.Command.ShowObject(
                             root = root,
                             blocks = blocks,
                             context = root
@@ -900,7 +900,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = blocks,
                         context = root
@@ -1056,7 +1056,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = blocks,
                         context = root
@@ -1150,7 +1150,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = blocks,
                         context = root
@@ -1248,7 +1248,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = blocks,
                         context = root
@@ -1330,7 +1330,7 @@ open class PageViewModelTest {
                 delay(100)
                 emit(
                     listOf(
-                        Event.Command.ShowBlock(
+                        Event.Command.ShowObject(
                             root = root,
                             blocks = blocks,
                             context = root
@@ -1387,7 +1387,7 @@ open class PageViewModelTest {
             delay(1000)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -1422,7 +1422,7 @@ open class PageViewModelTest {
             delay(1000)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -1499,7 +1499,7 @@ open class PageViewModelTest {
             delay(500)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = listOf(page, header, title, paragraph),
                         context = root
@@ -1591,7 +1591,7 @@ open class PageViewModelTest {
             delay(1000)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -1657,7 +1657,7 @@ open class PageViewModelTest {
             delay(1000)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = doc,
                         context = root
@@ -1735,7 +1735,7 @@ open class PageViewModelTest {
             delay(pageOpenedDelay)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = doc,
                         context = root
@@ -1842,7 +1842,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = doc,
                         context = root
@@ -1901,7 +1901,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -1942,7 +1942,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -1998,7 +1998,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2055,7 +2055,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2113,7 +2113,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2178,7 +2178,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2243,7 +2243,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2348,7 +2348,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2422,7 +2422,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2472,7 +2472,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2533,7 +2533,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2599,7 +2599,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2653,7 +2653,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2712,7 +2712,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2778,7 +2778,7 @@ open class PageViewModelTest {
         stubObserveEvents()
         stubOpenPage(
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     root = root,
                     blocks = page,
                     context = root
@@ -2838,7 +2838,7 @@ open class PageViewModelTest {
         stubObserveEvents()
         stubOpenPage(
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     root = root,
                     blocks = page,
                     context = root
@@ -2899,7 +2899,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -2964,7 +2964,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3028,7 +3028,7 @@ open class PageViewModelTest {
 
         stubOpenPage(
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     root = root,
                     blocks = page,
                     context = root
@@ -3082,7 +3082,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3165,7 +3165,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3244,7 +3244,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3325,7 +3325,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3385,7 +3385,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3502,7 +3502,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -3676,7 +3676,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4021,7 +4021,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4136,7 +4136,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4259,7 +4259,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4402,7 +4402,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4543,7 +4543,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4676,7 +4676,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root
@@ -4858,7 +4858,7 @@ open class PageViewModelTest {
             delay(100)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = root,
                         blocks = page,
                         context = root

@@ -18,7 +18,7 @@ sealed class Event {
             ) : BlockEvent()
         }
 
-        data class ShowBlock(
+        data class ShowObject(
             override val context: Id,
             val root: Id,
             val details: Block.Details = Block.Details(emptyMap()),

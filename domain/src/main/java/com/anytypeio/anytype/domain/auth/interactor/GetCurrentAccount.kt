@@ -25,9 +25,9 @@ class GetCurrentAccount(
 
         val payload = repo.openProfile(config.profile)
 
-        val event = payload.events.first { event -> event is Event.Command.ShowBlock }
+        val event = payload.events.first { event -> event is Event.Command.ShowObject }
 
-        val details = (event as Event.Command.ShowBlock).details.details[config.profile]
+        val details = (event as Event.Command.ShowObject).details.details[config.profile]
 
         val name = details?.name.orEmpty()
 

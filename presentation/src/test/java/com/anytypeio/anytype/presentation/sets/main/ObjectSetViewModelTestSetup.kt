@@ -95,7 +95,6 @@ open class ObjectSetViewModelTestSetup {
         doc: List<Block> = emptyList(),
         details: Block.Details = Block.Details(),
         objectTypes: List<ObjectType> = emptyList(),
-        objectTypePerObject: Map<String, String> = emptyMap(),
         relations: List<Relation> = emptyList(),
         additionalEvents: List<Event> = emptyList(),
         dataViewRestrictions: List<DataViewRestrictions> = emptyList()
@@ -107,7 +106,7 @@ open class ObjectSetViewModelTestSetup {
                 Payload(
                     context = root,
                     events = listOf(
-                        Event.Command.ShowBlock(
+                        Event.Command.ShowObject(
                             context = root,
                             root = root,
                             blocks = doc,

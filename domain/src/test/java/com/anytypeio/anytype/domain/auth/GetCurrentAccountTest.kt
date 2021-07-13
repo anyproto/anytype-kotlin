@@ -76,7 +76,7 @@ class GetCurrentAccountTest {
         stubOpenProfile(
             context = context,
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     context = context,
                     details = Block.Details(
                         details = mapOf(
@@ -125,7 +125,7 @@ class GetCurrentAccountTest {
         stubOpenProfile(
             context = context,
             events = listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     context = context,
                     details = Block.Details(
                         details = mapOf(

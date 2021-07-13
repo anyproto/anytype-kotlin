@@ -107,7 +107,7 @@ class BlockReadModeTest : PageViewModelTest() {
         delay(100)
         emit(
             listOf(
-                Event.Command.ShowBlock(
+                Event.Command.ShowObject(
                     root = root,
                     blocks = page,
                     context = root

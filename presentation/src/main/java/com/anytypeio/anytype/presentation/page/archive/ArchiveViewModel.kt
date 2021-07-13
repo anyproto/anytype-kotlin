@@ -102,7 +102,7 @@ class ArchiveViewModel(
 
     private suspend fun processEvents(events: List<Event>) {
         events.forEach { event ->
-            if (event is Event.Command.ShowBlock) {
+            if (event is Event.Command.ShowObject) {
                 orchestrator.stores.details.update(event.details)
             }
             if (event is Event.Command.Details.Set) {

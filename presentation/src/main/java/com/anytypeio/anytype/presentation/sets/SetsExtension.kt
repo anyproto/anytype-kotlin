@@ -2,11 +2,9 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.`object`.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.sets.model.*
 
@@ -201,7 +199,7 @@ fun Map<String, Any?>.buildObjectViews(
                 image = details[value]?.iconImage?.let {
                     if (it.isEmpty()) null else builder.thumbnail(it)
                 },
-                type = details[value]?.type
+                types = details[value]?.type
             )
         )
     } else if (value is List<*>) {
@@ -214,7 +212,7 @@ fun Map<String, Any?>.buildObjectViews(
                     image = details[id]?.iconImage?.let {
                         if (it.isEmpty()) null else builder.thumbnail(it)
                     },
-                    type = details[id]?.type
+                    types = details[id]?.type
                 )
             )
         }

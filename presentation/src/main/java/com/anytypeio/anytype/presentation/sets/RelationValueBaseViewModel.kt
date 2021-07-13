@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.relations.getObjectTypeById
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
@@ -130,7 +131,7 @@ abstract class RelationValueBaseViewModel(
                     }
                 } else if (value is Id) {
                     val detail = details.provide()[value]
-                    val objectType = types.provide().find { it.url == detail?.type }
+                    val objectType = types.provide().getObjectTypeById(detail?.type)
                     items.add(
                         RelationValueView.Object(
                             id = value,

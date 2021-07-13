@@ -50,7 +50,7 @@ class ObjectSetReducer {
         Timber.d("Reducing event: $event")
         val effects = mutableListOf<SideEffect>()
         val newState = when (event) {
-            is Command.ShowBlock -> {
+            is Command.ShowObject -> {
                 state.copy(
                     blocks = event.blocks,
                     details = state.details.updateFields(event.details.details),

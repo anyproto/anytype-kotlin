@@ -50,7 +50,7 @@ class MiddlewareEventChannelTest {
         }
 
         val expected = listOf(
-            Event.Command.ShowBlock(
+            Event.Command.ShowObject(
                 root = context,
                 blocks = emptyList(),
                 context = context
@@ -115,7 +115,7 @@ class MiddlewareEventChannelTest {
         }
 
         val expected = listOf(
-            Event.Command.ShowBlock(
+            Event.Command.ShowObject(
                 root = context,
                 blocks = emptyList(),
                 context = context

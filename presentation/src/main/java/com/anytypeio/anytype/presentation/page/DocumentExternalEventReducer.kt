@@ -21,7 +21,7 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
         }
 
     override suspend fun reduce(state: List<Block>, event: Event): List<Block> = when (event) {
-        is Event.Command.ShowBlock -> event.blocks
+        is Event.Command.ShowObject -> event.blocks
         is Event.Command.AddBlock -> state + event.blocks
         is Event.Command.UpdateStructure -> state.replace(
             replacement = { target ->

@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.page.editor.Proxy
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.relations.getObjectTypeById
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.relations.tabs
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -301,7 +302,7 @@ class ObjectSetViewModel(
                     val obj = cell.objects.first()
                     onObjectClicked(
                         id = obj.id,
-                        type = obj.type
+                        types = obj.types
                     )
                     return
                 } else {
@@ -373,9 +374,18 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onObjectClicked(id: Id, type: String?) {
-        Timber.d("onObjectClicked, id:[$id], type:[$type]")
-        reducer.state.value.objectTypes.find { it.url == type }?.let { targetType ->
+    fun onObjectClicked(id: Id, types: List<String>?) {
+        Timber.d("onObjectClicked, id:[$id], type:[$types]")
+
+        if (types.isNullOrEmpty()) {
+            Timber.e("onObjectClicked, types is null or empty, layout type unknown")
+            toast(OBJECT_TYPE_UNKNOWN)
+            return
+        }
+
+        val targetType = reducer.state.value.objectTypes.getObjectTypeById(types)
+
+        if (targetType != null) {
             when (targetType.layout) {
                 ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
                     navigate(EventWrapper(AppNavigation.Command.OpenPage(id)))
@@ -387,6 +397,9 @@ class ObjectSetViewModel(
                 }
                 else -> Timber.d("Unexpected layout: ${targetType.layout}")
             }
+        } else {
+            Timber.e("onObjectClicked, types is null or empty, layout type unknown")
+            toast(OBJECT_TYPE_UNKNOWN)
         }
     }
 
@@ -712,5 +725,6 @@ class ObjectSetViewModel(
         const val TITLE_CHANNEL_DISPATCH_DELAY = 300L
         const val NOT_ALLOWED = "Not allowed for this set"
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
+        const val OBJECT_TYPE_UNKNOWN = "Can't open object, object type unknown"
     }
 }

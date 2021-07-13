@@ -300,7 +300,7 @@ class PageViewModel(
         Timber.d("Blocks before handling events: $blocks")
         Timber.d("Events: $events")
         events.forEach { event ->
-            if (event is Event.Command.ShowBlock) {
+            if (event is Event.Command.ShowObject) {
                 orchestrator.stores.details.update(event.details)
                 orchestrator.stores.relations.update(event.relations)
                 orchestrator.stores.objectTypes.update(event.objectTypes)
@@ -613,8 +613,8 @@ class PageViewModel(
     }
 
     private fun onStartFocusing(payload: Payload) {
-        val event = payload.events.find { it is Event.Command.ShowBlock }
-        if (event is Event.Command.ShowBlock) {
+        val event = payload.events.find { it is Event.Command.ShowObject }
+        if (event is Event.Command.ShowObject) {
             val root = event.blocks.find { it.id == context }
             when {
                 root == null -> Timber.e("Could not find the root block on initial focusing")

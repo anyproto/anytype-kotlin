@@ -286,7 +286,7 @@ open class EditorPresentationTestSetup {
                     Payload(
                         context = root,
                         events = listOf(
-                            Event.Command.ShowBlock(
+                            Event.Command.ShowObject(
                                 context = root,
                                 root = root,
                                 details = details,

@@ -20,7 +20,7 @@ interface HomeDashboardEventConverter {
                 details = event.details,
                 builder = builder
             )
-            is Event.Command.ShowBlock -> when (event.type) {
+            is Event.Command.ShowObject -> when (event.type) {
                 SmartBlockType.HOME -> {
                     HomeDashboardStateMachine.Event.OnShowDashboard(
                         blocks = event.blocks,

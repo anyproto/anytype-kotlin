@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.Block.Content.Text.Style
+import com.anytypeio.anytype.core_models.ext.typeOf
 
 /**
  * Represents block as basic data structure.
@@ -36,7 +37,12 @@ data class Block(
         val lang: String? by default
         val fileExt: String? by default
         val fileMimeType: String? by default
-        val type: String? by default
+        val type: List<String>
+            get() = when (val value = map[TYPE_KEY]) {
+                is String -> listOf(value)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
         val layout: Double? by default
         val id: Id? by default
 

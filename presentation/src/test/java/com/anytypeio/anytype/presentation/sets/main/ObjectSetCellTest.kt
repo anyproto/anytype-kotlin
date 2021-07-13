@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -197,5 +198,271 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         val result = vm.toasts.stream().first()
 
         assertEquals(ObjectSetViewModel.NOT_ALLOWED_CELL, result)
+    }
+
+    @Test
+    fun `should show error toast on open readonly object as page 1`() = runBlocking {
+
+        val objectTypePage = "_otpage"
+        val objectTypeImage = "_otimage"
+        val objectTypeSet = "_otset"
+
+        val objectTypes = listOf(
+            ObjectType(
+                url = objectTypePage,
+                name = "Page",
+                relations = listOf(),
+                layout = ObjectType.Layout.BASIC,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.PAGE),
+                isHidden = false,
+                description = "page"
+            ),
+            ObjectType(
+                url = objectTypeImage,
+                name = "Image",
+                relations = listOf(),
+                layout = ObjectType.Layout.IMAGE,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.FILE),
+                isHidden = false,
+                description = "image"
+            ),
+            ObjectType(
+                url = objectTypeSet,
+                name = "Set",
+                relations = listOf(),
+                layout = ObjectType.Layout.SET,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.SET),
+                isHidden = false,
+                description = "set"
+            )
+        )
+
+        stubInterceptEvents()
+        stubOpenObjectSet(
+            doc = listOf(
+                header,
+                title,
+                dv
+            ),
+            objectTypes = objectTypes
+        )
+
+        stubSetActiveViewer()
+        stubUpdateDataViewViewer()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        vm.onObjectClicked(id = "dsadas", types = listOf())
+
+        val result = vm.toasts.stream().first()
+
+        assertEquals(ObjectSetViewModel.OBJECT_TYPE_UNKNOWN, result)
+    }
+
+    @Test
+    fun `should show error toast on open readonly object as page 2`() = runBlocking {
+
+        val objectTypePage = "_otpage"
+        val objectTypeImage = "_otimage"
+        val objectTypeSet = "_otset"
+
+        val objectTypes = listOf(
+            ObjectType(
+                url = objectTypePage,
+                name = "Page",
+                relations = listOf(),
+                layout = ObjectType.Layout.BASIC,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.PAGE),
+                isHidden = false,
+                description = "page"
+            ),
+            ObjectType(
+                url = objectTypeImage,
+                name = "Image",
+                relations = listOf(),
+                layout = ObjectType.Layout.IMAGE,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.FILE),
+                isHidden = false,
+                description = "image"
+            ),
+            ObjectType(
+                url = objectTypeSet,
+                name = "Set",
+                relations = listOf(),
+                layout = ObjectType.Layout.SET,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.SET),
+                isHidden = false,
+                description = "set"
+            )
+        )
+
+        stubInterceptEvents()
+        stubOpenObjectSet(
+            doc = listOf(
+                header,
+                title,
+                dv
+            ),
+            objectTypes = objectTypes
+        )
+
+        stubSetActiveViewer()
+        stubUpdateDataViewViewer()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        vm.onObjectClicked(id = "dsadas", types = listOf("p6Oa"))
+
+        val result = vm.toasts.stream().first()
+
+        assertEquals(ObjectSetViewModel.OBJECT_TYPE_UNKNOWN, result)
+    }
+
+    @Test
+    fun `should proceed with open page when open readonly object as page`() = runBlocking {
+
+        val objectTypePage = "_otpage"
+        val objectTypeImage = "_otimage"
+        val objectTypeSet = "_otset"
+        val objectId = "UnI9A1"
+
+        val objectTypes = listOf(
+            ObjectType(
+                url = objectTypePage,
+                name = "Page",
+                relations = listOf(),
+                layout = ObjectType.Layout.BASIC,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.PAGE),
+                isHidden = false,
+                description = "page"
+            ),
+            ObjectType(
+                url = objectTypeImage,
+                name = "Image",
+                relations = listOf(),
+                layout = ObjectType.Layout.IMAGE,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.FILE),
+                isHidden = false,
+                description = "image"
+            ),
+            ObjectType(
+                url = objectTypeSet,
+                name = "Set",
+                relations = listOf(),
+                layout = ObjectType.Layout.SET,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.SET),
+                isHidden = false,
+                description = "set"
+            )
+        )
+
+        stubInterceptEvents()
+        stubOpenObjectSet(
+            doc = listOf(
+                header,
+                title,
+                dv
+            ),
+            objectTypes = objectTypes
+        )
+
+        stubSetActiveViewer()
+        stubUpdateDataViewViewer()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        vm.onObjectClicked(id = objectId, types = listOf(objectTypePage))
+
+        val result = vm.navigation.value!!.peekContent()
+
+        assertEquals(AppNavigation.Command.OpenPage(id = objectId), result)
+    }
+
+    @Test
+    fun `should proceed with open set when open readonly object as set`() = runBlocking {
+
+        val objectTypePage = "_otpage"
+        val objectTypeImage = "_otimage"
+        val objectTypeSet = "_otset"
+        val objectId = "UnI9A1"
+
+        val objectTypes = listOf(
+            ObjectType(
+                url = objectTypePage,
+                name = "Page",
+                relations = listOf(),
+                layout = ObjectType.Layout.BASIC,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.PAGE),
+                isHidden = false,
+                description = "page"
+            ),
+            ObjectType(
+                url = objectTypeImage,
+                name = "Image",
+                relations = listOf(),
+                layout = ObjectType.Layout.IMAGE,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.FILE),
+                isHidden = false,
+                description = "image"
+            ),
+            ObjectType(
+                url = objectTypeSet,
+                name = "Set",
+                relations = listOf(),
+                layout = ObjectType.Layout.SET,
+                emoji = "",
+                smartBlockTypes = listOf(SmartBlockType.SET),
+                isHidden = false,
+                description = "set"
+            )
+        )
+
+        stubInterceptEvents()
+        stubOpenObjectSet(
+            doc = listOf(
+                header,
+                title,
+                dv
+            ),
+            objectTypes = objectTypes
+        )
+
+        stubSetActiveViewer()
+        stubUpdateDataViewViewer()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        vm.onObjectClicked(id = objectId, types = listOf(objectTypeSet, objectTypeImage))
+
+        val result = vm.navigation.value!!.peekContent()
+
+        assertEquals(AppNavigation.Command.OpenObjectSet(target = objectId), result)
     }
 }

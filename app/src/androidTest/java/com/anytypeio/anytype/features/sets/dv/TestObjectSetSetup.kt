@@ -121,7 +121,7 @@ abstract class TestObjectSetSetup {
             onBlocking { openObjectSet(ctx) } doReturn Payload(
                 context = ctx,
                 events = listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         context = ctx,
                         root = ctx,
                         details = details,
@@ -147,7 +147,7 @@ abstract class TestObjectSetSetup {
             onBlocking { openObjectSet(ctx) } doReturn Payload(
                 context = ctx,
                 events = listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         context = ctx,
                         root = ctx,
                         details = details,

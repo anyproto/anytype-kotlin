@@ -399,7 +399,8 @@ fun Relation.toObjects(
                     id = it,
                     name = details[it]?.name.orEmpty(),
                     emoji = details[it]?.iconEmoji,
-                    image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(image)
+                    image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(image),
+                    types = details[it]?.type
                 )
             )
         }
@@ -570,3 +571,13 @@ fun Relation.toFilterValue(
     }
 
 fun List<ObjectType>.getTypePrettyName(type: String): String? = firstOrNull { it.url == type }?.name
+
+fun List<ObjectType>.getObjectTypeById(types: List<String>?): ObjectType? {
+    types?.forEach { type ->
+        val objectType = firstOrNull { it.url == type }
+        if (objectType != null) {
+            return objectType
+        }
+    }
+    return null
+}

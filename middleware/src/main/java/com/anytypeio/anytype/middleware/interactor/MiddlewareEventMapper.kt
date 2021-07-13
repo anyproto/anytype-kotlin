@@ -21,7 +21,7 @@ fun anytype.Event.Message.toCoreModels(
         val event = objectShow
         checkNotNull(event)
         val type = event.type.toCoreModel()
-        Event.Command.ShowBlock(
+        Event.Command.ShowObject(
             context = context,
             root = event.rootId,
             blocks = event.blocks.toCoreModels(

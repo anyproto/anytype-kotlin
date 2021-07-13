@@ -80,7 +80,7 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             delay(delayInMillis)
             emit(
                 listOf(
-                    Event.Command.ShowBlock(
+                    Event.Command.ShowObject(
                         root = config.home,
                         context = config.home,
                         blocks = listOf(dashboard) + profile + pages,

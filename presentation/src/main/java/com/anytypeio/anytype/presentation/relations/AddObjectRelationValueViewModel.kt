@@ -143,7 +143,7 @@ abstract class AddObjectRelationValueViewModel(
                 if (value is List<*>) {
                     value.typeOf<Id>().forEach { id ->
                         val detail = details.provide()[id]
-                        val objectType = types.provide().find { it.url == detail?.type }
+                        val objectType = types.provide().getObjectTypeById(detail?.type)
                         items.add(
                             RelationValueView.Object(
                                 id = id,
@@ -161,7 +161,7 @@ abstract class AddObjectRelationValueViewModel(
                     }
                 } else if (value is Id) {
                     val detail = details.provide()[value]
-                    val objectType = types.provide().find { it.url == detail?.type }
+                    val objectType = types.provide().getObjectTypeById(detail?.type)
                     items.add(
                         RelationValueView.Object(
                             id = value,

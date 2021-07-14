@@ -49,7 +49,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_template)
                     tvActionTitle.setText(R.string.template)
                 }
-                else -> TODO()
+                ObjectAction.RESTORE -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
+                    tvActionTitle.setText(R.string.restore)
+                }
             }
         }
     }

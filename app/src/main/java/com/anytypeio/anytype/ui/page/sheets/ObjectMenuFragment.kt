@@ -21,9 +21,11 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.status.SyncStatus
+import com.anytypeio.anytype.presentation.`object`.ObjectAction
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
@@ -54,7 +56,17 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
     private val vm by viewModels<ObjectMenuViewModel> { factory }
 
     private val actionAdapter by lazy {
-        ObjectActionAdapter { action -> vm.onActionClick(ctx, action) }
+        ObjectActionAdapter { action ->
+            if (action == ObjectAction.SEARCH_ON_PAGE) {
+                // Temp. workaround. Action should be dispatched via vm dispatcher.
+                withParent<DocumentMenuActionReceiver> {
+                    onSearchOnPageClicked()
+                    dismiss()
+                }
+            } else {
+                vm.onActionClick(ctx, action)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -208,7 +220,11 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(ctx)
+        vm.onStart(
+            ctx = ctx,
+            isArchived = isArchived,
+            isProfile = isProfile
+        )
     }
 
     override fun onResume() {

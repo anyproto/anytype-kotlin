@@ -24,30 +24,42 @@ class ObjectMenuViewModel(
 
     val actions = MutableStateFlow(emptyList<ObjectAction>())
 
-    fun onStart(ctx: Id) {
+    fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
         viewModelScope.launch {
             checkIsFavorite(CheckIsFavorite.Params(ctx)).process(
                 failure = {
                     Timber.e(it, "Error while checking is-favorite status for object")
                 },
                 success = { isFavorite ->
-                    if (isFavorite)
-                        actions.value = listOf(
-                            ObjectAction.DELETE,
-                            ObjectAction.REMOVE_FROM_FAVOURITE,
-                            ObjectAction.SEARCH_ON_PAGE,
-                            ObjectAction.USE_AS_TEMPLATE
-                        )
-                    else
-                        actions.value = listOf(
-                            ObjectAction.DELETE,
-                            ObjectAction.ADD_TO_FAVOURITE,
-                            ObjectAction.SEARCH_ON_PAGE,
-                            ObjectAction.USE_AS_TEMPLATE
-                        )
+                    actions.value = buildActions(
+                        isArchived = isArchived,
+                        isFavorite = isFavorite,
+                        isProfile = isProfile
+                    )
                 }
             )
         }
+    }
+
+    private fun buildActions(
+        isArchived: Boolean,
+        isFavorite: Boolean,
+        isProfile: Boolean
+    ): MutableList<ObjectAction> = mutableListOf<ObjectAction>().apply {
+        if (!isProfile) {
+            if (isArchived) {
+                add(ObjectAction.RESTORE)
+            } else {
+                add(ObjectAction.DELETE)
+            }
+        }
+        if (isFavorite) {
+            add(ObjectAction.REMOVE_FROM_FAVOURITE)
+        } else {
+            add(ObjectAction.ADD_TO_FAVOURITE)
+        }
+        add(ObjectAction.SEARCH_ON_PAGE)
+        add(ObjectAction.USE_AS_TEMPLATE)
     }
 
     fun onActionClick(ctx: Id, action: ObjectAction) {
@@ -59,40 +71,50 @@ class ObjectMenuViewModel(
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
             }
             ObjectAction.ADD_TO_FAVOURITE -> {
-                viewModelScope.launch {
-                    addToFavorite(
-                        AddToFavorite.Params(
-                            target = ctx
-                        )
-                    ).process(
-                        failure = { Timber.e(it, "Error while adding to favorites.") },
-                        success = {
-                            _toasts.emit(ADD_TO_FAVORITE_SUCCESS_MSG).also {
-                                isDismissed.value = true
-                            }
-                        }
-                    )
-                }
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+                //proceedWithAddingToFavorites(ctx)
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                viewModelScope.launch {
-                    removeFromFavorite(
-                        RemoveFromFavorite.Params(
-                            target = ctx
-                        )
-                    ).process(
-                        failure = { Timber.e(it, "Error while removing from favorite.") },
-                        success = {
-                            _toasts.emit(REMOVE_FROM_FAVORITE_SUCCESS_MSG).also {
-                                isDismissed.value = true
-                            }
-                        }
-                    )
-                }
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+                //proceedWithRemovingFromFavorites(ctx)
             }
             else -> {
-                viewModelScope.launch { _toasts.emit("TODO") }
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
             }
+        }
+    }
+
+    private fun proceedWithRemovingFromFavorites(ctx: Id) {
+        viewModelScope.launch {
+            removeFromFavorite(
+                RemoveFromFavorite.Params(
+                    target = ctx
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing from favorite.") },
+                success = {
+                    _toasts.emit(REMOVE_FROM_FAVORITE_SUCCESS_MSG).also {
+                        isDismissed.value = true
+                    }
+                }
+            )
+        }
+    }
+
+    private fun proceedWithAddingToFavorites(ctx: Id) {
+        viewModelScope.launch {
+            addToFavorite(
+                AddToFavorite.Params(
+                    target = ctx
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while adding to favorites.") },
+                success = {
+                    _toasts.emit(ADD_TO_FAVORITE_SUCCESS_MSG).also {
+                        isDismissed.value = true
+                    }
+                }
+            )
         }
     }
 
@@ -145,5 +167,6 @@ class ObjectMenuViewModel(
             "Error while changing is-archived status for this object. Please, try again later."
         const val ADD_TO_FAVORITE_SUCCESS_MSG = "Object added to favorites."
         const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
+        const val COMING_SOON_MSG = "Coming soon..."
     }
 }

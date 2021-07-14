@@ -393,5 +393,7 @@
     <string name="name_is_required">Name is required</string>
     <string name="favourite">Favorite</string>
     <string name="template">Template</string>
+    <string name="restore">Restore</string>
+    <string name="unfavorite">Unfavorite</string>
 
 </resources>

@@ -176,7 +176,7 @@ class BlockMiddleware(
         command: Command.UploadFile
     ): String = middleware.uploadFile(command).hash
 
-    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks {
+    override suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
         return middleware.getObjectInfoWithLinks(pageId).toCoreModel()
     }
 

@@ -199,8 +199,9 @@ class BlockDataRepository(
         command: Command.UploadFile
     ): Hash = factory.remote.uploadFile(command)
 
-    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks =
-        factory.remote.getPageInfoWithLinks(pageId)
+    override suspend fun getObjectInfoWithLinks(
+        pageId: String
+    ): ObjectInfoWithLinks = factory.remote.getObjectInfoWithLinks(pageId)
 
     override suspend fun getListPages(): List<DocumentInfo> = factory.remote.getListPages()
 

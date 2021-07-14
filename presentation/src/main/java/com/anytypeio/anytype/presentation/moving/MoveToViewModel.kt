@@ -2,16 +2,16 @@ package com.anytypeio.anytype.presentation.moving
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetPageInfoWithLinks
+import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
 import com.anytypeio.anytype.presentation.mapper.toEmojiView
 import com.anytypeio.anytype.presentation.mapper.toImageView
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -24,7 +24,7 @@ import timber.log.Timber
 
 class MoveToViewModel(
     private val urlBuilder: UrlBuilder,
-    private val getPageInfoWithLinks: GetPageInfoWithLinks,
+    private val getObjectInfoWithLinks: GetObjectInfoWithLinks,
     private val getConfig: GetConfig,
     private val move: Move
 ) : ViewStateViewModel<ViewState<PageNavigationView>>(),
@@ -57,7 +57,7 @@ class MoveToViewModel(
     fun proceedWithGettingDocumentLinks(target: String) {
         stateData.postValue(ViewState.Loading)
         viewModelScope.launch {
-            getPageInfoWithLinks.invoke(GetPageInfoWithLinks.Params(pageId = target)).proceed(
+            getObjectInfoWithLinks.invoke(GetObjectInfoWithLinks.Params(pageId = target)).proceed(
                 failure = { error ->
                     error.timber()
                     stateData.postValue(ViewState.Error(error.message ?: "Unknown error"))

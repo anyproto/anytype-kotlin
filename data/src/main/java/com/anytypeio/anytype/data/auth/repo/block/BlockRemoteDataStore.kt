@@ -153,8 +153,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.UploadFile
     ): String = remote.uploadFile(command)
 
-    override suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks =
-        remote.getPageInfoWithLinks(pageId)
+    override suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks =
+        remote.getObjectInfoWithLinks(pageId)
 
     override suspend fun getListPages(): List<DocumentInfo> = remote.getListPages()
 

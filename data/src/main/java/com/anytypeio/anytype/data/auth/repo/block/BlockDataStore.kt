@@ -50,7 +50,7 @@ interface BlockDataStore {
 
     suspend fun uploadFile(command: Command.UploadFile): String
 
-    suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
+    suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks
 
     suspend fun getListPages(): List<DocumentInfo>
 

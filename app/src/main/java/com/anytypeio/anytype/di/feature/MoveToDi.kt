@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetPageInfoWithLinks
+import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import dagger.Module
@@ -35,7 +35,7 @@ object MoveToModule {
     @Provides
     fun provideGetPageInfoWithLinks(
         repo: BlockRepository
-    ): GetPageInfoWithLinks = GetPageInfoWithLinks(repo = repo)
+    ): GetObjectInfoWithLinks = GetObjectInfoWithLinks(repo = repo)
 
     @JvmStatic
     @PerScreen
@@ -58,12 +58,12 @@ object MoveToModule {
     @Provides
     fun provideMoveToViewModelFactory(
         urlBuilder: UrlBuilder,
-        getPageInfoWithLinks: GetPageInfoWithLinks,
+        getObjectInfoWithLinks: GetObjectInfoWithLinks,
         getConfig: GetConfig,
         move: Move
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         urlBuilder = urlBuilder,
-        getPageInfoWithLinks = getPageInfoWithLinks,
+        getObjectInfoWithLinks = getObjectInfoWithLinks,
         getConfig = getConfig,
         move = move
     )

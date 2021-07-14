@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetPageInfoWithLinks
+import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
 
 class MoveToViewModelFactory(
     private val urlBuilder: UrlBuilder,
-    private val getPageInfoWithLinks: GetPageInfoWithLinks,
+    private val getObjectInfoWithLinks: GetObjectInfoWithLinks,
     private val getConfig: GetConfig,
     private val move: Move
 ) : ViewModelProvider.Factory {
@@ -18,7 +18,7 @@ class MoveToViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return MoveToViewModel(
             urlBuilder = urlBuilder,
-            getPageInfoWithLinks = getPageInfoWithLinks,
+            getObjectInfoWithLinks = getObjectInfoWithLinks,
             getConfig = getConfig,
             move = move
         ) as T

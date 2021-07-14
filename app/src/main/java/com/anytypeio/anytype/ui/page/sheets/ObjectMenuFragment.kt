@@ -206,10 +206,15 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(ctx)
+    }
+
     override fun onResume() {
         super.onResume()
         with(lifecycleScope) {
-            subscribe(vm.actions) { actionAdapter.items = it }
+            subscribe(vm.actions) { actionAdapter.submitList(it) }
             subscribe(vm.toasts) { toast(it) }
             subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
         }

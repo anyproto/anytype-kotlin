@@ -14,10 +14,10 @@ data class DocumentInfo(
     val smartBlockType: SmartBlockType
 )
 
-data class PageLinks(val inbound: List<DocumentInfo>, val outbound: List<DocumentInfo>)
+data class ObjectLinks(val inbound: List<DocumentInfo>, val outbound: List<DocumentInfo>)
 
-data class PageInfoWithLinks(
+data class ObjectInfoWithLinks(
     val id: String,
     val documentInfo: DocumentInfo,
-    val links: PageLinks
+    val links: ObjectLinks
 )

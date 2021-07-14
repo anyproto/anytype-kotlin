@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetPageInfoWithLinks
+import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
 import com.anytypeio.anytype.presentation.navigation.PageNavigationViewModelFactory
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import dagger.Module
@@ -33,21 +33,21 @@ object PageNavigationModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideGetPageInfoWithLinks(repo: BlockRepository): GetPageInfoWithLinks =
-        GetPageInfoWithLinks(repo = repo)
+    fun provideGetPageInfoWithLinks(repo: BlockRepository): GetObjectInfoWithLinks =
+        GetObjectInfoWithLinks(repo = repo)
 
     @JvmStatic
     @PerScreen
     @Provides
     fun provideNavigationViewModelFactory(
         urlBuilder: UrlBuilder,
-        getPageInfoWithLinks: GetPageInfoWithLinks,
+        getObjectInfoWithLinks: GetObjectInfoWithLinks,
         getConfig: GetConfig,
         analytics: Analytics
     ): PageNavigationViewModelFactory =
         PageNavigationViewModelFactory(
             urlBuilder = urlBuilder,
-            getPageInfoWithLinks = getPageInfoWithLinks,
+            getObjectInfoWithLinks = getObjectInfoWithLinks,
             getConfig = getConfig,
             analytics = analytics
         )

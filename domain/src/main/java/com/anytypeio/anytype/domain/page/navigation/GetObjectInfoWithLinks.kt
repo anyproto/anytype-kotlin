@@ -1,16 +1,17 @@
 package com.anytypeio.anytype.domain.page.navigation
 
-import com.anytypeio.anytype.core_models.PageInfoWithLinks
+import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class GetPageInfoWithLinks(private val repo: BlockRepository) :
-    BaseUseCase<GetPageInfoWithLinks.Response, GetPageInfoWithLinks.Params>() {
+class GetObjectInfoWithLinks(
+    private val repo: BlockRepository
+) : BaseUseCase<GetObjectInfoWithLinks.Response, GetObjectInfoWithLinks.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Response> = safe {
-        repo.getPageInfoWithLinks(
+        repo.getObjectInfoWithLinks(
             pageId = params.pageId
         ).let {
             Response(
@@ -61,6 +62,6 @@ class GetPageInfoWithLinks(private val repo: BlockRepository) :
     )
 
     data class Response(
-        val pageInfoWithLinks: PageInfoWithLinks
+        val pageInfoWithLinks: ObjectInfoWithLinks
     )
 }

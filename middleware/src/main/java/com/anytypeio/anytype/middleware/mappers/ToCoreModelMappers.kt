@@ -449,17 +449,17 @@ fun MRelationOptionScope.scope(): Relation.OptionScope = when (this) {
 }
 
 // ---------------------- NAVIGATION & SEARCH ------------------------
-fun ObjectInfoWithLinks.toCoreModel(): PageInfoWithLinks {
+fun ObjectInfoWithLinks.toCoreModel(): com.anytypeio.anytype.core_models.ObjectInfoWithLinks {
     val i = info
     checkNotNull(i)
-    return PageInfoWithLinks(
+    return ObjectInfoWithLinks(
         id = id,
-        links = links?.toCoreModel() ?: PageLinks(emptyList(), emptyList()),
+        links = links?.toCoreModel() ?: ObjectLinks(emptyList(), emptyList()),
         documentInfo = i.toCoreModel()
     )
 }
 
-fun ObjectLinksInfo.toCoreModel(): PageLinks = PageLinks(
+fun ObjectLinksInfo.toCoreModel(): ObjectLinks = ObjectLinks(
     inbound = inbound.map { it.toCoreModel() },
     outbound = outbound.map { it.toCoreModel() }
 )

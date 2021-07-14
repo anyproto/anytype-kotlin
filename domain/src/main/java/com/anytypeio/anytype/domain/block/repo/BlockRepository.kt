@@ -105,7 +105,7 @@ interface BlockRepository {
     suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
 
-    suspend fun getPageInfoWithLinks(pageId: String): PageInfoWithLinks
+    suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks
     suspend fun getListPages(): List<DocumentInfo>
 
     suspend fun linkToObject(

@@ -14,12 +14,12 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
 
-class GetPageInfoWithLinksTest {
+class GetObjectInfoWithLinksTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
     var rule = CoroutineTestRule()
-    lateinit var getPageInfoWithLinks: GetPageInfoWithLinks
+    lateinit var getObjectInfoWithLinks: GetObjectInfoWithLinks
 
     @Mock
     lateinit var repository: BlockRepository
@@ -27,7 +27,7 @@ class GetPageInfoWithLinksTest {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        getPageInfoWithLinks = GetPageInfoWithLinks(repository)
+        getObjectInfoWithLinks = GetObjectInfoWithLinks(repository)
     }
 
     @Test
@@ -36,7 +36,7 @@ class GetPageInfoWithLinksTest {
         val pageId = MockDataFactory.randomUuid()
 
         repository.stub {
-            onBlocking { getPageInfoWithLinks(pageId) } doReturn PageInfoWithLinks(
+            onBlocking { getObjectInfoWithLinks(pageId) } doReturn ObjectInfoWithLinks(
                 id = pageId,
                 documentInfo = DocumentInfo(
                     id = pageId,
@@ -45,7 +45,7 @@ class GetPageInfoWithLinksTest {
                     hasInboundLinks = true,
                     smartBlockType = SmartBlockType.PAGE
                 ),
-                links = PageLinks(
+                links = ObjectLinks(
                     inbound = listOf(
                         DocumentInfo(
                             id = "12",
@@ -98,7 +98,7 @@ class GetPageInfoWithLinksTest {
 
         runBlocking {
 
-            getPageInfoWithLinks(GetPageInfoWithLinks.Params(pageId = pageId)).proceed(
+            getObjectInfoWithLinks(GetObjectInfoWithLinks.Params(pageId = pageId)).proceed(
                 failure = {},
                 success = { response ->
                     val outbound = response.pageInfoWithLinks.links.outbound

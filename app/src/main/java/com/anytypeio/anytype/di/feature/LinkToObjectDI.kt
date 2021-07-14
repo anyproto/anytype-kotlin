@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.block.interactor.CreateLinkToObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetPageInfoWithLinks
+import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import dagger.Module
@@ -35,19 +35,19 @@ object LinkToObjectModule {
     @Provides
     fun provideGetPageInfoWithLinks(
         repo: BlockRepository
-    ): GetPageInfoWithLinks = GetPageInfoWithLinks(repo = repo)
+    ): GetObjectInfoWithLinks = GetObjectInfoWithLinks(repo = repo)
 
     @JvmStatic
     @PerScreen
     @Provides
     fun provideLinkToObjectViewModelFactory(
         urlBuilder: UrlBuilder,
-        getPageInfoWithLinks: GetPageInfoWithLinks,
+        getObjectInfoWithLinks: GetObjectInfoWithLinks,
         createLinkToObject: CreateLinkToObject,
         getConfig: GetConfig
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         urlBuilder = urlBuilder,
-        getPageInfoWithLinks = getPageInfoWithLinks,
+        getObjectInfoWithLinks = getObjectInfoWithLinks,
         createLinkToObject = createLinkToObject,
         getConfig = getConfig
     )

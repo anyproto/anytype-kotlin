@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_ui.features.`object`
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.`object`.ObjectAction
@@ -9,23 +11,16 @@ import kotlinx.android.synthetic.main.item_object_menu_action.view.*
 
 class ObjectActionAdapter(
     val onObjectActionClicked: (ObjectAction) -> Unit
-) : RecyclerView.Adapter<ObjectActionAdapter.ViewHolder>() {
-
-    var items: List<ObjectAction> = emptyList()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+) : ListAdapter<ObjectAction, ObjectActionAdapter.ViewHolder>(Differ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent).apply {
-        itemView.setOnClickListener {
+        itemView.btnContainer.setOnClickListener {
             val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION)
-                onObjectActionClicked(items[pos])
+                onObjectActionClicked(getItem(pos))
         }
     }
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
-    override fun getItemCount(): Int = items.size
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(getItem(position))
 
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(
@@ -42,6 +37,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_add_to_favorites)
                     tvActionTitle.setText(R.string.favourite)
                 }
+                ObjectAction.REMOVE_FROM_FAVOURITE -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_add_to_favorites)
+                    tvActionTitle.setText(R.string.unfavorite)
+                }
                 ObjectAction.SEARCH_ON_PAGE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_search)
                     tvActionTitle.setText(R.string.search)
@@ -50,8 +49,20 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_template)
                     tvActionTitle.setText(R.string.template)
                 }
-                ObjectAction.MOVE_TO -> TODO()
+                else -> TODO()
             }
         }
+    }
+
+    object Differ : DiffUtil.ItemCallback<ObjectAction>() {
+        override fun areItemsTheSame(
+            oldItem: ObjectAction,
+            newItem: ObjectAction
+        ): Boolean = oldItem.name == newItem.name
+
+        override fun areContentsTheSame(
+            oldItem: ObjectAction,
+            newItem: ObjectAction
+        ): Boolean = oldItem == newItem
     }
 }

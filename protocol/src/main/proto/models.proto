@@ -107,7 +107,7 @@ message Block {
         */
         message Link {
             string targetBlockId = 1; // id of the target block
-            Style style = 2;
+            Style style = 2; // deprecated
             google.protobuf.Struct fields = 3;
 
             enum Style {

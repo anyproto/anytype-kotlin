@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.page.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.page
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.profile

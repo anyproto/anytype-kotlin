@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.status
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.domain.base.FlowUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

@@ -20,6 +20,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.presentation.relations.providers.*
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -79,6 +81,7 @@ object ObjectSetModule {
         updateDataViewRecord: UpdateDataViewRecord,
         updateText: UpdateText,
         interceptEvents: InterceptEvents,
+        interceptThreadStatus: InterceptThreadStatus,
         createDataViewRecord: CreateDataViewRecord,
         reducer: ObjectSetReducer,
         dispatcher: Dispatcher<Payload>,
@@ -95,6 +98,7 @@ object ObjectSetModule {
         createDataViewRecord = createDataViewRecord,
         updateText = updateText,
         interceptEvents = interceptEvents,
+        interceptThreadStatus = interceptThreadStatus,
         reducer = reducer,
         dispatcher = dispatcher,
         objectSetRecordCache = objectSetRecordCache,
@@ -157,6 +161,15 @@ object ObjectSetModule {
     ): InterceptEvents = InterceptEvents(
         channel = channel,
         context = Dispatchers.IO
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideInterceptThreadStatus(
+        channel: ThreadStatusChannel
+    ) : InterceptThreadStatus = InterceptThreadStatus(
+        channel = channel
     )
 
     @JvmStatic

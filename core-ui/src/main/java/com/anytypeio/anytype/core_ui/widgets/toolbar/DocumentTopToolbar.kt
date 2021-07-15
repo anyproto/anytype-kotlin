@@ -9,11 +9,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import kotlinx.android.synthetic.main.widget_document_top_toolbar.view.*
 
 class DocumentTopToolbar : ConstraintLayout {
 
-    val status: View get() = syncStatusBadge
+    val status: StatusBadgeWidget get() = syncStatusBadge
     val back: View get() = toolbarBackButton
     val menu: View get() = toolbarMenu
     val container: FrameLayout get() = toolbarIconContainer

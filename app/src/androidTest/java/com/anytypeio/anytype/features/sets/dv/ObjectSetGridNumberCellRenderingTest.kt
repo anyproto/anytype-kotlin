@@ -113,6 +113,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
@@ -206,6 +208,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
@@ -299,6 +303,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
@@ -392,6 +398,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
@@ -485,6 +493,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
@@ -500,7 +510,6 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvRows.rVMatcher()) {
-
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.tvText).checkHasText("1234.0564321")
         }
@@ -578,6 +587,8 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),
@@ -593,7 +604,6 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvRows.rVMatcher()) {
-
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.tvText).checkHasText("-1234")
         }

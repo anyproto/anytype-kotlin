@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
@@ -43,12 +42,11 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Text
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
-import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
-import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.page.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.page.scrollandmove.DefaultScrollAndMoveTargetDescriptor
@@ -62,7 +60,6 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.page.PageViewModel
@@ -689,18 +686,7 @@ open class PageFragment :
     }
 
     private fun bindSyncStatus(status: SyncStatus?) {
-        when (status) {
-            SyncStatus.UNKNOWN, SyncStatus.FAILED, SyncStatus.OFFLINE -> topToolbar.status.tint(
-                color = requireContext().color(R.color.sync_status_red)
-            )
-            SyncStatus.SYNCING -> topToolbar.status.tint(
-                color = requireContext().color(R.color.sync_status_orange)
-            )
-            SyncStatus.SYNCED -> topToolbar.status.tint(
-                color = requireContext().color(R.color.sync_status_green)
-            )
-            else -> topToolbar.status.tint(Color.WHITE)
-        }
+        topToolbar.status.bind(status)
     }
 
     override fun onDestroyView() {

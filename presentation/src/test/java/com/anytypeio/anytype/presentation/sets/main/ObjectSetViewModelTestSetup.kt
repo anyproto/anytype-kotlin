@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -55,6 +56,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var setActiveViewer: SetActiveViewer
 
     @Mock
+    lateinit var interceptThreadStatus: InterceptThreadStatus
+
+    @Mock
     lateinit var gateway: Gateway
 
     val dispatcher = Dispatcher.Default<Payload>()
@@ -73,6 +77,7 @@ open class ObjectSetViewModelTestSetup {
         updateDataViewViewer = updateDataViewViewer,
         updateText = updateText,
         interceptEvents = interceptEvents,
+        interceptThreadStatus = interceptThreadStatus,
         createDataViewRecord = createDataViewRecord,
         setActiveViewer = setActiveViewer,
         dispatcher = dispatcher,

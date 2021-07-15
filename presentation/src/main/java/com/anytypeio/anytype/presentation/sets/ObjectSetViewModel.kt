@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -43,12 +44,14 @@ class ObjectSetViewModel(
     private val createDataViewRecord: CreateDataViewRecord,
     private val updateText: UpdateText,
     private val interceptEvents: InterceptEvents,
+    private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
+    val status = MutableStateFlow(SyncStatus.UNKNOWN)
 
     private val total = MutableStateFlow(0)
     private val offset = MutableStateFlow(0)
@@ -145,11 +148,19 @@ class ObjectSetViewModel(
     fun onStart(ctx: Id) {
         Timber.d("onStart, ctx:[$ctx]")
         context = ctx
+
         jobs += viewModelScope.launch {
             interceptEvents
                 .build(InterceptEvents.Params(context))
                 .collect { events -> reducer.dispatch(events) }
         }
+
+        jobs += viewModelScope.launch {
+            interceptThreadStatus
+                .build(InterceptThreadStatus.Params(ctx))
+                .collect { status.value = it }
+        }
+
         viewModelScope.launch {
             isLoading.value = true
             openObjectSet(ctx).process(

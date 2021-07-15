@@ -113,7 +113,6 @@ open class ObjectSetFragment :
             }
             subscribe(objectSetIcon.clicks()) { vm.onIconClicked() }
             subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
-            subscribe(icBack.clicks()) { vm.onBackButtonPressed() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
                 vm.onViewerFiltersClicked()
@@ -198,6 +197,7 @@ open class ObjectSetFragment :
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         lifecycleScope.subscribe(vm.toasts.stream()) { toast(it) }
+        lifecycleScope.subscribe(vm.status) { statusBadge.bind(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }

@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.tint
@@ -24,7 +25,6 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.domain.status.SyncStatus
 import com.anytypeio.anytype.presentation.`object`.ObjectAction
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment

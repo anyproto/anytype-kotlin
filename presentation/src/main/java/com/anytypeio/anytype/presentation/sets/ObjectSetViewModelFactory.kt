@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
@@ -22,6 +23,7 @@ class ObjectSetViewModelFactory(
     private val createDataViewRecord: CreateDataViewRecord,
     private val updateText: UpdateText,
     private val interceptEvents: InterceptEvents,
+    private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
@@ -40,6 +42,7 @@ class ObjectSetViewModelFactory(
             createDataViewRecord = createDataViewRecord,
             updateText = updateText,
             interceptEvents = interceptEvents,
+            interceptThreadStatus = interceptThreadStatus,
             dispatcher = dispatcher,
             objectSetRecordCache = objectSetRecordCache,
             urlBuilder = urlBuilder,

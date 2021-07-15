@@ -13,6 +13,8 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
+import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
@@ -37,6 +39,7 @@ abstract class TestObjectSetSetup {
     private lateinit var createDataViewRecord: CreateDataViewRecord
     private lateinit var closeBlock: CloseBlock
     private lateinit var setActiveViewer: SetActiveViewer
+    private lateinit var interceptThreadStatus: InterceptThreadStatus
 
     lateinit var urlBuilder: UrlBuilder
 
@@ -46,6 +49,8 @@ abstract class TestObjectSetSetup {
     lateinit var gateway: Gateway
     @Mock
     lateinit var interceptEvents: InterceptEvents
+    @Mock
+    lateinit var threadStatusChannel: ThreadStatusChannel
 
     private val session = ObjectSetSession()
     private val reducer = ObjectSetReducer()
@@ -85,6 +90,7 @@ abstract class TestObjectSetSetup {
         updateDataViewRecord = UpdateDataViewRecord(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)
         setActiveViewer = SetActiveViewer(repo)
+        interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         closeBlock = CloseBlock(repo)
         urlBuilder = UrlBuilder(gateway)
 
@@ -93,6 +99,7 @@ abstract class TestObjectSetSetup {
             closeBlock = closeBlock,
             addDataViewRelation = addDataViewRelation,
             interceptEvents = interceptEvents,
+            interceptThreadStatus = interceptThreadStatus,
             updateDataViewViewer = updateDataViewViewer,
             setActiveViewer = setActiveViewer,
             createDataViewRecord = createDataViewRecord,
@@ -109,6 +116,29 @@ abstract class TestObjectSetSetup {
     fun stubInterceptEvents() {
         interceptEvents.stub {
             onBlocking { build(any()) } doReturn emptyFlow()
+        }
+    }
+
+    fun stubSetActiveViewer() {
+        repo.stub {
+            onBlocking {
+                setActiveDataViewViewer(
+                    context = any(),
+                    block = any(),
+                    view = any(),
+                    offset = any(),
+                    limit = any()
+                )
+            } doReturn Payload(
+                context = ctx,
+                events = emptyList()
+            )
+        }
+    }
+
+    fun stubInterceptThreadStatus() {
+        threadStatusChannel.stub {
+            onBlocking { observe(any()) } doReturn emptyFlow()
         }
     }
 

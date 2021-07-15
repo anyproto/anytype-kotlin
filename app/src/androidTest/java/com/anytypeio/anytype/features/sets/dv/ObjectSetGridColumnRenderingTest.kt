@@ -140,6 +140,8 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation1, relation2, relation3, relation4, relation5),
@@ -156,8 +158,7 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvHeader.rVMatcher()) {
-            // There should be 5 column headers + 1 plus button
-            checkIsRecyclerSize(6)
+            checkIsRecyclerSize(5)
             onItemView(0, R.id.cellText).checkHasText(relation1.name)
             onItemView(1, R.id.cellText).checkHasText(relation2.name)
             onItemView(2, R.id.cellText).checkHasText(relation3.name)

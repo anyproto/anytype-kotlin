@@ -2083,6 +2083,14 @@ message Rpc {
      * Namespace, that agregates subtopics and actions, that relates to account.
     */
     message Account {
+        message Config {
+            bool enableDataview = 1;
+            bool enableDebug = 2;
+            bool enableReleaseChannelSwitch = 3;
+
+            google.protobuf.Struct extra = 100;
+        }
+
         message Create {
             /**
             * Front end to middleware request-to-create-an account
@@ -2104,7 +2112,7 @@ message Rpc {
             message Response {
                 Error error = 1; // Error while trying to create an account
                 anytype.model.Account account = 2; // A newly created account; In case of a failure, i.e. error is non-NULL, the account model should contain empty/default-value fields
-
+                Config config = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -2176,7 +2184,7 @@ message Rpc {
             message Response {
                 Error error = 1; // Error while trying to launch/select an account
                 anytype.model.Account account = 2; // Selected account
-
+                Config config = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;

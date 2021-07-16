@@ -31,7 +31,7 @@ sealed class Viewer {
             val name: String? = null,
             val image: Url? = null,
             val emoji: String? = null,
-            val type: String,
+            val type: String?,
             val cells: List<CellView> = emptyList()
         )
 

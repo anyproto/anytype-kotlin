@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.sets.CellAction
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlinx.android.synthetic.main.item_viewer_grid_row.view.*
@@ -16,7 +15,7 @@ import timber.log.Timber
 
 class ViewerGridAdapter(
     private val onCellClicked: (CellView) -> Unit,
-    private val onObjectHeaderClicked: (String, String) -> Unit
+    private val onObjectHeaderClicked: (String, String?) -> Unit
 ) : ListAdapter<Viewer.GridView.Row, ViewerGridAdapter.RecordHolder>(GridDiffUtil) {
 
     var recordNamePositionX = 0f

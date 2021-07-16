@@ -409,7 +409,7 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onObjectHeaderClicked(id: Id, type: String) {
+    fun onObjectHeaderClicked(id: Id, type: String?) {
         Timber.d("onObjectHeaderClicked, id:[$id], type:[$type]")
         val set = reducer.state.value
         val objectType = set.objectTypes.find { it.url == type }

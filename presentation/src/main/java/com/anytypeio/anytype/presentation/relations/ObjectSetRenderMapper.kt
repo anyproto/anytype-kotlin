@@ -570,7 +570,7 @@ fun Relation.toFilterValue(
         else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
     }
 
-fun List<ObjectType>.getTypePrettyName(type: String): String? = firstOrNull { it.url == type }?.name
+fun List<ObjectType>.getTypePrettyName(type: String?): String? = firstOrNull { it.url == type }?.name
 
 fun List<ObjectType>.getObjectTypeById(types: List<String>?): ObjectType? {
     types?.forEach { type ->

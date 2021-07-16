@@ -43,9 +43,9 @@ object ObjectSetConfig {
     const val DEFAULT_LIMIT = 50
 }
 
-val Map<String, Any?>.type: String
+val Map<String, Any?>.type: String?
     get() = when (val value = get(ObjectSetConfig.TYPE_KEY)) {
         is String -> value
         is List<*> -> value.typeOf<Id>().first()
-        else -> throw IllegalStateException("Unexpected value format: $value")
+        else -> null
     }

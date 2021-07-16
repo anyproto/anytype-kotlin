@@ -8,10 +8,7 @@ import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.DebugSettings
-import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetConfig
-import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.*
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -83,6 +80,9 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var getFlavourConfig: GetFlavourConfig
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = Config(
@@ -113,7 +113,8 @@ class HomeDashboardViewModelTest {
             searchArchivedObjects = searchArchivedObjects,
             searchRecentObjects = searchRecentObjects,
             searchInboxObjects = searchInboxObjects,
-            searchObjectSets = searchObjectSets
+            searchObjectSets = searchObjectSets,
+            getFlavourConfig = getFlavourConfig
         )
     }
 

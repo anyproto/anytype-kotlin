@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -187,6 +188,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var setObjectType: SetObjectType
 
+    @Mock
+    lateinit var getFlavourConfig: GetFlavourConfig
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -270,7 +274,8 @@ open class EditorPresentationTestSetup {
             setDocCoverImage = setDocCoverImage,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
-            getCompatibleObjectTypes = getCompatibleObjectTypes
+            getCompatibleObjectTypes = getCompatibleObjectTypes,
+            getFlavourConfig = getFlavourConfig
         )
     }
 
@@ -493,6 +498,14 @@ open class EditorPresentationTestSetup {
             } doReturn Either.Right(
                 Payload(context = root, events = emptyList())
             )
+        }
+    }
+
+    fun stubGetFlavourConfig(
+        isDataViewEnabled: Boolean
+    ) {
+        getFlavourConfig.stub {
+            on { isDataViewEnabled() } doReturn isDataViewEnabled
         }
     }
 }

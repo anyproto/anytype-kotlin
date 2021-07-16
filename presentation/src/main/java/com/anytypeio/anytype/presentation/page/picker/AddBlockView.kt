@@ -39,7 +39,7 @@ sealed class AddBlockView : ViewType {
         const val VIEW_HOLDER_TURN_INTO_HEADER = 3
         const val VIEW_HOLDER_OBJECT_TYPES = 4
 
-        fun items(): List<AddBlockView> = listOf(
+        fun itemsExperimental(): List<AddBlockView> = listOf(
             AddBlockView.Section(category = UiBlock.Category.TEXT),
             AddBlockView.Item(type = UiBlock.TEXT),
             AddBlockView.Item(type = UiBlock.HEADER_ONE),
@@ -60,6 +60,31 @@ sealed class AddBlockView : ViewType {
             AddBlockView.Item(type = UiBlock.LINK_TO_OBJECT),
             AddBlockView.Section(category = UiBlock.Category.RELATION),
             AddBlockView.Item(type = UiBlock.RELATION),
+            AddBlockView.Section(category = UiBlock.Category.OTHER),
+            AddBlockView.Item(type = UiBlock.LINE_DIVIDER),
+            AddBlockView.Item(type = UiBlock.THREE_DOTS),
+            AddBlockView.Item(type = UiBlock.CODE)
+        )
+
+        fun itemsStable(): List<AddBlockView> = listOf(
+            AddBlockView.Section(category = UiBlock.Category.TEXT),
+            AddBlockView.Item(type = UiBlock.TEXT),
+            AddBlockView.Item(type = UiBlock.HEADER_ONE),
+            AddBlockView.Item(type = UiBlock.HEADER_TWO),
+            AddBlockView.Item(type = UiBlock.HEADER_THREE),
+            AddBlockView.Item(type = UiBlock.HIGHLIGHTED),
+            AddBlockView.Section(category = UiBlock.Category.LIST),
+            AddBlockView.Item(type = UiBlock.CHECKBOX),
+            AddBlockView.Item(type = UiBlock.BULLETED),
+            AddBlockView.Item(type = UiBlock.NUMBERED),
+            AddBlockView.Item(type = UiBlock.TOGGLE),
+            AddBlockView.Section(category = UiBlock.Category.OBJECT),
+            AddBlockView.Item(type = UiBlock.PAGE),
+            AddBlockView.Item(type = UiBlock.FILE),
+            AddBlockView.Item(type = UiBlock.IMAGE),
+            AddBlockView.Item(type = UiBlock.VIDEO),
+            AddBlockView.Item(type = UiBlock.BOOKMARK),
+            AddBlockView.Item(type = UiBlock.LINK_TO_OBJECT),
             AddBlockView.Section(category = UiBlock.Category.OTHER),
             AddBlockView.Item(type = UiBlock.LINE_DIVIDER),
             AddBlockView.Item(type = UiBlock.THREE_DOTS),

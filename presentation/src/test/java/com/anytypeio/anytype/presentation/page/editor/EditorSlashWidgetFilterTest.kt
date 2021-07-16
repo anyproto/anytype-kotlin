@@ -141,7 +141,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
     //region {3}
     @Test
-    fun `should return Update command with main items when filter only slash`() {
+    fun `should return Update command with relations in main items when filter only slash`() {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -149,6 +149,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
         stubInterceptEvents()
         stubUpdateText()
         stubOpenDocument(document = doc)
+        stubGetFlavourConfig(isDataViewEnabled = true)
         val vm = buildViewModel()
 
         vm.onStart(root)
@@ -178,30 +179,82 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup()  {
 
         assertNotNull(command)
 
-        val mainItems = if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
-            listOf(
-                SlashItem.Main.Style,
-                SlashItem.Main.Media,
-                SlashItem.Main.Objects,
-                SlashItem.Main.Relations,
-                SlashItem.Main.Other,
-                SlashItem.Main.Actions,
-                SlashItem.Main.Alignment,
-                SlashItem.Main.Color,
-                SlashItem.Main.Background,
+        val mainItems = listOf(
+            SlashItem.Main.Style,
+            SlashItem.Main.Media,
+            SlashItem.Main.Objects,
+            SlashItem.Main.Relations,
+            SlashItem.Main.Other,
+            SlashItem.Main.Actions,
+            SlashItem.Main.Alignment,
+            SlashItem.Main.Color,
+            SlashItem.Main.Background,
+        )
+
+        val expected = SlashWidgetState.UpdateItems(
+            mainItems = mainItems,
+            styleItems = emptyList(),
+            mediaItems = emptyList(),
+            objectItems = emptyList(),
+            relationItems = emptyList(),
+            otherItems = emptyList(),
+            actionsItems = emptyList(),
+            alignmentItems = emptyList(),
+            colorItems = emptyList(),
+            backgroundItems = emptyList()
+        )
+        assertEquals(expected = expected, actual = command)
+    }
+
+    @Test
+    fun `should return Update command with no relations in main items when filter only slash`() {
+
+        val doc = MockTypicalDocumentFactory.page(root)
+        val block = MockTypicalDocumentFactory.a
+
+        stubInterceptEvents()
+        stubUpdateText()
+        stubOpenDocument(document = doc)
+        stubGetFlavourConfig(isDataViewEnabled = false)
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = block.id,
+                hasFocus = true
             )
-        } else {
-            listOf(
-                SlashItem.Main.Style,
-                SlashItem.Main.Media,
-                SlashItem.Main.Objects,
-                SlashItem.Main.Other,
-                SlashItem.Main.Actions,
-                SlashItem.Main.Alignment,
-                SlashItem.Main.Color,
-                SlashItem.Main.Background,
+            onSlashTextWatcherEvent(
+                SlashEvent.Start(
+                    cursorCoordinate = 100,
+                    slashStart = 0
+                )
             )
         }
+
+        // TESTING
+
+        val event = SlashEvent.Filter(filter = "/", viewType = HOLDER_NUMBERED)
+
+        vm.onSlashTextWatcherEvent(event = event)
+
+        val state = vm.controlPanelViewState.value
+
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        assertNotNull(command)
+
+        val mainItems = listOf(
+            SlashItem.Main.Style,
+            SlashItem.Main.Media,
+            SlashItem.Main.Objects,
+            SlashItem.Main.Other,
+            SlashItem.Main.Actions,
+            SlashItem.Main.Alignment,
+            SlashItem.Main.Color,
+            SlashItem.Main.Background,
+        )
 
         val expected = SlashWidgetState.UpdateItems(
             mainItems = mainItems,

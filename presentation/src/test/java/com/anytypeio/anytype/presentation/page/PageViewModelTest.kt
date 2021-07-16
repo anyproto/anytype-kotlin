@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -215,6 +216,9 @@ open class PageViewModelTest {
 
     @Mock
     lateinit var setObjectType: SetObjectType
+
+    @Mock
+    lateinit var getFlavourConfig: GetFlavourConfig
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -3965,7 +3969,8 @@ open class PageViewModelTest {
             removeDocCover = removeDocCover,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
-            getCompatibleObjectTypes = getCompatibleObjectTypes
+            getCompatibleObjectTypes = getCompatibleObjectTypes,
+            getFlavourConfig = getFlavourConfig
         )
     }
 

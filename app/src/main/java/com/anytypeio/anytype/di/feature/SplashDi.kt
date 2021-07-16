@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
@@ -64,10 +65,12 @@ object SplashModule {
     @Provides
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
-        pathProvider: PathProvider
+        pathProvider: PathProvider,
+        flavourConfigProvider: FlavourConfigProvider
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
-        pathProvider = pathProvider
+        pathProvider = pathProvider,
+        flavourConfigProvider = flavourConfigProvider
     )
 
     @JvmStatic

@@ -2,11 +2,14 @@ package com.anytypeio.anytype.presentation.page
 
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
 
-
 object TurnIntoConstants {
 
-    fun excludedCategoriesForText() : List<String> {
+    fun excludedCategoriesForTextExperimental() : List<String> {
         return listOf()
+    }
+
+    fun excludedCategoriesForTextStable() : List<String> {
+        return listOf(UiBlock.Category.RELATION.name)
     }
 
     fun excludeTypesForText() = listOf(

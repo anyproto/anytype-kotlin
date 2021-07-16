@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.page.PageFragment
-import kotlinx.android.synthetic.experimental.fragment_desktop.*
+import kotlinx.android.synthetic.main.fragment_desktop.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber

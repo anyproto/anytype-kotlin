@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.data
 
 import com.anytypeio.anytype.data.auth.model.AccountEntity
+import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.*
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
@@ -54,8 +55,10 @@ class AuthDataRepositoryTest {
             color = null
         )
 
+        val config = FlavourConfigEntity()
+
         authRemote.stub {
-            onBlocking { startAccount(id = id, path = path) } doReturn account
+            onBlocking { startAccount(id = id, path = path) } doReturn Pair(account, config)
         }
 
         repo.startAccount(

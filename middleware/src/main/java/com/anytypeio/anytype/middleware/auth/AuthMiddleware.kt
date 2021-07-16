@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.auth
 
 import com.anytypeio.anytype.data.auth.model.AccountEntity
+import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.middleware.EventProxy
@@ -21,11 +22,17 @@ class AuthMiddleware(
     override suspend fun startAccount(
         id: String, path: String
     ) = middleware.selectAccount(id, path).let { response ->
-        AccountEntity(
+        val account = AccountEntity(
             id = response.id,
             name = response.name,
             color = response.avatar?.color
         )
+        val flavourConfig = FlavourConfigEntity(
+            enableDataView = response.enableDataView,
+            enableDebug = response.enableDebug,
+            enableChannelSwitch = response.enableChannelSwitch
+        )
+        return@let Pair(account, flavourConfig)
     }
 
     override suspend fun createAccount(

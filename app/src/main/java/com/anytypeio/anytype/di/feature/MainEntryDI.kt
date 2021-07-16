@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
@@ -39,10 +40,12 @@ object MainEntryModule {
     @Provides
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
-        pathProvider: PathProvider
+        pathProvider: PathProvider,
+        flavourConfigProvider: FlavourConfigProvider
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
-        context = Dispatchers.Main
+        context = Dispatchers.Main,
+        flavourConfigProvider = flavourConfigProvider
     )
 }

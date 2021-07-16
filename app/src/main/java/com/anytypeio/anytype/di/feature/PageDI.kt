@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -143,7 +144,8 @@ object EditorSessionModule {
         dispatcher: Dispatcher<Payload>,
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
-        getCompatibleObjectTypes: GetCompatibleObjectTypes
+        getCompatibleObjectTypes: GetCompatibleObjectTypes,
+        getFlavourConfig: GetFlavourConfig
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -167,7 +169,8 @@ object EditorSessionModule {
         dispatcher = dispatcher,
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
-        getCompatibleObjectTypes = getCompatibleObjectTypes
+        getCompatibleObjectTypes = getCompatibleObjectTypes,
+        getFlavourConfig = getFlavourConfig
     )
 
     @JvmStatic

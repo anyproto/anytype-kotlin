@@ -144,13 +144,17 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
 
         val acc = response.account
+        val config = response.config
 
         checkNotNull(acc)
 
         return SelectAccountResponse(
-            acc.id,
-            acc.name,
-            acc.avatar
+            id = acc.id,
+            name = acc.name,
+            avatar = acc.avatar,
+            enableDataView = config?.enableDataview,
+            enableDebug = config?.enableDebug,
+            enableChannelSwitch = config?.enableReleaseChannelSwitch
         )
     }
 

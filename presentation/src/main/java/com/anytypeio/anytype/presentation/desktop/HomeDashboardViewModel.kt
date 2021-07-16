@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -50,7 +51,8 @@ class HomeDashboardViewModel(
     private val searchArchivedObjects: SearchArchivedObjects,
     private val searchRecentObjects: SearchRecentObjects,
     private val searchInboxObjects: SearchInboxObjects,
-    private val searchObjectSets: SearchObjectSets
+    private val searchObjectSets: SearchObjectSets,
+    private val getFlavourConfig: GetFlavourConfig
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {

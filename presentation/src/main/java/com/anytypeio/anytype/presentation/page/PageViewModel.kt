@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -61,7 +62,8 @@ import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeCategori
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForDotsDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForLineDivider
 import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludeTypesForText
-import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludedCategoriesForText
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludedCategoriesForTextExperimental
+import com.anytypeio.anytype.presentation.page.TurnIntoConstants.excludedCategoriesForTextStable
 import com.anytypeio.anytype.presentation.page.editor.*
 import com.anytypeio.anytype.presentation.page.editor.Command
 import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
@@ -129,7 +131,8 @@ class PageViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
-    private val getCompatibleObjectTypes: GetCompatibleObjectTypes
+    private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
+    private val getFlavourConfig: GetFlavourConfig
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -1554,7 +1557,12 @@ class PageViewModel(
                 val target = blocks.first { it.id == id }
                 when (val content = target.content) {
                     is Content.Text -> {
-                        excludedCategories.addAll(excludedCategoriesForText())
+                        val categories = if (getFlavourConfig.isDataViewEnabled()) {
+                            excludedCategoriesForTextExperimental()
+                        } else {
+                            excludedCategoriesForTextStable()
+                        }
+                        excludedCategories.addAll(categories)
                         excludedTypes.addAll(excludeTypesForText())
                     }
                     is Content.Divider -> {
@@ -4137,7 +4145,7 @@ class PageViewModel(
                     return
                 }
                 if (event.filter.length == 1) {
-                    val mainItems = if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+                    val mainItems = if (getFlavourConfig.isDataViewEnabled()) {
                         SlashExtensions.getExperimentalSlashWidgetMainItems()
                     } else {
                         SlashExtensions.getStableSlashWidgetMainItems()
@@ -4151,7 +4159,7 @@ class PageViewModel(
                     return
                 }
 
-                if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+                if (getFlavourConfig.isDataViewEnabled()) {
                     getObjectTypes { objectTypes ->
                         getRelations { relations ->
                             val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
@@ -4481,7 +4489,7 @@ class PageViewModel(
     }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectType>) {
-        if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+        if (getFlavourConfig.isDataViewEnabled()) {
             onSlashWidgetStateChanged(
                 SlashWidgetState.UpdateItems.empty().copy(
                     objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
@@ -4655,7 +4663,7 @@ class PageViewModel(
     }
 
     private fun onSlashBackClicked() {
-        val items = if (BuildConfig.FLAVOR == FLAVOUR_EXPERIMENTAL) {
+        val items = if (getFlavourConfig.isDataViewEnabled()) {
             SlashExtensions.getExperimentalSlashWidgetMainItems()
         } else {
             SlashExtensions.getStableSlashWidgetMainItems()

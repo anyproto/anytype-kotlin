@@ -6,5 +6,8 @@ import anytype.model.Account
 class SelectAccountResponse(
     val id: String,
     val name: String,
-    val avatar: Account.Avatar?
+    val avatar: Account.Avatar?,
+    val enableDataView: Boolean?,
+    val enableDebug: Boolean?,
+    val enableChannelSwitch: Boolean?
 )

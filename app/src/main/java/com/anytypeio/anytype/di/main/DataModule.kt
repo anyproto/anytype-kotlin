@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.anytypeio.anytype.data.auth.config.FlavourConfigMemoryCache
 import com.anytypeio.anytype.data.auth.repo.*
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.database.repo.DatabaseRepository
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -229,4 +231,9 @@ object DataModule {
     @Provides
     @Singleton
     fun provideDatabaseRepo(): DatabaseRepository = DatabaseDataRepository()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideFlavourConfigProvider(): FlavourConfigProvider = FlavourConfigMemoryCache()
 }

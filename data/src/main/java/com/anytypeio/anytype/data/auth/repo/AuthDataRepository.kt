@@ -6,6 +6,7 @@ import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.core_models.FlavourConfig
 import kotlinx.coroutines.flow.map
 
 class AuthDataRepository(
@@ -15,7 +16,12 @@ class AuthDataRepository(
 
     override suspend fun startAccount(
         id: String, path: String
-    ): Account = factory.remote.startAccount(id, path).toDomain()
+    ): Pair<Account, FlavourConfig> = factory.remote.startAccount(id, path).let { pair ->
+        Pair(
+            first = pair.first.toDomain(),
+            second = pair.second.toDomain()
+        )
+    }
 
     override suspend fun createAccount(
         name: String,

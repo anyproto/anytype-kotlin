@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -58,7 +59,8 @@ object HomeDashboardModule {
         searchArchivedObjects: SearchArchivedObjects,
         searchRecentObjects: SearchRecentObjects,
         searchInboxObjects: SearchInboxObjects,
-        searchObjectSets: SearchObjectSets
+        searchObjectSets: SearchObjectSets,
+        getFlavourConfig: GetFlavourConfig
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -73,7 +75,8 @@ object HomeDashboardModule {
         searchRecentObjects = searchRecentObjects,
         searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
-        analytics = analytics
+        analytics = analytics,
+        getFlavourConfig = getFlavourConfig
     )
 
     @JvmStatic

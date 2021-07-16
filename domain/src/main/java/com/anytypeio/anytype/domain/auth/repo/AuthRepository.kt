@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.auth.repo
 
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
+import com.anytypeio.anytype.core_models.FlavourConfig
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -11,7 +12,7 @@ interface AuthRepository {
      * @param id user account id
      * @param path wallet repository path
      */
-    suspend fun startAccount(id: String, path: String): Account
+    suspend fun startAccount(id: String, path: String): Pair<Account, FlavourConfig>
 
     suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): Account
 

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerFeature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.*
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModelFactory
@@ -227,10 +228,12 @@ object SetupSelectedAccountModule {
     @Provides
     @PerScreen
     fun provideSelectAccountUseCase(
-        repository: AuthRepository
+        repository: AuthRepository,
+        flavourConfigProvider: FlavourConfigProvider
     ): StartAccount {
         return StartAccount(
-            repository = repository
+            repository = repository,
+            flavourConfigProvider = flavourConfigProvider
         )
     }
 }

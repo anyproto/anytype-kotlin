@@ -6,6 +6,8 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.domain.common.MockDataFactory
+import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -25,12 +27,15 @@ class StartAccountTest {
     @Mock
     lateinit var repo: AuthRepository
 
+    @Mock
+    lateinit var flavourConfigProvider: FlavourConfigProvider
+
     lateinit var startAccount: StartAccount
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        startAccount = StartAccount(repo)
+        startAccount = StartAccount(repo, flavourConfigProvider)
     }
 
     @Test
@@ -51,13 +56,19 @@ class StartAccountTest {
             color = null
         )
 
+        val config = FlavourConfig(
+            enableDataView = false,
+            enableDebug = false,
+            enableChannelSwitch = false
+        )
+
         repo.stub {
             onBlocking {
                 startAccount(
                     id = id,
                     path = path
                 )
-            } doReturn account
+            } doReturn Pair(account, config)
         }
 
         startAccount.run(params)
@@ -92,16 +103,110 @@ class StartAccountTest {
             color = null
         )
 
+        val config = FlavourConfig(
+            enableDataView = false,
+            enableDebug = false,
+            enableChannelSwitch = false
+        )
+
         repo.stub {
             onBlocking {
                 startAccount(
                     id = id,
                     path = path
                 )
-            } doReturn account
+            } doReturn Pair(account, config)
         }
 
         val result = startAccount.run(params)
+
+        assertTrue { result == Either.Right(account.id) }
+    }
+
+    @Test
+    fun `should set default flavour config`() = runBlocking {
+
+        val id = MockDataFactory.randomString()
+        val path = MockDataFactory.randomString()
+
+        val params = StartAccount.Params(
+            id = id,
+            path = path
+        )
+
+        val account = Account(
+            id = id,
+            name = MockDataFactory.randomString(),
+            avatar = null,
+            color = null
+        )
+
+        val config = FlavourConfig(
+            enableDataView = null,
+            enableDebug = null,
+            enableChannelSwitch = null
+        )
+
+        repo.stub {
+            onBlocking {
+                startAccount(
+                    id = id,
+                    path = path
+                )
+            } doReturn Pair(account, config)
+        }
+
+        val result = startAccount.run(params)
+
+        verify(flavourConfigProvider, times(1)).set(
+            enableDataView = false,
+            enableDebug = false,
+            enableChannelSwitch = false
+        )
+
+        assertTrue { result == Either.Right(account.id) }
+    }
+
+    @Test
+    fun `should set proper flavour config`() = runBlocking {
+
+        val id = MockDataFactory.randomString()
+        val path = MockDataFactory.randomString()
+
+        val params = StartAccount.Params(
+            id = id,
+            path = path
+        )
+
+        val account = Account(
+            id = id,
+            name = MockDataFactory.randomString(),
+            avatar = null,
+            color = null
+        )
+
+        val config = FlavourConfig(
+            enableDataView = true,
+            enableDebug = false,
+            enableChannelSwitch = true
+        )
+
+        repo.stub {
+            onBlocking {
+                startAccount(
+                    id = id,
+                    path = path
+                )
+            } doReturn Pair(account, config)
+        }
+
+        val result = startAccount.run(params)
+
+        verify(flavourConfigProvider, times(1)).set(
+            enableDataView = true,
+            enableDebug = false,
+            enableChannelSwitch = true
+        )
 
         assertTrue { result == Either.Right(account.id) }
     }

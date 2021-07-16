@@ -6,6 +6,11 @@ sealed class ObjectSetCommand {
 
     sealed class Modal : ObjectSetCommand() {
 
+        data class Menu(
+            val ctx: Id,
+            val isArchived: Boolean
+        ) : Modal()
+
         data class CreateViewer(
             val ctx: String,
             val target: Id

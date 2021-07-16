@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.page.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -142,6 +143,7 @@ open class ObjectSetFragment :
                     clearFocus()
                 }
             }
+            subscribe(menuButton.clicks()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
@@ -323,6 +325,16 @@ open class ObjectSetFragment :
 
     private fun observeCommands(command: ObjectSetCommand) {
         when (command) {
+            is ObjectSetCommand.Modal.Menu -> {
+                findNavController().navigate(
+                    R.id.objectSetMainMenuScreen,
+                    bundleOf(
+                        ObjectMenuBaseFragment.CTX_KEY to command.ctx,
+                        ObjectMenuBaseFragment.IS_ARCHIVED to command.isArchived,
+                        ObjectMenuBaseFragment.IS_PROFILE_KEY to false
+                    )
+                )
+            }
             is ObjectSetCommand.Modal.EditGridTextCell -> {
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,

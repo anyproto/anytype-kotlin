@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -64,6 +65,7 @@ interface ObjectSetSubComponent {
     fun modifyViewerSortComponent(): ModifyViewerSortSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun relationDateValueComponent(): RelationDataValueSubComponent.Builder
+    fun objectSetMenuComponent() : ObjectSetMenuComponent.Builder
 }
 
 @Module
@@ -252,4 +254,13 @@ object ObjectSetModule {
     fun provideAddFileToRecordUseCase(
         repo: BlockRepository
     ): AddFileToRecord = AddFileToRecord(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideArchiveDocumentUseCase(
+        repo: BlockRepository
+    ): ArchiveDocument = ArchiveDocument(
+        repo = repo
+    )
 }

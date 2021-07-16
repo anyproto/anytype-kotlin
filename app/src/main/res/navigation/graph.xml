@@ -27,7 +27,7 @@
             android:label="Object-Icon-Picker-Screen" />
         <dialog
             android:id="@+id/objectMainMenuScreen"
-            android:name="com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment"
+            android:name="com.anytypeio.anytype.ui.page.sheets.ObjectMenuBaseFragment"
             android:label="Doc-Menu-Bottom-Sheet-Screen"/>
         <fragment
             android:id="@+id/objectCoverScreen"
@@ -46,6 +46,14 @@
             android:id="@+id/dataViewRelationValueScreen"
             android:name="com.anytypeio.anytype.ui.relations.RelationValueDVFragment"
             android:label="DV-Relation-Value-Screen" />
+        <dialog
+            android:id="@+id/objectSetMainMenuScreen"
+            android:name="com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment"
+            android:label="Object-SetMenu"/>
+        <dialog
+            android:id="@+id/objectIconPickerScreen"
+            android:name="com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment"
+            android:label="Object-Icon-Picker-Screen" />
     </navigation>
 
     <fragment

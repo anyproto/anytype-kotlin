@@ -312,7 +312,11 @@ class HomeDashboardViewModel(
             }
             if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
                 if (view.type != ObjectTypes.TEMPLATE) {
-                    proceedWithOpeningDocument(target)
+                    if (view.layout == ObjectType.Layout.SET) {
+                        proceedWithOpeningObjectSet(target)
+                    } else {
+                        proceedWithOpeningDocument(target)
+                    }
                 } else {
                     toast("Can't open a template on Android. Coming soon")
                 }
@@ -511,7 +515,8 @@ class HomeDashboardViewModel(
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,
             ObjectType.Layout.PROFILE,
-            ObjectType.Layout.FILE
+            ObjectType.Layout.FILE,
+            ObjectType.Layout.SET
         )
     }
 

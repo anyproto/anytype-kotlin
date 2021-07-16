@@ -470,7 +470,17 @@ class ComponentManager(private val main: MainComponent) {
         pageComponent
             .get(ctx)
             .objectMenuComponent()
+            .base(ObjectMenuModuleBase)
             .module(ObjectMenuModule)
+            .build()
+    }
+
+    val objectSetMenuComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectSetMenuComponent()
+            .base(ObjectMenuModuleBase)
+            .module(ObjectSetMenuModule)
             .build()
     }
 

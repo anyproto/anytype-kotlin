@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.`object`.ObjectAction
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
+import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
 import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
@@ -36,9 +37,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-class ObjectMenuFragment : BaseBottomSheetFragment() {
+abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
-    private val ctx get() = arg<String>(CTX_KEY)
+    protected val ctx get() = arg<String>(CTX_KEY)
     private val title get() = arg<String?>(TITLE_KEY)
     private val status get() = SyncStatus.valueOf(arg(STATUS_KEY))
     private val image get() = arg<String?>(IMAGE_KEY)
@@ -51,9 +52,7 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
     private val isRelationsAllowed get() = arg<Boolean>(IS_RELATIONS_ALLOWED)
     private val isDownloadAllowed get() = arg<Boolean>(IS_DOWNLOAD_ALLOWED)
 
-    @Inject
-    lateinit var factory: ObjectMenuViewModel.Factory
-    private val vm by viewModels<ObjectMenuViewModel> { factory }
+    abstract val vm : ObjectMenuViewModelBase
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
@@ -169,41 +168,29 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
 //            searchOnPageContainer.setBackgroundResource(R.drawable.rectangle_doc_menu_top)
 //        }
 
+        optionHistory
+            .clicks()
+            .onEach { toast(COMING_SOON_MSG) }
+            .launchIn(lifecycleScope)
+
+        optionLayout
+            .clicks()
+            .onEach { toast(COMING_SOON_MSG) }
+            .launchIn(lifecycleScope)
+
         optionIcon
             .clicks()
-            .onEach {
-                findNavController().navigate(
-                    R.id.objectIconPickerScreen,
-                    bundleOf(
-                        DocumentEmojiIconPickerFragment.ARG_CONTEXT_ID_KEY to ctx,
-                        DocumentEmojiIconPickerFragment.ARG_TARGET_ID_KEY to ctx,
-                    )
-                )
-            }
+            .onEach { onIconClicked() }
             .launchIn(lifecycleScope)
 
         optionRelations
             .clicks()
-            .onEach {
-                findNavController().navigate(
-                    R.id.objectRelationListScreen,
-                    bundleOf(
-                        RelationListFragment.ARG_CTX to ctx,
-                        RelationListFragment.ARG_TARGET to null,
-                        RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
-                    )
-                )
-            }
+            .onEach { onRelationsClicked() }
             .launchIn(lifecycleScope)
 
         optionCover
             .clicks()
-            .onEach {
-                findNavController().navigate(
-                    R.id.objectCoverScreen,
-                    bundleOf(DocCoverSliderFragment.CTX_KEY to ctx)
-                )
-            }
+            .onEach { onCoverClicked() }
             .launchIn(lifecycleScope)
 
         rvActions.apply {
@@ -216,6 +203,34 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
                 )
             )
         }
+    }
+
+    protected open fun onCoverClicked() {
+        findNavController().navigate(
+            R.id.objectCoverScreen,
+            bundleOf(DocCoverSliderFragment.CTX_KEY to ctx)
+        )
+    }
+
+    protected open fun onIconClicked() {
+        findNavController().navigate(
+            R.id.objectIconPickerScreen,
+            bundleOf(
+                DocumentEmojiIconPickerFragment.ARG_CONTEXT_ID_KEY to ctx,
+                DocumentEmojiIconPickerFragment.ARG_TARGET_ID_KEY to ctx,
+            )
+        )
+    }
+
+    protected open fun onRelationsClicked() {
+        findNavController().navigate(
+            R.id.objectRelationListScreen,
+            bundleOf(
+                RelationListFragment.ARG_CTX to ctx,
+                RelationListFragment.ARG_TARGET to null,
+                RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+            )
+        )
     }
 
     override fun onStart() {
@@ -276,6 +291,40 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
         }
     }
 
+    companion object {
+        const val CTX_KEY = "arg.doc-menu-bottom-sheet.ctx"
+        const val TITLE_KEY = "arg.doc-menu-bottom-sheet.title"
+        const val IMAGE_KEY = "arg.doc-menu-bottom-sheet.image"
+        const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
+        const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
+        const val IS_ARCHIVED = "arg.doc-menu-bottom-sheet.is-archived"
+        const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
+        const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
+        const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
+        const val IS_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-cover-allowed"
+        const val IS_RELATIONS_ALLOWED = "arg.doc-menu-bottom-sheet.is-relations-allowed"
+        const val IS_DOWNLOAD_ALLOWED = "arg.doc-menu-bottom-sheet.is-download-allowed"
+        const val COMING_SOON_MSG = "Coming soon..."
+    }
+
+    interface DocumentMenuActionReceiver {
+        fun onArchiveClicked()
+        fun onRestoreFromArchiveClicked()
+        fun onSearchOnPageClicked()
+        fun onDocRelationsClicked()
+        fun onAddCoverClicked()
+        fun onSetIconClicked()
+        fun onLayoutClicked()
+        fun onDownloadClicked()
+    }
+}
+
+class ObjectMenuFragment : ObjectMenuBaseFragment() {
+
+    @Inject
+    lateinit var factory: ObjectMenuViewModel.Factory
+    override val vm by viewModels<ObjectMenuViewModel> { factory }
+
     override fun injectDependencies() {
         componentManager().objectMenuComponent.get(ctx).inject(this)
     }
@@ -314,29 +363,5 @@ class ObjectMenuFragment : BaseBottomSheetFragment() {
                 IS_DOWNLOAD_ALLOWED to isDownloadAllowed
             )
         }
-
-        const val CTX_KEY = "arg.doc-menu-bottom-sheet.ctx"
-        const val TITLE_KEY = "arg.doc-menu-bottom-sheet.title"
-        const val IMAGE_KEY = "arg.doc-menu-bottom-sheet.image"
-        const val EMOJI_KEY = "arg.doc-menu-bottom-sheet.emoji"
-        const val STATUS_KEY = "arg.doc-menu-bottom-sheet.status"
-        const val IS_ARCHIVED = "arg.doc-menu-bottom-sheet.is-archived"
-        const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
-        const val IS_DELETE_ALLOWED = "arg.doc-menu-bottom-sheet.is-delete-allowed"
-        const val IS_LAYOUT_ALLOWED = "arg.doc-menu-bottom-sheet.is-layout-allowed"
-        const val IS_COVER_ALLOWED = "arg.doc-menu-bottom-sheet.is-cover-allowed"
-        const val IS_RELATIONS_ALLOWED = "arg.doc-menu-bottom-sheet.is-relations-allowed"
-        const val IS_DOWNLOAD_ALLOWED = "arg.doc-menu-bottom-sheet.is-download-allowed"
-    }
-
-    interface DocumentMenuActionReceiver {
-        fun onArchiveClicked()
-        fun onRestoreFromArchiveClicked()
-        fun onSearchOnPageClicked()
-        fun onDocRelationsClicked()
-        fun onAddCoverClicked()
-        fun onSetIconClicked()
-        fun onLayoutClicked()
-        fun onDownloadClicked()
     }
 }

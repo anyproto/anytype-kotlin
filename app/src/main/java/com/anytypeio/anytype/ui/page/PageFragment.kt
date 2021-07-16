@@ -81,8 +81,8 @@ import com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.page.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.page.modals.*
 import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarFactory
+import com.anytypeio.anytype.ui.page.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment
-import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment

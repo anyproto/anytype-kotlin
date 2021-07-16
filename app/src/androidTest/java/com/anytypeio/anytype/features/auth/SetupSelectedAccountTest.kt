@@ -14,6 +14,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -52,6 +53,9 @@ class SetupSelectedAccountTest {
     lateinit var authRepository: AuthRepository
 
     @Mock
+    lateinit var flavourConfigProvider: FlavourConfigProvider
+
+    @Mock
     lateinit var analytics: Analytics
 
     @Mock
@@ -61,7 +65,8 @@ class SetupSelectedAccountTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
-            repository = authRepository
+            repository = authRepository,
+            flavourConfigProvider = flavourConfigProvider
         )
         TestSetupSelectedAccountFragment.testViewModelFactory =
             SetupSelectedAccountViewModelFactory(

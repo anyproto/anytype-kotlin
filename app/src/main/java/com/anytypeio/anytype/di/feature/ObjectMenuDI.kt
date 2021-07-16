@@ -7,17 +7,20 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
+import com.anytypeio.anytype.presentation.`object`.ObjectSetMenuViewModel
 import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
 
-@Subcomponent(modules = [ObjectMenuModule::class])
+@Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectMenuModule::class])
 @PerDialog
 interface ObjectMenuComponent {
     @Subcomponent.Builder
     interface Builder {
+        fun base(module: ObjectMenuModuleBase) : Builder
         fun module(module: ObjectMenuModule): Builder
         fun build(): ObjectMenuComponent
     }
@@ -25,23 +28,21 @@ interface ObjectMenuComponent {
     fun inject(fragment: ObjectMenuFragment)
 }
 
-@Module
-object ObjectMenuModule {
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideViewModelFactory(
-        archiveDocument: ArchiveDocument,
-        addToFavorite: AddToFavorite,
-        removeFromFavorite: RemoveFromFavorite,
-        checkIsFavorite: CheckIsFavorite
-    ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
-        archiveDocument = archiveDocument,
-        addToFavorite = addToFavorite,
-        removeFromFavorite = removeFromFavorite,
-        checkIsFavorite = checkIsFavorite
-    )
+@Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectSetMenuModule::class])
+@PerDialog
+interface ObjectSetMenuComponent {
+    @Subcomponent.Builder
+    interface Builder {
+        fun base(module: ObjectMenuModuleBase) : Builder
+        fun module(module: ObjectSetMenuModule): Builder
+        fun build(): ObjectSetMenuComponent
+    }
 
+    fun inject(fragment: ObjectSetMenuFragment)
+}
+
+@Module
+object ObjectMenuModuleBase {
     @JvmStatic
     @Provides
     @PerDialog
@@ -62,4 +63,40 @@ object ObjectMenuModule {
     fun provideCheckIsFavoriteUseCase(
         repo: BlockRepository
     ) : CheckIsFavorite = CheckIsFavorite(repo = repo)
+}
+
+@Module
+object ObjectMenuModule {
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideViewModelFactory(
+        archiveDocument: ArchiveDocument,
+        addToFavorite: AddToFavorite,
+        removeFromFavorite: RemoveFromFavorite,
+        checkIsFavorite: CheckIsFavorite
+    ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
+        archiveDocument = archiveDocument,
+        addToFavorite = addToFavorite,
+        removeFromFavorite = removeFromFavorite,
+        checkIsFavorite = checkIsFavorite
+    )
+}
+
+@Module
+object ObjectSetMenuModule {
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideViewModelFactory(
+        archiveDocument: ArchiveDocument,
+        addToFavorite: AddToFavorite,
+        removeFromFavorite: RemoveFromFavorite,
+        checkIsFavorite: CheckIsFavorite
+    ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
+        archiveDocument = archiveDocument,
+        addToFavorite = addToFavorite,
+        removeFromFavorite = removeFromFavorite,
+        checkIsFavorite = checkIsFavorite
+    )
 }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ObjectMenuViewModel(
+abstract class ObjectMenuViewModelBase(
     private val archiveDocument: ArchiveDocument,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
@@ -41,7 +41,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    private fun buildActions(
+    protected open fun buildActions(
         isArchived: Boolean,
         isFavorite: Boolean,
         isProfile: Boolean
@@ -143,6 +143,28 @@ class ObjectMenuViewModel(
         }
     }
 
+    companion object {
+        const val ARCHIVE_OBJECT_SUCCESS_MSG = "Object archived!"
+        const val RESTORE_OBJECT_SUCCESS_MSG = "Object restored!"
+        const val ARCHIVE_OBJECT_ERR_MSG =
+            "Error while changing is-archived status for this object. Please, try again later."
+        const val ADD_TO_FAVORITE_SUCCESS_MSG = "Object added to favorites."
+        const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
+        const val COMING_SOON_MSG = "Coming soon..."
+    }
+}
+
+class ObjectMenuViewModel(
+    archiveDocument: ArchiveDocument,
+    addToFavorite: AddToFavorite,
+    removeFromFavorite: RemoveFromFavorite,
+    checkIsFavorite: CheckIsFavorite
+) : ObjectMenuViewModelBase(
+    archiveDocument = archiveDocument,
+    addToFavorite = addToFavorite,
+    removeFromFavorite = removeFromFavorite,
+    checkIsFavorite = checkIsFavorite
+) {
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val archiveDocument: ArchiveDocument,
@@ -159,14 +181,50 @@ class ObjectMenuViewModel(
             ) as T
         }
     }
+}
 
-    companion object {
-        const val ARCHIVE_OBJECT_SUCCESS_MSG = "Object archived!"
-        const val RESTORE_OBJECT_SUCCESS_MSG = "Object restored!"
-        const val ARCHIVE_OBJECT_ERR_MSG =
-            "Error while changing is-archived status for this object. Please, try again later."
-        const val ADD_TO_FAVORITE_SUCCESS_MSG = "Object added to favorites."
-        const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
-        const val COMING_SOON_MSG = "Coming soon..."
+class ObjectSetMenuViewModel(
+    archiveDocument: ArchiveDocument,
+    addToFavorite: AddToFavorite,
+    removeFromFavorite: RemoveFromFavorite,
+    checkIsFavorite: CheckIsFavorite
+) : ObjectMenuViewModelBase(
+    archiveDocument = archiveDocument,
+    addToFavorite = addToFavorite,
+    removeFromFavorite = removeFromFavorite,
+    checkIsFavorite = checkIsFavorite
+) {
+    @Suppress("UNCHECKED_CAST")
+    class Factory(
+        private val archiveDocument: ArchiveDocument,
+        private val addToFavorite: AddToFavorite,
+        private val removeFromFavorite: RemoveFromFavorite,
+        private val checkIsFavorite: CheckIsFavorite
+    ) : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return ObjectSetMenuViewModel(
+                archiveDocument = archiveDocument,
+                addToFavorite = addToFavorite,
+                removeFromFavorite = removeFromFavorite,
+                checkIsFavorite = checkIsFavorite
+            ) as T
+        }
+    }
+
+    override fun buildActions(
+        isArchived: Boolean,
+        isFavorite: Boolean,
+        isProfile: Boolean
+    ): MutableList<ObjectAction> = mutableListOf<ObjectAction>().apply {
+        if (isArchived) {
+            add(ObjectAction.RESTORE)
+        } else {
+            add(ObjectAction.DELETE)
+        }
+        if (isFavorite) {
+            add(ObjectAction.REMOVE_FROM_FAVOURITE)
+        } else {
+            add(ObjectAction.ADD_TO_FAVOURITE)
+        }
     }
 }

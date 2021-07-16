@@ -96,6 +96,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -136,6 +137,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -178,6 +180,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -218,6 +221,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -259,6 +263,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -301,6 +306,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -341,6 +347,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -383,8 +390,9 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
-        val scenario = launchFragment(args)
+        launchFragment(args)
 
         with(R.id.recycler.rVMatcher()) {
             onItemView(1, R.id.textContent).perform(ViewActions.click())
@@ -440,6 +448,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
+        stubGetFlavorConfig()
 
         launchFragment(args)
 

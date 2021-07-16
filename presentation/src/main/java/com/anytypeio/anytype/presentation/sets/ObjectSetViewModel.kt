@@ -583,6 +583,20 @@ class ObjectSetViewModel(
         }
     }
 
+    fun onMenuClicked() {
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            dispatch(
+                ObjectSetCommand.Modal.Menu(
+                    ctx = context,
+                    isArchived = set.details[context]?.isArchived ?: false
+                )
+            )
+        } else {
+            toast("Set is not initialized. Please, try again later.")
+        }
+    }
+
     fun onIconClicked() {
         Timber.d("onIconClicked, ")
         val set = reducer.state.value

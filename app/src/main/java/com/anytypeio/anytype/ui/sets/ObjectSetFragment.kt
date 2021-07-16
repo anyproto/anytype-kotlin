@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.os.bundleOf
@@ -22,13 +23,19 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.extensions.setImageOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.reactive.*
+import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.page.cover.CoverColor
+import com.anytypeio.anytype.presentation.page.cover.CoverGradient
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -44,6 +51,7 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEdi
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.sets.modals.*
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_object_set.*
 import kotlinx.coroutines.flow.filterNotNull
 import timber.log.Timber
@@ -53,6 +61,29 @@ open class ObjectSetFragment :
     NavigationFragment(R.layout.fragment_object_set),
     TextValueEditReceiver,
     DateValueEditReceiver {
+
+    // Controls
+
+    private val title : TextInputWidget
+    get() = objectHeader.findViewById(R.id.tvSetTitle)
+
+    private val topToolbarTitle : TextView
+    get() = topToolbar.findViewById(R.id.tvTopToolbarTitle)
+
+    private val addNewButton : ImageView
+    get() = dataViewHeader.findViewById(R.id.addNewButton)
+
+    private val customizeViewButton : ImageView
+    get() = dataViewHeader.findViewById(R.id.customizeViewButton)
+
+    private val tvCurrentViewerName : TextView
+    get() = dataViewHeader.findViewById(R.id.tvCurrentViewerName)
+
+    private val tvStatus : TextView
+    get() = topToolbar.findViewById(R.id.tvStatus)
+
+    private val menuButton : FrameLayout
+    get() = topToolbar.findViewById(R.id.threeDotsButton)
 
     private val rvHeaders: RecyclerView get() = root.findViewById(R.id.rvHeader)
     private val rvRows: RecyclerView get() = root.findViewById(R.id.rvRows)
@@ -97,9 +128,9 @@ open class ObjectSetFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupGridAdapters(view)
         title.clearFocus()
+        topToolbarTitle.alpha = 0f
         root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
@@ -111,7 +142,6 @@ open class ObjectSetFragment :
                     clearFocus()
                 }
             }
-            subscribe(objectSetIcon.clicks()) { vm.onIconClicked() }
             subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
@@ -197,14 +227,26 @@ open class ObjectSetFragment :
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         lifecycleScope.subscribe(vm.toasts.stream()) { toast(it) }
-        lifecycleScope.subscribe(vm.status) { statusBadge.bind(it) }
+        lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
     }
 
+    private fun setStatus(status: SyncStatus) {
+        topToolbar.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
+        val tvStatus = topToolbar.findViewById<TextView>(R.id.tvStatus)
+        when (status) {
+            SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
+            SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
+            SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
+            SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
+            SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
+        }
+    }
+
     private fun observeGrid(viewer: Viewer) {
-        tvCurrentViewerName.text = viewer.title
+        dataViewHeader.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer.title
         when (viewer) {
             is Viewer.GridView -> {
                 viewerGridHeaderAdapter.submitList(viewer.columns)
@@ -222,13 +264,60 @@ open class ObjectSetFragment :
     private fun observeHeader(title: BlockView.Title.Basic) {
         checkMainThread()
         this.title.setText(title.text)
-        this.titleSmall.text = title.text
+        topToolbar.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
         if (title.emoji != null) {
-            objectSetIcon.scaleType = ImageView.ScaleType.CENTER
-            objectSetIcon.setEmoji(unicode = title.emoji)
+            objectHeader.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
         } else {
-            objectSetIcon.scaleType = ImageView.ScaleType.CENTER_CROP
-            objectSetIcon.setImageOrNull(image = title.image)
+            objectHeader.findViewById<ImageView>(R.id.emojiIcon).setImageOrNull(title.image)
+        }
+        setCover(
+            coverColor = title.coverColor,
+            coverGradient = title.coverGradient,
+            coverImage = title.coverImage
+        )
+    }
+
+    private fun setCover(
+        coverColor: CoverColor?,
+        coverImage: String?,
+        coverGradient: String?
+    ) {
+        val ivCover = objectHeader.findViewById<ImageView>(R.id.cover)
+        when {
+            coverColor != null -> {
+                ivCover?.apply {
+                    setImageDrawable(null)
+                    setBackgroundColor(coverColor.color)
+                }
+            }
+            coverImage != null -> {
+                ivCover?.apply {
+                    setBackgroundColor(0)
+                    Glide
+                        .with(this)
+                        .load(coverImage)
+                        .centerCrop()
+                        .into(this)
+                }
+            }
+            coverGradient != null -> {
+                ivCover?.apply {
+                    setImageDrawable(null)
+                    setBackgroundColor(0)
+                    when (coverGradient) {
+                        CoverGradient.YELLOW -> setBackgroundResource(com.anytypeio.anytype.core_ui.R.drawable.cover_gradient_yellow)
+                        CoverGradient.RED -> setBackgroundResource(com.anytypeio.anytype.core_ui.R.drawable.cover_gradient_red)
+                        CoverGradient.BLUE -> setBackgroundResource(com.anytypeio.anytype.core_ui.R.drawable.cover_gradient_blue)
+                        CoverGradient.TEAL -> setBackgroundResource(com.anytypeio.anytype.core_ui.R.drawable.cover_gradient_teal)
+                    }
+                }
+            }
+            else -> {
+                ivCover?.apply {
+                    setImageDrawable(null)
+                    setBackgroundColor(0)
+                }
+            }
         }
     }
 
@@ -353,22 +442,20 @@ open class ObjectSetFragment :
 
     private val transitionListener = object : MotionLayout.TransitionListener {
         override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {}
-        override fun onTransitionChange(
-            view: MotionLayout?,
-            start: Int,
-            end: Int,
-            progress: Float
-        ) {
+        override fun onTransitionChange(view: MotionLayout?, start: Int, end: Int, progress: Float) {
+            Timber.d("Transition change: $progress")
         }
-
         override fun onTransitionTrigger(view: MotionLayout?, id: Int, pos: Boolean, prog: Float) {}
-
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
                 title.enableEditMode()
+                tvStatus.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
+                topToolbarTitle.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
             }
             if (id == R.id.end) {
                 title.enableReadMode()
+                tvStatus.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
+                topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
             }
         }
     }
@@ -382,8 +469,7 @@ open class ObjectSetFragment :
             paginatorToolbar.set(count = count, index = index)
             if (count > 1) {
                 paginatorToolbar.visible()
-            }
-            else {
+            } else {
                 paginatorToolbar.gone()
             }
         }
@@ -391,10 +477,8 @@ open class ObjectSetFragment :
             Timber.d("isLoading: $isLoading")
             if (isLoading) {
                 dvProgressBar.show()
-                logoProgressBar.show()
             } else {
                 dvProgressBar.hide()
-                logoProgressBar.hide()
             }
         }
         vm.onStart(ctx)
@@ -478,5 +562,6 @@ open class ObjectSetFragment :
         const val CONTEXT_ID_KEY = "arg.object_set.context"
         val EMPTY_TAG = null
         const val BOTTOM_PANEL_ANIM_DURATION = 150L
+        const val DEFAULT_ANIM_DURATION = 300L
     }
 }

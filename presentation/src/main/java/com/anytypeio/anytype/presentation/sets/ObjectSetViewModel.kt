@@ -186,11 +186,6 @@ class ObjectSetViewModel(
         proceedWithExiting()
     }
 
-    fun onBackButtonPressed() {
-        Timber.d("onBackButtonPressed, ")
-        proceedWithExiting()
-    }
-
     private fun proceedWithExiting() {
         viewModelScope.launch {
             closeBlock(CloseBlock.Params(context)).process(

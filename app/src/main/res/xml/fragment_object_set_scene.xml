@@ -4,8 +4,7 @@
 
     <Transition
         motion:constraintSetEnd="@+id/end"
-        motion:constraintSetStart="@id/start"
-        motion:duration="500">
+        motion:constraintSetStart="@id/start">
         <OnSwipe
             motion:dragDirection="dragUp"
             motion:touchAnchorId="@id/gridContainer"
@@ -13,165 +12,41 @@
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
-        <Constraint
-            android:id="@+id/objectSetIcon"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="32dp"
-            android:scaleX="1"
-            android:scaleY="1"
-            motion:layout_constraintStart_toStartOf="parent"
-            motion:layout_constraintTop_toBottomOf="@+id/icBack" />
-        <Constraint
-            android:id="@+id/title"
+        <Constraint android:id="@+id/objectHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="135dp"
-            android:layout_marginEnd="20dp"
+            layout="@layout/layout_object_set_header"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            motion:layout_constraintTop_toTopOf="parent"
-            motion:transitionEasing="linear">
+            motion:layout_constraintTop_toTopOf="parent">
             <PropertySet android:alpha="1" />
         </Constraint>
-        <Constraint
-            android:id="@+id/titleSmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="@dimen/dp_16"
-            motion:layout_constraintBottom_toBottomOf="@+id/icBack"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toEndOf="@+id/icBack"
-            motion:layout_constraintTop_toTopOf="@+id/icBack"
-            motion:layout_editor_absoluteX="64dp"
-            motion:layout_editor_absoluteY="13dp"
-            motion:transitionEasing="cubic(1,0,1,0.1)">
-            <PropertySet android:alpha="0" />
-        </Constraint>
-        <Constraint
-            android:id="@+id/addNewButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="0dp"
-            motion:layout_constraintBottom_toBottomOf="@+id/tvCurrentViewerName"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintTop_toTopOf="@+id/tvCurrentViewerName" />
-        <Constraint
-            android:id="@+id/customizeViewButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            motion:layout_constraintBottom_toBottomOf="@+id/addNewButton"
-            motion:layout_constraintEnd_toStartOf="@+id/addNewButton"
-            motion:layout_constraintTop_toTopOf="@+id/addNewButton" />
-        <Constraint
-            android:id="@id/dvProgressBar"
-            motion:layout_constraintBottom_toBottomOf="@+id/gridContainer"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
-            motion:visibilityMode="ignore" />
-        <Constraint
-            android:id="@id/logoProgressBar"
-            motion:layout_constraintBottom_toBottomOf="@+id/objectSetIcon"
-            motion:layout_constraintEnd_toEndOf="@+id/objectSetIcon"
-            motion:layout_constraintStart_toStartOf="@+id/objectSetIcon"
-            motion:layout_constraintTop_toTopOf="@+id/objectSetIcon"
-            motion:visibilityMode="ignore" />
-        <Constraint
-            android:id="@id/paginatorToolbar"
-            android:layout_width="0dp"
+        <Constraint android:id="@+id/dataViewHeader"
+            layout="@layout/layout_object_set_dv_header"
             android:layout_height="@dimen/default_toolbar_height"
-            motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
             motion:layout_constraintStart_toStartOf="parent"
-            motion:visibilityMode="ignore" />
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/objectHeader"/>
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
-        <Constraint
-            android:id="@+id/objectSetIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
-            motion:layout_constraintBottom_toBottomOf="@+id/icBack"
-            motion:layout_constraintStart_toEndOf="@+id/icBack"
-            motion:layout_constraintTop_toTopOf="@+id/icBack" />
-        <Constraint
-            android:id="@+id/title"
+        <Constraint android:id="@+id/objectHeader"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="@dimen/dp_16"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_object_set_header"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            motion:layout_constraintTop_toTopOf="parent"
-            motion:transitionEasing="linear">
+            motion:layout_constraintBottom_toTopOf="parent">
             <PropertySet android:alpha="0" />
         </Constraint>
-        <Constraint
-            android:id="@+id/titleSmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="@dimen/dp_16"
-            motion:layout_constraintBottom_toBottomOf="@+id/icBack"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toEndOf="@+id/icBack"
-            motion:layout_constraintTop_toTopOf="@+id/icBack"
-            motion:transitionEasing="cubic(1,0,1,0.04)">
-            <PropertySet android:alpha="1" />
-        </Constraint>
-        <Constraint
-            android:id="@+id/addNewButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            motion:layout_constraintBottom_toBottomOf="@+id/tvCurrentViewerName"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintTop_toTopOf="@+id/tvCurrentViewerName" />
-        <Constraint
-            android:id="@+id/customizeViewButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            motion:layout_constraintBottom_toBottomOf="@+id/addNewButton"
-            motion:layout_constraintEnd_toStartOf="@+id/addNewButton"
-            motion:layout_constraintTop_toTopOf="@+id/addNewButton" />
-        <Constraint
-            android:id="@+id/controlDivider2"
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:layout_marginTop="8dp"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
-            motion:layout_constraintTop_toBottomOf="@+id/tvCurrentViewerName" />
-        <Constraint
-            android:id="@id/dvProgressBar"
-            motion:layout_constraintBottom_toBottomOf="@+id/gridContainer"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
-            motion:visibilityMode="ignore" />
-        <Constraint
-            android:id="@id/logoProgressBar"
-            motion:layout_constraintBottom_toBottomOf="@+id/objectSetIcon"
-            motion:layout_constraintEnd_toEndOf="@+id/objectSetIcon"
-            motion:layout_constraintStart_toStartOf="@+id/objectSetIcon"
-            motion:layout_constraintTop_toTopOf="@+id/objectSetIcon"
-            motion:visibilityMode="ignore" />
-        <Constraint
-            android:id="@id/paginatorToolbar"
-            android:layout_width="0dp"
+        <Constraint android:id="@+id/dataViewHeader"
+            layout="@layout/layout_object_set_dv_header"
             android:layout_height="@dimen/default_toolbar_height"
-            motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
             motion:layout_constraintStart_toStartOf="parent"
-            motion:visibilityMode="ignore" />
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/topToolbar"/>
     </ConstraintSet>
+
 </MotionScene>

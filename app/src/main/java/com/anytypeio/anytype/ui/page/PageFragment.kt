@@ -760,7 +760,7 @@ open class PageFragment :
 //                        .commit()
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
-                    DocumentEmojiIconPickerFragment.new(
+                    ObjectIconPickerFragment.new(
                         context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
                         target = command.target
                     ).show(childFragmentManager, null)
@@ -1649,8 +1649,8 @@ open class PageFragment :
         findNavController().navigate(
             R.id.objectIconPickerScreen,
             bundleOf(
-                DocumentEmojiIconPickerFragment.ARG_CONTEXT_ID_KEY to ctx,
-                DocumentEmojiIconPickerFragment.ARG_TARGET_ID_KEY to ctx,
+                ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
+                ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to ctx,
             )
         )
     }

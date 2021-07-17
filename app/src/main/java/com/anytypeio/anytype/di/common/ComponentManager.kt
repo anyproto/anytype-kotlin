@@ -136,11 +136,21 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val documentEmojiIconPickerComponent = DependentComponentMap { ctx ->
+    val objectIconPickerComponent = DependentComponentMap { ctx ->
         pageComponent
             .get(ctx)
-            .documentEmojiIconPickerComponentBuilder()
-            .documentIconActionMenuModule(DocumentEmojiIconPickerModule())
+            .objectIconPickerComponent()
+            .base(ObjectIconPickerBaseModule)
+            .module(ObjectIconPickerModule)
+            .build()
+    }
+
+    val objectSetIconPickerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectSetIconPickerComponent()
+            .base(ObjectIconPickerBaseModule)
+            .module(ObjectSetIconPickerModule)
             .build()
     }
 

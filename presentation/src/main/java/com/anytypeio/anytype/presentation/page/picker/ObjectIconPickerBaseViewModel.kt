@@ -11,7 +11,6 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiSuggest
-import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.page.editor.Proxy
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Dispatchers
@@ -20,14 +19,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class DocumentEmojiIconPickerViewModel(
+abstract class ObjectIconPickerBaseViewModel(
     private val setEmojiIcon: SetDocumentEmojiIcon,
     private val setImageIcon: SetDocumentImageIcon,
     private val removeDocumentIcon: RemoveDocumentIcon,
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
-    private val dispatcher: Dispatcher<Payload>,
-    private val details: DetailModificationManager
+    private val dispatcher: Dispatcher<Payload>
 ) : ViewModel() {
 
     /**
@@ -132,12 +130,11 @@ class DocumentEmojiIconPickerViewModel(
                     target = target,
                     context = context
                 )
-            ).proceed(
+            ).process(
                 failure = { Timber.e(it, "Error while setting emoji") },
                 success = { payload ->
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    details.setEmojiIcon(unicode = unicode, target = target)
-                        .also { state.value = ViewState.Exit }
+                    state.value = ViewState.Exit
                 }
             )
         }
@@ -181,7 +178,7 @@ class DocumentEmojiIconPickerViewModel(
                     context = ctx,
                     path = path
                 )
-            ).proceed(
+            ).process(
                 failure = {
                     Timber.e("Error while setting image icon").also { state.value = ViewState.Init }
                 },
@@ -206,4 +203,38 @@ class DocumentEmojiIconPickerViewModel(
     companion object {
         const val DEBOUNCE_DURATION = 300L
     }
+}
+
+class ObjectIconPickerViewModel(
+    setEmojiIcon: SetDocumentEmojiIcon,
+    setImageIcon: SetDocumentImageIcon,
+    removeDocumentIcon: RemoveDocumentIcon,
+    provider: EmojiProvider,
+    suggester: EmojiSuggester,
+    dispatcher: Dispatcher<Payload>
+) : ObjectIconPickerBaseViewModel(
+    setEmojiIcon = setEmojiIcon,
+    setImageIcon = setImageIcon,
+    removeDocumentIcon = removeDocumentIcon,
+    provider = provider,
+    suggester = suggester,
+    dispatcher = dispatcher
+)
+
+class ObjectSetIconPickerViewModel(
+    setEmojiIcon: SetDocumentEmojiIcon,
+    setImageIcon: SetDocumentImageIcon,
+    removeDocumentIcon: RemoveDocumentIcon,
+    provider: EmojiProvider,
+    suggester: EmojiSuggester,
+    dispatcher: Dispatcher<Payload>
+) : ObjectIconPickerBaseViewModel(
+    setEmojiIcon = setEmojiIcon,
+    setImageIcon = setImageIcon,
+    removeDocumentIcon = removeDocumentIcon,
+    provider = provider,
+    suggester = suggester,
+    dispatcher = dispatcher
+) {
+
 }

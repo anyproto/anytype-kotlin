@@ -23,32 +23,31 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
-import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModel
-import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModel.ViewState
-import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
+import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerBaseViewModel
+import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerBaseViewModel.ViewState
+import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerViewModel
+import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerViewModelFactory
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
-open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
+abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment() {
 
-    private val target: String
+    protected val target: String
         get() = requireArguments()
             .getString(ARG_TARGET_ID_KEY)
             ?: throw IllegalStateException(MISSING_TARGET_ERROR)
 
-    private val context: String
+    protected val context: String
         get() = requireArguments()
             .getString(ARG_CONTEXT_ID_KEY)
             ?: throw IllegalStateException(MISSING_CONTEXT_ERROR)
 
-    @Inject
-    lateinit var factory: DocumentEmojiIconPickerViewModelFactory
-    private val vm by viewModels<DocumentEmojiIconPickerViewModel> { factory }
+    abstract val vm : ObjectIconPickerBaseViewModel
 
     private val emojiPickerAdapter by lazy {
         DocumentEmojiIconPickerAdapter(
@@ -182,23 +181,7 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun injectDependencies() {
-        componentManager().documentEmojiIconPickerComponent.get(context).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().documentEmojiIconPickerComponent.release(context)
-    }
-
     companion object {
-
-        fun new(context: String, target: String) = DocumentEmojiIconPickerFragment().apply {
-            arguments = bundleOf(
-                ARG_CONTEXT_ID_KEY to context,
-                ARG_TARGET_ID_KEY to target
-            )
-        }
-
         private const val EMPTY_FILTER_TEXT = ""
         private const val PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT = 6
         private const val EMOJI_RECYCLER_ITEM_VIEW_CACHE_SIZE = 2000
@@ -212,5 +195,29 @@ open class DocumentEmojiIconPickerFragment : BaseBottomSheetFragment() {
         private const val SELECT_IMAGE_CODE = 1
         private const val COULD_NOT_PARSE_PATH_ERROR = "Could not parse path to your image"
         private const val REQUEST_PERMISSION_CODE = 2
+    }
+}
+
+open class ObjectIconPickerFragment : ObjectIconPickerBaseFragment() {
+
+    @Inject
+    lateinit var factory: ObjectIconPickerViewModelFactory
+    override val vm by viewModels<ObjectIconPickerViewModel> { factory }
+
+    override fun injectDependencies() {
+        componentManager().objectIconPickerComponent.get(context).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectIconPickerComponent.release(context)
+    }
+
+    companion object {
+        fun new(context: String, target: String) = ObjectIconPickerFragment().apply {
+            arguments = bundleOf(
+                ARG_CONTEXT_ID_KEY to context,
+                ARG_TARGET_ID_KEY to target
+            )
+        }
     }
 }

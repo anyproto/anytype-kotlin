@@ -68,7 +68,7 @@ interface PageSubComponent {
 
     fun inject(fragment: PageFragment)
 
-    fun documentEmojiIconPickerComponentBuilder(): DocumentEmojiIconPickerSubComponent.Builder
+    fun objectIconPickerComponent(): ObjectIconPickerComponent.Builder
     fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
 
     // Relations

@@ -65,7 +65,9 @@ interface ObjectSetSubComponent {
     fun modifyViewerSortComponent(): ModifyViewerSortSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun relationDateValueComponent(): RelationDataValueSubComponent.Builder
+
     fun objectSetMenuComponent() : ObjectSetMenuComponent.Builder
+    fun objectSetIconPickerComponent() : ObjectSetIconPickerComponent.Builder
 }
 
 @Module

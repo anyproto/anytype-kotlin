@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
@@ -25,10 +26,12 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
-import com.anytypeio.anytype.core_ui.extensions.setImageOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
-import com.anytypeio.anytype.core_ui.reactive.*
+import com.anytypeio.anytype.core_ui.reactive.afterTextChanges
+import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
+import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.OnSwipeListener
@@ -263,15 +266,32 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun observeHeader(title: BlockView.Title.Basic) {
-        checkMainThread()
+    private fun bindHeader(title: BlockView.Title.Basic) {
         this.title.setText(title.text)
         topToolbar.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
+
         if (title.emoji != null) {
-            objectHeader.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
+            objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).visible()
         } else {
-            objectHeader.findViewById<ImageView>(R.id.emojiIcon).setImageOrNull(title.image)
+            objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).gone()
         }
+
+        objectHeader.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
+
+        if (title.image != null) {
+            objectHeader.findViewById<ViewGroup>(R.id.docImageIconContainer).visible()
+            objectHeader.findViewById<ImageView>(R.id.imageIcon).apply {
+                Glide
+                    .with(this)
+                    .load(title.image)
+                    .centerCrop()
+                    .into(this)
+            }
+        } else {
+            objectHeader.findViewById<ViewGroup>(R.id.docImageIconContainer).gone()
+            objectHeader.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
+        }
+
         setCover(
             coverColor = title.coverColor,
             coverGradient = title.coverGradient,
@@ -475,7 +495,7 @@ open class ObjectSetFragment :
     override fun onStart() {
         super.onStart()
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
-        jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { observeHeader(it) }
+        jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
         jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
             paginatorToolbar.set(count = count, index = index)

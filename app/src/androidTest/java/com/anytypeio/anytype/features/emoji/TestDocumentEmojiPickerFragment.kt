@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.features.emoji
 
-import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
-import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
+import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerViewModelFactory
+import com.anytypeio.anytype.ui.page.modals.ObjectIconPickerFragment
 
-class TestDocumentEmojiPickerFragment : DocumentEmojiIconPickerFragment() {
+class TestDocumentEmojiPickerFragment : ObjectIconPickerFragment() {
     init {
         factory = testViewModelFactory
     }
@@ -12,6 +12,6 @@ class TestDocumentEmojiPickerFragment : DocumentEmojiIconPickerFragment() {
     override fun releaseDependencies() {}
 
     companion object {
-        lateinit var testViewModelFactory: DocumentEmojiIconPickerViewModelFactory
+        lateinit var testViewModelFactory: ObjectIconPickerViewModelFactory
     }
 }

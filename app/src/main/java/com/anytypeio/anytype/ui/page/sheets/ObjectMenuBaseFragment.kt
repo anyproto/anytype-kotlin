@@ -29,7 +29,7 @@ import com.anytypeio.anytype.presentation.`object`.ObjectAction
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment
-import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
+import com.anytypeio.anytype.ui.page.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.android.synthetic.main.fragment_doc_menu_bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_object_menu.*
@@ -216,8 +216,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         findNavController().navigate(
             R.id.objectIconPickerScreen,
             bundleOf(
-                DocumentEmojiIconPickerFragment.ARG_CONTEXT_ID_KEY to ctx,
-                DocumentEmojiIconPickerFragment.ARG_TARGET_ID_KEY to ctx,
+                ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
+                ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to ctx,
             )
         )
     }

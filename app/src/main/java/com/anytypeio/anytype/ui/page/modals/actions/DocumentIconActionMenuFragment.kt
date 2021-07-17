@@ -36,7 +36,7 @@ import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuView
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.Contract
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModel.ViewState
 import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
-import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
+import com.anytypeio.anytype.ui.page.modals.ObjectIconPickerFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.action_toolbar_page_icon.*
@@ -146,7 +146,7 @@ class DocumentIconActionMenuFragment : BaseFragment(R.layout.action_toolbar_page
                     OPTION_CHOOSE_EMOJI -> {
                         parentFragment?.childFragmentManager?.let { manager ->
                             manager.popBackStack()
-                            DocumentEmojiIconPickerFragment.new(
+                            ObjectIconPickerFragment.new(
                                 context = target,
                                 target = target
                             ).show(manager, null)

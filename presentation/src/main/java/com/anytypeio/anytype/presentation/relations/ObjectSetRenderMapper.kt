@@ -89,18 +89,23 @@ fun ObjectSet.render(
     }
 
     return ObjectSetViewState(
-        title = title(ctx),
+        title = title(ctx = ctx, urlBuilder = builder),
         viewer = dvview
     )
 }
 
-fun ObjectSet.title(ctx: Id): BlockView.Title.Basic {
+fun ObjectSet.title(
+    ctx: Id,
+    urlBuilder: UrlBuilder
+): BlockView.Title.Basic {
     val title = blocks.title()
     return BlockView.Title.Basic(
         id = title.id,
         text = title.content<Block.Content.Text>().text,
         emoji = details[ctx]?.iconEmoji,
-        image = details[ctx]?.iconImage
+        image = details[ctx]?.iconImage?.let { hash ->
+            urlBuilder.thumbnail(hash = hash)
+        }
     )
 }
 

@@ -8,49 +8,43 @@ import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
-import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
-import com.anytypeio.anytype.presentation.page.picker.DocumentEmojiIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.page.picker.ObjectSetIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment
+import com.anytypeio.anytype.ui.page.modals.ObjectIconPickerFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [DocumentEmojiIconPickerModule::class])
+@Subcomponent(modules = [ObjectIconPickerBaseModule::class, ObjectIconPickerModule::class])
 @PerModal
-interface DocumentEmojiIconPickerSubComponent {
-
+interface ObjectIconPickerComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun documentIconActionMenuModule(module: DocumentEmojiIconPickerModule): Builder
-        fun build(): DocumentEmojiIconPickerSubComponent
+        fun base(module: ObjectIconPickerBaseModule): Builder
+        fun module(module: ObjectIconPickerModule): Builder
+        fun build(): ObjectIconPickerComponent
     }
 
-    fun inject(fragment: DocumentEmojiIconPickerFragment)
+    fun inject(fragment: ObjectIconPickerFragment)
+}
+
+@Subcomponent(modules = [ObjectIconPickerBaseModule::class, ObjectSetIconPickerModule::class])
+@PerModal
+interface ObjectSetIconPickerComponent {
+    @Subcomponent.Builder
+    interface Builder {
+        fun base(module: ObjectIconPickerBaseModule): Builder
+        fun module(module: ObjectSetIconPickerModule): Builder
+        fun build(): ObjectSetIconPickerComponent
+    }
+
+    fun inject(fragment: ObjectSetIconPickerFragment)
 }
 
 @Module
-class DocumentEmojiIconPickerModule {
-
-    @Provides
-    @PerModal
-    fun provideDocumentEmojiIconPickerViewModel(
-        setEmojiIcon: SetDocumentEmojiIcon,
-        setImageIcon: SetDocumentImageIcon,
-        removeDocumentIcon: RemoveDocumentIcon,
-        emojiSuggester: EmojiSuggester,
-        dispatcher: Dispatcher<Payload>,
-        details: DetailModificationManager
-    ): DocumentEmojiIconPickerViewModelFactory = DocumentEmojiIconPickerViewModelFactory(
-        setEmojiIcon = setEmojiIcon,
-        setImageIcon = setImageIcon,
-        removeDocumentIcon = removeDocumentIcon,
-        emojiSuggester = emojiSuggester,
-        emojiProvider = Emoji,
-        dispatcher = dispatcher,
-        details = details
-    )
-
+object ObjectIconPickerBaseModule {
     @Provides
     @PerModal
     fun provideSetDocumentEmojiIconUseCase(
@@ -73,5 +67,45 @@ class DocumentEmojiIconPickerModule {
         repo: BlockRepository
     ): RemoveDocumentIcon = RemoveDocumentIcon(
         repo = repo
+    )
+}
+
+@Module
+object ObjectIconPickerModule {
+    @Provides
+    @PerModal
+    fun provideViewModelFactory(
+        setEmojiIcon: SetDocumentEmojiIcon,
+        setImageIcon: SetDocumentImageIcon,
+        removeDocumentIcon: RemoveDocumentIcon,
+        emojiSuggester: EmojiSuggester,
+        dispatcher: Dispatcher<Payload>
+    ): ObjectIconPickerViewModelFactory = ObjectIconPickerViewModelFactory(
+        setEmojiIcon = setEmojiIcon,
+        setImageIcon = setImageIcon,
+        removeDocumentIcon = removeDocumentIcon,
+        emojiSuggester = emojiSuggester,
+        emojiProvider = Emoji,
+        dispatcher = dispatcher,
+    )
+}
+
+@Module
+object ObjectSetIconPickerModule {
+    @Provides
+    @PerModal
+    fun provideViewModelFactory(
+        setEmojiIcon: SetDocumentEmojiIcon,
+        setImageIcon: SetDocumentImageIcon,
+        removeDocumentIcon: RemoveDocumentIcon,
+        emojiSuggester: EmojiSuggester,
+        dispatcher: Dispatcher<Payload>
+    ): ObjectSetIconPickerViewModelFactory = ObjectSetIconPickerViewModelFactory(
+        setEmojiIcon = setEmojiIcon,
+        setImageIcon = setImageIcon,
+        removeDocumentIcon = removeDocumentIcon,
+        emojiSuggester = emojiSuggester,
+        emojiProvider = Emoji,
+        dispatcher = dispatcher,
     )
 }

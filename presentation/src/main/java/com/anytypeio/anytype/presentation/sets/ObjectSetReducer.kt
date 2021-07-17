@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
+import com.anytypeio.anytype.core_models.ext.amend
+import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.presentation.extension.updateFields
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -150,6 +152,22 @@ class ObjectSetReducer {
                     details = state.details.toMutableMap().apply {
                         put(event.target, event.details)
                     }
+                )
+            }
+            is Command.Details.Amend -> {
+                state.copy(
+                    details = state.details.amend(
+                        target = event.target,
+                        slice = event.details
+                    )
+                )
+            }
+            is Command.Details.Unset -> {
+                state.copy(
+                    details = state.details.unset(
+                        target = event.target,
+                        keys = event.keys
+                    )
                 )
             }
             else -> {

@@ -23,7 +23,7 @@
             android:label="Object-Relation-Value-Screen" />
         <dialog
             android:id="@+id/objectIconPickerScreen"
-            android:name="com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment"
+            android:name="com.anytypeio.anytype.ui.page.modals.ObjectIconPickerBaseFragment"
             android:label="Object-Icon-Picker-Screen" />
         <dialog
             android:id="@+id/objectMainMenuScreen"
@@ -51,9 +51,9 @@
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment"
             android:label="Object-SetMenu"/>
         <dialog
-            android:id="@+id/objectIconPickerScreen"
-            android:name="com.anytypeio.anytype.ui.page.modals.DocumentEmojiIconPickerFragment"
-            android:label="Object-Icon-Picker-Screen" />
+            android:id="@+id/objectSetIconPickerScreen"
+            android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
+            android:label="Object-Set-Icon-Picker-Screen" />
     </navigation>
 
     <fragment

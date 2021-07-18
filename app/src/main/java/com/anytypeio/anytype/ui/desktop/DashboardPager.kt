@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.item_dashboard_recent.view.*
 import kotlinx.android.synthetic.main.item_dashboard_sets.view.*
 
 class DashboardPager(
+    private var items: List<TabItem>,
     private val defaultAdapter: DashboardAdapter,
     private val recentAdapter: DashboardAdapter,
     private val inboxAdapter: DashboardAdapter,
@@ -24,6 +25,11 @@ class DashboardPager(
     private val archiveAdapter: DashboardAdapter,
     private val dndBehavior: DashboardDragAndDropBehavior
 ): RecyclerView.Adapter<DashboardPager.ViewHolder>() {
+
+    fun setItems(items: List<TabItem>) {
+        this.items = items
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -134,25 +140,24 @@ class DashboardPager(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {}
-    override fun getItemCount(): Int = PAGE_COUNT
+    override fun getItemCount(): Int = items.size
 
-    override fun getItemViewType(position: Int) = when(position) {
-        INDEX_FAVOURITES -> R.layout.item_dashboard_page
-        INDEX_RECENT -> R.layout.item_dashboard_recent
-        INDEX_INBOX -> R.layout.item_dashboard_inbox
-        INDEX_SETS-> R.layout.item_dashboard_sets
-        INDEX_BIN -> R.layout.item_dashboard_page_archived
-        else -> throw IllegalStateException("Unexpected position: $position")
+    override fun getItemViewType(position: Int) = when(items[position].type) {
+        TYPE_FAVOURITES -> R.layout.item_dashboard_page
+        TYPE_RECENT -> R.layout.item_dashboard_recent
+        TYPE_INBOX -> R.layout.item_dashboard_inbox
+        TYPE_SETS-> R.layout.item_dashboard_sets
+        TYPE_BIN -> R.layout.item_dashboard_page_archived
+        else -> throw IllegalStateException("Unexpected item: ${items[position]}")
     }
 
     companion object {
         const val COLUMN_COUNT = 2
-        const val PAGE_COUNT = 5
-        const val INDEX_FAVOURITES = 0
-        const val INDEX_RECENT = 1
-        const val INDEX_INBOX = 2
-        const val INDEX_SETS = 3
-        const val INDEX_BIN = 4
+        const val TYPE_FAVOURITES = 0
+        const val TYPE_RECENT = 1
+        const val TYPE_INBOX = 2
+        const val TYPE_SETS = 3
+        const val TYPE_BIN = 4
     }
 
     sealed class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {

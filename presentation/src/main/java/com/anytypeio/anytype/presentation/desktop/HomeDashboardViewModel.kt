@@ -76,6 +76,7 @@ class HomeDashboardViewModel(
     val recent = MutableStateFlow(emptyList<DashboardView>())
     val inbox = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
+    val isDataViewEnabled = MutableStateFlow(false)
 
     private val objectTypes : List<ObjectType>
     get() = stateData.value?.objectTypes ?: emptyList()
@@ -84,6 +85,7 @@ class HomeDashboardViewModel(
     get() = stateData.value?.blocks ?: emptyList()
 
     init {
+        isDataViewEnabled.value = getFlavourConfig.isDataViewEnabled()
         startProcessingState()
         proceedWithGettingConfig()
     }
@@ -377,6 +379,15 @@ class HomeDashboardViewModel(
     }
 
     private fun proceedWithObjectSearch() {
+        proceedWithArchivedObjectSearch()
+        proceedWithRecentObjectSearch()
+        proceedWithInboxObjectSearch()
+        if (isDataViewEnabled.value) {
+            proceedWithSetsObjectSearch()
+        }
+    }
+
+    private fun proceedWithArchivedObjectSearch() {
         viewModelScope.launch {
             searchArchivedObjects(Unit).process(
                 success = { objects ->
@@ -402,9 +413,13 @@ class HomeDashboardViewModel(
                 failure = { Timber.e(it, "Error while searching for archived objects") }
             )
         }
+    }
+
+    private fun proceedWithRecentObjectSearch() {
         viewModelScope.launch {
             searchRecentObjects(Unit).process(
-                success = { objects -> Timber.d("Found ${objects.size} recent objects")
+                success = { objects ->
+                    Timber.d("Found ${objects.size} recent objects")
                     recent.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
                         val oType = stateData.value?.let { state ->
                             state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
@@ -438,6 +453,9 @@ class HomeDashboardViewModel(
                 failure = { Timber.e(it, "Error while searching for recent objects") }
             )
         }
+    }
+
+    private fun proceedWithInboxObjectSearch() {
         viewModelScope.launch {
             searchInboxObjects(Unit).process(
                 success = { objects ->
@@ -463,6 +481,9 @@ class HomeDashboardViewModel(
                 failure = { Timber.e(it, "Error while searching for inbox objects") }
             )
         }
+    }
+
+    private fun proceedWithSetsObjectSearch() {
         viewModelScope.launch {
             searchObjectSets(Unit).process(
                 success = { objects ->

@@ -108,63 +108,21 @@
         app:layout_constraintStart_toEndOf="@+id/bottomToolbar"
         app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
 
-        <HorizontalScrollView
-            android:id="@+id/dashboardTabToolbar"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp">
-
-                <TextView
-                    android:id="@+id/tabFavourite"
-                    style="@style/DashboardTabTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/favorites" />
-
-                <TextView
-                    android:id="@+id/tabRecent"
-                    style="@style/DashboardTabTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="@string/recent" />
-
-                <TextView
-                    android:id="@+id/tabInbox"
-                    style="@style/DashboardTabTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="@string/inbox" />
-
-                <TextView
-                    android:id="@+id/tabSets"
-                    style="@style/DashboardTabTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="@string/sets" />
-
-                <TextView
-                    android:id="@+id/tabBin"
-                    style="@style/DashboardTabTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="@string/archive" />
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
+            android:layout_marginStart="@dimen/dp_10"
+            android:background="@null"
+            app:tabIndicator="@null"
+            app:tabMinWidth="10dp"
+            app:tabPaddingBottom="@dimen/dp_12"
+            app:tabPaddingEnd="10dp"
+            app:tabPaddingStart="10dp"
+            app:tabPaddingTop="@dimen/dp_12"
+            app:tabSelectedTextColor="@color/black"
+            app:tabTextAppearance="@style/DashboardTabTextStyle"
+            app:tabTextColor="#CC0066C3" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/dashboardPager"

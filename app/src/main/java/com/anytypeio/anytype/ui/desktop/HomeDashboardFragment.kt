@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager2.widget.ViewPager2
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -19,6 +18,8 @@ import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.page.PageFragment
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_desktop.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -112,7 +113,8 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
             inboxAdapter = dashboardInboxAdapter,
             setsAdapter = dashboardSetsAdapter,
             archiveAdapter = dashboardArchiveAdapter,
-            dndBehavior = dndBehavior
+            dndBehavior = dndBehavior,
+            items = listOf()
         )
     }
 
@@ -129,6 +131,13 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     override fun onStart() {
         super.onStart()
+        lifecycleScope.subscribe(vm.isDataViewEnabled) { isEnabled ->
+            val items = if (isEnabled) tabs else tabsNoSets
+            dashboardPagerAdapter.setItems(items)
+            TabLayoutMediator(tabsLayout, dashboardPager) { tab, position ->
+                tab.text = items[position].title
+            }.attach()
+        }
         lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
         lifecycleScope.subscribe(vm.inbox) { dashboardInboxAdapter.update(it) }
@@ -190,40 +199,12 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private fun setup() {
 
-        val callback = object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                tabFavourite.isSelected = position == INDEX_FAVORITES
-                tabRecent.isSelected = position == INDEX_RECENT
-                tabInbox.isSelected = position == INDEX_INBOX
-                tabSets.isSelected = position == INDEX_SETS
-                tabBin.isSelected = position == INDEX_BIN
-            }
-        }
-
-        tabFavourite.setOnClickListener {
-            dashboardPager.setCurrentItem(INDEX_FAVORITES, true)
-        }
-
-        tabRecent.setOnClickListener {
-            dashboardPager.setCurrentItem(INDEX_RECENT, true)
-        }
-
-        tabInbox.setOnClickListener {
-            dashboardPager.setCurrentItem(INDEX_INBOX, true)
-        }
-
-        tabSets.setOnClickListener {
-            dashboardPager.setCurrentItem(INDEX_SETS, true)
-        }
-
-        tabBin.setOnClickListener {
-            dashboardPager.setCurrentItem(INDEX_BIN, true)
+        tabsLayout.apply {
+            tabMode = TabLayout.MODE_SCROLLABLE
         }
 
         dashboardPager.apply {
             adapter = dashboardPagerAdapter
-            registerOnPageChangeCallback(callback)
         }
 
         bottomToolbar
@@ -265,11 +246,24 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         componentManager().desktopComponent.release()
     }
 
-    companion object {
-        const val INDEX_FAVORITES = 0
-        const val INDEX_RECENT = 1
-        const val INDEX_INBOX = 2
-        const val INDEX_SETS = 3
-        const val INDEX_BIN = 4
+    private val tabs by lazy {
+        listOf(
+            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
+            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
+            TabItem(getString(R.string.inbox), DashboardPager.TYPE_INBOX),
+            TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS),
+            TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
+        )
+    }
+
+    private val tabsNoSets by lazy {
+        listOf(
+            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
+            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
+            TabItem(getString(R.string.inbox), DashboardPager.TYPE_INBOX),
+            TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
+        )
     }
 }
+
+data class TabItem(val title: String, val type: Int)

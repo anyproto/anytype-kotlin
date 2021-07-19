@@ -23,7 +23,7 @@
             android:label="Object-Relation-Value-Screen" />
         <dialog
             android:id="@+id/objectIconPickerScreen"
-            android:name="com.anytypeio.anytype.ui.page.modals.ObjectIconPickerBaseFragment"
+            android:name="com.anytypeio.anytype.ui.page.modals.ObjectIconPickerFragment"
             android:label="Object-Icon-Picker-Screen" />
         <dialog
             android:id="@+id/objectMainMenuScreen"

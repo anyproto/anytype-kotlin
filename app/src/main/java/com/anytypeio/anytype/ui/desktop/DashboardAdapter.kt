@@ -20,8 +20,8 @@ import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.facebook.shimmer.ShimmerFrameLayout
+import kotlinx.android.synthetic.main.item_dashboard_card_default.view.*
 import kotlinx.android.synthetic.main.item_desktop_archive.view.*
-import kotlinx.android.synthetic.main.item_desktop_page.view.*
 import timber.log.Timber
 
 class DashboardAdapter(
@@ -46,7 +46,7 @@ class DashboardAdapter(
         return when (viewType) {
             VIEW_TYPE_DOCUMENT -> {
                 ViewHolder.DocumentHolder(
-                    inflater.inflate(R.layout.item_desktop_page, parent, false)
+                    inflater.inflate(R.layout.item_dashboard_card_default, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -98,7 +98,7 @@ class DashboardAdapter(
             }
             VIEW_TYPE_SET -> {
                 ViewHolder.ObjectSetHolder(
-                    inflater.inflate(R.layout.item_desktop_object_set, parent, false)
+                    inflater.inflate(R.layout.item_dashboard_card_default, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition

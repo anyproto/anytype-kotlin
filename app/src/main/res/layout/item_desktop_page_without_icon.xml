@@ -4,39 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_dashboard_card_height"
+    android:background="@drawable/ripple_dashboard_card"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp">
 
-    <LinearLayout
-        android:background="@drawable/ripple_dashboard_card"
+    <TextView
+        android:id="@+id/tvDocTitle"
+        style="@style/DashboardDocAlternativeTitleStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="16dp"
+        tools:text="@string/default_text_placeholder" />
 
-        <TextView
-            android:layout_weight="1"
-            android:id="@+id/tvDocTitle"
-            style="@style/DashboardDocAlternativeTitleStyle"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="16dp"
-            tools:text="@string/default_text_placeholder" />
-
-        <TextView
-            android:hint="@string/unknown_type"
-            android:id="@+id/tvDocTypeName"
-            style="@style/DashboardDocumentSubtitleStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="12dp"
-            tools:text="Movies" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvDocTypeName"
+        style="@style/DashboardDocumentSubtitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/unknown_type"
+        tools:text="Movies" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
         tools:visibility="invisible"

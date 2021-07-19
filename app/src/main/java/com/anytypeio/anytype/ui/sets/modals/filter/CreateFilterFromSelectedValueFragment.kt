@@ -54,7 +54,7 @@ open class CreateFilterFromSelectedValueFragment :
             adapter = createFilterAdapter
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(drawable(R.drawable.divider_relations))
+                    setDrawable(drawable(R.drawable.divider_filter_list))
                 }
             )
         }

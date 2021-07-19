@@ -696,4 +696,15 @@
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
+    <style name="DataViewCellObjectHeaderNameStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">#929082</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
 </resources>

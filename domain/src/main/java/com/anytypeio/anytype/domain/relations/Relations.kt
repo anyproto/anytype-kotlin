@@ -11,4 +11,5 @@ object Relations {
     const val IS_ARCHIVED = "isArchived"
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val TYPE = "type"
+    const val DONE = "done"
 }

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
 import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -112,12 +113,12 @@ class ObjectIconWidget @JvmOverloads constructor(
             setInitials(name)
         } else {
             setEmoji(emoji)
-            setImage(image)
+            setCircularImage(image)
         }
         //todo Add checkbox logic
     }
 
-    private fun setInitials(
+    fun setInitials(
         name: String
     ) {
         val pos = name.firstDigitByHash()
@@ -130,7 +131,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         initial.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
     }
 
-    private fun setEmoji(emoji: String?) {
+    fun setEmoji(emoji: String?) {
         if (!emoji.isNullOrBlank()) {
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -150,7 +151,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setImage(image: Url?) {
+    fun setCircularImage(image: Url?) {
         if (!image.isNullOrBlank()) {
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -165,5 +166,31 @@ class ObjectIconWidget @JvmOverloads constructor(
         } else {
             ivImage.setImageDrawable(null)
         }
+    }
+
+    fun setRectangularImage(image: Url?) {
+        if (!image.isNullOrBlank()) {
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            emojiContainer.invisible()
+            ivImage.invisible()
+            rectangularIconContainer.visible()
+            Glide
+                .with(this)
+                .load(image)
+                .centerCrop()
+                .into(ivImageRectangular)
+        } else {
+            rectangularIconContainer.gone()
+            ivImage.setImageDrawable(null)
+        }
+    }
+
+    fun setCheckbox(isChecked: Boolean?) {
+        ivCheckbox.visible()
+        ivCheckbox.isSelected = isChecked ?: false
+        initialContainer.invisible()
+        emojiContainer.invisible()
+        ivImage.invisible()
     }
 }

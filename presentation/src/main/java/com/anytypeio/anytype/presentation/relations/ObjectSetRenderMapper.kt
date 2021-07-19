@@ -64,7 +64,8 @@ fun ObjectSet.render(
                 columns = columns,
                 relations = relations,
                 details = details,
-                builder = builder
+                builder = builder,
+                types = objectTypes
             )
         )
     }

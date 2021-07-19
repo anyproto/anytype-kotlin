@@ -2,15 +2,18 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.sets.model.*
 
 fun List<ColumnView>.buildGridRow(
     record: Map<String, Any?>,
     relations: List<Relation>,
+    objectTypes: List<ObjectType> = emptyList(),
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder
 ): Viewer.GridView.Row {
@@ -19,6 +22,8 @@ fun List<ColumnView>.buildGridRow(
     val name = record[ObjectSetConfig.NAME_KEY] as String?
     val emoji = record[ObjectSetConfig.EMOJI_KEY] as String?
     val image = record[ObjectSetConfig.IMAGE_KEY] as String?
+    val done = record[Relations.DONE] as Boolean?
+    val layout = objectTypes.find { it.url == type }?.layout
 
     val cells = mutableListOf<CellView>()
     this.map { column ->
@@ -149,7 +154,9 @@ fun List<ColumnView>.buildGridRow(
         name = name,
         emoji = emoji,
         image = image?.let { if (it.isEmpty()) null else builder.thumbnail(it) },
-        cells = cells
+        cells = cells,
+        layout = layout,
+        isChecked = done
     )
 }
 

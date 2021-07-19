@@ -7,7 +7,10 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlinx.android.synthetic.main.item_viewer_grid_row.view.*
@@ -78,11 +81,35 @@ class ViewerGridAdapter(
 
         fun bindObjectHeader(row: Viewer.GridView.Row) {
             Timber.d("Binding object header")
-            itemView.objectIcon.setIcon(
-                emoji = row.emoji,
-                image = row.image,
-                name = row.name.orEmpty()
-            )
+            when(row.layout) {
+                ObjectType.Layout.TODO -> {
+                    itemView.objectIcon.visible()
+                    itemView.objectIcon.setCheckbox(row.isChecked)
+                }
+                ObjectType.Layout.BASIC -> {
+                    if (row.image != null || row.emoji != null) {
+                        itemView.objectIcon.visible()
+                        if (row.image != null) {
+                            itemView.objectIcon.setRectangularImage(row.image)
+                        } else if (row.emoji != null) {
+                            itemView.objectIcon.setEmoji(row.emoji)
+                        }
+                    } else {
+                        itemView.objectIcon.gone()
+                    }
+                }
+                ObjectType.Layout.PROFILE -> {
+                    itemView.objectIcon.visible()
+                    if (row.image != null) {
+                        itemView.objectIcon.setCircularImage(row.image)
+                    } else {
+                        itemView.objectIcon.setInitials(row.name.orEmpty())
+                    }
+                }
+                else -> {
+                    itemView.objectIcon.gone()
+                }
+            }
             itemView.tvTitle.text = row.name
         }
 

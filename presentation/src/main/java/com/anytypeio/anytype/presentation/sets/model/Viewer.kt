@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.model
 
 import android.os.Parcelable
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -31,8 +32,10 @@ sealed class Viewer {
             val name: String? = null,
             val image: Url? = null,
             val emoji: String? = null,
-            val type: String?,
-            val cells: List<CellView> = emptyList()
+            val type: String? = null,
+            val isChecked: Boolean? = null,
+            val cells: List<CellView> = emptyList(),
+            val layout: ObjectType.Layout? = null
         )
 
         companion object {

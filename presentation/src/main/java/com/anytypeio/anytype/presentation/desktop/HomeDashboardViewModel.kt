@@ -391,24 +391,28 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchArchivedObjects(Unit).process(
                 success = { objects ->
-                    archived.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
-                        val oType = stateData.value?.let { state ->
-                            state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
+                    archived.value = objects
+                        .map { ObjectWrapper.Basic(it) }
+                        .mapNotNull { obj ->
+                            val oType = stateData.value?.findOTypeById(obj.type)
+                            if (oType?.layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
+                                null
+                            } else {
+                                DashboardView.Document(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.name,
+                                    isArchived = true,
+                                    isLoading = false,
+                                    emoji = obj.iconEmoji,
+                                    image = obj.iconImage,
+                                    type = obj.type.firstOrNull(),
+                                    typeName = oType?.name,
+                                    layout = obj.layout,
+                                    done = obj.done
+                                )
+                            }
                         }
-                        DashboardView.Document(
-                            id = obj.id,
-                            target = obj.id,
-                            title = obj.name,
-                            isArchived = true,
-                            isLoading = false,
-                            emoji = obj.iconEmoji,
-                            image = obj.iconImage,
-                            type = obj.type.firstOrNull(),
-                            typeName = oType?.name,
-                            layout = obj.layout,
-                            done = obj.done
-                        )
-                    }
                 },
                 failure = { Timber.e(it, "Error while searching for archived objects") }
             )
@@ -420,35 +424,39 @@ class HomeDashboardViewModel(
             searchRecentObjects(Unit).process(
                 success = { objects ->
                     Timber.d("Found ${objects.size} recent objects")
-                    recent.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
-                        val oType = stateData.value?.let { state ->
-                            state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
+                    recent.value = objects
+                        .map { ObjectWrapper.Basic(it) }
+                        .mapNotNull { obj ->
+                            val oType = stateData.value?.findOTypeById(obj.type)
+                            if (oType?.layout == ObjectType.Layout.SET) {
+                                if (isDataViewEnabled.value) {
+                                    DashboardView.ObjectSet(
+                                        id = obj.id,
+                                        target = obj.id,
+                                        title = obj.name,
+                                        isArchived = obj.isArchived ?: false,
+                                        isLoading = false,
+                                        emoji = obj.iconEmoji
+                                    )
+                                } else {
+                                    null
+                                }
+                            } else {
+                                DashboardView.Document(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.name,
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    emoji = obj.iconEmoji,
+                                    image = obj.iconImage,
+                                    type = obj.type.firstOrNull(),
+                                    typeName = oType?.name,
+                                    layout = obj.layout,
+                                    done = obj.done
+                                )
+                            }
                         }
-                        if (oType?.layout == ObjectType.Layout.SET) {
-                            DashboardView.ObjectSet(
-                                id = obj.id,
-                                target = obj.id,
-                                title = obj.name,
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                emoji = obj.iconEmoji
-                            )
-                        } else {
-                            DashboardView.Document(
-                                id = obj.id,
-                                target = obj.id,
-                                title = obj.name,
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                emoji = obj.iconEmoji,
-                                image = obj.iconImage,
-                                type = obj.type.firstOrNull(),
-                                typeName = oType?.name,
-                                layout = obj.layout,
-                                done = obj.done
-                            )
-                        }
-                    }
                 },
                 failure = { Timber.e(it, "Error while searching for recent objects") }
             )
@@ -459,24 +467,28 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchInboxObjects(Unit).process(
                 success = { objects ->
-                    inbox.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
-                        val oType = stateData.value?.let { state ->
-                            state.objectTypes.find { type -> type.url == obj.type.firstOrNull() }
+                    inbox.value = objects
+                        .map { ObjectWrapper.Basic(it) }
+                        .mapNotNull { obj ->
+                            val oType = stateData.value?.findOTypeById(obj.type)
+                            if (oType?.layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
+                                null
+                            } else {
+                                DashboardView.Document(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.name,
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    emoji = obj.iconEmoji,
+                                    image = obj.iconImage,
+                                    type = obj.type.firstOrNull(),
+                                    typeName = oType?.name,
+                                    layout = obj.layout,
+                                    done = obj.done
+                                )
+                            }
                         }
-                        DashboardView.Document(
-                            id = obj.id,
-                            target = obj.id,
-                            title = obj.name,
-                            isArchived = obj.isArchived ?: false,
-                            isLoading = false,
-                            emoji = obj.iconEmoji,
-                            image = obj.iconImage,
-                            type = obj.type.firstOrNull(),
-                            typeName = oType?.name,
-                            layout = obj.layout,
-                            done = obj.done
-                        )
-                    }
                 },
                 failure = { Timber.e(it, "Error while searching for inbox objects") }
             )

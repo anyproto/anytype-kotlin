@@ -283,3 +283,8 @@ sealed class HomeDashboardStateMachine {
         }
     }
 }
+
+fun State.findOTypeById(types: List<String>): ObjectType? {
+    val target = types.firstOrNull()
+    return objectTypes.find { oType -> oType.url == target }
+}

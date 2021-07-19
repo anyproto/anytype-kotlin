@@ -1,7 +1,12 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
+import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 fun ObjectSet.updateRecord(
@@ -17,6 +22,65 @@ fun ObjectSet.updateRecord(
         this.copy(viewerDb = updatedRecords)
     } else {
         this.copy()
+    }
+}
+
+fun ObjectSet.featuredRelations(
+    ctx: Id,
+    urlBuilder: UrlBuilder
+) : BlockView.FeaturedRelation? {
+    val block = blocks.find { it.content is Block.Content.FeaturedRelations }
+    if (block != null) {
+        val views = mutableListOf<DocumentRelationView>()
+        val ids = details[ctx]?.featuredRelations ?: emptyList()
+        views.addAll(
+            mapFeaturedRelations(
+                ctx = ctx,
+                ids = ids,
+                details = Block.Details(details),
+                relations = relations,
+                urlBuilder = urlBuilder
+            )
+        )
+        return BlockView.FeaturedRelation(
+            id = block.id,
+            relations = views
+        )
+    } else {
+        return null
+    }
+}
+
+private fun mapFeaturedRelations(
+    ctx: Id,
+    ids: List<String>,
+    details: Block.Details,
+    relations: List<Relation>,
+    urlBuilder: UrlBuilder
+): List<DocumentRelationView> = ids.mapNotNull { id ->
+    when (id) {
+        Relations.DESCRIPTION -> null
+        Relations.TYPE -> {
+            val objectTypeId = details.details[ctx]?.type?.firstOrNull()
+            if (objectTypeId != null) {
+                DocumentRelationView.ObjectType(
+                    relationId = objectTypeId.orEmpty(),
+                    name = details.details[objectTypeId]?.name.orEmpty(),
+                    isFeatured = true
+                )
+            } else {
+                null
+            }
+        }
+        else -> {
+            val relation = relations.firstOrNull { it.key == id }
+            relation?.view(
+                details = details,
+                values = details.details[ctx]?.map ?: emptyMap(),
+                urlBuilder = urlBuilder,
+                isFeatured = true
+            )
+        }
     }
 }
 

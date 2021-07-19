@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_ui.reactive.afterTextChanges
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.touches
+import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.OnSwipeListener
@@ -88,6 +89,9 @@ open class ObjectSetFragment :
 
     private val menuButton : FrameLayout
     get() = topToolbar.findViewById(R.id.threeDotsButton)
+
+    private val featuredRelations : FeaturedRelationGroupWidget
+    get() = objectHeader.findViewById(R.id.featuredRelationsWidget)
 
     private val rvHeaders: RecyclerView get() = root.findViewById(R.id.rvHeader)
     private val rvRows: RecyclerView get() = root.findViewById(R.id.rvRows)
@@ -233,6 +237,18 @@ open class ObjectSetFragment :
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         lifecycleScope.subscribe(vm.toasts.stream()) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
+        lifecycleScope.subscribe(vm.featured) { featured ->
+            if (featured != null) {
+                featuredRelations.visible()
+                featuredRelations.set(
+                    item = featured,
+                    click = {}
+                )
+            } else {
+                featuredRelations.clear()
+                featuredRelations.gone()
+            }
+        }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }

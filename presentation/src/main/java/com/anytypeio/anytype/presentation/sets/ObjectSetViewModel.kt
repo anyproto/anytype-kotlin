@@ -56,6 +56,8 @@ class ObjectSetViewModel(
     private val total = MutableStateFlow(0)
     private val offset = MutableStateFlow(0)
 
+    val featured = MutableStateFlow<BlockView.FeaturedRelation?>(null)
+
     val pagination = total.combine(offset) { t, o ->
         val idx = ceil(o.toDouble() / ObjectSetConfig.DEFAULT_LIMIT).toInt()
         val pages = ceil(t.toDouble() / ObjectSetConfig.DEFAULT_LIMIT).toInt()
@@ -101,10 +103,15 @@ class ObjectSetViewModel(
                 Timber.d("Set updated!")
                 _viewerTabs.value = set.tabs(session.currentViewerId)
                 val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
+
                 set.render(viewerIndex, context, urlBuilder).let { vs ->
                     _viewerGrid.value = vs.viewer
                     _header.value = vs.title
                 }
+                featured.value = set.featuredRelations(
+                    ctx = context,
+                    urlBuilder = urlBuilder
+                )
             }
         }
 

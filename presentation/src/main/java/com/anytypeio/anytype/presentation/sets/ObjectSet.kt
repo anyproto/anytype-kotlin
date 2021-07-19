@@ -13,6 +13,7 @@ data class ObjectSet(
     val viewerDb: Map<Id, ViewerData> = emptyMap(),
     val details: Map<Id, Block.Fields> = emptyMap(),
     val objectTypes: List<ObjectType> = emptyList(),
+    val relations: List<Relation> = emptyList(),
     val restrictions: List<DataViewRestrictions> = emptyList()
 ) {
 

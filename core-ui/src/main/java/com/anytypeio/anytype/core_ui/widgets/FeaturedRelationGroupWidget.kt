@@ -29,8 +29,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     private val defaultTextSize : Float = context.dimen(R.dimen.sp_13)
     private val dividerSize : Int = context.dimen(R.dimen.dp_4).toInt()
 
-    fun set(item: BlockView.FeaturedRelation, click: (ListenerType) -> Unit) {
-        removeAllViews()
+    fun set(item: BlockView.FeaturedRelation, click: (ListenerType.Relation) -> Unit) {
+        clear()
 
         val flow = Flow(context).apply {
             id = View.generateViewId()
@@ -165,5 +165,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         }
 
         flow.referencedIds = ids.toIntArray()
+    }
+
+    fun clear() {
+        removeAllViews()
     }
 }

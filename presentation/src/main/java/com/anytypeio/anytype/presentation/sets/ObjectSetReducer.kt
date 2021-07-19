@@ -53,11 +53,13 @@ class ObjectSetReducer {
         val effects = mutableListOf<SideEffect>()
         val newState = when (event) {
             is Command.ShowObject -> {
+                Timber.d("Relations in data view: ${event.relations.size}")
                 state.copy(
                     blocks = event.blocks,
                     details = state.details.updateFields(event.details.details),
                     objectTypes = event.objectTypes,
-                    restrictions = event.dataViewRestrictions
+                    restrictions = event.dataViewRestrictions,
+                    relations = event.relations
                 )
             }
             is Command.DataView.SetView -> {

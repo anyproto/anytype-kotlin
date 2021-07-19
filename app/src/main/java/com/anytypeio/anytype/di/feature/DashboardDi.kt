@@ -148,8 +148,11 @@ object HomeDashboardModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideEventConverter(builder: UrlBuilder): HomeDashboardEventConverter {
-        return HomeDashboardEventConverter.DefaultConverter(builder)
+    fun provideEventConverter(
+        builder: UrlBuilder,
+        getFlavourConfig: GetFlavourConfig
+    ): HomeDashboardEventConverter {
+        return HomeDashboardEventConverter.DefaultConverter(builder, getFlavourConfig)
     }
 
     @JvmStatic

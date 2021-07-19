@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.desktop
 
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import timber.log.Timber
 
@@ -9,7 +10,10 @@ interface HomeDashboardEventConverter {
 
     fun convert(event: Event): HomeDashboardStateMachine.Event?
 
-    class DefaultConverter(private val builder: UrlBuilder) : HomeDashboardEventConverter {
+    class DefaultConverter(
+        private val builder: UrlBuilder,
+        private val getFlavourConfig: GetFlavourConfig
+    ) : HomeDashboardEventConverter {
 
         override fun convert(event: Event) = when (event) {
             is Event.Command.UpdateStructure -> HomeDashboardStateMachine.Event.OnStructureUpdated(
@@ -27,7 +31,8 @@ interface HomeDashboardEventConverter {
                         context = event.context,
                         details = event.details,
                         builder = builder,
-                        objectTypes = event.objectTypes
+                        objectTypes = event.objectTypes,
+                        isDataViewEnabled = getFlavourConfig.isDataViewEnabled()
                     )
                 }
                 SmartBlockType.PROFILE_PAGE -> {

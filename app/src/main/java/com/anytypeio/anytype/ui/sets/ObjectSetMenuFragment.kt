@@ -21,7 +21,7 @@ class ObjectSetMenuFragment : ObjectMenuBaseFragment() {
         toast(COMING_SOON_MSG)
     }
 
-    override fun onRelationsClicked() {
+    override fun proceedWithRelationsScreen() {
         toast(COMING_SOON_MSG)
     }
 

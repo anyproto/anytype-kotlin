@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.CoverType
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -24,7 +25,8 @@ class DefaultBlockViewRenderer(
     private val counter: Counter,
     private val urlBuilder: UrlBuilder,
     private val toggleStateHolder: ToggleStateHolder,
-    private val coverImageHashProvider: CoverImageHashProvider
+    private val coverImageHashProvider: CoverImageHashProvider,
+    private val getFlavourConfig: GetFlavourConfig
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -425,14 +427,16 @@ class DefaultBlockViewRenderer(
                         details = details
                     )
                     if (featured.relations.isNotEmpty()) {
-                        result.add(
-                            featured(
-                                ctx = root.id,
-                                block = block,
-                                relations = relations,
-                                details = details
+                        if (getFlavourConfig.isDataViewEnabled()) {
+                            result.add(
+                                featured(
+                                    ctx = root.id,
+                                    block = block,
+                                    relations = relations,
+                                    details = details
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

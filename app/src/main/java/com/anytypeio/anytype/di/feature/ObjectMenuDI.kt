@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
@@ -74,12 +75,14 @@ object ObjectMenuModule {
         archiveDocument: ArchiveDocument,
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
-        checkIsFavorite: CheckIsFavorite
+        checkIsFavorite: CheckIsFavorite,
+        getFlavourConfig: GetFlavourConfig
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
-        checkIsFavorite = checkIsFavorite
+        checkIsFavorite = checkIsFavorite,
+        getFlavourConfig = getFlavourConfig
     )
 }
 
@@ -92,11 +95,13 @@ object ObjectSetMenuModule {
         archiveDocument: ArchiveDocument,
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
-        checkIsFavorite: CheckIsFavorite
+        checkIsFavorite: CheckIsFavorite,
+        getFlavourConfig: GetFlavourConfig
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
-        checkIsFavorite = checkIsFavorite
+        checkIsFavorite = checkIsFavorite,
+        getFlavourConfig = getFlavourConfig
     )
 }

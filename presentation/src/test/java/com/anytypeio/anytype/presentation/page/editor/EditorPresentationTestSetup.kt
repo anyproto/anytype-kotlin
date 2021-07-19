@@ -262,7 +262,8 @@ open class EditorPresentationTestSetup {
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
                 counter = Counter.Default(),
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
+                getFlavourConfig = getFlavourConfig
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
@@ -320,12 +321,16 @@ open class EditorPresentationTestSetup {
     fun stubInterceptEvents(
         params: InterceptEvents.Params = InterceptEvents.Params(context = root),
         flow: Flow<List<Event>> = flowOf(),
-        stubInterceptThreadStatus: Boolean = true
+        stubInterceptThreadStatus: Boolean = true,
+        isDataViewEnabled: Boolean = true
     ) {
         interceptEvents.stub {
             onBlocking { build(params) } doReturn flow
         }
         if (stubInterceptThreadStatus) stubInterceptThreadStatus()
+        getFlavourConfig.stub {
+            on { isDataViewEnabled() } doReturn isDataViewEnabled
+        }
     }
 
     fun stubInterceptThreadStatus() {

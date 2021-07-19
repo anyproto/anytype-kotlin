@@ -98,7 +98,7 @@ open class DashboardTestSetup {
         getConfig = getConfig,
         move = move,
         interceptEvents = interceptEvents,
-        eventConverter = HomeDashboardEventConverter.DefaultConverter(builder),
+        eventConverter = HomeDashboardEventConverter.DefaultConverter(builder, getFlavourConfig),
         getDebugSettings = getDebugSettings,
         analytics = analytics,
         searchArchivedObjects = searchArchivedObjects,

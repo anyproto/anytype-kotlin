@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SmartBlockType
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.page.editor.model.Types
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
@@ -319,7 +318,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             smartBlockTypes = listOf(SmartBlockType.PAGE)
         )
 
-        stubInterceptEvents()
+        stubInterceptEvents(
+            isDataViewEnabled = false
+        )
         stubOpenDocument(document = doc)
         stubGetObjectTypes(
             objectTypes = listOf(type1, type2, type3)
@@ -366,24 +367,20 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         )
 
-        if (BuildConfig.FLAVOR == "stable") {
-            val expected = SlashWidgetState.UpdateItems(
-                mainItems = emptyList(),
-                styleItems = emptyList(),
-                mediaItems = emptyList(),
-                objectItems = expectedObjectItems,
-                relationItems = emptyList(),
-                otherItems = emptyList(),
-                actionsItems = emptyList(),
-                alignmentItems = emptyList(),
-                colorItems = emptyList(),
-                backgroundItems = emptyList()
-            )
+        val expected = SlashWidgetState.UpdateItems(
+            mainItems = emptyList(),
+            styleItems = emptyList(),
+            mediaItems = emptyList(),
+            objectItems = expectedObjectItems,
+            relationItems = emptyList(),
+            otherItems = emptyList(),
+            actionsItems = emptyList(),
+            alignmentItems = emptyList(),
+            colorItems = emptyList(),
+            backgroundItems = emptyList()
+        )
 
-            assertEquals(expected = expected, actual = stateWidget)
-        } else {
-            // TODO add test for experimental flavor
-        }
+        assertEquals(expected = expected, actual = stateWidget)
     }
     //endregion
 

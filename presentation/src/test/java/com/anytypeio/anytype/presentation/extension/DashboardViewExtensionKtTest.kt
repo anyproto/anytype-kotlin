@@ -599,6 +599,70 @@ class DashboardViewExtensionKtTest {
     }
 
     @Test
+    fun `should sort by ids without Set`() {
+
+        val id1 = MockDataFactory.randomUuid()
+        val target1 = MockDataFactory.randomUuid()
+        val id2 = MockDataFactory.randomUuid()
+        val target2 = MockDataFactory.randomUuid()
+        val setId = MockDataFactory.randomUuid()
+
+        val views = listOf(
+            DashboardView.Document(
+                isArchived = false,
+                id = id1,
+                target = target1,
+                title = "Title1",
+                emoji = "emoji1"
+            ),
+            DashboardView.Document(
+                isArchived = false,
+                id = id2,
+                target = target2,
+                title = "Title2",
+                emoji = "emoji2"
+            ),
+            DashboardView.Document(
+                isArchived = false,
+                id = "profileId",
+                target = "profileTarget",
+                title = "Profile",
+                emoji = "profile_emoji"
+            )
+        )
+
+        val result = views.sortByIds(
+            ids = listOf(setId, id2, id1)
+        )
+
+        val expected = listOf(
+            DashboardView.Document(
+                isArchived = false,
+                id = "profileId",
+                target = "profileTarget",
+                title = "Profile",
+                emoji = "profile_emoji"
+            ),
+            DashboardView.Document(
+                isArchived = false,
+                id = id2,
+                target = target2,
+                title = "Title2",
+                emoji = "emoji2"
+            ),
+            DashboardView.Document(
+                isArchived = false,
+                id = id1,
+                target = target1,
+                title = "Title1",
+                emoji = "emoji1"
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
     fun `should filter by not archived pages`() {
 
         val id1 = MockDataFactory.randomUuid()

@@ -241,7 +241,8 @@ open class EditorTestSetup {
                 urlBuilder = urlBuilder,
                 counter = Counter.Default(),
                 toggleStateHolder = ToggleStateHolder.Default(),
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
+                getFlavourConfig = getFlavourConfig
             ),
             getListPages = getListPages,
             orchestrator = Orchestrator(

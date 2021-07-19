@@ -185,7 +185,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
         optionRelations
             .clicks()
-            .onEach { onRelationsClicked() }
+            .onEach { vm.onRelationsClicked() }
             .launchIn(lifecycleScope)
 
         optionCover
@@ -222,7 +222,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         )
     }
 
-    protected open fun onRelationsClicked() {
+    protected open fun proceedWithRelationsScreen() {
         findNavController().navigate(
             R.id.objectRelationListScreen,
             bundleOf(
@@ -248,6 +248,15 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
             subscribe(vm.actions) { actionAdapter.submitList(it) }
             subscribe(vm.toasts) { toast(it) }
             subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+            subscribe(vm.commands) { command -> execute(command) }
+        }
+    }
+
+    private fun execute(command: ObjectMenuViewModelBase.Command) {
+        when(command) {
+            ObjectMenuViewModelBase.Command.OpenRelations -> {
+                proceedWithRelationsScreen()
+            }
         }
     }
 

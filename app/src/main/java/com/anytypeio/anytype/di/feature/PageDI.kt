@@ -179,12 +179,14 @@ object EditorSessionModule {
         urlBuilder: UrlBuilder,
         toggleStateHolder: ToggleStateHolder,
         counter: Counter,
-        coverImageHashProvider: CoverImageHashProvider
+        coverImageHashProvider: CoverImageHashProvider,
+        getFlavourConfig: GetFlavourConfig
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         counter = counter,
-        coverImageHashProvider = coverImageHashProvider
+        coverImageHashProvider = coverImageHashProvider,
+        getFlavourConfig = getFlavourConfig
     )
 
     @JvmStatic

@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -17,11 +19,12 @@ abstract class ObjectMenuViewModelBase(
     private val archiveDocument: ArchiveDocument,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
-    private val checkIsFavorite: CheckIsFavorite
+    private val checkIsFavorite: CheckIsFavorite,
+    private val getFlavourConfig: GetFlavourConfig
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
-
+    val commands = MutableSharedFlow<Command>(replay = 0)
     val actions = MutableStateFlow(emptyList<ObjectAction>())
 
     fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
@@ -38,6 +41,16 @@ abstract class ObjectMenuViewModelBase(
                     )
                 }
             )
+        }
+    }
+
+    fun onRelationsClicked() {
+        viewModelScope.launch {
+            if (getFlavourConfig.isDataViewEnabled()) {
+                commands.emit(Command.OpenRelations)
+            } else {
+                _toasts.emit(COMING_SOON_MSG)
+            }
         }
     }
 
@@ -143,6 +156,10 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    sealed class Command {
+        object OpenRelations: Command()
+    }
+
     companion object {
         const val ARCHIVE_OBJECT_SUCCESS_MSG = "Object archived!"
         const val RESTORE_OBJECT_SUCCESS_MSG = "Object restored!"
@@ -158,26 +175,30 @@ class ObjectMenuViewModel(
     archiveDocument: ArchiveDocument,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
-    checkIsFavorite: CheckIsFavorite
+    checkIsFavorite: CheckIsFavorite,
+    getFlavourConfig: GetFlavourConfig
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    checkIsFavorite = checkIsFavorite
+    checkIsFavorite = checkIsFavorite,
+    getFlavourConfig = getFlavourConfig
 ) {
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val archiveDocument: ArchiveDocument,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
-        private val checkIsFavorite: CheckIsFavorite
+        private val checkIsFavorite: CheckIsFavorite,
+        private val getFlavourConfig: GetFlavourConfig
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
                 archiveDocument = archiveDocument,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
-                checkIsFavorite = checkIsFavorite
+                checkIsFavorite = checkIsFavorite,
+                getFlavourConfig = getFlavourConfig
             ) as T
         }
     }
@@ -187,26 +208,30 @@ class ObjectSetMenuViewModel(
     archiveDocument: ArchiveDocument,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
-    checkIsFavorite: CheckIsFavorite
+    checkIsFavorite: CheckIsFavorite,
+    getFlavourConfig: GetFlavourConfig
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    checkIsFavorite = checkIsFavorite
+    checkIsFavorite = checkIsFavorite,
+    getFlavourConfig = getFlavourConfig
 ) {
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val archiveDocument: ArchiveDocument,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
-        private val checkIsFavorite: CheckIsFavorite
+        private val checkIsFavorite: CheckIsFavorite,
+        private val getFlavourConfig: GetFlavourConfig
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
                 archiveDocument = archiveDocument,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
-                checkIsFavorite = checkIsFavorite
+                checkIsFavorite = checkIsFavorite,
+                getFlavourConfig = getFlavourConfig
             ) as T
         }
     }

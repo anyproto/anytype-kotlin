@@ -3919,7 +3919,8 @@ open class PageViewModelTest {
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
                 counter = Counter.Default(),
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
+                getFlavourConfig = getFlavourConfig
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,

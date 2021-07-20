@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,6 +30,9 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
     val flow get() = arg<Int>(FLOW_KEY)
     val dataview get() = argString(DATAVIEW_KEY)
     val viewer get() = argString(VIEWER_KEY)
+
+    private lateinit var searchRelationInput: EditText
+    private lateinit var clearSearchText: View
 
     abstract val vm: AddObjectRelationValueViewModel
 
@@ -69,11 +73,20 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                 }
             )
         }
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
         with(lifecycleScope) {
             subscribe(view.clicks()) { dismiss() }
             subscribe(btnAdd.clicks()) { onAddButtonClicked() }
-            subscribe(filterInput.textChanges()) { vm.onFilterInputChanged(it.toString()) }
-            subscribe(filterInput.focusChanges()) { hasFocus ->
+            subscribe(searchRelationInput.textChanges()) {
+                if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
+                vm.onFilterInputChanged(it.toString())
+            }
+            subscribe(searchRelationInput.focusChanges()) { hasFocus ->
                 if (hasFocus) behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
@@ -122,19 +135,19 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                     recycler.updatePadding(
                         bottom = dimen(R.dimen.multiple_option_value_bottom_list_margin)
                     )
-                    filterInput.setHint(R.string.choose_options)
+                    searchRelationInput.setHint(R.string.choose_options)
                 } else {
                     recycler.updatePadding(
                         bottom = dimen(R.dimen.single_option_value_bottom_list_margin)
                     )
-                    filterInput.setHint(R.string.choose_option)
+                    searchRelationInput.setHint(R.string.choose_option)
                 }
             }
         }
     }
 
     open fun proceedWithExiting(dismissParent: Boolean = false) {
-        filterInput.apply {
+        searchRelationInput.apply {
             clearFocus()
             hideKeyboard()
         }

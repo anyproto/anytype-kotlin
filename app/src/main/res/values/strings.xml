@@ -184,7 +184,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="filter_condition_is">Is</string>
-    <string name="search_options">Choose options</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
@@ -200,10 +199,12 @@ Do the computation of an expensive paragraph of text on a background thread:
 
     <string name="remove">Remove</string>
     <string name="choose_options">Choose options</string>
+    <string name="choose_relation_to_filter">Choose a relation to filter</string>
+    <string name="choose_relation_to_sort">Choose a relation to sort</string>
     <string name="btn_apply_new_object">Add to list</string>
     <string name="btn_add">Add</string>
     <string name="btn_upload_gallery">Upload from Gallery</string>
-    <string name="btn_upload_storage">Upload from Enternal storage</string>
+    <string name="btn_upload_storage">Upload from External storage</string>
 
     <string name="alert_qr_camera">Open "Settings" and then "Keychain phrase" in Anytype Desktop.</string>
     <string name="alert_qr_camera_ok">Ok</string>

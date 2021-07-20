@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,9 +14,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.sets.SearchRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.drawable
-import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.SelectSortRelationViewModel
@@ -32,6 +31,9 @@ class SelectSortRelationFragment : BaseBottomSheetFragment() {
         }
     }
 
+    lateinit var searchRelationInput: EditText
+    lateinit var clearSearchText: View
+
     @Inject
     lateinit var factory: SelectSortRelationViewModel.Factory
 
@@ -45,6 +47,16 @@ class SelectSortRelationFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.choose_relation_to_sort)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+
+        }
         searchRelationRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = searchRelationAdapter
@@ -55,7 +67,14 @@ class SelectSortRelationFragment : BaseBottomSheetFragment() {
             )
         }
         with(lifecycleScope) {
-            subscribe(searchRelationInput.textChanges()) { vm.onSearchQueryChanged(it.toString()) }
+            subscribe(searchRelationInput.textChanges()) {
+                vm.onSearchQueryChanged(it.toString())
+                if (it.isEmpty()) {
+                    clearSearchText.invisible()
+                } else {
+                    clearSearchText.visible()
+                }
+            }
         }
     }
 

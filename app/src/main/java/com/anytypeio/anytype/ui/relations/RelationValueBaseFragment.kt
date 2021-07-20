@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -64,6 +65,8 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     abstract val vm: RelationValueBaseViewModel
 
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
+    private lateinit var searchRelationInput: EditText
+    private lateinit var clearSearchText: View
 
     private val dndBehavior by lazy {
         object : DefaultDragAndDropBehavior(
@@ -114,8 +117,20 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
                 }
             )
         }
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.choose_options)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
         with(lifecycleScope) {
-            subscribe(filterInput.textChanges()) { vm.onFilterInputChanged(it.toString()) }
+            subscribe(searchRelationInput.textChanges()) {
+                if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
+                vm.onFilterInputChanged(it.toString())
+            }
             subscribe(btnEditOrDone.clicks()) { vm.onEditOrDoneClicked() }
             subscribe(btnAddValue.clicks()) { vm.onAddValueClicked() }
         }
@@ -128,7 +143,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.views) { editCellTagAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.name) { tvTagOrStatusRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.isFilterVisible) {
-            if (it) filterInputContainer.visible() else filterInputContainer.gone()
+            if (it) searchBar.visible() else searchBar.gone()
         }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading)}
@@ -187,7 +202,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private fun observeDismiss(isDismissed: Boolean) {
         if (isDismissed) {
-            filterInput.apply {
+            searchRelationInput.apply {
                 clearFocus()
                 hideKeyboard()
             }

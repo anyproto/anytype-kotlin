@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -35,6 +36,9 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     protected val ctx get() = arg<Id>(CTX_KEY)
 
+    private lateinit var searchRelationInput: EditText
+    lateinit var clearSearchText: View
+
     protected val createFromScratchAdapter = RelationAddHeaderAdapter {
         onCreateFromScratchClicked()
     }
@@ -53,6 +57,15 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.find_a_relation)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
         setupFullHeight()
         relationAddRecycler.apply {
             layoutManager = LinearLayoutManager(context)
@@ -72,6 +85,9 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
             subscribe(vm.results) { relationAdapter.submitList(it) }
             subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
             subscribe(vm.toasts) { toast(it) }
+            subscribe(searchRelationInput.textChanges()) {
+                if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
+            }
         }
     }
 

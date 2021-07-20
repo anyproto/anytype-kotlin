@@ -50,23 +50,28 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="20dp"
         android:orientation="horizontal">
+
         <View
-            android:background="@drawable/ic_todo_title_checkbox_selector"
-            android:layout_gravity="center_vertical"
             android:id="@+id/todoTitleCheckbox"
             android:layout_width="28dp"
-            android:layout_height="28dp"/>
+            android:layout_height="28dp"
+            android:layout_gravity="top"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/ic_todo_title_checkbox_selector" />
+
         <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-            android:paddingTop="0dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginStart="8dp"
             android:id="@+id/title"
             style="@style/BlockTitleContentStyle"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
             android:hint="@string/hint_title"
+            android:includeFontPadding="false"
+            android:letterSpacing="-0.02"
+            android:paddingTop="0dp"
             tools:text="Check new Android version" />
     </LinearLayout>
 

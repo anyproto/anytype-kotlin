@@ -2,8 +2,9 @@
 <com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/featuredRelationRoot"
-    android:paddingTop="6dp"
+    android:layout_marginTop="@dimen/dp_8"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
+    android:layout_marginBottom="24dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>

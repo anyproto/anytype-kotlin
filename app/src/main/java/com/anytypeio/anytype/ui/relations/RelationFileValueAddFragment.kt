@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -12,10 +13,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationFileValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.FileValueAddCommand
@@ -34,6 +32,9 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
     private val objectId get() = argString(OBJECT_ID)
     private val relationId get() = argString(RELATION_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
+
+    private lateinit var searchRelationInput: EditText
+    private lateinit var clearSearchText: View
 
     private val adapter by lazy {
         RelationFileValueAdapter(
@@ -57,13 +58,25 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
         rvFiles.layoutManager = LinearLayoutManager(requireContext())
         rvFiles.adapter = adapter
         btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.choose_options)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
     }
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.viewsFiltered) { observeState(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(searchRelationInput.textChanges())
-        { vm.onFilterTextChanged(it.toString()) }
+        {
+            if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
+            vm.onFilterTextChanged(it.toString())
+        }
         super.onStart()
         vm.onStart(objectId = objectId, relationId = relationId)
     }

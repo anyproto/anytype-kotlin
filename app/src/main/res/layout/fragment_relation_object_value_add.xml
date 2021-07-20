@@ -28,47 +28,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
+            <include
                 android:id="@+id/searchBar"
+                layout="@layout/widget_search_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="20dp"
-                android:background="@drawable/rect_dv_filter_search"
-                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dragger">
-
-                <ImageView
-                    android:id="@+id/searchIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp"
-                    android:src="@drawable/ic_dv_filter_search" />
-
-                <EditText
-                    android:id="@+id/searchRelationInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="4dp"
-                    android:background="@null"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center_vertical"
-                    android:hint="@string/search_options"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/gray"
-                    android:textCursorDrawable="@drawable/cursor"
-                    android:textSize="15sp"
-                    tools:text="Search" />
-
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/dragger" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

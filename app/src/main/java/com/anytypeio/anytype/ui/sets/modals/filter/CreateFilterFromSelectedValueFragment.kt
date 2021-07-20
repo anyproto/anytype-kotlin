@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.sets.modals.filter
 
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -35,6 +36,9 @@ open class CreateFilterFromSelectedValueFragment :
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
 
+    private lateinit var searchRelationInput: EditText
+    lateinit var clearSearchText: View
+
     @Inject
     lateinit var factory: FilterViewModel.Factory
 
@@ -49,6 +53,15 @@ open class CreateFilterFromSelectedValueFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnBottomAction.setText(R.string.create)
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.choose_options)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
         rvViewerFilterRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = createFilterAdapter
@@ -75,6 +88,13 @@ open class CreateFilterFromSelectedValueFragment :
             }
             subscribe(vm.conditionState) {
                 tvFilterCondition.text = it?.condition?.title
+            }
+            subscribe(searchRelationInput.textChanges()) {
+                if (it.isEmpty()) {
+                    clearSearchText.invisible()
+                } else {
+                    clearSearchText.visible()
+                }
             }
             val queries = searchRelationInput.textChanges()
                 .onStart { emit(searchRelationInput.text.toString()) }

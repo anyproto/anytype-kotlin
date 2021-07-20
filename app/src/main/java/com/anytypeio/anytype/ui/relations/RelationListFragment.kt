@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -34,6 +35,9 @@ open class RelationListFragment : BaseBottomSheetFragment(),
 
     @Inject
     lateinit var factory: ObjectRelationListViewModelFactory
+
+    private lateinit var searchRelationInput: EditText
+    private lateinit var clearSearchText: View
 
     private val ctx: String get() = argString(ARG_CTX)
     private val target: String? get() = argStringOrNull(ARG_TARGET)
@@ -66,6 +70,15 @@ open class RelationListFragment : BaseBottomSheetFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.choose_options)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
         recycler.apply {
             adapter = docRelationAdapter
             layoutManager = LinearLayoutManager(context)
@@ -99,6 +112,9 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                             }
                         }
                     }
+                }
+                subscribe(searchRelationInput.textChanges()) {
+                    if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
                 }
                 subscribe(views) { docRelationAdapter.update(it) }
             } else {

@@ -40,7 +40,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center_vertical|end"
-        android:background="@drawable/checkbox_selected_relation_selector"
+        android:background="@drawable/ic_tag_selected_selector"
         android:visibility="invisible"
         tools:text="1"
         tools:visibility="visible" />

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -37,6 +38,9 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
     private val relation: String get() = arg(RELATION_KEY)
     private val index: Int get() = arg(IDX_KEY)
 
+    private lateinit var searchRelationInput: EditText
+    lateinit var clearSearchText: View
+
     @Inject
     lateinit var factory: FilterViewModel.Factory
 
@@ -55,6 +59,15 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnBottomAction.setText(R.string.apply)
+        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput.apply {
+            hint = getString(R.string.choose_options)
+        }
+        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText.setOnClickListener {
+            searchRelationInput.setText("")
+            clearSearchText.invisible()
+        }
         rvViewerFilterRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = createFilterAdapter
@@ -83,6 +96,13 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             subscribe(vm.isCompleted) { isCompleted -> if (isCompleted) dismiss() }
             subscribe(vm.conditionState) {
                 tvFilterCondition.text = it?.condition?.title
+            }
+            subscribe(searchRelationInput.textChanges()) {
+                if (it.isEmpty()) {
+                    clearSearchText.invisible()
+                } else {
+                    clearSearchText.visible()
+                }
             }
             val queries = searchRelationInput.textChanges()
                 .onStart { emit(searchRelationInput.text.toString()) }

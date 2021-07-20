@@ -30,7 +30,8 @@ import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 open class CreateFilterFromSelectedValueFragment :
-    BaseFragment(R.layout.fragment_create_or_update_filter), UpdateConditionActionReceiver,
+    BaseFragment(R.layout.fragment_create_or_update_filter),
+    UpdateConditionActionReceiver,
     DatePickerReceiver {
 
     private val ctx: String get() = arg(CTX_KEY)
@@ -130,7 +131,21 @@ open class CreateFilterFromSelectedValueFragment :
             FilterViewModel.Commands.HideCount -> tvOptionCount.gone()
             FilterViewModel.Commands.ShowSearchbar -> searchBar.visible()
             FilterViewModel.Commands.HideSearchbar -> searchBar.gone()
-            else -> {}
+            FilterViewModel.Commands.DateDivider -> setDivider(R.drawable.divider_relation_date)
+            FilterViewModel.Commands.ObjectDivider -> setDivider(R.drawable.divider_relation_object)
+            FilterViewModel.Commands.TagDivider -> setDivider(R.drawable.divider_relation_tag)
+            FilterViewModel.Commands.ShowInput -> {}
+            FilterViewModel.Commands.HideInput -> {}
+        }
+    }
+
+    private fun setDivider(divider: Int) {
+        rvViewerFilterRecycler.apply {
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(divider))
+                }
+            )
         }
     }
 

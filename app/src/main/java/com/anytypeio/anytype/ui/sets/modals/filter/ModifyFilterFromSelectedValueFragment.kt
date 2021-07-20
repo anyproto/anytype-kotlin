@@ -137,6 +137,21 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             FilterViewModel.Commands.HideCount -> tvOptionCount.gone()
             FilterViewModel.Commands.ShowSearchbar -> searchBar.visible()
             FilterViewModel.Commands.HideSearchbar -> searchBar.gone()
+            FilterViewModel.Commands.DateDivider -> setDivider(R.drawable.divider_relation_date)
+            FilterViewModel.Commands.ObjectDivider -> setDivider(R.drawable.divider_relation_object)
+            FilterViewModel.Commands.TagDivider -> setDivider(R.drawable.divider_relation_tag)
+            FilterViewModel.Commands.ShowInput -> {}
+            FilterViewModel.Commands.HideInput -> {}
+        }
+    }
+
+    private fun setDivider(divider: Int) {
+        rvViewerFilterRecycler.apply {
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(divider))
+                }
+            )
         }
     }
 

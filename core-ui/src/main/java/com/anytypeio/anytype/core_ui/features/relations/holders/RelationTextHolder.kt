@@ -45,6 +45,8 @@ class RelationPhoneHolder(view: View) : RelationBaseHolder(view) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
                 textInputField.focusAndShowKeyboard()
+            } else {
+                ivActionIcon.setImageResource(R.drawable.ic_cell_relation_call_with)
             }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_CLASS_PHONE
@@ -52,7 +54,6 @@ class RelationPhoneHolder(view: View) : RelationBaseHolder(view) {
             btnAction.setOnClickListener {
                 actionClick(EditGridCellAction.Phone(textInputField.text.toString()))
             }
-            ivActionIcon.setImageResource(R.drawable.ic_cell_relation_call_with)
         }
 }
 
@@ -63,6 +64,8 @@ class RelationEmailHolder(view: View) : RelationBaseHolder(view) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
                 textInputField.focusAndShowKeyboard()
+            } else {
+                ivActionIcon.setImageResource(R.drawable.ic_cell_relation_go_to_mail_client)
             }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -70,7 +73,6 @@ class RelationEmailHolder(view: View) : RelationBaseHolder(view) {
             btnAction.setOnClickListener {
                 actionClick(EditGridCellAction.Email(textInputField.text.toString()))
             }
-            ivActionIcon.setImageResource(R.drawable.ic_cell_relation_go_to_mail_client)
         }
 }
 
@@ -81,6 +83,8 @@ class RelationUrlHolder(view: View) : RelationBaseHolder(view) {
             textInputField.setText(view.value)
             if (view.value.isNullOrEmpty()) {
                 textInputField.focusAndShowKeyboard()
+            } else {
+                ivActionIcon.setImageResource(R.drawable.ic_cell_relation_go_to_link)
             }
             textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_URI
@@ -88,7 +92,6 @@ class RelationUrlHolder(view: View) : RelationBaseHolder(view) {
             btnAction.setOnClickListener {
                 actionClick(EditGridCellAction.Url(textInputField.text.toString()))
             }
-            ivActionIcon.setImageResource(R.drawable.ic_cell_relation_go_to_link)
         }
 }
 

@@ -268,12 +268,10 @@
 
     <style name="DefaultCellRelationHeaderStyle">
         <item name="android:textSize">17sp</item>
-        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:maxLines">1</item>
-        <item name="singleLine">true</item>
-        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="SelectRelationValueCounterStyle">

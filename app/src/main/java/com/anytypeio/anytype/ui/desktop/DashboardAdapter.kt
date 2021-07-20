@@ -159,6 +159,7 @@ class DashboardAdapter(
                     val item = data[position] as DashboardView.ObjectSet
                     bindTitle(item.title)
                     bindEmoji(item.emoji)
+                    bindLoading(item.isLoading)
                 }
             }
             is ViewHolder.ArchiveHolder -> {
@@ -429,6 +430,19 @@ class DashboardAdapter(
 
             private val tvTitle = itemView.title
             private val ivEmoji = itemView.emojiIcon
+            private val shimmer = itemView.shimmer
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                }
+            }
 
             fun bindTitle(title: String?) {
                 if (title.isNullOrEmpty())

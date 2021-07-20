@@ -44,7 +44,6 @@ abstract class RelationValueBaseViewModel(
 
     val isEditing = MutableStateFlow(false)
     val isDimissed = MutableStateFlow(false)
-    val isFilterVisible = MutableStateFlow(false)
     val name = MutableStateFlow("")
     val views = MutableStateFlow(listOf<RelationValueView>())
     val commands = MutableSharedFlow<ObjectRelationValueCommand>(replay = 0)
@@ -180,13 +179,6 @@ abstract class RelationValueBaseViewModel(
 
         views.value = result
         name.value = relation.name
-    }
-
-    fun onFilterInputChanged(input: String) {
-        views.value =
-            views.value.filterNot { it is RelationValueView.Create }.toMutableList().apply {
-                if (input.isNotEmpty()) add(0, RelationValueView.Create(input))
-            }
     }
 
     fun onEditOrDoneClicked() {

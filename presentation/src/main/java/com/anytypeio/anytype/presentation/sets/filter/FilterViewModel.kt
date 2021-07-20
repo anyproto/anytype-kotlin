@@ -114,10 +114,20 @@ open class FilterViewModel(
                     viewModelScope.launch { commands.emit(Commands.HideInput) }
                 }
             }
+            Relation.Format.OBJECT -> {
+                viewModelScope.launch { commands.emit(Commands.ObjectDivider) }
+                if (condition.hasValue()) {
+                    viewModelScope.launch { commands.emit(Commands.ShowSearchbar) }
+                    viewModelScope.launch { commands.emit(Commands.ShowCount) }
+                } else {
+                    viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
+                    viewModelScope.launch { commands.emit(Commands.HideCount) }
+                }
+            }
             Relation.Format.TAG,
-            Relation.Format.OBJECT,
             Relation.Format.STATUS,
             Relation.Format.FILE -> {
+                viewModelScope.launch { commands.emit(Commands.TagDivider) }
                 if (condition.hasValue()) {
                     viewModelScope.launch { commands.emit(Commands.ShowSearchbar) }
                     viewModelScope.launch { commands.emit(Commands.ShowCount) }
@@ -127,6 +137,7 @@ open class FilterViewModel(
                 }
             }
             Relation.Format.DATE -> {
+                viewModelScope.launch { commands.emit(Commands.DateDivider) }
                 viewModelScope.launch { commands.emit(Commands.HideSearchbar) }
                 viewModelScope.launch { commands.emit(Commands.HideCount) }
             }
@@ -709,5 +720,8 @@ open class FilterViewModel(
         object HideCount: Commands()
         data class OpenDatePicker(val timeInSeconds: Long) : Commands()
         data class OpenConditionPicker(val type: Viewer.Filter.Type, val index: Int) : Commands()
+        object TagDivider: Commands()
+        object ObjectDivider: Commands()
+        object DateDivider: Commands()
     }
 }

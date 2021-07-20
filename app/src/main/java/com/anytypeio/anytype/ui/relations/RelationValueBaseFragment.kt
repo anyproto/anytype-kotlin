@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -27,7 +26,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.sets.RelationValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -65,8 +63,8 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     abstract val vm: RelationValueBaseViewModel
 
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
-    private lateinit var searchRelationInput: EditText
-    private lateinit var clearSearchText: View
+    private lateinit var dividerItem : DividerItemDecoration
+    private lateinit var dividerItemEdit: DividerItemDecoration
 
     private val dndBehavior by lazy {
         object : DefaultDragAndDropBehavior(
@@ -111,26 +109,14 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = editCellTagAdapter
-            addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(drawable(R.drawable.divider_relations))
-                }
-            )
         }
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
-        searchRelationInput.apply {
-            hint = getString(R.string.choose_options)
+        dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+            setDrawable(drawable(R.drawable.divider_relations))
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
-        clearSearchText.setOnClickListener {
-            searchRelationInput.setText("")
-            clearSearchText.invisible()
+        dividerItemEdit = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+            setDrawable(drawable(R.drawable.divider_relations_edit))
         }
         with(lifecycleScope) {
-            subscribe(searchRelationInput.textChanges()) {
-                if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
-                vm.onFilterInputChanged(it.toString())
-            }
             subscribe(btnEditOrDone.clicks()) { vm.onEditOrDoneClicked() }
             subscribe(btnAddValue.clicks()) { vm.onAddValueClicked() }
         }
@@ -142,9 +128,6 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.isEditing) { observeEditing(it) }
         jobs += lifecycleScope.subscribe(vm.views) { editCellTagAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.name) { tvTagOrStatusRelationHeader.text = it }
-        jobs += lifecycleScope.subscribe(vm.isFilterVisible) {
-            if (it) searchBar.visible() else searchBar.gone()
-        }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading)}
         super.onStart()
@@ -154,10 +137,10 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     private fun observeLoading(isLoading: Boolean) {
         if (isLoading) {
             refresh.visible()
-            btnAddValueIcon.invisible()
+            btnAddValue.invisible()
         } else {
             refresh.gone()
-            btnAddValueIcon.visible()
+            btnAddValue.visible()
         }
     }
 
@@ -190,10 +173,18 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private fun observeEditing(isEditing: Boolean) {
         if (isEditing) {
+            recycler.apply {
+                removeItemDecoration(dividerItem)
+                addItemDecoration(dividerItemEdit)
+            }
             btnAddValue.invisible()
             btnEditOrDone.setText(R.string.done)
             dndItemTouchHelper.attachToRecyclerView(recycler)
         } else {
+            recycler.apply {
+                removeItemDecoration(dividerItemEdit)
+                addItemDecoration(dividerItem)
+            }
             btnAddValue.visible()
             btnEditOrDone.setText(R.string.edit)
             dndItemTouchHelper.attachToRecyclerView(null)
@@ -202,10 +193,6 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private fun observeDismiss(isDismissed: Boolean) {
         if (isDismissed) {
-            searchRelationInput.apply {
-                clearFocus()
-                hideKeyboard()
-            }
             dismiss()
         }
     }

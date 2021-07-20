@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.sets
 
 import android.content.Intent
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
@@ -203,6 +204,21 @@ open class ObjectSetFragment :
                     DividerItemDecoration.VERTICAL
                 ).apply {
                     setDrawable(verticalDivider)
+                }
+            )
+            addItemDecoration(
+                object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
+                        val position = parent.getChildAdapterPosition(view)
+                        val size = parent.adapter?.itemCount ?: 0
+                        if (size > 0 && position == size.dec())
+                            outRect.bottom = paginatorToolbar.height
+                    }
                 }
             )
         }

@@ -158,12 +158,13 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvHeader.rVMatcher()) {
-            checkIsRecyclerSize(5)
-            onItemView(0, R.id.cellText).checkHasText(relation1.name)
-            onItemView(1, R.id.cellText).checkHasText(relation2.name)
-            onItemView(2, R.id.cellText).checkHasText(relation3.name)
-            onItemView(3, R.id.cellText).checkHasText(relation4.name)
-            onItemView(4, R.id.cellText).checkHasText(relation5.name)
+            checkIsRecyclerSize(6)
+            onItemView(0, R.id.cellText).checkHasText("")
+            onItemView(1, R.id.cellText).checkHasText(relation1.name)
+            onItemView(2, R.id.cellText).checkHasText(relation2.name)
+            onItemView(3, R.id.cellText).checkHasText(relation3.name)
+            onItemView(4, R.id.cellText).checkHasText(relation4.name)
+            onItemView(5, R.id.cellText).checkHasText(relation5.name)
         }
     }
 }

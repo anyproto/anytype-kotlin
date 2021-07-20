@@ -175,6 +175,8 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation1, relation2, relation3, relation4, relation5),
@@ -194,29 +196,34 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
             checkIsRecyclerSize(2)
 
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(5)
+                .checkHasChildViewCount(6)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    text = object1value1,
+                    text = "",
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 1,
-                    text = object1value2,
+                    text = object1value1,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 2,
-                    text = object1value3,
+                    text = object1value2,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 3,
-                    text = object1value4,
+                    text = object1value3,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 4,
+                    text = object1value4,
+                    target = R.id.tvText
+                )
+                .checkHasChildViewWithText(
+                    pos = 5,
                     text = object1value5,
                     target = R.id.tvText
                 )
@@ -224,29 +231,34 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
             onItemView(0, R.id.tvTitle).checkHasText("Anytype")
 
             onItemView(1, R.id.rowCellRecycler)
-                .checkHasChildViewCount(5)
+                .checkHasChildViewCount(6)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    text = object2value1,
+                    text = "",
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 1,
-                    text = object2value2,
+                    text = object2value1,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 2,
-                    text = object2value3,
+                    text = object2value2,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 3,
-                    text = object2value4,
+                    text = object2value3,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
                     pos = 4,
+                    text = object2value4,
+                    target = R.id.tvText
+                )
+                .checkHasChildViewWithText(
+                    pos = 5,
                     text = object2value5,
                     target = R.id.tvText
                 )

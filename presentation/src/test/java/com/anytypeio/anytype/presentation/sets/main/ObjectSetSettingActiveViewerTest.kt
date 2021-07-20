@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.TypicalTwoRecordObjectSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -121,6 +122,15 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
         val expectedColumnsBefore = listOf(
             ColumnView(
+                key = Relations.NAME,
+                text = "",
+                format = ColumnView.Format.SHORT_TEXT,
+                width = 0,
+                isVisible = true,
+                isHidden = false,
+                isReadOnly = false
+            ),
+            ColumnView(
                 key = doc.relations[0].key,
                 text = doc.relations[0].name,
                 format = ColumnView.Format.LONG_TEXT,
@@ -152,6 +162,11 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 cells = listOf(
                     CellView.Description(
                         id = doc.firstRecordId,
+                        key = Relations.NAME,
+                        text = ""
+                    ),
+                    CellView.Description(
+                        id = doc.firstRecordId,
                         text = doc.firstRecord[doc.relations[0].key] as String,
                         key = doc.relations[0].key
                     ),
@@ -169,6 +184,11 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 image = null,
                 type = doc.secondRecordType,
                 cells = listOf(
+                    CellView.Description(
+                        id = doc.secondRecordId,
+                        key = Relations.NAME,
+                        text = ""
+                    ),
                     CellView.Description(
                         id = doc.secondRecordId,
                         text = doc.secondRecord[doc.relations[0].key] as String,
@@ -203,9 +223,9 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
         val valueAfter = vm.viewerGrid.value
 
-        // Expecting that only one column is visibile, because the second viewer has the first relation hidden.
+        // Expecting that only two columns are visibile, because the second viewer has the first relation hidden.
 
-        val expectedColumnsAfter = listOf(expectedColumnsBefore[1])
+        val expectedColumnsAfter = listOf(expectedColumnsBefore[0], expectedColumnsBefore[2])
 
         // Expecting that cells corresponding to the first relations are not visible
         // Expecting that row order is reversed, because record order was reversed.
@@ -220,6 +240,11 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 cells = listOf(
                     CellView.Description(
                         id = doc.secondRecordId,
+                        key = Relations.NAME,
+                        text = ""
+                    ),
+                    CellView.Description(
+                        id = doc.secondRecordId,
                         text = doc.secondRecord[doc.relations[1].key] as String,
                         key = doc.relations[1].key
                     )
@@ -232,6 +257,11 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 image = null,
                 type = doc.firstRecordType,
                 cells = listOf(
+                    CellView.Description(
+                        id = doc.firstRecordId,
+                        key = Relations.NAME,
+                        text = ""
+                    ),
                     CellView.Description(
                         id = doc.firstRecordId,
                         text = doc.firstRecord[doc.relations[1].key] as String,

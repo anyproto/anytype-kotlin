@@ -76,6 +76,8 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSetActiveViewer()
         stubOpenObjectSet(
             set = set,
             relations = emptyList(),
@@ -86,7 +88,7 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
 
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
-        onView(withId(R.id.title)).checkHasText(title.content<Block.Content.Text>().text)
+        onView(withId(R.id.tvSetTitle)).checkHasText(title.content<Block.Content.Text>().text)
         onView(withId(R.id.tvCurrentViewerName)).checkHasText(viewer.name)
     }
 }

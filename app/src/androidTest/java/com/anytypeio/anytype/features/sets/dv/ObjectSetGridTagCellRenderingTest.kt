@@ -143,6 +143,8 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
         val set = listOf(root, header, title, dataview)
 
         stubInterceptEvents()
+        stubSetActiveViewer()
+        stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation),

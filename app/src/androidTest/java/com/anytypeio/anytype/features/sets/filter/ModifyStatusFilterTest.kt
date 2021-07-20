@@ -258,7 +258,7 @@ class ModifyStatusFilterTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestModifyFilterFromSelectedValueFragment> {
-        return launchFragmentInContainer<TestModifyFilterFromSelectedValueFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -142,6 +143,11 @@ class TagAndStatusTests {
             cells = listOf(
                 CellView.Description(
                     id = recordId,
+                    key = Relations.NAME,
+                    text = ""
+                ),
+                CellView.Description(
+                    id = recordId,
                     key = viewerRelations[0].key,
                     text = "Title4"
                 ),
@@ -264,10 +270,6 @@ class TagAndStatusTests {
             children = listOf()
         )
 
-        val blocks = listOf(dataView)
-
-        val objectSet = ObjectSet(blocks = blocks)
-
         //TESTING
 
         val columns: List<ColumnView> = viewerRelations.toViewerColumns(
@@ -286,6 +288,11 @@ class TagAndStatusTests {
             id = recordId,
             type = "Type111",
             cells = listOf(
+                CellView.Description(
+                    id = recordId,
+                    key = Relations.NAME,
+                    text = ""
+                ),
                 CellView.Description(
                     id = recordId,
                     key = viewerRelations[0].key,

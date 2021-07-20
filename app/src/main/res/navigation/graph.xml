@@ -366,9 +366,9 @@
         tools:layout="@layout/fragment_move_to" />
     <fragment
         android:id="@+id/pageSearchFragment"
-        android:name="com.anytypeio.anytype.ui.search.PageSearchFragment"
+        android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
         android:label="PageSearchFragment"
-        tools:layout="@layout/fragment_page_search" />
+        tools:layout="@layout/fragment_object_search" />
     <fragment
         android:id="@+id/archiveFragment"
         android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"

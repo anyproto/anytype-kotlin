@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.navigation
 
 import com.anytypeio.anytype.core_ui.MockDataFactory
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.navigation.filterBy
 import com.anytypeio.anytype.presentation.navigation.isContainsText
 import org.junit.Assert.*
@@ -11,7 +11,7 @@ class PageLinkViewKtTest {
 
     @Test
     fun `should contain text`() {
-        val pageLink = PageLinkView(
+        val pageLink = ObjectView(
             id = MockDataFactory.randomUuid(),
             subtitle = "Subtitle first",
             title = "Title first",
@@ -27,7 +27,7 @@ class PageLinkViewKtTest {
 
     @Test
     fun `should not contain text`() {
-        val pageLink = PageLinkView(
+        val pageLink = ObjectView(
             id = MockDataFactory.randomUuid(),
             subtitle = "Subtitle first",
             title = "Title first",
@@ -45,21 +45,21 @@ class PageLinkViewKtTest {
     fun `should return original list`() {
         val text = "same"
         val list = listOf(
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString() + text,
                 title = MockDataFactory.randomString(),
                 emoji = null,
                 image = null
             ),
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString() + text,
                 emoji = null,
                 image = null
             ),
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString() + text,
@@ -76,14 +76,14 @@ class PageLinkViewKtTest {
     @Test
     fun `should return list without one item`() {
         val text = "same"
-        val pageLink1 = PageLinkView(
+        val pageLink1 = ObjectView(
             id = MockDataFactory.randomUuid(),
             subtitle = MockDataFactory.randomString() + text,
             title = MockDataFactory.randomString(),
             emoji = null,
             image = null
         )
-        val pageLink3 = PageLinkView(
+        val pageLink3 = ObjectView(
             id = MockDataFactory.randomUuid(),
             subtitle = MockDataFactory.randomString() + text + MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
@@ -92,7 +92,7 @@ class PageLinkViewKtTest {
         )
         val list = listOf(
             pageLink1,
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
@@ -112,21 +112,21 @@ class PageLinkViewKtTest {
     fun `should return empty list`() {
         val text = "same"
         val list = listOf(
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
                 emoji = null,
                 image = null
             ),
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
                 emoji = null,
                 image = null
             ),
-            PageLinkView(
+            ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
@@ -137,7 +137,7 @@ class PageLinkViewKtTest {
 
         val result = list.filterBy(text)
 
-        val expected = listOf<PageLinkView>()
+        val expected = listOf<ObjectView>()
         assertEquals(expected, result)
     }
 }

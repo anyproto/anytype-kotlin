@@ -12,35 +12,35 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.navigation.filterBy
 import kotlinx.coroutines.launch
 
-class PageSearchViewModel(
+class ObjectSearchViewModel(
     private val urlBuilder: UrlBuilder,
     private val getListPages: GetListPages,
     private val analytics: Analytics
-) : ViewStateViewModel<PageSearchView>(),
+) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    private var links: MutableList<PageLinkView> = mutableListOf()
+    private var links: MutableList<ObjectView> = mutableListOf()
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
     fun onViewCreated() {
         links.clear()
-        stateData.postValue(PageSearchView.Init)
+        stateData.postValue(ObjectSearchView.Init)
     }
 
     fun onGetPageList(searchText: String) {
-        stateData.postValue(PageSearchView.Loading)
+        stateData.postValue(ObjectSearchView.Loading)
         viewModelScope.launch {
             getListPages(Unit).proceed(
                 failure = {
                     it.timber()
-                    stateData.postValue(PageSearchView.Error(it.message ?: "Unknown error"))
+                    stateData.postValue(ObjectSearchView.Error(it.message ?: "Unknown error"))
                 },
                 success = { response ->
                     links.addAll(response.listPages.map { it.toView(urlBuilder) })
@@ -57,16 +57,16 @@ class PageSearchViewModel(
         proceedWithResults(original = links, filter = searchText)
     }
 
-    private fun proceedWithResults(original: List<PageLinkView>, filter: String) {
+    private fun proceedWithResults(original: List<ObjectView>, filter: String) {
         val query = filter.trim()
         val filtered = original.filterBy(query)
         if (filtered.isNotEmpty()) {
-            stateData.postValue(PageSearchView.Success(pages = filtered))
+            stateData.postValue(ObjectSearchView.Success(pages = filtered))
         } else {
             if (query.isEmpty())
-                stateData.postValue(PageSearchView.EmptyPages)
+                stateData.postValue(ObjectSearchView.EmptyPages)
             else
-                stateData.postValue(PageSearchView.NoResults(query))
+                stateData.postValue(ObjectSearchView.NoResults(query))
         }
     }
 

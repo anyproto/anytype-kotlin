@@ -188,9 +188,9 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val pageSearchComponent = Component {
-        main.pageSearchComponentBuilder()
-            .pageSearchModule(PageSearchModule)
+    val objectSearchComponent = Component {
+        main.objectSearchComponentBuilder()
+            .module(ObjectSearchModule)
             .build()
     }
 

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_utils.ui.BottomOffsetDecoration
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 import kotlinx.android.synthetic.main.item_page_link_list.view.*
 
 class PageLinksListHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -16,7 +16,7 @@ class PageLinksListHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val sorting = itemView.icSorting
 
     fun bind(
-        links: List<PageLinkView>,
+        links: List<ObjectView>,
         onClick: (String) -> Unit,
         onSearchClick: () -> Unit
     ) {

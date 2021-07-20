@@ -5,27 +5,27 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
-import com.anytypeio.anytype.presentation.search.PageSearchViewModelFactory
-import com.anytypeio.anytype.ui.search.PageSearchFragment
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
+import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [PageSearchModule::class])
+@Subcomponent(modules = [ObjectSearchModule::class])
 @PerScreen
-interface PageSearchSubComponent {
+interface ObjectSearchSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun pageSearchModule(module: PageSearchModule): Builder
-        fun build(): PageSearchSubComponent
+        fun module(module: ObjectSearchModule): Builder
+        fun build(): ObjectSearchSubComponent
     }
 
-    fun inject(fragment: PageSearchFragment)
+    fun inject(fragment: ObjectSearchFragment)
 }
 
 @Module
-object PageSearchModule {
+object ObjectSearchModule {
 
     @JvmStatic
     @PerScreen
@@ -35,9 +35,9 @@ object PageSearchModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun providePageSearchViewModelFactory(
+    fun provideViewModelFactory(
         urlBuilder: UrlBuilder,
         getListPages: GetListPages,
         analytics: Analytics
-    ): PageSearchViewModelFactory = PageSearchViewModelFactory(urlBuilder, getListPages, analytics)
+    ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(urlBuilder, getListPages, analytics)
 }

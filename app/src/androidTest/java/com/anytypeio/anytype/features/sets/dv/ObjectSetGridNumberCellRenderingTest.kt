@@ -9,9 +9,7 @@ import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.utils.checkHasText
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.rVMatcher
+import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -130,9 +128,19 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvRows.rVMatcher()) {
-
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(0, R.id.tvText).checkHasText("")
+            onItemView(0, R.id.rowCellRecycler)
+                .checkHasChildViewCount(2)
+                .checkHasChildViewWithText(
+                    pos = 0,
+                    target = R.id.tvText,
+                    text = ""
+                )
+                .checkHasChildViewWithText(
+                    pos = 1,
+                    target = R.id.tvText,
+                    text = ""
+                )
         }
     }
 
@@ -225,9 +233,19 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvRows.rVMatcher()) {
-
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(0, R.id.tvText).checkHasText("")
+            onItemView(0, R.id.rowCellRecycler)
+                .checkHasChildViewCount(2)
+                .checkHasChildViewWithText(
+                    pos = 0,
+                    target = R.id.tvText,
+                    text = ""
+                )
+                .checkHasChildViewWithText(
+                    pos = 1,
+                    target = R.id.tvText,
+                    text = ""
+                )
         }
     }
 
@@ -320,9 +338,19 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvRows.rVMatcher()) {
-
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(0, R.id.tvText).checkHasText("1234.012")
+            onItemView(0, R.id.rowCellRecycler)
+                .checkHasChildViewCount(2)
+                .checkHasChildViewWithText(
+                    pos = 0,
+                    target = R.id.tvText,
+                    text = ""
+                )
+                .checkHasChildViewWithText(
+                    pos = 1,
+                    target = R.id.tvText,
+                    text = "1234.012"
+                )
         }
     }
 
@@ -415,9 +443,19 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvRows.rVMatcher()) {
-
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(0, R.id.tvText).checkHasText("1234")
+            onItemView(0, R.id.rowCellRecycler)
+                .checkHasChildViewCount(2)
+                .checkHasChildViewWithText(
+                    pos = 0,
+                    target = R.id.tvText,
+                    text = ""
+                )
+                .checkHasChildViewWithText(
+                    pos = 1,
+                    target = R.id.tvText,
+                    text = "1234"
+                )
         }
     }
 
@@ -511,7 +549,18 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(0, R.id.tvText).checkHasText("1234.0564321")
+            onItemView(0, R.id.rowCellRecycler)
+                .checkHasChildViewCount(2)
+                .checkHasChildViewWithText(
+                    pos = 0,
+                    target = R.id.tvText,
+                    text = ""
+                )
+                .checkHasChildViewWithText(
+                    pos = 1,
+                    target = R.id.tvText,
+                    text = "1234.0564321"
+                )
         }
     }
 
@@ -605,7 +654,18 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
 
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(0, R.id.tvText).checkHasText("-1234")
+            onItemView(0, R.id.rowCellRecycler)
+                .checkHasChildViewCount(2)
+                .checkHasChildViewWithText(
+                    pos = 0,
+                    target = R.id.tvText,
+                    text = ""
+                )
+                .checkHasChildViewWithText(
+                    pos = 1,
+                    target = R.id.tvText,
+                    text = "-1234"
+                )
         }
     }
 }

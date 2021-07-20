@@ -5,6 +5,6 @@ data class PageNavigationView(
     val subtitle: String,
     val emoji: String?,
     val image: String?,
-    val inbound: List<PageLinkView>,
-    val outbound: List<PageLinkView>
+    val inbound: List<ObjectView>,
+    val outbound: List<ObjectView>
 )

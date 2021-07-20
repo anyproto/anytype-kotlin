@@ -8,18 +8,18 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_page_link.view.*
 import timber.log.Timber
 
 class PageLinksAdapter(
-    private var data: List<PageLinkView>,
+    private var data: List<ObjectView>,
     private val onClick: (String) -> Unit
 ) : RecyclerView.Adapter<PageLinksAdapter.PageLinkHolder>() {
 
-    fun updateLinks(links: List<PageLinkView>) {
+    fun updateLinks(links: List<ObjectView>) {
         data = links
         notifyDataSetChanged()
     }
@@ -44,7 +44,7 @@ class PageLinksAdapter(
         private val icon = itemView.icon
         private val image = itemView.image
 
-        fun bind(link: PageLinkView, onClick: (String) -> Unit) {
+        fun bind(link: ObjectView, onClick: (String) -> Unit) {
             itemView.setOnClickListener { onClick(link.id) }
             title.text = if (link.title.isEmpty()) untitled else link.title
             if (link.subtitle.isBlank()) {

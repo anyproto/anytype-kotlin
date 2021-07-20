@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.desktop.DashboardView
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
@@ -412,13 +412,14 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
 fun DebugSettings.toView(): EditorSettings =
     EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
 
-fun DocumentInfo.toView(urlBuilder: UrlBuilder): PageLinkView = PageLinkView(
-    id = id,
-    title = fields.name.orEmpty(),
-    subtitle = snippet.orEmpty(),
-    image = fields.toImageView(urlBuilder),
-    emoji = fields.toEmojiView()
-)
+fun DocumentInfo.toView(urlBuilder: UrlBuilder): ObjectView =
+    ObjectView(
+        id = id,
+        title = fields.name.orEmpty(),
+        subtitle = snippet.orEmpty(),
+        image = fields.toImageView(urlBuilder),
+        emoji = fields.toEmojiView()
+    )
 
 fun Block.Fields.toImageView(urlBuilder: UrlBuilder): String? = this.iconImage.let { url ->
     if (url.isNullOrBlank()) null else urlBuilder.image(url)

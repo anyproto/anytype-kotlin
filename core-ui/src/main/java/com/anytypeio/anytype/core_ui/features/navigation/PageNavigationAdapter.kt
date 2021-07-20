@@ -4,18 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 
 class PageNavigationAdapter(
     private val onClick: (String) -> Unit,
-    private val onSearchClick: (MutableList<PageLinkView>) -> Unit
+    private val onSearchClick: (MutableList<ObjectView>) -> Unit
 ) :
     RecyclerView.Adapter<PageLinksListHolder>() {
 
-    private var inbound = mutableListOf<PageLinkView>()
-    private var outbound = mutableListOf<PageLinkView>()
+    private var inbound = mutableListOf<ObjectView>()
+    private var outbound = mutableListOf<ObjectView>()
 
-    fun setPageLinks(inbound: List<PageLinkView>, outbound: List<PageLinkView>) {
+    fun setPageLinks(inbound: List<ObjectView>, outbound: List<ObjectView>) {
         this.inbound.clear()
         this.inbound.addAll(inbound)
         this.outbound.clear()

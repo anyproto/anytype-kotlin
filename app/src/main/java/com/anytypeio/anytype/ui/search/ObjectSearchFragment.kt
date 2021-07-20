@@ -13,23 +13,23 @@ import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.search.PageSearchView
-import com.anytypeio.anytype.presentation.search.PageSearchViewModel
-import com.anytypeio.anytype.presentation.search.PageSearchViewModelFactory
+import com.anytypeio.anytype.presentation.search.ObjectSearchView
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_page_search.*
+import kotlinx.android.synthetic.main.fragment_object_search.*
 import javax.inject.Inject
 
-class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_page_search) {
+class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragment_object_search) {
 
     @Inject
-    lateinit var factory: PageSearchViewModelFactory
+    lateinit var factory: ObjectSearchViewModelFactory
 
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText
 
-    private val vm by viewModels<PageSearchViewModel> { factory }
+    private val vm by viewModels<ObjectSearchViewModel> { factory }
 
     private val searchAdapter by lazy {
         PageLinksAdapter(
@@ -70,9 +70,9 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
         }
     }
 
-    override fun render(state: PageSearchView) {
+    override fun render(state: ObjectSearchView) {
         when (state) {
-            PageSearchView.Init -> {
+            ObjectSearchView.Init -> {
                 recyclerView.invisible()
                 tvScreenStateMessage.invisible()
                 progressBar.invisible()
@@ -98,30 +98,30 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
                 vm.onGetPageList(searchText = "")
                 focusSearchInput()
             }
-            PageSearchView.Loading -> {
+            ObjectSearchView.Loading -> {
                 recyclerView.invisible()
                 tvScreenStateMessage.invisible()
                 progressBar.visible()
             }
-            is PageSearchView.Success -> {
+            is ObjectSearchView.Success -> {
                 progressBar.invisible()
                 tvScreenStateMessage.invisible()
                 recyclerView.visible()
                 searchAdapter.updateLinks(state.pages)
             }
-            PageSearchView.EmptyPages -> {
+            ObjectSearchView.EmptyPages -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = getString(R.string.search_empty_pages)
             }
-            is PageSearchView.NoResults -> {
+            is ObjectSearchView.NoResults -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = getString(R.string.search_no_results, state.searchText)
             }
-            is PageSearchView.Error -> {
+            is ObjectSearchView.Error -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
@@ -131,11 +131,11 @@ class PageSearchFragment : ViewStateFragment<PageSearchView>(R.layout.fragment_p
     }
 
     override fun injectDependencies() {
-        componentManager().pageSearchComponent.get().inject(this)
+        componentManager().objectSearchComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().pageSearchComponent.release()
+        componentManager().objectSearchComponent.release()
     }
 
     companion object {

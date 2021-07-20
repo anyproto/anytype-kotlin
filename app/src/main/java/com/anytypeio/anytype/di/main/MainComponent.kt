@@ -35,7 +35,7 @@ interface MainComponent {
     fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder
-    fun pageSearchComponentBuilder(): PageSearchSubComponent.Builder
+    fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun createSetComponentBuilder(): CreateSetSubComponent.Builder
     fun createObjectTypeComponentBuilder(): CreateObjectTypeSubComponent.Builder

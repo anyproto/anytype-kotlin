@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.navigation.PageLinkView
+import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.navigation.filterBy
 import kotlinx.android.synthetic.main.view_page_links_filter.view.*
 import kotlinx.android.synthetic.main.widget_search_view.view.*
@@ -28,7 +28,7 @@ class FilterView @JvmOverloads constructor(
     private val recycler: RecyclerView
     private val cancel: TextView
     private val sorting: View
-    private var links: MutableList<PageLinkView> = mutableListOf()
+    private var links: MutableList<ObjectView> = mutableListOf()
 
     val inputField : EditText get() = filterInputField
 
@@ -62,7 +62,7 @@ class FilterView @JvmOverloads constructor(
         }
     }
 
-    fun bind(links: MutableList<PageLinkView>) {
+    fun bind(links: MutableList<ObjectView>) {
         this.links.clear()
         this.links.addAll(links)
         if (recycler.adapter == null) {

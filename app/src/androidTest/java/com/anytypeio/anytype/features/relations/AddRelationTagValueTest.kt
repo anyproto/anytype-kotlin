@@ -185,7 +185,7 @@ class AddRelationTagValueTest {
 
         // Creating name for a new option
 
-        R.id.filterInput.type("Writer")
+        R.id.filterInputField.type("Writer")
 
         val btn = R.id.recycler.rVMatcher().onItemView(0, R.id.tvCreateOptionValue)
 
@@ -397,7 +397,7 @@ class AddRelationTagValueTest {
 
         val textToType = "a"
 
-        R.id.filterInput.type(textToType)
+        R.id.filterInputField.type(textToType)
 
         // Checking that not only create-option view button, but also tags are visible
 

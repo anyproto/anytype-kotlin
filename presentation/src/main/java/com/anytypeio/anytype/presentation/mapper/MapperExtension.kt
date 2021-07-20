@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.mapper
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.navigation.PageLinkView
 import com.anytypeio.anytype.presentation.page.editor.Markup
@@ -610,6 +611,18 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
     filterBy: List<String>
 ): List<ColumnView> {
     val columns = mutableListOf<ColumnView>()
+    // Adding virtual name column, whose rows should not have any content.
+    columns.add(
+        ColumnView(
+            Relations.NAME,
+            format = ColumnView.Format.SHORT_TEXT,
+            isVisible = true,
+            isHidden = false,
+            isReadOnly = false,
+            text = "",
+            width = 0
+        )
+    )
     this.filter { it.key !in filterBy }
         .forEach { viewerRelation ->
             relations

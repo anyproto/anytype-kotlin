@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.mapper.toDomain
@@ -301,6 +302,9 @@ class ObjectSetViewModel(
 
     fun onGridCellClicked(cell: CellView) {
         Timber.d("onGridCellClicked, cell:[$cell]")
+
+        if (cell.key == Relations.NAME) return
+
         val state = reducer.state.value
         val block = state.dataview
         val dv = block.content as DV

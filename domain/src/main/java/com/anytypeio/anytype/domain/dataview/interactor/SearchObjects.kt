@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.dataview.interactor
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -16,16 +17,18 @@ class SearchObjects(
             filters = params.filters,
             fulltext = params.fulltext,
             offset = params.offset,
-            limit = params.limit
+            limit = params.limit,
+            objectTypeFilter = params.objectTypeFilter
         )
     }
 
     class Params(
-        val sorts: List<DVSort>,
-        val filters: List<DVFilter>,
+        val sorts: List<DVSort> = emptyList(),
+        val filters: List<DVFilter> = emptyList(),
         val fulltext: String,
-        val offset: Int,
-        val limit: Int
+        val offset: Int = INIT_OFFSET,
+        val limit: Int,
+        val objectTypeFilter : List<Id> = emptyList()
     )
 
     companion object {

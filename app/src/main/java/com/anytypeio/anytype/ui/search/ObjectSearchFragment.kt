@@ -95,7 +95,7 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
                 }
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recyclerView.adapter = searchAdapter
-                vm.onGetPageList(searchText = "")
+                //vm.onGetPageList(searchText = "")
                 focusSearchInput()
             }
             ObjectSearchView.Loading -> {

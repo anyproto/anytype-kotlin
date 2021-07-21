@@ -2,9 +2,11 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import dagger.Module
@@ -30,14 +32,27 @@ object ObjectSearchModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun getListPages(repo: BlockRepository): GetListPages = GetListPages(repo = repo)
+    fun getObjectTypes(repo: BlockRepository): GetObjectTypes = GetObjectTypes(repo = repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideViewModelFactory(
         urlBuilder: UrlBuilder,
-        getListPages: GetListPages,
+        getObjectTypes: GetObjectTypes,
+        searchObjects: SearchObjects,
+        getFlavourConfig: GetFlavourConfig,
         analytics: Analytics
-    ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(urlBuilder, getListPages, analytics)
+    ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(
+        urlBuilder = urlBuilder,
+        searchObjects = searchObjects,
+        getObjectTypes = getObjectTypes,
+        getFlavourConfig = getFlavourConfig,
+        analytics = analytics
+    )
 }

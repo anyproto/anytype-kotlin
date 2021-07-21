@@ -108,6 +108,7 @@ class DashboardAdapter(
                             onObjectSetClicked(item.target)
                         }
                     }
+                    itemView.typeTitle.setText(R.string.set)
                 }
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")

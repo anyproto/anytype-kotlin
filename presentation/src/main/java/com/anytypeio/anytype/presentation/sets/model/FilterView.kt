@@ -158,10 +158,6 @@ sealed class FilterView : ViewType {
         }
     }
 
-    object Add : FilterView(), ViewType {
-        override fun getViewType(): Int = HOLDER_ADD
-    }
-
     companion object {
         const val HOLDER_TEXT = 1
         const val HOLDER_TEXT_SHORT = 2
@@ -173,7 +169,6 @@ sealed class FilterView : ViewType {
         const val HOLDER_STATUS = 8
         const val HOLDER_TAG = 9
         const val HOLDER_OBJECT = 10
-        const val HOLDER_ADD = 11
         const val HOLDER_CHECKBOX = 12
     }
 }

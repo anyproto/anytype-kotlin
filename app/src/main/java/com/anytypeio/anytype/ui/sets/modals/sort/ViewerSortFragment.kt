@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
-import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel.Mode
+import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel.ScreenState
 import kotlinx.android.synthetic.main.fragment_viewer_sort.*
 import javax.inject.Inject
 
@@ -32,9 +32,8 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
 
     private val viewerSortAdapter by lazy {
         ViewerSortAdapter(
-            onAddViewerSortClicked = { navigateToSelectSort() },
             onViewerSortClicked = { view ->
-                if (view.mode == Mode.READ) navigateToChangeSort(view.relation)
+                if (view.mode == ScreenState.READ) navigateToChangeSort(view.relation)
             },
             onRemoveViewerSortClicked = { vm.onRemoveViewerSortClicked(ctx, it) }
         )
@@ -70,10 +69,9 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
         viewerSortRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewerSortAdapter
-
         }
         with(lifecycleScope) {
-            subscribe(btnResetSort.clicks()) { vm.onResetClicked(ctx) }
+            subscribe(btnAdd.clicks()) { navigateToSelectSort() }
             subscribe(btnEditSortOrDone.clicks()) {
                 if (btnEditSortOrDone.text == getString(R.string.edit))
                     vm.onEditClicked()
@@ -83,31 +81,40 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
         with(lifecycleScope) {
-            subscribe(vm.mode) { mode ->
-                when (mode) {
-                    Mode.READ -> {
-                        btnEditSortOrDone.setText(R.string.edit)
-                        btnResetSort.visible()
-                        viewerSortRecycler.apply {
-                            removeItemDecoration(dividerItemEdit)
-                            addItemDecoration(dividerItem)
-                        }
-                    }
-                    Mode.EDIT -> {
-                        btnEditSortOrDone.setText(R.string.done)
-                        btnResetSort.invisible()
-                        viewerSortRecycler.apply {
-                            removeItemDecoration(dividerItem)
-                            addItemDecoration(dividerItemEdit)
-                        }
-                    }
+            jobs += subscribe(vm.screenState) { render(it) }
+            jobs += subscribe(vm.views) { viewerSortAdapter.update(it) }
+            jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+        }
+        super.onStart()
+    }
+
+    private fun render(state: ScreenState) {
+        when (state) {
+            ScreenState.READ -> {
+                btnEditSortOrDone.setText(R.string.edit)
+                btnAdd.visible()
+                viewerSortRecycler.apply {
+                    removeItemDecoration(dividerItemEdit)
+                    addItemDecoration(dividerItem)
                 }
+                txtEmptyState.gone()
             }
-            subscribe(vm.views) { viewerSortAdapter.update(it) }
-            subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+            ScreenState.EDIT -> {
+                btnEditSortOrDone.setText(R.string.done)
+                btnAdd.invisible()
+                viewerSortRecycler.apply {
+                    removeItemDecoration(dividerItem)
+                    addItemDecoration(dividerItemEdit)
+                }
+                txtEmptyState.gone()
+            }
+            ScreenState.EMPTY -> {
+                txtEmptyState.visible()
+                btnEditSortOrDone.text = ""
+                btnAdd.visible()
+            }
         }
     }
 

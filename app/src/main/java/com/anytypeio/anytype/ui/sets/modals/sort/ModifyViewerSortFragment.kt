@@ -55,6 +55,7 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment() {
             subscribe(vm.viewState.filterNotNull()) { state ->
                 tvSortAsc.setText(DVSortType.ASC.text(state.format))
                 tvSortDesc.setText(DVSortType.DESC.text(state.format))
+                txtName.text = state.name
                 when (state.type) {
                     Block.Content.DataView.Sort.Type.ASC -> {
                         ivAscSelected.visible()

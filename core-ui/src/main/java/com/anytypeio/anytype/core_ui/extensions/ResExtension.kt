@@ -128,22 +128,20 @@ fun ColumnView.Format.relationIcon(isMedium: Boolean = false): Int = when (this)
     }
 }
 
-//todo Add proper URL, EMAIL, PHONE icons
-fun ColumnView.Format.relationIconSmall() : Int? = when(this) {
-    ColumnView.Format.SHORT_TEXT -> R.drawable.ic_relation_name_24
-    ColumnView.Format.LONG_TEXT -> R.drawable.ic_relation_desc_24
-    ColumnView.Format.NUMBER -> R.drawable.ic_relation_number_24
-    ColumnView.Format.STATUS -> R.drawable.ic_relation_status_24
-    ColumnView.Format.DATE -> R.drawable.ic_relation_date_24
-    ColumnView.Format.FILE -> R.drawable.ic_relation_attachment_24
-    ColumnView.Format.CHECKBOX -> R.drawable.ic_relation_checkbox_24
-    ColumnView.Format.URL -> null
-    ColumnView.Format.EMAIL -> null
-    ColumnView.Format.PHONE -> null
-    ColumnView.Format.EMOJI -> null
-    ColumnView.Format.OBJECT -> R.drawable.ic_relation_object_24
-    ColumnView.Format.TAG -> R.drawable.ic_relation_tag_24
-    ColumnView.Format.RELATIONS -> null
+fun ColumnView.Format.relationIconSmall(): Int? = when (this) {
+    ColumnView.Format.SHORT_TEXT -> R.drawable.ic_relation_format_text_small
+    ColumnView.Format.LONG_TEXT -> R.drawable.ic_relation_format_text_small
+    ColumnView.Format.NUMBER -> R.drawable.ic_relation_format_number_small
+    ColumnView.Format.STATUS -> R.drawable.ic_relation_format_status_small
+    ColumnView.Format.DATE -> R.drawable.ic_relation_format_date_small
+    ColumnView.Format.FILE -> R.drawable.ic_relation_format_attachment_small
+    ColumnView.Format.CHECKBOX -> R.drawable.ic_relation_format_checkbox_small
+    ColumnView.Format.URL -> R.drawable.ic_relation_format_url_small
+    ColumnView.Format.EMAIL -> R.drawable.ic_relation_format_email_small
+    ColumnView.Format.PHONE -> R.drawable.ic_relation_format_phone_number_small
+    ColumnView.Format.OBJECT -> R.drawable.ic_relation_format_object_small
+    ColumnView.Format.TAG -> R.drawable.ic_relation_format_tag_small
+    else -> null
 }
 
 fun Relation.Format.icon(isMedium: Boolean = false): Int = when (this) {

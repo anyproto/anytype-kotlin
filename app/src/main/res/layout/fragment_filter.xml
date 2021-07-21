@@ -19,12 +19,12 @@
 
     <TextView
         android:id="@+id/title"
+        style="@style/ViewerModalTitleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/sheet_top"
         android:layout_marginTop="18dp"
         android:text="@string/filter"
-        style="@style/ViewerModalTitleStyle"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sheet_top" />
@@ -37,6 +37,7 @@
         android:paddingStart="@dimen/dp_16"
         android:paddingEnd="32dp"
         android:text="@string/edit"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title"
@@ -60,23 +61,39 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="12dp"
         android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:listitem="@layout/item_modify_viewer_relation_order" />
+        tools:listitem="@layout/item_modify_viewer_relation_order"
+        tools:visibility="invisible" />
 
-    <TextView
-        android:id="@+id/resetBtn"
+    <ImageView
+        android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="@dimen/dp_16"
-        android:text="@string/reset"
-        style="@style/ViewerModalStateButtonsStyle"
+        android:paddingEnd="14dp"
+        android:paddingStart="14dp"
+        android:src="@drawable/ic_default_plus"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/txtEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/inter_regular"
+        android:gravity="center"
+        android:paddingTop="23dp"
+        android:paddingBottom="43dp"
+        android:text="@string/filter_empty_state"
+        android:textColor="#CBC9BD"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,14 +27,16 @@ class ModifyViewerSortViewModel(
 
     val viewState = MutableStateFlow<ViewState?>(null)
 
-    fun onStart(relation: Id) {
+    fun onStart(relationId: Id) {
         val state = objectSetState.value
         val dv = state.dataview.content as DV
         val viewer = state.viewerById(session.currentViewerId)
-        val sort = viewer.sorts.first { it.relationKey == relation }
+        val sort = viewer.sorts.first { it.relationKey == relationId }
+        val relation = dv.relations.first { it.key == relationId }
         viewState.value = ViewState(
-            format = dv.relations.first { it.key == relation }.format,
-            type = sort.type
+            format = relation.format,
+            type = sort.type,
+            name = relation.name
         )
     }
 
@@ -74,7 +76,8 @@ class ModifyViewerSortViewModel(
 
     class ViewState(
         val format: Relation.Format,
-        val type: DVSortType
+        val type: DVSortType,
+        val name: String
     )
 
     class Factory(

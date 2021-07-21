@@ -119,6 +119,8 @@
     <string name="kanban_view">Kanban view</string>
     <string name="properties">Properties</string>
     <string name="sort">Sort</string>
+    <string name="sort_empty_state">No sorts here. You can add some</string>
+    <string name="filter_empty_state">No filters here. You can add some</string>
     <string name="filter_by">Filter by</string>
     <string name="filter">Filter</string>
     <string name="group">Group</string>

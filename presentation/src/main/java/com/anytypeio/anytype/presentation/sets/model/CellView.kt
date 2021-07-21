@@ -24,6 +24,7 @@ sealed class CellView : Parcelable {
         val dateFormat: String
     }
 
+    //todo maybe this cell type is legacy, need to be checked
     @Parcelize
     data class Title(
         override val id: String,

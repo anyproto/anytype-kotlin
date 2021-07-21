@@ -30,17 +30,16 @@
         android:textSize="17sp"
         tools:text="We need to render the " />
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchView"
-        android:layout_width="58dp"
-        android:layout_height="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/dp_12"
         android:paddingStart="0dp"
-        android:thumb="@drawable/viewer_relation_switch_thumb"
-        app:showText="false"
+        app:useMaterialThemeColors="false"
         app:splitTrack="false"
-        app:switchPadding="0dp"
-        app:track="@drawable/viewer_relation_switch_track" />
+        app:thumbTint="@drawable/viewer_relation_switch_thumb"
+        app:trackTint="@drawable/viewer_relation_switch_track"/>
 
 </LinearLayout>

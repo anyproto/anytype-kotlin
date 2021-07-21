@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="false">
-        <shape android:shape="oval">
-            <solid android:color="#ffffff" />
-            <size android:width="29dp" android:height="29dp" />
-            <stroke android:width="0.5dp" android:color="#14000000" />
-        </shape>
-    </item>
-    <item android:state_checked="true">
-        <shape android:shape="oval">
-            <solid android:color="#ffffff" />
-            <size android:width="29dp" android:height="29dp" />
-            <stroke android:width="0.5dp" android:color="#142C2B27" />
-        </shape>
-    </item>
+    <item android:color="@color/white" android:state_checked="true" />
+    <item android:color="@color/white" />
 </selector>

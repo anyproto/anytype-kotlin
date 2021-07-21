@@ -41,10 +41,22 @@ class ViewerFilterViewModel(
             setState.collect { objectSet ->
                 val block = objectSet.dataview
                 val dv = block.content as DV
+                val filterExpression = objectSet.filterExpression(session.currentViewerId)
+                if (filterExpression.isEmpty()) {
+                    screenState.value = ScreenState.EMPTY
+                } else {
+                    screenState.value = when (screenState.value) {
+                        ScreenState.LIST -> ScreenState.LIST
+                        ScreenState.EDIT -> ScreenState.EDIT
+                        ScreenState.EMPTY -> ScreenState.LIST
+                    }
+                }
                 _views.value = getFilterViews(
                     relations = dv.relations,
-                    filters = objectSet.filterExpression(session.currentViewerId),
-                    details = objectSet.details
+                    filters = filterExpression,
+                    details = objectSet.details,
+                    screenState = screenState.value,
+                    urlBuilder = urlBuilder
                 )
             }
         }
@@ -62,10 +74,6 @@ class ViewerFilterViewModel(
                 onValueClicked(click.index)
             }
         }
-    }
-
-    fun onResetButtonClicked(ctx: Id) {
-        proceedWithResetAllFilters(ctx)
     }
 
     fun onDoneButtonClicked() {
@@ -102,34 +110,13 @@ class ViewerFilterViewModel(
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
             is FilterView.Expression.Checkbox ->
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
-            FilterView.Add -> filterView
         }
-
-    private fun proceedWithResetAllFilters(ctx: Id) {
-        val viewer = setState.value.viewerById(session.currentViewerId)
-        val block = setState.value.blocks.first { it.content is DV }
-        val updated = viewer.copy(
-            filters = listOf()
-        )
-        viewModelScope.launch {
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = block.id,
-                    viewer = updated
-                )
-            ).process(
-                success = { dispatcher.send(it) },
-                failure = { Timber.e("Error while reset all filters") }
-            )
-        }
-    }
 
     private fun onApplyFiltersClicked() {
         emitCommand(ViewerFilterCommand.Apply(data.value.filters))
     }
 
-    private fun onAddNewFilterClicked() {
+    fun onAddNewFilterClicked() {
         emitCommand(Modal.ShowRelationList)
     }
 
@@ -173,9 +160,6 @@ class ViewerFilterViewModel(
             is FilterView.Expression.Checkbox -> {
                 emitCommand(Modal.UpdateSelectValueFilter(filter.key, filterIndex))
             }
-            FilterView.Add -> {
-                onAddNewFilterClicked()
-            }
         }
     }
 
@@ -209,7 +193,9 @@ class ViewerFilterViewModel(
     private fun getFilterViews(
         relations: List<Relation>,
         filters: List<DVFilter>,
-        details: Map<Id, Block.Fields>
+        details: Map<Id, Block.Fields>,
+        screenState: ScreenState,
+        urlBuilder: UrlBuilder
     ): List<FilterView> {
         val list = mutableListOf<FilterView>()
         filters.forEach { filter ->
@@ -217,12 +203,11 @@ class ViewerFilterViewModel(
                 filter.toView(
                     relation = relations.first { it.key == filter.relationKey },
                     details = details,
-                    isInEditMode = screenState.value == ScreenState.EDIT,
+                    isInEditMode = screenState == ScreenState.EDIT,
                     urlBuilder = urlBuilder
                 )
             )
         }
-        list.add(FilterView.Add)
         return list
     }
 
@@ -251,5 +236,5 @@ class ViewerFilterViewModel(
         }
     }
 
-    enum class ScreenState { LIST, EDIT }
+    enum class ScreenState { LIST, EDIT, EMPTY }
 }

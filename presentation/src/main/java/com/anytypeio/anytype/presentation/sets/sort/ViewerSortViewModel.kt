@@ -27,7 +27,7 @@ class ViewerSortViewModel(
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
-    val mode = MutableStateFlow(Mode.READ)
+    val screenState = MutableStateFlow(ScreenState.READ)
 
     init {
         viewModelScope.launch {
@@ -35,42 +35,35 @@ class ViewerSortViewModel(
                 val dv = state.dataview.content as DV
                 val viewer = dv.viewers.find { it.id == session.currentViewerId }
                     ?: dv.viewers.first()
-                _views.value = buildViews(viewer, dv)
+                val sorts = viewer.sorts
+                if (sorts.isEmpty()) {
+                    screenState.value = ScreenState.EMPTY
+                } else {
+                    screenState.value = when (screenState.value) {
+                        ScreenState.READ -> ScreenState.READ
+                        ScreenState.EDIT -> ScreenState.EDIT
+                        ScreenState.EMPTY -> ScreenState.READ
+                    }
+                }
+                _views.value = buildViews(sorts = sorts, dv = dv, screenState = screenState.value)
             }
         }
     }
 
     fun onEditClicked() {
-        mode.value = Mode.EDIT
+        screenState.value = ScreenState.EDIT
         _views.value = views.value.map { view ->
             view.copy(
-                mode = Mode.EDIT
+                mode = ScreenState.EDIT
             )
         }
     }
 
     fun onDoneClicked() {
-        mode.value = Mode.READ
+        screenState.value = ScreenState.READ
         _views.value = views.value.map { view ->
             view.copy(
-                mode = Mode.READ
-            )
-        }
-    }
-
-    fun onResetClicked(ctx: Id) {
-        viewModelScope.launch {
-            val state = objectSetState.value
-            val viewer = state.viewerById(session.currentViewerId)
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params(
-                    context = ctx,
-                    target = state.dataview.id,
-                    viewer = viewer.copy(sorts = emptyList())
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing a sort") },
-                success = { dispatcher.send(it) }
+                mode = ScreenState.READ
             )
         }
     }
@@ -94,9 +87,10 @@ class ViewerSortViewModel(
     }
 
     private fun buildViews(
-        viewer: DVViewer,
-        dv: DV
-    ): List<ViewerSortView> = viewer.sorts
+        sorts: List<DVSort>,
+        dv: DV,
+        screenState: ScreenState
+    ): List<ViewerSortView> = sorts
         .associateWith { sort -> dv.relations.first { it.key == sort.relationKey } }
         .map { (sort, relation) ->
             ViewerSortView(
@@ -104,7 +98,7 @@ class ViewerSortViewModel(
                 name = relation.name,
                 type = sort.type,
                 format = relation.format,
-                mode = mode.value
+                mode = screenState
             )
         }
 
@@ -119,12 +113,12 @@ class ViewerSortViewModel(
         val name: String,
         val format: Relation.Format,
         val type: DVSortType,
-        val mode: Mode = Mode.READ
+        val mode: ScreenState
     ) : DefaultObjectDiffIdentifier {
         override val identifier: String get() = relation
     }
 
-    enum class Mode { READ, EDIT }
+    enum class ScreenState { READ, EDIT, EMPTY }
 
     class Factory(
         private val state: StateFlow<ObjectSet>,

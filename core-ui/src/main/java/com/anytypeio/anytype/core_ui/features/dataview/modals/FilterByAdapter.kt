@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.sets.filter.FilterClick
 import com.anytypeio.anytype.presentation.sets.model.FilterView
-import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_ADD
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_DATE
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_EMAIL
@@ -108,17 +107,6 @@ class FilterByAdapter(
                     }
                 }
             }
-            HOLDER_ADD -> {
-                val view = inflater.inflate(R.layout.item_dv_viewer_filter_add, parent, false)
-                FilterAddViewHolder(view).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            click(FilterClick.Value(pos))
-                        }
-                    }
-                }
-            }
             HOLDER_DATE -> {
                 val views = inflater.inflate(R.layout.item_dv_viewer_filter_date, parent, false)
                 FilterDateViewHolder(views).apply {
@@ -197,7 +185,6 @@ class FilterByAdapter(
             is FilterCheckboxViewHolder -> {
                 holder.bind(items[position] as FilterView.Expression.Checkbox)
             }
-            is FilterAddViewHolder -> { }
         }
     }
 
@@ -215,6 +202,5 @@ class FilterByAdapter(
         is FilterView.Expression.TextShort -> HOLDER_TEXT_SHORT
         is FilterView.Expression.Url -> HOLDER_URL
         is FilterView.Expression.Checkbox -> HOLDER_CHECKBOX
-        FilterView.Add -> HOLDER_ADD
     }
 }

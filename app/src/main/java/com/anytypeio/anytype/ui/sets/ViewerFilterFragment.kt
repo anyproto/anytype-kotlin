@@ -52,7 +52,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
         recycler.adapter = filterAdapter
         with(lifecycleScope) {
             subscribe(vm.commands) { observeCommands(it) }
-            subscribe(resetBtn.clicks()) { vm.onResetButtonClicked(ctx) }
+            subscribe(addButton.clicks()) { vm.onAddNewFilterClicked() }
             subscribe(doneBtn.clicks()) { vm.onDoneButtonClicked() }
             subscribe(editBtn.clicks()) { vm.onEditButtonClicked() }
         }
@@ -70,8 +70,9 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
         when (state) {
             ViewerFilterViewModel.ScreenState.LIST -> {
                 editBtn.visible()
-                resetBtn.visible()
+                addButton.visible()
                 doneBtn.invisible()
+                txtEmptyState.gone()
                 removeDivider()
                 recycler.addItemDecoration(
                     DividerVerticalItemDecoration(
@@ -84,7 +85,8 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
             ViewerFilterViewModel.ScreenState.EDIT -> {
                 doneBtn.visible()
                 editBtn.invisible()
-                resetBtn.invisible()
+                addButton.invisible()
+                txtEmptyState.gone()
                 removeDivider()
                 recycler.addItemDecoration(
                     DividerVerticalItemDecoration(
@@ -93,6 +95,13 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
                     ),
                     0
                 )
+            }
+            ViewerFilterViewModel.ScreenState.EMPTY -> {
+                doneBtn.invisible()
+                editBtn.invisible()
+                addButton.visible()
+                txtEmptyState.visible()
+                removeDivider()
             }
         }
     }

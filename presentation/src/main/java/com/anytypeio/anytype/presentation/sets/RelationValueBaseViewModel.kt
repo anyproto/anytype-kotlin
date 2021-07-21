@@ -233,7 +233,7 @@ abstract class RelationValueBaseViewModel(
             when (targetType.layout) {
                 ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
                     viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenPage(id))
+                        navigation.emit(AppNavigation.Command.OpenObject(id))
                     }
                 }
                 ObjectType.Layout.SET -> {
@@ -248,7 +248,7 @@ abstract class RelationValueBaseViewModel(
 
     fun onFileClicked(id: Id) {
         viewModelScope.launch {
-            navigation.emit(AppNavigation.Command.OpenPage(id))
+            navigation.emit(AppNavigation.Command.OpenObject(id))
         }
     }
 

@@ -68,7 +68,7 @@ class FilterView @JvmOverloads constructor(
         if (recycler.adapter == null) {
             recycler.adapter = PageLinksAdapter(
                 data = links,
-                onClick = { pageId -> pageClicked?.invoke(pageId) }
+                onClick = { obj, layout -> pageClicked?.invoke(obj) }
             )
         } else {
             (recycler.adapter as PageLinksAdapter).updateLinks(links)

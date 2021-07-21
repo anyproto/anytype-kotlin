@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.widget_object_icon.view.*
@@ -101,6 +102,17 @@ class ObjectIconWidget @JvmOverloads constructor(
                 initialTextSize.toFloat()
             )
             recycle()
+        }
+    }
+
+    fun setIcon(icon: ObjectIcon) {
+        when(icon) {
+            is ObjectIcon.None -> invisible()
+            is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
+            is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
+            is ObjectIcon.Profile.Avatar -> setInitials(icon.name)
+            is ObjectIcon.Profile.Image -> setRectangularImage(icon.hash)
+            is ObjectIcon.Task -> setCheckbox(icon.isChecked)
         }
     }
 

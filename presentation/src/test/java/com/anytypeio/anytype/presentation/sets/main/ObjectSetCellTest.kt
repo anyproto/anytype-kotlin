@@ -396,7 +396,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
 
         val result = vm.navigation.value!!.peekContent()
 
-        assertEquals(AppNavigation.Command.OpenPage(id = objectId), result)
+        assertEquals(AppNavigation.Command.OpenObject(id = objectId), result)
     }
 
     @Test

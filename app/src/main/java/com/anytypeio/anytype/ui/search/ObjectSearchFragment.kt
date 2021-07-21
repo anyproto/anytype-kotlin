@@ -8,7 +8,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.navigation.PageLinksAdapter
+import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_object_search.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragment_object_search) {
@@ -32,9 +33,8 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
     private val vm by viewModels<ObjectSearchViewModel> { factory }
 
     private val searchAdapter by lazy {
-        PageLinksAdapter(
-            data = emptyList(),
-            onClick = vm::onOpenPageClicked
+        DefaultObjectViewAdapter(
+            onClick = vm::onObjectClicked
         )
     }
 
@@ -58,7 +58,8 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         clearSearchText = searchView.findViewById(R.id.clearSearchText)
         filterInputField = searchView.findViewById(R.id.filterInputField)
-        vm.onViewCreated()
+        filterInputField.setHint(R.string.search)
+        initialize()
     }
 
     private fun focusSearchInput() {
@@ -72,32 +73,6 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
 
     override fun render(state: ObjectSearchView) {
         when (state) {
-            ObjectSearchView.Init -> {
-                recyclerView.invisible()
-                tvScreenStateMessage.invisible()
-                progressBar.invisible()
-                searchView.findViewById<View>(R.id.clearSearchText).setOnClickListener {
-
-                }
-                clearSearchText.setOnClickListener {
-                    filterInputField.setText(EMPTY_FILTER_TEXT)
-                    clearSearchText.invisible()
-                }
-                filterInputField.doAfterTextChanged { newText ->
-                    if (newText != null) {
-                        vm.onSearchTextChanged(newText.toString())
-                    }
-                    if (newText.isNullOrEmpty()) {
-                        clearSearchText.invisible()
-                    } else {
-                        clearSearchText.visible()
-                    }
-                }
-                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                recyclerView.adapter = searchAdapter
-                //vm.onGetPageList(searchText = "")
-                focusSearchInput()
-            }
             ObjectSearchView.Loading -> {
                 recyclerView.invisible()
                 tvScreenStateMessage.invisible()
@@ -107,7 +82,7 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
                 progressBar.invisible()
                 tvScreenStateMessage.invisible()
                 recyclerView.visible()
-                searchAdapter.updateLinks(state.pages)
+                searchAdapter.submitList(state.objects)
             }
             ObjectSearchView.EmptyPages -> {
                 progressBar.invisible()
@@ -127,7 +102,34 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = state.error
             }
+            else -> Timber.d("Skipping state: $state")
         }
+    }
+
+    private fun initialize() {
+        recyclerView.invisible()
+        tvScreenStateMessage.invisible()
+        progressBar.invisible()
+        searchView.findViewById<View>(R.id.clearSearchText).setOnClickListener {
+
+        }
+        clearSearchText.setOnClickListener {
+            filterInputField.setText(EMPTY_FILTER_TEXT)
+            clearSearchText.invisible()
+        }
+        filterInputField.doAfterTextChanged { newText ->
+            if (newText != null) {
+                vm.onSearchTextChanged(newText.toString())
+            }
+            if (newText.isNullOrEmpty()) {
+                clearSearchText.invisible()
+            } else {
+                clearSearchText.visible()
+            }
+        }
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = searchAdapter
+        focusSearchInput()
     }
 
     override fun injectDependencies() {

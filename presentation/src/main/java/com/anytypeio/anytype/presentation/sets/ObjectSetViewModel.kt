@@ -405,7 +405,7 @@ class ObjectSetViewModel(
         if (targetType != null) {
             when (targetType.layout) {
                 ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
-                    navigate(EventWrapper(AppNavigation.Command.OpenPage(id)))
+                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id)))
                 }
                 ObjectType.Layout.SET -> {
                     viewModelScope.launch {
@@ -432,7 +432,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE, ObjectType.Layout.TODO -> {
                 navigate(
                     EventWrapper(
-                        AppNavigation.Command.OpenPage(
+                        AppNavigation.Command.OpenObject(
                             id = id
                         )
                     )

@@ -30,7 +30,9 @@ class PageLinksListHolder(view: View) : RecyclerView.ViewHolder(view) {
                 addItemDecoration(BottomOffsetDecoration(offset))
             }
             if (adapter == null) {
-                adapter = PageLinksAdapter(links.toMutableList(), onClick)
+                adapter = PageLinksAdapter(links.toMutableList()) { obj, _ ->
+                    onClick(obj)
+                }
             } else {
                 (adapter as PageLinksAdapter).updateLinks(links)
             }

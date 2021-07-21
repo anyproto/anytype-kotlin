@@ -152,7 +152,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.target)
                 )
             }
-            is AppNavigation.Command.OpenPage -> {
+            is AppNavigation.Command.OpenObject -> {
                 findNavController().navigate(
                     R.id.objectNavigation,
                     bundleOf(PageFragment.ID_KEY to command.id)

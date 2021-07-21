@@ -267,7 +267,7 @@ class HomeDashboardViewModel(
         )
         navigation.postValue(
             EventWrapper(
-                AppNavigation.Command.OpenPage(
+                AppNavigation.Command.OpenObject(
                     id = id,
                     editorSettings = editorSettings
                 )

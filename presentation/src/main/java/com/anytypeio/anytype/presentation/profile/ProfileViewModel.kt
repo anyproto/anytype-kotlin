@@ -65,7 +65,7 @@ open class ProfileViewModel(
             analytics = analytics,
             eventName = SCREEN_DOCUMENT
         )
-        navigate(EventWrapper(AppNavigation.Command.OpenPage(target)))
+        navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
     }
 
     fun onDebugSettingsClicked() {

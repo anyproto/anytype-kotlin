@@ -97,6 +97,17 @@ class Navigator : AppNavigation {
         )
     }
 
+    override fun launchObjectSet(id: Id) {
+        navController?.navigate(
+            R.id.dataViewNavigation,
+            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
+            navOptions {
+                popUpTo = R.id.desktopScreen
+                launchSingleTop = true
+            }
+        )
+    }
+
     override fun openKeychainScreen() {
         navController?.navigate(R.id.action_open_keychain)
     }

@@ -5,30 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <FrameLayout
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/iconContainer"
         android:layout_width="@dimen/dp_48"
         android:layout_height="@dimen/dp_48"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/rectangle_default_page_logo_background"
+        android:background="@drawable/rectangle_object_in_list_emoji_icon"
+        app:emojiSize="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center" />
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -41,6 +29,7 @@
         android:maxLines="1"
         android:textColor="#2C2B27"
         android:textSize="15sp"
+        android:hint="@string/untitled"
         app:layout_constraintBottom_toTopOf="@+id/tvSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

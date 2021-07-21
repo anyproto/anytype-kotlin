@@ -24,6 +24,7 @@ interface AppNavigation {
     fun openDocument(id: String, editorSettings: EditorSettings?)
 
     fun launchDocument(id: String)
+    fun launchObjectSet(id: Id)
 
     fun startDesktopFromSplash()
     fun startDesktopFromLogin()
@@ -64,7 +65,7 @@ interface AppNavigation {
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
 
-        data class OpenPage(val id: String, val editorSettings: EditorSettings? = null) : Command()
+        data class OpenObject(val id: String, val editorSettings: EditorSettings? = null) : Command()
         data class LaunchDocument(val id: String) : Command()
 
         object OpenProfile : Command()
@@ -105,6 +106,7 @@ interface AppNavigation {
 
         data class OpenArchive(val target: String) : Command()
         data class OpenObjectSet(val target: String) : Command()
+        data class LaunchObjectSet(val target: Id) : Command()
 
         data class OpenCreateSetScreen(val ctx: Id) : Command()
     }

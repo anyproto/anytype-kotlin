@@ -329,7 +329,7 @@ class HomeDashboardViewModelTest {
             .test()
             .assertHasValue()
             .assertValue { value ->
-                (value.peekContent() as AppNavigation.Command.OpenPage).id == id
+                (value.peekContent() as AppNavigation.Command.OpenObject).id == id
             }
     }
 

@@ -1,6 +1,16 @@
 package com.anytypeio.anytype.presentation.navigation
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
+
+data class DefaultObjectView(
+    val id: Id,
+    val name: String? = null,
+    val typeName: String? = null,
+    val typeLayout: ObjectType.Layout? = null,
+    val icon: ObjectIcon = ObjectIcon.None
+)
 
 data class ObjectView(
     val id: String,

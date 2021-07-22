@@ -80,7 +80,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             }
 
             if (hasEmojiRounded12Background) {
-                emojiContainer.setBackgroundResource(R.drawable.rectangle_object_icon_emoji_background)
+                emojiContainer.setBackgroundResource(R.drawable.rectangle_object_in_list_emoji_icon)
             }
 
             if (hasEmojiRounded8Background) {
@@ -107,7 +107,6 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setIcon(icon: ObjectIcon) {
         when(icon) {
-            is ObjectIcon.None -> invisible()
             is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
             is ObjectIcon.Profile.Avatar -> setInitials(icon.name)
@@ -139,6 +138,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         emojiContainer.invisible()
         ivCheckbox.invisible()
         initialContainer.visible()
+        rectangularIconContainer.invisible()
         initialContainer.backgroundTintList = ColorStateList.valueOf(color)
         initial.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
     }
@@ -147,6 +147,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         if (!emoji.isNullOrBlank()) {
             ivCheckbox.invisible()
             initialContainer.invisible()
+            rectangularIconContainer.invisible()
             ivImage.invisible()
             emojiContainer.visible()
             try {
@@ -168,6 +169,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivCheckbox.invisible()
             initialContainer.invisible()
             emojiContainer.invisible()
+            rectangularIconContainer.invisible()
             ivImage.visible()
             Glide
                 .with(this)
@@ -203,6 +205,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         ivCheckbox.isSelected = isChecked ?: false
         initialContainer.invisible()
         emojiContainer.invisible()
+        rectangularIconContainer.invisible()
         ivImage.invisible()
     }
 }

@@ -21,43 +21,43 @@
 
     <FrameLayout
         android:id="@+id/initialContainer"
-        android:background="@drawable/rectangle_avatar_initial_background"
         android:layout_width="match_parent"
-        android:visibility="invisible"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/rectangle_avatar_initial_background"
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/initial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_semibold"
             android:gravity="center"
             android:textColor="@color/white" />
 
     </FrameLayout>
 
     <ImageView
-        android:src="@drawable/ic_data_view_grid_checkbox_selector"
         android:id="@+id/ivCheckbox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:visibility="invisible"
-        android:scaleType="center" />
+        android:scaleType="center"
+        android:src="@drawable/ic_data_view_grid_checkbox_selector"
+        android:visibility="invisible" />
 
     <androidx.cardview.widget.CardView
-        android:visibility="gone"
         android:id="@+id/rectangularIconContainer"
-        android:elevation="0dp"
-        app:cardCornerRadius="1dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:elevation="0dp"
+        android:visibility="gone"
+        app:cardCornerRadius="1dp">
 
         <ImageView
             android:id="@+id/ivImageRectangular"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </androidx.cardview.widget.CardView>
 

@@ -12,8 +12,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/rectangle_object_in_list_emoji_icon"
         app:emojiSize="28dp"
+        app:hasEmojiRounded12Background="true"
+        app:initialTextSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

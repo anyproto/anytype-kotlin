@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Hash
 sealed class ObjectIcon {
     object None : ObjectIcon()
     sealed class Basic : ObjectIcon() {
+        data class Avatar(val name: String) : Basic()
         data class Image(val hash: Hash) : Basic()
         data class Emoji(val unicode: String) : Basic()
     }

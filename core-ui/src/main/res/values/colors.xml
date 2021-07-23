@@ -124,4 +124,9 @@
 
     <color name="dashboard_default_avatar_circle_color">#80F5F5F5</color>
 
+    <color name="default_object_profile_avatar_background_color">#DFDDD0</color>
+    <color name="default_object_profile_avatar_text_color">#FFFFFF</color>
+    <color name="default_object_basic_avatar_background_color">#F3F2EC</color>
+    <color name="default_object_basic_avatar_text_color">#CBC9BD</color>
+
 </resources>

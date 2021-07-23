@@ -33,6 +33,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/inter_semibold"
             android:gravity="center"
+            android:hint="U"
             android:textColor="@color/white" />
 
     </FrameLayout>

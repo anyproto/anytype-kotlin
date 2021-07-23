@@ -79,10 +79,16 @@ class ObjectSearchViewModel(
                         ObjectType.Layout.BASIC -> {
                             val img = obj.iconImage
                             val emoji = obj.iconEmoji
-                            if (!img.isNullOrBlank()) {
-                                icon = ObjectIcon.Basic.Image(hash = urlBuilder.thumbnail(img))
-                            } else if (!emoji.isNullOrBlank()) {
-                                icon = ObjectIcon.Basic.Emoji(unicode = emoji)
+                            icon = when {
+                                !img.isNullOrBlank() -> {
+                                    ObjectIcon.Basic.Image(hash = urlBuilder.thumbnail(img))
+                                }
+                                !emoji.isNullOrBlank() -> {
+                                    ObjectIcon.Basic.Emoji(unicode = emoji)
+                                }
+                                else -> {
+                                    ObjectIcon.Basic.Avatar(obj.name.orEmpty())
+                                }
                             }
                         }
                         ObjectType.Layout.PROFILE -> {

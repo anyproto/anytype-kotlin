@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -9,8 +8,7 @@ import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.avatarColor
-import com.anytypeio.anytype.core_utils.ext.firstDigitByHash
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -109,7 +107,8 @@ class ObjectIconWidget @JvmOverloads constructor(
         when(icon) {
             is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
-            is ObjectIcon.Profile.Avatar -> setInitials(icon.name)
+            is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
+            is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setRectangularImage(icon.hash)
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
         }
@@ -121,7 +120,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         name: String
     ) {
         if (emoji.isNullOrBlank() && image.isNullOrBlank()) {
-            setInitials(name)
+            setProfileInitials(name)
         } else {
             setEmoji(emoji)
             setCircularImage(image)
@@ -129,18 +128,34 @@ class ObjectIconWidget @JvmOverloads constructor(
         //todo Add checkbox logic
     }
 
-    fun setInitials(
+    fun setProfileInitials(
         name: String
     ) {
-        val pos = name.firstDigitByHash()
-        val color = context.avatarColor(pos)
+        val textColor = context.color(R.color.default_object_profile_avatar_text_color)
         ivImage.invisible()
         emojiContainer.invisible()
         ivCheckbox.invisible()
         initialContainer.visible()
         rectangularIconContainer.invisible()
-        initialContainer.backgroundTintList = ColorStateList.valueOf(color)
-        initial.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
+        initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
+        initial.setTextColor(textColor)
+        initial.setHintTextColor(textColor)
+        initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+    }
+
+    fun setBasicInitials(
+        name: String
+    ) {
+        val textColor = context.color(R.color.default_object_basic_avatar_text_color)
+        ivImage.invisible()
+        emojiContainer.invisible()
+        ivCheckbox.invisible()
+        initialContainer.visible()
+        rectangularIconContainer.invisible()
+        initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
+        initial.setTextColor(textColor)
+        initial.setHintTextColor(textColor)
+        initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
     }
 
     fun setEmoji(emoji: String?) {

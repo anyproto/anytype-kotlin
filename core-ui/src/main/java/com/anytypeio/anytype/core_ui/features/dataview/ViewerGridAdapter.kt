@@ -103,7 +103,7 @@ class ViewerGridAdapter(
                     if (row.image != null) {
                         itemView.objectIcon.setCircularImage(row.image)
                     } else {
-                        itemView.objectIcon.setInitials(row.name.orEmpty())
+                        itemView.objectIcon.setProfileInitials(row.name.orEmpty())
                     }
                 }
                 else -> {

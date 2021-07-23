@@ -455,4 +455,14 @@ class BlockDataRepository(
 
     override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
         factory.remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
+
+    override suspend fun addToFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload = factory.remote.addToFeaturedRelations(ctx, relations)
+
+    override suspend fun removeFromFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload = factory.remote.removeFromFeaturedRelations(ctx, relations)
 }

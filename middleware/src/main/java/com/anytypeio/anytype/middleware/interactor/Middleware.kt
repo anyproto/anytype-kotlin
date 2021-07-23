@@ -1302,7 +1302,7 @@ class Middleware(
         relation: Id,
         name: Id,
         color: String
-    ) : Pair<Payload, Id?> {
+    ): Pair<Payload, Id?> {
         val request = Rpc.Object.RelationOptionAdd.Request(
             contextId = ctx,
             relationKey = relation,
@@ -1351,7 +1351,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun blockListSetTextMarkup(command: Command.UpdateBlocksMark) : Payload {
+    fun blockListSetTextMarkup(command: Command.UpdateBlocksMark): Payload {
         val context = command.context
         val mark = command.mark.toMiddlewareModel()
         val targets = command.targets
@@ -1391,7 +1391,7 @@ class Middleware(
         Timber.d(message)
     }
 
-    fun addRelationToObject(ctx: Id, relation: Id) : Payload {
+    fun addRelationToObject(ctx: Id, relation: Id): Payload {
         val request = Rpc.Object.RelationAdd.Request(
             contextId = ctx,
             relation = MRelation(
@@ -1414,6 +1414,34 @@ class Middleware(
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    fun addToFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload {
+        val request = Rpc.Object.FeaturedRelation.Add.Request(
+            contextId = ctx,
+            relations = relations
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.featuredRelationsAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    fun removeFromFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload {
+        val request = Rpc.Object.FeaturedRelation.Remove.Request(
+            contextId = ctx,
+            relations = relations
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.featuredRelationsRemove(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }

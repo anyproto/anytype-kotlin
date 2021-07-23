@@ -390,4 +390,14 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
         remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
+
+    override suspend fun addToFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload = remote.addToFeaturedRelations(ctx, relations)
+
+    override suspend fun removeFromFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload = remote.removeFromFeaturedRelations(ctx, relations)
 }

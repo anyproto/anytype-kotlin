@@ -231,4 +231,7 @@ interface BlockRepository {
     suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload
 
     suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload
+
+    suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
+    suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 }

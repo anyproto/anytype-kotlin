@@ -6,6 +6,8 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
@@ -39,7 +41,9 @@ object DocumentRelationModule {
         objectRelationList: ObjectRelationList,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
-        detailModificationManager: DetailModificationManager
+        detailModificationManager: DetailModificationManager,
+        addToFeaturedRelations: AddToFeaturedRelations,
+        removeFromFeaturedRelations: RemoveFromFeaturedRelations
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             stores = stores,
@@ -47,7 +51,9 @@ object DocumentRelationModule {
             objectRelationList = objectRelationList,
             dispatcher = dispatcher,
             updateDetail = updateDetail,
-            detailModificationManager = detailModificationManager
+            detailModificationManager = detailModificationManager,
+            addToFeaturedRelations = addToFeaturedRelations,
+            removeFromFeaturedRelations = removeFromFeaturedRelations
         )
     }
 
@@ -57,4 +63,14 @@ object DocumentRelationModule {
     fun provideObjectRelationListUseCase(
         repository: BlockRepository
     ) : ObjectRelationList = ObjectRelationList(repository)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun addToFeaturedRelations(repo: BlockRepository) : AddToFeaturedRelations = AddToFeaturedRelations(repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun removeFromFeaturedRelations(repo: BlockRepository) : RemoveFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
 }

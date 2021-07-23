@@ -408,4 +408,14 @@ class BlockMiddleware(
 
     override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
         middleware.setObjectType(ctx = ctx, typeId = typeId)
+
+    override suspend fun addToFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload = middleware.addToFeaturedRelations(ctx, relations)
+
+    override suspend fun removeFromFeaturedRelations(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload = middleware.removeFromFeaturedRelations(ctx, relations)
 }

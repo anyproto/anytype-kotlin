@@ -185,4 +185,10 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockSetObjectType(request: Block.ObjectType.Set.Request): Block.ObjectType.Set.Response
+
+    @Throws(Exception::class)
+    fun featuredRelationsAdd(request: Object.FeaturedRelation.Add.Request): Object.FeaturedRelation.Add.Response
+
+    @Throws(Exception::class)
+    fun featuredRelationsRemove(request: Object.FeaturedRelation.Remove.Request): Object.FeaturedRelation.Remove.Response
 }

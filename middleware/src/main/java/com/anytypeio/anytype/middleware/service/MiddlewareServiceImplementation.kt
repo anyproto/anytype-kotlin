@@ -730,4 +730,30 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun featuredRelationsAdd(request: Object.FeaturedRelation.Add.Request): Object.FeaturedRelation.Add.Response {
+        val encoded = Service.objectFeaturedRelationAdd(
+            Object.FeaturedRelation.Add.Request.ADAPTER.encode(request)
+        )
+        val response = Object.FeaturedRelation.Add.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.FeaturedRelation.Add.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun featuredRelationsRemove(request: Object.FeaturedRelation.Remove.Request): Object.FeaturedRelation.Remove.Response {
+        val encoded = Service.objectFeaturedRelationRemove(
+            Object.FeaturedRelation.Remove.Request.ADAPTER.encode(request)
+        )
+        val response = Object.FeaturedRelation.Remove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.FeaturedRelation.Remove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

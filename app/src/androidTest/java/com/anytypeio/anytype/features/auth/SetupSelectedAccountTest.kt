@@ -4,10 +4,6 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -22,6 +18,8 @@ import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewM
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModelFactory
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.utils.CoroutinesTestRule
+import com.anytypeio.anytype.utils.checkHasText
+import com.anytypeio.anytype.utils.matchView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -98,15 +96,15 @@ class SetupSelectedAccountTest {
 
         launchFragment(args)
 
+        coroutineTestRule.advanceTime(SetupSelectedAccountViewModel.TIMEOUT_DURATION)
+
         val expected = SetupSelectedAccountViewModel.ERROR_MESSAGE
 
-        onView(withId(R.id.error)).apply {
-            check(matches(withText(expected)))
-        }
+        R.id.error.matchView().checkHasText(expected)
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestSetupSelectedAccountFragment> {
-        return launchFragmentInContainer<TestSetupSelectedAccountFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

@@ -27,4 +27,6 @@ class CoroutinesTestRule(
     fun advanceTime(millis: Long) {
         testDispatcher.advanceTimeBy(millis)
     }
+
+    fun advanceUntilIdle() = testDispatcher.advanceUntilIdle()
 }

@@ -1016,33 +1016,8 @@ class PageViewModel(
             when (content.type) {
                 SmartBlockType.PROFILE_PAGE -> {
                     val details = orchestrator.stores.details.current().details
-                    val restrictions = orchestrator.stores.objectRestrictions.current()
                     dispatch(
-                        command = Command.OpenProfileMenu(
-                            status = syncStatus.value ?: SyncStatus.UNKNOWN,
-                            title = try {
-                                blocks.title().content<Content.Text>().text
-                            } catch (e: Throwable) {
-                                null
-                            },
-                            emoji = details[context]?.iconEmoji?.let { name ->
-                                if (name.isNotEmpty())
-                                    name
-                                else
-                                    null
-                            },
-                            image = details[context]?.iconImage?.let { name ->
-                                if (name.isNotEmpty())
-                                    urlBuilder.image(name)
-                                else
-                                    null
-                            },
-                            isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
-                            isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
-                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
-                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
-                            isDownloadAllowed = false
-                        )
+                        command = Command.OpenProfileMenu
                     )
                     viewModelScope.sendEvent(
                         analytics = analytics,
@@ -1051,34 +1026,10 @@ class PageViewModel(
                 }
                 SmartBlockType.PAGE -> {
                     val details = orchestrator.stores.details.current().details
-                    val restrictions = orchestrator.stores.objectRestrictions.current()
                     controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(
                         command = Command.OpenDocumentMenu(
-                            status = syncStatus.value ?: SyncStatus.UNKNOWN,
-                            title = try {
-                                blocks.title().content<Content.Text>().text
-                            } catch (e: Throwable) {
-                                null
-                            },
-                            emoji = details[context]?.iconEmoji?.let { name ->
-                                if (name.isNotEmpty())
-                                    name
-                                else
-                                    null
-                            },
-                            image = details[context]?.iconImage?.let { name ->
-                                if (name.isNotEmpty())
-                                    urlBuilder.image(name)
-                                else
-                                    null
-                            },
-                            isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
-                            isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
-                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
-                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
-                            isArchived = details[context]?.isArchived ?: false,
-                            isDownloadAllowed = false
+                            isArchived = details[context]?.isArchived ?: false
                         )
                     )
                     viewModelScope.sendEvent(
@@ -1088,34 +1039,10 @@ class PageViewModel(
                 }
                 SmartBlockType.FILE -> {
                     val details = orchestrator.stores.details.current().details
-                    val restrictions = orchestrator.stores.objectRestrictions.current()
                     controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(
                         command = Command.OpenDocumentMenu(
-                            status = syncStatus.value ?: SyncStatus.UNKNOWN,
-                            title = try {
-                                blocks.title().content<Content.Text>().text
-                            } catch (e: Throwable) {
-                                null
-                            },
-                            emoji = details[context]?.iconEmoji?.let { name ->
-                                if (name.isNotEmpty())
-                                    name
-                                else
-                                    null
-                            },
-                            image = details[context]?.iconImage?.let { name ->
-                                if (name.isNotEmpty())
-                                    urlBuilder.image(name)
-                                else
-                                    null
-                            },
-                            isDeleteAllowed = restrictions.none { it == ObjectRestriction.DELETE },
-                            isLayoutAllowed = restrictions.none { it == ObjectRestriction.LAYOUT_CHANGE },
-                            isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS },
-                            isRelationsAllowed = restrictions.none { it == ObjectRestriction.RELATIONS },
-                            isArchived = details[context]?.isArchived ?: false,
-                            isDownloadAllowed = true
+                            isArchived = details[context]?.isArchived ?: false
                         )
                     )
                     viewModelScope.sendEvent(

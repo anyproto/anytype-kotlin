@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 
 /**
@@ -14,6 +15,7 @@ data class ObjectSet(
     val details: Map<Id, Block.Fields> = emptyMap(),
     val objectTypes: List<ObjectType> = emptyList(),
     val relations: List<Relation> = emptyList(),
+    val objectRestrictions: List<ObjectRestriction> = emptyList(),
     val restrictions: List<DataViewRestrictions> = emptyList()
 ) {
 

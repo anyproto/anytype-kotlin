@@ -59,7 +59,8 @@ class ObjectSetReducer {
                     details = state.details.updateFields(event.details.details),
                     objectTypes = event.objectTypes,
                     restrictions = event.dataViewRestrictions,
-                    relations = event.relations
+                    relations = event.relations,
+                    objectRestrictions = event.objectRestrictions
                 )
             }
             is Command.DataView.SetView -> {

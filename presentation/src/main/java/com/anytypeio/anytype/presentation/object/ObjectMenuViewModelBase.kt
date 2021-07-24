@@ -3,15 +3,20 @@ package com.anytypeio.anytype.presentation.`object`
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.page.Editor
+import com.anytypeio.anytype.presentation.sets.ObjectSet
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -19,15 +24,21 @@ abstract class ObjectMenuViewModelBase(
     private val archiveDocument: ArchiveDocument,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
-    private val checkIsFavorite: CheckIsFavorite,
-    private val getFlavourConfig: GetFlavourConfig
+    private val checkIsFavorite: CheckIsFavorite
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val actions = MutableStateFlow(emptyList<ObjectAction>())
 
-    fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
+    abstract fun onIconClicked()
+    abstract fun onCoverClicked()
+    abstract fun onLayoutClicked()
+    abstract fun onRelationsClicked()
+    abstract fun onHistoryClicked()
+    abstract fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean)
+
+    protected fun checkIsFavorite(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
         viewModelScope.launch {
             checkIsFavorite(CheckIsFavorite.Params(ctx)).process(
                 failure = {
@@ -41,16 +52,6 @@ abstract class ObjectMenuViewModelBase(
                     )
                 }
             )
-        }
-    }
-
-    fun onRelationsClicked() {
-        viewModelScope.launch {
-            if (getFlavourConfig.isDataViewEnabled()) {
-                commands.emit(Command.OpenRelations)
-            } else {
-                _toasts.emit(COMING_SOON_MSG)
-            }
         }
     }
 
@@ -157,7 +158,15 @@ abstract class ObjectMenuViewModelBase(
     }
 
     sealed class Command {
-        object OpenRelations: Command()
+        object OpenObjectIcons : Command()
+        object OpenSetIcons : Command()
+        object OpenObjectCover : Command()
+        object OpenSetCover : Command()
+        object OpenObjectLayout : Command()
+        object OpenSetLayout : Command()
+        object OpenObjectRelations : Command()
+        object OpenSetRelations : Command()
+        object HideSetsLogic : Command()
     }
 
     companion object {
@@ -168,6 +177,7 @@ abstract class ObjectMenuViewModelBase(
         const val ADD_TO_FAVORITE_SUCCESS_MSG = "Object added to favorites."
         const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
         const val COMING_SOON_MSG = "Coming soon..."
+        const val NOT_ALLOWED = "Not allowed for this object"
     }
 }
 
@@ -176,21 +186,80 @@ class ObjectMenuViewModel(
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     checkIsFavorite: CheckIsFavorite,
-    getFlavourConfig: GetFlavourConfig
+    private val getFlavourConfig: GetFlavourConfig,
+    storage: Editor.Storage,
+    private val analytics: Analytics
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    checkIsFavorite = checkIsFavorite,
-    getFlavourConfig = getFlavourConfig
+    checkIsFavorite = checkIsFavorite
 ) {
+
+    private val objectRestrictions = storage.objectRestrictions.current()
+
+    override fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
+        if (!getFlavourConfig.isDataViewEnabled()) {
+            viewModelScope.launch {
+                commands.emit(Command.HideSetsLogic)
+            }
+        }
+        checkIsFavorite(ctx = ctx, isArchived = isArchived, isProfile = isProfile)
+    }
+
+    override fun onIconClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenObjectIcons)
+            }
+        }
+    }
+
+    override fun onCoverClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenObjectCover)
+            }
+        }
+    }
+
+    override fun onLayoutClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenObjectLayout)
+            }
+        }
+    }
+
+    override fun onRelationsClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.RELATIONS)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenObjectRelations)
+            }
+        }
+    }
+
+    override fun onHistoryClicked() {
+        viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val archiveDocument: ArchiveDocument,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val checkIsFavorite: CheckIsFavorite,
-        private val getFlavourConfig: GetFlavourConfig
+        private val getFlavourConfig: GetFlavourConfig,
+        private val storage: Editor.Storage,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -198,7 +267,9 @@ class ObjectMenuViewModel(
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 checkIsFavorite = checkIsFavorite,
-                getFlavourConfig = getFlavourConfig
+                getFlavourConfig = getFlavourConfig,
+                storage = storage,
+                analytics = analytics
             ) as T
         }
     }
@@ -209,21 +280,36 @@ class ObjectSetMenuViewModel(
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     checkIsFavorite: CheckIsFavorite,
-    getFlavourConfig: GetFlavourConfig
+    private val getFlavourConfig: GetFlavourConfig,
+    analytics: Analytics,
+    state: StateFlow<ObjectSet>
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    checkIsFavorite = checkIsFavorite,
-    getFlavourConfig = getFlavourConfig
+    checkIsFavorite = checkIsFavorite
 ) {
+
+    private val objectRestrictions = state.value.objectRestrictions
+
+    override fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
+        if (!getFlavourConfig.isDataViewEnabled()) {
+            viewModelScope.launch {
+                commands.emit(Command.HideSetsLogic)
+            }
+        }
+        checkIsFavorite(ctx = ctx, isArchived = isArchived, isProfile = isProfile)
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val archiveDocument: ArchiveDocument,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val checkIsFavorite: CheckIsFavorite,
-        private val getFlavourConfig: GetFlavourConfig
+        private val getFlavourConfig: GetFlavourConfig,
+        private val analytics: Analytics,
+        private val state: StateFlow<ObjectSet>
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -231,9 +317,55 @@ class ObjectSetMenuViewModel(
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 checkIsFavorite = checkIsFavorite,
-                getFlavourConfig = getFlavourConfig
+                getFlavourConfig = getFlavourConfig,
+                analytics = analytics,
+                state = state
             ) as T
         }
+    }
+
+    override fun onIconClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenSetIcons)
+            }
+        }
+    }
+
+    override fun onCoverClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenSetCover)
+            }
+        }
+    }
+
+    override fun onLayoutClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenSetLayout)
+            }
+        }
+    }
+
+    override fun onRelationsClicked() {
+        viewModelScope.launch {
+            if (objectRestrictions.contains(ObjectRestriction.RELATIONS)) {
+                _toasts.emit(NOT_ALLOWED)
+            } else {
+                commands.emit(Command.OpenSetRelations)
+            }
+        }
+    }
+
+    override fun onHistoryClicked() {
+        viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
     }
 
     override fun buildActions(

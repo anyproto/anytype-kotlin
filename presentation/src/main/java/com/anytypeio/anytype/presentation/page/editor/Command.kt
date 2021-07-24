@@ -70,29 +70,10 @@ sealed class Command {
     ) : Command()
 
     data class OpenDocumentMenu(
-        val status: SyncStatus,
-        val title: String?,
-        val emoji: String?,
-        val image: String?,
-        val isDeleteAllowed: Boolean,
-        val isLayoutAllowed: Boolean,
-        val isDetailsAllowed: Boolean,
-        val isArchived: Boolean,
-        val isRelationsAllowed: Boolean,
-        val isDownloadAllowed: Boolean
+        val isArchived: Boolean
     ) : Command()
 
-    data class OpenProfileMenu(
-        val status: SyncStatus,
-        val title: String?,
-        val emoji: String?,
-        val image: String?,
-        val isDeleteAllowed: Boolean,
-        val isLayoutAllowed: Boolean,
-        val isDetailsAllowed: Boolean,
-        val isRelationsAllowed: Boolean,
-        val isDownloadAllowed: Boolean
-    ) : Command()
+    object OpenProfileMenu: Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()
     data class OpenObjectLayout(val ctx: String) : Command()

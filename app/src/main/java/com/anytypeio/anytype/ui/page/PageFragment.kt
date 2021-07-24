@@ -847,16 +847,7 @@ open class PageFragment :
                     hideKeyboard()
                     val fr = ObjectMenuFragment.new(
                         ctx = ctx,
-                        title = command.title,
-                        status = command.status,
-                        image = command.image,
-                        emoji = command.emoji,
-                        isArchived = command.isArchived,
-                        isDeleteAllowed = command.isDeleteAllowed,
-                        isLayoutAllowed = command.isLayoutAllowed,
-                        isAddCoverAllowed = command.isDetailsAllowed,
-                        isRelationsAllowed = command.isRelationsAllowed,
-                        isDownloadAllowed = command.isDownloadAllowed
+                        isArchived = command.isArchived
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -864,16 +855,7 @@ open class PageFragment :
                     hideKeyboard()
                     val fr = ObjectMenuFragment.new(
                         ctx = ctx,
-                        title = command.title,
-                        status = command.status,
-                        image = command.image,
-                        emoji = command.emoji,
                         isProfile = true,
-                        isDeleteAllowed = command.isDeleteAllowed,
-                        isLayoutAllowed = command.isLayoutAllowed,
-                        isAddCoverAllowed = command.isDetailsAllowed,
-                        isRelationsAllowed = command.isRelationsAllowed,
-                        isDownloadAllowed = command.isDownloadAllowed,
                         isArchived = false
                     )
                     fr.show(childFragmentManager, null)

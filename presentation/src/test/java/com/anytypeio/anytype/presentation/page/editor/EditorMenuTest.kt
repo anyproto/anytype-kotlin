@@ -51,17 +51,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenProfileMenu(
-                status = SyncStatus.UNKNOWN,
-                title = MockTypicalDocumentFactory.title.content<TXT>().text,
-                emoji = null,
-                image = null,
-                isDeleteAllowed = true,
-                isLayoutAllowed = true,
-                isDetailsAllowed = true,
-                isRelationsAllowed = true,
-                isDownloadAllowed = false
-            )
+            value.peekContent() == Command.OpenProfileMenu
         }
     }
 
@@ -111,18 +101,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenDocumentMenu(
-                status = SyncStatus.UNKNOWN,
-                title = MockTypicalDocumentFactory.title.content<TXT>().text,
-                emoji = null,
-                image = null,
-                isDeleteAllowed = true,
-                isLayoutAllowed = true,
-                isDetailsAllowed = true,
-                isRelationsAllowed = true,
-                isDownloadAllowed = false,
-                isArchived = false
-            )
+            value.peekContent() == Command.OpenDocumentMenu(isArchived = false)
         }
     }
 
@@ -152,15 +131,6 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         observer.assertValue { value ->
             value.peekContent() == Command.OpenDocumentMenu(
-                status = SyncStatus.UNKNOWN,
-                title = MockTypicalDocumentFactory.title.content<TXT>().text,
-                emoji = null,
-                image = null,
-                isDeleteAllowed = false,
-                isLayoutAllowed = false,
-                isDetailsAllowed = true,
-                isRelationsAllowed = true,
-                isDownloadAllowed = false,
                 isArchived = false
             )
         }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
@@ -9,11 +10,15 @@ import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.`object`.ObjectSetMenuViewModel
+import com.anytypeio.anytype.presentation.page.Editor
+import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.flow.StateFlow
 
 
 @Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectMenuModule::class])
@@ -76,13 +81,17 @@ object ObjectMenuModule {
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
         checkIsFavorite: CheckIsFavorite,
-        getFlavourConfig: GetFlavourConfig
+        getFlavourConfig: GetFlavourConfig,
+        storage: Editor.Storage,
+        analytics: Analytics
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         checkIsFavorite = checkIsFavorite,
-        getFlavourConfig = getFlavourConfig
+        getFlavourConfig = getFlavourConfig,
+        storage = storage,
+        analytics = analytics
     )
 }
 
@@ -96,12 +105,16 @@ object ObjectSetMenuModule {
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
         checkIsFavorite: CheckIsFavorite,
-        getFlavourConfig: GetFlavourConfig
+        getFlavourConfig: GetFlavourConfig,
+        analytics: Analytics,
+        state: StateFlow<ObjectSet>
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         checkIsFavorite = checkIsFavorite,
-        getFlavourConfig = getFlavourConfig
+        getFlavourConfig = getFlavourConfig,
+        analytics = analytics,
+        state = state
     )
 }

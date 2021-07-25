@@ -248,9 +248,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private val tabs by lazy {
         listOf(
-            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
-            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
             TabItem(getString(R.string.inbox), DashboardPager.TYPE_INBOX),
+            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
+            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
             TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS),
             TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
         )
@@ -258,9 +258,9 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
     private val tabsNoSets by lazy {
         listOf(
-            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
-            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
             TabItem(getString(R.string.inbox), DashboardPager.TYPE_INBOX),
+            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
+            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
             TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
         )
     }

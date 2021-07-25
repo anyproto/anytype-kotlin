@@ -114,7 +114,8 @@ class HomeDashboardViewModelTest {
             searchRecentObjects = searchRecentObjects,
             searchInboxObjects = searchInboxObjects,
             searchObjectSets = searchObjectSets,
-            getFlavourConfig = getFlavourConfig
+            getFlavourConfig = getFlavourConfig,
+            urlBuilder = builder
         )
     }
 

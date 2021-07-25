@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.`object`.ObjectWrapper
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.page.editor.Markup
@@ -320,7 +322,7 @@ fun List<Block>.toDashboardViews(
                     typeName = type?.name,
                     layout = layout
                 )
-                ObjectType.Layout.SET -> content.toSetView(block.id, details)
+                ObjectType.Layout.SET -> content.toSetView(block.id, details, builder)
                 else -> {
                     when (content.type) {
                         Block.Content.Link.Type.PAGE -> content.toPageView(
@@ -331,7 +333,7 @@ fun List<Block>.toDashboardViews(
                             typeName = type?.name,
                             layout = layout
                         )
-                        Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details)
+                        Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details, builder)
                         Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
                         else -> null
                     }
@@ -361,36 +363,48 @@ fun Block.Content.Link.toPageView(
     typeName: String?,
     type: String?
 ): DashboardView.Document {
+
+    val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
+
     return DashboardView.Document(
         id = id,
         target = target,
-        title = details.details[target]?.name,
-        emoji = details.details[target]?.iconEmoji?.let { name ->
-            if (name.isNotEmpty()) name else null
+        title = obj.name,
+        emoji = details.details[target]?.iconEmoji?.let { unicode ->
+            if (unicode.isNotEmpty()) unicode else null
         },
-        image = details.details[target]?.iconImage?.let { name ->
-            if (name.isNotEmpty()) builder.image(name) else null
+        image = details.details[target]?.iconImage?.let { hash ->
+            if (hash.isNotEmpty()) builder.image(hash) else null
         },
         isArchived = details.details[target]?.isArchived ?: false,
         isLoading = !details.details.containsKey(target),
         typeName = typeName,
         type = type,
         layout = layout,
-        done = details.details[target]?.done
+        done = details.details[target]?.done,
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = layout,
+            builder = builder
+        )
     )
 }
 
 fun Block.Content.Link.toSetView(
     id: String,
     details: Block.Details,
+    urlBuilder: UrlBuilder
 ): DashboardView.ObjectSet {
+    val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
     return DashboardView.ObjectSet(
         id = id,
         target = target,
         title = details.details[target]?.name,
-        emoji = details.details[target]?.iconEmoji?.let { name ->
-            if (name.isNotEmpty()) name else null
-        },
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = obj.layout,
+            builder = urlBuilder
+        ),
         isArchived = details.details[target]?.isArchived ?: false
     )
 }

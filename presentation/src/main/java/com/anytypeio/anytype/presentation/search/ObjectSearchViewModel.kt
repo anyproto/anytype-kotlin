@@ -74,51 +74,16 @@ class ObjectSearchViewModel(
                     val targetType = listOfTypes.find { type ->
                         obj.type.contains(type.url)
                     }
-                    var icon : ObjectIcon = ObjectIcon.None
-                    when(targetType?.layout) {
-                        ObjectType.Layout.BASIC -> {
-                            val img = obj.iconImage
-                            val emoji = obj.iconEmoji
-                            icon = when {
-                                !img.isNullOrBlank() -> {
-                                    ObjectIcon.Basic.Image(hash = urlBuilder.thumbnail(img))
-                                }
-                                !emoji.isNullOrBlank() -> {
-                                    ObjectIcon.Basic.Emoji(unicode = emoji)
-                                }
-                                else -> {
-                                    ObjectIcon.Basic.Avatar(obj.name.orEmpty())
-                                }
-                            }
-                        }
-                        ObjectType.Layout.PROFILE -> {
-                            val img = obj.iconImage
-                            icon = if (!img.isNullOrBlank()) {
-                                ObjectIcon.Profile.Image(hash = urlBuilder.thumbnail(img))
-                            } else {
-                                ObjectIcon.Profile.Avatar(name = obj.name.orEmpty())
-                            }
-                        }
-                        ObjectType.Layout.TODO -> {
-                            icon = ObjectIcon.Task(isChecked = obj.done ?: false)
-                        }
-                        ObjectType.Layout.SET -> {
-                            val img = obj.iconImage
-                            val emoji = obj.iconEmoji
-                            if (!img.isNullOrBlank()) {
-                                icon = ObjectIcon.Basic.Image(hash = urlBuilder.thumbnail(img))
-                            } else if (!emoji.isNullOrBlank()) {
-                                icon = ObjectIcon.Basic.Emoji(unicode = emoji)
-                            }
-                        }
-                        else -> {}
-                    }
                     DefaultObjectView(
                         id = obj.id,
                         name = obj.name.orEmpty(),
                         typeName = targetType?.name.orEmpty(),
-                        typeLayout = targetType?.layout,
-                        icon = icon
+                        typeLayout = obj.layout,
+                        icon = ObjectIcon.from(
+                            obj = obj,
+                            layout = obj.layout,
+                            builder = urlBuilder
+                        )
                     )
                 }
             }.collectLatest { views ->

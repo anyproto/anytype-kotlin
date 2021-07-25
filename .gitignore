@@ -3,6 +3,7 @@
 /local.properties
 /configuration.properties
 /github.properties
+/apikeys.properties
 .idea/*
 !.idea/copyright
 .DS_Store

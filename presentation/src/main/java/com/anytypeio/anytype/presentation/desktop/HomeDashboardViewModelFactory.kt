@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
 
 class HomeDashboardViewModelFactory(
@@ -27,7 +28,8 @@ class HomeDashboardViewModelFactory(
     private val searchRecentObjects: SearchRecentObjects,
     private val searchInboxObjects: SearchInboxObjects,
     private val searchObjectSets: SearchObjectSets,
-    private val getFlavourConfig: GetFlavourConfig
+    private val getFlavourConfig: GetFlavourConfig,
+    private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -47,7 +49,8 @@ class HomeDashboardViewModelFactory(
             searchRecentObjects = searchRecentObjects,
             searchInboxObjects = searchInboxObjects,
             searchObjectSets = searchObjectSets,
-            getFlavourConfig = getFlavourConfig
+            getFlavourConfig = getFlavourConfig,
+            urlBuilder = urlBuilder
         ) as T
     }
 }

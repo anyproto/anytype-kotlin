@@ -60,7 +60,8 @@ object HomeDashboardModule {
         searchRecentObjects: SearchRecentObjects,
         searchInboxObjects: SearchInboxObjects,
         searchObjectSets: SearchObjectSets,
-        getFlavourConfig: GetFlavourConfig
+        getFlavourConfig: GetFlavourConfig,
+        urlBuilder: UrlBuilder
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -76,7 +77,8 @@ object HomeDashboardModule {
         searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
         analytics = analytics,
-        getFlavourConfig = getFlavourConfig
+        getFlavourConfig = getFlavourConfig,
+        urlBuilder = urlBuilder
     )
 
     @JvmStatic

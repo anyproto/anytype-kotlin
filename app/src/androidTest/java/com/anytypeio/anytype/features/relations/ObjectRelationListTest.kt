@@ -21,6 +21,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.page.Editor
 import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
@@ -64,6 +66,8 @@ class ObjectRelationListTest {
 
     private lateinit var objectRelationList: ObjectRelationList
     private lateinit var updateDetail: UpdateDetail
+    private lateinit var addToFeaturedRelations: AddToFeaturedRelations
+    private lateinit var removeFromFeaturedRelations: RemoveFromFeaturedRelations
 
     private val ctx = MockDataFactory.randomUuid()
     private val storage = Editor.Storage()
@@ -76,13 +80,17 @@ class ObjectRelationListTest {
         urlBuilder = UrlBuilder(gateway)
         objectRelationList = ObjectRelationList(repo)
         updateDetail = UpdateDetail(repo)
+        addToFeaturedRelations = AddToFeaturedRelations(repo)
+        removeFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
         TestRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
             stores = storage,
             urlBuilder = urlBuilder,
             objectRelationList = objectRelationList,
             dispatcher = dispatcher,
             detailModificationManager = detailModificationManager,
-            updateDetail = updateDetail
+            updateDetail = updateDetail,
+            addToFeaturedRelations = addToFeaturedRelations,
+            removeFromFeaturedRelations = removeFromFeaturedRelations
         )
     }
 

@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.`object`.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 
 fun List<DashboardView>.addAndSortByIds(
@@ -44,6 +46,7 @@ fun List<DashboardView>.updateDetails(
             }
             is DashboardView.Document -> {
                 if (view.target == target) {
+                    val obj = ObjectWrapper.Basic(details.map)
                     view.copy(
                         title = details.name,
                         emoji = details.iconEmoji?.let { name ->
@@ -59,7 +62,12 @@ fun List<DashboardView>.updateDetails(
                                 null
                         },
                         isArchived = details.isArchived ?: false,
-                        isLoading = false
+                        isLoading = false,
+                        icon = ObjectIcon.from(
+                            obj = obj,
+                            layout = obj.layout,
+                            builder = builder
+                        )
                     )
                 } else {
                     view
@@ -67,15 +75,15 @@ fun List<DashboardView>.updateDetails(
             }
             is DashboardView.ObjectSet -> {
                 if (view.target == target) {
+                    val obj = ObjectWrapper.Basic(details.map)
                     view.copy(
                         title = details.name,
-                        emoji = details.iconEmoji?.let { name ->
-                            if (name.isNotEmpty())
-                                name
-                            else
-                                null
-                        },
-                        isArchived = details.isArchived ?: false
+                        isArchived = details.isArchived ?: false,
+                        icon = ObjectIcon.from(
+                            obj = obj,
+                            layout = obj.layout,
+                            builder = builder
+                        )
                     )
                 } else {
                     view

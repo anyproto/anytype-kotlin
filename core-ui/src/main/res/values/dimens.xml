@@ -156,5 +156,7 @@
 
     <dimen name="slash_widget_item_height">55dp</dimen>
     <dimen name="data_view_divider_height">0.5dp</dimen>
+    <dimen name="object_icon_card_emoji_size">28dp</dimen>
+    <dimen name="object_icon_card_rectangle_image_radius">2dp</dimen>
 
 </resources>

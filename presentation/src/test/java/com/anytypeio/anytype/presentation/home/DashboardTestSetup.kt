@@ -105,7 +105,8 @@ open class DashboardTestSetup {
         searchRecentObjects = searchRecentObjects,
         searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
-        getFlavourConfig = getFlavourConfig
+        getFlavourConfig = getFlavourConfig,
+        urlBuilder = builder
     )
 
     fun stubGetConfig(response: Either.Right<Config>) {

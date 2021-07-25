@@ -8,59 +8,18 @@
     android:background="@drawable/ripple_dashboard_card"
     app:cardElevation="0dp">
 
-    <FrameLayout
-        android:id="@+id/icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <com.anytypeio.anytype.core_ui.widgets.ObjectCardIconWidget
+        android:id="@+id/iconWidget"
+        android:layout_width="@dimen/dashboard_object_icon_default_size"
+        android:layout_height="@dimen/dashboard_object_icon_default_size"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/roundedImageContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="0dp">
-
-            <ImageView
-                android:id="@+id/rectangleImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:id="@+id/emoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/emoji_color"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/emojiIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/circleImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
-            android:id="@+id/avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/circle_solid_default"
-            android:visibility="invisible"
-            app:text_size="28sp" />
-
-    </FrameLayout>
+        android:layout_marginTop="16dp"/>
 
     <TextView
         android:id="@+id/title"
         style="@style/DashboardDocumentTitleStyle"
         android:layout_width="match_parent"
+        android:hint="@string/untitled"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="79dp"

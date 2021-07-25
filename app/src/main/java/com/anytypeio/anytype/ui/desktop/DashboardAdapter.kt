@@ -15,10 +15,8 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.desktop.DashboardView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.facebook.shimmer.ShimmerFrameLayout
 import kotlinx.android.synthetic.main.item_dashboard_card_default.view.*
 import kotlinx.android.synthetic.main.item_desktop_archive.view.*
@@ -137,8 +135,7 @@ class DashboardAdapter(
                 with(holder) {
                     bindTitle(item.title)
                     bindSubtitle(item.typeName)
-                    bindEmoji(item.emoji)
-                    bindImage(item.image, item.layout, item.title)
+                    bindIcon(item.icon)
                     bindLoading(item.isLoading)
                 }
             }
@@ -159,7 +156,7 @@ class DashboardAdapter(
                 with(holder) {
                     val item = data[position] as DashboardView.ObjectSet
                     bindTitle(item.title)
-                    bindEmoji(item.emoji)
+                    bindIcon(item.icon)
                     bindLoading(item.isLoading)
                 }
             }
@@ -217,10 +214,10 @@ class DashboardAdapter(
                 bindTitle(item.title)
             }
             if (payload.emojiChanged()) {
-                bindEmoji(item.emoji)
+                bindIcon(item.icon)
             }
             if (payload.imageChanged()) {
-                bindImage(item.image, item.layout, item.title)
+                bindIcon(item.icon)
             }
             if (payload.isLoadingChanged) {
                 bindLoading(item.isLoading)
@@ -259,10 +256,6 @@ class DashboardAdapter(
 
             private val tvTitle = itemView.title
             private val tvSubtitle = itemView.typeTitle
-            private val ivEmoji = itemView.emojiIcon
-            private val circleImage = itemView.circleImage
-            private val rectangleImage = itemView.rectangleImage
-            private val avatar = itemView.avatar
             private val shimmer = itemView.shimmer
 
             fun bindTitle(title: String?) {
@@ -276,6 +269,10 @@ class DashboardAdapter(
                 tvSubtitle.text = subtitle
             }
 
+            fun bindIcon(icon: ObjectIcon) {
+                itemView.iconWidget.bind(icon)
+            }
+
             fun bindLoading(isLoading: Boolean) {
                 if (isLoading) {
                     tvTitle.invisible()
@@ -286,65 +283,6 @@ class DashboardAdapter(
                     shimmer.invisible()
                     tvTitle.visible()
                 }
-            }
-
-            fun bindEmoji(emoji: String?) {
-                try {
-                    emoji?.let { unicode ->
-                        Glide
-                            .with(ivEmoji)
-                            .load(Emojifier.uri(unicode))
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(ivEmoji)
-                    } ?: run {
-                        ivEmoji.setImageDrawable(null)
-                    }
-                } catch (e: Throwable) {
-                    Timber.e(e, "Could not set emoji icon")
-                }
-            }
-
-            fun bindImage(
-                image: String?,
-                layout: ObjectType.Layout?,
-                name: String?
-            ) {
-                when (layout) {
-                    ObjectType.Layout.BASIC -> bindRectangleImage(image)
-                    ObjectType.Layout.PROFILE -> {
-                        if (image != null) {
-                            avatar.invisible()
-                            bindCircleImage(image)
-                        } else {
-                            rectangleImage.invisible()
-                            avatar.visible()
-                            avatar.bind(name.orEmpty())
-                        }
-                    }
-                    else -> Timber.d("Skipping image bound")
-                }
-            }
-
-            private fun bindCircleImage(image: String?) {
-                image?.let { url ->
-                    Glide
-                        .with(circleImage)
-                        .load(url)
-                        .centerInside()
-                        .circleCrop()
-                        .into(circleImage)
-                } ?: run { circleImage.setImageDrawable(null) }
-            }
-
-            private fun bindRectangleImage(image: String?) {
-                Timber.d("Binding rectangle image: $image")
-                image?.let { url ->
-                    Glide
-                        .with(rectangleImage)
-                        .load(url)
-                        .centerCrop()
-                        .into(rectangleImage)
-                } ?: run { rectangleImage.setImageDrawable(null) }
             }
         }
 
@@ -430,7 +368,6 @@ class DashboardAdapter(
         class ObjectSetHolder(itemView: View) : ViewHolder(itemView) {
 
             private val tvTitle = itemView.title
-            private val ivEmoji = itemView.emojiIcon
             private val shimmer = itemView.shimmer
 
             fun bindLoading(isLoading: Boolean) {
@@ -452,18 +389,8 @@ class DashboardAdapter(
                     tvTitle.text = title
             }
 
-            fun bindEmoji(emoji: String?) {
-                try {
-                    emoji?.let { unicode ->
-                        Glide
-                            .with(ivEmoji)
-                            .load(Emojifier.uri(unicode))
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(ivEmoji)
-                    }
-                } catch (e: Throwable) {
-                    Timber.e(e, "Could not set emoji icon")
-                }
+            fun bindIcon(icon: ObjectIcon) {
+                itemView.iconWidget.bind(icon)
             }
         }
     }

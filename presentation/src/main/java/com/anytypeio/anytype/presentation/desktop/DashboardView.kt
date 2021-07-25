@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.desktop
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 
 sealed class DashboardView {
 
@@ -29,7 +30,8 @@ sealed class DashboardView {
         val type: String? = null,
         val done: Boolean? = null,
         override val isArchived: Boolean,
-        override val isLoading: Boolean = false
+        override val isLoading: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None
     ) : DashboardView() {
         val hasIcon = emoji != null || image != null
     }
@@ -46,8 +48,8 @@ sealed class DashboardView {
         override val id: Id,
         val target: Id,
         val title: String? = null,
-        val emoji: String? = null,
         override val isArchived: Boolean,
-        override val isLoading: Boolean = false
+        override val isLoading: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None
     ) : DashboardView()
 }

@@ -23,8 +23,10 @@ import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.desktop.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -52,7 +54,8 @@ class HomeDashboardViewModel(
     private val searchRecentObjects: SearchRecentObjects,
     private val searchInboxObjects: SearchInboxObjects,
     private val searchObjectSets: SearchObjectSets,
-    private val getFlavourConfig: GetFlavourConfig
+    private val getFlavourConfig: GetFlavourConfig,
+    private val urlBuilder: UrlBuilder
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -394,8 +397,9 @@ class HomeDashboardViewModel(
                     archived.value = objects
                         .map { ObjectWrapper.Basic(it) }
                         .mapNotNull { obj ->
+                            val layout = obj.layout
                             val oType = stateData.value?.findOTypeById(obj.type)
-                            if (oType?.layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
+                            if (layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
                                 null
                             } else {
                                 DashboardView.Document(
@@ -409,7 +413,12 @@ class HomeDashboardViewModel(
                                     type = obj.type.firstOrNull(),
                                     typeName = oType?.name,
                                     layout = obj.layout,
-                                    done = obj.done
+                                    done = obj.done,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = layout,
+                                        builder = urlBuilder
+                                    )
                                 )
                             }
                         }
@@ -428,7 +437,8 @@ class HomeDashboardViewModel(
                         .map { ObjectWrapper.Basic(it) }
                         .mapNotNull { obj ->
                             val oType = stateData.value?.findOTypeById(obj.type)
-                            if (oType?.layout == ObjectType.Layout.SET) {
+                            val layout = obj.layout
+                            if (layout == ObjectType.Layout.SET) {
                                 if (isDataViewEnabled.value) {
                                     DashboardView.ObjectSet(
                                         id = obj.id,
@@ -436,7 +446,11 @@ class HomeDashboardViewModel(
                                         title = obj.name,
                                         isArchived = obj.isArchived ?: false,
                                         isLoading = false,
-                                        emoji = obj.iconEmoji
+                                        icon = ObjectIcon.from(
+                                            obj = obj,
+                                            layout = obj.layout,
+                                            builder = urlBuilder
+                                        )
                                     )
                                 } else {
                                     null
@@ -453,7 +467,12 @@ class HomeDashboardViewModel(
                                     type = obj.type.firstOrNull(),
                                     typeName = oType?.name,
                                     layout = obj.layout,
-                                    done = obj.done
+                                    done = obj.done,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
                                 )
                             }
                         }
@@ -470,8 +489,9 @@ class HomeDashboardViewModel(
                     inbox.value = objects
                         .map { ObjectWrapper.Basic(it) }
                         .mapNotNull { obj ->
+                            val layout = obj.layout
                             val oType = stateData.value?.findOTypeById(obj.type)
-                            if (oType?.layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
+                            if (layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
                                 null
                             } else {
                                 DashboardView.Document(
@@ -485,7 +505,12 @@ class HomeDashboardViewModel(
                                     type = obj.type.firstOrNull(),
                                     typeName = oType?.name,
                                     layout = obj.layout,
-                                    done = obj.done
+                                    done = obj.done,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
                                 )
                             }
                         }
@@ -506,7 +531,11 @@ class HomeDashboardViewModel(
                             title = obj.name,
                             isArchived = obj.isArchived ?: false,
                             isLoading = false,
-                            emoji = obj.iconEmoji
+                            icon = ObjectIcon.from(
+                                obj = obj,
+                                layout = obj.layout,
+                                builder = urlBuilder
+                            )
                         )
                     }
                 },

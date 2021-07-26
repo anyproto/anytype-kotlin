@@ -1,84 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/sheet_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+    <View
+        android:id="@+id/dragger"
+        android:layout_width="@dimen/default_dragger_width"
+        android:layout_height="@dimen/default_dragger_height"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="6dp"
-        android:src="@drawable/sheet_top"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@drawable/dragger" />
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/sheet_top"
-        android:layout_marginTop="18dp"
-        android:fontFamily="@font/inter_medium"
-        android:text="@string/edit_relations_title"
-        android:textColor="@color/black"
-        android:textSize="17sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sheet_top" />
+    <FrameLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_toolbar_height"
+        android:layout_marginTop="6dp">
 
-    <TextView
-        android:id="@+id/editBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dp_16"
-        android:paddingEnd="16dp"
-        android:text="@string/edit"
-        style="@style/DefaultCellInteractionTextButtonStyle"
-        app:layout_constraintBottom_toBottomOf="@+id/title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/title"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/editBtn"
+            style="@style/DefaultCellInteractionTextButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/dp_16"
+            android:paddingEnd="16dp"
+            android:text="@string/edit" />
 
-    <TextView
-        android:id="@+id/doneBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dp_16"
-        android:paddingEnd="16dp"
-        android:text="@string/done"
-        style="@style/DefaultCellInteractionTextButtonStyle"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/title"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/doneBtn"
+            style="@style/DefaultCellInteractionTextButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:paddingStart="@dimen/dp_16"
+            android:paddingEnd="16dp"
+            android:text="@string/done"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sheet_top"
+            android:layout_gravity="center"
+            android:fontFamily="@font/inter_semibold"
+            android:text="@string/edit_relations_title"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/iconAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_default_plus" />
+
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginStart="8dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="8dp"
-        android:paddingBottom="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
         tools:listitem="@layout/item_modify_viewer_relation_order" />
 
-    <ImageView
-        android:id="@+id/iconAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/title"
-        android:src="@drawable/ic_default_plus" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

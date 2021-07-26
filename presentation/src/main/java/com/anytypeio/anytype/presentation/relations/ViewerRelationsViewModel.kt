@@ -9,8 +9,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
-import com.anytypeio.anytype.presentation.sets.*
+import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -91,7 +91,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             onStatusClicked = {},
             onRemoveStatusClicked = { status -> onRemoveStatusClicked(status) },
             onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
-            onObjectClicked = { o -> vm.onObjectClicked(o.id, o.type) },
+            onObjectClicked = { o -> vm.onObjectClicked(ctx = ctx, id = o.id, type = o.type) },
             onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
             onFileClicked = { o -> vm.onFileClicked(o.id) },
             onRemoveFileClicked = { file -> onRemoveFileClicked(file) }
@@ -123,6 +123,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     }
 
     override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.isDimissed) { observeDismiss(it) }
         jobs += lifecycleScope.subscribe(vm.isEditing) { observeEditing(it) }

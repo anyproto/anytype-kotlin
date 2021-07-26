@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.relations.getObjectTypeById
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -35,7 +36,7 @@ abstract class RelationValueBaseViewModel(
     private val details: ObjectDetailProvider,
     private val types: ObjectTypeProvider,
     private val urlBuilder: UrlBuilder
-) : ViewModel() {
+) : BaseViewModel() {
 
     val navigation = MutableSharedFlow<AppNavigation.Command>()
 
@@ -228,21 +229,25 @@ abstract class RelationValueBaseViewModel(
 
     fun onFileValueActionUploadFromStorageClicked() {}
 
-    fun onObjectClicked(id: Id, type: String?) {
-        types.provide().find { it.url == type }?.let { targetType ->
-            when (targetType.layout) {
-                ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
-                    viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenObject(id))
+    fun onObjectClicked(ctx: Id, id: Id, type: String?) {
+        if (id != ctx) {
+            types.provide().find { it.url == type }?.let { targetType ->
+                when (targetType.layout) {
+                    ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
+                        viewModelScope.launch {
+                            navigation.emit(AppNavigation.Command.OpenObject(id))
+                        }
                     }
-                }
-                ObjectType.Layout.SET -> {
-                    viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenObjectSet(id))
+                    ObjectType.Layout.SET -> {
+                        viewModelScope.launch {
+                            navigation.emit(AppNavigation.Command.OpenObjectSet(id))
+                        }
                     }
+                    else -> Timber.d("Unexpected layout: ${targetType.layout}")
                 }
-                else -> Timber.d("Unexpected layout: ${targetType.layout}")
             }
+        } else {
+            sendToast(ALREADY_HERE_MSG)
         }
     }
 
@@ -307,6 +312,10 @@ abstract class RelationValueBaseViewModel(
             override val isSelected: Boolean? = null,
             val selectedNumber: String? = null
         ) : RelationValueView(), Selectable
+    }
+
+    companion object {
+        const val ALREADY_HERE_MSG = "Already here."
     }
 }
 

@@ -33,9 +33,9 @@
         android:contentDescription="@string/content_description_more_button"
         android:paddingStart="14dp"
         android:paddingTop="14dp"
-        android:paddingEnd="8dp"
+        android:paddingEnd="28dp"
         android:paddingBottom="14dp"
-        android:src="@drawable/ic_pencil_24"
+        android:src="@drawable/ic_data_view_edit_view"
         android:visibility="visible"
         tools:visibility="visible" />
 
@@ -49,7 +49,7 @@
         android:paddingEnd="@dimen/dp_20"
         android:paddingBottom="14dp"
         android:src="@drawable/ic_dv_manage_view_dnd_dragger"
-        android:visibility="visible"
+        android:visibility="gone"
         tools:visibility="visible" />
 
 </LinearLayout>

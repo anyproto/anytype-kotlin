@@ -7,31 +7,36 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.features.sets.ManageViewerAdapter
+import com.anytypeio.anytype.core_ui.features.sets.ManageViewerDoneAdapter
+import com.anytypeio.anytype.core_ui.features.sets.ManageViewerEditAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
 import kotlinx.android.synthetic.main.fragment_manage_viewer.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ManageViewerFragment : BaseBottomSheetFragment() {
+class ManageViewerFragment : BaseBottomSheetFragment(), OnStartDragListener {
 
     private val manageViewerAdapter by lazy {
-        ManageViewerAdapter(
-            onViewerClicked = { view -> vm.onViewerClicked(ctx = ctx, view = view) },
-            onViewerActionClicked = { view ->
-                val dialog = DataViewViewerActionFragment.new(
-                    ctx = ctx,
-                    viewer = view.id,
-                    title = view.name
-                )
-                dialog.show(parentFragmentManager, null)
-            }
+        ManageViewerDoneAdapter(
+            onViewerClicked = { view -> vm.onViewerClicked(ctx = ctx, view = view) }
+        )
+    }
+
+    private val manageViewerEditAdapter by lazy {
+        ManageViewerEditAdapter(
+            onDragListener = this,
+            onButtonMoreClicked = { vm.onViewerActionClicked(it) }
         )
     }
 
@@ -43,6 +48,14 @@ class ManageViewerFragment : BaseBottomSheetFragment() {
 
     private val vm: ManageViewerViewModel by viewModels { factory }
 
+    private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
+    private val dndBehavior by lazy {
+        DefaultDragAndDropBehavior(
+            onItemMoved = { from, to -> manageViewerEditAdapter.onItemMove(from, to) },
+            onItemDropped = { vm.onOrderChanged(ctx, manageViewerEditAdapter.order) }
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,36 +66,67 @@ class ManageViewerFragment : BaseBottomSheetFragment() {
         super.onViewCreated(view, savedInstanceState)
         dataViewViewerRecycler.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = manageViewerAdapter
         }
         with(lifecycleScope) {
-            subscribe(btnEditViewers.clicks()) { vm.onViewerEditClicked() }
-            subscribe(btnAddNewViewer.clicks()) { navigateToCreateDataViewViewerScreen() }
+            subscribe(btnEditViewers.clicks()) { vm.onButtonEditClicked() }
+            subscribe(btnAddNewViewer.clicks()) { vm.onButtonAddClicked() }
         }
     }
 
-    private fun navigateToCreateDataViewViewerScreen() {
-        val dialog = CreateDataViewViewerFragment.new(
-            ctx = ctx,
-            target = dataview
-        )
-        dialog.show(parentFragmentManager, null)
+    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
-            subscribe(vm.toasts) { toast(it) }
-            subscribe(vm.views) { manageViewerAdapter.update(it) }
-            subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
-            subscribe(vm.isEditEnabled) { isEditEnabled ->
+    override fun onStart() {
+        lifecycleScope.launch {
+            jobs += subscribe(vm.commands) { observe(it) }
+            jobs += subscribe(vm.toasts) { toast(it) }
+            jobs += subscribe(vm.views) {
+                manageViewerAdapter.update(it)
+                manageViewerEditAdapter.update(it)
+            }
+            jobs += subscribe(vm.isDismissed) { isDismissed ->
+                if (isDismissed) dismiss()
+            }
+            jobs += subscribe(vm.isEditEnabled) { isEditEnabled ->
                 if (isEditEnabled) {
                     btnEditViewers.setText(R.string.done)
                     btnAddNewViewer.invisible()
+                    dataViewViewerRecycler.apply {
+                        adapter = manageViewerEditAdapter
+                        //ToDo temporary blocked, because of missing middleware command
+                        //dndItemTouchHelper.attachToRecyclerView(this)
+
+                    }
                 } else {
                     btnEditViewers.setText(R.string.edit)
                     btnAddNewViewer.visible()
+                    dataViewViewerRecycler.apply {
+                        adapter = manageViewerAdapter
+                        //ToDo temporary blocked, because of missing middleware command
+                        //dndItemTouchHelper.attachToRecyclerView(null)
+                    }
                 }
+            }
+        }
+        super.onStart()
+    }
+
+    private fun observe(command: ManageViewerViewModel.Command) {
+        when (command) {
+            is ManageViewerViewModel.Command.OpenEditScreen -> {
+                val dialog = DataViewViewerActionFragment.new(
+                    ctx = ctx,
+                    viewer = command.id,
+                    title = command.name
+                )
+                dialog.show(parentFragmentManager, null)
+            }
+            ManageViewerViewModel.Command.OpenCreateScreen -> {
+                val dialog = CreateDataViewViewerFragment.new(
+                    ctx = ctx,
+                    target = dataview
+                )
+                dialog.show(parentFragmentManager, null)
             }
         }
     }

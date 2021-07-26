@@ -707,4 +707,10 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="ModifyViewerTextStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
 </resources>

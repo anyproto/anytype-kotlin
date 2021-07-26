@@ -42,9 +42,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="16dp"
             android:contentDescription="@string/content_description_plus_button"
-            android:src="@drawable/ic_dv_modal_plus" />
+            android:paddingTop="@dimen/dp_10"
+            android:paddingEnd="17dp"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingBottom="@dimen/dp_10"
+            android:src="@drawable/ic_dv_modal_plus"
+            tools:visibility="visible" />
 
     </FrameLayout>
 

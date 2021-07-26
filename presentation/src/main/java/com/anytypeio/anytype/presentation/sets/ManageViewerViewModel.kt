@@ -26,6 +26,7 @@ class ManageViewerViewModel(
 
     val isEditEnabled = MutableStateFlow(false)
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
     init {
         viewModelScope.launch {
@@ -46,10 +47,26 @@ class ManageViewerViewModel(
         }
     }
 
-    fun onViewerEditClicked() {
+    fun onOrderChanged(ctx: Id, order: List<String>) {
+
+    }
+
+    fun onViewerActionClicked(view: ViewerView) {
+        viewModelScope.launch {
+            commands.emit(Command.OpenEditScreen(view.id, view.name))
+        }
+    }
+
+    fun onButtonEditClicked() {
         isEditEnabled.value = !isEditEnabled.value
         _views.value = views.value.map { view ->
             view.copy(showActionMenu = isEditEnabled.value)
+        }
+    }
+
+    fun onButtonAddClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.OpenCreateScreen)
         }
     }
 
@@ -75,10 +92,9 @@ class ManageViewerViewModel(
             Timber.d("Skipping click in edit mode")
     }
 
-    fun onViewerActionClicked(
-        viewerView: ViewerView
-    ) {
-        // TODO in next PR
+    sealed class Command {
+        data class OpenEditScreen(val id: Id, val name: String) : Command()
+        object OpenCreateScreen : Command()
     }
 
     class Factory(

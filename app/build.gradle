@@ -8,6 +8,10 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 apply from: "$rootDir/versioning.gradle"
 
+def apikeyPropertiesFile = rootProject.file("apikeys.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     def config = rootProject.extensions.getByName("ext")
 
@@ -46,11 +50,13 @@ android {
             minifyEnabled false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
         }
 
         debug {
             applicationIdSuffix ".debug"
             debuggable true
+            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
         }
     }
 

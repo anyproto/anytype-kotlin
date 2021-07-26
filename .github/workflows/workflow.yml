@@ -11,6 +11,8 @@ jobs:
         env:
           token_secret: ${{ secrets.ANYTYPE_SECRET }}
           user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
-        run: ./middleware2.sh $token_secret $user_secret
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug
       - name: Run unit tests. Full mode.
         run: ./gradlew build test -Dpre-dex=false

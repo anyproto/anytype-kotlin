@@ -59,10 +59,6 @@ class AndroidApplication : Application() {
     }
 
     private fun setupAnalytics() {
-        if (BuildConfig.DEBUG) {
-            Amplitude.getInstance().initialize(this, getString(R.string.amplitude_api_key_debug))
-        } else {
-            Amplitude.getInstance().initialize(this, getString(R.string.amplitude_api_key))
-        }
+        Amplitude.getInstance().initialize(this, BuildConfig.AMPLITUDE_KEY)
     }
 }

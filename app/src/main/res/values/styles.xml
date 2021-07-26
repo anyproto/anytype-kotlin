@@ -54,7 +54,7 @@
     <style name="DefaultSolidButtonStyle">
         <item name="android:clickable">true</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textSize">17sp</item>
         <item name="android:gravity">center</item>
         <item name="android:stateListAnimator">@animator/scale_shrink</item>
@@ -244,9 +244,10 @@
     </style>
 
     <style name="DataViewComingSoonStyle">
-        <item name="android:textColor">@color/gray</item>
+        <item name="android:textColor">#CBC9BD</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="DefaultBottomDialogAnimation">

@@ -397,5 +397,6 @@
     <string name="template">Template</string>
     <string name="restore">Restore</string>
     <string name="unfavorite">Unfavorite</string>
+    <string name="delete_view">Delete View</string>
 
 </resources>

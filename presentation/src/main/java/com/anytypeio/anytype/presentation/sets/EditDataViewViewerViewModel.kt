@@ -20,7 +20,9 @@ class EditDataViewViewerViewModel(
 ) : ViewModel() {
 
     private val viewerNameUpdatePipeline = Channel<ViewerNameUpdate>()
+
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
+    val popupCommands = MutableSharedFlow<PopupMenuCommand>(replay = 0)
 
     private val _toasts = MutableSharedFlow<String>()
     val toasts: SharedFlow<String> = _toasts
@@ -63,6 +65,14 @@ class EditDataViewViewerViewModel(
         }
     }
 
+    fun onMenuClicked() {
+        viewModelScope.launch {
+            popupCommands.emit(
+                PopupMenuCommand(isDeletionAllowed = objectSetState.value.viewers.size > 1)
+            )
+        }
+    }
+
     fun onDoneClicked() {
         viewModelScope.launch { isDismissed.emit(true) }
     }
@@ -88,4 +98,6 @@ class EditDataViewViewerViewModel(
         val viewer: DVViewer,
         val name: String
     )
+
+    data class PopupMenuCommand(val isDeletionAllowed: Boolean = false)
 }

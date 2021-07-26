@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp">
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
 
     <View
         android:id="@+id/dragger"
@@ -27,39 +28,69 @@
             android:gravity="center"
             android:text="@string/edit_view" />
 
+        <ImageView
+            android:id="@+id/threeDotsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_action_more" />
+
     </FrameLayout>
 
-    <EditText
-        android:id="@+id/viewerNameInput"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:background="@null"
-        android:hint="@string/name"
-        android:maxLines="1"
-        android:imeOptions="actionDone"
-        android:singleLine="true"
-        android:textColorHint="@color/gray"
-        android:textCursorDrawable="@drawable/cursor"
-        android:textSize="17sp" />
+        android:layout_height="72dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/name"
+            android:textColor="#929082"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/viewerNameInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@null"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:hint="@string/name"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColorHint="@color/gray"
+            android:textCursorDrawable="@drawable/cursor"
+            android:textSize="22sp"
+            tools:text="Oscar Nominated Movies" />
+
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
         <FrameLayout
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -89,19 +120,21 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="44dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
         <FrameLayout
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -132,26 +165,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:text="@string/coming_soon" />
+            android:text="@string/soon" />
 
     </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="44dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
         <FrameLayout
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -182,26 +217,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:text="@string/coming_soon" />
+            android:text="@string/soon" />
 
     </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="44dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
         <FrameLayout
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -232,7 +269,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:text="@string/coming_soon" />
+            android:text="@string/soon" />
 
     </FrameLayout>
 
@@ -241,7 +278,9 @@
         style="@style/DefaultSolidButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="44dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:text="@string/done"
         android:textSize="17sp" />

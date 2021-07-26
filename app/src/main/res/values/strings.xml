@@ -230,5 +230,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="history">History</string>
     <string name="provide_name">Provide name for new object</string>
     <string name="migration_in_progress_message">Migration in progress. It can take up to 5 minutes…</string>
+    <string name="soon">Soon</string>
 
 </resources>

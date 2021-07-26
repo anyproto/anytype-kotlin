@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.menu.DataViewEditViewPopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -49,6 +50,7 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
                 )
             }
             subscribe(btnDone.clicks()) { vm.onDoneClicked() }
+            subscribe(threeDotsButton.clicks()) { vm.onMenuClicked() }
         }
     }
 
@@ -65,6 +67,13 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
                 }
             }
             subscribe(vm.toasts) { toast(it) }
+            subscribe(vm.popupCommands) { cmd ->
+                DataViewEditViewPopupMenu(
+                    requireContext(),
+                    threeDotsButton,
+                    cmd.isDeletionAllowed
+                ).show()
+            }
         }
     }
 

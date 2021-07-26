@@ -73,10 +73,6 @@ class PageNavigationViewModel(
 
     fun onOpenPageClicked() {
         if (pageId == homeId) {
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = EventsDictionary.SCREEN_DASHBOARD
-            )
             navigate(EventWrapper(AppNavigation.Command.ExitToDesktop))
         } else {
             viewModelScope.sendEvent(

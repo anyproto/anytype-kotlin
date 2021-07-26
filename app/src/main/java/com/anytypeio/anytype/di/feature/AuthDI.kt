@@ -246,11 +246,13 @@ object SelectAccountModule {
     @Provides
     fun provideSelectAccountViewModelFactory(
         startLoadingAccounts: StartLoadingAccounts,
-        observeAccounts: ObserveAccounts
+        observeAccounts: ObserveAccounts,
+        analytics: Analytics
     ): SelectAccountViewModelFactory {
         return SelectAccountViewModelFactory(
             startLoadingAccounts = startLoadingAccounts,
-            observeAccounts = observeAccounts
+            observeAccounts = observeAccounts,
+            analytics = analytics
         )
     }
 

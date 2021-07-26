@@ -45,7 +45,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
                     dismiss()
                 }
             } else {
-                vm.onActionClick(ctx, action)
+                vm.onActionClicked(ctx, action)
             }
         }
     }

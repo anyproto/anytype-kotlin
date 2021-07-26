@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.auth
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.auth.model.Account
@@ -33,6 +34,9 @@ class SelectAccountViewModelTest {
     @Mock
     lateinit var observeAccounts: ObserveAccounts
 
+    @Mock
+    lateinit var analytics: Analytics
+
     lateinit var vm: SelectAccountViewModel
 
     @Before
@@ -43,7 +47,8 @@ class SelectAccountViewModelTest {
     private fun buildViewModel(): SelectAccountViewModel {
         return SelectAccountViewModel(
             startLoadingAccounts = startLoadingAccounts,
-            observeAccounts = observeAccounts
+            observeAccounts = observeAccounts,
+            analytics = analytics
         )
     }
 

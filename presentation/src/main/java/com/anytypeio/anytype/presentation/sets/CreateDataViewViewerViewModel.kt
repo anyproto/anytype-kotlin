@@ -3,6 +3,11 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_VIEWER_TYPE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_CREATE
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
@@ -15,7 +20,8 @@ import timber.log.Timber
 
 class CreateDataViewViewerViewModel(
     private val addDataViewViewer: AddDataViewViewer,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     val state = MutableStateFlow(STATE_IDLE)
@@ -30,12 +36,14 @@ class CreateDataViewViewerViewModel(
     ) {
         state.value = STATE_LOADING
         viewModelScope.launch {
+            val start = System.currentTimeMillis()
+            val type = DVViewerType.GRID
             addDataViewViewer(
                 AddDataViewViewer.Params(
                     ctx = ctx,
                     target = target,
                     name = name.ifEmpty { "Untitled" },
-                    type = DVViewerType.GRID
+                    type = type
                 )
             ).process(
                 failure = {
@@ -44,7 +52,16 @@ class CreateDataViewViewerViewModel(
                         state.value = STATE_ERROR
                     }
                 },
-                success = { dispatcher.send(it).also { state.value = STATE_COMPLETED } }
+                success = {
+                    sendEvent(
+                        analytics = analytics,
+                        eventName = SETS_VIEWER_CREATE,
+                        startTime = start,
+                        middleTime = System.currentTimeMillis(),
+                        props = Props(mapOf(PROP_VIEWER_TYPE to type.name))
+                    )
+                    dispatcher.send(it).also { state.value = STATE_COMPLETED }
+                }
             )
         }
     }
@@ -52,13 +69,15 @@ class CreateDataViewViewerViewModel(
 
     class Factory(
         private val addDataViewViewer: AddDataViewViewer,
-        private val dispatcher: Dispatcher<Payload>
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return CreateDataViewViewerViewModel(
                 addDataViewViewer = addDataViewViewer,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                analytics = analytics
             ) as T
         }
     }

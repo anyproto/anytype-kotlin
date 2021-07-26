@@ -25,6 +25,8 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_TEXT
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPDATE_TITLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_UPLOAD
+import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_TYPE_CHANGE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
@@ -759,6 +761,7 @@ class Orchestrator(
                     )
                 }
                 is Intent.Document.SetObjectType -> {
+                    val startTime = System.currentTimeMillis()
                     setObjectType(
                         params = SetObjectType.Params(
                             context = intent.context,
@@ -766,7 +769,22 @@ class Orchestrator(
                         )
                     ).process(
                         failure = defaultOnError,
-                        success = { payload -> defaultPayload(payload) }
+                        success = { payload ->
+                            val objType = Props.mapType(intent.typeId)
+                            val event = EventAnalytics.Anytype(
+                                name = OBJECT_TYPE_CHANGE,
+                                props = Props(
+                                    mapOf(
+                                        PROP_TYPE to objType
+                                    )
+                                ),
+                                duration = EventAnalytics.Duration(
+                                    start = startTime,
+                                    middleware = System.currentTimeMillis()
+                                )
+                            )
+                            defaultPayloadWithEvent(Pair(payload, event))
+                        }
                     )
                 }
             }

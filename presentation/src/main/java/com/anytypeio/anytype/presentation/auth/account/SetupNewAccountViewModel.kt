@@ -7,8 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.event.EventAnalytics
+import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.presentation.auth.model.Session
@@ -56,9 +57,9 @@ class SetupNewAccountViewModel(
             )
         ) { result ->
             result.either(
-                fnL = {
+                fnL = { error ->
                     //todo Remove this, after adding proper error handling logic
-                    if (it.message?.contains("BAD_INVITE_CODE") == true) {
+                    if (error.message?.contains("BAD_INVITE_CODE") == true) {
                         _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invite code!"))
                         viewModelScope.launch {
                             delay(300)
@@ -67,10 +68,11 @@ class SetupNewAccountViewModel(
                     } else {
                         _state.postValue(SetupNewAccountViewState.Error("Error while creating account"))
                     }
-                    Timber.e(it, "Error while creating account")
+                    Timber.e(error, "Error while creating account")
                 },
-                fnR = {
-                    sendAuthEvent(startTime)
+                fnR = { account ->
+                    updateUserProps(account.id)
+                    sendAuthEvent(startTime, account.id)
                     _state.postValue(SetupNewAccountViewState.Success)
                     navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
                 }
@@ -78,14 +80,22 @@ class SetupNewAccountViewModel(
         }
     }
 
-    private fun sendAuthEvent(start: Long) {
+    private fun updateUserProps(id: String) {
+        viewModelScope.updateUserProperties(
+            analytics = analytics,
+            userProperty = UserProperty.AccountId(id)
+        )
+    }
+
+    private fun sendAuthEvent(start: Long, id: String) {
         val middle = System.currentTimeMillis()
         viewModelScope.sendEvent(
             analytics = analytics,
             startTime = start,
             middleTime = middle,
             renderTime = middle,
-            eventName = EventsDictionary.ACCOUNT_CREATE
+            eventName = EventsDictionary.ACCOUNT_CREATE,
+            props = Props(mapOf(EventsDictionary.PROP_ACCOUNT_ID to id))
         )
     }
 }

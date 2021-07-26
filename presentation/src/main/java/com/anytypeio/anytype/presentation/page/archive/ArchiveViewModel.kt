@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
@@ -258,10 +256,6 @@ class ArchiveViewModel(
         closePage(viewModelScope, CloseBlock.Params(context)) { result ->
             result.either(
                 fnR = {
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = EventsDictionary.SCREEN_DASHBOARD
-                    )
                     navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
                 },
                 fnL = { Timber.e(it, "Error while closing document: $context") }

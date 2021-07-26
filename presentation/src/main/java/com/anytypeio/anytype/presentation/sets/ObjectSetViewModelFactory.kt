@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.interactor.*
@@ -27,7 +28,8 @@ class ObjectSetViewModelFactory(
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
-    private val session: ObjectSetSession
+    private val session: ObjectSetSession,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -46,7 +48,8 @@ class ObjectSetViewModelFactory(
             dispatcher = dispatcher,
             objectSetRecordCache = objectSetRecordCache,
             urlBuilder = urlBuilder,
-            session = session
+            session = session,
+            analytics = analytics
         ) as T
     }
 }

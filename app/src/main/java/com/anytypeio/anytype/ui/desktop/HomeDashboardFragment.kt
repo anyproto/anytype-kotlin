@@ -118,6 +118,14 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
         )
     }
 
+    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener{
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            vm.sendTabEvent(tab?.text)
+        }
+        override fun onTabUnselected(tab: TabLayout.Tab?) {}
+        override fun onTabReselected(tab: TabLayout.Tab?) {}
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
@@ -148,11 +156,15 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
     override fun onPause() {
         super.onPause()
         motionProgress = dashboardRoot.progress
+        tabsLayout.removeOnTabSelectedListener(onTabSelectedListener)
     }
 
     override fun onResume() {
         super.onResume()
         vm.onResume()
+        tabsLayout.apply {
+            addOnTabSelectedListener(onTabSelectedListener)
+        }
     }
 
     private fun parseIntent() {
@@ -229,7 +241,7 @@ class HomeDashboardFragment : ViewStateFragment<State>(R.layout.fragment_desktop
 
         ivSettings
             .clicks()
-            .onEach { vm.onProfileClicked() }
+            .onEach { vm.onSettingsClicked() }
             .launchIn(lifecycleScope)
 
         avatarContainer

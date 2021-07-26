@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -91,7 +92,8 @@ object ObjectSetModule {
         dispatcher: Dispatcher<Payload>,
         objectSetRecordCache: ObjectSetRecordCache,
         urlBuilder: UrlBuilder,
-        session: ObjectSetSession
+        session: ObjectSetSession,
+        analytics: Analytics
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -107,7 +109,8 @@ object ObjectSetModule {
         dispatcher = dispatcher,
         objectSetRecordCache = objectSetRecordCache,
         urlBuilder = urlBuilder,
-        session = session
+        session = session,
+        analytics = analytics
     )
 
     @JvmStatic

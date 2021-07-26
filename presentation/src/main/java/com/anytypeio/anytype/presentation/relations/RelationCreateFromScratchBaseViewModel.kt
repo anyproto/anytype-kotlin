@@ -3,6 +3,12 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_RELATION_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_RELATION_FORMAT
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_CREATE
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -59,19 +65,29 @@ abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
 
 class RelationCreateFromScratchForObjectViewModel(
     private val addNewRelationToObject: AddNewRelationToObject,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : RelationCreateFromScratchBaseViewModel() {
 
     fun onCreateRelationClicked(ctx: Id) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
+            val format =  views.value.first { it.isSelected }.format
             addNewRelationToObject(
                 AddNewRelationToObject.Params(
                     ctx = ctx,
-                    format = views.value.first { it.isSelected }.format,
+                    format = format,
                     name = name.value
                 )
             ).process(
                 success = {
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = OBJECT_RELATION_CREATE,
+                        props = Props(mapOf(PROP_RELATION_FORMAT to format.name)),
+                        startTime = startTime,
+                        middleTime = System.currentTimeMillis()
+                    )
                     dispatcher.send(it).also { isDismissed.value = true }
                 },
                 failure = {
@@ -83,13 +99,15 @@ class RelationCreateFromScratchForObjectViewModel(
 
     class Factory(
         private val addNewRelationToObject: AddNewRelationToObject,
-        private val dispatcher: Dispatcher<Payload>
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForObjectViewModel(
                 dispatcher = dispatcher,
-                addNewRelationToObject = addNewRelationToObject
+                addNewRelationToObject = addNewRelationToObject,
+                analytics = analytics
             ) as T
         }
     }
@@ -100,20 +118,30 @@ class RelationCreateFromScratchForDataViewViewModel(
     private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addNewRelationToDataView: AddNewRelationToDataView,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : RelationCreateFromScratchBaseViewModel() {
 
     fun onCreateRelationClicked(ctx: Id, dv: Id) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
+            val format =  views.value.first { it.isSelected }.format
             addNewRelationToDataView(
                 AddNewRelationToDataView.Params(
                     ctx = ctx,
-                    format = views.value.first { it.isSelected }.format,
+                    format = format,
                     name = name.value,
                     target = dv
                 )
             ).process(
                 success = { (relation, payload) ->
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = SETS_RELATION_CREATE,
+                        props = Props(mapOf(PROP_RELATION_FORMAT to format.name)),
+                        startTime = startTime,
+                        middleTime = System.currentTimeMillis()
+                    )
                     dispatcher.send(payload).also {
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
@@ -157,7 +185,8 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addNewRelationToDataView: AddNewRelationToDataView,
-        private val dispatcher: Dispatcher<Payload>
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -166,7 +195,8 @@ class RelationCreateFromScratchForDataViewViewModel(
                 addNewRelationToDataView = addNewRelationToDataView,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
-                state = state
+                state = state,
+                analytics = analytics
             ) as T
         }
     }

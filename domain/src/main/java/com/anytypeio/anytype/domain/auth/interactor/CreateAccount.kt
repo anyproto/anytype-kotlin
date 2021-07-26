@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
@@ -9,7 +10,7 @@ import com.anytypeio.anytype.domain.base.Either
  */
 open class CreateAccount(
     private val repository: AuthRepository
-) : BaseUseCase<Unit, CreateAccount.Params>() {
+) : BaseUseCase<Account, CreateAccount.Params>() {
 
     override suspend fun run(params: Params) = try {
         repository.createAccount(
@@ -20,6 +21,7 @@ open class CreateAccount(
             with(repository) {
                 saveAccount(account)
                 setCurrentAccount(account.id)
+                account
             }
         }.let {
             Either.Right(it)

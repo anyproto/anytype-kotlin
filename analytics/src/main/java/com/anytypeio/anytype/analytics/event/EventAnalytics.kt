@@ -17,7 +17,7 @@ interface EventAnalytics {
     data class Anytype(
         override val name: String,
         override val prettified: String? = null,
-        override val props: Props,
+        override val props: Props = Props.empty(),
         val duration: Duration?
     ) : EventAnalytics
 }

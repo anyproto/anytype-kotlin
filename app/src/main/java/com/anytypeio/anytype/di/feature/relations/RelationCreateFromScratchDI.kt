@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.relations
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -37,11 +38,13 @@ object RelationCreateFromScratchForObjectModule {
     @PerDialog
     fun provideViewModelFactory(
         addNewRelationToObject: AddNewRelationToObject,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
     ): RelationCreateFromScratchForObjectViewModel.Factory =
         RelationCreateFromScratchForObjectViewModel.Factory(
             addNewRelationToObject = addNewRelationToObject,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            analytics = analytics
         )
 
     @JvmStatic
@@ -74,12 +77,14 @@ object RelationCreateFromScratchForDataViewModule {
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         addNewRelationToDataView: AddNewRelationToDataView,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
     ) : RelationCreateFromScratchForDataViewViewModel.Factory = RelationCreateFromScratchForDataViewViewModel.Factory(
         addNewRelationToDataView = addNewRelationToDataView,
         dispatcher = dispatcher,
         state = state,
         session = session,
-        updateDataViewViewer = updateDataViewViewer
+        updateDataViewViewer = updateDataViewViewer,
+        analytics = analytics
     )
 }

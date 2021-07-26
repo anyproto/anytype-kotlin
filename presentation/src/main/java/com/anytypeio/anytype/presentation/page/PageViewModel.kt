@@ -18,9 +18,11 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MENTION_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MULTI_SELECT_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_ICON_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_MENU
+import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_SLASH_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_STYLE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_TURN_INTO
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_LAYOUT
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
@@ -768,10 +770,6 @@ class PageViewModel(
 
     fun navigateToDesktop() {
         Timber.d("navigateToDesktop, ")
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_DASHBOARD
-        )
         navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
     }
 
@@ -2817,10 +2815,17 @@ class PageViewModel(
                 failure = { Timber.e(it, "Error while creating new object with params: $params") },
                 success = { result ->
                     val middleTime = System.currentTimeMillis()
+                    val objType = Props.mapType(type)
+
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = OBJECT_CREATE,
-                            props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY)),
+                            props = Props(
+                                mapOf(
+                                    PROP_TYPE to objType,
+                                    PROP_LAYOUT to layout.name
+                                )
+                            ),
                             duration = EventAnalytics.Duration(
                                 start = startTime,
                                 middleware = middleTime,
@@ -2874,7 +2879,7 @@ class PageViewModel(
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = PAGE_CREATE,
-                            props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY)),
+                            props = Props.empty(),
                             duration = EventAnalytics.Duration(
                                 start = startTime,
                                 middleware = middleTime,
@@ -2917,11 +2922,19 @@ class PageViewModel(
     fun onAddCoverClicked() {
         Timber.d("onAddCoverClicked, ")
         dispatch(Command.OpenCoverGallery(context))
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.POPUP_CHOOSE_COVER
+        )
     }
 
     fun onLayoutClicked() {
         Timber.d("onLayoutClicked, ")
         dispatch(Command.OpenObjectLayout(context))
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.POPUP_CHOOSE_LAYOUT
+        )
     }
 
     fun onDownloadClicked() {
@@ -3575,6 +3588,10 @@ class PageViewModel(
                         smartBlockType = smartBlockType
                     )
                 )
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
+                )
             }
         }
     }
@@ -3615,7 +3632,7 @@ class PageViewModel(
                         middleTime = middle,
                         renderTime = middle,
                         eventName = PAGE_CREATE,
-                        props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY))
+                        props = Props.empty()
                     )
                     proceedWithOpeningPage(id)
                 }
@@ -3812,7 +3829,7 @@ class PageViewModel(
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = PAGE_MENTION_CREATE,
-                            props = Props(mapOf(PROP_STYLE to Content.Page.Style.EMPTY)),
+                            props = Props.empty(),
                             duration = EventAnalytics.Duration(
                                 start = startTime,
                                 middleware = middleTime,
@@ -4059,6 +4076,14 @@ class PageViewModel(
                     slashFrom = event.slashStart
                 )
                 controlPanelInteractor.onEvent(panelEvent)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_SLASH_MENU
+                )
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = POPUP_SLASH_MENU
+                )
             }
             is SlashEvent.Filter -> {
                 slashFilter = event.filter.toString()

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -31,10 +32,12 @@ object CreateDataViewViewerModule {
     @PerModal
     fun provideCreateDataViewViewerViewModelFactory(
         dispatcher: Dispatcher<Payload>,
-        addDataViewViewer: AddDataViewViewer
+        addDataViewViewer: AddDataViewViewer,
+        analytics: Analytics
     ): CreateDataViewViewerViewModel.Factory = CreateDataViewViewerViewModel.Factory(
         dispatcher = dispatcher,
-        addDataViewViewer = addDataViewViewer
+        addDataViewViewer = addDataViewViewer,
+        analytics = analytics
     )
 
     @JvmStatic

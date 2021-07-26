@@ -66,7 +66,7 @@ class SetupSelectedAccountViewModel(
                         analytics = analytics,
                         userProperty = UserProperty.AccountId(accountId)
                     )
-                    sendEvent(startTime)
+                    sendEvent(startTime, accountId)
                     navigateToHomeDashboard()
                 }
             )
@@ -77,7 +77,7 @@ class SetupSelectedAccountViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromLogin))
     }
 
-    private fun sendEvent(startTime: Long) {
+    private fun sendEvent(startTime: Long, id: String) {
         val middleTime = System.currentTimeMillis()
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -85,7 +85,7 @@ class SetupSelectedAccountViewModel(
             middleTime = middleTime,
             renderTime = middleTime,
             eventName = EventsDictionary.ACCOUNT_SELECT,
-            props = Props.empty()
+            props = Props(mapOf(EventsDictionary.PROP_ACCOUNT_ID to id))
         )
     }
 

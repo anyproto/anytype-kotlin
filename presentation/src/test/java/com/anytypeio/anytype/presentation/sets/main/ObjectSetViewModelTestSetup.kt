@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import MockDataFactory
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.Either
@@ -61,6 +62,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var analytics: Analytics
+
     val dispatcher = Dispatcher.Default<Payload>()
     val reducer = ObjectSetReducer()
     val cache = ObjectSetRecordCache()
@@ -84,7 +88,8 @@ open class ObjectSetViewModelTestSetup {
         reducer = reducer,
         objectSetRecordCache = cache,
         urlBuilder = urlBuilder,
-        session = session
+        session = session,
+        analytics = analytics
     )
 
     fun stubInterceptEvents(

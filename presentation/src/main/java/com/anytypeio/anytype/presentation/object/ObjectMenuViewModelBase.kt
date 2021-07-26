@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
@@ -37,6 +39,7 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onRelationsClicked()
     abstract fun onHistoryClicked()
     abstract fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean)
+    abstract fun onActionClicked(ctx: Id, action: ObjectAction)
 
     protected fun checkIsFavorite(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
         viewModelScope.launch {
@@ -76,28 +79,6 @@ abstract class ObjectMenuViewModelBase(
         add(ObjectAction.USE_AS_TEMPLATE)
     }
 
-    fun onActionClick(ctx: Id, action: ObjectAction) {
-        when (action) {
-            ObjectAction.DELETE -> {
-                proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
-            }
-            ObjectAction.RESTORE -> {
-                proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
-            }
-            ObjectAction.ADD_TO_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-                //proceedWithAddingToFavorites(ctx)
-            }
-            ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-                //proceedWithRemovingFromFavorites(ctx)
-            }
-            else -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-            }
-        }
-    }
-
     private fun proceedWithRemovingFromFavorites(ctx: Id) {
         viewModelScope.launch {
             removeFromFavorite(
@@ -132,7 +113,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    private fun proceedWithUpdatingArchivedStatus(ctx: Id, isArchived: Boolean) {
+    fun proceedWithUpdatingArchivedStatus(ctx: Id, isArchived: Boolean) {
         viewModelScope.launch {
             archiveDocument(
                 ArchiveDocument.Params(
@@ -215,6 +196,10 @@ class ObjectMenuViewModel(
                 commands.emit(Command.OpenObjectIcons)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_OBJ_MENU_ICON
+        )
     }
 
     override fun onCoverClicked() {
@@ -225,6 +210,10 @@ class ObjectMenuViewModel(
                 commands.emit(Command.OpenObjectCover)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_OBJ_MENU_COVER
+        )
     }
 
     override fun onLayoutClicked() {
@@ -235,6 +224,10 @@ class ObjectMenuViewModel(
                 commands.emit(Command.OpenObjectLayout)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_OBJ_MENU_LAYOUT
+        )
     }
 
     override fun onRelationsClicked() {
@@ -245,10 +238,52 @@ class ObjectMenuViewModel(
                 commands.emit(Command.OpenObjectRelations)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_OBJ_MENU_RELATIONS
+        )
     }
 
     override fun onHistoryClicked() {
         viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+    }
+
+    override fun onActionClicked(ctx: Id, action: ObjectAction) {
+        when (action) {
+            ObjectAction.DELETE -> {
+                proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_OBJ_MENU_ARCHIVE
+                )
+            }
+            ObjectAction.RESTORE -> {
+                proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_OBJ_MENU_RESTORE
+                )
+            }
+            ObjectAction.ADD_TO_FAVOURITE -> {
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_OBJ_MENU_FAVORITE
+                )
+                //proceedWithAddingToFavorites(ctx)
+            }
+            ObjectAction.REMOVE_FROM_FAVOURITE -> {
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_OBJ_MENU_UNFAVORITE
+                )
+                //proceedWithRemovingFromFavorites(ctx)
+            }
+            else -> {
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+            }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -281,7 +316,7 @@ class ObjectSetMenuViewModel(
     removeFromFavorite: RemoveFromFavorite,
     checkIsFavorite: CheckIsFavorite,
     private val getFlavourConfig: GetFlavourConfig,
-    analytics: Analytics,
+    private val analytics: Analytics,
     state: StateFlow<ObjectSet>
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
@@ -332,6 +367,10 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetIcons)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SET_MENU_ICON
+        )
     }
 
     override fun onCoverClicked() {
@@ -342,6 +381,10 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetCover)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SET_MENU_COVER
+        )
     }
 
     override fun onLayoutClicked() {
@@ -352,6 +395,10 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetLayout)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SET_MENU_LAYOUT
+        )
     }
 
     override fun onRelationsClicked() {
@@ -362,6 +409,10 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetRelations)
             }
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_SET_MENU_RELATIONS
+        )
     }
 
     override fun onHistoryClicked() {
@@ -382,6 +433,44 @@ class ObjectSetMenuViewModel(
             add(ObjectAction.REMOVE_FROM_FAVOURITE)
         } else {
             add(ObjectAction.ADD_TO_FAVOURITE)
+        }
+    }
+
+    override fun onActionClicked(ctx: Id, action: ObjectAction) {
+        when (action) {
+            ObjectAction.DELETE -> {
+                proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_SET_MENU_ARCHIVE
+                )
+            }
+            ObjectAction.RESTORE -> {
+                proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_SET_MENU_RESTORE
+                )
+            }
+            ObjectAction.ADD_TO_FAVOURITE -> {
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+                //proceedWithAddingToFavorites(ctx)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_SET_MENU_FAVORITE
+                )
+            }
+            ObjectAction.REMOVE_FROM_FAVOURITE -> {
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+                //proceedWithRemovingFromFavorites(ctx)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_SET_MENU_UNFAVORITE
+                )
+            }
+            else -> {
+                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+            }
         }
     }
 }

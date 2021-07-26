@@ -51,22 +51,30 @@ class SplashViewModel(
     }
 
     private fun proceedWithLaunchingWallet() {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             launchWallet(BaseUseCase.None).either(
                 fnL = { retryLaunchingWallet() },
-                fnR = { proceedWithLaunchingAccount() }
+                fnR = {
+                    sendEvent(startTime, EventsDictionary.WALLET_RECOVER, Props.empty())
+                    proceedWithLaunchingAccount()
+                }
             )
         }
     }
 
     private fun retryLaunchingWallet() {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             launchWallet(BaseUseCase.None).either(
                 fnL = { e ->
                     Timber.e(e, "Error while retrying launching wallet")
                     state.postValue(ViewState.Error(error = e.toString()))
                 },
-                fnR = { proceedWithLaunchingAccount() }
+                fnR = {
+                    sendEvent(startTime, EventsDictionary.WALLET_RECOVER, Props.empty())
+                    proceedWithLaunchingAccount()
+                }
             )
         }
     }
@@ -80,7 +88,8 @@ class SplashViewModel(
                         analytics = analytics,
                         userProperty = UserProperty.AccountId(accountId)
                     )
-                    sendEvent(startTime)
+                    val props = Props(mapOf(EventsDictionary.PROP_ACCOUNT_ID to accountId))
+                    sendEvent(startTime, EventsDictionary.ACCOUNT_SELECT, props)
                     navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSplash))
                 },
                 fnL = { e -> Timber.e(e, "Error while launching account") }
@@ -88,15 +97,15 @@ class SplashViewModel(
         }
     }
 
-    private fun sendEvent(startTime: Long) {
+    private fun sendEvent(startTime: Long, event: String, props: Props) {
         val middleTime = System.currentTimeMillis()
         viewModelScope.sendEvent(
             analytics = analytics,
             startTime = startTime,
             middleTime = middleTime,
             renderTime = middleTime,
-            eventName = EventsDictionary.ACCOUNT_SELECT,
-            props = Props.empty()
+            eventName = event,
+            props = props
         )
     }
 }

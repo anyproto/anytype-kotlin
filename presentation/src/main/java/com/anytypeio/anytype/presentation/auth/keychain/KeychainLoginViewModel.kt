@@ -74,7 +74,7 @@ class KeychainLoginViewModel(
                     proceedWithSavingMnemonic(chain, createEvent(startTime, middleTime))
                 },
                 fnL = {
-                    state.postValue(ViewState.Error(it.localizedMessage))
+                    state.postValue(ViewState.Error(it.localizedMessage.orEmpty()))
                     Timber.e(it, "Error while recovering wallet")
                 }
             )

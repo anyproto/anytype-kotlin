@@ -5,11 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_STYLE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_DASHBOARD
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_PROFILE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_ARCHIVE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_FAVORITES
+import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_INBOX
+import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_RECENT
+import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_SETS
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -188,7 +196,7 @@ class HomeDashboardViewModel(
                         middleTime = middle,
                         renderTime = middle,
                         eventName = PAGE_CREATE,
-                        props = Props(mapOf(PROP_STYLE to Block.Content.Page.Style.EMPTY))
+                        props = Props.empty()
                     )
                     machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(id)
@@ -336,6 +344,10 @@ class HomeDashboardViewModel(
 
     fun onAvatarClicked() {
         if (isProfileNavigationEnabled.value) {
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = SCREEN_PROFILE
+            )
             proceedWithOpeningDocument(profile)
         } else {
             toast("Profile is not ready yet. Please, try again later.")
@@ -351,10 +363,10 @@ class HomeDashboardViewModel(
         proceedWithOpeningObjectSet(target)
     }
 
-    fun onProfileClicked() {
+    fun onSettingsClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = SCREEN_PROFILE
+            eventName = EventsDictionary.POPUP_SETTINGS
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenProfile))
     }
@@ -557,7 +569,25 @@ class HomeDashboardViewModel(
         viewModelScope.launch { toasts.emit(msg) }
     }
 
-    fun onResume() {}
+    fun onResume() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = SCREEN_DASHBOARD
+        )
+    }
+
+    fun sendTabEvent(tab: CharSequence?) {
+        if (tab != null) {
+            val eventName = listOf(TAB_FAVORITES, TAB_RECENT, TAB_INBOX, TAB_SETS, TAB_ARCHIVE)
+                .firstOrNull { it.startsWith(tab, true) }
+            if (eventName != null) {
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = eventName
+                )
+            }
+        }
+    }
 
     /**
      * Represents movements of blocks during block dragging action.

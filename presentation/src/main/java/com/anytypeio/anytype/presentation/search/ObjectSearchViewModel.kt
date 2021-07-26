@@ -3,8 +3,6 @@ package com.anytypeio.anytype.presentation.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -121,10 +119,6 @@ class ObjectSearchViewModel(
     }
 
     private fun navigateToDesktop() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_DASHBOARD
-        )
         navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
     }
 

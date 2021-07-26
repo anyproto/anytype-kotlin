@@ -3,6 +3,10 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_RELATION_ADD
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_ADD
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
@@ -75,10 +79,12 @@ abstract class RelationAddBaseViewModel(
 class RelationAddToObjectViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
-    objectRelationList: ObjectRelationList
+    objectRelationList: ObjectRelationList,
+    private val analytics: Analytics
 ) : RelationAddBaseViewModel(objectRelationList = objectRelationList) {
 
     fun onRelationSelected(ctx: Id, relation: Id) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             addRelationToObject(
                 AddRelationToObject.Params(
@@ -86,7 +92,15 @@ class RelationAddToObjectViewModel(
                     relation = relation
                 )
             ).process(
-                success = { dispatcher.send(it).also { isDismissed.value = true } },
+                success = {
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = OBJECT_RELATION_ADD,
+                        startTime = startTime,
+                        middleTime = System.currentTimeMillis()
+                    )
+                    dispatcher.send(it).also { isDismissed.value = true }
+                },
                 failure = {
                     Timber.e(it, ERROR_MESSAGE)
                     _toasts.emit("$ERROR_MESSAGE: ${it.localizedMessage}")
@@ -98,14 +112,16 @@ class RelationAddToObjectViewModel(
     class Factory(
         private val objectRelationList: ObjectRelationList,
         private val addRelationToObject: AddRelationToObject,
-        private val dispatcher: Dispatcher<Payload>
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return RelationAddToObjectViewModel(
                 addRelationToObject = addRelationToObject,
                 objectRelationList = objectRelationList,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                analytics = analytics
             ) as T
         }
     }
@@ -117,10 +133,12 @@ class RelationAddToDataViewViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
     private val dispatcher: Dispatcher<Payload>,
-    objectRelationList: ObjectRelationList
+    objectRelationList: ObjectRelationList,
+    private val analytics: Analytics
 ) : RelationAddBaseViewModel(objectRelationList = objectRelationList) {
 
     fun onRelationSelected(ctx: Id, relation: Id, dv: Id) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             addRelationToDataView(
                 AddRelationToDataView.Params(
@@ -130,6 +148,12 @@ class RelationAddToDataViewViewModel(
                 )
             ).process(
                 success = {
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = SETS_RELATION_ADD,
+                        startTime = startTime,
+                        middleTime = System.currentTimeMillis()
+                    )
                     dispatcher.send(it).also {
                         proceedWithAddingNewRelationToCurrentViewer(ctx = ctx, relation = relation)
                     }
@@ -173,7 +197,8 @@ class RelationAddToDataViewViewModel(
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val objectRelationList: ObjectRelationList,
         private val addRelationToDataView: AddRelationToDataView,
-        private val dispatcher: Dispatcher<Payload>
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -183,7 +208,8 @@ class RelationAddToDataViewViewModel(
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
-                state = state
+                state = state,
+                analytics = analytics
             ) as T
         }
     }

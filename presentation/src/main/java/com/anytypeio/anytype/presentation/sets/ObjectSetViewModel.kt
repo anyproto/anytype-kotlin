@@ -3,6 +3,16 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_SET
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RECORD_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_TEXT_VALUE_UPDATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_ACTIVE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_FILTER_UPDATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_RELATION_UPDATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_SORT_UPDATE
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -49,7 +59,8 @@ class ObjectSetViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
-    private val session: ObjectSetSession
+    private val session: ObjectSetSession,
+    private val analytics: Analytics
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -75,6 +86,18 @@ class ObjectSetViewModel(
     private val defaultPayloadConsumer: suspend (Payload) -> Unit = { payload ->
         reducer.dispatch(payload.events)
     }
+
+    private val defaultPayloadWithEvent: suspend (Pair<Payload, EventAnalytics.Anytype>) -> Unit =
+        { (payload, event) ->
+            reducer.dispatch(payload.events)
+            analytics.registerEvent(
+                event.copy(
+                    duration = event.duration?.copy(
+                        render = System.currentTimeMillis()
+                    )
+                )
+            )
+        }
 
     private val jobs = mutableListOf<Job>()
 
@@ -184,6 +207,13 @@ class ObjectSetViewModel(
         }
     }
 
+    fun onResume() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = SCREEN_SET
+        )
+    }
+
     fun onStop() {
         Timber.d("onStop, ")
         jobs.forEach { it.cancel() }
@@ -213,6 +243,7 @@ class ObjectSetViewModel(
         )
     }
 
+    @Deprecated("uses only in tests")
     fun onViewerTabClicked(viewer: Id) {
         Timber.d("onViewerTabClicked, viewer:[$viewer]")
         viewModelScope.launch {
@@ -265,7 +296,7 @@ class ObjectSetViewModel(
         val viewer = dv.viewers.find {
             it.id == session.currentViewerId
         } ?: dv.viewers.first()
-
+        val start = System.currentTimeMillis()
         updateDataViewViewer(
             UpdateDataViewViewer.Params(
                 context = context,
@@ -280,7 +311,16 @@ class ObjectSetViewModel(
                 )
             )
         ).process(
-            success = defaultPayloadConsumer,
+            success = { payload ->
+                val event = EventAnalytics.Anytype(
+                    name = SETS_VIEWER_RELATION_UPDATE,
+                    duration = EventAnalytics.Duration(
+                        start = start,
+                        middleware = System.currentTimeMillis()
+                    )
+                )
+                defaultPayloadWithEvent(Pair(payload, event))
+            },
             failure = { Timber.e(it, "Error while updating data view's viewer") }
         )
     }
@@ -457,6 +497,7 @@ class ObjectSetViewModel(
             val updated = record.toMutableMap()
             updated[relationKey] = value
             viewModelScope.launch {
+                val start = System.currentTimeMillis()
                 updateDataViewRecord(
                     UpdateDataViewRecord.Params(
                         context = ctx,
@@ -466,7 +507,15 @@ class ObjectSetViewModel(
                     )
                 ).process(
                     failure = { Timber.e(it, "Error while updating data view record") },
-                    success = { Timber.d("Data view record updated successfully") }
+                    success = {
+                        sendEvent(
+                            analytics = analytics,
+                            eventName = SETS_RELATION_TEXT_VALUE_UPDATE,
+                            startTime = start,
+                            middleTime = System.currentTimeMillis()
+                        )
+                        Timber.d("Data view record updated successfully")
+                    }
                 )
             }
         } else {
@@ -477,6 +526,7 @@ class ObjectSetViewModel(
     fun onUpdateViewerSorting(sorts: List<SortingExpression>) {
         Timber.d("onUpdateViewerSorting, sorts:[$sorts]")
         viewModelScope.launch {
+            val start = System.currentTimeMillis()
             val block = reducer.state.value.dataview
             val dv = block.content as DV
             val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
@@ -487,7 +537,16 @@ class ObjectSetViewModel(
                     viewer = viewer.copy(sorts = sorts.map { it.toDomain() })
                 )
             ).process(
-                success = defaultPayloadConsumer,
+                success = { payload ->
+                    val event = EventAnalytics.Anytype(
+                        name = SETS_VIEWER_SORT_UPDATE,
+                        duration = EventAnalytics.Duration(
+                            start = start,
+                            middleware = System.currentTimeMillis()
+                        )
+                    )
+                    defaultPayloadWithEvent(Pair(payload, event))
+                },
                 failure = { Timber.e(it, "Error while updating data view's viewer") }
             )
         }
@@ -496,6 +555,7 @@ class ObjectSetViewModel(
     fun onUpdateViewerFilters(filters: List<FilterExpression>) {
         Timber.d("onUpdateViewerFilters, filters:[$filters]")
         viewModelScope.launch {
+            val start = System.currentTimeMillis()
             val block = reducer.state.value.dataview
             val dv = block.content as DV
             val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
@@ -506,7 +566,16 @@ class ObjectSetViewModel(
                     viewer = viewer.copy(filters = filters.map { it.toDomain() })
                 )
             ).process(
-                success = defaultPayloadConsumer,
+                success = { payload ->
+                    val event = EventAnalytics.Anytype(
+                        name = SETS_VIEWER_FILTER_UPDATE,
+                        duration = EventAnalytics.Duration(
+                            start = start,
+                            middleware = System.currentTimeMillis()
+                        )
+                    )
+                    defaultPayloadWithEvent(Pair(payload, event))
+                },
                 failure = { Timber.e(it, "Error while updating data view's viewer") }
             )
         }
@@ -517,6 +586,7 @@ class ObjectSetViewModel(
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
+            val start = System.currentTimeMillis()
             viewModelScope.launch {
                 createDataViewRecord(
                     CreateDataViewRecord.Params(
@@ -526,6 +596,13 @@ class ObjectSetViewModel(
                 ).process(
                     failure = { Timber.e(it, "Error while creating new record") },
                     success = { record ->
+                        val middle = System.currentTimeMillis()
+                        sendEvent(
+                            eventName = SETS_RECORD_CREATE,
+                            startTime = start,
+                            middleTime = middle,
+                            analytics = analytics
+                        )
                         total.value = total.value.inc()
                         objectSetRecordCache.map[context] = record
                         dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
@@ -595,6 +672,7 @@ class ObjectSetViewModel(
     }
 
     fun onMenuClicked() {
+        Timber.d("onMenuClicked, ")
         val set = reducer.state.value
         if (set.isInitialized) {
             dispatch(
@@ -730,6 +808,7 @@ class ObjectSetViewModel(
         set: Block,
         viewer: Id
     ) {
+        val start = System.currentTimeMillis()
         setActiveViewer(
             SetActiveViewer.Params(
                 context = context,
@@ -739,7 +818,16 @@ class ObjectSetViewModel(
                 offset = offset.value
             )
         ).process(
-            success = { payload -> defaultPayloadConsumer(payload) },
+            success = { payload ->
+                val event = EventAnalytics.Anytype(
+                    name = SETS_VIEWER_ACTIVE,
+                    duration = EventAnalytics.Duration(
+                        start = start,
+                        middleware = System.currentTimeMillis()
+                    )
+                )
+                defaultPayloadWithEvent(Pair(payload, event))
+            },
             failure = { Timber.e(it, "Error while setting view during pagination") }
         )
     }

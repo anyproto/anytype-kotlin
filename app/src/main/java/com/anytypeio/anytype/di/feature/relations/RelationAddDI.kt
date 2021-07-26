@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.relations
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -40,11 +41,13 @@ object RelationAddToObjectModule {
     fun provideViewModelFactory(
         addRelationToObject: AddRelationToObject,
         objectRelationList: ObjectRelationList,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         objectRelationList = objectRelationList,
         addRelationToObject = addRelationToObject,
-        dispatcher = dispatcher
+        dispatcher = dispatcher,
+        analytics = analytics
     )
 
     @JvmStatic
@@ -87,13 +90,15 @@ object RelationAddToDataViewModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
+        analytics: Analytics
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         objectRelationList = objectRelationList,
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
         state = state,
         session = session,
-        updateDataViewViewer = updateDataViewViewer
+        updateDataViewViewer = updateDataViewViewer,
+        analytics = analytics
     )
 
     @JvmStatic

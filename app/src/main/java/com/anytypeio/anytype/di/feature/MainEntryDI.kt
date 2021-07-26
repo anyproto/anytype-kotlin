@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -32,8 +33,9 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideMainViewModelFactory(
-        launchAccount: LaunchAccount
-    ): MainViewModelFactory = MainViewModelFactory(launchAccount)
+        launchAccount: LaunchAccount,
+        analytics: Analytics
+    ): MainViewModelFactory = MainViewModelFactory(launchAccount, analytics)
 
     @JvmStatic
     @PerScreen

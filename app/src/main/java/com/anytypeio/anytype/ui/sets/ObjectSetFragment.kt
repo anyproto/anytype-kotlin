@@ -70,29 +70,29 @@ open class ObjectSetFragment :
 
     // Controls
 
-    private val title : TextInputWidget
-    get() = objectHeader.findViewById(R.id.tvSetTitle)
+    private val title: TextInputWidget
+        get() = objectHeader.findViewById(R.id.tvSetTitle)
 
-    private val topToolbarTitle : TextView
-    get() = topToolbar.findViewById(R.id.tvTopToolbarTitle)
+    private val topToolbarTitle: TextView
+        get() = topToolbar.findViewById(R.id.tvTopToolbarTitle)
 
-    private val addNewButton : ImageView
-    get() = dataViewHeader.findViewById(R.id.addNewButton)
+    private val addNewButton: ImageView
+        get() = dataViewHeader.findViewById(R.id.addNewButton)
 
-    private val customizeViewButton : ImageView
-    get() = dataViewHeader.findViewById(R.id.customizeViewButton)
+    private val customizeViewButton: ImageView
+        get() = dataViewHeader.findViewById(R.id.customizeViewButton)
 
-    private val tvCurrentViewerName : TextView
-    get() = dataViewHeader.findViewById(R.id.tvCurrentViewerName)
+    private val tvCurrentViewerName: TextView
+        get() = dataViewHeader.findViewById(R.id.tvCurrentViewerName)
 
-    private val tvStatus : TextView
-    get() = topToolbar.findViewById(R.id.tvStatus)
+    private val tvStatus: TextView
+        get() = topToolbar.findViewById(R.id.tvStatus)
 
-    private val menuButton : FrameLayout
-    get() = topToolbar.findViewById(R.id.threeDotsButton)
+    private val menuButton: FrameLayout
+        get() = topToolbar.findViewById(R.id.threeDotsButton)
 
-    private val featuredRelations : FeaturedRelationGroupWidget
-    get() = objectHeader.findViewById(R.id.featuredRelationsWidget)
+    private val featuredRelations: FeaturedRelationGroupWidget
+        get() = objectHeader.findViewById(R.id.featuredRelationsWidget)
 
     private val rvHeaders: RecyclerView get() = root.findViewById(R.id.rvHeader)
     private val rvRows: RecyclerView get() = root.findViewById(R.id.rvRows)
@@ -506,9 +506,7 @@ open class ObjectSetFragment :
 
     private val transitionListener = object : MotionLayout.TransitionListener {
         override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {}
-        override fun onTransitionChange(view: MotionLayout?, start: Int, end: Int, progress: Float) {
-            Timber.d("Transition change: $progress")
-        }
+        override fun onTransitionChange(view: MotionLayout?, start: Int, end: Int, progress: Float) {}
         override fun onTransitionTrigger(view: MotionLayout?, id: Int, pos: Boolean, prog: Float) {}
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {

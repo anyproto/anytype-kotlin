@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.relations.simpleRelations
+import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -20,11 +21,18 @@ abstract class SearchRelationViewModel(
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
     private val query = Channel<String>()
+    private val notAllowedRelationFormats = listOf(
+        ColumnView.Format.RELATIONS,
+        ColumnView.Format.EMOJI,
+        ColumnView.Format.FILE
+    )
 
     init {
         // Initializing views before any query.
         viewModelScope.launch {
-            _views.value = objectSetState.value.simpleRelations(session.currentViewerId).filter { !it.isHidden }
+            _views.value = objectSetState.value.simpleRelations(session.currentViewerId)
+                .filterNot { notAllowedRelationFormats.contains(it.format) }
+                .filter { !it.isHidden }
         }
         // Searching and mapping views based on query changes.
         viewModelScope.launch {

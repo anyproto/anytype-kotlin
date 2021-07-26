@@ -16,12 +16,14 @@ interface Analytics {
     /**
      * Update current [UserProperty]
      */
-    fun updateUserProperty(property: UserProperty)
+    suspend fun updateUserProperty(property: UserProperty)
 
     /**
      * Return a stream of [EventAnalytics]
      */
     fun observeEvents(): Flow<EventAnalytics>
+
+    fun observeUserProperties(): Flow<UserProperty>
 }
 
 fun CoroutineScope.sendEvent(
@@ -44,4 +46,11 @@ fun CoroutineScope.sendEvent(
         )
     )
     analytics.registerEvent(event)
+}
+
+fun CoroutineScope.updateUserProperties(
+    analytics: Analytics,
+    userProperty: UserProperty
+) = this.launch {
+    analytics.updateUserProperty(userProperty)
 }

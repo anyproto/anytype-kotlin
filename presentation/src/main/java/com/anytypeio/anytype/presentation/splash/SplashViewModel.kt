@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -15,7 +17,6 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.amplitude.api.Amplitude
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -75,7 +76,10 @@ class SplashViewModel(
         viewModelScope.launch {
             launchAccount(BaseUseCase.None).either(
                 fnR = { accountId ->
-                    Amplitude.getInstance().setUserId(accountId, true)
+                    updateUserProperties(
+                        analytics = analytics,
+                        userProperty = UserProperty.AccountId(accountId)
+                    )
                     sendEvent(startTime)
                     navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSplash))
                 },

@@ -1,13 +1,14 @@
 package com.anytypeio.anytype.analytics.tracker
 
+import com.amplitude.api.Amplitude
+import com.amplitude.api.AmplitudeClient
 import com.anytypeio.anytype.analytics.BuildConfig
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker.Companion.PROP_MIDDLE
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker.Companion.PROP_RENDER
-import com.amplitude.api.Amplitude
-import com.amplitude.api.AmplitudeClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -29,6 +30,7 @@ class AmplitudeTracker(
 
     init {
         scope.launch { startRegisteringEvents() }
+        scope.launch { startRegisteringUserProps() }
     }
 
     private suspend fun startRegisteringEvents() {
@@ -44,6 +46,13 @@ class AmplitudeTracker(
         }
     }
 
+    private suspend fun startRegisteringUserProps() {
+        analytics.observeUserProperties().collect { prop: UserProperty ->
+            if (BuildConfig.SEND_EVENTS && prop is UserProperty.AccountId) {
+                tracker.setUserId(prop.id, true)
+            }
+        }
+    }
 }
 
 fun Props.getEventProperties(startTime: Long?, middleTime: Long?, renderTime: Long?): JSONObject {

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.ACCOUNT_STOP
@@ -11,6 +10,8 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.BTN_PROFILE_BACK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_DOCUMENT
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_KEYCHAIN
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.base.updateUserProperties
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -115,7 +116,10 @@ open class ProfileViewModel(
                     is Interactor.Status.Success -> {
                         _isLoggingOut.value = false
                         sendEvent(startTime)
-                        Amplitude.getInstance().userId = null
+                        updateUserProperties(
+                            analytics = analytics,
+                            userProperty = UserProperty.AccountId(null)
+                        )
                         navigation.postValue(EventWrapper(AppNavigation.Command.StartSplashFromDesktop))
                     }
                     is Interactor.Status.Error -> {

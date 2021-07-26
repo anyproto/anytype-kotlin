@@ -3,11 +3,12 @@ package com.anytypeio.anytype.presentation.auth.account
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -61,7 +62,10 @@ class SetupSelectedAccountViewModel(
                 success = { accountId ->
                     migrationMessageJob.cancel()
                     isMigrationInProgres.value = false
-                    Amplitude.getInstance().setUserId(accountId, true)
+                    updateUserProperties(
+                        analytics = analytics,
+                        userProperty = UserProperty.AccountId(accountId)
+                    )
                     sendEvent(startTime)
                     navigateToHomeDashboard()
                 }

@@ -1,3 +1,5 @@
 package com.anytypeio.anytype.analytics.props
 
-interface UserProperty
+sealed class UserProperty {
+    data class AccountId(val id: String?) : UserProperty()
+}

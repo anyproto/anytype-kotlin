@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.anytypeio.anytype.data.auth.config.FlavourConfigMemoryCache
+import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.data.auth.config.DefaultFlavourConfigProvider
+import com.anytypeio.anytype.data.auth.config.ExperimentalFlavourConfigProvider
 import com.anytypeio.anytype.data.auth.repo.*
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
@@ -235,5 +237,10 @@ object DataModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideFlavourConfigProvider(): FlavourConfigProvider = FlavourConfigMemoryCache()
+    fun provideFlavourConfigProvider(): FlavourConfigProvider {
+        return if (BuildConfig.FLAVOR == "experimental")
+            ExperimentalFlavourConfigProvider()
+        else
+            DefaultFlavourConfigProvider()
+    }
 }

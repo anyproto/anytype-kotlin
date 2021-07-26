@@ -22,7 +22,7 @@ data class Relation(
 
     enum class Format(val prettyName: String) {
         SHORT_TEXT("Short text"),
-        LONG_TEXT("Long text"),
+        LONG_TEXT("Text"),
         NUMBER("Number"),
         STATUS("Status"),
         TAG("Tag"),

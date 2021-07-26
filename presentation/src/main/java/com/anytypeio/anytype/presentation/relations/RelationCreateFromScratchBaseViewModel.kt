@@ -21,14 +21,21 @@ import timber.log.Timber
 abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
 
     protected val name = MutableStateFlow("")
+    private val notAllowedFormats = listOf(
+        Relation.Format.SHORT_TEXT,
+        Relation.Format.EMOJI,
+        Relation.Format.RELATIONS
+    )
 
     val views = MutableStateFlow(
-        Relation.Format.values().map { format ->
-            RelationView.CreateFromScratch(
-                format = format,
-                isSelected = format == Relation.Format.LONG_TEXT
-            )
-        }
+        Relation.Format.values()
+            .filterNot { notAllowedFormats.contains(it) }
+            .map { format ->
+                RelationView.CreateFromScratch(
+                    format = format,
+                    isSelected = format == Relation.Format.LONG_TEXT
+                )
+            }
     )
 
     val isActionButtonEnabled = name.map { it.isNotEmpty() }

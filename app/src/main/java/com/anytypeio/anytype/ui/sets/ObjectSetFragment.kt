@@ -60,7 +60,6 @@ import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_object_set.*
 import kotlinx.coroutines.flow.filterNotNull
-import timber.log.Timber
 import javax.inject.Inject
 
 open class ObjectSetFragment :
@@ -536,7 +535,6 @@ open class ObjectSetFragment :
             }
         }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading ->
-            Timber.d("isLoading: $isLoading")
             if (isLoading) {
                 dvProgressBar.show()
             } else {

@@ -15,6 +15,7 @@ import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.flow.StateFlow
 
+@Deprecated("Legacy")
 @Subcomponent(modules = [DataViewViewerActionModule::class])
 @PerModal
 interface DataViewViewerActionSubComponent {
@@ -27,6 +28,7 @@ interface DataViewViewerActionSubComponent {
     fun inject(fragment: DataViewViewerActionFragment)
 }
 
+@Deprecated("Legacy")
 @Module
 object DataViewViewerActionModule {
 

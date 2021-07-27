@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.sets.DataViewViewerActionViewModel
 import kotlinx.android.synthetic.main.fragment_data_view_viewer_actions.*
 import javax.inject.Inject
 
+@Deprecated("Legacy")
 class DataViewViewerActionFragment : BaseDialogFragment() {
 
     private val ctx: String get() = arg(CTX_KEY)

@@ -72,7 +72,15 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
                     requireContext(),
                     threeDotsButton,
                     cmd.isDeletionAllowed
-                ).show()
+                ).apply {
+                    setOnMenuItemClickListener { item ->
+                        when(item.itemId) {
+                            R.id.duplicate -> vm.onDuplicateClicked(ctx = ctx, viewer = viewer)
+                            R.id.delete -> vm.onDeleteClicked(ctx = ctx, viewer = viewer)
+                        }
+                        true
+                    }
+                }.show()
             }
         }
     }

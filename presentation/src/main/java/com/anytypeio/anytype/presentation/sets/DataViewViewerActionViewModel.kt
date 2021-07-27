@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("Legacy")
 class DataViewViewerActionViewModel(
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
     private val deleteDataViewViewer: DeleteDataViewViewer,

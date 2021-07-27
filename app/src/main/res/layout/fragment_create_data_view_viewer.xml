@@ -11,8 +11,7 @@
         android:layout_width="48dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/page_icon_picker_dragger_background" />
+        android:layout_marginTop="6dp"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -57,8 +56,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -99,8 +97,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -149,8 +146,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -199,8 +195,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rect_create_viewer_icon_background">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="wrap_content"

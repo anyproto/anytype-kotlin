@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -33,10 +35,14 @@ object EditDataViewViewerModule {
     @PerModal
     fun provideEditDataViewViewerViewModelFactory(
         renameDataViewViewer: RenameDataViewViewer,
+        deleteDataViewViewer: DeleteDataViewViewer,
+        duplicateDataViewViewer: DuplicateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
         objectSetState: StateFlow<ObjectSet>
     ): EditDataViewViewerViewModel.Factory = EditDataViewViewerViewModel.Factory(
         renameDataViewViewer = renameDataViewViewer,
+        deleteDataViewViewer = deleteDataViewViewer,
+        duplicateDataViewViewer = duplicateDataViewViewer,
         dispatcher = dispatcher,
         objectSetState = objectSetState
     )
@@ -47,4 +53,18 @@ object EditDataViewViewerModule {
     fun provideRenameDataViewViewerUseCase(
         repo: BlockRepository
     ): RenameDataViewViewer = RenameDataViewViewer(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideDuplicateDataViewViewerUseCase(
+        repo: BlockRepository
+    ): DuplicateDataViewViewer = DuplicateDataViewViewer(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideDeleteDataViewViewerUseCase(
+        repo: BlockRepository
+    ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo)
 }

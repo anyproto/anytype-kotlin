@@ -388,6 +388,7 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    @Deprecated("Legacy")
     val dataviewViewerActionComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)

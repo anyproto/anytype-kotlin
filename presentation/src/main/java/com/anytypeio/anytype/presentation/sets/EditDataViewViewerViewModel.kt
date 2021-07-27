@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.channels.Channel
@@ -17,6 +19,8 @@ class EditDataViewViewerViewModel(
     private val renameDataViewViewer: RenameDataViewViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetState: StateFlow<ObjectSet>,
+    private val deleteDataViewViewer: DeleteDataViewViewer,
+    private val duplicateDataViewViewer: DuplicateDataViewViewer
 ) : ViewModel() {
 
     private val viewerNameUpdatePipeline = Channel<ViewerNameUpdate>()
@@ -65,6 +69,50 @@ class EditDataViewViewerViewModel(
         }
     }
 
+    fun onDuplicateClicked(ctx: Id, viewer: Id) {
+        viewModelScope.launch {
+            duplicateDataViewViewer(
+                DuplicateDataViewViewer.Params(
+                    context = ctx,
+                    target = objectSetState.value.dataview.id,
+                    viewer = objectSetState.value.viewers.first { it.id == viewer }
+                )
+            ).process(
+                failure = { e ->
+                    Timber.e(e, "Error while duplicating viewer: $viewer")
+                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
+                },
+                success = {
+                    dispatcher.send(it).also { isDismissed.emit(true) }
+                }
+            )
+        }
+    }
+
+    fun onDeleteClicked(ctx: Id, viewer: Id) {
+        viewModelScope.launch {
+            if (objectSetState.value.viewers.size > 1) {
+                deleteDataViewViewer(
+                    DeleteDataViewViewer.Params(
+                        ctx = ctx,
+                        viewer = viewer,
+                        dataview = objectSetState.value.dataview.id
+                    )
+                ).process(
+                    failure = { e ->
+                        Timber.e(e, "Error while deleting viewer: $viewer")
+                        _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
+                    },
+                    success = {
+                        dispatcher.send(it).also { isDismissed.emit(true) }
+                    }
+                )
+            } else {
+                _toasts.emit("Data view should have at least one view")
+            }
+        }
+    }
+
     fun onMenuClicked() {
         viewModelScope.launch {
             popupCommands.emit(
@@ -79,6 +127,8 @@ class EditDataViewViewerViewModel(
 
     class Factory(
         private val renameDataViewViewer: RenameDataViewViewer,
+        private val deleteDataViewViewer: DeleteDataViewViewer,
+        private val duplicateDataViewViewer: DuplicateDataViewViewer,
         private val dispatcher: Dispatcher<Payload>,
         private val objectSetState: StateFlow<ObjectSet>
     ) : ViewModelProvider.Factory {
@@ -86,6 +136,8 @@ class EditDataViewViewerViewModel(
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return EditDataViewViewerViewModel(
                 renameDataViewViewer = renameDataViewViewer,
+                deleteDataViewViewer = deleteDataViewViewer,
+                duplicateDataViewViewer = duplicateDataViewViewer,
                 dispatcher = dispatcher,
                 objectSetState = objectSetState
             ) as T

@@ -31,10 +31,7 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.page.editor.Proxy
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.model.TextUpdate
-import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.relations.getObjectTypeById
-import com.anytypeio.anytype.presentation.relations.render
-import com.anytypeio.anytype.presentation.relations.tabs
+import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -64,6 +61,7 @@ class ObjectSetViewModel(
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
+    val error = MutableStateFlow<String?>(null)
 
     private val total = MutableStateFlow(0)
     private val offset = MutableStateFlow(0)
@@ -125,17 +123,29 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             reducer.state.filter { it.isInitialized }.collect { set ->
                 Timber.d("Set updated!")
-                _viewerTabs.value = set.tabs(session.currentViewerId)
-                val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
-
-                set.render(viewerIndex, context, urlBuilder).let { vs ->
-                    _viewerGrid.value = vs.viewer
-                    _header.value = vs.title
+                if (set.viewers.isNotEmpty()) {
+                    _viewerTabs.value = set.tabs(session.currentViewerId)
+                    val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
+                    set.render(viewerIndex, context, urlBuilder).let { vs ->
+                        _viewerGrid.value = vs.viewer
+                        _header.value = vs.title
+                    }
+                    featured.value = set.featuredRelations(
+                        ctx = context,
+                        urlBuilder = urlBuilder
+                    )
+                } else {
+                    Timber.e("Data view contained no view")
+                    error.value = DATA_VIEW_HAS_NO_VIEW_MSG
+                    _header.value = set.title(
+                        ctx = context,
+                        urlBuilder = urlBuilder
+                    )
+                    featured.value = set.featuredRelations(
+                        ctx = context,
+                        urlBuilder = urlBuilder
+                    )
                 }
-                featured.value = set.featuredRelations(
-                    ctx = context,
-                    urlBuilder = urlBuilder
-                )
             }
         }
 
@@ -710,38 +720,56 @@ class ObjectSetViewModel(
             if (set.isInitialized) {
                 val block = set.dataview
                 val dv = block.content as DV
-                val viewer =
-                    dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-                dispatch(
-                    ObjectSetCommand.Modal.ModifyViewerRelationOrder(
-                        ctx = context,
-                        dv = block.id,
-                        viewer = viewer.id
+                if (dv.viewers.isNotEmpty()) {
+                    val viewer =
+                        dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                    dispatch(
+                        ObjectSetCommand.Modal.ModifyViewerRelationOrder(
+                            ctx = context,
+                            dv = block.id,
+                            viewer = viewer.id
+                        )
                     )
-                )
+                } else {
+                    toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+                }
             }
         }
     }
 
     fun onViewerFiltersClicked() {
         Timber.d("onViewerFiltersClicked, ")
-        if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
-            toast(NOT_ALLOWED)
-        } else {
-            dispatch(
-                ObjectSetCommand.Modal.ModifyViewerFilters(ctx = context)
-            )
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            if (set.viewers.isNotEmpty()) {
+                if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
+                    toast(NOT_ALLOWED)
+                } else {
+                    dispatch(
+                        ObjectSetCommand.Modal.ModifyViewerFilters(ctx = context)
+                    )
+                }
+            } else {
+                toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+            }
         }
     }
 
     fun onViewerSortsClicked() {
         Timber.d("onViewerSortsClicked, ")
-        if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
-            toast(NOT_ALLOWED)
-        } else {
-            dispatch(
-                ObjectSetCommand.Modal.ModifyViewerSorts(ctx = context)
-            )
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            if (set.viewers.isNotEmpty()) {
+                if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
+                    toast(NOT_ALLOWED)
+                } else {
+                    dispatch(
+                        ObjectSetCommand.Modal.ModifyViewerSorts(ctx = context)
+                    )
+                }
+            } else {
+                toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+            }
         }
     }
 
@@ -769,8 +797,12 @@ class ObjectSetViewModel(
     private suspend fun proceedWithStartupPaging() {
         val set = reducer.state.value.dataview
         val dv = set.content<Block.Content.DataView>()
-        val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-        proceedWithViewerPaging(set = set, viewer = viewer.id)
+        if (dv.viewers.isNotEmpty()) {
+            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+            proceedWithViewerPaging(set = set, viewer = viewer.id)
+        } else {
+            Timber.e("Stopped initial paging: data view contained no view")
+        }
     }
 
     fun onPaginatorToolbarNumberClicked(number: Int, isSelected: Boolean) {
@@ -845,5 +877,6 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED = "Not allowed for this set"
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val OBJECT_TYPE_UNKNOWN = "Can't open object, object type unknown"
+        const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
     }
 }

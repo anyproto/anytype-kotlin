@@ -526,6 +526,7 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
         jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
+        jobs += lifecycleScope.subscribe(vm.error) { tvError.text = it }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
             paginatorToolbar.set(count = count, index = index)
             if (count > 1) {

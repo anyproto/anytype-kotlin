@@ -2823,7 +2823,7 @@ class PageViewModel(
                             props = Props(
                                 mapOf(
                                     PROP_TYPE to objType,
-                                    PROP_LAYOUT to layout.name
+                                    PROP_LAYOUT to layout.code
                                 )
                             ),
                             duration = EventAnalytics.Duration(

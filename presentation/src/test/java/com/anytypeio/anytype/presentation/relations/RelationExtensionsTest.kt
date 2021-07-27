@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.presentation.relations.model.RelationView
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -90,6 +91,54 @@ class RelationExtensionsTest {
                 operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.NOT_EQUAL,
                 value = true
+            )
+        )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `should return filtered relation views`() {
+
+        val relation = Relation(
+            key = "type",
+            name = "Object type",
+            format = Relation.Format.OBJECT,
+            source = Relation.Source.DERIVED,
+            isHidden = true,
+            isReadOnly = true,
+            isMulti = false,
+            objectTypes = listOf("_otobjectType")
+        )
+
+        val relation2 = Relation(
+            key = "events",
+            name = "Events",
+            format = Relation.Format.OBJECT,
+            source = Relation.Source.DERIVED
+        )
+
+        val relation3 = Relation(
+            key = "70L0KG2q",
+            name = "Custom relation",
+            format = Relation.Format.NUMBER,
+            source = Relation.Source.ACCOUNT
+        )
+
+        val relations = listOf(relation, relation2, relation3)
+
+        val result = relations.toNotHiddenRelationViews()
+
+        val expected = listOf(
+            RelationView.Existing(
+                id = relation2.key,
+                name = relation2.name,
+                format = relation2.format
+            ),
+            RelationView.Existing(
+                id = relation3.key,
+                name = relation3.name,
+                format = relation3.format
             )
         )
 

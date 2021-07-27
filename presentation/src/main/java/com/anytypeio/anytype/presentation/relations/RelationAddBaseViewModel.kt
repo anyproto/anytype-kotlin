@@ -47,7 +47,7 @@ abstract class RelationAddBaseViewModel(
         viewModelScope.launch {
             objectRelationList(ObjectRelationList.Params(ctx)).process(
                 success = { relations ->
-                    views.value = toNotHiddenRelationViews(relations)
+                    views.value = relations.toNotHiddenRelationViews()
                 },
                 failure = { Timber.e(it, "Error while fetching list of available relations") }
             )
@@ -56,17 +56,6 @@ abstract class RelationAddBaseViewModel(
 
     fun onQueryChanged(input: String) {
         userInput.value = input
-    }
-
-    private fun toNotHiddenRelationViews(relations: List<Relation>): List<RelationView.Existing> {
-        return relations.filter { !it.isHidden }
-            .map {
-                RelationView.Existing(
-                    id = it.key,
-                    name = it.name,
-                    format = it.format
-                )
-            }
     }
 
     companion object {

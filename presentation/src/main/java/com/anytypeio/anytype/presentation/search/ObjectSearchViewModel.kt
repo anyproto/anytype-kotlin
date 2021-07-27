@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -17,6 +18,8 @@ import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.relations.addIsHiddenFilter
+import com.anytypeio.anytype.presentation.relations.searchObjectsFilter
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -52,13 +55,15 @@ class ObjectSearchViewModel(
                 success = { types.value = it }
             )
         }
+        val filters = listOf<DVFilter>().addIsHiddenFilter()
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 searchObjects(
                     SearchObjects.Params(
                         fulltext = query,
                         limit = SEARCH_LIMIT,
-                        objectTypeFilter = supportedObjectTypes
+                        objectTypeFilter = supportedObjectTypes,
+                        filters = filters
                     )
                 ).process(
                     success = { raw -> objects.value = raw.map { ObjectWrapper.Basic(it) } },

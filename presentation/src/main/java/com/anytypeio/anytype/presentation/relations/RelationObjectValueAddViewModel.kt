@@ -111,7 +111,10 @@ class RelationObjectValueAddViewModel(
     }
 
     private fun proceedWithSearchObjects(ids: List<String>, relation: Relation) {
-        val filters = relation.searchObjectsFilter()
+        val filters = relation
+            .searchObjectsFilter()
+            .addIsHiddenFilter()
+
         val sorts = arrayListOf(
             DVSort(
                 relationKey = ObjectSetConfig.LAST_OPENED_DATE_KEY,

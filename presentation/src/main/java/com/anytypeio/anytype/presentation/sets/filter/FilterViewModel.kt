@@ -247,7 +247,9 @@ open class FilterViewModel(
         relation: Relation,
         objectTypes: List<ObjectType>
     ) {
-        val filters = relation.searchObjectsFilter()
+        val filters = relation
+            .searchObjectsFilter()
+            .addIsHiddenFilter()
         val sorts = arrayListOf(
             DVSort(
                 relationKey = ObjectSetConfig.LAST_OPENED_DATE_KEY,

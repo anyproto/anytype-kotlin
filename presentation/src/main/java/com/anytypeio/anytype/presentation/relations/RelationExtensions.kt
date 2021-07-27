@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -145,6 +146,17 @@ fun Relation.searchObjectsFilter(): List<DVFilter> {
     }
     return filter.toList()
 }
+
+fun List<DVFilter>.addIsHiddenFilter(): List<DVFilter> =
+    this.toMutableList().apply {
+        add(
+            DVFilter(
+                relationKey = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+    }
 
 object FilterInputValueParser {
     fun parse(

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.domain.relations.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.*
@@ -166,7 +167,11 @@ object FilterInputValueParser {
         condition: Viewer.Filter.Condition
     ): Any? = when (format) {
         ColumnView.Format.NUMBER -> {
-            if (condition.hasValue()) value?.toDoubleOrNull() else null
+            if (value.isNullOrBlank()) {
+                NUMBER_DEFAULT_VALUE
+            } else {
+                value.toDoubleOrNull() ?: NUMBER_DEFAULT_VALUE
+            }
         }
         else -> {
             if (condition.hasValue()) value else null

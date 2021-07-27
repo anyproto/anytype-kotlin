@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.relations.Relations
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -389,14 +390,32 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should send null, number 1`() {
+    fun `should send default number value, number 1`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Equal()
         val textInput = ""
         val filterIndex = null
 
-        val value: Double? = null
+        val value = Relations.NUMBER_DEFAULT_VALUE
+
+        shouldSendFilterValueAsAny(
+            relationKey = relation2.key,
+            condition = condition,
+            textInput = textInput,
+            value = value,
+            filterIndex = filterIndex)
+    }
+
+    @Test
+    fun `should send default number value, number 2`() {
+
+        //INIT
+        val condition = Viewer.Filter.Condition.Text.Equal()
+        val textInput = " "
+        val filterIndex = null
+
+        val value = Relations.NUMBER_DEFAULT_VALUE
 
         shouldSendFilterValueAsAny(
             relationKey = relation2.key,
@@ -461,14 +480,14 @@ class FilterViewModelInputFieldValueCreateTest {
     }
 
     @Test
-    fun `should send null, number 5`() {
+    fun `should send default number value, number 3`() {
 
         //INIT
         val condition = Viewer.Filter.Condition.Text.Equal()
         val textInput = "e1.0"
         val filterIndex = null
 
-        val value = null
+        val value = Relations.NUMBER_DEFAULT_VALUE
 
         shouldSendFilterValueAsAny(
             relationKey = relation2.key,

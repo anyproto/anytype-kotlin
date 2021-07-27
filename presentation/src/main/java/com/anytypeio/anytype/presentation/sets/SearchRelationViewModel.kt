@@ -48,7 +48,11 @@ abstract class SearchRelationViewModel(
                         }
                     }
                 }
-                .mapLatest { relations -> relations.filter { !it.isHidden } }
+                .mapLatest { relations ->
+                    relations
+                        .filterNot { notAllowedRelationFormats.contains(it.format) }
+                        .filter { !it.isHidden }
+                }
                 .collect { _views.value = it }
         }
     }

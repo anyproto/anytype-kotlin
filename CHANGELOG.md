@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.2.1 (WIP)
+
+### New features & enhancements 🚀
+
+* Added basic syntax rules for Rust (#1695)
+
 ## Version 0.1.14
 
 ### Fixes & tech 🚒

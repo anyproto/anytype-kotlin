@@ -4,8 +4,8 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.relations.Relations
-import com.anytypeio.anytype.domain.relations.Relations.NUMBER_DEFAULT_VALUE
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.*

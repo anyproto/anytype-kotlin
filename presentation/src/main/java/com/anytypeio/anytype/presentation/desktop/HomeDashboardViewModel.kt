@@ -21,8 +21,8 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.domain.`object`.ObjectTypes
-import com.anytypeio.anytype.domain.`object`.ObjectWrapper
+import com.anytypeio.anytype.core_models.ObjectTypes
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move

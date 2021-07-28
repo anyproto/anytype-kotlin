@@ -1,10 +1,6 @@
-package com.anytypeio.anytype.domain.`object`
+package com.anytypeio.anytype.core_models
 
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ext.typeOf
-import com.anytypeio.anytype.domain.cover.CoverType
-import com.anytypeio.anytype.domain.relations.Relations
 
 /**
  * Wrapper for easily parsing object's relations when object is represented as an untyped structure.

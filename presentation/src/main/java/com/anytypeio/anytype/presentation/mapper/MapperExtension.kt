@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.domain.`object`.ObjectWrapper
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.desktop.DashboardView
 import com.anytypeio.anytype.presentation.navigation.ObjectView

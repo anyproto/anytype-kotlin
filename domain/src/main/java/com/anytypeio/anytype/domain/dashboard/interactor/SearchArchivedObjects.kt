@@ -3,7 +3,7 @@ package com.anytypeio.anytype.domain.dashboard.interactor
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.core_models.Relations
 
 class SearchArchivedObjects(
     private val repo: BlockRepository

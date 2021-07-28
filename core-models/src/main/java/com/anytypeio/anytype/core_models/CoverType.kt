@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.cover
+package com.anytypeio.anytype.core_models
 
 /**
  * [BUNDLED_IMAGE] preset image, or image bundled to Anytype

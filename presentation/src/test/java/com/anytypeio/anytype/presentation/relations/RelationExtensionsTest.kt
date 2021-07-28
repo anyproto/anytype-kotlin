@@ -4,7 +4,7 @@ import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import org.junit.Assert.assertEquals
 import org.junit.Test

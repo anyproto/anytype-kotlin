@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.relations
+package com.anytypeio.anytype.core_models
 
 /**
  * Keys for predefined, bundled relations.

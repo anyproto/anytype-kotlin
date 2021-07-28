@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.`object`
+package com.anytypeio.anytype.core_models
 
 /**
  * Keys for predefined, bundled object types.

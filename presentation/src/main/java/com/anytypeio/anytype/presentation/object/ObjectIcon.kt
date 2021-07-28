@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.`object`
 
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.domain.`object`.ObjectWrapper
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 sealed class ObjectIcon {

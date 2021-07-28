@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.domain.`object`.ObjectTypes
+import com.anytypeio.anytype.core_models.ObjectTypes
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.relations.Relations
+import com.anytypeio.anytype.core_models.Relations
 
 /**
  * Request for searching unarchived object sets

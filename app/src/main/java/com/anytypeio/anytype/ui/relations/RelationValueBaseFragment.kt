@@ -149,7 +149,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         when (command) {
             is AppNavigation.Command.OpenObjectSet -> {
                 findNavController().navigate(
-                    R.id.objectSetScreen,
+                    R.id.dataViewNavigation,
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.target)
                 )
             }

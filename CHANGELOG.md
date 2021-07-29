@@ -8,7 +8,9 @@
 
 ### Fixes & tech 🚒
 
+* Relations | Object | Fix navigation to sets (#1698) 
 * Data View | Should set new active view after current one is deleted (#1696)
+* Data View | Do not allow creating new records if data view is not initialized (#1698)
 
 ## Version 0.1.14
 

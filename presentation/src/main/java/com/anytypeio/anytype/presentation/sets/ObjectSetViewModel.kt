@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.mapper.toDomain
@@ -593,32 +592,36 @@ class ObjectSetViewModel(
 
     fun onCreateNewRecord() {
         Timber.d("onCreateNewRecord, ")
-        if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
-            toast(NOT_ALLOWED)
-        } else {
-            val start = System.currentTimeMillis()
-            viewModelScope.launch {
-                createDataViewRecord(
-                    CreateDataViewRecord.Params(
-                        context = context,
-                        target = reducer.state.value.dataview.id
-                    )
-                ).process(
-                    failure = { Timber.e(it, "Error while creating new record") },
-                    success = { record ->
-                        val middle = System.currentTimeMillis()
-                        sendEvent(
-                            eventName = SETS_RECORD_CREATE,
-                            startTime = start,
-                            middleTime = middle,
-                            analytics = analytics
+        if (reducer.state.value.isInitialized) {
+            if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
+                toast(NOT_ALLOWED)
+            } else {
+                val start = System.currentTimeMillis()
+                viewModelScope.launch {
+                    createDataViewRecord(
+                        CreateDataViewRecord.Params(
+                            context = context,
+                            target = reducer.state.value.dataview.id
                         )
-                        total.value = total.value.inc()
-                        objectSetRecordCache.map[context] = record
-                        dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
-                    }
-                )
+                    ).process(
+                        failure = { Timber.e(it, "Error while creating new record") },
+                        success = { record ->
+                            val middle = System.currentTimeMillis()
+                            sendEvent(
+                                eventName = SETS_RECORD_CREATE,
+                                startTime = start,
+                                middleTime = middle,
+                                analytics = analytics
+                            )
+                            total.value = total.value.inc()
+                            objectSetRecordCache.map[context] = record
+                            dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
+                        }
+                    )
+                }
             }
+        } else {
+            toast("Data view is not initialized yet.")
         }
     }
 

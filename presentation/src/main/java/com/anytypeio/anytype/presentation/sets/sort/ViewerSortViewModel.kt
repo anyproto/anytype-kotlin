@@ -45,7 +45,15 @@ class ViewerSortViewModel(
                         ScreenState.EMPTY -> ScreenState.READ
                     }
                 }
-                _views.value = buildViews(sorts = sorts, dv = dv, screenState = screenState.value)
+                try {
+                    _views.value = buildViews(
+                        sorts = sorts,
+                        dv = dv,
+                        screenState = screenState.value
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while building views")
+                }
             }
         }
     }

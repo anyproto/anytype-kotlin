@@ -4,7 +4,11 @@
 
 ### New features & enhancements 🚀
 
-* Added basic syntax rules for Rust (#1695)
+* Editor | Added basic syntax rules for Rust (#1695)
+
+### Fixes & tech 🚒
+
+* Data View | Should set new active view after current one is deleted (#1696)
 
 ## Version 0.1.14
 

@@ -6,8 +6,10 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import dagger.Module
@@ -37,14 +39,18 @@ object EditDataViewViewerModule {
         renameDataViewViewer: RenameDataViewViewer,
         deleteDataViewViewer: DeleteDataViewViewer,
         duplicateDataViewViewer: DuplicateDataViewViewer,
+        setActiveViewer: SetActiveViewer,
         dispatcher: Dispatcher<Payload>,
-        objectSetState: StateFlow<ObjectSet>
+        objectSetState: StateFlow<ObjectSet>,
+        objectSetSession: ObjectSetSession
     ): EditDataViewViewerViewModel.Factory = EditDataViewViewerViewModel.Factory(
         renameDataViewViewer = renameDataViewViewer,
         deleteDataViewViewer = deleteDataViewViewer,
         duplicateDataViewViewer = duplicateDataViewViewer,
+        setActiveViewer = setActiveViewer,
         dispatcher = dispatcher,
-        objectSetState = objectSetState
+        objectSetState = objectSetState,
+        objectSetSession = objectSetSession
     )
 
     @JvmStatic

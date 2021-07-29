@@ -9,6 +9,8 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -17,10 +19,12 @@ import timber.log.Timber
 
 class EditDataViewViewerViewModel(
     private val renameDataViewViewer: RenameDataViewViewer,
+    private val deleteDataViewViewer: DeleteDataViewViewer,
+    private val duplicateDataViewViewer: DuplicateDataViewViewer,
+    private val setActiveViewer: SetActiveViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetState: StateFlow<ObjectSet>,
-    private val deleteDataViewViewer: DeleteDataViewViewer,
-    private val duplicateDataViewViewer: DuplicateDataViewViewer
+    private val objectSetSession: ObjectSetSession
 ) : ViewModel() {
 
     private val viewerNameUpdatePipeline = Channel<ViewerNameUpdate>()
@@ -90,26 +94,89 @@ class EditDataViewViewerViewModel(
     }
 
     fun onDeleteClicked(ctx: Id, viewer: Id) {
-        viewModelScope.launch {
-            if (objectSetState.value.viewers.size > 1) {
-                deleteDataViewViewer(
-                    DeleteDataViewViewer.Params(
-                        ctx = ctx,
-                        viewer = viewer,
-                        dataview = objectSetState.value.dataview.id
-                    )
-                ).process(
-                    failure = { e ->
-                        Timber.e(e, "Error while deleting viewer: $viewer")
-                        _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
-                    },
-                    success = {
-                        dispatcher.send(it).also { isDismissed.emit(true) }
-                    }
-                )
+        val state = objectSetState.value
+        if (state.viewers.size > 1) {
+            val targetIdx = state.viewers.indexOfFirst { it.id == viewer }
+            val isActive = if (objectSetSession.currentViewerId != null) {
+                objectSetSession.currentViewerId == viewer
             } else {
+                targetIdx == 0
+            }
+            var nextViewerId: Id? = null
+            if (isActive) {
+                nextViewerId = if (targetIdx != state.viewers.lastIndex)
+                    state.viewers[targetIdx.inc()].id
+                else
+                    state.viewers[targetIdx.dec()].id
+            }
+            proceedWithDeletion(
+                ctx = ctx,
+                dv = state.dataview.id,
+                viewer = viewer,
+                nextViewerId = nextViewerId,
+                state = state
+            )
+        } else {
+            viewModelScope.launch {
                 _toasts.emit("Data view should have at least one view")
             }
+        }
+    }
+
+    private fun proceedWithDeletion(
+        ctx: Id,
+        dv: Id,
+        viewer: Id,
+        nextViewerId: Id?,
+        state: ObjectSet
+    ) {
+        viewModelScope.launch {
+            deleteDataViewViewer(
+                DeleteDataViewViewer.Params(
+                    ctx = ctx,
+                    viewer = viewer,
+                    dataview = dv
+                )
+            ).process(
+                failure = { e ->
+                    Timber.e(e, "Error while deleting viewer: $viewer")
+                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
+                },
+                success = { firstPayload ->
+                    dispatcher.send(firstPayload)
+                    if (nextViewerId != null) {
+                        proceedWithSettingActiveView(ctx, state, nextViewerId)
+                    } else {
+                        _toasts.emit("Something went wrong")
+                        isDismissed.emit(true)
+                    }
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSettingActiveView(
+        ctx: Id,
+        state: ObjectSet,
+        nextViewerId: Id
+    ) {
+        viewModelScope.launch {
+            setActiveViewer(
+                SetActiveViewer.Params(
+                    context = ctx,
+                    block = state.dataview.id,
+                    view = nextViewerId,
+                    limit = ObjectSetConfig.DEFAULT_LIMIT,
+                    offset = 0
+                )
+            ).process(
+                failure = { e ->
+                    Timber.e(e, "Error while setting active viewer after deletion")
+                },
+                success = { secondPayload ->
+                    dispatcher.send(secondPayload).also { isDismissed.emit(true) }
+                }
+            )
         }
     }
 
@@ -129,8 +196,10 @@ class EditDataViewViewerViewModel(
         private val renameDataViewViewer: RenameDataViewViewer,
         private val deleteDataViewViewer: DeleteDataViewViewer,
         private val duplicateDataViewViewer: DuplicateDataViewViewer,
+        private val setActiveViewer: SetActiveViewer,
         private val dispatcher: Dispatcher<Payload>,
-        private val objectSetState: StateFlow<ObjectSet>
+        private val objectSetState: StateFlow<ObjectSet>,
+        private val objectSetSession: ObjectSetSession
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -138,8 +207,10 @@ class EditDataViewViewerViewModel(
                 renameDataViewViewer = renameDataViewViewer,
                 deleteDataViewViewer = deleteDataViewViewer,
                 duplicateDataViewViewer = duplicateDataViewViewer,
+                setActiveViewer = setActiveViewer,
                 dispatcher = dispatcher,
-                objectSetState = objectSetState
+                objectSetState = objectSetState,
+                objectSetSession = objectSetSession
             ) as T
         }
     }

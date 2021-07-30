@@ -1,6 +1,13 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.1 (WIP)
+## Version 0.2.2 (WIP)
+
+### Fixes & tech 🚒
+
+* Opening styling panel in objects with task layout crashes the app (#1701)
+* Opening search for content in objects with task layout crashes the app (#1701)
+
+## Version 0.2.1
 
 ### New features & enhancements 🚀
 

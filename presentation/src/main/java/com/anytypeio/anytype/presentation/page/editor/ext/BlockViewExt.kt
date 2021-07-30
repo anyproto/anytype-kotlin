@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.page.editor.ext
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.presentation.extension.shift
-import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
@@ -135,6 +134,9 @@ fun List<BlockView>.singleStylingMode(
             isSelected = isSelected
         )
         is BlockView.Title.Basic -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Todo -> view.copy(
             mode = BlockView.Mode.READ
         )
         is BlockView.Title.Profile -> view.copy(
@@ -279,6 +281,9 @@ fun List<BlockView>.enterSAM(
         is BlockView.Title.Profile -> view.copy(
             mode = BlockView.Mode.READ
         )
+        is BlockView.Title.Todo -> view.copy(
+            mode = BlockView.Mode.READ
+        )
         is BlockView.Title.Archive -> view.copy(
             mode = BlockView.Mode.READ
         )
@@ -367,6 +372,7 @@ fun List<BlockView>.exitSingleStylingMode(
         is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Description -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
         else -> view.also { check(view !is BlockView.Permission) }
@@ -385,6 +391,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Description -> view.copy(mode = BlockView.Mode.READ)
@@ -438,6 +445,7 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Description -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
         else -> view.also { check(view !is BlockView.Permission) }
     }
@@ -456,6 +464,7 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.Text.Highlight -> view.copy(searchFields = emptyList())
         is BlockView.Title.Basic -> view.copy(searchFields = emptyList())
         is BlockView.Title.Profile -> view.copy(searchFields = emptyList())
+        is BlockView.Title.Todo -> view.copy(searchFields = emptyList())
         is BlockView.Media.Bookmark -> view.copy(searchFields = emptyList())
         is BlockView.Media.File -> view.copy(searchFields = emptyList())
         is BlockView.Page -> view.copy(searchFields = emptyList())
@@ -508,6 +517,10 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
+        is BlockView.Title.Todo -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
         is BlockView.Title.Profile -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
@@ -550,6 +563,7 @@ fun BlockView.setHighlight(
     is BlockView.Text.Highlight -> copy(searchFields = highlights)
     is BlockView.Title.Basic -> copy(searchFields = highlights)
     is BlockView.Title.Profile -> copy(searchFields = highlights)
+    is BlockView.Title.Todo -> copy(searchFields = highlights)
     is BlockView.Media.Bookmark -> copy(searchFields = highlights)
     is BlockView.Media.File -> copy(searchFields = highlights)
     is BlockView.Page -> copy(searchFields = highlights)

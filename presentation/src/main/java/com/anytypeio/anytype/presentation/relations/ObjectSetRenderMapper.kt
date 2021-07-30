@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewState
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.model.*
+import timber.log.Timber
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -122,15 +123,17 @@ fun ObjectSet.simpleRelations(viewerId: Id?): ArrayList<SimpleRelationView> {
 }
 
 fun DVViewer.toViewRelation(relation: Relation): SimpleRelationView {
-    return viewerRelations.first { it.key == relation.key }.let { vRelation ->
-        SimpleRelationView(
-            key = relation.key,
-            isHidden = relation.isHidden,
-            isVisible = vRelation.isVisible,
-            title = relation.name,
-            format = relation.format.toView()
-        )
+    val viewerRelation = viewerRelations.firstOrNull { it.key == relation.key }
+    if (viewerRelation == null) {
+        Timber.e("ViewerRelations is not containing relation:$relation")
     }
+    return SimpleRelationView(
+        key = relation.key,
+        isHidden = relation.isHidden,
+        isVisible = viewerRelation?.isVisible ?: false,
+        title = relation.name,
+        format = relation.format.toView()
+    )
 }
 
 fun Relation.toCreateFilterCheckboxView(isSelected: Boolean? = null): List<CreateFilterView.Checkbox> {

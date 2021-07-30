@@ -247,8 +247,8 @@ class BlockDataRepository(
         style = style
     )
 
-    override suspend fun getObjectTypes(isArchived: Boolean): List<ObjectType> {
-        return factory.remote.getObjectTypes(isArchived)
+    override suspend fun getObjectTypes(): List<ObjectType> {
+        return factory.remote.getObjectTypes()
     }
 
     override suspend fun createObjectType(

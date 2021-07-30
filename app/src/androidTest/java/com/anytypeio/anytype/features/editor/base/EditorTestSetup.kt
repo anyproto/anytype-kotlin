@@ -7,6 +7,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -157,6 +158,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var flavourConfigProvider: FlavourConfigProvider
 
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
     val root: String = "rootId123"
 
     private val config = Config(
@@ -295,7 +299,8 @@ open class EditorTestSetup {
             detailModificationManager = InternalDetailModificationManager(stores.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig
+            getFlavourConfig = getFlavourConfig,
+            objectTypesProvider = objectTypesProvider
         )
     }
 

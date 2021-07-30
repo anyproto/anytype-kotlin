@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_models.ObjectTypes
+import com.anytypeio.anytype.core_models.ObjectTypeConst
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Relations
@@ -30,7 +30,7 @@ class SearchInboxObjects(
             ),
             DVFilter(
                 condition = DVFilterCondition.EQUAL,
-                value = ObjectTypes.PAGE,
+                value = ObjectTypeConst.PAGE,
                 relationKey = Relations.TYPE,
                 operator = DVFilterOperator.AND
             )

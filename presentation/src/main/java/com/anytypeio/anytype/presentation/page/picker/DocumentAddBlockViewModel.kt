@@ -27,7 +27,8 @@ class DocumentAddBlockViewModel(
         if (getFlavourConfig.isDataViewEnabled()) {
             views.value = listOf(AddBlockView.AddBlockHeader) + itemsExperimental()
             viewModelScope.launch {
-                getObjectTypes.invoke(Unit).proceed(
+                val params = GetObjectTypes.Params(filterArchivedObjects = true)
+                getObjectTypes.invoke(params).proceed(
                     failure = { Timber.e("Error getting object type list:${it.message}") },
                     success = { addObjectTypes(it) }
                 )

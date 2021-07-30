@@ -204,8 +204,8 @@ class BlockMiddleware(
         command: Command.SetFields
     ): Payload = middleware.setFields(command)
 
-    override suspend fun getObjectTypes(isArchived: Boolean): List<ObjectType> {
-        return middleware.getObjectTypes(isArchived).map { it.toCoreModels() }
+    override suspend fun getObjectTypes(): List<ObjectType> {
+        return middleware.getObjectTypes().map { it.toCoreModels() }
     }
 
     override suspend fun createObjectType(

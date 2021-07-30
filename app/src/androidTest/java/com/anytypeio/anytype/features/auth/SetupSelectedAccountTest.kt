@@ -8,8 +8,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
@@ -51,6 +54,9 @@ class SetupSelectedAccountTest {
     lateinit var authRepository: AuthRepository
 
     @Mock
+    lateinit var blockRepository: BlockRepository
+
+    @Mock
     lateinit var flavourConfigProvider: FlavourConfigProvider
 
     @Mock
@@ -59,6 +65,8 @@ class SetupSelectedAccountTest {
     @Mock
     lateinit var pathProvider: PathProvider
 
+    lateinit var storeObjectTypes: StoreObjectTypes
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -66,11 +74,16 @@ class SetupSelectedAccountTest {
             repository = authRepository,
             flavourConfigProvider = flavourConfigProvider
         )
+        storeObjectTypes = StoreObjectTypes(
+            repo = blockRepository,
+            objectTypesProvider = DefaultObjectTypesProvider()
+        )
         TestSetupSelectedAccountFragment.testViewModelFactory =
             SetupSelectedAccountViewModelFactory(
                 startAccount = startAccount,
                 pathProvider = pathProvider,
-                analytics = analytics
+                analytics = analytics,
+                storeObjectTypes = storeObjectTypes
             )
     }
 

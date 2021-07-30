@@ -539,7 +539,9 @@ class SlashWidgetTesting : EditorTestSetup() {
                 relations = emptyList(),
                 description = MockDataFactory.randomString(),
                 isHidden = false,
-                smartBlockTypes = listOf()
+                smartBlockTypes = listOf(),
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = MockDataFactory.randomUuid(),
@@ -549,7 +551,9 @@ class SlashWidgetTesting : EditorTestSetup() {
                 relations = emptyList(),
                 description = MockDataFactory.randomString(),
                 isHidden = false,
-                smartBlockTypes = listOf()
+                smartBlockTypes = listOf(),
+                isArchived = false,
+                isReadOnly = false
             )
         )
 

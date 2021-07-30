@@ -13,7 +13,9 @@ import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemoteDataStore
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
+import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
@@ -242,5 +244,12 @@ object DataModule {
             ExperimentalFlavourConfigProvider()
         else
             DefaultFlavourConfigProvider()
+    }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideObjectTypesProvider(): ObjectTypesProvider {
+        return DefaultObjectTypesProvider()
     }
 }

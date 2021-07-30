@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
-import com.anytypeio.anytype.core_models.ObjectTypes
+import com.anytypeio.anytype.core_models.ObjectTypeConst
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Relations
@@ -27,7 +27,7 @@ class SearchRecentObjects(
             fulltext = EMPTY_TEXT,
             offset = INIT_OFFSET,
             limit = LIMIT,
-            objectTypeFilter = listOf(ObjectTypes.SET, ObjectTypes.PAGE)
+            objectTypeFilter = listOf(ObjectTypeConst.SET, ObjectTypeConst.PAGE)
         )
     }
 

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -191,6 +192,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var getFlavourConfig: GetFlavourConfig
 
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -276,7 +280,8 @@ open class EditorPresentationTestSetup {
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig
+            getFlavourConfig = getFlavourConfig,
+            objectTypesProvider = objectTypesProvider
         )
     }
 

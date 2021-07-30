@@ -974,14 +974,12 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun getObjectTypes(isArchived: Boolean): List<MObjectType> {
+    fun getObjectTypes(): List<MObjectType> {
         val request = Rpc.ObjectType.List.Request()
-        // TODO use isArchived flag when middleware is ready for that.
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectTypeList(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        // TODO do not use this flag directly, put it into request when it's ready
-        return response.objectTypes.filter { it.isArchived == isArchived }
+        return response.objectTypes
     }
 
     @Throws(Exception::class)

@@ -65,7 +65,9 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val relationId = MockDataFactory.randomUuid()

@@ -66,7 +66,9 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.BASIC    ,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val relationId = MockDataFactory.randomUuid()

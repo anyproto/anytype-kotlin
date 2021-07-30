@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.core_models.ObjectTypes
+import com.anytypeio.anytype.core_models.ObjectTypeConst
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
@@ -43,13 +43,14 @@ class ObjectSearchViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     private val supportedObjectTypes = if (getFlavourConfig.isDataViewEnabled())
-        listOf(ObjectTypes.PAGE, ObjectTypes.SET)
+        listOf(ObjectTypeConst.PAGE, ObjectTypeConst.SET)
     else
-        listOf(ObjectTypes.PAGE)
+        listOf(ObjectTypeConst.PAGE)
 
     init {
         viewModelScope.launch {
-            getObjectTypes.invoke(Unit).process(
+            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+            getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = { types.value = it }
             )

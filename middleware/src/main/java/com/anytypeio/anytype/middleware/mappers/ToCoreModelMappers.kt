@@ -395,7 +395,8 @@ fun MObjectType.toCoreModels(): ObjectType = ObjectType(
     relations = relations.map { it.toCoreModels() },
     layout = layout.toCoreModels(),
     smartBlockTypes = types.map { it.toCoreModel() },
-    isArchived = isArchived
+    isArchived = isArchived,
+    isReadOnly = readonly
 )
 
 fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {

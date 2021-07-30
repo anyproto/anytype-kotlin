@@ -329,7 +329,9 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.values().random(),
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val objectType2 = ObjectType(
@@ -340,7 +342,9 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.values().random(),
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val relationId = MockDataFactory.randomUuid()
@@ -447,7 +451,9 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val objectType2 = ObjectType(
@@ -458,7 +464,9 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val relationName = "Cast"
@@ -567,7 +575,9 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val objectType2 = ObjectType(
@@ -578,7 +588,9 @@ class DisplayRelationObjectValueTest {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val relationId = MockDataFactory.randomUuid()

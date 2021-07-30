@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 
 /**
  * Created by Konstantin Ivanov
@@ -16,7 +17,8 @@ class SplashViewModelFactory(
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val launchAccount: LaunchAccount,
     private val launchWallet: LaunchWallet,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeObjectTypes: StoreObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -25,6 +27,7 @@ class SplashViewModelFactory(
             checkAuthorizationStatus = checkAuthorizationStatus,
             launchAccount = launchAccount,
             launchWallet = launchWallet,
-            analytics = analytics
+            analytics = analytics,
+            storeObjectTypes = storeObjectTypes
         ) as T
 }

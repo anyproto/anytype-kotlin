@@ -14,15 +14,10 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_RECENT
 import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_SETS
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.core_models.ObjectTypes
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -88,9 +83,6 @@ class HomeDashboardViewModel(
     val inbox = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
     val isDataViewEnabled = MutableStateFlow(false)
-
-    private val objectTypes : List<ObjectType>
-    get() = stateData.value?.objectTypes ?: emptyList()
 
     private val views : List<DashboardView>
     get() = stateData.value?.blocks ?: emptyList()
@@ -324,7 +316,7 @@ class HomeDashboardViewModel(
                 else -> null
             }
             if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
-                if (view.type != ObjectTypes.TEMPLATE) {
+                if (view.type != ObjectTypeConst.TEMPLATE) {
                     if (view.layout == ObjectType.Layout.SET) {
                         proceedWithOpeningObjectSet(target)
                     } else {

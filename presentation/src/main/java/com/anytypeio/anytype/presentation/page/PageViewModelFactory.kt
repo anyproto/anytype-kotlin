@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
@@ -48,7 +49,8 @@ open class PageViewModelFactory(
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val getFlavourConfig: GetFlavourConfig
+    private val getFlavourConfig: GetFlavourConfig,
+    private val objectTypesProvider: ObjectTypesProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -77,7 +79,8 @@ open class PageViewModelFactory(
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig
+            getFlavourConfig = getFlavourConfig,
+            objectTypesProvider = objectTypesProvider
         ) as T
     }
 }

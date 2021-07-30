@@ -37,7 +37,7 @@ class GetObjectTypeTest {
     }
 
     @Test
-    fun `should call repo only once if the first call was successfull`() {
+    fun `should call repo only once if the first call was successful`() {
 
         val type = ObjectType(
             url = MockDataFactory.randomUuid(),
@@ -47,7 +47,9 @@ class GetObjectTypeTest {
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         runBlocking {
@@ -56,7 +58,9 @@ class GetObjectTypeTest {
                 onBlocking { repo.getObjectTypes() } doReturn listOf(type)
             }
 
-            val firstTimeResult = usecase.invoke(params = Unit)
+            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+
+            val firstTimeResult = usecase.invoke(params = params)
             firstTimeResult.either(
                 { Assert.fail() },
                 { results ->
@@ -66,7 +70,141 @@ class GetObjectTypeTest {
                     )
                 }
             )
-            val secondTimeResult = usecase.invoke(params = Unit)
+            val secondTimeResult = usecase.invoke(params = params)
+            assertEquals(firstTimeResult, secondTimeResult)
+
+            verify(repo, times(1)).getObjectTypes()
+        }
+    }
+
+    @Test
+    fun `should return not filtered object types`() {
+
+        val type1 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            relations = emptyList(),
+            layout = ObjectType.Layout.values().random(),
+            emoji = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
+        )
+
+        val type2 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            relations = emptyList(),
+            layout = ObjectType.Layout.values().random(),
+            emoji = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(),
+            isArchived = true,
+            isReadOnly = false
+        )
+
+        val type3 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            relations = emptyList(),
+            layout = ObjectType.Layout.values().random(),
+            emoji = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
+        )
+
+        runBlocking {
+
+            usecase.stub {
+                onBlocking { repo.getObjectTypes() } doReturn listOf(type1, type2, type3)
+            }
+
+            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+
+            val firstTimeResult = usecase.invoke(params = params)
+            firstTimeResult.either(
+                { Assert.fail() },
+                { results ->
+                    assertEquals(
+                        expected = listOf(type1, type3),
+                        actual = results
+                    )
+                }
+            )
+            val secondTimeResult = usecase.invoke(params = params)
+            assertEquals(firstTimeResult, secondTimeResult)
+
+            verify(repo, times(1)).getObjectTypes()
+        }
+    }
+
+    @Test
+    fun `should return all object types`() {
+
+        val type1 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            relations = emptyList(),
+            layout = ObjectType.Layout.values().random(),
+            emoji = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
+        )
+
+        val type2 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            relations = emptyList(),
+            layout = ObjectType.Layout.values().random(),
+            emoji = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(),
+            isArchived = true,
+            isReadOnly = false
+        )
+
+        val type3 = ObjectType(
+            url = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            relations = emptyList(),
+            layout = ObjectType.Layout.values().random(),
+            emoji = MockDataFactory.randomString(),
+            description = MockDataFactory.randomString(),
+            isHidden = MockDataFactory.randomBoolean(),
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
+        )
+
+        runBlocking {
+
+            usecase.stub {
+                onBlocking { repo.getObjectTypes() } doReturn listOf(type1, type2, type3)
+            }
+
+            val params = GetObjectTypes.Params(filterArchivedObjects = false)
+
+            val firstTimeResult = usecase.invoke(params = params)
+            firstTimeResult.either(
+                { Assert.fail() },
+                { results ->
+                    assertEquals(
+                        expected = listOf(type1, type2, type3),
+                        actual = results
+                    )
+                }
+            )
+            val secondTimeResult = usecase.invoke(params = params)
             assertEquals(firstTimeResult, secondTimeResult)
 
             verify(repo, times(1)).getObjectTypes()

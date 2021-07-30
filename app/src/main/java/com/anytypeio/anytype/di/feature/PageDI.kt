@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
@@ -145,7 +146,8 @@ object EditorSessionModule {
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
         getCompatibleObjectTypes: GetCompatibleObjectTypes,
-        getFlavourConfig: GetFlavourConfig
+        getFlavourConfig: GetFlavourConfig,
+        objectTypesProvider: ObjectTypesProvider
     ): PageViewModelFactory = PageViewModelFactory(
         openPage = openPage,
         closePage = closePage,
@@ -170,7 +172,8 @@ object EditorSessionModule {
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
         getCompatibleObjectTypes = getCompatibleObjectTypes,
-        getFlavourConfig = getFlavourConfig
+        getFlavourConfig = getFlavourConfig,
+        objectTypesProvider = objectTypesProvider
     )
 
     @JvmStatic

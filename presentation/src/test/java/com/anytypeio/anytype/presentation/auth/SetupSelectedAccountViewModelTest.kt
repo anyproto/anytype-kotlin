@@ -4,9 +4,12 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
@@ -31,7 +34,10 @@ class SetupSelectedAccountViewModelTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
-    lateinit var repo: AuthRepository
+    lateinit var authRepo: AuthRepository
+
+    @Mock
+    lateinit var blockRepo: BlockRepository
 
     @Mock
     lateinit var analytics: Analytics
@@ -42,14 +48,23 @@ class SetupSelectedAccountViewModelTest {
     @Mock
     lateinit var flavourConfigProvider: FlavourConfigProvider
 
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
+    lateinit var storeObjectTypes: StoreObjectTypes
+
     private lateinit var startAccount: StartAccount
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
-            repository = repo,
+            repository = authRepo,
             flavourConfigProvider = flavourConfigProvider
+        )
+        storeObjectTypes = StoreObjectTypes(
+            repo = blockRepo,
+            objectTypesProvider = objectTypesProvider
         )
     }
 
@@ -64,7 +79,7 @@ class SetupSelectedAccountViewModelTest {
 
         assertEquals(
             expected = false,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
         coroutineTestRule.advanceTime(SetupSelectedAccountViewModel.TIMEOUT_DURATION)
     }
@@ -80,12 +95,12 @@ class SetupSelectedAccountViewModelTest {
 
         assertEquals(
             expected = false,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
         coroutineTestRule.advanceTime(SetupSelectedAccountViewModel.TIMEOUT_DURATION)
         assertEquals(
             expected = true,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
     }
 
@@ -98,7 +113,7 @@ class SetupSelectedAccountViewModelTest {
         val path = MockDataFactory.randomString()
 
         stubProvidePath(path)
-        repo.stub {
+        authRepo.stub {
             onBlocking {
                 startAccount(
                     id = any(),
@@ -122,14 +137,14 @@ class SetupSelectedAccountViewModelTest {
 
         assertEquals(
             expected = false,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
 
         coroutineTestRule.advanceTime(SetupSelectedAccountViewModel.TIMEOUT_DURATION * 2)
 
         assertEquals(
             expected = false,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
     }
 
@@ -144,7 +159,7 @@ class SetupSelectedAccountViewModelTest {
         val id = MockDataFactory.randomUuid()
 
         stubProvidePath(path)
-        repo.stub {
+        authRepo.stub {
             onBlocking {
                 startAccount(
                     id = id,
@@ -161,7 +176,7 @@ class SetupSelectedAccountViewModelTest {
 
         assertEquals(
             expected = false,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
 
         coroutineTestRule.advanceTime(SetupSelectedAccountViewModel.TIMEOUT_DURATION)
@@ -171,7 +186,7 @@ class SetupSelectedAccountViewModelTest {
 
         assertEquals(
             expected = false,
-            actual = vm.isMigrationInProgres.value
+            actual = vm.isMigrationInProgress.value
         )
     }
 
@@ -185,7 +200,8 @@ class SetupSelectedAccountViewModelTest {
         return SetupSelectedAccountViewModel(
             startAccount = startAccount,
             analytics = analytics,
-            pathProvider = pathProvider
+            pathProvider = pathProvider,
+            storeObjectTypes = storeObjectTypes
         )
     }
 }

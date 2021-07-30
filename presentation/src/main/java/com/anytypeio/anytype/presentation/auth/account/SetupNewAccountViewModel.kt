@@ -12,6 +12,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -29,7 +30,8 @@ sealed class SetupNewAccountViewState{
 class SetupNewAccountViewModel(
     private val session: Session,
     private val createAccount: CreateAccount,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeObjectTypes: StoreObjectTypes
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
@@ -74,10 +76,28 @@ class SetupNewAccountViewModel(
                     updateUserProps(account.id)
                     sendAuthEvent(startTime, account.id)
                     _state.postValue(SetupNewAccountViewState.Success)
-                    navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
+                    proceedWithUpdatingObjectTypesStore()
                 }
             )
         }
+    }
+
+    private fun proceedWithUpdatingObjectTypesStore() {
+        viewModelScope.launch {
+            storeObjectTypes.invoke(Unit).process(
+                failure = {
+                    Timber.e(it, "Error while store account object types")
+                    navigateToCongratsScreen()
+                },
+                success = {
+                    navigateToCongratsScreen()
+                }
+            )
+        }
+    }
+
+    private fun navigateToCongratsScreen() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
     }
 
     private fun updateUserProps(id: String) {

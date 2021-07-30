@@ -7,9 +7,23 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class GetObjectTypes(
     private val repo: BlockRepository
-) : CacheUseCase<List<ObjectType>, Unit>() {
+) : CacheUseCase<List<ObjectType>, GetObjectTypes.Params>() {
 
     override suspend fun run(
-        params: Unit
-    ): Either<Throwable, List<ObjectType>> = safe { repo.getObjectTypes() }
+        params: Params
+    ): Either<Throwable, List<ObjectType>> = safe {
+        val objectTypes = repo.getObjectTypes()
+        if (params.filterArchivedObjects) {
+            objectTypes.filter { !it.isArchived }
+        } else {
+            objectTypes
+        }
+    }
+
+    /**
+     * @param filterArchivedObjects if true, filter object types by not archived types
+     */
+    class Params(
+        val filterArchivedObjects: Boolean
+    )
 }

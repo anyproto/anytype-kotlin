@@ -4,13 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.ACCOUNT_SELECT
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_ACCOUNT_ID
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -26,10 +28,11 @@ import timber.log.Timber
 class SetupSelectedAccountViewModel(
     private val startAccount: StartAccount,
     private val pathProvider: PathProvider,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeObjectTypes: StoreObjectTypes
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    val isMigrationInProgres = MutableStateFlow(false)
+    val isMigrationInProgress = MutableStateFlow(false)
     val error = MutableLiveData<String>()
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -41,7 +44,7 @@ class SetupSelectedAccountViewModel(
     }
 
     private val migrationMessageJob: Job = viewModelScope.launch {
-        migrationMessageTimer.collect { isMigrationInProgres.value = true }
+        migrationMessageTimer.collect { isMigrationInProgress.value = true }
     }
 
     fun selectAccount(id: String) {
@@ -55,26 +58,44 @@ class SetupSelectedAccountViewModel(
             ).process(
                 failure = {
                     migrationMessageJob.cancel()
-                    isMigrationInProgres.value = false
+                    isMigrationInProgress.value = false
                     error.postValue(ERROR_MESSAGE)
                     Timber.e(it, "Error while selecting account with id: $id")
                 },
                 success = { accountId ->
                     migrationMessageJob.cancel()
-                    isMigrationInProgres.value = false
-                    updateUserProperties(
-                        analytics = analytics,
-                        userProperty = UserProperty.AccountId(accountId)
-                    )
+                    isMigrationInProgress.value = false
+                    updateUserProps(accountId)
                     sendEvent(startTime, accountId)
-                    navigateToHomeDashboard()
+                    proceedWithUpdatingObjectTypesStore()
                 }
             )
         }
     }
 
-    private fun navigateToHomeDashboard() {
+    private fun proceedWithUpdatingObjectTypesStore() {
+        viewModelScope.launch {
+            storeObjectTypes.invoke(Unit).process(
+                failure = {
+                    Timber.e(it, "Error while store account object types")
+                    navigateToDashboard()
+                },
+                success = {
+                    navigateToDashboard()
+                }
+            )
+        }
+    }
+
+    private fun navigateToDashboard() {
         navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromLogin))
+    }
+
+    private fun updateUserProps(id: String) {
+        viewModelScope.updateUserProperties(
+            analytics = analytics,
+            userProperty = UserProperty.AccountId(id)
+        )
     }
 
     private fun sendEvent(startTime: Long, id: String) {
@@ -84,13 +105,13 @@ class SetupSelectedAccountViewModel(
             startTime = startTime,
             middleTime = middleTime,
             renderTime = middleTime,
-            eventName = EventsDictionary.ACCOUNT_SELECT,
-            props = Props(mapOf(EventsDictionary.PROP_ACCOUNT_ID to id))
+            eventName = ACCOUNT_SELECT,
+            props = Props(mapOf(PROP_ACCOUNT_ID to id))
         )
     }
 
     companion object {
-        const val ERROR_MESSAGE = "An error occured while starting account..."
+        const val ERROR_MESSAGE = "An error occurred while starting account..."
         const val TIMEOUT_DURATION = 5000L
     }
 }

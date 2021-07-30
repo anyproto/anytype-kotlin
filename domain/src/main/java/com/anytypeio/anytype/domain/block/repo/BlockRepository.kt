@@ -120,7 +120,7 @@ interface BlockRepository {
 
     suspend fun setFields(command: Command.SetFields): Payload
 
-    suspend fun getObjectTypes(isArchived: Boolean = false): List<ObjectType>
+    suspend fun getObjectTypes(): List<ObjectType>
 
     suspend fun createObjectType(prototype: ObjectType.Prototype): ObjectType
 

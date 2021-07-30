@@ -293,7 +293,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf(SmartBlockType.PAGE)
+            smartBlockTypes = listOf(SmartBlockType.PAGE),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val type2 = ObjectType(
@@ -304,7 +306,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf(SmartBlockType.PAGE)
+            smartBlockTypes = listOf(SmartBlockType.PAGE),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val type3 = ObjectType(
@@ -315,7 +319,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             emoji = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             isHidden = MockDataFactory.randomBoolean(),
-            smartBlockTypes = listOf(SmartBlockType.PAGE)
+            smartBlockTypes = listOf(SmartBlockType.PAGE),
+            isArchived = false,
+            isReadOnly = false
         )
 
         stubInterceptEvents(

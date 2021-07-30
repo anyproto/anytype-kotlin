@@ -59,7 +59,8 @@ class CreateObjectSetViewModel(
             }
         }
         viewModelScope.launch {
-            getObjectTypes(Unit).process(
+            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+            getObjectTypes(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = { result ->
                     Timber.d("Result: $result")

@@ -58,7 +58,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -163,7 +165,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -268,7 +272,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -373,7 +379,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -478,7 +486,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val record1: Map<String, Any?> = mapOf(
@@ -583,7 +593,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
             layout = ObjectType.Layout.PROFILE,
             description = "",
             isHidden = false,
-            smartBlockTypes = listOf()
+            smartBlockTypes = listOf(),
+            isArchived = false,
+            isReadOnly = false
         )
 
         val record1: Map<String, Any?> = mapOf(

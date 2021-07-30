@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -51,6 +52,8 @@ abstract class TestObjectSetSetup {
     lateinit var interceptEvents: InterceptEvents
     @Mock
     lateinit var threadStatusChannel: ThreadStatusChannel
+    @Mock
+    lateinit var analytics: Analytics
 
     private val session = ObjectSetSession()
     private val reducer = ObjectSetReducer()
@@ -109,7 +112,8 @@ abstract class TestObjectSetSetup {
             session = session,
             dispatcher = dispatcher,
             reducer = reducer,
-            objectSetRecordCache = objectSetRecordCache
+            objectSetRecordCache = objectSetRecordCache,
+            analytics = analytics
         )
     }
 

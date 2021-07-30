@@ -4,11 +4,14 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
@@ -40,17 +43,30 @@ class SplashViewModelTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var repo: BlockRepository
+
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
+    lateinit var storeObjectTypes: StoreObjectTypes
+
     lateinit var vm: SplashViewModel
 
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        storeObjectTypes = StoreObjectTypes(
+            repo = repo,
+            objectTypesProvider = objectTypesProvider
+        )
         vm = SplashViewModel(
             checkAuthorizationStatus = checkAuthorizationStatus,
             launchAccount = launchAccount,
             launchWallet = launchWallet,
-            analytics = analytics
+            analytics = analytics,
+            storeObjectTypes = storeObjectTypes
         )
     }
 

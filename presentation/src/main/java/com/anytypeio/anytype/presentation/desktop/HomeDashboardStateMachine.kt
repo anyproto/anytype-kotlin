@@ -42,7 +42,7 @@ sealed class HomeDashboardStateMachine {
     /**
      * @property isInitialized whether this state is initialized
      * @property isLoading whether the data is being loaded to prepare a new state
-     * @property error if present, represents an error occured in this state machine
+     * @property error if present, represents an error occurred in this state machine
      * @property blocks current dashboard data state that should be rendered
      */
     data class State(

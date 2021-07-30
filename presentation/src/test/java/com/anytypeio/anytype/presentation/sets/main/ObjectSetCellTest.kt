@@ -216,7 +216,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.PAGE),
                 isHidden = false,
-                description = "page"
+                description = "page",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeImage,
@@ -226,7 +228,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.FILE),
                 isHidden = false,
-                description = "image"
+                description = "image",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeSet,
@@ -236,7 +240,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.SET),
                 isHidden = false,
-                description = "set"
+                description = "set",
+                isArchived = false,
+                isReadOnly = false
             )
         )
 
@@ -282,7 +288,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.PAGE),
                 isHidden = false,
-                description = "page"
+                description = "page",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeImage,
@@ -292,7 +300,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.FILE),
                 isHidden = false,
-                description = "image"
+                description = "image",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeSet,
@@ -302,7 +312,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.SET),
                 isHidden = false,
-                description = "set"
+                description = "set",
+                isArchived = false,
+                isReadOnly = false
             )
         )
 
@@ -349,7 +361,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.PAGE),
                 isHidden = false,
-                description = "page"
+                description = "page",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeImage,
@@ -359,7 +373,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.FILE),
                 isHidden = false,
-                description = "image"
+                description = "image",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeSet,
@@ -369,7 +385,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.SET),
                 isHidden = false,
-                description = "set"
+                description = "set",
+                isArchived = false,
+                isReadOnly = false
             )
         )
 
@@ -416,7 +434,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.PAGE),
                 isHidden = false,
-                description = "page"
+                description = "page",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeImage,
@@ -426,7 +446,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.FILE),
                 isHidden = false,
-                description = "image"
+                description = "image",
+                isArchived = false,
+                isReadOnly = false
             ),
             ObjectType(
                 url = objectTypeSet,
@@ -436,7 +458,9 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 emoji = "",
                 smartBlockTypes = listOf(SmartBlockType.SET),
                 isHidden = false,
-                description = "set"
+                description = "set",
+                isArchived = false,
+                isReadOnly = false
             )
         )
 

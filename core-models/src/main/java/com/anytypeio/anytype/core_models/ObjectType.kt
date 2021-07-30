@@ -15,9 +15,10 @@ data class ObjectType(
     val relations: List<Relation>,
     val layout: Layout,
     val emoji: String,
-    val description: String?,
+    val description: String,
     val isHidden: Boolean,
-    val isArchived: Boolean = false,
+    val isArchived: Boolean,
+    val isReadOnly: Boolean,
     val smartBlockTypes: List<SmartBlockType>
 ) {
     enum class Layout(val code: Int) {

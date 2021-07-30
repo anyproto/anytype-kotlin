@@ -71,6 +71,8 @@ object MockTypicalDocumentFactory {
         emoji = MockDataFactory.randomString(),
         description = MockDataFactory.randomString(),
         isHidden = MockDataFactory.randomBoolean(),
-        smartBlockTypes = listOf(SmartBlockType.PAGE)
+        smartBlockTypes = listOf(SmartBlockType.PAGE),
+        isArchived = false,
+        isReadOnly = false
     )
 }

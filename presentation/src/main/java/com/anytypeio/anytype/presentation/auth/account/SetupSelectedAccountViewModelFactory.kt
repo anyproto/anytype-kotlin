@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.device.PathProvider
 
 class SetupSelectedAccountViewModelFactory(
     private val startAccount: StartAccount,
     private val pathProvider: PathProvider,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeObjectTypes: StoreObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -17,7 +19,8 @@ class SetupSelectedAccountViewModelFactory(
         return SetupSelectedAccountViewModel(
             startAccount = startAccount,
             pathProvider = pathProvider,
-            analytics = analytics
+            analytics = analytics,
+            storeObjectTypes = storeObjectTypes
         ) as T
     }
 }

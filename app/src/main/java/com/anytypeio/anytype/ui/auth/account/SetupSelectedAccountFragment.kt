@@ -62,7 +62,7 @@ open class SetupSelectedAccountFragment :
     private fun subscribe() {
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
         vm.error.observe(viewLifecycleOwner, errorObserver)
-        lifecycleScope.subscribe(vm.isMigrationInProgres) { isInProgress ->
+        lifecycleScope.subscribe(vm.isMigrationInProgress) { isInProgress ->
             if (isInProgress) {
                 tvMigrationInProgress.visible()
                 tvMigrationInProgress.startAnimation(blinkingAnimation)

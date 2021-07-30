@@ -199,14 +199,17 @@ class ViewerFilterViewModel(
     ): List<FilterView> {
         val list = mutableListOf<FilterView>()
         filters.forEach { filter ->
-            list.add(
-                filter.toView(
-                    relation = relations.first { it.key == filter.relationKey },
-                    details = details,
-                    isInEditMode = screenState == ScreenState.EDIT,
-                    urlBuilder = urlBuilder
+            //todo Fast fix. In feature we should proper handle DVFilterCondition.NONE
+            if (filter.condition != DVFilterCondition.NONE) {
+                list.add(
+                    filter.toView(
+                        relation = relations.first { it.key == filter.relationKey },
+                        details = details,
+                        isInEditMode = screenState == ScreenState.EDIT,
+                        urlBuilder = urlBuilder
+                    )
                 )
-            )
+            }
         }
         return list
     }

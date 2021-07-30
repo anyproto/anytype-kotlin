@@ -1,11 +1,13 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.2 (WIP)
+## Version 0.2.2
 
 ### Fixes & tech 🚒
 
-* Opening styling panel in objects with task layout crashes the app (#1701)
-* Opening search for content in objects with task layout crashes the app (#1701)
+* Object | Opening styling panel in objects with task layout crashes the app (#1701)
+* Object | Opening search for content in objects with task layout crashes the app (#1701)
+* Data View | Opening filter without condition in data view crashes the app (#1704)
+* Data View | Click on filter with hidden relation in data view crashes the app (#1702)
 
 ## Version 0.2.1
 

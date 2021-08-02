@@ -614,6 +614,7 @@ class ObjectSetViewModel(
                                 analytics = analytics
                             )
                             total.value = total.value.inc()
+                            proceedWithRefreshingViewerAfterObjectCreation()
                             objectSetRecordCache.map[context] = record
                             dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
                         }
@@ -623,6 +624,24 @@ class ObjectSetViewModel(
         } else {
             toast("Data view is not initialized yet.")
         }
+    }
+
+    private suspend fun proceedWithRefreshingViewerAfterObjectCreation() {
+        val set = reducer.state.value
+        val viewer = set.viewerById(session.currentViewerId).id
+
+        setActiveViewer(
+            SetActiveViewer.Params(
+                context = context,
+                block = set.dataview.id,
+                view = viewer,
+                limit = ObjectSetConfig.DEFAULT_LIMIT,
+                offset = offset.value
+            )
+        ).process(
+            success = { payload -> defaultPayloadConsumer(payload) },
+            failure = { Timber.e(it, "Error while refreshing viewer") }
+        )
     }
 
     fun onViewerCustomizeButtonClicked() {

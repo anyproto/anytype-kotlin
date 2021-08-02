@@ -4,7 +4,8 @@
 
 ### Fixes & tech 🚒
 
-* Data View | Icon is not synced correctly with other peers (#)
+* Data View | Icon is not synced correctly with other peers (#e6eef8d)
+* Data View | Fix create-new-record flow (#1707)
 * Object | Remove featured relations max count limit (#1706)
 * Object | Do not show featured relation with empty values below object's header (#1706)
 

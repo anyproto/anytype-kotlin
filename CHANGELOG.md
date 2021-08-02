@@ -8,6 +8,7 @@
 * Data View | Fix create-new-record flow (#1707)
 * Object | Remove featured relations max count limit (#1706)
 * Object | Do not show featured relation with empty values below object's header (#1706)
+* Editor | Code block | Updated syntax rules for Rust (highlight basic comments) (#1708)
 
 ## Version 0.2.2
 

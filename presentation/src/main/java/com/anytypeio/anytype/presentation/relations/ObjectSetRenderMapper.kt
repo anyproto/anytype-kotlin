@@ -106,7 +106,10 @@ fun ObjectSet.title(
         text = title.content<Block.Content.Text>().text,
         emoji = details[ctx]?.iconEmoji,
         image = details[ctx]?.iconImage?.let { hash ->
-            urlBuilder.thumbnail(hash = hash)
+            if (hash.isNotEmpty())
+                urlBuilder.thumbnail(hash = hash)
+            else
+                null
         }
     )
 }

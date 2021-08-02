@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.2.3 (WIP)
+
+### Fixes & tech 🚒
+
+* Data View | Icon is not synced correctly with other peers (#)
+
 ## Version 0.2.2
 
 ### Fixes & tech 🚒

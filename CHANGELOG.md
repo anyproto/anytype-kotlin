@@ -5,6 +5,8 @@
 ### Fixes & tech 🚒
 
 * Data View | Icon is not synced correctly with other peers (#)
+* Object | Remove featured relations max count limit (#1706)
+* Object | Do not show featured relation with empty values below object's header (#1706)
 
 ## Version 0.2.2
 

@@ -98,20 +98,16 @@ class RelationListViewModel(
                     )
                 }
             } else {
-                if (current.size < MAX_FEATURED_RELATION_COUNT) {
-                    viewModelScope.launch {
-                        addToFeaturedRelations(
-                            AddToFeaturedRelations.Params(
-                                ctx = ctx,
-                                relations = listOf(view.relationId)
-                            )
-                        ).process(
-                            failure = { Timber.e(it, "Error while adding to featured relations") },
-                            success = { dispatcher.send(it) }
+                viewModelScope.launch {
+                    addToFeaturedRelations(
+                        AddToFeaturedRelations.Params(
+                            ctx = ctx,
+                            relations = listOf(view.relationId)
                         )
-                    }
-                } else {
-                    _toasts.emit(MAX_FEATURED_RELATION_COUNT_ERROR)
+                    ).process(
+                        failure = { Timber.e(it, "Error while adding to featured relations") },
+                        success = { dispatcher.send(it) }
+                    )
                 }
             }
         }

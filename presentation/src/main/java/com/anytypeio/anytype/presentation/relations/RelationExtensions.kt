@@ -1,11 +1,10 @@
 package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.*
@@ -44,24 +43,32 @@ fun Relation.view(
                 details = details.details,
                 builder = urlBuilder
             )
-            DocumentRelationView.Object(
-                relationId = relation.key,
-                name = relation.name,
-                objects = objects,
-                isFeatured = isFeatured
-            )
+            if (objects.isNotEmpty()) {
+                DocumentRelationView.Object(
+                    relationId = relation.key,
+                    name = relation.name,
+                    objects = objects,
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
         relation.format == Relation.Format.FILE -> {
             val files = values.buildFileViews(
                 columnKey = relation.key,
                 details = details.details
             )
-            DocumentRelationView.File(
-                relationId = relation.key,
-                name = relation.name,
-                files = files,
-                isFeatured = isFeatured
-            )
+            if (files.isNotEmpty()) {
+                DocumentRelationView.File(
+                    relationId = relation.key,
+                    name = relation.name,
+                    files = files,
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
         relation.format == Relation.Format.DATE -> {
             //TODO In DataView Relation Date uses DateFormat and TimeFormat
@@ -75,36 +82,48 @@ fun Relation.view(
             } else {
                 null
             }
-            DocumentRelationView.Default(
-                relationId = relation.key,
-                name = relation.name,
-                value = formattedDate,
-                isFeatured = isFeatured
-            )
+            if (formattedDate != null) {
+                DocumentRelationView.Default(
+                    relationId = relation.key,
+                    name = relation.name,
+                    value = formattedDate,
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
         relation.format == Relation.Format.STATUS -> {
             val status = values.buildStatusViews(
                 selOptions = relation.selections,
                 columnKey = relation.key
             )
-            DocumentRelationView.Status(
-                relationId = relation.key,
-                name = relation.name,
-                status = status,
-                isFeatured = isFeatured
-            )
+            if (status.isNotEmpty()) {
+                DocumentRelationView.Status(
+                    relationId = relation.key,
+                    name = relation.name,
+                    status = status,
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
         relation.format == Relation.Format.TAG -> {
             val tags = values.buildTagViews(
                 selOptions = relation.selections,
                 columnKey = relation.key
             )
-            DocumentRelationView.Tags(
-                relationId = relation.key,
-                name = relation.name,
-                tags = tags,
-                isFeatured = isFeatured
-            )
+            if (tags.isNotEmpty()) {
+                DocumentRelationView.Tags(
+                    relationId = relation.key,
+                    name = relation.name,
+                    tags = tags,
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
         relation.format == Relation.Format.CHECKBOX -> {
             DocumentRelationView.Checkbox(
@@ -116,20 +135,29 @@ fun Relation.view(
         }
         relation.format == Relation.Format.NUMBER -> {
             val value = values[relation.key]
-            DocumentRelationView.Default(
-                relationId = relation.key,
-                name = relation.name,
-                value = NumberParser.parse(value),
-                isFeatured = isFeatured
-            )
+            if (value != null) {
+                DocumentRelationView.Default(
+                    relationId = relation.key,
+                    name = relation.name,
+                    value = NumberParser.parse(value),
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
         else -> {
-            DocumentRelationView.Default(
-                relationId = relation.key,
-                name = relation.name,
-                value = values[relation.key] as? String,
-                isFeatured = isFeatured
-            )
+            val value = values[relation.key]
+            if (value != null) {
+                DocumentRelationView.Default(
+                    relationId = relation.key,
+                    name = relation.name,
+                    value = value as? String,
+                    isFeatured = isFeatured
+                )
+            } else {
+                null
+            }
         }
     }
 }

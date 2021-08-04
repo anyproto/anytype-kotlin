@@ -35,35 +35,42 @@ class GetObjectInfoWithLinksTest {
 
         val pageId = MockDataFactory.randomUuid()
 
+        val obj1 = ObjectWrapper.Basic(mapOf("name" to "Alex"))
+        val obj2 = ObjectWrapper.Basic(mapOf("name" to "Mike", "isArchived" to false))
+        val obj3 = ObjectWrapper.Basic(mapOf("name" to "Leo", "isArchived" to true))
+        val obj4 = ObjectWrapper.Basic(mapOf("name" to "Teo"))
+        val obj5 = ObjectWrapper.Basic(mapOf("name" to "Thom", "isArchived" to false))
+        val obj6 = ObjectWrapper.Basic(mapOf("name" to "Andrey", "isArchived" to true))
+
         repository.stub {
             onBlocking { getObjectInfoWithLinks(pageId) } doReturn ObjectInfoWithLinks(
                 id = pageId,
                 documentInfo = DocumentInfo(
                     id = pageId,
-                    fields = Block.Fields.empty(),
                     snippet = "Snip",
                     hasInboundLinks = true,
-                    smartBlockType = SmartBlockType.PAGE
+                    smartBlockType = SmartBlockType.PAGE,
+                    obj = ObjectWrapper.Basic(emptyMap()),
                 ),
                 links = ObjectLinks(
                     inbound = listOf(
                         DocumentInfo(
                             id = "12",
-                            fields = Block.Fields(mapOf("name" to "Alex")),
+                            obj = obj1,
                             snippet = "Snippet12",
                             hasInboundLinks = false,
                             smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "13",
-                            fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
+                            obj = obj2,
                             snippet = "Snippet13",
                             hasInboundLinks = false,
                             smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "14",
-                            fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
+                            obj = obj3,
                             snippet = "Snippet14",
                             hasInboundLinks = false,
                             smartBlockType = SmartBlockType.PAGE
@@ -72,21 +79,21 @@ class GetObjectInfoWithLinksTest {
                     outbound = listOf(
                         DocumentInfo(
                             id = "15",
-                            fields = Block.Fields(mapOf("name" to "Teo")),
+                            obj = obj4,
                             snippet = "Snippet15",
                             hasInboundLinks = false,
                             smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "16",
-                            fields = Block.Fields(mapOf("name" to "Thom", "isArchived" to false)),
+                            obj = obj5,
                             snippet = "Snippet16",
                             hasInboundLinks = false,
                             smartBlockType = SmartBlockType.PAGE
                         ),
                         DocumentInfo(
                             id = "17",
-                            fields = Block.Fields(mapOf("name" to "Andrey", "isArchived" to true)),
+                            obj = obj6,
                             snippet = "Snippet17",
                             hasInboundLinks = false,
                             smartBlockType = SmartBlockType.PAGE
@@ -107,19 +114,14 @@ class GetObjectInfoWithLinksTest {
                         expected = listOf(
                             DocumentInfo(
                                 id = "15",
-                                fields = Block.Fields(mapOf("name" to "Teo")),
+                                obj = obj4,
                                 snippet = "Snippet15",
                                 hasInboundLinks = false,
                                 smartBlockType = SmartBlockType.PAGE
                             ),
                             DocumentInfo(
                                 id = "16",
-                                fields = Block.Fields(
-                                    mapOf(
-                                        "name" to "Thom",
-                                        "isArchived" to false
-                                    )
-                                ),
+                                obj = obj5,
                                 snippet = "Snippet16",
                                 hasInboundLinks = false,
                                 smartBlockType = SmartBlockType.PAGE
@@ -131,19 +133,14 @@ class GetObjectInfoWithLinksTest {
                         expected = listOf(
                             DocumentInfo(
                                 id = "12",
-                                fields = Block.Fields(mapOf("name" to "Alex")),
+                                obj = obj1,
                                 snippet = "Snippet12",
                                 hasInboundLinks = false,
                                 smartBlockType = SmartBlockType.PAGE
                             ),
                             DocumentInfo(
                                 id = "13",
-                                fields = Block.Fields(
-                                    mapOf(
-                                        "name" to "Mike",
-                                        "isArchived" to false
-                                    )
-                                ),
+                                obj = obj2,
                                 snippet = "Snippet13",
                                 hasInboundLinks = false,
                                 smartBlockType = SmartBlockType.PAGE

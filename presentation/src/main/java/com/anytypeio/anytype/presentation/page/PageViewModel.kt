@@ -58,6 +58,7 @@ import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.mapper.toMentionView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.page.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.page.Editor.Restore
@@ -73,7 +74,8 @@ import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.ext.*
 import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionConst.MENTION_PREFIX
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.mention.getMentionName
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
@@ -3796,10 +3798,15 @@ class PageViewModel(
                     getListPages.invoke(Unit).proceed(
                         failure = { it.timber() },
                         success = { response ->
-                            controlPanelInteractor.onEvent(
-                                ControlPanelMachine.Event.Mentions.OnResult(
-                                    mentions = response.listPages.map { it.toMentionView(urlBuilder) }
+                            val objectTypes = objectTypesProvider.get()
+                            val objectViews = response.listPages.map { pages ->
+                                pages.toMentionView(
+                                    objectTypes = objectTypes,
+                                    urlBuilder = urlBuilder
                                 )
+                            }
+                            controlPanelInteractor.onEvent(
+                                ControlPanelMachine.Event.Mentions.OnResult(objectViews)
                             )
                         }
                     )
@@ -3822,7 +3829,7 @@ class PageViewModel(
         Timber.d("onAddMentionNewPageClicked, name:[$name]")
 
         val params = CreateNewDocument.Params(
-            name = name.removePrefix(Mention.MENTION_PREFIX)
+            name = name.removePrefix(MENTION_PREFIX)
         )
 
         val startTime = System.currentTimeMillis()
@@ -3837,12 +3844,8 @@ class PageViewModel(
                 success = { result ->
                     val middleTime = System.currentTimeMillis()
                     onCreateMentionInText(
-                        mention = Mention(
-                            id = result.id,
-                            title = result.name.getMentionName(MENTION_TITLE_EMPTY),
-                            emoji = result.emoji,
-                            image = null
-                        ),
+                        id = result.id,
+                        name = result.name.getMentionName(MENTION_TITLE_EMPTY),
                         mentionTrigger = name
                     )
                     analytics.registerEvent(
@@ -3861,21 +3864,21 @@ class PageViewModel(
         }
     }
 
-    fun onMentionSuggestClick(mention: Mention, mentionTrigger: String) {
+    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String) {
         Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
-        onCreateMentionInText(mention, mentionTrigger)
+        onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }
 
-    fun onCreateMentionInText(mention: Mention, mentionTrigger: String) {
-        Timber.d("onCreateMentionInText, mention:[$mention], mentionTrigger:[$mentionFrom]")
+    fun onCreateMentionInText(id: Id, name: String, mentionTrigger: String) {
+        Timber.d("onCreateMentionInText, id:[$id], name:[$name], mentionTrigger:[$mentionFrom]")
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
 
         val target = blocks.first { it.id == focus.value }
 
         val new = target.addMention(
-            mentionText = mention.title,
-            mentionId = mention.id,
+            mentionText = name,
+            mentionId = id,
             from = mentionFrom,
             mentionTrigger = mentionTrigger
         )
@@ -3888,7 +3891,7 @@ class PageViewModel(
         }
 
         viewModelScope.launch {
-            val position = mentionFrom + mention.title.length + 1
+            val position = mentionFrom + name.length + 1
             orchestrator.stores.focus.update(
                 t = Editor.Focus(
                     id = new.id,
@@ -4028,7 +4031,6 @@ class PageViewModel(
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
         const val CANNOT_MOVE_PARENT_INTO_CHILD =
             "Cannot move parent into child. Please, check selected blocks."
-        const val MENTION_TITLE_EMPTY = "Untitled"
 
         const val CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR =
             "Opening action menu for title currently not supported"

@@ -9,13 +9,13 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.extension.isInRange
 import com.anytypeio.anytype.presentation.extension.style
 import com.anytypeio.anytype.presentation.mapper.marks
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.page.ControlPanelMachine.*
 import com.anytypeio.anytype.presentation.page.editor.Markup
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Companion.init
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState.Toolbar
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.styling.StylingMode
@@ -198,7 +198,7 @@ sealed class ControlPanelMachine {
         sealed class Mentions : Event() {
             data class OnStart(val cursorCoordinate: Int, val mentionFrom: Int) : Mentions()
             data class OnQuery(val text: String) : Mentions()
-            data class OnResult(val mentions: List<Mention>) : Mentions()
+            data class OnResult(val mentions: List<DefaultObjectView>) : Mentions()
             object OnMentionClicked : Mentions()
             object OnStop : Mentions()
         }

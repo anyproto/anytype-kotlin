@@ -12,8 +12,8 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
-import com.anytypeio.anytype.presentation.mapper.toEmojiView
-import com.anytypeio.anytype.presentation.mapper.toImageView
+import com.anytypeio.anytype.presentation.mapper.getEmojiPath
+import com.anytypeio.anytype.presentation.mapper.getImagePath
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.PageNavigationView
@@ -68,10 +68,10 @@ class MoveToViewModel(
                         stateData.postValue(
                             ViewState.Success(
                                 PageNavigationView(
-                                    title = documentInfo.fields.name.orEmpty(),
+                                    title = documentInfo.obj.name.orEmpty(),
                                     subtitle = documentInfo.snippet.orEmpty(),
-                                    image = documentInfo.fields.toImageView(urlBuilder),
-                                    emoji = documentInfo.fields.toEmojiView(),
+                                    image = documentInfo.obj.getImagePath(urlBuilder),
+                                    emoji = documentInfo.obj.getEmojiPath(),
                                     inbound = links.inbound.map { it.toView(urlBuilder) },
                                     outbound = links.outbound.map { it.toView(urlBuilder) }
                                 )

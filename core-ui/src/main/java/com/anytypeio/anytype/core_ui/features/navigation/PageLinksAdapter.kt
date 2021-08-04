@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.ObjectView
-import kotlinx.android.synthetic.main.item_object_default.view.*
+import kotlinx.android.synthetic.main.item_list_object.view.*
 
 @Deprecated("LEGACY SUSPECT")
 class PageLinksAdapter(
@@ -30,7 +30,7 @@ class PageLinksAdapter(
         parent: ViewGroup,
         viewType: Int
     ): PageLinkHolder = PageLinkHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_object_default, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_list_object, parent, false)
     ).apply {
         itemView.setOnClickListener {
             val pos = bindingAdapterPosition
@@ -51,7 +51,7 @@ class PageLinksAdapter(
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val title = itemView.tvTitle
         private val subtitle = itemView.tvSubtitle
-        private val icon = itemView.iconContainer
+        private val icon = itemView.ivIcon
 
         fun bind(link: ObjectView) {
             title.text = if (link.title.isEmpty()) untitled else link.title
@@ -78,7 +78,7 @@ class DefaultObjectViewAdapter(
         parent: ViewGroup,
         viewType: Int
     ): ObjectViewHolder = ObjectViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_object_default, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_list_object, parent, false)
     ).apply {
         itemView.setOnClickListener {
             val pos = bindingAdapterPosition
@@ -96,7 +96,7 @@ class DefaultObjectViewAdapter(
 
         private val title = itemView.tvTitle
         private val subtitle = itemView.tvSubtitle
-        private val icon = itemView.iconContainer
+        private val icon = itemView.ivIcon
 
         fun bind(link: DefaultObjectView) {
             title.text = link.name

@@ -13,7 +13,7 @@ open class GetListPages(
     override suspend fun run(params: Unit): Either<Throwable, Response> = safe {
         val documents = repo.getListPages()
         val pages = documents.filterNot { document ->
-            document.fields.isArchived == true
+            document.obj.isArchived == true
                     || document.smartBlockType == SmartBlockType.SET
                     || document.smartBlockType == SmartBlockType.BREADCRUMBS
                     || document.smartBlockType == SmartBlockType.HOME

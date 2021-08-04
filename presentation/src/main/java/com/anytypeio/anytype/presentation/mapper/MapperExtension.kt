@@ -1,18 +1,17 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.desktop.DashboardView
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.relations.getTypePrettyName
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -429,25 +428,24 @@ fun DebugSettings.toView(): EditorSettings =
 fun DocumentInfo.toView(urlBuilder: UrlBuilder): ObjectView =
     ObjectView(
         id = id,
-        title = fields.name.orEmpty(),
+        title = obj.name.orEmpty(),
         subtitle = snippet.orEmpty(),
-        image = fields.toImageView(urlBuilder),
-        emoji = fields.toEmojiView()
+        image = obj.getImagePath(urlBuilder),
+        emoji = obj.getEmojiPath()
     )
 
-fun Block.Fields.toImageView(urlBuilder: UrlBuilder): String? = this.iconImage.let { url ->
-    if (url.isNullOrBlank()) null else urlBuilder.image(url)
-}
-
-fun Block.Fields.toEmojiView(): String? = this.iconEmoji.let { emoji ->
-    if (emoji.isNullOrBlank()) null else emoji
-}
-
-fun DocumentInfo.toMentionView(urlBuilder: UrlBuilder) = Mention(
+fun DocumentInfo.toMentionView(
+    urlBuilder: UrlBuilder, objectTypes: List<ObjectType>
+) = DefaultObjectView(
     id = id,
-    title = fields.getName(),
-    image = fields.iconImage?.let { if (it.isNotEmpty()) urlBuilder.thumbnail(it) else null },
-    emoji = fields.iconEmoji
+    name = obj.name.orEmpty(),
+    typeName = objectTypes.getTypePrettyName(type = obj.type.firstOrNull()),
+    typeLayout = obj.layout,
+    icon = ObjectIcon.from(
+        obj = obj,
+        layout = obj.layout,
+        builder = urlBuilder
+    )
 )
 
 fun Block.Fields.getName(): String =

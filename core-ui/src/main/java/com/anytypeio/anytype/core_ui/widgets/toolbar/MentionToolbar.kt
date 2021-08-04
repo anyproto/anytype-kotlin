@@ -4,10 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import kotlinx.android.synthetic.main.widget_mention_menu.view.*
 
 class MentionToolbar @JvmOverloads constructor(
@@ -16,7 +18,7 @@ class MentionToolbar @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private var mentionClick: ((Mention, String) -> Unit)? = null
+    private var mentionClick: ((DefaultObjectView, String) -> Unit)? = null
     private var newPageClick: ((String) -> Unit)? = null
 
     init {
@@ -26,7 +28,10 @@ class MentionToolbar @JvmOverloads constructor(
         setup(context)
     }
 
-    fun setupClicks(mentionClick: (Mention, String) -> Unit, newPageClick: (String) -> Unit) {
+    fun setupClicks(
+        mentionClick: (DefaultObjectView, String) -> Unit,
+        newPageClick: (String) -> Unit
+    ) {
         this.mentionClick = mentionClick
         this.newPageClick = newPageClick
     }
@@ -37,17 +42,22 @@ class MentionToolbar @JvmOverloads constructor(
             layoutManager = lm
             adapter = MentionAdapter(
                 data = arrayListOf(),
-                clicked = { mention, filter ->
-                    mentionClick?.invoke(mention, filter)
+                onClicked = { objectView, filter ->
+                    mentionClick?.invoke(objectView, filter)
                 },
                 newClicked = { name ->
                     newPageClick?.invoke(name)
                 }
             )
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(context.drawable(R.drawable.divider_mentions))
+                }
+            )
         }
     }
 
-    fun addItems(items: List<Mention>) {
+    fun addItems(items: List<DefaultObjectView>) {
         (recyclerView.adapter as? MentionAdapter)?.setData(items)
     }
 

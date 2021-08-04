@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.page.editor.control
 
 import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention
 import com.anytypeio.anytype.presentation.page.editor.model.Alignment
 import com.anytypeio.anytype.presentation.page.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
@@ -197,7 +197,7 @@ data class ControlPanelState(
             val mentionFilter: String?,
             val cursorCoordinate: Int?,
             val updateList: Boolean = false,
-            val mentions: List<Mention> = emptyList()
+            val mentions: List<DefaultObjectView> = emptyList()
         ) : Toolbar() {
             companion object {
                 fun reset(): MentionToolbar = MentionToolbar(

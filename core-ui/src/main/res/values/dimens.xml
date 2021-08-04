@@ -129,7 +129,7 @@
     <dimen name="mention_span_image_padding_header_two">5dp</dimen>
     <dimen name="mention_span_image_padding_header_one">6dp</dimen>
 
-    <dimen name="mention_suggester_item_height">40dp</dimen>
+    <dimen name="mention_suggester_item_height">56dp</dimen>
     <dimen name="mention_list_padding_top">4dp</dimen>
     <dimen name="mention_list_padding_bottom">5dp</dimen>
     <dimen name="mention_suggester_padding_top">10dp</dimen>
@@ -158,5 +158,15 @@
     <dimen name="data_view_divider_height">0.5dp</dimen>
     <dimen name="object_icon_card_emoji_size">28dp</dimen>
     <dimen name="object_icon_card_rectangle_image_radius">2dp</dimen>
+
+
+    <!-- Object items is lists -->
+    <dimen name="list_item_object_icon_width">40dp</dimen>
+    <dimen name="list_item_object_icon_height">40dp</dimen>
+    <dimen name="list_item_object_icon_margin_start">16dp</dimen>
+    <dimen name="list_item_object_icon_margin_top">8dp</dimen>
+    <dimen name="list_item_object_icon_margin_bottom">8dp</dimen>
+    <dimen name="list_item_object_text_margin_start">68dp</dimen>
+    <dimen name="list_item_object_text_margin_end">24dp</dimen>
 
 </resources>

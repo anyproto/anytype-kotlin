@@ -1,9 +1,6 @@
 package com.anytypeio.anytype.domain.page.navigation
 
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.DocumentInfo
-import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
@@ -35,25 +32,29 @@ class GetListPagesTest {
     @Test
     fun `should filter results by archived pages`() {
 
+        val obj1 = ObjectWrapper.Basic(mapOf("name" to "Alex"))
+        val obj2 = ObjectWrapper.Basic(mapOf("name" to "Mike", "isArchived" to false))
+        val obj3 = ObjectWrapper.Basic(mapOf("name" to "Leo", "isArchived" to true))
+
         repository.stub {
             onBlocking { getListPages() } doReturn listOf(
                 DocumentInfo(
                     id = "123678",
-                    fields = Block.Fields(mapOf("name" to "Alex")),
+                    obj = obj1,
                     snippet = "Snippet1",
                     hasInboundLinks = false,
                     smartBlockType = SmartBlockType.PAGE
                 ),
                 DocumentInfo(
                     id = "9876",
-                    fields = Block.Fields(mapOf("name" to "Mike", "isArchived" to false)),
+                    obj = obj2,
                     snippet = "Snippet2",
                     hasInboundLinks = false,
                     smartBlockType = SmartBlockType.PAGE
                 ),
                 DocumentInfo(
                     id = "934",
-                    fields = Block.Fields(mapOf("name" to "Leo", "isArchived" to true)),
+                    obj = obj3,
                     snippet = "Snippet3",
                     hasInboundLinks = false,
                     smartBlockType = SmartBlockType.PAGE
@@ -70,19 +71,14 @@ class GetListPagesTest {
                         expected = listOf(
                             DocumentInfo(
                                 id = "123678",
-                                fields = Block.Fields(mapOf("name" to "Alex")),
+                                obj = obj1,
                                 snippet = "Snippet1",
                                 hasInboundLinks = false,
                                 smartBlockType = SmartBlockType.PAGE
                             ),
                             DocumentInfo(
                                 id = "9876",
-                                fields = Block.Fields(
-                                    mapOf(
-                                        "name" to "Mike",
-                                        "isArchived" to false
-                                    )
-                                ),
+                                obj = obj2,
                                 snippet = "Snippet2",
                                 hasInboundLinks = false,
                                 smartBlockType = SmartBlockType.PAGE

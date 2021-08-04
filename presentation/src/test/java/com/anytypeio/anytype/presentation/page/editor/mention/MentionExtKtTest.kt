@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.page.editor.mention
 
 import MockDataFactory
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -9,25 +10,19 @@ class MentionExtTest {
     @Test
     fun `should filter mentions by filter 1`() {
 
-        val mention1 = Mention(
+        val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "abc",
-            emoji = null,
-            image = null
+            name = "abc"
         )
 
-        val mention2 = Mention(
+        val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "Cde",
-            emoji = null,
-            image = null
+            name = "Cde"
         )
 
-        val mention3 = Mention(
+        val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "EfB",
-            emoji = null,
-            image = null
+            name = "EfB"
         )
 
         val mentions = listOf(mention1, mention2, mention3)
@@ -44,25 +39,19 @@ class MentionExtTest {
     @Test
     fun `should filter mentions by filter 2`() {
 
-        val mention1 = Mention(
+        val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "abc",
-            emoji = null,
-            image = null
+            name = "abc"
         )
 
-        val mention2 = Mention(
+        val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "Cde",
-            emoji = null,
-            image = null
+            name = "Cde"
         )
 
-        val mention3 = Mention(
+        val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "EfB",
-            emoji = null,
-            image = null
+            name = "EfB"
         )
 
         val mentions = listOf(mention1, mention2, mention3)
@@ -79,25 +68,19 @@ class MentionExtTest {
     @Test
     fun `should filter mentions by filter 3`() {
 
-        val mention1 = Mention(
+        val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "abc",
-            emoji = null,
-            image = null
+            name = "abc"
         )
 
-        val mention2 = Mention(
+        val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "Cde",
-            emoji = null,
-            image = null
+            name = "Cde"
         )
 
-        val mention3 = Mention(
+        val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "EfB",
-            emoji = null,
-            image = null
+            name = "EfB"
         )
 
         val mentions = listOf(mention1, mention2, mention3)
@@ -114,25 +97,19 @@ class MentionExtTest {
     @Test
     fun `should filter mentions by filter 4`() {
 
-        val mention1 = Mention(
+        val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "abc",
-            emoji = null,
-            image = null
+            name = "abc"
         )
 
-        val mention2 = Mention(
+        val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "Cde",
-            emoji = null,
-            image = null
+            name = "Cde"
         )
 
-        val mention3 = Mention(
+        val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            title = "EfB",
-            emoji = null,
-            image = null
+            name = "EfB"
         )
 
         val mentions = listOf(mention1, mention2, mention3)
@@ -141,7 +118,7 @@ class MentionExtTest {
 
         val result = mentions.filterMentionsBy(filter)
 
-        val expected = emptyList<Mention>()
+        val expected = emptyList<DefaultObjectView>()
 
         assertEquals(expected, result)
     }

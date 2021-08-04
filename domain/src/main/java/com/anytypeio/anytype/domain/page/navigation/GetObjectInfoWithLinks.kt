@@ -18,7 +18,7 @@ class GetObjectInfoWithLinks(
                 pageInfoWithLinks = it.copy(
                     links = it.links.copy(
                         outbound = it.links.outbound.filterNot { document ->
-                            document.fields.isArchived == true
+                            document.obj.isArchived == true
                                     || document.smartBlockType == SmartBlockType.SET
                                     || document.smartBlockType == SmartBlockType.BREADCRUMBS
                                     || document.smartBlockType == SmartBlockType.HOME
@@ -35,7 +35,7 @@ class GetObjectInfoWithLinks(
                                     || document.smartBlockType == SmartBlockType.ANYTYPE_PROFILE
                         },
                         inbound = it.links.inbound.filterNot { document ->
-                            document.fields.isArchived == true
+                            document.obj.isArchived == true
                                     || document.smartBlockType == SmartBlockType.SET
                                     || document.smartBlockType == SmartBlockType.BREADCRUMBS
                                     || document.smartBlockType == SmartBlockType.HOME

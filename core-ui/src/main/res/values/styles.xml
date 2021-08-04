@@ -713,4 +713,17 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
+    <!-- Object items in lists -->
+    <style name="ObjectListItemTitle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="ObjectListItemSubtitle">
+        <item name="android:textColor">#929082</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
 </resources>

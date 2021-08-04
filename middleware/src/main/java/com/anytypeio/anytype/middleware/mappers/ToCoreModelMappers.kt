@@ -467,7 +467,7 @@ fun ObjectLinksInfo.toCoreModel(): ObjectLinks = ObjectLinks(
 
 fun ObjectInfo.toCoreModel(): DocumentInfo = DocumentInfo(
     id = id,
-    fields = details.toCoreModel(),
+    obj = ObjectWrapper.Basic(details?.toMap() ?: mapOf()),
     snippet = snippet,
     hasInboundLinks = hasInboundLinks,
     smartBlockType = objectType.toCoreModel()

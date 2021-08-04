@@ -8,7 +8,7 @@ package com.anytypeio.anytype.core_models
  */
 data class DocumentInfo(
     val id: String,
-    val fields: Block.Fields,
+    val obj: ObjectWrapper.Basic,
     val snippet: String?,
     val hasInboundLinks: Boolean,
     val smartBlockType: SmartBlockType

@@ -8,9 +8,10 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.page.PageViewModel
 import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.page.editor.mention.Mention
+import com.anytypeio.anytype.presentation.page.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -142,12 +143,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 )
             )
             onCreateMentionInText(
-                mention = Mention(
-                    id = mentionHash,
-                    emoji = null,
-                    image = null,
-                    title = mentionText
-                ),
+                id = mentionHash,
+                name = mentionText,
                 mentionTrigger = mentionTrigger
             )
         }
@@ -506,7 +503,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                         ),
                         BlockView.Text.Paragraph(
                             id = a.id,
-                            cursor = from + PageViewModel.MENTION_TITLE_EMPTY.length + 1,
+                            cursor = from + MENTION_TITLE_EMPTY.length + 1,
                             isSelected = false,
                             isFocused = true,
                             marks = listOf(
@@ -517,7 +514,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                 ),
                                 Markup.Mark(
                                     from = from,
-                                    to = from + PageViewModel.MENTION_TITLE_EMPTY.length,
+                                    to = from + MENTION_TITLE_EMPTY.length,
                                     type = Markup.Type.MENTION,
                                     param = newPageId,
                                     extras = mapOf(

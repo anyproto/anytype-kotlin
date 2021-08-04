@@ -2777,7 +2777,24 @@ class PageViewModel(
 
     private fun onMentionClicked(target: String) {
         proceedWithClearingFocus()
-        proceedWithOpeningPage(target = target)
+        val details = orchestrator.stores.details.current()
+        val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
+        when(wrapper.layout) {
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.FILE -> {
+                proceedWithOpeningPage(target = target)
+            }
+            ObjectType.Layout.SET -> {
+                proceedWithOpeningSet(target = target)
+            }
+            else -> {
+                viewModelScope.launch {
+                    _toasts.send("Cannot open object with layout: ${wrapper.layout}")
+                }
+            }
+        }
     }
 
     fun onAddNewObjectClicked(type: String, layout: ObjectType.Layout) {
@@ -3915,6 +3932,14 @@ class PageViewModel(
             eventName = EventsDictionary.SCREEN_DOCUMENT
         )
         navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+    }
+
+    private fun proceedWithOpeningSet(target: Id) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_SET
+        )
+        navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
     }
 
     /**

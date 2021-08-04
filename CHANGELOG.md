@@ -4,6 +4,7 @@
 
 ### Fixes & tech 🚒
 
+* Editor | Enable mentioning sets (#1709)
 * Object search | Sort results by last opened date (#1710)
 
 ## Version 0.2.3

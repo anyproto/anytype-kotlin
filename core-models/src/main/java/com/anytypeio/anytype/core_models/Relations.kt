@@ -13,6 +13,7 @@ object Relations {
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val TYPE = "type"
     const val DONE = "done"
+    const val FEATURED_RELATIONS = "featuredRelations"
 
     const val NUMBER_DEFAULT_VALUE = "0"
 }

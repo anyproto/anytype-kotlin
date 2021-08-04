@@ -1023,20 +1023,25 @@ class DefaultBlockViewRenderer(
             )
         } else {
             val relation = relations.firstOrNull { it.key == content.key }
-
             if (relation != null) {
                 val view = relation.view(
                     details = details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder
                 )
-                checkNotNull(view) { "Format not supported: ${relation.format} or some data missing" }
-                return BlockView.Relation.Related(
-                    id = block.id,
-                    view = view,
-                    indent = indent,
-                    background = content.background
-                )
+                return if (view != null) {
+                    BlockView.Relation.Related(
+                        id = block.id,
+                        view = view,
+                        indent = indent,
+                        background = content.background
+                    )
+                } else {
+                    BlockView.Relation.Placeholder(
+                        id = block.id,
+                        indent = indent
+                    )
+                }
             } else {
                 return BlockView.Relation.Placeholder(
                     id = block.id,
@@ -1060,7 +1065,17 @@ class DefaultBlockViewRenderer(
                 ids = featured,
                 details = details,
                 relations = relations
-            )
+            ).filter { v ->
+                when(v) {
+                    is DocumentRelationView.Object -> v.objects.isNotEmpty()
+                    is DocumentRelationView.Checkbox -> true
+                    is DocumentRelationView.Default -> v.value != null
+                    is DocumentRelationView.File -> v.files.isNotEmpty()
+                    is DocumentRelationView.ObjectType -> true
+                    is DocumentRelationView.Status -> v.status.isNotEmpty()
+                    is DocumentRelationView.Tags -> v.tags.isNotEmpty()
+                }
+            }
         )
         return BlockView.FeaturedRelation(
             id = block.id,
@@ -1080,9 +1095,10 @@ class DefaultBlockViewRenderer(
                 val objectTypeId = details.details[ctx]?.type?.firstOrNull()
                 if (objectTypeId != null) {
                     DocumentRelationView.ObjectType(
-                        relationId = objectTypeId.orEmpty(),
+                        relationId = id,
                         name = details.details[objectTypeId]?.name.orEmpty(),
-                        isFeatured = true
+                        isFeatured = true,
+                        type = objectTypeId
                     )
                 } else {
                     null

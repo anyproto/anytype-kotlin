@@ -56,11 +56,15 @@ object MockTypicalDocumentFactory {
         return listOf(page, header, title, a)
     }
 
-    fun relation(name: String) = Relation(
+    fun relation(
+        name: String,
+        isHidden: Boolean = false
+    ) = Relation(
         key = MockDataFactory.randomString(),
         name = name,
         format = Relation.Format.SHORT_TEXT,
-        source = Relation.Source.values().random()
+        source = Relation.Source.values().random(),
+        isHidden = isHidden
     )
 
     fun objectType(name: String) = ObjectType(

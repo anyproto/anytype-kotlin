@@ -346,4 +346,109 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         vm.state.test().assertValue(ViewState.Success(expected))
     }
+
+    @Test
+    fun `should render block-relation with hidden relation as placeholder`() {
+
+        val title = MockTypicalDocumentFactory.title
+        val header = MockTypicalDocumentFactory.header
+        val block = MockTypicalDocumentFactory.a
+
+        val r1 = MockTypicalDocumentFactory.relation("Ad")
+        val r2 = MockTypicalDocumentFactory.relation(name = "De", isHidden = true)
+        val r3 = MockTypicalDocumentFactory.relation("HJ")
+
+        val relationObjectType = Relation(
+            key = Block.Fields.TYPE_KEY,
+            name = "Radio Station",
+            format = Relation.Format.OBJECT,
+            source = Relation.Source.DERIVED
+        )
+
+        val value1 = MockDataFactory.randomString()
+        val value2 = MockDataFactory.randomString()
+        val value3 = MockDataFactory.randomString()
+
+        val relationBlock = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.RelationBlock(key = r2.key)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(SmartBlockType.PAGE),
+            children = listOf(header.id, block.id, relationBlock.id)
+        )
+
+        val doc = listOf(page, header, title, block, relationBlock)
+
+        val objectTypeId = MockDataFactory.randomString()
+        val objectTypeName = MockDataFactory.randomString()
+        val objectTypeDescription = MockDataFactory.randomString()
+
+        val objectFields = Block.Fields(
+            mapOf(
+                r1.key to value1,
+                r2.key to value2,
+                r3.key to value3,
+                relationObjectType.key to objectTypeId
+            )
+        )
+
+        val objectTypeFields = Block.Fields(
+            mapOf(
+                Block.Fields.NAME_KEY to objectTypeName,
+                Block.Fields.DESCRIPTION_KEY to objectTypeDescription
+            )
+        )
+        val customDetails = Block.Details(
+            mapOf(
+                root to objectFields,
+                objectTypeId to objectTypeFields
+            )
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubGetObjectTypes(objectTypes = listOf())
+        stubOpenDocument(
+            document = doc,
+            details = customDetails,
+            relations = listOf(r1, r2, r3, relationObjectType)
+        )
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        val expected =
+            listOf(
+                BlockView.Title.Basic(
+                    id = title.id,
+                    isFocused = false,
+                    text = title.content<Block.Content.Text>().text,
+                    emoji = null
+                ),
+                BlockView.Text.Numbered(
+                    isFocused = false,
+                    id = block.id,
+                    marks = emptyList(),
+                    backgroundColor = block.content<Block.Content.Text>().backgroundColor,
+                    color = block.content<Block.Content.Text>().color,
+                    text = block.content<Block.Content.Text>().text,
+                    alignment = block.content<Block.Content.Text>().align?.toView(),
+                    number = 1
+                ),
+                BlockView.Relation.Placeholder(
+                    id = relationBlock.id,
+                    indent = 0,
+                    isSelected = false
+                )
+            )
+
+        vm.state.test().assertValue(ViewState.Success(expected))
+    }
 }

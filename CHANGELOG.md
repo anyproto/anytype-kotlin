@@ -6,6 +6,7 @@
 
 * Editor | Enable mentioning sets (#1709)
 * Object search | Sort results by last opened date (#1710)
+* Object | White screen when failed to render an object (#1711)
 
 ## Version 0.2.3
 

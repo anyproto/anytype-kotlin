@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -64,9 +63,10 @@ private fun mapFeaturedRelations(
             val objectTypeId = details.details[ctx]?.type?.firstOrNull()
             if (objectTypeId != null) {
                 DocumentRelationView.ObjectType(
-                    relationId = objectTypeId.orEmpty(),
+                    relationId = id,
                     name = details.details[objectTypeId]?.name.orEmpty(),
-                    isFeatured = true
+                    isFeatured = true,
+                    type = objectTypeId
                 )
             } else {
                 null

@@ -64,10 +64,15 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         val files: List<FileView>
     ) : DocumentRelationView()
 
+    /**
+     * @property [type] object type id
+     * @property [relationId] id of the relation
+     */
     data class ObjectType(
         override val relationId: Id,
         override val name: String,
         override val value: String? = null,
         override val isFeatured: Boolean = false,
+        val type: Id
     ) : DocumentRelationView()
 }

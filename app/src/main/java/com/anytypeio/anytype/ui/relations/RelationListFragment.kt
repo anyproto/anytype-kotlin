@@ -91,6 +91,9 @@ open class RelationListFragment : BaseBottomSheetFragment(),
         btnPlus.setOnClickListener {
             RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
         }
+        btnEditOrDone.setOnClickListener {
+            toast(getString(R.string.coming_soon))
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

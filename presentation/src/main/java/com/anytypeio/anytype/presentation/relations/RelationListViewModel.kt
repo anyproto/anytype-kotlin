@@ -83,8 +83,6 @@ class RelationListViewModel(
 
     fun onCheckboxClicked(ctx: Id, view: DocumentRelationView) {
         viewModelScope.launch {
-            val details = stores.details.current().details[ctx]
-            val current = details?.featuredRelations ?: emptyList()
             if (view.isFeatured) {
                 viewModelScope.launch {
                     removeFromFeaturedRelations(

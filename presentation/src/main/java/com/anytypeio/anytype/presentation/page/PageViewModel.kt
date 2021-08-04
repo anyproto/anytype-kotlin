@@ -3799,7 +3799,13 @@ class PageViewModel(
                         failure = { it.timber() },
                         success = { response ->
                             val objectTypes = objectTypesProvider.get()
-                            val objectViews = response.listPages.map { pages ->
+                            val objectViews = response.listPages.filter { obj ->
+                                if (getFlavourConfig.isDataViewEnabled()) {
+                                    true
+                                } else {
+                                    obj.smartBlockType != SmartBlockType.SET
+                                }
+                            }.map { pages ->
                                 pages.toMentionView(
                                     objectTypes = objectTypes,
                                     urlBuilder = urlBuilder

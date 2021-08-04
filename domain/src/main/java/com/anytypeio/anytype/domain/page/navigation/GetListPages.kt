@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
+@Deprecated("Legacy. Consider switching to ObjectSearch")
 open class GetListPages(
     private val repo: BlockRepository
 ) : BaseUseCase<GetListPages.Response, Unit>() {
@@ -14,7 +15,6 @@ open class GetListPages(
         val documents = repo.getListPages()
         val pages = documents.filterNot { document ->
             document.obj.isArchived == true
-                    || document.smartBlockType == SmartBlockType.SET
                     || document.smartBlockType == SmartBlockType.BREADCRUMBS
                     || document.smartBlockType == SmartBlockType.HOME
                     || document.smartBlockType == SmartBlockType.BUNDLED_OBJECT_TYPE

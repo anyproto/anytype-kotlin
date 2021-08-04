@@ -53,7 +53,7 @@ class MentionAdapter(
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            onClicked(data[pos - 1], mentionFilter)
+                            onClicked(filteredData[pos - 1], mentionFilter)
                         }
                     }
                 }

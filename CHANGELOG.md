@@ -1,6 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.3 (WIP)
+## Version 0.2.4 (WIP)
+
+### Fixes & tech 🚒
+
+* Object search | Sort results by last opened date (#1710)
+
+## Version 0.2.3
 
 ### Fixes & tech 🚒
 

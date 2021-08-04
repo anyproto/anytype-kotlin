@@ -3,13 +3,9 @@ package com.anytypeio.anytype.presentation.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.core_models.ObjectTypeConst
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -63,7 +59,13 @@ class ObjectSearchViewModel(
                         fulltext = query,
                         limit = SEARCH_LIMIT,
                         objectTypeFilter = supportedObjectTypes,
-                        filters = filters
+                        filters = filters,
+                        sorts = listOf(
+                            DVSort(
+                                relationKey = Relations.LAST_OPENED_DATE,
+                                type = DVSortType.DESC
+                            )
+                        )
                     )
                 ).process(
                     success = { raw -> objects.value = raw.map { ObjectWrapper.Basic(it) } },

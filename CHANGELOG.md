@@ -1,12 +1,20 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.4 (WIP)
+## Version 0.2.4
+
+### New features & enhancements 🚀
+
+* Editor | @-mention Sets in-line (#1709)
 
 ### Fixes & tech 🚒
 
-* Editor | Enable mentioning sets (#1709)
-* Object search | Sort results by last opened date (#1710)
-* Object | White screen when failed to render an object (#1711)
+* Object search | Sort results by date last opened (#1710)
+* Object | Fixed: Failure to render an object would result in a white screen due to a regression introduced in 0.2.3 (#1711)
+* Object | Fixed: Adding a new relation to an object due to a regression introduced in 0.2.3 (#1711)
+
+### Design & UX 🔳
+
+* Updated design for objects appearing in lists (mentions, link-to, move-to, etc.) (#1697)
 
 ## Version 0.2.3
 

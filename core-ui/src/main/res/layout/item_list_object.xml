@@ -16,6 +16,7 @@
         app:emojiSize="24dp"
         app:hasEmojiRounded8Background="true"
         app:hasInitialRounded8Background="true"
+        app:checkboxSize="24dp"
         app:imageSize="@dimen/list_item_object_icon_height"
         app:initialTextSize="22sp" />
 

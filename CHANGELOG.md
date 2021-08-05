@@ -4,7 +4,11 @@
 
 ### New features & enhancements 🚀
 
-* Global search | Filter archived objects (#1717) 
+* Global search | Filter archived objects (#1717)
+
+### Fixes & tech 🚒
+
+* Data View | Grid View | Enhanced object header syncing / applying granular changes (#1718)
 
 ## Version 0.2.4
 

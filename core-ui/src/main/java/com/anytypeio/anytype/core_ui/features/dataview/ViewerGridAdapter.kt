@@ -81,7 +81,7 @@ class ViewerGridAdapter(
 
         fun bindObjectHeader(row: Viewer.GridView.Row) {
             Timber.d("Binding object header")
-            when(row.layout) {
+            when (row.layout) {
                 ObjectType.Layout.TODO -> {
                     itemView.objectIcon.visible()
                     itemView.objectIcon.setCheckbox(row.isChecked)
@@ -124,6 +124,7 @@ class ViewerGridAdapter(
             oldItem: Viewer.GridView.Row,
             newItem: Viewer.GridView.Row
         ): Boolean = oldItem.id == newItem.id
+
         override fun areContentsTheSame(
             oldItem: Viewer.GridView.Row,
             newItem: Viewer.GridView.Row
@@ -132,13 +133,20 @@ class ViewerGridAdapter(
         override fun getChangePayload(
             oldItem: Viewer.GridView.Row,
             newItem: Viewer.GridView.Row
-        ): Any? {
+        ): Any {
             val payload = mutableListOf<Int>()
-            if (oldItem.emoji != newItem.emoji || oldItem.image != newItem.image || oldItem.name != newItem.name) {
-                payload.add(OBJECT_HEADER_CHANGED)
-            }
+            if (isHeaderChanged(oldItem, newItem)) payload.add(OBJECT_HEADER_CHANGED)
             return payload
         }
+
+        private fun isHeaderChanged(
+            oldItem: Viewer.GridView.Row,
+            newItem: Viewer.GridView.Row
+        ) = (oldItem.emoji != newItem.emoji
+                || oldItem.image != newItem.image
+                || oldItem.name != newItem.name
+                || oldItem.isChecked != newItem.isChecked
+                || oldItem.layout != newItem.layout)
 
         const val OBJECT_HEADER_CHANGED = 0
     }

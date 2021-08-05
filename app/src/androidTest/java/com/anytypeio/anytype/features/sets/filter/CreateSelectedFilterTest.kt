@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -47,6 +48,9 @@ class CreateSelectedFilterTest {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
     lateinit var urlBuilder: UrlBuilder
@@ -68,7 +72,8 @@ class CreateSelectedFilterTest {
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             searchObjects = searchObjects,
-            objectSetState = state
+            objectSetState = state,
+            objectTypesProvider = objectTypesProvider
         )
     }
 

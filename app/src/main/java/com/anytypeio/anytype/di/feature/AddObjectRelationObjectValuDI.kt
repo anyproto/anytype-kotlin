@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -34,11 +35,12 @@ object AddObjectRelationObjectValueModule {
     fun provideViewModelFactory(
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
+        objectTypesProvider: ObjectTypesProvider,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder
     ): RelationObjectValueAddViewModel.Factory =
         RelationObjectValueAddViewModel.Factory(
-            relations, values, searchObjects, urlBuilder
+            relations, values, searchObjects, urlBuilder, objectTypesProvider
         )
 
     @JvmStatic

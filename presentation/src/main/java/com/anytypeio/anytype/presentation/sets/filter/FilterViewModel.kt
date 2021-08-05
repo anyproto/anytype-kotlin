@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.EMPTY_TIMESTAMP
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -35,7 +36,8 @@ open class FilterViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val searchObjects: SearchObjects,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val objectTypesProvider: ObjectTypesProvider
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -181,22 +183,28 @@ open class FilterViewModel(
         val relation = dv.relations.first { it.key == relationId }
 
         if (index == null) {
-            filterValueState.value =
-                relation.toFilterValue(null, objectSet.details, urlBuilder)
+            filterValueState.value = relation.toFilterValue(
+                value = null,
+                details = objectSet.details,
+                urlBuilder = urlBuilder
+            )
             proceedWithFilterValueList(
                 relation = relation,
                 filter = null,
-                objecttypes = objectSet.objectTypes
+                objecttypes = objectTypesProvider.get()
             )
         } else {
             val filter = viewer.filters[index]
             check(filter.relationKey == relation.key) { "Incorrect filter state" }
-            filterValueState.value =
-                relation.toFilterValue(filter.value, objectSet.details, urlBuilder)
+            filterValueState.value = relation.toFilterValue(
+                value = filter.value,
+                details = objectSet.details,
+                urlBuilder = urlBuilder
+            )
             proceedWithFilterValueList(
                 relation = relation,
                 filter = filter,
-                objecttypes = objectSet.objectTypes
+                objecttypes = objectTypesProvider.get()
             )
         }
     }
@@ -263,7 +271,8 @@ open class FilterViewModel(
                     filters = filters,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
-                    limit = SearchObjects.LIMIT
+                    limit = SearchObjects.LIMIT,
+                    objectTypeFilter = listOf(ObjectTypeConst.PAGE, ObjectTypeConst.PAGE)
                 )
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },
@@ -698,7 +707,8 @@ open class FilterViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val searchObjects: SearchObjects,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val objectTypesProvider: ObjectTypesProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -708,7 +718,8 @@ open class FilterViewModel(
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 searchObjects = searchObjects,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                objectTypesProvider = objectTypesProvider
             ) as T
         }
     }

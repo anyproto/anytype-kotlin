@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.sets;
 
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -43,14 +44,16 @@ object ModifyFilterModule {
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
         searchObjects: SearchObjects,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        objectTypesProvider: ObjectTypesProvider
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectSetState = state,
         session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
         searchObjects = searchObjects,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        objectTypesProvider = objectTypesProvider
     )
 
     @JvmStatic

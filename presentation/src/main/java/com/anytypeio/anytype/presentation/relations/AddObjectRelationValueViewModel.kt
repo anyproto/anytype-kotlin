@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecor
 import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -143,17 +145,20 @@ abstract class AddObjectRelationValueViewModel(
                 if (value is List<*>) {
                     value.typeOf<Id>().forEach { id ->
                         val detail = details.provide()[id]
-                        val objectType = types.provide().getObjectTypeById(detail?.type)
+                        val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                        val type = wrapper.type.firstOrNull()
+                        val objectType = types.provide().find { it.url == type }
                         items.add(
                             RelationValueView.Object(
                                 id = id,
                                 name = detail?.name.orEmpty(),
                                 typeName = objectType?.name,
                                 type = objectType?.url,
-                                emoji = detail?.iconEmoji?.ifEmpty { null },
-                                image = detail?.iconImage?.let {
-                                    if (it.isEmpty()) null else urlBuilder.thumbnail(it)
-                                },
+                                icon = ObjectIcon.from(
+                                    obj = wrapper,
+                                    layout = wrapper.layout,
+                                    builder = urlBuilder
+                                ),
                                 removeable = false,
                                 layout = objectType?.layout
                             )
@@ -161,17 +166,20 @@ abstract class AddObjectRelationValueViewModel(
                     }
                 } else if (value is Id) {
                     val detail = details.provide()[value]
-                    val objectType = types.provide().getObjectTypeById(detail?.type)
+                    val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                    val type = wrapper.type.firstOrNull()
+                    val objectType = types.provide().find { it.url == type }
                     items.add(
                         RelationValueView.Object(
                             id = value,
                             name = detail?.name.orEmpty(),
                             typeName = objectType?.name,
                             type = objectType?.url,
-                            emoji = detail?.iconEmoji?.ifEmpty { null },
-                            image = detail?.iconImage?.let {
-                                if (it.isEmpty()) null else urlBuilder.thumbnail(it)
-                            },
+                            icon = ObjectIcon.from(
+                                obj = wrapper,
+                                layout = wrapper.layout,
+                                builder = urlBuilder
+                            ),
                             removeable = false,
                             layout = objectType?.layout
                         )

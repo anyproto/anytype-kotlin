@@ -109,7 +109,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
-            is ObjectIcon.Profile.Image -> setRectangularImage(icon.hash)
+            is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
         }
     }

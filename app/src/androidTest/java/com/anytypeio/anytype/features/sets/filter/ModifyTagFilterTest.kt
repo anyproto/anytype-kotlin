@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -50,6 +51,8 @@ class ModifyTagFilterTest {
     lateinit var repo: BlockRepository
     @Mock
     lateinit var gateway: Gateway
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
 
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
@@ -72,7 +75,8 @@ class ModifyTagFilterTest {
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             searchObjects = searchObjects,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            objectTypesProvider = objectTypesProvider
         )
     }
 

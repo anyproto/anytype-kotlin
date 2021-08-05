@@ -226,11 +226,7 @@ class RelationValueAdapter(
                     btnRemoveObject.visible()
                     btnDragAndDropObject.visible()
                 }
-                iconWidget.setIcon(
-                    emoji = item.emoji,
-                    image = item.image,
-                    name = item.name
-                )
+                iconWidget.setIcon(item.icon)
             }
         }
 

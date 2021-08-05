@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DateDescription
 
 sealed class CreateFilterView {
@@ -42,9 +43,8 @@ sealed class CreateFilterView {
     data class Object(
         val id: Id,
         val name: String,
-        val image: String?,
-        val emoji: String?,
         val type: String?,
+        val icon: ObjectIcon,
         override val isSelected: Boolean
     ): CreateFilterView() {
         override val text: String

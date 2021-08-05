@@ -9,8 +9,7 @@ import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.Relati
 
 class RelationObjectValueAdapter(
     private val onObjectClick: (String) -> Unit
-) :
-    RecyclerView.Adapter<ObjectRelationObjectHolder>() {
+) : RecyclerView.Adapter<ObjectRelationObjectHolder>() {
 
     private var views = emptyList<RelationValueView.Object>()
 

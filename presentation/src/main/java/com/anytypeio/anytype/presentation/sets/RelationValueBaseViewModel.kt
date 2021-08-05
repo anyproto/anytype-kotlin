@@ -13,14 +13,13 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.relations.getObjectTypeById
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -112,7 +111,8 @@ abstract class RelationValueBaseViewModel(
                 if (value is List<*>) {
                     value.typeOf<Id>().forEach { id ->
                         val detail = details.provide()[id]
-                        val type = detail?.map?.type
+                        val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                        val type = wrapper.type.firstOrNull()
                         val objectType = types.provide().find { it.url == type }
                         items.add(
                             RelationValueView.Object(
@@ -120,10 +120,11 @@ abstract class RelationValueBaseViewModel(
                                 name = detail?.name.orEmpty(),
                                 typeName = objectType?.name,
                                 type = objectType?.url,
-                                emoji = detail?.iconEmoji?.ifEmpty { null },
-                                image = detail?.iconImage?.let {
-                                    if (it.isEmpty()) null else urlBuilder.thumbnail(it)
-                                },
+                                icon = ObjectIcon.from(
+                                    obj = wrapper,
+                                    layout = wrapper.layout,
+                                    builder = urlBuilder
+                                ),
                                 removeable = isRemoveable,
                                 layout = objectType?.layout
                             )
@@ -131,17 +132,20 @@ abstract class RelationValueBaseViewModel(
                     }
                 } else if (value is Id) {
                     val detail = details.provide()[value]
-                    val objectType = types.provide().getObjectTypeById(detail?.type)
+                    val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                    val type = wrapper.type.firstOrNull()
+                    val objectType = types.provide().find { it.url == type }
                     items.add(
                         RelationValueView.Object(
                             id = value,
                             name = detail?.name.orEmpty(),
                             typeName = objectType?.name,
                             type = objectType?.url,
-                            emoji = detail?.iconEmoji?.ifEmpty { null },
-                            image = detail?.iconImage?.let {
-                                if (it.isEmpty()) null else urlBuilder.thumbnail(it)
-                            },
+                            icon = ObjectIcon.from(
+                                obj = wrapper,
+                                layout = wrapper.layout,
+                                builder = urlBuilder
+                            ),
                             removeable = isRemoveable,
                             layout = objectType?.layout
                         )
@@ -295,8 +299,7 @@ abstract class RelationValueBaseViewModel(
             val typeName: String?,
             val type: String?,
             val removeable: Boolean,
-            val emoji: String?,
-            val image: Url?,
+            val icon: ObjectIcon,
             val layout: ObjectType.Layout?,
             override val isSelected: Boolean? = null,
             val selectedNumber: String? = null

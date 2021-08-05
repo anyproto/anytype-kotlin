@@ -18,10 +18,6 @@ class ObjectRelationObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
         objectSelectionIndex.visible()
         objectSelectionIndex.isSelected = item.isSelected == true
-        iconWidget.setIcon(
-            emoji = item.emoji,
-            image = item.image,
-            name = item.name
-        )
+        iconWidget.setIcon(item.icon)
     }
 }

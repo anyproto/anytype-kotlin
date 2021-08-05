@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -41,6 +42,9 @@ class FilterViewModelInputFieldValueModifyTest {
 
     @Mock
     lateinit var searchObjects: SearchObjects
+
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
 
     private lateinit var viewModel: FilterViewModel
     private lateinit var urlBuilder: UrlBuilder
@@ -166,7 +170,8 @@ class FilterViewModelInputFieldValueModifyTest {
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            objectTypesProvider = objectTypesProvider
         )
     }
 

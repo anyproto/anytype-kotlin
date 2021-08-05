@@ -19,8 +19,6 @@ import kotlinx.android.synthetic.main.item_create_filter_date.view.iconChecked
 import kotlinx.android.synthetic.main.item_create_filter_object.view.*
 import kotlinx.android.synthetic.main.item_create_filter_status.view.*
 import kotlinx.android.synthetic.main.item_create_filter_tag.view.*
-import kotlinx.android.synthetic.main.widget_object_icon_text.view.*
-import java.util.*
 
 class CreateFilterAdapter(
     private val onItemClicked: (CreateFilterView) -> Unit
@@ -176,11 +174,7 @@ class CreateFilterAdapter(
                 tvObjectName.text = item.name
                 tvObjectType.text = item.type
                 ivSelectObjectIcon.isSelected = item.isSelected
-                objectIconWidget.setIcon(
-                    emoji = item.emoji,
-                    image = item.image,
-                    name = item.name
-                )
+                objectIconWidget.setIcon(item.icon)
             }
         }
 

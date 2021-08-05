@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.page.editor.model.BlockView
@@ -182,18 +183,18 @@ fun List<Map<String, Any?>>.toCreateFilterObjectView(
     objectTypes: List<ObjectType>
 ): List<CreateFilterView.Object> =
     this.map { record ->
-        val id = record[ObjectSetConfig.ID_KEY] as String
-        val type = record.type
-        val name = record[ObjectSetConfig.NAME_KEY] as String?
-        val emoji = record[ObjectSetConfig.EMOJI_KEY] as String?
-        val image = record[ObjectSetConfig.IMAGE_KEY] as String?
+        val obj = ObjectWrapper.Basic(record)
+        val type = obj.type.firstOrNull()
         CreateFilterView.Object(
-            id = id,
-            type = objectTypes.getTypePrettyName(type),
-            name = name.orEmpty(),
-            image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(image),
-            emoji = emoji,
-            isSelected = ids?.contains(id) ?: false
+            id = obj.id,
+            type = objectTypes.find { it.url == type }?.name.orEmpty(),
+            name = obj.name.orEmpty(),
+            icon = ObjectIcon.from(
+                obj = obj,
+                layout = obj.layout,
+                builder = urlBuilder
+            ),
+            isSelected = ids?.contains(obj.id) ?: false
         )
     }
 

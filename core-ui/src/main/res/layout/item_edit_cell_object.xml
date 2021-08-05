@@ -31,6 +31,7 @@
         app:hasEmojiRounded12Background="true"
         app:imageSize="@dimen/dp_48"
         app:initialTextSize="28sp"
+        app:checkboxSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnRemoveObject"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.2.5 (WIP)
+
+### New features & enhancements 🚀
+
+* Global search | Filter archived objects (#1717) 
+
 ## Version 0.2.4
 
 ### New features & enhancements 🚀

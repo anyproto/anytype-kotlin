@@ -14,7 +14,6 @@ import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.relations.addIsHiddenFilter
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -51,7 +50,19 @@ class ObjectSearchViewModel(
                 success = { types.value = it }
             )
         }
-        val filters = listOf<DVFilter>().addIsHiddenFilter()
+        val filters = listOf(
+            DVFilter(
+                condition = DVFilterCondition.EQUAL,
+                value = false,
+                relationKey = Relations.IS_ARCHIVED,
+                operator = DVFilterOperator.AND
+            ),
+            DVFilter(
+                relationKey = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 searchObjects(

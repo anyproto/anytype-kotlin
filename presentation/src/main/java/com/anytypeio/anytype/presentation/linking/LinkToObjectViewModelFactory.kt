@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.linking
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.interactor.CreateLinkToObject
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -11,7 +12,8 @@ class LinkToObjectViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val getObjectInfoWithLinks: GetObjectInfoWithLinks,
     private val createLinkToObject: CreateLinkToObject,
-    private val getConfig: GetConfig
+    private val getConfig: GetConfig,
+    private val objectTypesProvider: ObjectTypesProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -20,7 +22,8 @@ class LinkToObjectViewModelFactory(
             urlBuilder = urlBuilder,
             getObjectInfoWithLinks = getObjectInfoWithLinks,
             createLinkToObject = createLinkToObject,
-            getConfig = getConfig
+            getConfig = getConfig,
+            objectTypesProvider = objectTypesProvider
         ) as T
     }
 }

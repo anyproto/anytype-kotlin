@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
 import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecord
@@ -19,7 +20,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.page.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -35,7 +35,7 @@ abstract class AddObjectRelationValueViewModel(
     protected val values: ObjectValueProvider,
     protected val details: ObjectDetailProvider,
     protected val relations: ObjectRelationProvider,
-    protected val types: ObjectTypeProvider,
+    protected val types: ObjectTypesProvider,
     protected val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
@@ -147,7 +147,7 @@ abstract class AddObjectRelationValueViewModel(
                         val detail = details.provide()[id]
                         val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
                         val type = wrapper.type.firstOrNull()
-                        val objectType = types.provide().find { it.url == type }
+                        val objectType = types.get().find { it.url == type }
                         items.add(
                             RelationValueView.Object(
                                 id = id,
@@ -168,7 +168,7 @@ abstract class AddObjectRelationValueViewModel(
                     val detail = details.provide()[value]
                     val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
                     val type = wrapper.type.firstOrNull()
-                    val objectType = types.provide().find { it.url == type }
+                    val objectType = types.get().find { it.url == type }
                     items.add(
                         RelationValueView.Object(
                             id = value,
@@ -236,7 +236,7 @@ abstract class AddObjectRelationValueViewModel(
 
 class RelationOptionValueDVAddViewModel(
     details: ObjectDetailProvider,
-    types: ObjectTypeProvider,
+    types: ObjectTypesProvider,
     urlBuilder: UrlBuilder,
     values: ObjectValueProvider,
     relations: ObjectRelationProvider,
@@ -395,7 +395,7 @@ class RelationOptionValueDVAddViewModel(
         private val values: ObjectValueProvider,
         private val details: ObjectDetailProvider,
         private val relations: ObjectRelationProvider,
-        private val types: ObjectTypeProvider,
+        private val types: ObjectTypesProvider,
         private val addDataViewRelationOption: AddDataViewRelationOption,
         private val addTagToDataViewRecord: AddTagToDataViewRecord,
         private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
@@ -421,7 +421,7 @@ class RelationOptionValueDVAddViewModel(
 
 class RelationOptionValueAddViewModel(
     details: ObjectDetailProvider,
-    types: ObjectTypeProvider,
+    types: ObjectTypesProvider,
     urlBuilder: UrlBuilder,
     values: ObjectValueProvider,
     relations: ObjectRelationProvider,
@@ -562,7 +562,7 @@ class RelationOptionValueAddViewModel(
         private val values: ObjectValueProvider,
         private val details: ObjectDetailProvider,
         private val relations: ObjectRelationProvider,
-        private val types: ObjectTypeProvider,
+        private val types: ObjectTypesProvider,
         private val addObjectRelationOption: AddObjectRelationOption,
         private val updateDetail: UpdateDetail,
         private val urlBuilder: UrlBuilder,

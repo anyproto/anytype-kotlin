@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -26,7 +27,8 @@ class MoveToViewModel(
     private val urlBuilder: UrlBuilder,
     private val getObjectInfoWithLinks: GetObjectInfoWithLinks,
     private val getConfig: GetConfig,
-    private val move: Move
+    private val move: Move,
+    private val objectTypesProvider: ObjectTypesProvider
 ) : ViewStateViewModel<ViewState<PageNavigationView>>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -72,8 +74,8 @@ class MoveToViewModel(
                                     subtitle = documentInfo.snippet.orEmpty(),
                                     image = documentInfo.obj.getImagePath(urlBuilder),
                                     emoji = documentInfo.obj.getEmojiPath(),
-                                    inbound = links.inbound.map { it.toView(urlBuilder) },
-                                    outbound = links.outbound.map { it.toView(urlBuilder) }
+                                    inbound = links.inbound.map { it.toView(urlBuilder, objectTypesProvider.get()) },
+                                    outbound = links.outbound.map { it.toView(urlBuilder, objectTypesProvider.get()) }
                                 )
                             )
                         )

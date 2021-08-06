@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
@@ -18,7 +19,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -33,7 +33,7 @@ abstract class RelationValueBaseViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
-    private val types: ObjectTypeProvider,
+    private val types: ObjectTypesProvider,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
@@ -113,7 +113,7 @@ abstract class RelationValueBaseViewModel(
                         val detail = details.provide()[id]
                         val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
                         val type = wrapper.type.firstOrNull()
-                        val objectType = types.provide().find { it.url == type }
+                        val objectType = types.get().find { it.url == type }
                         items.add(
                             RelationValueView.Object(
                                 id = id,
@@ -134,7 +134,7 @@ abstract class RelationValueBaseViewModel(
                     val detail = details.provide()[value]
                     val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
                     val type = wrapper.type.firstOrNull()
-                    val objectType = types.provide().find { it.url == type }
+                    val objectType = types.get().find { it.url == type }
                     items.add(
                         RelationValueView.Object(
                             id = value,
@@ -235,9 +235,9 @@ abstract class RelationValueBaseViewModel(
 
     fun onObjectClicked(ctx: Id, id: Id, type: String?) {
         if (id != ctx) {
-            types.provide().find { it.url == type }?.let { targetType ->
+            types.get().find { it.url == type }?.let { targetType ->
                 when (targetType.layout) {
-                    ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
+                    ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE, ObjectType.Layout.TODO -> {
                         viewModelScope.launch {
                             navigation.emit(AppNavigation.Command.OpenObject(id))
                         }
@@ -326,7 +326,7 @@ class RelationValueDVViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
-    private val types: ObjectTypeProvider,
+    private val types: ObjectTypesProvider,
     private val removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
     private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
     private val updateDataViewRecord: UpdateDataViewRecord,
@@ -529,7 +529,7 @@ class RelationValueDVViewModel(
         private val values: ObjectValueProvider,
         private val dispatcher: Dispatcher<Payload>,
         private val details: ObjectDetailProvider,
-        private val types: ObjectTypeProvider,
+        private val types: ObjectTypesProvider,
         private val updateDataViewRecord: UpdateDataViewRecord,
         private val removeTagFromRecord: RemoveTagFromDataViewRecord,
         private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
@@ -556,7 +556,7 @@ class RelationValueViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
-    private val types: ObjectTypeProvider,
+    private val types: ObjectTypesProvider,
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder,
@@ -733,7 +733,7 @@ class RelationValueViewModel(
         private val values: ObjectValueProvider,
         private val dispatcher: Dispatcher<Payload>,
         private val details: ObjectDetailProvider,
-        private val types: ObjectTypeProvider,
+        private val types: ObjectTypesProvider,
         private val updateDetail: UpdateDetail,
         private val urlBuilder: UrlBuilder,
         private val addFileToObject: AddFileToObject

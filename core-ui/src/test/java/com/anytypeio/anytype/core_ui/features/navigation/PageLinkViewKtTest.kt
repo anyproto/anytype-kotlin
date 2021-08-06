@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.navigation
 
 import com.anytypeio.anytype.core_ui.MockDataFactory
+import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.navigation.filterBy
 import com.anytypeio.anytype.presentation.navigation.isContainsText
@@ -15,8 +16,7 @@ class PageLinkViewKtTest {
             id = MockDataFactory.randomUuid(),
             subtitle = "Subtitle first",
             title = "Title first",
-            emoji = null,
-            image = null
+            icon = ObjectIcon.None
         )
         val text = "IRst"
 
@@ -31,8 +31,7 @@ class PageLinkViewKtTest {
             id = MockDataFactory.randomUuid(),
             subtitle = "Subtitle first",
             title = "Title first",
-            emoji = null,
-            image = null
+            icon = ObjectIcon.None
         )
         val text = "ECO"
 
@@ -49,22 +48,19 @@ class PageLinkViewKtTest {
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString() + text,
                 title = MockDataFactory.randomString(),
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             ),
             ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString() + text,
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             ),
             ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString() + text,
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             )
         )
 
@@ -80,15 +76,13 @@ class PageLinkViewKtTest {
             id = MockDataFactory.randomUuid(),
             subtitle = MockDataFactory.randomString() + text,
             title = MockDataFactory.randomString(),
-            emoji = null,
-            image = null
+            icon = ObjectIcon.None
         )
         val pageLink3 = ObjectView(
             id = MockDataFactory.randomUuid(),
             subtitle = MockDataFactory.randomString() + text + MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
-            emoji = null,
-            image = null
+            icon = ObjectIcon.None
         )
         val list = listOf(
             pageLink1,
@@ -96,8 +90,7 @@ class PageLinkViewKtTest {
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             ),
             pageLink3
         )
@@ -116,22 +109,19 @@ class PageLinkViewKtTest {
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             ),
             ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             ),
             ObjectView(
                 id = MockDataFactory.randomUuid(),
                 subtitle = MockDataFactory.randomString(),
                 title = MockDataFactory.randomString(),
-                emoji = null,
-                image = null
+                icon = ObjectIcon.None
             )
         )
 

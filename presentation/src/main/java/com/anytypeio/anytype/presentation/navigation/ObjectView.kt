@@ -16,8 +16,7 @@ data class ObjectView(
     val id: String,
     val title: String,
     val subtitle: String,
-    val image: String? = null,
-    val emoji: String? = null,
+    val icon: ObjectIcon,
     val layout: ObjectType.Layout? = null
 )
 

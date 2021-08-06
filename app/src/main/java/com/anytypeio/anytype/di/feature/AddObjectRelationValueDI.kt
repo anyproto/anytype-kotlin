@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
@@ -13,7 +14,6 @@ import com.anytypeio.anytype.presentation.relations.RelationOptionValueAddViewMo
 import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationOptionValueAddFragment
@@ -45,7 +45,7 @@ object AddObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
-        types: ObjectTypeProvider,
+        types: ObjectTypesProvider,
         dispatcher: Dispatcher<Payload>,
         addDataViewRelationOption: AddDataViewRelationOption,
         addTagToDataViewRecord: AddTagToDataViewRecord,
@@ -70,7 +70,7 @@ object AddObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
-        types: ObjectTypeProvider,
+        types: ObjectTypesProvider,
         dispatcher: Dispatcher<Payload>,
         addObjectRelationOption: AddObjectRelationOption,
         updateDetail: UpdateDetail,

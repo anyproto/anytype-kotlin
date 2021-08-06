@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -20,7 +21,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
@@ -87,8 +87,9 @@ class EditRelationTagValueTest {
             details = object : ObjectDetailProvider {
                 override fun provide(): Map<Id, Block.Fields> = state.value.details
             },
-            types = object : ObjectTypeProvider {
-                override fun provide(): List<ObjectType> = state.value.objectTypes
+            types = object : ObjectTypesProvider {
+                override fun set(objectTypes: List<ObjectType>) {}
+                override fun get(): List<ObjectType> = state.value.objectTypes
             },
             removeTagFromRecord = removeTagFromDataViewRecord,
             removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,

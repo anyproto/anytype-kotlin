@@ -312,7 +312,7 @@ fun List<Block>.toDashboardViews(
                     layout.code == code
                 }
             }
-            when(layout) {
+            when (layout) {
                 ObjectType.Layout.BASIC -> content.toPageView(
                     id = block.id,
                     details = details,
@@ -332,7 +332,11 @@ fun List<Block>.toDashboardViews(
                             typeName = type?.name,
                             layout = layout
                         )
-                        Block.Content.Link.Type.DATA_VIEW -> content.toSetView(block.id, details, builder)
+                        Block.Content.Link.Type.DATA_VIEW -> content.toSetView(
+                            block.id,
+                            details,
+                            builder
+                        )
                         Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
                         else -> null
                     }
@@ -425,14 +429,23 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
 fun DebugSettings.toView(): EditorSettings =
     EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
 
-fun DocumentInfo.toView(urlBuilder: UrlBuilder): ObjectView =
-    ObjectView(
+fun DocumentInfo.toView(
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectType>
+): ObjectView {
+    val typeId = obj.type.firstOrNull()
+    val type = objectTypes.find { it.url == typeId }
+    return ObjectView(
         id = id,
         title = obj.name.orEmpty(),
-        subtitle = snippet.orEmpty(),
-        image = obj.getImagePath(urlBuilder),
-        emoji = obj.getEmojiPath()
+        subtitle = type?.name.orEmpty(),
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = obj.layout,
+            builder = urlBuilder
+        )
     )
+}
 
 fun DocumentInfo.toMentionView(
     urlBuilder: UrlBuilder, objectTypes: List<ObjectType>

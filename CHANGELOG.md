@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.5 (WIP)
+## Version 0.2.5
 
 ### New features & enhancements 🚀
 
@@ -9,6 +9,11 @@
 ### Fixes & tech 🚒
 
 * Data View | Grid View | Enhanced object header syncing / applying granular changes (#1718)
+* Relations | Fixed: Cannot navigate to task object from relation value (#1720)
+
+### Design & UX 🔳
+
+* Updated design for objects appearing in lists (#1716)
 
 ## Version 0.2.4
 

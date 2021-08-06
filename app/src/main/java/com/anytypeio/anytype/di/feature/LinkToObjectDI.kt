@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.interactor.CreateLinkToObject
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -44,12 +45,14 @@ object LinkToObjectModule {
         urlBuilder: UrlBuilder,
         getObjectInfoWithLinks: GetObjectInfoWithLinks,
         createLinkToObject: CreateLinkToObject,
-        getConfig: GetConfig
+        getConfig: GetConfig,
+        objectTypesProvider: ObjectTypesProvider
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         urlBuilder = urlBuilder,
         getObjectInfoWithLinks = getObjectInfoWithLinks,
         createLinkToObject = createLinkToObject,
-        getConfig = getConfig
+        getConfig = getConfig,
+        objectTypesProvider = objectTypesProvider
     )
 
     @JvmStatic

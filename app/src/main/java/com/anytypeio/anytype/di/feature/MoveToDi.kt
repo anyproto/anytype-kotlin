@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -60,11 +61,13 @@ object MoveToModule {
         urlBuilder: UrlBuilder,
         getObjectInfoWithLinks: GetObjectInfoWithLinks,
         getConfig: GetConfig,
-        move: Move
+        move: Move,
+        objectTypesProvider: ObjectTypesProvider
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         urlBuilder = urlBuilder,
         getObjectInfoWithLinks = getObjectInfoWithLinks,
         getConfig = getConfig,
-        move = move
+        move = move,
+        objectTypesProvider = objectTypesProvider
     )
 }

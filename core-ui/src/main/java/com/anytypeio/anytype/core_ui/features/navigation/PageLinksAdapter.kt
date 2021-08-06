@@ -61,11 +61,7 @@ class PageLinksAdapter(
                 subtitle.visible()
                 subtitle.text = link.subtitle
             }
-            icon.setIcon(
-                emoji = link.emoji,
-                image = link.image,
-                name = link.title
-            )
+            icon.setIcon(link.icon)
         }
     }
 }

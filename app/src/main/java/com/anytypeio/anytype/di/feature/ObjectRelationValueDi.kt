@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.*
@@ -10,7 +11,6 @@ import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
@@ -95,7 +95,7 @@ object ObjectSetObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
-        types: ObjectTypeProvider,
+        types: ObjectTypesProvider,
         removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
         removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
         urlBuilder: UrlBuilder,
@@ -126,7 +126,7 @@ object ObjectObjectRelationValueModule {
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
         details: ObjectDetailProvider,
-        types: ObjectTypeProvider,
+        types: ObjectTypesProvider,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,

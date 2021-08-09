@@ -84,8 +84,8 @@ class HomeDashboardViewModel(
     val sets = MutableStateFlow(emptyList<DashboardView>())
     val isDataViewEnabled = MutableStateFlow(false)
 
-    private val views : List<DashboardView>
-    get() = stateData.value?.blocks ?: emptyList()
+    private val views: List<DashboardView>
+        get() = stateData.value?.blocks ?: emptyList()
 
     init {
         isDataViewEnabled.value = getFlavourConfig.isDataViewEnabled()
@@ -308,7 +308,7 @@ class HomeDashboardViewModel(
 
     fun onTabObjectClicked(target: Id, isLoading: Boolean, tab: TAB = TAB.FAVOURITE) {
         if (!isLoading) {
-            val view = when(tab) {
+            val view = when (tab) {
                 TAB.FAVOURITE -> views.find { it is DashboardView.Document && it.target == target }
                 TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
                 TAB.INBOX -> inbox.value.find { it is DashboardView.Document && it.target == target }
@@ -328,8 +328,7 @@ class HomeDashboardViewModel(
             } else {
                 toast("Currently unsupported layout on Android")
             }
-        }
-        else {
+        } else {
             toast("This object is still syncing.")
         }
     }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.`object`.ObjectIcon
@@ -27,7 +28,8 @@ fun List<DashboardView>.filterByNotArchivedPages(): List<DashboardView> =
 fun List<DashboardView>.updateDetails(
     target: String,
     details: Block.Fields,
-    builder: UrlBuilder
+    builder: UrlBuilder,
+    objectTypes: List<ObjectType>
 ): List<DashboardView> {
     return mapNotNull { view ->
         when (view) {
@@ -69,7 +71,8 @@ fun List<DashboardView>.updateDetails(
                             builder = builder
                         ),
                         layout = obj.layout,
-                        type = obj.type.firstOrNull()
+                        type = obj.type.firstOrNull(),
+                        typeName = objectTypes.find { it.url == obj.type.firstOrNull() }?.name
                     )
                 } else {
                     view

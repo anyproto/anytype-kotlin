@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.Either
@@ -80,6 +81,9 @@ open class DashboardTestSetup {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
     lateinit var vm: HomeDashboardViewModel
 
     val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -98,7 +102,11 @@ open class DashboardTestSetup {
         getConfig = getConfig,
         move = move,
         interceptEvents = interceptEvents,
-        eventConverter = HomeDashboardEventConverter.DefaultConverter(builder, getFlavourConfig),
+        eventConverter = HomeDashboardEventConverter.DefaultConverter(
+            builder = builder,
+            getFlavourConfig = getFlavourConfig,
+            objectTypesProvider = objectTypesProvider
+        ),
         getDebugSettings = getDebugSettings,
         analytics = analytics,
         searchArchivedObjects = searchArchivedObjects,

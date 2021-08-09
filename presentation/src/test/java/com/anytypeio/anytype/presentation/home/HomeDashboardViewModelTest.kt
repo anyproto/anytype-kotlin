@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -83,6 +84,9 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var getFlavourConfig: GetFlavourConfig
 
+    @Mock
+    lateinit var objectTypesProvider: ObjectTypesProvider
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = Config(
@@ -107,7 +111,11 @@ class HomeDashboardViewModelTest {
             getConfig = getConfig,
             move = move,
             interceptEvents = interceptEvents,
-            eventConverter = HomeDashboardEventConverter.DefaultConverter(builder, getFlavourConfig),
+            eventConverter = HomeDashboardEventConverter.DefaultConverter(
+                builder = builder,
+                getFlavourConfig = getFlavourConfig,
+                objectTypesProvider = objectTypesProvider
+            ),
             getDebugSettings = getDebugSettings,
             analytics = analytics,
             searchArchivedObjects = searchArchivedObjects,

@@ -58,7 +58,8 @@ class DashboardViewExtensionKtTest {
         val result = views.updateDetails(
             target = views[1].target,
             details = Block.Fields(mapOf("iconEmoji" to "emoji777")),
-            builder = builder
+            builder = builder,
+            objectTypes = emptyList()
         )
 
         val expected = listOf<DashboardView.Document>(

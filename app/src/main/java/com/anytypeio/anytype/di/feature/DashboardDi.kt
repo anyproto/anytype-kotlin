@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -152,9 +153,14 @@ object HomeDashboardModule {
     @PerScreen
     fun provideEventConverter(
         builder: UrlBuilder,
-        getFlavourConfig: GetFlavourConfig
+        getFlavourConfig: GetFlavourConfig,
+        objectTypesProvider: ObjectTypesProvider
     ): HomeDashboardEventConverter {
-        return HomeDashboardEventConverter.DefaultConverter(builder, getFlavourConfig)
+        return HomeDashboardEventConverter.DefaultConverter(
+            builder = builder,
+            getFlavourConfig = getFlavourConfig,
+            objectTypesProvider = objectTypesProvider
+        )
     }
 
     @JvmStatic

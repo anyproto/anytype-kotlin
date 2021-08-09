@@ -226,7 +226,8 @@ sealed class HomeDashboardStateMachine {
                         blocks = state.blocks.updateDetails(
                             event.id,
                             event.fields,
-                            event.builder
+                            event.builder,
+                            objectTypes = state.objectTypes
                         )
                     )
                 }
@@ -235,7 +236,8 @@ sealed class HomeDashboardStateMachine {
                         blocks = state.blocks.updateDetails(
                             event.target,
                             event.details,
-                            event.builder
+                            event.builder,
+                            objectTypes = state.objectTypes
                         ),
                         details = state.details.set(
                             target = event.target,
@@ -253,7 +255,8 @@ sealed class HomeDashboardStateMachine {
                         blocks = state.blocks.updateDetails(
                             target = event.target,
                             details = updated.details[event.target] ?: Block.Fields.empty(),
-                            builder = event.builder
+                            builder = event.builder,
+                            objectTypes = state.objectTypes
                         )
                     )
                 }
@@ -267,7 +270,8 @@ sealed class HomeDashboardStateMachine {
                         blocks = state.blocks.updateDetails(
                             target = event.target,
                             details = updated.details[event.target] ?: Block.Fields.empty(),
-                            builder = event.builder
+                            builder = event.builder,
+                            objectTypes = state.objectTypes
                         )
                     )
                 }

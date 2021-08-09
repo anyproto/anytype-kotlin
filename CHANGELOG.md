@@ -8,8 +8,9 @@
 
 ### Fixes & tech 🚒
 
+* Dashboard | Enhanced: Syncing / fetching an object's type ("Unknown type" issue) (#1723)
 * Dashboard | Fixed: Incorrectly synced layout relation prevented user from opening an object (#1721)
-* Dashboard | Fixed: Initial's letter sometimes overlaps an object's icon due to view recycling (#1722)   
+* Dashboard | Fixed: Initial's letter sometimes overlaps an object's icon due to view recycling (#1722)
 * Data View | Grid View | Enhanced object header syncing / applying granular changes (#1718)
 * Relations | Fixed: Cannot navigate to task object from relation value (#1720)
 

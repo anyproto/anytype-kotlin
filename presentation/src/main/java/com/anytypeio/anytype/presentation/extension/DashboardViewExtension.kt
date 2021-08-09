@@ -67,7 +67,9 @@ fun List<DashboardView>.updateDetails(
                             obj = obj,
                             layout = obj.layout,
                             builder = builder
-                        )
+                        ),
+                        layout = obj.layout,
+                        type = obj.type.firstOrNull()
                     )
                 } else {
                     view

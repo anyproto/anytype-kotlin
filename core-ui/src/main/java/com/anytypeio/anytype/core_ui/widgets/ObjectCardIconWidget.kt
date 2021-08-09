@@ -30,6 +30,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
     fun bind(icon: ObjectIcon) {
         when(icon) {
             is ObjectIcon.Basic.Emoji -> {
+                clearInitials()
                 setBackgroundResource(R.drawable.rect_object_icon_card_emoji_background)
                 ivIcon.updateLayoutParams<LayoutParams> {
                     height = emojiSize
@@ -46,6 +47,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                 }
             }
             is ObjectIcon.Basic.Image -> {
+                clearInitials()
                 setBackgroundResource(0)
                 ivIcon.updateLayoutParams<LayoutParams> {
                     height = LayoutParams.MATCH_PARENT
@@ -61,11 +63,13 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     .into(ivIcon)
             }
             is ObjectIcon.Profile.Avatar -> {
+                clearInitials()
                 setBackgroundResource(R.drawable.circle_default_avatar_background)
                 ivIcon.setImageDrawable(null)
                 tvInitial.text = icon.name.ifEmpty { DEFAULT_INITIAL_CHAR }.first().uppercaseChar().toString()
             }
             is ObjectIcon.Profile.Image -> {
+                clearInitials()
                 setBackgroundResource(0)
                 ivIcon.updateLayoutParams<LayoutParams> {
                     height = LayoutParams.MATCH_PARENT
@@ -82,6 +86,10 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                 // TODO
             }
         }
+    }
+
+    private fun clearInitials() {
+        tvInitial.text = null
     }
 
     companion object {

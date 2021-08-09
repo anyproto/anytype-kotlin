@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.5
+## Version 0.2.6
 
 ### New features & enhancements 🚀
 
@@ -8,6 +8,8 @@
 
 ### Fixes & tech 🚒
 
+* Dashboard | Fixed: Incorrectly synced layout relation prevented user from opening an object (#1721)
+* Dashboard | Fixed: Initial's letter sometimes overlaps an object's icon due to view recycling (#1722)   
 * Data View | Grid View | Enhanced object header syncing / applying granular changes (#1718)
 * Relations | Fixed: Cannot navigate to task object from relation value (#1720)
 

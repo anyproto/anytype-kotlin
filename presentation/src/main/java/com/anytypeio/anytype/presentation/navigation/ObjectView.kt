@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.presentation.`object`.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 data class DefaultObjectView(
     val id: Id,

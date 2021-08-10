@@ -5,14 +5,14 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.page.SupportNesting
-import com.anytypeio.anytype.core_ui.features.page.marks
+import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.page.editor.mention.MentionEvent
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
-import com.anytypeio.anytype.presentation.page.editor.slash.SlashEvent
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 
 class Checkbox(

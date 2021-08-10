@@ -15,11 +15,11 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.PageViewModel
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -37,7 +37,7 @@ class RelationBlockUITesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val defaultDetails = Block.Details(
         mapOf(
@@ -635,12 +635,12 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         onView(withId(R.id.multiSelectModeButton)).perform(click())
 
-        advance(PageViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+        advance(EditorViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
         rvMatcher.onItemView(1, R.id.textContent).perform(click())
         rvMatcher.onItemView(2, R.id.placeholderContainer).perform(click())
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -1042,7 +1042,7 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         onView(withId(R.id.multiSelectModeButton)).perform(click())
 
-        advance(PageViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+        advance(EditorViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
         rvMatcher.onItemView(1, R.id.textContent).perform(click())
         rvMatcher.onItemView(2, R.id.content).perform(click())
@@ -1051,7 +1051,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         rvMatcher.onItemView(5, R.id.content).perform(click())
         rvMatcher.onItemView(6, R.id.content).perform(click())
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         with(rvMatcher) {
             checkIsRecyclerSize(7)
@@ -1066,8 +1066,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
     // STUBBING & SETUP
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
-        return launchFragmentInContainer<TestPageFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
+        return launchFragmentInContainer<TestEditorFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

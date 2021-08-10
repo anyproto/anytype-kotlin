@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.core_ui.common
 
 import android.graphics.Color
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 enum class ThemeColorCode(
     val title: String,

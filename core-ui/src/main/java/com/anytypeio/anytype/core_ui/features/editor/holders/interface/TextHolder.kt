@@ -6,10 +6,10 @@ import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.presentation.page.editor.model.Alignment
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
-import com.anytypeio.anytype.presentation.page.editor.model.Focusable
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import timber.log.Timber
 
 /**

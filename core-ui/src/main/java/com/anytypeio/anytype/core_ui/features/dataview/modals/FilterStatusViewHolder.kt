@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_status.view.*
 import timber.log.Timber

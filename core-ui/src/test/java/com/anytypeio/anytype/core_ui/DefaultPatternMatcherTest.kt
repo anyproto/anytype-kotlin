@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui
 
-import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.page.editor.pattern.Pattern
+import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.pattern.Pattern
 import org.junit.Test
 import kotlin.test.assertEquals
 

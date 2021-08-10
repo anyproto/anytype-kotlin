@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.core_ui
 
-import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil
-import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.MARKUP_CHANGED
-import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Companion.TEXT_CHANGED
-import com.anytypeio.anytype.core_ui.features.page.BlockViewDiffUtil.Payload
-import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.MARKUP_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

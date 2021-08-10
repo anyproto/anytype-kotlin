@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
-import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.widget_block_style_toolbar_new.view.*
 import kotlinx.coroutines.channels.Channel

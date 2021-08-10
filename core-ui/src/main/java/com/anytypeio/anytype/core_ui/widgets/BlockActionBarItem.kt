@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.drawable
-import com.anytypeio.anytype.presentation.page.editor.actions.ActionItemType
+import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import kotlinx.android.synthetic.main.action_item.view.*
 
 class BlockActionBarItem @JvmOverloads constructor(

@@ -8,8 +8,8 @@ import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.toSpannable
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.ext.isSpanInRange
-import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

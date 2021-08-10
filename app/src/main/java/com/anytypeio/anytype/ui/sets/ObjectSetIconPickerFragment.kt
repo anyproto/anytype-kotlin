@@ -2,9 +2,9 @@ package com.anytypeio.anytype.ui.sets
 
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.page.picker.ObjectSetIconPickerViewModel
-import com.anytypeio.anytype.presentation.page.picker.ObjectSetIconPickerViewModelFactory
-import com.anytypeio.anytype.ui.page.modals.ObjectIconPickerBaseFragment
+import com.anytypeio.anytype.presentation.editor.picker.ObjectSetIconPickerViewModel
+import com.anytypeio.anytype.presentation.editor.picker.ObjectSetIconPickerViewModelFactory
+import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import javax.inject.Inject
 
 class ObjectSetIconPickerFragment : ObjectIconPickerBaseFragment() {

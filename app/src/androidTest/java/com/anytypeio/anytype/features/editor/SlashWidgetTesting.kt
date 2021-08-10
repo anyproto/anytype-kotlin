@@ -13,16 +13,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_ui.features.page.slash.holders.MainMenuHolder
-import com.anytypeio.anytype.core_ui.features.page.slash.holders.MediaMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MainMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MediaMenuHolder
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.PageViewModel
+import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.relations.NumberParser
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -40,7 +40,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val defaultDetails = Block.Details(
         mapOf(
@@ -144,7 +144,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             checkIsRecyclerSize(9)
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -194,7 +194,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             checkIsRecyclerSize(9)
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -249,7 +249,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.flBack)).checkIsDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -304,7 +304,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             checkIsRecyclerSize(9)
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -359,7 +359,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.flBack)).checkIsDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -414,7 +414,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             checkIsRecyclerSize(9)
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -503,7 +503,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             checkIsRecyclerSize(3)
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -581,7 +581,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             onItemView(0, R.id.flBack).checkIsDisplayed()
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
     }
     //endregion
@@ -675,7 +675,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -773,7 +773,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -871,7 +871,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -965,7 +965,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.slashWidget)).checkIsNotDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -1023,7 +1023,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.flBack)).checkIsDisplayed()
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -1070,7 +1070,7 @@ class SlashWidgetTesting : EditorTestSetup() {
             onItemView(1, R.id.textContent).checkHasText("FooBar/")
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
@@ -1123,13 +1123,13 @@ class SlashWidgetTesting : EditorTestSetup() {
             checkIsRecyclerSize(9)
         }
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
     //endregion
 
     // STUBBING & SETUP
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

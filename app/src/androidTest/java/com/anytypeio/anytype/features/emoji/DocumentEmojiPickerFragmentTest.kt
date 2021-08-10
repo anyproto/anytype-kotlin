@@ -21,8 +21,8 @@ import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiModel
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
-import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*

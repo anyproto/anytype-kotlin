@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.navigation
 
 import com.anytypeio.anytype.core_ui.MockDataFactory
-import com.anytypeio.anytype.presentation.`object`.ObjectIcon
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.navigation.filterBy
 import com.anytypeio.anytype.presentation.navigation.isContainsText
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import org.junit.Assert.*
 import org.junit.Test
 

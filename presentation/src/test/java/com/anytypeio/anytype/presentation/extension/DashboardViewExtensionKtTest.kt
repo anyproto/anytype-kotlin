@@ -4,7 +4,7 @@ import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.desktop.DashboardView
+import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import org.junit.Test
 import kotlin.test.assertEquals
 

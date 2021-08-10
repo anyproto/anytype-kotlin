@@ -24,12 +24,12 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.presentation.editor.editor.Proxy
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.page.editor.Proxy
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
-import com.anytypeio.anytype.presentation.page.model.TextUpdate
 import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.util.Dispatcher

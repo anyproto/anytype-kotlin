@@ -5,15 +5,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.cover.CoverColor
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -31,7 +31,7 @@ class LayoutTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),

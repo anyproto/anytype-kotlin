@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.library_page_icon_picker_widget.R
-import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView
-import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
-import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
+import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
+import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
+import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
 
 class DocumentEmojiIconPickerAdapter(
     private var views: List<EmojiPickerView>,

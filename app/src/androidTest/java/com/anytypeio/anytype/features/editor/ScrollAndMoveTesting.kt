@@ -12,10 +12,10 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.PageViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -34,7 +34,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val args = bundleOf(PageFragment.ID_KEY to root)
+    val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -127,7 +127,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
 
     // STUBBING & SETUP
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

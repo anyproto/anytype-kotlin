@@ -8,10 +8,10 @@ import com.anytypeio.anytype.device.DeviceCoverCollectionProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.cover.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.page.cover.SelectDocCoverViewModel
-import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.editor.cover.SelectDocCoverViewModel
+import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.page.cover.DocCoverGalleryFragment
+import com.anytypeio.anytype.ui.editor.cover.DocCoverGalleryFragment
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides

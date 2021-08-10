@@ -9,9 +9,9 @@ import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.presentation.page.markup.MarkupStyleDescriptor
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import kotlinx.android.synthetic.main.widget_markup_toolbar_main.view.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge

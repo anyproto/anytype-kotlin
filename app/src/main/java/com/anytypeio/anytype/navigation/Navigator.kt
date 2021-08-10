@@ -12,10 +12,10 @@ import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
-import com.anytypeio.anytype.ui.page.PageFragment
 import com.anytypeio.anytype.ui.sets.CreateObjectSetFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 
@@ -78,9 +78,9 @@ class Navigator : AppNavigation {
         navController?.navigate(
             R.id.objectNavigation,
             Bundle().apply {
-                putString(PageFragment.ID_KEY, id)
+                putString(EditorFragment.ID_KEY, id)
                 editorSettings?.let {
-                    putParcelable(PageFragment.DEBUG_SETTINGS, it)
+                    putParcelable(EditorFragment.DEBUG_SETTINGS, it)
                 }
             }
         )
@@ -89,7 +89,7 @@ class Navigator : AppNavigation {
     override fun launchDocument(id: String) {
         navController?.navigate(
             R.id.objectNavigation,
-            bundleOf(PageFragment.ID_KEY to id),
+            bundleOf(EditorFragment.ID_KEY to id),
             navOptions {
                 popUpTo = R.id.desktopScreen
                 launchSingleTop = true
@@ -194,7 +194,7 @@ class Navigator : AppNavigation {
     override fun exitToDesktopAndOpenPage(pageId: String) {
         navController?.navigate(
             R.id.desktopScreen,
-            bundleOf(PageFragment.ID_KEY to pageId),
+            bundleOf(EditorFragment.ID_KEY to pageId),
             navOptions {
                 popUpTo = R.id.desktopScreen
                 launchSingleTop = true

@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.presentation.page.editor.Store
+import com.anytypeio.anytype.presentation.editor.editor.Store
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

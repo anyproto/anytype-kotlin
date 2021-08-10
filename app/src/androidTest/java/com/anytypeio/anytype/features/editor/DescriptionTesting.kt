@@ -8,13 +8,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -32,7 +32,7 @@ class DescriptionTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -168,7 +168,7 @@ class DescriptionTesting : EditorTestSetup() {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

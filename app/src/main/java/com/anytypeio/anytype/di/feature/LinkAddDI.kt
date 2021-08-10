@@ -2,8 +2,8 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.page.CheckForUnlink
-import com.anytypeio.anytype.presentation.page.LinkAddViewModelFactory
-import com.anytypeio.anytype.ui.page.modals.SetLinkFragment
+import com.anytypeio.anytype.presentation.editor.LinkAddViewModelFactory
+import com.anytypeio.anytype.ui.editor.modals.SetLinkFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

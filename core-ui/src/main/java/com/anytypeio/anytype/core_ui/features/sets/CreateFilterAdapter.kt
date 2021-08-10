@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.DateDescription
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import kotlinx.android.synthetic.main.item_create_filter_checkbox.view.*

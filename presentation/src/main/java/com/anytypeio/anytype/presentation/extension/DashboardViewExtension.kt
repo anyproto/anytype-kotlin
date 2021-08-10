@@ -4,8 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.`object`.ObjectIcon
-import com.anytypeio.anytype.presentation.desktop.DashboardView
+import com.anytypeio.anytype.presentation.dashboard.DashboardView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 fun List<DashboardView>.addAndSortByIds(
     ids: List<String>,

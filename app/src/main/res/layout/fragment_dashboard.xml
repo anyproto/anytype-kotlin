@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dashboardRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_dashboard_background_color"
+    app:layoutDescription="@xml/fragment_dashboard_scene">
+
+    <TextView
+        android:id="@+id/tvGreeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/graphik_semibold"
+        android:text="Hi, User"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/ic_dashboard_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
+        android:id="@+id/avatarContainer"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/avatar_ripple"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvGreeting"
+        app:text_size="44sp" />
+
+    <FrameLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/background_dashboard_button"
+        app:layout_constraintEnd_toStartOf="@+id/btnMarketplace"
+        app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dashboard_search" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnMarketplace"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/background_dashboard_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dashboard_marketplace" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnAddDoc"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/background_dashboard_button"
+        app:layout_constraintStart_toEndOf="@+id/btnMarketplace"
+        app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dashboard_add_doc" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomSheet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="58dp"
+        android:background="@drawable/background_desktop_bottom_sheet"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bottomToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
+
+        <com.google.android.material.tabs.TabLayout
+            app:tabRippleColor="@null"
+            android:id="@+id/tabsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:paddingStart="10dp"
+            android:background="@null"
+            app:tabIndicator="@null"
+            app:tabMinWidth="10dp"
+            app:tabPaddingBottom="@dimen/dp_12"
+            app:tabPaddingEnd="10dp"
+            app:tabPaddingStart="10dp"
+            app:tabPaddingTop="@dimen/dp_12"
+            app:tabSelectedTextColor="@color/black"
+            app:tabTextAppearance="@style/DashboardTabTextStyle"
+            app:tabTextColor="#CC0066C3" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/dashboardPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
+
+    </LinearLayout>
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.DesktopBottomToolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingConstraints" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

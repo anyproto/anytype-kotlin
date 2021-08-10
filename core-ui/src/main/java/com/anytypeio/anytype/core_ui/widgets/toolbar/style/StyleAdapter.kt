@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.page.editor.model.Alignment
-import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
-import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
-import com.anytypeio.anytype.presentation.page.editor.styling.StylingType
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
 
 class StyleAdapter(
     var props: ControlPanelState.Toolbar.Styling.Props?,

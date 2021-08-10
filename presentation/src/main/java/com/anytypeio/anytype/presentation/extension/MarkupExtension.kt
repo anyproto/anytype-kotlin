@@ -3,8 +3,8 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
-import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.markup.MarkupStyleDescriptor
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 
 /**
  * Check if list of marks contains [Markup.Type] in selection range

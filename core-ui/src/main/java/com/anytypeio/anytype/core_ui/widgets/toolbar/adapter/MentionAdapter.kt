@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
+import com.anytypeio.anytype.presentation.editor.editor.mention.filterMentionsBy
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.page.editor.mention.filterMentionsBy
 
 class MentionAdapter(
     private var data: ArrayList<DefaultObjectView>,

@@ -2,8 +2,8 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
-import com.anytypeio.anytype.presentation.`object`.ObjectTypeChangeViewModelFactory
-import com.anytypeio.anytype.ui.`object`.ObjectTypeChangeFragment
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
+import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

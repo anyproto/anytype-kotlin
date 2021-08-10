@@ -8,12 +8,11 @@ import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
-import com.anytypeio.anytype.presentation.`object`.ObjectMenuViewModel
-import com.anytypeio.anytype.presentation.`object`.ObjectSetMenuViewModel
-import com.anytypeio.anytype.presentation.page.Editor
+import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectSetMenuViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
-import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
-import com.anytypeio.anytype.ui.page.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
 import dagger.Provides

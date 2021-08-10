@@ -21,7 +21,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
-import com.anytypeio.anytype.ui.page.OnFragmentInteractionListener
+import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_relation_list.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.library_page_icon_picker_widget
 
-import com.anytypeio.anytype.library_page_icon_picker_widget.model.PageIconPickerViewDiffUtil
-import com.anytypeio.anytype.presentation.page.picker.EmojiPickerView
+import com.anytypeio.anytype.library_page_icon_picker_widget.model.ObjectIconPickerViewDiffUtil
+import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -29,7 +29,7 @@ class DocumentEmojiIconPickerViewDiffUtilTest {
             )
         )
 
-        val util = PageIconPickerViewDiffUtil(
+        val util = ObjectIconPickerViewDiffUtil(
             old = old,
             new = new
         )

@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.presentation.page.editor.Markup
-import com.anytypeio.anytype.presentation.page.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.page.editor.model.Alignment
-import com.anytypeio.anytype.presentation.page.editor.styling.StyleConfig
-import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import kotlinx.android.synthetic.main.widget_block_style_extra.view.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -12,9 +12,9 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.checkHasViewGroupChildWithText
 import com.anytypeio.anytype.utils.matchView
@@ -34,7 +34,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -280,7 +280,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

@@ -16,9 +16,9 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
-import com.anytypeio.anytype.presentation.desktop.HomeDashboardEventConverter
-import com.anytypeio.anytype.presentation.desktop.HomeDashboardViewModelFactory
-import com.anytypeio.anytype.ui.desktop.HomeDashboardFragment
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
+import com.anytypeio.anytype.ui.dashboard.DashboardFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -37,7 +37,7 @@ interface HomeDashboardSubComponent {
         fun build(): HomeDashboardSubComponent
     }
 
-    fun inject(fragment: HomeDashboardFragment)
+    fun inject(fragment: DashboardFragment)
 }
 
 @Module

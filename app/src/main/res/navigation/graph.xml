@@ -10,9 +10,9 @@
         app:startDestination="@id/pageScreen">
         <fragment
             android:id="@+id/pageScreen"
-            android:name="com.anytypeio.anytype.ui.page.PageFragment"
+            android:name="com.anytypeio.anytype.ui.editor.EditorFragment"
             android:label="Page screen"
-            tools:layout="@layout/fragment_page" />
+            tools:layout="@layout/fragment_editor" />
         <dialog
             android:id="@+id/objectRelationListScreen"
             android:name="com.anytypeio.anytype.ui.relations.RelationListFragment"
@@ -23,15 +23,15 @@
             android:label="Object-Relation-Value-Screen" />
         <dialog
             android:id="@+id/objectIconPickerScreen"
-            android:name="com.anytypeio.anytype.ui.page.modals.ObjectIconPickerFragment"
+            android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
             android:label="Object-Icon-Picker-Screen" />
         <dialog
             android:id="@+id/objectMainMenuScreen"
-            android:name="com.anytypeio.anytype.ui.page.sheets.ObjectMenuBaseFragment"
+            android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment"
             android:label="Doc-Menu-Bottom-Sheet-Screen"/>
         <fragment
             android:id="@+id/objectCoverScreen"
-            android:name="com.anytypeio.anytype.ui.page.cover.DocCoverSliderFragment"
+            android:name="com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment"
             android:label="Object-Cover-Screen"/>
     </navigation>
 
@@ -58,9 +58,9 @@
 
     <fragment
         android:id="@+id/desktopScreen"
-        android:name="com.anytypeio.anytype.ui.desktop.HomeDashboardFragment"
+        android:name="com.anytypeio.anytype.ui.dashboard.DashboardFragment"
         android:label="DesktopFragment"
-        tools:layout="@layout/fragment_desktop">
+        tools:layout="@layout/fragment_dashboard">
         <action
             android:id="@+id/action_open_profile"
             app:destination="@id/profileScreen"
@@ -375,7 +375,7 @@
         android:label="ArchiveFragment" />
     <fragment
         android:id="@+id/fullScreenImageFragment"
-        android:name="com.anytypeio.anytype.ui.page.gallery.FullScreenPictureFragment"
+        android:name="com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment"
         android:label="FullScreenImageFragment" />
     <fragment
         android:id="@+id/createSetScreen"

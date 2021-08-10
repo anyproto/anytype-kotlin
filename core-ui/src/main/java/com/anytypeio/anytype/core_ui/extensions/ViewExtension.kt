@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
-import com.anytypeio.anytype.presentation.page.editor.BlockDimensions
+import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
 fun Context.toast(

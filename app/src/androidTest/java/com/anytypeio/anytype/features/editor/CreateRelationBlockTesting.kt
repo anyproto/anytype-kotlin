@@ -16,10 +16,10 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -37,7 +37,7 @@ class CreateRelationBlockTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     private val defaultDetails = Block.Details(
         mapOf(
@@ -326,8 +326,8 @@ class CreateRelationBlockTesting : EditorTestSetup() {
 
     // STUBBING & SETUP
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
-        return launchFragmentInContainer<TestPageFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
+        return launchFragmentInContainer<TestEditorFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

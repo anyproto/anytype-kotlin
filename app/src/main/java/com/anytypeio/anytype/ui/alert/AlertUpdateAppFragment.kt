@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.ui.page.OnFragmentInteractionListener
+import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_alert.*
 
 class AlertUpdateAppFragment : BaseBottomSheetFragment() {

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.presentation.`object`.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DateDescription
 
 sealed class CreateFilterView {

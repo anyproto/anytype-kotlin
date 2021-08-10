@@ -20,14 +20,14 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.features.editor.base.TestPageFragment
+import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.PageViewModel
-import com.anytypeio.anytype.ui.page.PageFragment
+import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_page.*
+import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -48,7 +48,7 @@ class DeleteBlockTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(PageFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.ID_KEY to root)
 
     @Before
     override fun setup() {
@@ -372,7 +372,7 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         // Release pending coroutines
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     //endregion
@@ -630,7 +630,7 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         // Release pending coroutines
 
-        advance(PageViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     //endregion
@@ -651,8 +651,8 @@ class DeleteBlockTesting : EditorTestSetup() {
         }
     }
 
-    private fun launchFragment(args: Bundle): FragmentScenario<TestPageFragment> {
-        return launchFragmentInContainer<TestPageFragment>(
+    private fun launchFragment(args: Bundle): FragmentScenario<TestEditorFragment> {
+        return launchFragmentInContainer<TestEditorFragment>(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

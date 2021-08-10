@@ -34,18 +34,18 @@ import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
-import com.anytypeio.anytype.presentation.page.Editor
-import com.anytypeio.anytype.presentation.page.PageViewModelFactory
-import com.anytypeio.anytype.presentation.page.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.page.editor.Interactor
-import com.anytypeio.anytype.presentation.page.editor.InternalDetailModificationManager
-import com.anytypeio.anytype.presentation.page.editor.Orchestrator
-import com.anytypeio.anytype.presentation.page.editor.Proxy
-import com.anytypeio.anytype.presentation.page.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
-import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
-import com.anytypeio.anytype.presentation.page.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
+import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.Interactor
+import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
+import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.editor.Proxy
+import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
@@ -229,9 +229,9 @@ open class EditorTestSetup {
         updateDetail = UpdateDetail(repo)
         getCompatibleObjectTypes = GetCompatibleObjectTypes(repo)
 
-        TestPageFragment.testViewModelFactory = PageViewModelFactory(
+        TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
-            closePage = closePage,
+            closeObject = closePage,
             interceptEvents = interceptEvents,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
@@ -415,7 +415,7 @@ open class EditorTestSetup {
         }
     }
 
-    fun launch(args: Bundle): FragmentScenario<TestPageFragment> {
+    fun launch(args: Bundle): FragmentScenario<TestEditorFragment> {
         return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme

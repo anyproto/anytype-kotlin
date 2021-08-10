@@ -8,10 +8,10 @@ import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
-import com.anytypeio.anytype.presentation.page.picker.ObjectIconPickerViewModelFactory
-import com.anytypeio.anytype.presentation.page.picker.ObjectSetIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.editor.picker.ObjectSetIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.page.modals.ObjectIconPickerFragment
+import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment
 import dagger.Module
 import dagger.Provides

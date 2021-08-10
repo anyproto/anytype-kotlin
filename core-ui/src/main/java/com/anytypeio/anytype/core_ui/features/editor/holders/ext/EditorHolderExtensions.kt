@@ -3,11 +3,11 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.ext
 import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
-import com.anytypeio.anytype.core_ui.features.page.BlockAdapter
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.page.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 fun RelationViewHolder.setup(adapter: BlockAdapter): RelationViewHolder {
     with(itemView) {

@@ -36,8 +36,8 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
-import com.anytypeio.anytype.ui.page.PageFragment
-import com.anytypeio.anytype.ui.page.REQUEST_FILE_CODE
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.REQUEST_FILE_CODE
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -156,7 +156,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             is AppNavigation.Command.OpenObject -> {
                 findNavController().navigate(
                     R.id.objectNavigation,
-                    bundleOf(PageFragment.ID_KEY to command.id)
+                    bundleOf(EditorFragment.ID_KEY to command.id)
                 )
             }
             else -> toast("Unexpected nav command: $command")

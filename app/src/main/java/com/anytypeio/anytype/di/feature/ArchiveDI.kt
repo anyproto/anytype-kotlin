@@ -6,11 +6,11 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
-import com.anytypeio.anytype.presentation.page.DocumentExternalEventReducer
-import com.anytypeio.anytype.presentation.page.archive.ArchiveViewModelFactory
-import com.anytypeio.anytype.presentation.page.editor.Orchestrator
-import com.anytypeio.anytype.presentation.page.render.DefaultBlockViewRenderer
-import com.anytypeio.anytype.presentation.page.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
+import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewModelFactory
+import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import dagger.Module
 import dagger.Provides

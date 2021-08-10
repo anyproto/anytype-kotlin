@@ -3,7 +3,7 @@ package com.anytypeio.anytype.core_ui.extensions
 import android.graphics.Point
 import com.anytypeio.anytype.core_ui.common.isLinksOrMentionsPresent
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 
 fun TextInputWidget.preserveSelection(block: () -> Unit) = synchronized(this) {
     val selection = selectionStart..selectionEnd

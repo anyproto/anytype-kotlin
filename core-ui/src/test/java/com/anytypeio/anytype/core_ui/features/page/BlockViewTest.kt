@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.page
 
 import com.anytypeio.anytype.core_ui.MockDataFactory
-import com.anytypeio.anytype.presentation.page.editor.model.BlockView
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

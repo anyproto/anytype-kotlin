@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.presentation.page.editor.Proxy
+import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.relations.sortingExpression
-import com.anytypeio.anytype.presentation.sets.model.*
+import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.sets.model.SortingExpression
+import com.anytypeio.anytype.presentation.sets.model.SortingView
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect

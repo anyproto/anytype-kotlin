@@ -4,10 +4,10 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.layout.SetObjectLayout
-import com.anytypeio.anytype.presentation.page.Editor
-import com.anytypeio.anytype.presentation.page.layout.ObjectLayoutViewModel
+import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.layout.ObjectLayoutViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.page.layout.ObjectLayoutFragment
+import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

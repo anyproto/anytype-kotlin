@@ -14,9 +14,9 @@ import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.page.archive.ArchiveViewModel
-import com.anytypeio.anytype.presentation.page.archive.ArchiveViewModelFactory
-import com.anytypeio.anytype.presentation.page.archive.ArchiveViewState
+import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewModel
+import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewModelFactory
+import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_archive.*

@@ -2,12 +2,12 @@ package com.anytypeio.anytype.ext
 
 import android.text.Editable
 import android.text.Spanned
-import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.core_ui.common.Span
+import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
 fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).mapNotNull { span ->
     when (span) {

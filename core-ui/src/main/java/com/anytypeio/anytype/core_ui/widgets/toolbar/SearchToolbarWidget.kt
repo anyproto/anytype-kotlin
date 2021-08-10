@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import kotlinx.android.synthetic.main.widget_doc_search_engine_toolbar.view.*
 import kotlinx.coroutines.flow.*
-import com.anytypeio.anytype.presentation.page.editor.search.SearchInDocEvent as Event
+import com.anytypeio.anytype.presentation.editor.editor.search.SearchInDocEvent as Event
 
 class SearchToolbarWidget : ConstraintLayout {
 

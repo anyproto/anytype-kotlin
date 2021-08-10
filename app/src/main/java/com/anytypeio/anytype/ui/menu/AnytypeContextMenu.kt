@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_ui.menu.ContextMenuType
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateContentBounds
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.lerp
-import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import java.lang.ref.WeakReference
 
 class AnytypeContextMenu constructor(

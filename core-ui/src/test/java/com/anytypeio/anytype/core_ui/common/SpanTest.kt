@@ -2,7 +2,7 @@ package com.anytypeio.anytype.core_ui.common
 
 import androidx.core.text.getSpans
 import com.anytypeio.anytype.core_utils.ext.hasSpan
-import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub

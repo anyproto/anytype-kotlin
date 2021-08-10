@@ -100,16 +100,16 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val desktopComponent = Component {
+    val dashboardComponent = Component {
         main
             .homeDashboardComponentBuilder()
             .homeDashboardModule(HomeDashboardModule)
             .build()
     }
 
-    val pageComponent = ComponentMap {
+    val editorComponent = ComponentMap {
         main
-            .pageComponentBuilder()
+            .editorComponentBuilder()
             .session(EditorSessionModule)
             .usecase(EditorUseCaseModule)
             .build()
@@ -129,7 +129,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val documentIconActionMenuComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .documentActionMenuComponentBuilder()
             .documentIconActionMenuModule(DocumentIconActionMenuModule())
@@ -137,7 +137,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectIconPickerComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .objectIconPickerComponent()
             .base(ObjectIconPickerBaseModule)
@@ -155,7 +155,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectLayoutComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .objectLayoutComponent()
             .module(ObjectLayoutModule)
@@ -213,7 +213,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val documentRelationComponent = DependentComponentMap { id ->
-        pageComponent
+        editorComponent
             .get(id)
             .documentRelationSubComponent()
             .module(DocumentRelationModule)
@@ -237,7 +237,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val relationTextValueComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .relationTextValueComponent()
             .module(RelationTextValueModule)
@@ -253,7 +253,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectObjectRelationDateValueComponet = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .editRelationDateComponent()
             .module(RelationDateValueModule)
@@ -261,7 +261,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val documentAddNewBlockComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .documentAddNewBlockComponentBuilder()
             .documentAddNewBlockModule(DocumentAddNewBlockModule)
@@ -325,7 +325,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectObjectRelationValueComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .editDocRelationComponent()
             .module(ObjectRelationValueModule)
@@ -462,7 +462,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val docCoverGalleryComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .docCoverGalleryComponentBuilder()
             .module(SelectDocCoverModule)
@@ -470,7 +470,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectCoverPickerComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .objectCoverPickerComponent()
             .module(ObjectCoverPickerModule)
@@ -478,7 +478,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectMenuComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .objectMenuComponent()
             .base(ObjectMenuModuleBase)
@@ -496,7 +496,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val uploadDocCoverImageComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .uploadDocCoverImageComponentBuilder()
             .module(UploadDocCoverImageModule)
@@ -504,7 +504,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val relationAddToObjectComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .relationAddToObjectComponent()
             .module(RelationAddToObjectModule)
@@ -520,7 +520,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val relationCreateFromScratchForObjectComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .relationCreateFromScratchForObjectComponent()
             .module(RelationCreateFromScratchForObjectModule)
@@ -536,7 +536,7 @@ class ComponentManager(private val main: MainComponent) {
     }
 
     val objectTypeChangeComponent = DependentComponentMap { ctx ->
-        pageComponent
+        editorComponent
             .get(ctx)
             .objectTypeChangeComponent()
             .module(ObjectTypeChangeModule)

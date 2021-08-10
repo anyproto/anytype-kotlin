@@ -4,7 +4,7 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 
 class TextBlockContextMenu(
     private val menuType: ContextMenuType,

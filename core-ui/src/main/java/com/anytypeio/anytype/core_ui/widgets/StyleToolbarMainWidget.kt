@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.presentation.page.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import kotlinx.android.synthetic.main.widget_style_toolbar_main.view.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge

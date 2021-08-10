@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.synthetic.main.item_featured_relation_default.view.*
 import kotlinx.android.synthetic.main.item_featured_relation_status.view.*

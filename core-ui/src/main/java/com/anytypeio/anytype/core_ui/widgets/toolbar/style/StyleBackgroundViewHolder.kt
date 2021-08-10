@@ -2,8 +2,8 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
-import com.anytypeio.anytype.presentation.page.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import kotlinx.android.synthetic.main.block_style_toolbar_background.view.*
 
 class StyleBackgroundViewHolder(view: View) : RecyclerView.ViewHolder(view) {

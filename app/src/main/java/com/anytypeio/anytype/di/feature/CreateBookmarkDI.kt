@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.presentation.page.bookmark.CreateBookmarkViewModel
-import com.anytypeio.anytype.ui.page.modals.CreateBookmarkFragment
+import com.anytypeio.anytype.presentation.editor.bookmark.CreateBookmarkViewModel
+import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

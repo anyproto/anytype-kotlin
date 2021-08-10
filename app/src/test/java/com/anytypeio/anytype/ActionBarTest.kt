@@ -1,9 +1,9 @@
 package com.anytypeio.anytype
 
-import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarHelper
-import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarHelper.blockVisibilityState
-import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarHelper.canShowBlockAtTheBottom
-import com.anytypeio.anytype.ui.page.modals.actions.BlockActionToolbarHelper.getAnchorView
+import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarHelper
+import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarHelper.blockVisibilityState
+import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarHelper.canShowBlockAtTheBottom
+import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarHelper.getAnchorView
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

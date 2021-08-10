@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.presentation.page.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import org.junit.Test
 
 class MarkupExtensionTest {

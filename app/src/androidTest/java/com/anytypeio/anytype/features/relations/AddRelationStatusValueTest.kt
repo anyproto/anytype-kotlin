@@ -19,7 +19,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRec
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.mocking.MockDataFactory
-import com.anytypeio.anytype.presentation.page.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider

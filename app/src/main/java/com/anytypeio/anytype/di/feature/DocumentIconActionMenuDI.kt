@@ -5,11 +5,11 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.presentation.page.editor.DetailModificationManager
-import com.anytypeio.anytype.presentation.page.picker.DocumentIconActionMenuViewModelFactory
+import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.editor.picker.DocumentIconActionMenuViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.page.modals.actions.DocumentIconActionMenuFragment
-import com.anytypeio.anytype.ui.page.modals.actions.ProfileIconActionMenuFragment
+import com.anytypeio.anytype.ui.editor.modals.actions.DocumentIconActionMenuFragment
+import com.anytypeio.anytype.ui.editor.modals.actions.ProfileIconActionMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

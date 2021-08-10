@@ -87,6 +87,7 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
     }
 
     class Status(view: View) : RelationViewHolder(view) {
+
         fun bind(item: DocumentRelationView.Status) {
             itemView.findViewById<TextView>(R.id.tvRelationTitle).text = item.name
             itemView.findViewById<TextView>(R.id.tvRelationValue).apply {
@@ -114,8 +115,15 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
 
     class Tags(view: View) : RelationViewHolder(view) {
 
+        private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
+
         fun bind(item: DocumentRelationView.Tags) = with(itemView) {
             findViewById<TextView>(R.id.tvRelationTitle).text = item.name
+            if (item.tags.isEmpty()) {
+                placeholder.visible()
+            } else {
+                placeholder.gone()
+            }
             for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
             item.tags.forEachIndexed { index, tagView ->
                 when (index) {
@@ -151,8 +159,15 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
 
     class Object(view: View) : RelationViewHolder(view) {
 
+        private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
+
         fun bind(item: DocumentRelationView.Object) {
             itemView.findViewById<TextView>(R.id.tvRelationTitle).text = item.name
+            if (item.objects.isEmpty()) {
+                placeholder.visible()
+            } else {
+                placeholder.gone()
+            }
             for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
             item.objects.forEachIndexed { index, objectView ->
                 when (index) {
@@ -191,8 +206,15 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
 
     class File(view: View) : RelationViewHolder(view) {
 
+        private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
+
         fun bind(item: DocumentRelationView.File) = with(itemView) {
             findViewById<TextView>(R.id.tvRelationTitle).text = item.name
+            if (item.files.isEmpty()) {
+                placeholder.visible()
+            } else {
+                placeholder.gone()
+            }
             item.files.forEachIndexed { index, fileView ->
                 when (index) {
                     in 0..MAX_VISIBLE_FILES_INDEX -> {

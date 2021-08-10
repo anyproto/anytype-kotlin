@@ -23,6 +23,8 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="0.6"
         android:ellipsize="end"
+        android:hint="@string/select_status"
+        android:textColorHint="@color/RelationPlaceholderTextColor"
         android:maxLines="1"
         android:singleLine="true"
         android:textColor="@color/black"

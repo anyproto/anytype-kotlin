@@ -20,6 +20,16 @@
         tools:text="Description of something"
         tools:visibility="visible" />
 
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/tvPlaceholder"
+        android:text="@string/select_objects"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline3"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/default_text_placeholder"
+        style="@style/RelationPlaceholderTextStyle" />
+
     <com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
         android:id="@+id/obj0"
         android:layout_width="wrap_content"

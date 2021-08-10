@@ -24,7 +24,9 @@
         android:layout_weight="0.6"
         android:ellipsize="end"
         android:maxLines="1"
+        android:hint="@string/enter_value"
         android:singleLine="true"
+        android:textColorHint="@color/RelationPlaceholderTextColor"
         android:textColor="@color/black"
         tools:text="@string/default_text_placeholder" />
 

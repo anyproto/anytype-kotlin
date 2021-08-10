@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="@dimen/relation_view_padding_top"
     android:paddingBottom="@dimen/relation_view_padding_bottom">
@@ -17,15 +17,25 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
+        style="@style/RelationViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        style="@style/RelationViewTitleStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Description" />
+
+    <TextView
+        android:id="@+id/tvPlaceholder"
+        android:visibility="gone"
+        android:text="@string/select_tags"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline3"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/default_text_placeholder"
+        style="@style/RelationPlaceholderTextStyle" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
         android:id="@+id/tag0"

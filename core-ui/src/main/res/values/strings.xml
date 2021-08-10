@@ -278,7 +278,7 @@
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object</string>
     <string name="viewer_sorting_prefix">Then</string>
-    <string name="enter_value">Enter a value</string>
+    <string name="enter_value">Enter value</string>
     <string name="ityem_relations">Relations</string>
     <string name="add_sort">Add a sort</string>
     <string name="apply">Apply</string>
@@ -399,5 +399,9 @@
     <string name="restore">Restore</string>
     <string name="unfavorite">Unfavorite</string>
     <string name="delete_view">Delete View</string>
+    <string name="select_tags">Select tags</string>
+    <string name="select_status">Select status</string>
+    <string name="select_objects">Select objects</string>
+    <string name="select_files">Select files</string>
 
 </resources>

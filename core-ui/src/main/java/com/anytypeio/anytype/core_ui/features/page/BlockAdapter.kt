@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
@@ -67,6 +68,7 @@ import com.anytypeio.anytype.core_ui.features.page.BlockViewHolder.Companion.HOL
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.page.Editor
@@ -111,6 +113,7 @@ class BlockAdapter(
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
     private val onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
+    private val onSplitDescription: (Id, Editable, IntRange) -> Unit,
     private val onTextInputClicked: (String) -> Unit,
     val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
@@ -272,6 +275,20 @@ class BlockAdapter(
                             onDescriptionChanged(view)
                         }
                     )
+                    itemView.tvBlockDescription.setOnEditorActionListener { v, actionId, _ ->
+                        if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                onSplitDescription(
+                                    views[pos].id,
+                                    v.editableText,
+                                    v.selectionStart..v.selectionEnd
+                                )
+                                return@setOnEditorActionListener true
+                            }
+                        }
+                        false
+                    }
                 }
             }
             HOLDER_FILE -> {

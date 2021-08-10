@@ -909,6 +909,19 @@ class PageViewModel(
         }
     }
 
+    fun onSplitObjectDescription(
+        target: Id,
+        text: String,
+        range: IntRange
+    ) {
+        proceedWithSplitEvent(
+            target = target,
+            text = text,
+            range = range,
+            marks = emptyList()
+        )
+    }
+
     private fun proceedWithEnterEvent(
         target: Id,
         range: IntRange,
@@ -1017,7 +1030,6 @@ class PageViewModel(
             check(content is Content.Smart)
             when (content.type) {
                 SmartBlockType.PROFILE_PAGE -> {
-                    val details = orchestrator.stores.details.current().details
                     dispatch(
                         command = Command.OpenProfileMenu
                     )

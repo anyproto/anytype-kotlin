@@ -3307,6 +3307,7 @@ class BlockAdapterTest {
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},
             onSplitLineEnterClicked = onSplitLineEnterClicked,
+            onSplitDescription = { _, _, _ -> },
             onTextChanged = onTextChanged,
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,

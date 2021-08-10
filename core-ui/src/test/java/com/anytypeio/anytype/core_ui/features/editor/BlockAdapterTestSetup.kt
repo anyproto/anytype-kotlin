@@ -35,6 +35,7 @@ open class BlockAdapterTestSetup {
             onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
             onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
             onSplitLineEnterClicked = onSplitLineEnterClicked,
+            onSplitDescription = { _, _, _ -> },
             onTextChanged = onTextChanged,
             onCheckboxClicked = onCheckboxClicked,
             onFocusChanged = onFocusChanged,

@@ -1,5 +1,15 @@
 # Change log for Android @Anytype app.
 
+## Version 0.2.7 (WIP)
+
+### New features & enhancements 🚀
+
+* Relations | Added placeholders where relation value is missing (#1724)
+
+### Fixes & tech 🚒
+
+* Editor | Pressing "Action Go" on the keyboard in description block crashes the app if there is no other focusable text block below (#1725)
+
 ## Version 0.2.6
 
 ### New features & enhancements 🚀

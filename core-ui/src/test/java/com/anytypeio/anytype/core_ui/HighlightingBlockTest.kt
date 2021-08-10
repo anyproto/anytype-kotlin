@@ -101,6 +101,7 @@ class HighlightingBlockTest {
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},
             onSplitLineEnterClicked = { _, _, _ -> },
+            onSplitDescription = { _, _, _ -> },
             onTextChanged = onTextChanged,
             onCheckboxClicked = {},
             onFocusChanged = onFocusChanged,

@@ -211,6 +211,13 @@ open class PageFragment :
                     range = range
                 )
             },
+            onSplitDescription = { id, editable, range ->
+                vm.onSplitObjectDescription(
+                    target = id,
+                    text = editable.toString(),
+                    range = range
+                )
+            },
             onEmptyBlockBackspaceClicked = vm::onEmptyBlockBackspaceClicked,
             onNonEmptyBlockBackspaceClicked = { id, editable ->
                 vm.onNonEmptyBlockBackspaceClicked(

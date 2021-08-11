@@ -22,8 +22,9 @@ class BlockMiddleware(
         middleware.closeDashboard(id)
     }
 
-    override suspend fun createPage(parentId: String, emoji: String?): String =
-        middleware.createPage(parentId, emoji)
+    override suspend fun createPage(
+        ctx: Id?, emoji: String?
+    ): String = middleware.createPage(ctx = ctx, emoji = emoji)
 
     override suspend fun createPage(command: Command.CreateNewDocument): String =
         middleware.createPage(command)

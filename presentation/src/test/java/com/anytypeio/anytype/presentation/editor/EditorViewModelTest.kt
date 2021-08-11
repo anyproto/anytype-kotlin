@@ -2453,7 +2453,7 @@ open class EditorViewModelTest {
 
         verify(createPage, times(1)).invoke(
             scope = any(),
-            params = eq(CreatePage.Params.insideDashboard()),
+            params = eq(CreatePage.Params(null)),
             onResult = any()
         )
     }

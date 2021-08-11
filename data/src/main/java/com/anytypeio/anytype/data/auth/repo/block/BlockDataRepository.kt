@@ -42,8 +42,10 @@ class BlockDataRepository(
         command: Command.UpdateAlignment
     ): Payload = factory.remote.updateAlignment(command)
 
-    override suspend fun createPage(parentId: String, emoji: String?) =
-        factory.remote.createPage(parentId, emoji)
+    override suspend fun createPage(ctx: Id?, emoji: String?) = factory.remote.createPage(
+        ctx = ctx,
+        emoji = emoji
+    )
 
     override suspend fun closePage(id: String) {
         factory.remote.closePage(id)

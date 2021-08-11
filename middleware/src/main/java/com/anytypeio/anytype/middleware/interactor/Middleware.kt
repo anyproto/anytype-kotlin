@@ -182,7 +182,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createPage(parentId: String, emoji: String?): String {
+    fun createPage(ctx: Id?, emoji: String?): Id {
 
         val details = if (emoji != null)
             mapOf(iconEmojiKey to emoji)
@@ -190,7 +190,7 @@ class Middleware(
             emptyMap()
 
         val request = Rpc.Block.CreatePage.Request(
-            contextId = parentId,
+            contextId = ctx.orEmpty(),
             details = details,
             position = Block.Position.Inner
         )

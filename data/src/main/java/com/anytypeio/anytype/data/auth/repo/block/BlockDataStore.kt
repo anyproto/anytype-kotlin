@@ -26,7 +26,7 @@ interface BlockDataStore {
     suspend fun move(command: Command.Move): Payload
     suspend fun unlink(command: Command.Unlink): Payload
     suspend fun getConfig(): Config
-    suspend fun createPage(parentId: String, emoji: String?): String
+    suspend fun createPage(ctx: Id?, emoji: String?): Id
     suspend fun openPage(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
     suspend fun openProfile(id: String): Payload

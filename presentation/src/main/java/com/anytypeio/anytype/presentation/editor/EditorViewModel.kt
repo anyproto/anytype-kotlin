@@ -3653,7 +3653,7 @@ class EditorViewModel(
         val startTime = System.currentTimeMillis()
         createPage(
             scope = viewModelScope,
-            params = CreatePage.Params.insideDashboard()
+            params = CreatePage.Params(null)
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while creating a new page on home dashboard") },

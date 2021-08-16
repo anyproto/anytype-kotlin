@@ -34,6 +34,16 @@ class MentionTextWatcher(
     private val onMentionEvent: (MentionTextWatcherState) -> Unit
 ) : TextWatcher {
 
+    private var locked: Boolean = false
+
+    fun lock() {
+        locked = true
+    }
+
+    fun unlock() {
+        locked = false
+    }
+
     /**
      * Position of "@" character
      */
@@ -106,8 +116,12 @@ class MentionTextWatcher(
     }
 
     private fun proceedWithMentionEvent(event: MentionTextWatcherState) {
-        Timber.d("proceedWithMentionEvent, event:[$event]")
-        onMentionEvent(event)
+        if (!locked) {
+            Timber.d("proceedWithMentionEvent, event:[$event]")
+            onMentionEvent(event)
+        } else {
+            Timber.d("Locked mention watcher. Skipping event:[$event]")
+        }
     }
 
     private fun isStartPositionBeforeMention(start: Int, mentionPos: Int): Boolean =

@@ -107,12 +107,14 @@ abstract class Text(
     }
 
     private fun setContent(item: BlockView.TextBlockProps, clicked: (ListenerType) -> Unit) {
-        setBlockText(
-            text = item.text,
-            markup = item,
-            clicked = clicked,
-            textColor = item.getBlockTextColor()
-        )
+        content.pauseTextWatchers {
+            setBlockText(
+                text = item.text,
+                markup = item,
+                clicked = clicked,
+                textColor = item.getBlockTextColor()
+            )
+        }
         if (item is BlockView.Searchable) {
             applySearchHighlight(item)
         }

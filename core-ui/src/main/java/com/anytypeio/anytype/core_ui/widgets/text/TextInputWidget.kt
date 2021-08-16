@@ -147,6 +147,7 @@ class TextInputWidget : AppCompatEditText {
         watchers.forEach { watcher ->
             if (watcher is DefaultTextWatcher) watcher.lock()
             if (watcher is SlashTextWatcher) watcher.lock()
+            if (watcher is MentionTextWatcher) watcher.lock()
         }
     }
 
@@ -154,6 +155,7 @@ class TextInputWidget : AppCompatEditText {
         watchers.forEach { watcher ->
             if (watcher is DefaultTextWatcher) watcher.unlock()
             if (watcher is SlashTextWatcher) watcher.unlock()
+            if (watcher is MentionTextWatcher) watcher.unlock()
         }
     }
 

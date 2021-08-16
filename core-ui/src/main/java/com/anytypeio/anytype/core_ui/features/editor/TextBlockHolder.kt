@@ -329,7 +329,9 @@ interface TextBlockHolder : TextHolder {
                         onSlashEvent = onSlashEvent
                     )
                     //content.selectionWatcher = { onSelectionChanged(item.id, it) }
-                    enableEditMode()
+                    content.pauseTextWatchers {
+                        enableEditMode()
+                    }
                 } else {
                     enableReadMode()
                 }

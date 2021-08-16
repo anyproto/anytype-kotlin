@@ -185,19 +185,19 @@ class RelationObjectActionToolbar : BlockActionToolbar() {
             when (index) {
                 0 -> view.findViewById<RelationObjectItem>(R.id.obj0).apply {
                     visible()
-                    setup(objectView.name, objectView.emoji, objectView.image)
+                    setup(objectView.name, objectView.icon)
                 }
                 1 -> view.findViewById<RelationObjectItem>(R.id.obj1).apply {
                     visible()
-                    setup(objectView.name, objectView.emoji, objectView.image)
+                    setup(objectView.name, objectView.icon)
                 }
                 2 -> view.findViewById<RelationObjectItem>(R.id.obj2).apply {
                     visible()
-                    setup(objectView.name, objectView.emoji, objectView.image)
+                    setup(objectView.name, objectView.icon)
                 }
                 3 -> view.findViewById<RelationObjectItem>(R.id.obj3).apply {
                     visible()
-                    setup(objectView.name, objectView.emoji, objectView.image)
+                    setup(objectView.name, objectView.icon)
                 }
             }
         }

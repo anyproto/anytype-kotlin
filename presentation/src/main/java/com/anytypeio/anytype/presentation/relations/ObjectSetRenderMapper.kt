@@ -157,25 +157,25 @@ fun Relation.toCreateFilterTagView(ids: List<*>? = null): List<CreateFilterView.
     selections
         .filter { it.scope == Relation.OptionScope.LOCAL }
         .map { option ->
-        CreateFilterView.Tag(
-            id = option.id,
-            name = option.text,
-            color = option.color,
-            isSelected = ids?.contains(option.id) ?: false
-        )
-    }
+            CreateFilterView.Tag(
+                id = option.id,
+                name = option.text,
+                color = option.color,
+                isSelected = ids?.contains(option.id) ?: false
+            )
+        }
 
 fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterView.Status> =
     selections
         .filter { it.scope == Relation.OptionScope.LOCAL }
         .map { option ->
-        CreateFilterView.Status(
-            id = option.id,
-            name = option.text,
-            color = option.color,
-            isSelected = ids?.contains(option.id) ?: false
-        )
-    }
+            CreateFilterView.Status(
+                id = option.id,
+                name = option.text,
+                color = option.color,
+                isSelected = ids?.contains(option.id) ?: false
+            )
+        }
 
 fun List<Map<String, Any?>>.toCreateFilterObjectView(
     ids: List<*>? = null,
@@ -401,26 +401,28 @@ fun Relation.toObjects(
     value: Any?,
     details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder
-) =
-    if (value is List<*>?) {
-        val ids = value?.filterIsInstance<String>() ?: emptyList()
-        val list = arrayListOf<ObjectView>()
-        ids.forEach {
-            val image = details[it]?.iconImage
-            list.add(
-                ObjectView(
-                    id = it,
-                    name = details[it]?.name.orEmpty(),
-                    emoji = details[it]?.iconEmoji,
-                    image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(image),
-                    types = details[it]?.type
-                )
+) = if (value is List<*>?) {
+    val ids = value?.filterIsInstance<String>() ?: emptyList()
+    val list = arrayListOf<ObjectView>()
+    ids.forEach {
+        val wrapper = ObjectWrapper.Basic(details[it]?.map ?: emptyMap())
+        list.add(
+            ObjectView(
+                id = it,
+                name = details[it]?.name.orEmpty(),
+                icon = ObjectIcon.from(
+                    obj = wrapper,
+                    layout = wrapper.layout,
+                    builder = urlBuilder
+                ),
+                types = wrapper.type
             )
-        }
-        list
-    } else {
-        throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
+        )
     }
+    list
+} else {
+    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
+}
 
 fun DVFilter.toView(
     relation: Relation,
@@ -583,7 +585,8 @@ fun Relation.toFilterValue(
         else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
     }
 
-fun List<ObjectType>.getTypePrettyName(type: String?): String? = firstOrNull { it.url == type }?.name
+fun List<ObjectType>.getTypePrettyName(type: String?): String? =
+    firstOrNull { it.url == type }?.name
 
 fun List<ObjectType>.getObjectTypeById(types: List<String>?): ObjectType? {
     types?.forEach { type ->

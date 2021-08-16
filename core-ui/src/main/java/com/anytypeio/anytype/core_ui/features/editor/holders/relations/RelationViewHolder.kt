@@ -174,11 +174,7 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
                     in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
                         getViewByIndex(index)?.let { view ->
                             view.visible()
-                            view.setup(
-                                name = objectView.name,
-                                emoji = objectView.emoji,
-                                image = objectView.image
-                            )
+                            view.setup(name = objectView.name, icon = objectView.icon)
                         }
                     }
                 }

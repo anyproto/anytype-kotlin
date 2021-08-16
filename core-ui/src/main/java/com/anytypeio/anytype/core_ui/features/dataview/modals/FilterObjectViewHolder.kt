@@ -32,8 +32,7 @@ class FilterObjectViewHolder(view: View) : FilterViewHolder(view) {
                         view.visible()
                         view.setup(
                             name = objectView.name,
-                            emoji = objectView.emoji,
-                            image = objectView.image
+                            icon = objectView.icon
                         )
                     }
                 }

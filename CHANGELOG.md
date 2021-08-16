@@ -8,8 +8,13 @@
 
 ### Fixes & tech 🚒
 
-* Editor | Pressing "Action Go" on the keyboard in description block crashes the app if there is no other focusable text block below (#1725)
+* Editor | Fixed: @-character left in a text block triggers mention events when entering multi-select mode after reopening this object (#1731) 
+* Editor | Fixed: Pressing "Action Go" on the keyboard in description block crashes the app if there is no other focusable text block below (#1725)
 * Data View | Navigating to media objects (file, video, image) from sets (#1729, #1730)
+
+### Design & UX 🔳
+
+* Data View | Layout fixes for object icons appearing in grid cells (#1732)
 
 ## Version 0.2.6
 

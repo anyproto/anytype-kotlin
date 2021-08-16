@@ -3,10 +3,8 @@ package com.anytypeio.anytype.presentation.sets.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-//todo Move to FilterView maybe
-sealed class FilterValue : Parcelable {
+sealed class FilterValue {
 
-    @Parcelize
     data class TextShort(val value: String?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -15,7 +13,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Url(val value: String?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -24,7 +21,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Email(val value: String?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -33,7 +29,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Phone(val value: String?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -42,7 +37,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Text(val value: String?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -51,7 +45,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Number(val value: String?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -60,7 +53,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Date(val value: Long?) : FilterValue() {
         fun isEmpty(): Boolean = this.value == null || this == empty()
 
@@ -69,7 +61,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Check(val value: Boolean?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -78,7 +69,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Status(val value: StatusView?) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -87,7 +77,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Tag(val value: List<TagView>) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 
@@ -96,7 +85,6 @@ sealed class FilterValue : Parcelable {
         }
     }
 
-    @Parcelize
     data class Object(val value: List<ObjectView>) : FilterValue() {
         fun isEmpty(): Boolean = this == empty()
 

@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.sets.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-sealed class CellView : Parcelable {
+sealed class CellView {
 
     abstract val key: String
     abstract val id: String
@@ -90,12 +90,11 @@ sealed class CellView : Parcelable {
         val status: List<StatusView>
     ) : CellView(), Parcelable
 
-    @Parcelize
     data class Object(
         override val id: String,
         override val key: String,
         val objects: List<ObjectView>
-    ) : CellView(), Parcelable
+    ) : CellView()
 
     @Parcelize
     data class Checkbox(

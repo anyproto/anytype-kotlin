@@ -143,9 +143,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
     }
 
-    fun setBasicInitials(
-        name: String
-    ) {
+    private fun setBasicInitials(name: String) {
         val textColor = context.color(R.color.default_object_basic_avatar_text_color)
         ivImage.invisible()
         emojiContainer.invisible()

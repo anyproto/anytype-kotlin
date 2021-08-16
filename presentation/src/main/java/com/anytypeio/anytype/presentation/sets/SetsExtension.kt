@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -209,28 +210,32 @@ fun Map<String, Any?>.buildObjectViews(
     val objects = mutableListOf<ObjectView>()
     val value = this.getOrDefault(columnKey, null)
     if (value is Id) {
+        val wrapper = ObjectWrapper.Basic(details[value]?.map ?: emptyMap())
         objects.add(
             ObjectView(
                 id = value,
                 name = details[value]?.name.orEmpty(),
-                emoji = details[value]?.iconEmoji,
-                image = details[value]?.iconImage?.let {
-                    if (it.isEmpty()) null else builder.thumbnail(it)
-                },
-                types = details[value]?.type
+                icon = ObjectIcon.from(
+                    obj = wrapper,
+                    layout = wrapper.layout,
+                    builder = builder
+                ),
+                types = wrapper.type
             )
         )
     } else if (value is List<*>) {
         value.typeOf<Id>().forEach { id ->
+            val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
             objects.add(
                 ObjectView(
                     id = id,
                     name = details[id]?.name.orEmpty(),
-                    emoji = details[id]?.iconEmoji,
-                    image = details[id]?.iconImage?.let {
-                        if (it.isEmpty()) null else builder.thumbnail(it)
-                    },
-                    types = details[id]?.type
+                    icon = ObjectIcon.from(
+                        obj = wrapper,
+                        layout = wrapper.layout,
+                        builder = builder
+                    ),
+                    types = wrapper.type
                 )
             )
         }

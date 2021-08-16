@@ -12,6 +12,7 @@
         android:layout_gravity="center_vertical"
         app:imageSize="16dp"
         app:emojiSize="16dp"
+        app:checkboxSize="16dp"
         app:initialTextSize="11sp"
         tools:background="@drawable/circle_solid_default" />
 

@@ -6,6 +6,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.android.synthetic.main.widget_object_icon_text.view.*
 
 class ObjectIconTextWidget @JvmOverloads constructor(
@@ -37,12 +38,8 @@ class ObjectIconTextWidget @JvmOverloads constructor(
         attrs.recycle()
     }
 
-    fun setup(name: String, emoji: String?, image: String?) {
+    fun setup(name: String, icon: ObjectIcon) {
         objectName.text = name
-        objectIcon.setIcon(
-            emoji = emoji,
-            image = image,
-            name = name
-        )
+        objectIcon.setIcon(icon)
     }
 }

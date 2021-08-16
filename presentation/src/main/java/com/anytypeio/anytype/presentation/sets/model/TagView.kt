@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.model
 
 import android.os.Parcelable
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -8,14 +9,12 @@ data class TagView(val id: String, val tag: String, val color: String): Parcelab
 @Parcelize
 data class StatusView(val id: String, val status: String, val color: String) : Parcelable
 
-@Parcelize
 data class ObjectView(
     val id: String,
     val name: String,
-    val emoji: String?,
-    val image: String?,
-    val types: List<String>?
-) : Parcelable
+    val icon: ObjectIcon,
+    val types: List<String>
+)
 
 @Parcelize
 data class FileView(

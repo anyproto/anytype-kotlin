@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.android.synthetic.main.widget_dv_grid_object.view.*
 
 class RelationObjectItem @JvmOverloads constructor(
@@ -16,13 +17,9 @@ class RelationObjectItem @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.widget_relation_object, this)
     }
 
-    fun setup(name: String, emoji: String?, image: String?) {
+    fun setup(name: String, icon: ObjectIcon) {
         tvName.visible()
         tvName.text = name
-        objectIcon.setIcon(
-            emoji = emoji,
-            image = image,
-            name = name
-        )
+        objectIcon.setIcon(icon)
     }
 }

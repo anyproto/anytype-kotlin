@@ -403,5 +403,6 @@
     <string name="select_status">Select status</string>
     <string name="select_objects">Select objects</string>
     <string name="select_files">Select files</string>
+    <string name="u">U</string>
 
 </resources>

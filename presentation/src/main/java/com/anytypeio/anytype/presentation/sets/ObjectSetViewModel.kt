@@ -481,6 +481,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.TODO,
+            ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE -> {
                 navigate(
                     EventWrapper(

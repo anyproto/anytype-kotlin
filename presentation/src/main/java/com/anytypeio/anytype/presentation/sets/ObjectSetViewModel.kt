@@ -478,7 +478,10 @@ class ObjectSetViewModel(
             return
         }
         when (objectType.layout) {
-            ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE, ObjectType.Layout.TODO -> {
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.FILE -> {
                 navigate(
                     EventWrapper(
                         AppNavigation.Command.OpenObject(

@@ -686,6 +686,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .launchIn(lifecycleScope)
 
         vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
+        vm.isSyncStatusVisible.onEach { isSyncStatusVisible ->
+            if (isSyncStatusVisible)
+                topToolbar.status.visible()
+            else
+                topToolbar.status.invisible()
+        }.launchIn(lifecycleScope)
         vm.isUndoEnabled.onEach { topToolbar.setUndoState(it) }.launchIn(lifecycleScope)
         vm.isRedoEnabled.onEach { topToolbar.setRedoState(it) }.launchIn(lifecycleScope)
     }

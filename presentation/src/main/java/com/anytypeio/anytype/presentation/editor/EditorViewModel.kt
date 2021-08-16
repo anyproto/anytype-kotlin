@@ -147,6 +147,7 @@ class EditorViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     StateReducer<List<Block>, Event> by reducer {
 
+    val isSyncStatusVisible = MutableStateFlow(true)
     val syncStatus = MutableStateFlow<SyncStatus?>(null)
 
     val isUndoEnabled = MutableStateFlow(false)
@@ -604,6 +605,15 @@ class EditorViewModel(
                             session.value = Session.OPEN
                             onStartFocusing(result.data)
                             orchestrator.proxies.payloads.send(result.data)
+                            // Temporarily hiding sync status for file objects.
+                            // TODO Remove when sync status for files is ready.
+                            result.data.events.forEach { event ->
+                                if (event is Event.Command.ShowObject) {
+                                    if (event.type == SmartBlockType.FILE) {
+                                        isSyncStatusVisible.value = false
+                                    }
+                                }
+                            }
                         }
                         is Result.Failure -> {
                             session.value = Session.ERROR

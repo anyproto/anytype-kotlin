@@ -9,6 +9,7 @@
 ### Fixes & tech 🚒
 
 * Editor | Pressing "Action Go" on the keyboard in description block crashes the app if there is no other focusable text block below (#1725)
+* Data View | Navigating to file objects from sets (#1729)
 
 ## Version 0.2.6
 

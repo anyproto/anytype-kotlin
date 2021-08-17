@@ -4,7 +4,7 @@
 
 ### New features & enhancements 🚀
 
-* Relations | Added placeholders where relation value is missing (#1724)
+* Relations | Added placeholders where relation value is missing (#1724, #1734)
 
 ### Fixes & tech 🚒
 

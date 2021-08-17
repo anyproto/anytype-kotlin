@@ -1065,17 +1065,7 @@ class DefaultBlockViewRenderer(
                 ids = featured,
                 details = details,
                 relations = relations
-            ).filter { v ->
-                when(v) {
-                    is DocumentRelationView.Object -> v.objects.isNotEmpty()
-                    is DocumentRelationView.Checkbox -> true
-                    is DocumentRelationView.Default -> v.value != null
-                    is DocumentRelationView.File -> v.files.isNotEmpty()
-                    is DocumentRelationView.ObjectType -> true
-                    is DocumentRelationView.Status -> v.status.isNotEmpty()
-                    is DocumentRelationView.Tags -> v.tags.isNotEmpty()
-                }
-            }
+            )
         )
         return BlockView.FeaturedRelation(
             id = block.id,

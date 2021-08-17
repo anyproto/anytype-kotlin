@@ -3618,6 +3618,77 @@ class EditorViewModel(
                     else -> onBlockMultiSelectClicked(clicked.value.id)
                 }
             }
+            is ListenerType.Relation.Featured -> {
+                val restrictions = orchestrator.stores.objectRestrictions.current()
+                if (restrictions.contains(ObjectRestriction.RELATIONS)) {
+                    _toasts.trySend(NOT_ALLOWED_FOR_RELATION)
+                    return
+                }
+                when (mode) {
+                    EditorMode.Edit -> {
+                        val relationId = clicked.relation.relationId
+                        val relation = orchestrator.stores.relations.current().first { it.key == relationId }
+                        if (relation.isReadOnly) {
+                            _toasts.trySend(NOT_ALLOWED_FOR_RELATION)
+                            return
+                        }
+                        when (relation.format) {
+                            Relation.Format.SHORT_TEXT,
+                            Relation.Format.LONG_TEXT,
+                            Relation.Format.URL,
+                            Relation.Format.PHONE,
+                            Relation.Format.NUMBER,
+                            Relation.Format.EMAIL -> {
+                                dispatch(
+                                    Command.OpenObjectRelationScreen.Value.Text(
+                                        ctx = context,
+                                        target = context,
+                                        relation = relationId
+                                    )
+                                )
+                            }
+                            Relation.Format.CHECKBOX -> {
+                                val view = clicked.relation
+                                if (view is DocumentRelationView.Checkbox) {
+                                    viewModelScope.launch {
+                                        updateDetail(
+                                            UpdateDetail.Params(
+                                                ctx = context,
+                                                key = relationId,
+                                                value = !view.isChecked
+                                            )
+                                        ).process(
+                                            success = { dispatcher.send(it) },
+                                            failure = { Timber.e(it, "Error while updating relation values") }
+                                        )
+                                    }
+                                }
+                            }
+                            Relation.Format.DATE -> {
+                                dispatch(
+                                    Command.OpenObjectRelationScreen.Value.Date(
+                                        ctx = context,
+                                        target = context,
+                                        relation = relationId
+                                    )
+                                )
+                            }
+                            else -> {
+                                dispatch(
+                                    Command.OpenObjectRelationScreen.Value.Default(
+                                        ctx = context,
+                                        target = context,
+                                        relation = relationId
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        // Do nothing
+                    }
+                }
+            }
             is ListenerType.Relation.ObjectType -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
                 if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {

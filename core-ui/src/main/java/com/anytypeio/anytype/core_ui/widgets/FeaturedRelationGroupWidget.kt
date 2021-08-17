@@ -51,11 +51,15 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.Default -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
-                        text = relation.value
+                        text = relation.value ?: resources.getString(R.string.enter_value)
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                    }
+                    if (relation.value == null) {
+                        view.alpha = 0.5f
+                        view.setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
                     ids.add(view.id)
@@ -67,6 +71,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         layoutParams = LayoutParams(size, size)
                         setBackgroundResource(R.drawable.ic_relation_checkbox_selector)
                         isSelected = relation.isChecked
+                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
                     ids.add(view.id)
@@ -84,6 +89,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         addView(view)
                         ids.add(view.id)
                     }
+                    if (relation.files.isEmpty()) {
+                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_files)).apply {
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                        }
+                        addView(placeholder)
+                        ids.add(placeholder.id)
+                    }
                 }
                 is DocumentRelationView.Object -> {
                     relation.objects.forEach { obj ->
@@ -97,6 +109,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         }
                         addView(view)
                         ids.add(view.id)
+                    }
+                    if (relation.objects.isEmpty()) {
+                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_objects)).apply {
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                        }
+                        addView(placeholder)
+                        ids.add(placeholder.id)
                     }
                 }
                 is DocumentRelationView.Status -> {
@@ -116,6 +135,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         addView(view)
                         ids.add(view.id)
                     }
+                    if (relation.status.isEmpty()) {
+                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_status)).apply {
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                        }
+                        addView(placeholder)
+                        ids.add(placeholder.id)
+                    }
                 }
                 is DocumentRelationView.Tags -> {
                     relation.tags.forEach { tag ->
@@ -134,6 +160,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         }
                         addView(view)
                         ids.add(view.id)
+                    }
+                    if (relation.tags.isEmpty()) {
+                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_tags)).apply {
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                        }
+                        addView(placeholder)
+                        ids.add(placeholder.id)
                     }
                 }
                 is DocumentRelationView.ObjectType -> {
@@ -165,6 +198,16 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         }
 
         flow.referencedIds = ids.toIntArray()
+    }
+
+    private fun buildPlaceholderView(txt: String) : TextView = TextView(context).apply {
+        id = generateViewId()
+        text = txt
+        isSingleLine = true
+        alpha = 0.5f
+        maxLines = 1
+        ellipsize = TextUtils.TruncateAt.END
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
     }
 
     fun clear() {

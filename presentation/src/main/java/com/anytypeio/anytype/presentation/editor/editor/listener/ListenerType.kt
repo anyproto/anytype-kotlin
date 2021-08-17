@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor.listener
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 
 sealed class ListenerType {
 
@@ -53,5 +54,6 @@ sealed class ListenerType {
         data class Placeholder(val target: Id) : Relation()
         data class Related(val value: BlockView.Relation) : Relation()
         data class ObjectType(val type: String) : Relation()
+        data class Featured(val relation: DocumentRelationView) : Relation()
     }
 }

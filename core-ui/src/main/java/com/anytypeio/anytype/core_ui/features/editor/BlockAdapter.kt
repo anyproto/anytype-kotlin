@@ -109,7 +109,7 @@ class BlockAdapter(
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
     private val onTitleCheckboxClicked: (BlockView.Title.Todo) -> Unit = {},
-    private val onFocusChanged: (String, Boolean) -> Unit,
+    private val onFocusChanged: (Id, Boolean) -> Unit,
     private val onEmptyBlockBackspaceClicked: (String) -> Unit,
     private val onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
     private val onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -269,12 +269,21 @@ class BlockAdapter(
                 ).apply {
                     itemView.tvBlockDescription.addTextChangedListener(
                         DefaultTextWatcher { editable ->
-                            val view = views[bindingAdapterPosition]
-                            check(view is BlockView.Description)
-                            view.description = editable.toString()
-                            onDescriptionChanged(view)
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                check(view is BlockView.Description)
+                                view.description = editable.toString()
+                                onDescriptionChanged(view)
+                            }
                         }
                     )
+                    itemView.tvBlockDescription.setOnFocusChangeListener { v, hasFocus ->
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onFocusChanged(blocks[pos].id, hasFocus)
+                        }
+                    }
                     itemView.tvBlockDescription.setOnEditorActionListener { v, actionId, _ ->
                         if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
                             val pos = bindingAdapterPosition

@@ -8,6 +8,7 @@
 
 ### Fixes & tech 🚒
 
+* Editor | Fixed: Jumping cursor in description block (#1733)
 * Editor | Fixed: @-character left in a text block triggers mention events when entering multi-select mode after reopening this object (#1731) 
 * Editor | Fixed: Pressing "Action Go" on the keyboard in description block crashes the app if there is no other focusable text block below (#1725)
 * Data View | Navigating to media objects (file, video, image) from sets (#1729, #1730)

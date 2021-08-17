@@ -2092,11 +2092,12 @@ class EditorViewModel(
         val target = focus.id
         if (target.isNotEmpty()) {
             when (views.find { it.id == target }) {
-                is BlockView.Title -> _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
+                is BlockView.Title -> _toasts.trySend(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
+                is BlockView.Description -> _toasts.trySend(CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION)
                 is BlockView.Code -> {
                     val selection = orchestrator.stores.textSelection.current().selection
                     if (selection != null && selection.first != selection.last) {
-                        _toasts.offer(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
+                        _toasts.trySend(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
                     } else {
                         proceedWithStyleToolbarEvent()
                     }
@@ -2242,15 +2243,20 @@ class EditorViewModel(
     fun onBlockToolbarBlockActionsClicked() {
         Timber.d("onBlockToolbarBlockActionsClicked, ")
         val target = orchestrator.stores.focus.current().id
-        val view = views.first { it.id == target }
-        if (view is BlockView.Title) {
-            _toasts.offer(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
-        } else {
-            dispatch(Command.Measure(target = target))
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = EventsDictionary.BTN_BLOCK_ACTIONS
-            )
+        when (views.first { it.id == target }) {
+            is BlockView.Title -> {
+                _toasts.trySend(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
+            }
+            is BlockView.Description -> {
+                _toasts.trySend(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
+            }
+            else -> {
+                dispatch(Command.Measure(target = target))
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_BLOCK_ACTIONS
+                )
+            }
         }
     }
 
@@ -4062,8 +4068,10 @@ class EditorViewModel(
 
         const val CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR =
             "Opening action menu for title currently not supported"
+        const val CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION = "Cannot open action menu for description"
         const val CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR =
             "Opening style panel for title currently not supported"
+        const val CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION = "Description block is text primitive and therefore no styling can be applied."
         const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =
             "Opening style panel for code block currently not supported"
         const val FLAVOUR_EXPERIMENTAL = "experimental"

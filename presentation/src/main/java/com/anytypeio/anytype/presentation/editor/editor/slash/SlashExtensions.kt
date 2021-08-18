@@ -169,28 +169,57 @@ object SlashExtensions {
         relations: List<RelationListViewModel.Model.Item>
     ): SlashWidgetState.UpdateItems {
         val filter = text.subSequence(1, text.length).toString()
+        val filteredStyle = filterSlashItems(
+            filter = filter,
+            subheading = SlashItem.Subheader.Style.getSearchName(),
+            items = getSlashWidgetStyleItems(viewType = viewType)
+        )
+        val filteredMedia = filterSlashItems(
+            filter = filter,
+            subheading = SlashItem.Subheader.Media.getSearchName(),
+            items = getSlashWidgetMediaItems()
+        )
+        val filteredActions = filterSlashItems(
+            filter = filter,
+            subheading = SlashItem.Subheader.Actions.getSearchName(),
+            items = getSlashWidgetActionItems()
+        )
+        val filteredAlign = filterSlashItems(
+            filter = filter,
+            subheading = SlashItem.Subheader.Alignment.getSearchName(),
+            items = getSlashWidgetAlignmentItems(viewType = viewType)
+        )
+        val filteredOther = filterSlashItems(
+            filter = filter,
+            subheading = SlashItem.Subheader.Other.getSearchName(),
+            items = getSlashWidgetOtherItems()
+        )
+        val filteredColor = filterColor(
+            filter = filter,
+            items = getSlashWidgetColorItems(code = null)
+        )
+        val filteredBackground = filterBackground(
+            filter = filter,
+            items = getSlashWidgetBackgroundItems(code = null)
+        )
+        val filteredObjects = filterObjectTypes(
+            filter = filter,
+            items = objectTypes
+        )
+        val filteredRelations = filterRelations(
+            filter = filter,
+            items = relations
+        )
         return SlashWidgetState.UpdateItems.empty().copy(
-            styleItems = filterSlashItems(
-                filter = filter,
-                items = getSlashWidgetStyleItems(viewType = viewType)
-            ),
-            mediaItems = filterSlashItems(filter = filter, items = getSlashWidgetMediaItems()),
-            objectItems = filterObjectTypes(filter = filter, items = objectTypes),
-            relationItems = filterRelations(filter = filter, items = relations),
-            otherItems = filterSlashItems(filter = filter, items = getSlashWidgetOtherItems()),
-            actionsItems = filterSlashItems(filter = filter, items = getSlashWidgetActionItems()),
-            alignmentItems = filterAlignItems(
-                filter = filter,
-                items = getSlashWidgetAlignmentItems(viewType = viewType)
-            ),
-            colorItems = filterColor(
-                filter = filter,
-                items = getSlashWidgetColorItems(code = null)
-            ),
-            backgroundItems = filterBackground(
-                filter = filter,
-                items = getSlashWidgetBackgroundItems(code = null)
-            )
+            styleItems = filteredStyle,
+            mediaItems = filteredMedia,
+            objectItems = filteredObjects,
+            relationItems = filteredRelations,
+            otherItems = filteredOther,
+            actionsItems = filteredActions,
+            alignmentItems = filteredAlign,
+            colorItems = filteredColor,
+            backgroundItems = filteredBackground
         )
     }
 
@@ -199,8 +228,12 @@ object SlashExtensions {
 
     //region {PRIVATE HELPING METHODS}
     private fun filterColor(filter: String, items: List<SlashItem.Color.Text>): List<SlashItem> {
-        val filtered = items.filter {
-            it.code.contains(filter, ignoreCase = true)
+        val filtered = items.filter { item ->
+            searchBySubheadingOrName(
+                filter = filter,
+                subheading = SlashItem.Main.Color.getSearchName(),
+                name = item.code
+            )
         }
         return updateWithSubheader(filtered)
     }
@@ -209,8 +242,12 @@ object SlashExtensions {
         filter: String,
         items: List<SlashItem.Color.Background>
     ): List<SlashItem> {
-        val filtered = items.filter {
-            it.code.contains(filter, ignoreCase = true)
+        val filtered = items.filter { item ->
+            searchBySubheadingOrName(
+                filter = filter,
+                subheading = SlashItem.Main.Background.getSearchName(),
+                name = item.code
+            )
         }
         return updateWithSubheader(filtered)
     }
@@ -219,8 +256,12 @@ object SlashExtensions {
         filter: String,
         items: List<RelationListViewModel.Model.Item>
     ): List<RelationListViewModel.Model> {
-        val filtered = items.filter {
-            it.view.name.contains(filter, ignoreCase = true)
+        val filtered = items.filter { item ->
+            searchBySubheadingOrName(
+                filter = filter,
+                subheading = SlashItem.Main.Relations.getSearchName(),
+                name = item.view.name
+            )
         }
         return if (filtered.isEmpty()) {
             filtered
@@ -233,28 +274,36 @@ object SlashExtensions {
         filter: String,
         items: List<SlashItem.ObjectType>
     ): List<SlashItem> {
-        val filtered = items.filter {
-            it.name.contains(filter, ignoreCase = true)
+        val filtered = items.filter { item ->
+            searchBySubheadingOrName(
+                filter = filter,
+                subheading = SlashItem.Main.Objects.getSearchName(),
+                name = item.name
+            )
         }
         return updateWithSubheader(items = filtered)
     }
 
-    private fun filterSlashItems(filter: String, items: List<SlashItem>): List<SlashItem> {
-        val filtered = items
-            .filter {
-                it.javaClass.simpleName.contains(filter, ignoreCase = true)
-            }
+    private fun filterSlashItems(
+        filter: String,
+        items: List<SlashItem>,
+        subheading: String
+    ): List<SlashItem> {
+        val filtered = items.filter { item ->
+            searchBySubheadingOrName(
+                filter = filter,
+                subheading = subheading,
+                name = item.getSearchName()
+            )
+        }
         return updateWithSubheader(items = filtered)
     }
 
-    private fun filterAlignItems(filter: String, items: List<SlashItem>): List<SlashItem> {
-        val filtered = items
-            .filter {
-                val name = "$SLASH_ALIGN ${it.javaClass.simpleName}"
-                name.contains(filter, ignoreCase = true)
-            }
-        return updateWithSubheader(items = filtered)
-    }
+    private fun searchBySubheadingOrName(
+        filter: String,
+        subheading: String,
+        name: String
+    ): Boolean = subheading.startsWith(filter, true) || name.contains(filter, true)
 
     private fun updateWithSubheader(items: List<SlashItem>): List<SlashItem> =
         if (items.isNotEmpty()) {

@@ -5,6 +5,7 @@
 ### New features & enhancements 🚀
 
 * Relations | Added placeholders where relation value is missing (#1724, #1734)
+* Slash widget | Using category title as filter will show all items from this category (#1735)
 
 ### Fixes & tech 🚒
 

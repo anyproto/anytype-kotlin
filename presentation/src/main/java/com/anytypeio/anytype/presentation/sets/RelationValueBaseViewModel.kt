@@ -80,28 +80,36 @@ abstract class RelationValueBaseViewModel(
                 relationFormat = Relation.Format.TAG
                 val isRemoveable = isEditing.value
                 optionKeys.forEach { key ->
-                    val option = options.first { it.id == key }
-                    items.add(
-                        RelationValueView.Tag(
-                            id = option.id,
-                            name = option.text,
-                            color = option.color.ifEmpty { null },
-                            removeable = isRemoveable
+                    val option = options.find { it.id == key }
+                    if (option != null) {
+                        items.add(
+                            RelationValueView.Tag(
+                                id = option.id,
+                                name = option.text,
+                                color = option.color.ifEmpty { null },
+                                removeable = isRemoveable
+                            )
                         )
-                    )
+                    } else {
+                        Timber.e("Tag option for relation key [$key] was not found")
+                    }
                 }
             }
             Relation.Format.STATUS -> {
                 relationFormat = Relation.Format.STATUS
                 optionKeys.forEach { key ->
-                    val option = options.first { it.id == key }
-                    items.add(
-                        RelationValueView.Status(
-                            id = option.id,
-                            name = option.text,
-                            color = option.color.ifEmpty { null },
+                    val option = options.find { it.id == key }
+                    if (option != null) {
+                        items.add(
+                            RelationValueView.Status(
+                                id = option.id,
+                                name = option.text,
+                                color = option.color.ifEmpty { null },
+                            )
                         )
-                    )
+                    } else {
+                        Timber.e("Status option for relation key [$key] was not found")
+                    }
                 }
             }
             Relation.Format.OBJECT -> {

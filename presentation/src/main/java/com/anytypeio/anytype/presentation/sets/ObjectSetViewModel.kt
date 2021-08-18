@@ -337,15 +337,19 @@ class ObjectSetViewModel(
     fun onTitleChanged(txt: String) {
         Timber.d("onTitleChanged, txt:[$txt]")
         val target = header.value?.id
-        checkNotNull(target) { "Title block was missing or not ready" }
-        viewModelScope.launch {
-            titleUpdateChannel.send(
-                TextUpdate.Default(
-                    text = txt,
-                    target = target,
-                    markup = emptyList()
+        if (target != null) {
+            viewModelScope.launch {
+                titleUpdateChannel.send(
+                    TextUpdate.Default(
+                        text = txt,
+                        target = target,
+                        markup = emptyList()
+                    )
                 )
-            )
+            }
+        } else {
+            // TODO Use loading state to prevent user from editing title if set of objects is not ready.
+            Timber.e("Skipping dispatching title update, because set of objects was not ready.")
         }
     }
 

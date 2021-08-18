@@ -362,23 +362,26 @@ fun Relation.toCheckbox(value: Any?): Boolean? =
         throw IllegalArgumentException("Relation format $format value should be Boolean, actual:$value")
     }
 
-fun Relation.toTags(value: Any?): List<TagView> =
-    if (value is List<*>?) {
-        val list = arrayListOf<TagView>()
-        value?.filterIsInstance<String>()?.forEach { id ->
-            val option = selections.first { it.id == id }
-            list.add(
+fun Relation.toTags(value: Any?): List<TagView> = if (value is List<*>?) {
+    val views = arrayListOf<TagView>()
+    value?.filterIsInstance<Id>()?.forEach { id ->
+        val option = selections.find { it.id == id }
+        if (option != null) {
+            views.add(
                 TagView(
                     id = option.id,
                     tag = option.text,
                     color = option.color
                 )
             )
+        } else {
+            Timber.e("Failed to find corresponding tag option")
         }
-        list.toList()
-    } else {
-        throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
     }
+    views.toList()
+} else {
+    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
+}
 
 fun Relation.toStatus(value: Any?): StatusView? =
     if (value is List<*>?) {

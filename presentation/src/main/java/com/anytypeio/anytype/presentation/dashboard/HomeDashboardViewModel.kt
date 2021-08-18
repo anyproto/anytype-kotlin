@@ -599,6 +599,7 @@ class HomeDashboardViewModel(
             ObjectType.Layout.TODO,
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.FILE,
+            ObjectType.Layout.IMAGE,
             ObjectType.Layout.SET
         )
     }

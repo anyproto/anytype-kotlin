@@ -126,7 +126,7 @@ abstract class RelationValueBaseViewModel(
                                     builder = urlBuilder
                                 ),
                                 removeable = isRemoveable,
-                                layout = objectType?.layout
+                                layout = wrapper.layout
                             )
                         )
                     }
@@ -147,7 +147,7 @@ abstract class RelationValueBaseViewModel(
                                 builder = urlBuilder
                             ),
                             removeable = isRemoveable,
-                            layout = objectType?.layout
+                            layout = wrapper.layout
                         )
                     )
                 }
@@ -233,22 +233,24 @@ abstract class RelationValueBaseViewModel(
 
     fun onFileValueActionUploadFromStorageClicked() {}
 
-    fun onObjectClicked(ctx: Id, id: Id, type: String?) {
+    fun onObjectClicked(ctx: Id, id: Id, layout: ObjectType.Layout?) {
         if (id != ctx) {
-            types.get().find { it.url == type }?.let { targetType ->
-                when (targetType.layout) {
-                    ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE, ObjectType.Layout.TODO -> {
-                        viewModelScope.launch {
-                            navigation.emit(AppNavigation.Command.OpenObject(id))
-                        }
+            when (layout) {
+                ObjectType.Layout.BASIC,
+                ObjectType.Layout.PROFILE,
+                ObjectType.Layout.TODO,
+                ObjectType.Layout.FILE,
+                ObjectType.Layout.IMAGE -> {
+                    viewModelScope.launch {
+                        navigation.emit(AppNavigation.Command.OpenObject(id))
                     }
-                    ObjectType.Layout.SET -> {
-                        viewModelScope.launch {
-                            navigation.emit(AppNavigation.Command.OpenObjectSet(id))
-                        }
-                    }
-                    else -> Timber.d("Unexpected layout: ${targetType.layout}")
                 }
+                ObjectType.Layout.SET -> {
+                    viewModelScope.launch {
+                        navigation.emit(AppNavigation.Command.OpenObjectSet(id))
+                    }
+                }
+                else -> Timber.d("Unexpected layout: $layout")
             }
         } else {
             sendToast(ALREADY_HERE_MSG)

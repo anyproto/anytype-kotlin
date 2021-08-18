@@ -63,7 +63,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     abstract val vm: RelationValueBaseViewModel
 
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
-    private lateinit var dividerItem : DividerItemDecoration
+    private lateinit var dividerItem: DividerItemDecoration
     private lateinit var dividerItemEdit: DividerItemDecoration
 
     private val dndBehavior by lazy {
@@ -91,7 +91,13 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             onStatusClicked = {},
             onRemoveStatusClicked = { status -> onRemoveStatusClicked(status) },
             onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
-            onObjectClicked = { o -> vm.onObjectClicked(ctx = ctx, id = o.id, type = o.type) },
+            onObjectClicked = { o ->
+                vm.onObjectClicked(
+                    ctx = ctx,
+                    id = o.id,
+                    layout = o.layout
+                )
+            },
             onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
             onFileClicked = { o -> vm.onFileClicked(o.id) },
             onRemoveFileClicked = { file -> onRemoveFileClicked(file) }
@@ -130,7 +136,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.views) { editCellTagAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.name) { tvTagOrStatusRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
-        jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading)}
+        jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading) }
         super.onStart()
         vm.onStart(relationId = relation, objectId = target)
     }
@@ -492,7 +498,8 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                 dataview = dataview,
                 record = target,
                 relation = relation,
-                filePath = filePath)
+                filePath = filePath
+            )
         } else {
             Timber.e("Couldn't get file path")
         }
@@ -658,7 +665,8 @@ class RelationValueFragment : RelationValueBaseFragment() {
                 ctx = ctx,
                 target = target,
                 relation = relation,
-                filePath = filePath)
+                filePath = filePath
+            )
         } else {
             Timber.e("Couldn't get file path")
         }

@@ -151,16 +151,16 @@ abstract class AddObjectRelationValueViewModel(
                         items.add(
                             RelationValueView.Object(
                                 id = id,
-                                name = detail?.name.orEmpty(),
+                                name = wrapper.name.orEmpty(),
                                 typeName = objectType?.name,
-                                type = objectType?.url,
+                                type = type,
                                 icon = ObjectIcon.from(
                                     obj = wrapper,
                                     layout = wrapper.layout,
                                     builder = urlBuilder
                                 ),
                                 removeable = false,
-                                layout = objectType?.layout
+                                layout = wrapper.layout
                             )
                         )
                     }
@@ -172,16 +172,16 @@ abstract class AddObjectRelationValueViewModel(
                     items.add(
                         RelationValueView.Object(
                             id = value,
-                            name = detail?.name.orEmpty(),
+                            name = wrapper.name.orEmpty(),
                             typeName = objectType?.name,
-                            type = objectType?.url,
+                            type = type,
                             icon = ObjectIcon.from(
                                 obj = wrapper,
                                 layout = wrapper.layout,
                                 builder = urlBuilder
                             ),
                             removeable = false,
-                            layout = objectType?.layout
+                            layout = wrapper.layout
                         )
                     )
                 }

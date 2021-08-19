@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -20,7 +21,8 @@ sealed class DocumentRelationView : DefaultObjectDiffIdentifier {
         override val relationId: Id,
         override val name: String,
         override val value: String? = null,
-        override val isFeatured: Boolean = false
+        override val isFeatured: Boolean = false,
+        val format: Relation.Format
     ) : DocumentRelationView()
 
     data class Checkbox(

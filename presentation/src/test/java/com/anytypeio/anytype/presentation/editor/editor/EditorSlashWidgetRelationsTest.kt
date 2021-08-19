@@ -4,6 +4,7 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
@@ -96,7 +97,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         relationId = r2.key,
                         name = r2.name,
                         value = value2,
-                        isFeatured = true
+                        isFeatured = true,
+                        format = Relation.Format.SHORT_TEXT
                     )
                 )
             )
@@ -200,7 +202,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         relationId = r3.key,
                         name = r3.name,
                         value = value3,
-                        isFeatured = true
+                        isFeatured = true,
+                        format = Relation.Format.SHORT_TEXT
                     )
                 )
             )
@@ -304,7 +307,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         relationId = r3.key,
                         name = r3.name,
                         value = value3,
-                        isFeatured = true
+                        isFeatured = true,
+                        format = Relation.Format.SHORT_TEXT
                     )
                 )
             )
@@ -370,7 +374,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                         relationId = r2.key,
                         name = r2.name,
                         value = value2,
-                        isFeatured = true
+                        isFeatured = true,
+                        format = Relation.Format.SHORT_TEXT
                     )
                 )
             )

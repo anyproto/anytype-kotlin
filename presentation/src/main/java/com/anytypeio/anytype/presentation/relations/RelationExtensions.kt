@@ -78,7 +78,8 @@ fun Relation.view(
                 relationId = relation.key,
                 name = relation.name,
                 value = formattedDate,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                format = relation.format
             )
         }
         relation.format == Relation.Format.STATUS -> {
@@ -119,7 +120,8 @@ fun Relation.view(
                 relationId = relation.key,
                 name = relation.name,
                 value = NumberParser.parse(value),
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                format = relation.format
             )
         }
         else -> {
@@ -128,7 +130,8 @@ fun Relation.view(
                 relationId = relation.key,
                 name = relation.name,
                 value = value as? String,
-                isFeatured = isFeatured
+                isFeatured = isFeatured,
+                format = relation.format
             )
         }
     }

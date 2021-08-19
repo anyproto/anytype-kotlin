@@ -404,5 +404,11 @@
     <string name="select_objects">Select objects</string>
     <string name="select_files">Select files</string>
     <string name="u">U</string>
+    <string name="enter_text">Enter text</string>
+    <string name="enter_number">Enter number</string>
+    <string name="enter_date">Enter date</string>
+    <string name="enter_url">Enter URL</string>
+    <string name="enter_email">Enter e-mail</string>
+    <string name="enter_phone">Enter phone</string>
 
 </resources>

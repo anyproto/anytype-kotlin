@@ -144,7 +144,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         relationId = r3.key,
                         name = r3.name,
                         value = value3,
-                        isFeatured = true
+                        isFeatured = true,
+                        format = Relation.Format.SHORT_TEXT
                     )
                 )
             ),
@@ -660,7 +661,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         relationId = r1.key,
                         name = r1.name,
                         value = value1,
-                        isFeatured = true
+                        isFeatured = true,
+                        format = Relation.Format.SHORT_TEXT
                     )
                 )
             ),

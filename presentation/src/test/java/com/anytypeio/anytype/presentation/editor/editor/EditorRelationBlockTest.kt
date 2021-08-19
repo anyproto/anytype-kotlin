@@ -127,7 +127,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                             view = DocumentRelationView.Default(
                                 relationId = relation.key,
                                 name = relation.name,
-                                value = value
+                                value = value,
+                                format = relation.format
                             )
                         )
                     )
@@ -339,7 +340,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                         relationId = r2.key,
                         name = r2.name,
                         value = value2,
-                        isFeatured = false
+                        isFeatured = false,
+                        format = r2.format
                     )
                 )
             )

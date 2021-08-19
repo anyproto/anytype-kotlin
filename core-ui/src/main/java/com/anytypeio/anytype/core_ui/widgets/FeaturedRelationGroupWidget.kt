@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -26,8 +27,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr)
 
-    private val defaultTextSize : Float = context.dimen(R.dimen.sp_13)
-    private val dividerSize : Int = context.dimen(R.dimen.dp_4).toInt()
+    private val defaultTextSize: Float = context.dimen(R.dimen.sp_13)
+    private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
 
     fun set(item: BlockView.FeaturedRelation, click: (ListenerType.Relation) -> Unit) {
         clear()
@@ -47,11 +48,11 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         val ids = mutableListOf<Int>()
 
         item.relations.forEachIndexed { index, relation ->
-            when(relation) {
+            when (relation) {
                 is DocumentRelationView.Default -> {
                     val view = TextView(context).apply {
                         id = generateViewId()
-                        text = relation.value ?: resources.getString(R.string.enter_value)
+                        text = relation.value ?: getPlaceholderHint(relation)
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
@@ -90,9 +91,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(view.id)
                     }
                     if (relation.files.isEmpty()) {
-                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_files)).apply {
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
+                        val placeholder =
+                            buildPlaceholderView(resources.getString(R.string.select_files)).apply {
+                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                            }
                         addView(placeholder)
                         ids.add(placeholder.id)
                     }
@@ -111,9 +113,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(view.id)
                     }
                     if (relation.objects.isEmpty()) {
-                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_objects)).apply {
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
+                        val placeholder =
+                            buildPlaceholderView(resources.getString(R.string.select_objects)).apply {
+                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                            }
                         addView(placeholder)
                         ids.add(placeholder.id)
                     }
@@ -136,9 +139,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(view.id)
                     }
                     if (relation.status.isEmpty()) {
-                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_status)).apply {
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
+                        val placeholder =
+                            buildPlaceholderView(resources.getString(R.string.select_status)).apply {
+                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                            }
                         addView(placeholder)
                         ids.add(placeholder.id)
                     }
@@ -162,9 +166,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         ids.add(view.id)
                     }
                     if (relation.tags.isEmpty()) {
-                        val placeholder = buildPlaceholderView(resources.getString(R.string.select_tags)).apply {
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
+                        val placeholder =
+                            buildPlaceholderView(resources.getString(R.string.select_tags)).apply {
+                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                            }
                         addView(placeholder)
                         ids.add(placeholder.id)
                     }
@@ -200,7 +205,20 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         flow.referencedIds = ids.toIntArray()
     }
 
-    private fun buildPlaceholderView(txt: String) : TextView = TextView(context).apply {
+    private fun getPlaceholderHint(relation: DocumentRelationView.Default): String {
+        return when (relation.format) {
+            Relation.Format.SHORT_TEXT -> resources.getString(R.string.enter_text)
+            Relation.Format.LONG_TEXT -> resources.getString(R.string.enter_text)
+            Relation.Format.NUMBER -> resources.getString(R.string.enter_number)
+            Relation.Format.DATE -> resources.getString(R.string.enter_date)
+            Relation.Format.URL -> resources.getString(R.string.enter_url)
+            Relation.Format.EMAIL -> resources.getString(R.string.enter_email)
+            Relation.Format.PHONE -> resources.getString(R.string.enter_phone)
+            else -> resources.getString(R.string.enter_value)
+        }
+    }
+
+    private fun buildPlaceholderView(txt: String): TextView = TextView(context).apply {
         id = generateViewId()
         text = txt
         isSingleLine = true

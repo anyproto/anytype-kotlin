@@ -506,21 +506,24 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 view = DocumentRelationView.Default(
                     relationId = relation1.key,
                     name = relation1.name,
-                    value = value1
+                    value = value1,
+                    format = relation1.format
                 )
             ),
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation2.key,
                     name = relation2.name,
-                    value = NumberParser.parse(value2)
+                    value = NumberParser.parse(value2),
+                    format = relation2.format
                 )
             ),
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation3.key,
                     name = relation3.name,
-                    value = value3
+                    value = value3,
+                    format = relation3.format
                 )
             )
         )

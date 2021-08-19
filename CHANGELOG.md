@@ -1,6 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.7 (WIP)
+## Version 0.2.8 (WIP)
+
+### New features & enhancements 🚀
+
+* Relations | Enhanced: Added format-specific placeholders (#1740)
+
+## Version 0.2.7
 
 ### New features & enhancements 🚀
 

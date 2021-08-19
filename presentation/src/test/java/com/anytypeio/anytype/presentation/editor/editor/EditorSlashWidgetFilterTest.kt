@@ -4,6 +4,7 @@ import MockDataFactory
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NUMBERED
@@ -587,14 +588,16 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                 view = DocumentRelationView.Default(
                     relationId = r1.key,
                     name = r1.name,
-                    value = value1
+                    value = value1,
+                    format = Relation.Format.SHORT_TEXT
                 )
             ),
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = r2.key,
                     name = r2.name,
-                    value = value2.toString()
+                    value = value2.toString(),
+                    format = Relation.Format.SHORT_TEXT
                 )
             ),
         )
@@ -1450,21 +1453,24 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                 view = DocumentRelationView.Default(
                     relationId = r1.key,
                     name = r1.name,
-                    value = value1
+                    value = value1,
+                    format = Relation.Format.SHORT_TEXT
                 )
             ),
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = r2.key,
                     name = r2.name,
-                    value = value2
+                    value = value2,
+                    format = Relation.Format.SHORT_TEXT
                 )
             ),
             RelationListViewModel.Model.Item(
                 view = DocumentRelationView.Default(
                     relationId = r3.key,
                     name = r3.name,
-                    value = value3
+                    value = value3,
+                    format = Relation.Format.SHORT_TEXT
                 )
             )
         )

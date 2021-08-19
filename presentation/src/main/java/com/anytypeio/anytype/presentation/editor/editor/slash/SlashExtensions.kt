@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 
 fun List<ObjectType>.toView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
@@ -140,8 +139,8 @@ object SlashExtensions {
     fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
         listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
 
-    fun getSlashWidgetRelationItems(relations: List<RelationListViewModel.Model>): List<RelationListViewModel.Model> =
-        listOf(RelationListViewModel.Model.Section.SlashWidget.SubheaderWithBack) + relations
+    fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
+        listOf(SlashRelationView.Section.SubheaderWithBack) + relations
 
     fun getSlashWidgetColorItems(code: String?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->
@@ -166,7 +165,7 @@ object SlashExtensions {
         viewType: Int,
         text: CharSequence,
         objectTypes: List<SlashItem.ObjectType>,
-        relations: List<RelationListViewModel.Model.Item>
+        relations: List<SlashRelationView.Item>
     ): SlashWidgetState.UpdateItems {
         val filter = text.subSequence(1, text.length).toString()
         val filteredStyle = filterSlashItems(
@@ -254,8 +253,8 @@ object SlashExtensions {
 
     private fun filterRelations(
         filter: String,
-        items: List<RelationListViewModel.Model.Item>
-    ): List<RelationListViewModel.Model> {
+        items: List<SlashRelationView.Item>
+    ): List<SlashRelationView> {
         val filtered = items.filter { item ->
             searchBySubheadingOrName(
                 filter = filter,
@@ -266,7 +265,7 @@ object SlashExtensions {
         return if (filtered.isEmpty()) {
             filtered
         } else {
-            listOf(RelationListViewModel.Model.Section.SlashWidget.Subheader) + filtered
+            listOf(SlashRelationView.Section.Subheader) + filtered
         }
     }
 

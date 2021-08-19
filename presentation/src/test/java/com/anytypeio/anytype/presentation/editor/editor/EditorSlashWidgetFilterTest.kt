@@ -11,9 +11,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NUMBE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.Before
 import org.junit.Rule
@@ -583,8 +583,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         assertNotNull(command)
         val expectedItems = listOf(
-            RelationListViewModel.Model.Section.SlashWidget.Subheader,
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Section.Subheader,
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = r1.key,
                     name = r1.name,
@@ -592,7 +592,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = r2.key,
                     name = r2.name,
@@ -640,7 +640,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         assertNotNull(command)
-        val expectedItems = emptyList<RelationListViewModel.Model>()
+        val expectedItems = emptyList<SlashRelationView>()
         assertEquals(expected = expectedItems, actual = command.relationItems)
     }
 
@@ -1448,8 +1448,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
 
         val expectedItems = listOf(
-            RelationListViewModel.Model.Section.SlashWidget.Subheader,
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Section.Subheader,
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = r1.key,
                     name = r1.name,
@@ -1457,7 +1457,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = r2.key,
                     name = r2.name,
@@ -1465,7 +1465,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     format = Relation.Format.SHORT_TEXT
                 )
             ),
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = r3.key,
                     name = r3.name,

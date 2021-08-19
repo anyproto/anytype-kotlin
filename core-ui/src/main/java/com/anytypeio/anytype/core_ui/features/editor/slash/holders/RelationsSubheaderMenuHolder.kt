@@ -5,18 +5,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 
 class RelationsSubheaderMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(item: RelationListViewModel.Model.Section.SlashWidget) = with(itemView) {
+    fun bind(item: SlashRelationView.Section) = with(itemView) {
         val text = when (item) {
-            RelationListViewModel.Model.Section.SlashWidget.Subheader -> {
+            SlashRelationView.Section.Subheader -> {
                 flBack.invisible()
                 R.string.slash_widget_main_relations
             }
-            RelationListViewModel.Model.Section.SlashWidget.SubheaderWithBack -> {
+            SlashRelationView.Section.SubheaderWithBack -> {
                 flBack.visible()
                 R.string.slash_widget_main_relations
             }

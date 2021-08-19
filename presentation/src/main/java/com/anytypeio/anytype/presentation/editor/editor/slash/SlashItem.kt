@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.const.SlashConst
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.core_models.ObjectType.Layout as ObjectTypeLayout
 
 sealed class SlashWidgetState {
@@ -11,7 +10,7 @@ sealed class SlashWidgetState {
         val styleItems: List<SlashItem>,
         val mediaItems: List<SlashItem>,
         val objectItems: List<SlashItem>,
-        val relationItems: List<RelationListViewModel.Model>,
+        val relationItems: List<SlashRelationView>,
         val otherItems: List<SlashItem>,
         val actionsItems: List<SlashItem>,
         val alignmentItems: List<SlashItem>,
@@ -254,7 +253,7 @@ sealed class SlashItem {
     //endregion
 
     //region RELATION
-    data class Relation(val relation: RelationListViewModel.Model.Item) : SlashItem() {
+    data class Relation(val relation: SlashRelationView.Item) : SlashItem() {
         override fun getSearchName(): String = relation.view.name
     }
     //endregion

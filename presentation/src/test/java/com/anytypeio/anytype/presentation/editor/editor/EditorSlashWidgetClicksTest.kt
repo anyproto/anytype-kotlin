@@ -10,10 +10,10 @@ import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.NumberParser
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.Before
 import org.junit.Rule
@@ -501,8 +501,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         assertNotNull(stateWidget)
 
         val expectedRelationItems = listOf(
-            RelationListViewModel.Model.Section.SlashWidget.SubheaderWithBack,
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Section.SubheaderWithBack,
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation1.key,
                     name = relation1.name,
@@ -510,7 +510,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     format = relation1.format
                 )
             ),
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation2.key,
                     name = relation2.name,
@@ -518,7 +518,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     format = relation2.format
                 )
             ),
-            RelationListViewModel.Model.Item(
+            SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation3.key,
                     name = relation3.name,

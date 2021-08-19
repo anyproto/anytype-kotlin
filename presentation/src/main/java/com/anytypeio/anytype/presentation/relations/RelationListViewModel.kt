@@ -237,22 +237,8 @@ class RelationListViewModel(
             object Featured : Section() {
                 override val identifier: String get() = "Section_Featured"
             }
-
             object Other : Section() {
                 override val identifier: String get() = "Section_Other"
-            }
-
-            sealed class SlashWidget : Section() {
-                object Subheader : SlashWidget() {
-                    override val identifier: String
-                        get() = "Slash_Subheader"
-                }
-                object SubheaderWithBack : SlashWidget() {
-                    override val identifier: String
-                        get() = "Slash_Subheader_Back"
-
-                }
-
             }
         }
 

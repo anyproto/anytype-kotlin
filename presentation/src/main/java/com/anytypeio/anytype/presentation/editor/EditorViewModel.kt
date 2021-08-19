@@ -100,7 +100,6 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -4562,7 +4561,7 @@ class EditorViewModel(
         }
     }
 
-    private fun getRelations(action: (List<RelationListViewModel.Model.Item>) -> Unit) {
+    private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
         val relations = orchestrator.stores.relations.current()
         val details = orchestrator.stores.details.current()
         val detail = details.details[context]
@@ -4571,8 +4570,7 @@ class EditorViewModel(
             details = details,
             values = values,
             urlBuilder = urlBuilder
-        )
-            .map { RelationListViewModel.Model.Item(it) }
+        ).map { SlashRelationView.Item(it) }
         action.invoke(update)
     }
 
@@ -4593,7 +4591,7 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithRelations(relations: List<RelationListViewModel.Model>) {
+    private fun proceedWithRelations(relations: List<SlashRelationView>) {
         onSlashWidgetStateChanged(
             SlashWidgetState.UpdateItems.empty().copy(
                 relationItems = SlashExtensions.getSlashWidgetRelationItems(relations)

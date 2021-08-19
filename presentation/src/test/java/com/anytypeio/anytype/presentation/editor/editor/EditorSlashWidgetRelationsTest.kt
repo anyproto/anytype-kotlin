@@ -12,8 +12,8 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import org.junit.After
@@ -92,7 +92,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         vm.onSlashItemClicked(
             SlashItem.Relation(
-                relation = RelationListViewModel.Model.Item(
+                relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
                         relationId = r2.key,
                         name = r2.name,
@@ -197,7 +197,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         vm.onSlashItemClicked(
             SlashItem.Relation(
-                relation = RelationListViewModel.Model.Item(
+                relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
                         relationId = r3.key,
                         name = r3.name,
@@ -302,7 +302,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         vm.onSlashItemClicked(
             SlashItem.Relation(
-                relation = RelationListViewModel.Model.Item(
+                relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
                         relationId = r3.key,
                         name = r3.name,
@@ -369,7 +369,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         vm.onSlashItemClicked(
             SlashItem.Relation(
-                relation = RelationListViewModel.Model.Item(
+                relation = SlashRelationView.Item(
                     view = DocumentRelationView.Default(
                         relationId = r2.key,
                         name = r2.name,

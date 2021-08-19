@@ -13,13 +13,13 @@ import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 import timber.log.Timber
 
 class SlashRelationsAdapter(
-    private var items: List<RelationListViewModel.Model>,
+    private var items: List<SlashRelationView>,
     private val clicks: (SlashItem) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -30,7 +30,7 @@ class SlashRelationsAdapter(
                 RelationViewHolder.Default(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
+                        check(view is SlashRelationView.Item)
                         clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
@@ -46,7 +46,7 @@ class SlashRelationsAdapter(
                     .apply {
                         itemView.setOnClickListener {
                             val view = items[bindingAdapterPosition]
-                            check(view is RelationListViewModel.Model.Item)
+                            check(view is SlashRelationView.Item)
                             clicks(SlashItem.Relation(view))
                         }
                         itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
@@ -61,7 +61,7 @@ class SlashRelationsAdapter(
                 RelationViewHolder.Object(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
+                        check(view is SlashRelationView.Item)
                         clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
@@ -76,7 +76,7 @@ class SlashRelationsAdapter(
                 RelationViewHolder.Status(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
+                        check(view is SlashRelationView.Item)
                         clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
@@ -91,7 +91,7 @@ class SlashRelationsAdapter(
                 RelationViewHolder.Tags(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
+                        check(view is SlashRelationView.Item)
                         clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
@@ -106,7 +106,7 @@ class SlashRelationsAdapter(
                 RelationViewHolder.File(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
+                        check(view is SlashRelationView.Item)
                         clicks(SlashItem.Relation(view))
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
@@ -143,47 +143,43 @@ class SlashRelationsAdapter(
         val item = items[position]
         when (holder) {
             is RelationViewHolder.Status -> {
-                check(item is RelationListViewModel.Model.Item)
+                check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Status)
                 holder.bind(view)
             }
             is RelationViewHolder.Checkbox -> {
-                check(item is RelationListViewModel.Model.Item)
+                check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Checkbox)
                 holder.bind(view)
             }
             is RelationViewHolder.Tags -> {
-                check(item is RelationListViewModel.Model.Item)
+                check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Tags)
                 holder.bind(view)
             }
             is RelationViewHolder.Object -> {
-                check(item is RelationListViewModel.Model.Item)
+                check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Object)
                 holder.bind(view)
             }
             is RelationViewHolder.File -> {
-                check(item is RelationListViewModel.Model.Item)
+                check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.File)
                 holder.bind(view)
             }
             is RelationViewHolder.Default -> {
-                check(item is RelationListViewModel.Model.Item)
+                check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Default)
                 holder.bind(view)
             }
-            is DocumentRelationAdapter.SectionViewHolder -> {
-                check(item is RelationListViewModel.Model.Section)
-                holder.bind(item)
-            }
             is RelationsSubheaderMenuHolder -> {
-                check(item is RelationListViewModel.Model.Section.SlashWidget)
+                check(item is SlashRelationView.Section)
                 holder.bind(item)
             }
             else -> {
@@ -195,7 +191,7 @@ class SlashRelationsAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
-        is RelationListViewModel.Model.Item -> {
+        is SlashRelationView.Item -> {
             when (item.view) {
                 is DocumentRelationView.Checkbox -> R.layout.item_relation_list_relation_checkbox
                 is DocumentRelationView.Object -> R.layout.item_relation_list_relation_object
@@ -205,12 +201,10 @@ class SlashRelationsAdapter(
                 else -> R.layout.item_relation_list_relation_default
             }
         }
-        RelationListViewModel.Model.Section.Featured -> R.layout.item_relation_list_section
-        RelationListViewModel.Model.Section.Other -> R.layout.item_relation_list_section
-        is RelationListViewModel.Model.Section.SlashWidget -> R.layout.item_slash_widget_subheader
+        is SlashRelationView.Section -> R.layout.item_slash_widget_subheader
     }
 
-    fun update(update: List<RelationListViewModel.Model>) {
+    fun update(update: List<SlashRelationView>) {
         Timber.d("Updating adapter: $update")
         val differ = DefaultDiffUtil(old = items, new = update)
         val result = DiffUtil.calculateDiff(differ, false)

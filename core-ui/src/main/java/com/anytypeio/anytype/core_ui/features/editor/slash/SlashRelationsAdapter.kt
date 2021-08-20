@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
-import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -116,15 +115,6 @@ class SlashRelationsAdapter(
                         visible()
                     }
                 }
-            }
-            R.layout.item_relation_list_section -> {
-                DocumentRelationAdapter.SectionViewHolder(
-                    view = inflater.inflate(
-                        viewType,
-                        parent,
-                        false
-                    )
-                )
             }
             R.layout.item_slash_widget_subheader -> {
                 RelationsSubheaderMenuHolder(

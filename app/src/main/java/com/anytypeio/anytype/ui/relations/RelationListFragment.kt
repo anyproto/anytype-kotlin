@@ -58,6 +58,12 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                     ctx = ctx,
                     view = it.view
                 )
+            },
+            onDeleteClicked = {
+                vm.onDeleteClicked(
+                    ctx = ctx,
+                    view = it.view
+                )
             }
         )
     }
@@ -92,7 +98,7 @@ open class RelationListFragment : BaseBottomSheetFragment(),
             RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
         }
         btnEditOrDone.setOnClickListener {
-            toast(getString(R.string.coming_soon))
+            vm.onEditOrDoneClicked()
         }
     }
 
@@ -126,6 +132,15 @@ open class RelationListFragment : BaseBottomSheetFragment(),
             }
             subscribe(vm.commands) { command -> execute(command) }
             subscribe(vm.toasts) { toast(it) }
+            subscribe(vm.isEditMode) { isEditMode ->
+                if (isEditMode) {
+                    btnEditOrDone.setText(R.string.done)
+                    btnPlus.invisible()
+                } else {
+                    btnPlus.visible()
+                    btnEditOrDone.setText(R.string.edit)
+                }
+            }
         }
     }
 

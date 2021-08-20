@@ -427,6 +427,10 @@ class BlockDataRepository(
         ctx: Id, relation: Id
     ): Payload = factory.remote.addRelationToObject(ctx, relation)
 
+    override suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload {
+        return factory.remote.deleteRelationFromObject(ctx = ctx, relation = relation)
+    }
+
     override suspend fun addNewRelationToObject(
         ctx: Id,
         name: String,

@@ -169,6 +169,9 @@ interface MiddlewareService {
     fun objectRelationAdd(request: Object.RelationAdd.Request) : Object.RelationAdd.Response
 
     @Throws(Exception::class)
+    fun objectRelationDelete(request: Object.RelationDelete.Request) : Object.RelationDelete.Response
+
+    @Throws(Exception::class)
     fun debugSync(request: Debug.Sync.Request) : Debug.Sync.Response
 
     @Throws(Exception::class)

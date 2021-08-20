@@ -4,11 +4,13 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -27,8 +29,11 @@ class RelationListViewModel(
     private val updateDetail: UpdateDetail,
     private val detailModificationManager: DetailModificationManager,
     private val addToFeaturedRelations: AddToFeaturedRelations,
-    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val deleteRelationFromObject: DeleteRelationFromObject
 ) : BaseViewModel() {
+
+    val isEditMode = MutableStateFlow(false)
 
     private val jobs = mutableListOf<Job>()
 
@@ -43,7 +48,12 @@ class RelationListViewModel(
                 val detail = details.details[ctx]
                 val values = detail?.map ?: emptyMap()
                 val featured = detail?.featuredRelations ?: emptyList()
-                relations.views(details, values, urlBuilder, featured).map { Model.Item(it) }
+                relations.views(details, values, urlBuilder, featured).map { view ->
+                    Model.Item(
+                        view = view,
+                        isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.relationId)
+                    )
+                }
             }.map { views ->
                 val result = mutableListOf<Model>().apply {
                     val (isFeatured, other) = views.partition { it.view.isFeatured }
@@ -107,6 +117,33 @@ class RelationListViewModel(
                         success = { dispatcher.send(it) }
                     )
                 }
+            }
+        }
+    }
+
+    fun onDeleteClicked(ctx: Id, view: DocumentRelationView) {
+        viewModelScope.launch {
+            deleteRelationFromObject(
+                DeleteRelationFromObject.Params(
+                    ctx = ctx,
+                    relation = view.relationId
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while deleting relation") },
+                success = { dispatcher.send(it) }
+            )
+        }
+    }
+
+    fun onEditOrDoneClicked() {
+        isEditMode.value = !isEditMode.value
+        views.value = views.value.map { view ->
+            if (view is Model.Item) {
+                view.copy(
+                    isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.view.relationId)
+                )
+            } else {
+                view
             }
         }
     }
@@ -237,12 +274,16 @@ class RelationListViewModel(
             object Featured : Section() {
                 override val identifier: String get() = "Section_Featured"
             }
+
             object Other : Section() {
                 override val identifier: String get() = "Section_Other"
             }
         }
 
-        data class Item(val view: DocumentRelationView) : Model() {
+        data class Item(
+            val view: DocumentRelationView,
+            val isRemoveable: Boolean = false
+        ) : Model() {
             override val identifier: String get() = view.identifier
         }
     }
@@ -273,8 +314,6 @@ class RelationListViewModel(
     }
 
     companion object {
-        const val MAX_FEATURED_RELATION_COUNT = 5
-        const val MAX_FEATURED_RELATION_COUNT_ERROR = "Currently you cannot create more than $MAX_FEATURED_RELATION_COUNT featured relations"
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
     }
 }

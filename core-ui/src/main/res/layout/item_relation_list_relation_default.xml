@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/default_ripple"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/default_ripple">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/actionsLeftContainer"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/ivActionDelete"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_relation_delete" />
+        </FrameLayout>
 
         <include
             layout="@layout/item_document_relation_default"
@@ -27,9 +41,9 @@
 
     <include
         android:id="@+id/divider"
+        layout="@layout/view_divider"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        layout="@layout/view_divider"
         android:layout_gravity="bottom"
         android:visibility="gone" />
 

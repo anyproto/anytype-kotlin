@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
  * [T] should also implement [DefaultObjectDiffIdentifier]. Otherwise, [areItemsTheSame] won't work.
  * @see [DefaultObjectDiffIdentifier]
  */
-class DefaultDiffUtil<in T : DefaultObjectDiffIdentifier>(
+open class DefaultDiffUtil<in T : DefaultObjectDiffIdentifier>(
     private val old: List<T>,
     private val new: List<T>
 ) : DiffUtil.Callback() {

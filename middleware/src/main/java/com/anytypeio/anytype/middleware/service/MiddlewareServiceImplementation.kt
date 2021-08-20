@@ -656,6 +656,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun objectRelationDelete(request: Object.RelationDelete.Request): Object.RelationDelete.Response {
+        val encoded = Service.objectRelationDelete(
+            Object.RelationDelete.Request.ADAPTER.encode(request)
+        )
+        val response = Object.RelationDelete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.RelationDelete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockAddRelation(request: Block.Relation.Add.Request): Block.Relation.Add.Response {
         val encoded = Service.blockRelationAdd(
             Block.Relation.Add.Request.ADAPTER.encode(request)

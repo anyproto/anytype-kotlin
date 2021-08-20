@@ -1416,6 +1416,17 @@ class Middleware(
         return response.event.toPayload()
     }
 
+    fun deleteRelationFromObject(ctx: Id, relation: Id) : Payload {
+        val request = Rpc.Object.RelationDelete.Request(
+            contextId = ctx,
+            relationKey = relation
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectRelationDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     fun addToFeaturedRelations(
         ctx: Id,
         relations: List<Id>

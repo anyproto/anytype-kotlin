@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -43,7 +44,8 @@ object DocumentRelationModule {
         updateDetail: UpdateDetail,
         detailModificationManager: DetailModificationManager,
         addToFeaturedRelations: AddToFeaturedRelations,
-        removeFromFeaturedRelations: RemoveFromFeaturedRelations
+        removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        deleteRelationFromObject: DeleteRelationFromObject
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             stores = stores,
@@ -53,7 +55,8 @@ object DocumentRelationModule {
             updateDetail = updateDetail,
             detailModificationManager = detailModificationManager,
             addToFeaturedRelations = addToFeaturedRelations,
-            removeFromFeaturedRelations = removeFromFeaturedRelations
+            removeFromFeaturedRelations = removeFromFeaturedRelations,
+            deleteRelationFromObject = deleteRelationFromObject
         )
     }
 
@@ -73,4 +76,9 @@ object DocumentRelationModule {
     @Provides
     @PerModal
     fun removeFromFeaturedRelations(repo: BlockRepository) : RemoveFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun deleteRelationFromObject(repo: BlockRepository) : DeleteRelationFromObject = DeleteRelationFromObject(repo)
 }

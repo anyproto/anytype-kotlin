@@ -379,6 +379,14 @@ class BlockMiddleware(
         name = name
     )
 
+    override suspend fun deleteRelationFromObject(
+        ctx: Id,
+        relation: Id
+    ): Payload = middleware.deleteRelationFromObject(
+        ctx = ctx,
+        relation = relation
+    )
+
     override suspend fun debugSync(): String = middleware.debugSync()
 
     override suspend fun turnInto(

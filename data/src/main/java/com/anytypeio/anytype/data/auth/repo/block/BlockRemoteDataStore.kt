@@ -348,7 +348,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun addRelationToObject(
         ctx: Id,
         relation: Id
-    ): Payload = remote.addRelationToObject(ctx, relation)
+    ): Payload = remote.addRelationToObject(ctx = ctx, relation = relation)
 
     override suspend fun addNewRelationToObject(
         ctx: Id,
@@ -359,6 +359,11 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         format = format,
         name = name
     )
+
+    override suspend fun deleteRelationFromObject(
+        ctx: Id,
+        relation: Id
+    ): Payload = remote.deleteRelationFromObject(ctx = ctx, relation = relation)
 
     override suspend fun debugSync(): String = remote.debugSync()
 

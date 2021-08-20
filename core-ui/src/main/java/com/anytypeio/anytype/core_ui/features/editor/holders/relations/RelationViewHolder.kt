@@ -32,6 +32,12 @@ sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHo
         }
     }
 
+    fun setIsRemovable(isRemoveable: Boolean) {
+        itemView.findViewById<View>(R.id.actionsLeftContainer).apply {
+            if (isRemoveable) visible() else gone()
+        }
+    }
+
     fun setBackgroundColor(color: String? = null) {
         Timber.d("Setting background color: $color")
         if (color != null) {

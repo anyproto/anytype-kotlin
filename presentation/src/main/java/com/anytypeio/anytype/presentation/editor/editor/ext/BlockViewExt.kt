@@ -819,7 +819,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
 }
 
 /**
- *  Cut part of the text and shift marks in Text BlockView
+ *  Cut part of the text, shift marks in Text BlockView and set cursor position to {from}
  *  @param from cut text starting from this position, should be positive or zero
  *  @param partLength length of the cut text, should be positive or zero
  *  For tests see BlockViewCutTextTest
@@ -844,7 +844,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Checkbox -> {
@@ -857,7 +858,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Header.One -> {
@@ -870,7 +872,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Header.Three -> {
@@ -883,7 +886,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Header.Two -> {
@@ -896,7 +900,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Highlight -> {
@@ -909,7 +914,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Numbered -> {
@@ -922,7 +928,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Paragraph -> {
@@ -935,7 +942,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
         is BlockView.Text.Toggle -> {
@@ -948,7 +956,8 @@ fun BlockView.Text.cutPartOfText(
                 marks = marks.shift(
                     from = from,
                     length = length
-                )
+                ),
+                cursor = from
             )
         }
     }

@@ -44,7 +44,7 @@ class BlockViewCutTextTest {
                 Markup.Mark(from = 12, to = 15, type = Markup.Type.ITALIC)
             ),
             isFocused = true,
-            cursor = 2,
+            cursor = 8,
             color = "red",
             backgroundColor = "blue",
             isSelected = false,
@@ -85,7 +85,7 @@ class BlockViewCutTextTest {
             text = "",
             marks = listOf(),
             isFocused = true,
-            cursor = null,
+            cursor = 0,
             color = "red",
             backgroundColor = "blue",
             isSelected = false,
@@ -132,7 +132,7 @@ class BlockViewCutTextTest {
                 Markup.Mark(from = 14, to = 17, type = Markup.Type.ITALIC)
             ),
             isFocused = true,
-            cursor = 2,
+            cursor = 8,
             color = "red",
             backgroundColor = "blue",
             isSelected = false,

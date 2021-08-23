@@ -42,7 +42,7 @@
 
         </FrameLayout>
 
-        <com.anytypeio.anytype.core_ui.widgets.toolbar.DocumentTopToolbar
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
             android:id="@+id/topToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"

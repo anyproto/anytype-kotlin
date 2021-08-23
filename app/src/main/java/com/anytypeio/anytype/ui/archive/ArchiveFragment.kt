@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.archive.ArchiveAdapter
-import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -20,8 +18,6 @@ import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_archive.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
@@ -42,10 +38,8 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
                 topToolbar.title.invisible()
-                topToolbar.container.invisible()
             } else {
                 topToolbar.title.visible()
-                topToolbar.container.visible()
             }
         }
     }
@@ -73,14 +67,6 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
         }
 
         topToolbar.menu.invisible()
-
-        topToolbar.back.clicks().onEach {
-            hideSoftInput()
-            vm.onBackButtonPressed()
-        }.launchIn(lifecycleScope)
-
-        topToolbar.undo.invisible()
-        topToolbar.redo.invisible()
 
         with(bottomMenu) {
             update(COUNTER_INIT)

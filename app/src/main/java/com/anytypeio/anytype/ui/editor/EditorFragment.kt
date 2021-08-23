@@ -16,6 +16,7 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -60,7 +61,6 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -87,7 +87,6 @@ import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
-import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -291,11 +290,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private val titleVisibilityDetector by lazy {
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
-                topToolbar.title.invisible()
-                topToolbar.container.invisible()
+                topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
+                topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
             } else {
-                topToolbar.title.visible()
-                topToolbar.container.visible()
+                topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
+                topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
             }
         }
     }
@@ -566,18 +565,18 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .onEach { vm.onBlockerClicked() }
             .launchIn(lifecycleScope)
 
-        topToolbar.back.clicks().onEach {
-            hideSoftInput()
-            vm.onBackButtonPressed()
-        }.launchIn(lifecycleScope)
-
-        topToolbar.undo.clicks().onEach {
-            vm.onActionUndoClicked()
-        }.launchIn(lifecycleScope)
-
-        topToolbar.redo.clicks().onEach {
-            vm.onActionRedoClicked()
-        }.launchIn(lifecycleScope)
+//        topToolbar.back.clicks().onEach {
+//            hideSoftInput()
+//            vm.onBackButtonPressed()
+//        }.launchIn(lifecycleScope)
+//
+//        topToolbar.undo.clicks().onEach {
+//            vm.onActionUndoClicked()
+//        }.launchIn(lifecycleScope)
+//
+//        topToolbar.redo.clicks().onEach {
+//            vm.onActionRedoClicked()
+//        }.launchIn(lifecycleScope)
 
         lifecycleScope.subscribe(styleToolbarMain.styles) {
             vm.onUpdateTextBlockStyle(it)
@@ -692,12 +691,24 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             else
                 topToolbar.status.invisible()
         }.launchIn(lifecycleScope)
-        vm.isUndoEnabled.onEach { topToolbar.setUndoState(it) }.launchIn(lifecycleScope)
-        vm.isRedoEnabled.onEach { topToolbar.setRedoState(it) }.launchIn(lifecycleScope)
+        vm.isUndoEnabled.onEach {
+            // TODO
+        }.launchIn(lifecycleScope)
+        vm.isRedoEnabled.onEach {
+            // TODO
+        }.launchIn(lifecycleScope)
     }
 
     private fun bindSyncStatus(status: SyncStatus?) {
         topToolbar.status.bind(status)
+        val tvStatus = topToolbar.findViewById<TextView>(R.id.tvStatus)
+        when (status) {
+            SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
+            SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
+            SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
+            SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
+            SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
+        }
     }
 
     override fun onDestroyView() {
@@ -1031,30 +1042,30 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
         topToolbar.title.text = text
-        when {
-            emoji != null && emoji.isNotEmpty() -> {
-                try {
-                    topToolbar.emoji.invisible()
-                    Glide.with(topToolbar.image).load(Emojifier.uri(emoji)).into(topToolbar.image)
-                } catch (e: Exception) {
-                    topToolbar.emoji.visible()
-                    topToolbar.emoji.text = emoji
-                }
-            }
-            image != null -> {
-                topToolbar.emoji.invisible()
-                topToolbar.image.visible()
-                Glide
-                    .with(topToolbar.image)
-                    .load(image)
-                    .centerInside()
-                    .circleCrop()
-                    .into(topToolbar.image)
-            }
-            else -> {
-                topToolbar.image.setImageDrawable(null)
-            }
-        }
+//        when {
+//            emoji != null && emoji.isNotEmpty() -> {
+//                try {
+//                    topToolbar.emoji.invisible()
+//                    Glide.with(topToolbar.image).load(Emojifier.uri(emoji)).into(topToolbar.image)
+//                } catch (e: Exception) {
+//                    topToolbar.emoji.visible()
+//                    topToolbar.emoji.text = emoji
+//                }
+//            }
+//            image != null -> {
+//                topToolbar.emoji.invisible()
+//                topToolbar.image.visible()
+//                Glide
+//                    .with(topToolbar.image)
+//                    .load(image)
+//                    .centerInside()
+//                    .circleCrop()
+//                    .into(topToolbar.image)
+//            }
+//            else -> {
+//                topToolbar.image.setImageDrawable(null)
+//            }
+//        }
     }
 
     private fun render(state: ControlPanelState) {
@@ -1715,6 +1726,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         const val FAB_SHOW_ANIMATION_DURATION = 100L
 
         const val DEFAULT_ANIM_DURATION = 150L
+        const val DEFAULT_TOOLBAR_ANIM_DURATION = 150L
 
         const val SHOW_MENTION_TRANSITION_DURATION = 150L
         const val SELECT_BUTTON_SHOW_ANIMATION_DURATION = 200L

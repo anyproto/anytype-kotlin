@@ -82,6 +82,8 @@ import com.anytypeio.anytype.ui.editor.modals.*
 import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.moving.MoveToFragment
+import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
@@ -113,6 +115,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
     DocCoverAction,
+    OnMoveToAction,
     PickiTCallbacks {
 
     private val ctx get() = arg<Id>(ID_KEY)
@@ -978,6 +981,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     )
                     fr.show(childFragmentManager, null)
                 }
+                is Command.OpenMoveToScreen -> {
+                    lifecycleScope.launch {
+                        hideSoftInput()
+                        delay(DEFAULT_ANIM_DURATION)
+                        val fr = MoveToFragment.new(
+                            block = command.block
+                        )
+                        fr.show(childFragmentManager, null)
+                    }
+                }
             }
         }
     }
@@ -1710,6 +1723,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             ctx = ctx,
             relationId = relationId,
             value = timeInSeconds
+        )
+    }
+
+    override fun onMoveTo(target: Id, block: Id) {
+        vm.proceedWithMoveToAction(
+            target = target,
+            block = block
         )
     }
 

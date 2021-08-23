@@ -360,11 +360,6 @@
         android:label="LinkToFragment"
         tools:layout="@layout/fragment_link_to_object" />
     <fragment
-        android:id="@+id/moveToFragment"
-        android:name="com.anytypeio.anytype.ui.moving.MoveToFragment"
-        android:label="MoveToFragment"
-        tools:layout="@layout/fragment_move_to" />
-    <fragment
         android:id="@+id/pageSearchFragment"
         android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
         android:label="PageSearchFragment"

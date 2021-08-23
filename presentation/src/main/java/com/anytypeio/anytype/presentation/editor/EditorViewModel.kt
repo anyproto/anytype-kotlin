@@ -1556,7 +1556,7 @@ class EditorViewModel(
             ActionItemType.MoveTo -> {
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
-                proceedWithMoveTo(id)
+                proceedWithMoveToButtonClicked(id)
             }
             ActionItemType.Style -> {
                 viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
@@ -1630,33 +1630,6 @@ class EditorViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = POPUP_STYLE
-        )
-    }
-
-    private fun proceedWithMoveTo(id: String) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_MOVE_TO
-        )
-
-        val excluded = mutableListOf<Id>()
-
-        val target = blocks.find { it.id == id }
-
-        if (target != null) {
-            (target.content as? Content.Link)?.let { content ->
-                excluded.add(content.target)
-            }
-        }
-
-        navigate(
-            EventWrapper(
-                AppNavigation.Command.OpenMoveToScreen(
-                    context = context,
-                    targets = listOf(id),
-                    excluded = excluded
-                )
-            )
         )
     }
 
@@ -4715,7 +4688,7 @@ class EditorViewModel(
             }
             SlashItem.Actions.MoveTo -> {
                 onHideKeyboardClicked()
-                proceedWithMoveTo(targetId)
+                proceedWithMoveToButtonClicked(targetId)
             }
             SlashItem.Actions.LinkTo -> {
                 onAddLinkToObjectClicked()
@@ -4920,5 +4893,31 @@ class EditorViewModel(
         )
     }
 
+    //endregion
+
+    //region MOVE TO
+    private fun proceedWithMoveToButtonClicked(id: String) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_MOVE_TO
+        )
+
+        dispatch(Command.OpenMoveToScreen(block = id))
+    }
+
+    fun proceedWithMoveToAction(target: Id, block: Id) {
+        Timber.d("onMoveToTargetClicked, target:[$target], block:[$block]")
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.Move(
+                    context = context,
+                    target = target,
+                    targetContext = target,
+                    blocks = listOf(block),
+                    position = Position.BOTTOM
+                )
+            )
+        }
+    }
     //endregion
 }

@@ -62,6 +62,11 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
         initialize()
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
     private fun focusSearchInput() {
         filterInputField.apply {
             post {
@@ -76,11 +81,13 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
             ObjectSearchView.Loading -> {
                 recyclerView.invisible()
                 tvScreenStateMessage.invisible()
+                tvScreenStateSubMessage.invisible()
                 progressBar.visible()
             }
             is ObjectSearchView.Success -> {
                 progressBar.invisible()
                 tvScreenStateMessage.invisible()
+                tvScreenStateSubMessage.invisible()
                 recyclerView.visible()
                 searchAdapter.submitList(state.objects)
             }
@@ -89,18 +96,21 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = getString(R.string.search_empty_pages)
+                tvScreenStateSubMessage.invisible()
             }
             is ObjectSearchView.NoResults -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = getString(R.string.search_no_results, state.searchText)
+                tvScreenStateSubMessage.visible()
             }
             is ObjectSearchView.Error -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = state.error
+                tvScreenStateSubMessage.invisible()
             }
             else -> Timber.d("Skipping state: $state")
         }

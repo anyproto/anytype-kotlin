@@ -13,7 +13,6 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import org.junit.After
@@ -517,19 +516,11 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         assertNotNull(state)
         assertFalse(state.slashWidget.isVisible)
 
-        val expected = AppNavigation.Command.OpenMoveToScreen(
-            context = root,
-            targets = listOf(block.id),
-            excluded = listOf()
-        )
-
-        vm.navigation
-            .test()
+        vm.commands.test()
             .assertHasValue()
-            .assertValue { event ->
-                (event.peekContent() as AppNavigation.Command.OpenMoveToScreen).let { result ->
-                    result == expected
-                }
+            .assertValue { result ->
+                val command = result.peekContent()
+                command is Command.OpenMoveToScreen && command.block == block.id
             }
     }
     //endregion

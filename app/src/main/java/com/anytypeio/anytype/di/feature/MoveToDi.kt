@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import dagger.Module
@@ -34,40 +34,27 @@ object MoveToModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideGetPageInfoWithLinks(
-        repo: BlockRepository
-    ): GetObjectInfoWithLinks = GetObjectInfoWithLinks(repo = repo)
+    fun getObjectTypes(repo: BlockRepository): GetObjectTypes = GetObjectTypes(repo = repo)
 
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideGetConfigUseCase(
-        repo: BlockRepository
-    ): GetConfig = GetConfig(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideMoveUseCase(
-        repo: BlockRepository
-    ): Move = Move(
-        repo = repo
-    )
+    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
     @PerScreen
     @Provides
     fun provideMoveToViewModelFactory(
         urlBuilder: UrlBuilder,
-        getObjectInfoWithLinks: GetObjectInfoWithLinks,
-        getConfig: GetConfig,
-        move: Move,
-        objectTypesProvider: ObjectTypesProvider
+        getObjectTypes: GetObjectTypes,
+        searchObjects: SearchObjects,
+        getFlavourConfig: GetFlavourConfig,
+        analytics: Analytics
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         urlBuilder = urlBuilder,
-        getObjectInfoWithLinks = getObjectInfoWithLinks,
-        getConfig = getConfig,
-        move = move,
-        objectTypesProvider = objectTypesProvider
+        getObjectTypes = getObjectTypes,
+        searchObjects = searchObjects,
+        analytics = analytics,
+        getFlavourConfig = getFlavourConfig
     )
 }

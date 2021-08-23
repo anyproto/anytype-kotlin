@@ -160,13 +160,29 @@
     <dimen name="object_icon_card_rectangle_image_radius">2dp</dimen>
 
 
-    <!-- Object items is lists -->
-    <dimen name="list_item_object_icon_width">40dp</dimen>
-    <dimen name="list_item_object_icon_height">40dp</dimen>
-    <dimen name="list_item_object_icon_margin_start">16dp</dimen>
-    <dimen name="list_item_object_icon_margin_top">8dp</dimen>
-    <dimen name="list_item_object_icon_margin_bottom">8dp</dimen>
-    <dimen name="list_item_object_text_margin_start">68dp</dimen>
-    <dimen name="list_item_object_text_margin_end">24dp</dimen>
+    <!-- Object items is full screen lists -->
+    <dimen name="list_item_object_icon_width">48dp</dimen>
+    <dimen name="list_item_object_icon_height">48dp</dimen>
+    <dimen name="list_item_object_icon_margin_start">20dp</dimen>
+    <dimen name="list_item_object_icon_margin_top">10dp</dimen>
+    <dimen name="list_item_object_icon_margin_bottom">10dp</dimen>
+    <dimen name="list_item_object_title_margin_top">13dp</dimen>
+    <dimen name="list_item_object_title_margin_start">80dp</dimen>
+    <dimen name="list_item_object_title_margin_end">20dp</dimen>
+    <dimen name="list_item_object_subtitle_margin_top">34dp</dimen>
+    <dimen name="list_item_object_subtitle_margin_start">80dp</dimen>
+    <dimen name="list_item_object_subtitle_margin_end">20dp</dimen>
+    <dimen name="list_item_object_emoji_size">28dp</dimen>
+    <dimen name="list_item_object_checkbox_size">24dp</dimen>
+    <dimen name="list_item_object_initials_size">28sp</dimen>
+
+    <!-- Object items is half screen lists -->
+    <dimen name="list_item_object_half_icon_width">40dp</dimen>
+    <dimen name="list_item_object_half_icon_height">40dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_start">20dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_top">8dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_bottom">8dp</dimen>
+    <dimen name="list_item_object_half_text_margin_start">72dp</dimen>
+    <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
 
 </resources>

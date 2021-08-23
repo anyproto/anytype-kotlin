@@ -133,7 +133,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="content_desc_pin">Pin icon</string>
     <string name="nav_open_page">Open as page</string>
     <string name="btn_nav_open">Open</string>
-    <string name="search_no_results">There are no pages named %1$s. Try creating a new one or search for something else.</string>
+    <string name="search_no_results">There is no object named \"%1$s\"</string>
+    <string name="search_no_results_try">Try to create a new one or search for something else</string>
     <string name="search_empty_pages">You have no pages to search for.</string>
     <string name="link_to_this_page">Link to this page</string>
     <string name="link">Link</string>

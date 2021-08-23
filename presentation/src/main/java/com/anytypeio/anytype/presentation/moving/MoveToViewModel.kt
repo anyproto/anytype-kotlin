@@ -1,116 +1,91 @@
 package com.anytypeio.anytype.presentation.moving
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.core_utils.ext.timber
-import com.anytypeio.anytype.core_utils.ui.ViewState
-import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.page.navigation.GetObjectInfoWithLinks
-import com.anytypeio.anytype.presentation.mapper.getEmojiPath
-import com.anytypeio.anytype.presentation.mapper.getImagePath
-import com.anytypeio.anytype.presentation.mapper.toView
-import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.PageNavigationView
-import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MoveToViewModel(
-    private val urlBuilder: UrlBuilder,
-    private val getObjectInfoWithLinks: GetObjectInfoWithLinks,
-    private val getConfig: GetConfig,
-    private val move: Move,
-    private val objectTypesProvider: ObjectTypesProvider
-) : ViewStateViewModel<ViewState<PageNavigationView>>(),
-    SupportNavigation<EventWrapper<AppNavigation.Command>> {
+    urlBuilder: UrlBuilder,
+    searchObjects: SearchObjects,
+    getObjectTypes: GetObjectTypes,
+    analytics: Analytics,
+    private val getFlavourConfig: GetFlavourConfig
+) : ObjectSearchViewModel(
+    urlBuilder = urlBuilder,
+    getObjectTypes = getObjectTypes,
+    searchObjects = searchObjects,
+    analytics = analytics,
+    getFlavourConfig = getFlavourConfig,
+) {
 
-    private var pageId: String = ""
-    private var home: String = ""
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
-    val isMovingDisabled: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    override fun getSearchObjectsParams(): SearchObjects.Params {
 
-    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
-        MutableLiveData()
+        val filteredTypes = if (getFlavourConfig.isDataViewEnabled()) {
+            types.value
+                .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
+                .map { objectType -> objectType.url }
+        } else {
+            listOf(ObjectTypeConst.PAGE)
+        }
 
-    fun onViewCreated() {
-        stateData.postValue(ViewState.Init)
+        val filters = listOf(
+            DVFilter(
+                condition = DVFilterCondition.EQUAL,
+                value = false,
+                relationKey = Relations.IS_ARCHIVED,
+                operator = DVFilterOperator.AND
+            ),
+            DVFilter(
+                relationKey = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            ),
+            DVFilter(
+                relationKey = Relations.IS_READ_ONLY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+
+        val sorts = listOf(
+            DVSort(
+                relationKey = Relations.NAME,
+                type = DVSortType.ASC
+            )
+        )
+
+        return SearchObjects.Params(
+            limit = SEARCH_LIMIT,
+            objectTypeFilter = filteredTypes,
+            filters = filters,
+            sorts = sorts,
+            fulltext = EMPTY_QUERY
+        )
     }
 
-    fun onStart(initialTarget: Id) {
+    override fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
         viewModelScope.launch {
-            getConfig(Unit).proceed(
-                failure = { Timber.e(it, "Error while getting config") },
-                success = { config ->
-                    home = config.home
-                    proceedWithGettingDocumentLinks(initialTarget)
-                }
-            )
+            commands.emit(Command.Move(target = target))
         }
     }
 
-    fun proceedWithGettingDocumentLinks(target: String) {
-        stateData.postValue(ViewState.Loading)
+    override fun onBottomSheetHidden() {
         viewModelScope.launch {
-            getObjectInfoWithLinks.invoke(GetObjectInfoWithLinks.Params(pageId = target)).proceed(
-                failure = { error ->
-                    error.timber()
-                    stateData.postValue(ViewState.Error(error.message ?: "Unknown error"))
-                },
-                success = { response ->
-                    with(response.pageInfoWithLinks) {
-                        pageId = this.id
-                        stateData.postValue(
-                            ViewState.Success(
-                                PageNavigationView(
-                                    title = documentInfo.obj.name.orEmpty(),
-                                    subtitle = documentInfo.snippet.orEmpty(),
-                                    image = documentInfo.obj.getImagePath(urlBuilder),
-                                    emoji = documentInfo.obj.getEmojiPath(),
-                                    inbound = links.inbound.map { it.toView(urlBuilder, objectTypesProvider.get()) },
-                                    outbound = links.outbound.map { it.toView(urlBuilder, objectTypesProvider.get()) }
-                                )
-                            )
-                        )
-                    }
-                }
-            )
+            commands.emit(Command.Exit)
         }
     }
 
-    fun onLinkClicked(
-        target: Id,
-        context: Id,
-        excluded: List<Id>
-    ) {
-        isMovingDisabled.value = (target == context || target == home || excluded.contains(target))
-        proceedWithGettingDocumentLinks(target)
-    }
-
-    fun onMoveToClicked(
-        context: Id,
-        targets: List<Id>
-    ) {
-        viewModelScope.launch {
-            move(
-                Move.Params(
-                    context = context,
-                    blockIds = targets,
-                    position = Position.INNER,
-                    targetId = pageId,
-                    targetContext = pageId
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while moving blocks") },
-                success = { navigate(EventWrapper(AppNavigation.Command.Exit)) }
-            )
-        }
+    sealed class Command {
+        object Exit : Command()
+        data class Move(val target: Id) : Command()
     }
 }

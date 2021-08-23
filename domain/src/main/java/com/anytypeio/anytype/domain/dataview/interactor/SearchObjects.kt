@@ -22,7 +22,7 @@ class SearchObjects(
         )
     }
 
-    class Params(
+    data class Params(
         val sorts: List<DVSort> = emptyList(),
         val filters: List<DVFilter> = emptyList(),
         val fulltext: String,

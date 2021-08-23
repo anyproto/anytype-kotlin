@@ -18,12 +18,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ObjectSearchViewModel(
+open class ObjectSearchViewModel(
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val getFlavourConfig: GetFlavourConfig
+    getFlavourConfig: GetFlavourConfig
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -32,7 +32,7 @@ class ObjectSearchViewModel(
         emitAll(userInput.debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
-    private val types = MutableStateFlow(emptyList<ObjectType>())
+    protected val types = MutableStateFlow(emptyList<ObjectType>())
     private val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
@@ -43,47 +43,6 @@ class ObjectSearchViewModel(
         listOf(ObjectTypeConst.PAGE)
 
     init {
-        viewModelScope.launch {
-            val params = GetObjectTypes.Params(filterArchivedObjects = true)
-            getObjectTypes.invoke(params).process(
-                failure = { Timber.e(it, "Error while getting object types") },
-                success = { types.value = it }
-            )
-        }
-        val filters = listOf(
-            DVFilter(
-                condition = DVFilterCondition.EQUAL,
-                value = false,
-                relationKey = Relations.IS_ARCHIVED,
-                operator = DVFilterOperator.AND
-            ),
-            DVFilter(
-                relationKey = Relations.IS_HIDDEN,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
-            )
-        )
-        viewModelScope.launch {
-            searchQuery.collectLatest { query ->
-                searchObjects(
-                    SearchObjects.Params(
-                        fulltext = query,
-                        limit = SEARCH_LIMIT,
-                        objectTypeFilter = supportedObjectTypes,
-                        filters = filters,
-                        sorts = listOf(
-                            DVSort(
-                                relationKey = Relations.LAST_OPENED_DATE,
-                                type = DVSortType.DESC
-                            )
-                        )
-                    )
-                ).process(
-                    success = { raw -> objects.value = raw.map { ObjectWrapper.Basic(it) } },
-                    failure = { Timber.e(it, "Error while searching for objects") }
-                )
-            }
-        }
         viewModelScope.launch {
             combine(objects, types) { listOfObjects, listOfTypes ->
                 listOfObjects.map { obj ->
@@ -111,11 +70,67 @@ class ObjectSearchViewModel(
         }
     }
 
+    fun onStart() {
+        getObjectTypes()
+        startProcessingSearchQuery()
+    }
+
+    private fun getObjectTypes() {
+        viewModelScope.launch {
+            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+            getObjectTypes.invoke(params).process(
+                failure = { Timber.e(it, "Error while getting object types") },
+                success = { types.value = it }
+            )
+        }
+    }
+
+    open fun getSearchObjectsParams(): SearchObjects.Params {
+        val filters = listOf(
+            DVFilter(
+                condition = DVFilterCondition.EQUAL,
+                value = false,
+                relationKey = Relations.IS_ARCHIVED,
+                operator = DVFilterOperator.AND
+            ),
+            DVFilter(
+                relationKey = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        val sorts = listOf(
+            DVSort(
+                relationKey = Relations.LAST_OPENED_DATE,
+                type = DVSortType.DESC
+            )
+        )
+        return SearchObjects.Params(
+            limit = SEARCH_LIMIT,
+            objectTypeFilter = supportedObjectTypes,
+            filters = filters,
+            sorts = sorts,
+            fulltext = EMPTY_QUERY
+        )
+    }
+
+    private fun startProcessingSearchQuery() {
+        viewModelScope.launch {
+            searchQuery.collectLatest { query ->
+                val params = getSearchObjectsParams().copy(fulltext = query)
+                searchObjects(params = params).process(
+                    success = { raw -> objects.value = raw.map { ObjectWrapper.Basic(it) } },
+                    failure = { Timber.e(it, "Error while searching for objects") }
+                )
+            }
+        }
+    }
+
     fun onSearchTextChanged(searchText: String) {
         userInput.value = searchText
     }
 
-    fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
+    open fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
         when(layout) {
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.BASIC,
@@ -132,7 +147,7 @@ class ObjectSearchViewModel(
         }
     }
 
-    fun onBottomSheetHidden() {
+    open fun onBottomSheetHidden() {
         navigateToDesktop()
     }
 

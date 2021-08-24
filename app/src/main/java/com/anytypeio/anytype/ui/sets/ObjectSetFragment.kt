@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.ui.sets
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
@@ -75,6 +77,18 @@ open class ObjectSetFragment :
     private val topToolbarTitle: TextView
         get() = topToolbar.findViewById(R.id.tvTopToolbarTitle)
 
+    private val topToolbarThreeDotsButton : ViewGroup
+        get() = topToolbar.findViewById(R.id.threeDotsButton)
+
+    private val topToolbarStatusContainer: ViewGroup
+        get() = topToolbar.findViewById(R.id.statusContainer)
+
+    private val topToolbarThreeDotsIcon : ImageView
+        get() = topToolbar.findViewById(R.id.ivThreeDots)
+
+    private val topToolbarStatusText: TextView
+        get() = topToolbar.findViewById(R.id.tvStatus)
+
     private val addNewButton: ImageView
         get() = dataViewHeader.findViewById(R.id.addNewButton)
 
@@ -83,9 +97,6 @@ open class ObjectSetFragment :
 
     private val tvCurrentViewerName: TextView
         get() = dataViewHeader.findViewById(R.id.tvCurrentViewerName)
-
-    private val tvStatus: TextView
-        get() = topToolbar.findViewById(R.id.tvStatus)
 
     private val menuButton: FrameLayout
         get() = topToolbar.findViewById(R.id.threeDotsButton)
@@ -342,6 +353,7 @@ open class ObjectSetFragment :
                     setImageDrawable(null)
                     setBackgroundColor(coverColor.color)
                 }
+                onObjectCoverUpdated()
             }
             coverImage != null -> {
                 ivCover?.apply {
@@ -352,6 +364,7 @@ open class ObjectSetFragment :
                         .centerCrop()
                         .into(this)
                 }
+                onObjectCoverUpdated()
             }
             coverGradient != null -> {
                 ivCover?.apply {
@@ -364,12 +377,28 @@ open class ObjectSetFragment :
                         CoverGradient.TEAL -> setBackgroundResource(com.anytypeio.anytype.core_ui.R.drawable.cover_gradient_teal)
                     }
                 }
+                onObjectCoverUpdated()
             }
             else -> {
                 ivCover?.apply {
                     setImageDrawable(null)
                     setBackgroundColor(0)
                 }
+            }
+        }
+    }
+
+    private fun onObjectCoverUpdated() {
+        topToolbarThreeDotsButton.apply {
+            setBackgroundResource(R.drawable.rect_object_menu_button_default)
+        }
+        topToolbarStatusContainer.apply {
+            setBackgroundResource(R.drawable.rect_object_menu_button_default)
+        }
+        if (root.currentState == R.id.start) {
+            topToolbarStatusText.setTextColor(Color.WHITE)
+            topToolbarThreeDotsIcon.apply {
+                imageTintList = ColorStateList.valueOf(Color.WHITE)
             }
         }
     }
@@ -510,13 +539,39 @@ open class ObjectSetFragment :
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
                 title.enableEditMode()
-                tvStatus.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
+                topToolbarStatusText.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
+                topToolbarThreeDotsButton.apply {
+                    if (background != null) {
+                        background?.alpha = DRAWABLE_ALPHA_FULL
+                        topToolbarThreeDotsIcon.apply {
+                            imageTintList = ColorStateList.valueOf(Color.WHITE)
+                        }
+                    }
+                }
+                topToolbarStatusContainer.apply {
+                    if (background != null) {
+                        background?.alpha = DRAWABLE_ALPHA_FULL
+                        topToolbarStatusText.setTextColor(Color.WHITE)
+                    }
+                }
             }
             if (id == R.id.end) {
                 title.enableReadMode()
-                tvStatus.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
+                topToolbarStatusText.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
+                topToolbar.findViewById<ImageView>(R.id.ivThreeDots).apply {
+                    imageTintList = null
+                }
+                topToolbarThreeDotsButton.apply {
+                    background?.alpha = DRAWABLE_ALPHA_ZERO
+                }
+                topToolbarStatusContainer.apply {
+                    background?.alpha = DRAWABLE_ALPHA_ZERO
+                    topToolbarStatusText.setTextColor(
+                        context.getColor(R.color.default_status_text_color)
+                    )
+                }
             }
         }
     }
@@ -629,5 +684,7 @@ open class ObjectSetFragment :
         val EMPTY_TAG = null
         const val BOTTOM_PANEL_ANIM_DURATION = 150L
         const val DEFAULT_ANIM_DURATION = 300L
+        const val DRAWABLE_ALPHA_FULL = 255
+        const val DRAWABLE_ALPHA_ZERO = 0
     }
 }

@@ -142,7 +142,10 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
                 )
             }
             ObjectMenuViewModelBase.Command.OpenSetCover -> {
-                toast(COMING_SOON_MSG)
+                findNavController().navigate(
+                    R.id.objectCoverScreen,
+                    bundleOf(DocCoverSliderFragment.CTX_KEY to ctx)
+                )
             }
             ObjectMenuViewModelBase.Command.OpenSetIcons -> {
                 findNavController().navigate(

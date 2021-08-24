@@ -54,6 +54,10 @@
             android:id="@+id/objectSetIconPickerScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
             android:label="Object-Set-Icon-Picker-Screen" />
+        <fragment
+            android:id="@+id/objectCoverScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment"
+            android:label="Object-Cover-Screen"/>
     </navigation>
 
     <fragment

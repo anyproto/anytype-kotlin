@@ -5,22 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="48dp">
 
-    <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
-        android:id="@+id/statusBadge"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+    <FrameLayout
+        android:id="@+id/statusContainer"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="20dp"
-        android:backgroundTint="@color/orange" />
-
-    <TextView
-        android:id="@+id/tvStatus"
-        style="@style/SyncStatusTextStyle"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="36dp"
-        tools:text="Syncing" />
+        android:layout_height="28dp">
+
+        <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+            android:id="@+id/statusBadge"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center_vertical"
+            android:backgroundTint="@color/orange" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            style="@style/SyncStatusTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            tools:text="Syncing" />
+
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -39,8 +49,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="8dp"
-                android:visibility="gone"
-                tools:background="@drawable/circle_blue" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvTopToolbarTitle"
@@ -61,6 +70,7 @@
         android:layout_marginEnd="12dp">
 
         <ImageView
+            android:id="@+id/ivThreeDots"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

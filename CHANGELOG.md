@@ -4,6 +4,7 @@
 
 ### New features & enhancements 🚀
 
+* Data View | Setting and rendering covers (#1747)
 * Relations | Enhanced: Added format-specific placeholders (#1740)
 
 ## Version 0.2.7

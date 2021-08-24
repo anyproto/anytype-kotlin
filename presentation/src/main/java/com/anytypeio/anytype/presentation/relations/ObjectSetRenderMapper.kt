@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.*
@@ -102,16 +103,44 @@ fun ObjectSet.title(
     urlBuilder: UrlBuilder
 ): BlockView.Title.Basic {
     val title = blocks.title()
+
+    val objectDetails = details[ctx]
+
+    var coverColor: CoverColor? = null
+    var coverImage: Url? = null
+    var coverGradient: String? = null
+
+    when (val type = objectDetails?.coverType?.toInt()) {
+        CoverType.UPLOADED_IMAGE.code -> {
+            coverImage = objectDetails.coverId?.let { id ->
+                urlBuilder.image(id)
+            }
+        }
+        CoverType.COLOR.code -> {
+            coverColor = objectDetails.coverId?.let { id ->
+                CoverColor.values().find { it.code == id }
+            }
+        }
+        CoverType.GRADIENT.code -> {
+            coverGradient = objectDetails.coverId
+        }
+        else -> Timber.d("Missing cover type: $type")
+    }
+
+
     return BlockView.Title.Basic(
         id = title.id,
         text = title.content<Block.Content.Text>().text,
-        emoji = details[ctx]?.iconEmoji,
-        image = details[ctx]?.iconImage?.let { hash ->
+        emoji = objectDetails?.iconEmoji?.ifEmpty { null },
+        image = objectDetails?.iconImage?.let { hash ->
             if (hash.isNotEmpty())
                 urlBuilder.thumbnail(hash = hash)
             else
                 null
-        }
+        },
+        coverImage = coverImage,
+        coverColor = coverColor,
+        coverGradient = coverGradient
     )
 }
 

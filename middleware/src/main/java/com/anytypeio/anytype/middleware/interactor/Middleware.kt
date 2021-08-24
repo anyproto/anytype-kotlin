@@ -892,41 +892,6 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun linkToObject(
-        contextId: String,
-        targetId: String,
-        blockId: String,
-        replace: Boolean,
-        positionCore: Position
-    ): Payload {
-
-        val position: Block.Position = if (replace) {
-            Block.Position.Replace
-        } else {
-            positionCore.toMiddlewareModel()
-        }
-
-        val link = Block.Content.Link(targetBlockId = blockId)
-
-        val model = Block(link = link)
-
-        val request: Rpc.Block.Create.Request = Rpc.Block.Create.Request(
-            contextId = contextId,
-            targetId = targetId,
-            position = position,
-            block = model
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockCreate(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
     fun updateDividerStyle(command: Command.UpdateDivider): Payload {
         val style = command.style.toMiddlewareModel()
 

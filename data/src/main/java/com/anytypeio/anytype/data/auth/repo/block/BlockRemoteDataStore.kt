@@ -160,20 +160,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun getListPages(): List<DocumentInfo> = remote.getListPages()
 
-    override suspend fun linkToObject(
-        context: String,
-        target: String,
-        block: String,
-        replace: Boolean,
-        position: Position
-    ): Payload = remote.linkToObject(
-        context = context,
-        target = target,
-        block = block,
-        replace = replace,
-        position = position
-    )
-
     override suspend fun setRelationKey(command: Command.SetRelationKey): Payload =
         remote.setRelationKey(command)
 

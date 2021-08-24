@@ -6,15 +6,12 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
-import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.sets.CreateObjectSetFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -166,16 +163,6 @@ class Navigator : AppNavigation {
     override fun openPageNavigation(target: String) {
         val bundle = bundleOf(PageNavigationFragment.TARGET_ID_KEY to target)
         navController?.navigate(R.id.pageNavigationFragment, bundle)
-    }
-
-    override fun openLinkTo(target: String, context: String, replace: Boolean, position: Position) {
-        val bundle = bundleOf(
-            LinkToObjectFragment.TARGET_ID_KEY to target,
-            LinkToObjectFragment.CONTEXT_ID_KEY to context,
-            LinkToObjectFragment.REPLACE_KEY to replace,
-            LinkToObjectFragment.POSITION_KEY to position.name
-        )
-        navController?.navigate(R.id.linkToFragment, bundle)
     }
 
     override fun openPageSearch() {

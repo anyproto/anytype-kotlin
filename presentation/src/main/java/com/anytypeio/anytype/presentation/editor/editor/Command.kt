@@ -34,6 +34,7 @@ sealed class Command {
         val context: String
     ) : Command()
 
+    @Deprecated("To be deleted")
     data class OpenAddBlockPanel(val ctx: Id) : Command()
 
     data class Measure(val target: Id) : Command()
@@ -103,4 +104,6 @@ sealed class Command {
     data class OpenChangeObjectTypeScreen(val ctx: Id, val smartBlockType: SmartBlockType): Command()
 
     data class OpenMoveToScreen(val block: Id): Command()
+
+    data class OpenLinkToScreen(val target: Id): Command()
 }

@@ -39,8 +39,6 @@ import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Block.Content.Text
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SyncStatus
@@ -82,6 +80,8 @@ import com.anytypeio.anytype.ui.editor.modals.*
 import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
+import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
@@ -107,7 +107,6 @@ const val REQUEST_FILE_CODE = 745
 @RuntimePermissions
 open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     OnFragmentInteractionListener,
-    AddBlockFragment.AddBlockActionReceiver,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
     RelationTextValueFragment.TextValueEditReceiver,
@@ -116,6 +115,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     ClipboardInterceptor,
     DocCoverAction,
     OnMoveToAction,
+    OnLinkToAction,
     PickiTCallbacks {
 
     private val ctx get() = arg<Id>(ID_KEY)
@@ -300,13 +300,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
             }
         }
-    }
-
-    override fun onAddObjectClicked(url: String, layout: ObjectType.Layout) {
-        vm.onAddNewObjectClicked(
-            type = url,
-            layout = layout
-        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -632,31 +625,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onAddBookmarkUrlClicked(target: String, url: String) {
         vm.onAddBookmarkUrl(target = target, url = url)
-    }
-
-    override fun onAddBlockClicked(block: UiBlock) {
-        when (block) {
-            UiBlock.TEXT -> vm.onAddTextBlockClicked(Text.Style.P)
-            UiBlock.HEADER_ONE -> vm.onAddTextBlockClicked(Text.Style.H1)
-            UiBlock.HEADER_TWO -> vm.onAddTextBlockClicked(Text.Style.H2)
-            UiBlock.HEADER_THREE -> vm.onAddTextBlockClicked(Text.Style.H3)
-            UiBlock.HIGHLIGHTED -> vm.onAddTextBlockClicked(Text.Style.QUOTE)
-            UiBlock.CHECKBOX -> vm.onAddTextBlockClicked(Text.Style.CHECKBOX)
-            UiBlock.BULLETED -> vm.onAddTextBlockClicked(Text.Style.BULLET)
-            UiBlock.NUMBERED -> vm.onAddTextBlockClicked(Text.Style.NUMBERED)
-            UiBlock.TOGGLE -> vm.onAddTextBlockClicked(Text.Style.TOGGLE)
-            UiBlock.CODE -> vm.onAddTextBlockClicked(Text.Style.CODE_SNIPPET)
-            UiBlock.PAGE -> vm.onAddNewPageClicked()
-            UiBlock.FILE -> vm.onAddFileBlockClicked(Block.Content.File.Type.FILE)
-            UiBlock.IMAGE -> vm.onAddFileBlockClicked(Block.Content.File.Type.IMAGE)
-            UiBlock.VIDEO -> vm.onAddFileBlockClicked(Block.Content.File.Type.VIDEO)
-            UiBlock.BOOKMARK -> vm.onAddBookmarkBlockClicked()
-            UiBlock.LINE_DIVIDER -> vm.onAddDividerBlockClicked(Block.Content.Divider.Style.LINE)
-            UiBlock.THREE_DOTS -> vm.onAddDividerBlockClicked(Block.Content.Divider.Style.DOTS)
-            UiBlock.LINK_TO_OBJECT -> vm.onAddLinkToObjectClicked()
-            UiBlock.RELATION -> vm.onAddRelationBlockClicked()
-            else -> toast(NOT_IMPLEMENTED_MESSAGE)
-        }
     }
 
     override fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
@@ -987,6 +955,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = MoveToFragment.new(
                             block = command.block
+                        )
+                        fr.show(childFragmentManager, null)
+                    }
+                }
+                is Command.OpenLinkToScreen -> {
+                    lifecycleScope.launch {
+                        hideSoftInput()
+                        delay(DEFAULT_ANIM_DURATION)
+                        val fr = LinkToObjectFragment.new(
+                            target = command.target
                         )
                         fr.show(childFragmentManager, null)
                     }
@@ -1730,6 +1708,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.proceedWithMoveToAction(
             target = target,
             block = block
+        )
+    }
+
+    override fun onLinkTo(link: Id, target: Id) {
+        vm.proceedWithLinkToAction(
+            link = link,
+            target = target
         )
     }
 

@@ -359,11 +359,6 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/linkToFragment"
-        android:name="com.anytypeio.anytype.ui.linking.LinkToObjectFragment"
-        android:label="LinkToFragment"
-        tools:layout="@layout/fragment_link_to_object" />
-    <fragment
         android:id="@+id/pageSearchFragment"
         android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
         android:label="PageSearchFragment"

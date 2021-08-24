@@ -27,6 +27,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_add_block.*
 import javax.inject.Inject
 
+@Deprecated("To be deleted")
 class AddBlockFragment : BaseBottomSheetFragment() {
 
     companion object {

@@ -207,20 +207,6 @@ class BlockDataRepository(
 
     override suspend fun getListPages(): List<DocumentInfo> = factory.remote.getListPages()
 
-    override suspend fun linkToObject(
-        context: Id,
-        target: Id,
-        block: Id,
-        replace: Boolean,
-        position: Position
-    ): Payload = factory.remote.linkToObject(
-        context = context,
-        target = target,
-        block = block,
-        replace = replace,
-        position = position
-    )
-
     override suspend fun setRelationKey(command: Command.SetRelationKey): Payload =
         factory.remote.setRelationKey(command)
 

@@ -53,14 +53,6 @@ interface BlockRemote {
 
     suspend fun getListPages(): List<DocumentInfo>
 
-    suspend fun linkToObject(
-        context: String,
-        target: String,
-        block: String,
-        replace: Boolean,
-        position: Position
-    ): Payload
-
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
     suspend fun updateDivider(command: Command.UpdateDivider): Payload

@@ -189,14 +189,6 @@ class BlockMiddleware(
         return middleware.setRelationKey(command)
     }
 
-    override suspend fun linkToObject(
-        context: String,
-        target: String,
-        block: String,
-        replace: Boolean,
-        position: Position
-    ): Payload = middleware.linkToObject(context, target, block, replace, position)
-
     override suspend fun updateDivider(
         command: Command.UpdateDivider
     ): Payload = middleware.updateDividerStyle(command)

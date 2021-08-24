@@ -54,14 +54,6 @@ interface BlockDataStore {
 
     suspend fun getListPages(): List<DocumentInfo>
 
-    suspend fun linkToObject(
-        context: String,
-        target: String,
-        block: String,
-        replace: Boolean,
-        position: Position
-    ): Payload
-
     suspend fun updateDivider(command: Command.UpdateDivider): Payload
 
     suspend fun setFields(command: Command.SetFields): Payload

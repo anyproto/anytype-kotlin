@@ -1827,48 +1827,6 @@ class EditorViewModel(
         dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
     }
 
-    fun onAddLinkToObjectClicked() {
-
-        Timber.d("onAddLinkToObjectClicked, ")
-
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
-
-        val content = focused.content
-
-        val replace = content is Content.Text && content.text.isEmpty()
-
-        var position: Position = Position.BOTTOM
-
-        var target: Id = focused.id
-
-        if (!replace && focused.id == context) {
-            if (focused.children.isEmpty()) {
-                position = Position.INNER
-            } else {
-                position = Position.TOP
-                target = focused.children.first()
-            }
-        }
-
-        proceedWithClearingFocus()
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_LINK_TO
-        )
-
-        navigate(
-            EventWrapper(
-                AppNavigation.Command.OpenLinkToScreen(
-                    target = target,
-                    context = context,
-                    replace = replace,
-                    position = position
-                )
-            )
-        )
-    }
-
     fun onAddRelationBlockClicked() {
 
         Timber.d("onAddRelationBlockClicked, ")
@@ -2238,6 +2196,7 @@ class EditorViewModel(
         onBlockLongPressedClicked(target, dimensions)
     }
 
+    @Deprecated("To be deleted")
     fun onAddBlockToolbarClicked() {
         Timber.d("onAddBlockToolbarClicked, ")
 
@@ -4691,7 +4650,8 @@ class EditorViewModel(
                 proceedWithMoveToButtonClicked(targetId)
             }
             SlashItem.Actions.LinkTo -> {
-                onAddLinkToObjectClicked()
+                onHideKeyboardClicked()
+                proceedWithLinkToButtonClicked(targetId)
             }
         }
     }
@@ -4917,6 +4877,41 @@ class EditorViewModel(
                     position = Position.BOTTOM
                 )
             )
+        }
+    }
+    //endregion
+
+    //region LINK TO
+    private fun proceedWithLinkToButtonClicked(block: Id) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.SCREEN_LINK_TO
+        )
+        dispatch(Command.OpenLinkToScreen(target = block))
+    }
+
+    fun proceedWithLinkToAction(link: Id, target: Id) {
+        val targetBlock = blocks.firstOrNull { it.id == target }
+        if (targetBlock != null) {
+            val targetContent = targetBlock.content
+            val position = if (targetContent is Content.Text && targetContent.text.isEmpty()) {
+                Position.REPLACE
+            } else {
+                Position.BOTTOM
+            }
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        target = target,
+                        position = position,
+                        prototype = Prototype.Link(target = link)
+                    )
+                )
+            }
+        } else {
+            Timber.e("Can't find target block for link")
+            _toasts.offer("Error while creating link")
         }
     }
     //endregion

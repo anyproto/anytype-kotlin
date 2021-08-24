@@ -16,6 +16,7 @@ object Relations {
     const val IS_READ_ONLY = "isReadonly"
     const val IS_HIDDEN = "isHidden"
     const val LAST_OPENED_DATE = "lastOpenedDate"
+    const val LAST_MODIFIED_DATE = "lastModifiedDate"
     const val TYPE = "type"
     const val DONE = "done"
     const val FEATURED_RELATIONS = "featuredRelations"

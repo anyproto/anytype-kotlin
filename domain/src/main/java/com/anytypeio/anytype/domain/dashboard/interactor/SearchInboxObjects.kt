@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_models.ObjectTypeConst
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.core_models.Relations
 
 /**
  * Request for searching unarchived pages.
@@ -16,7 +14,7 @@ class SearchInboxObjects(
     override suspend fun run(params: Unit) = safe {
         val sorts = listOf(
             DVSort(
-                relationKey = Relations.LAST_OPENED_DATE,
+                relationKey = Relations.LAST_MODIFIED_DATE,
                 type = DVSortType.DESC
             )
         )

@@ -6,6 +6,7 @@
 
 * Data View | Setting and rendering covers (#1747)
 * Relations | Enhanced: Added format-specific placeholders (#1740)
+* Dashboard | Sort results in inbox tab by lastModifiedDate #1748
 
 ## Version 0.2.7
 

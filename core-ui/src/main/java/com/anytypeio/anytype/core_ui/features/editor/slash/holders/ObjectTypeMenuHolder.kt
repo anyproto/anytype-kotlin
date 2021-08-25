@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import kotlinx.android.synthetic.main.item_slash_widget_object_type.view.*
+import kotlinx.android.synthetic.main.item_list_object_small.view.*
 
 class ObjectTypeMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
 

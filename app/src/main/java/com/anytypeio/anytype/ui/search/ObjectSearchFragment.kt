@@ -6,8 +6,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -137,8 +139,15 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
                 clearSearchText.visible()
             }
         }
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = searchAdapter
+        with(recyclerView) {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = searchAdapter
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(context.drawable(R.drawable.divider_search))
+                }
+            )
+        }
         focusSearchInput()
     }
 

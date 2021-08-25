@@ -3,12 +3,14 @@ package com.anytypeio.anytype.core_ui.features.navigation
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -90,9 +92,9 @@ class DefaultObjectViewAdapter(
 
     class ObjectViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private val title = itemView.tvTitle
-        private val subtitle = itemView.tvSubtitle
-        private val icon = itemView.ivIcon
+        private val title = itemView.findViewById<TextView>(R.id.tvTitle)
+        private val subtitle = itemView.findViewById<TextView>(R.id.tvSubtitle)
+        private val icon = itemView.findViewById<ObjectIconWidget>(R.id.ivIcon)
 
         fun bind(link: DefaultObjectView) {
             title.text = link.name

@@ -49,11 +49,6 @@ class MentionToolbar @JvmOverloads constructor(
                     newPageClick?.invoke(name)
                 }
             )
-            addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(context.drawable(R.drawable.divider_mentions))
-                }
-            )
         }
     }
 

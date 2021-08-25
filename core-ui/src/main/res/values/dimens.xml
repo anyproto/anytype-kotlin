@@ -179,10 +179,17 @@
     <!-- Object items is half screen lists -->
     <dimen name="list_item_object_half_icon_width">40dp</dimen>
     <dimen name="list_item_object_half_icon_height">40dp</dimen>
-    <dimen name="list_item_object_half_icon_margin_start">20dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_start">0dp</dimen>
     <dimen name="list_item_object_half_icon_margin_top">8dp</dimen>
     <dimen name="list_item_object_half_icon_margin_bottom">8dp</dimen>
-    <dimen name="list_item_object_half_text_margin_start">72dp</dimen>
-    <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
+    <dimen name="list_item_object_half_title_margin_top">8dp</dimen>
+    <dimen name="list_item_object_half_title_margin_start">52dp</dimen>
+    <dimen name="list_item_object_half_title_margin_end">0dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_top">30dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_start">52dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_end">0dp</dimen>
+    <dimen name="list_item_object_half_emoji_size">24dp</dimen>
+    <dimen name="list_item_object_half_checkbox_size">22dp</dimen>
+    <dimen name="list_item_object_half_initials_size">24sp</dimen>
 
 </resources>

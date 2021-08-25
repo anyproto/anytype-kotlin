@@ -48,7 +48,7 @@ class MentionAdapter(
             }
             TYPE_MENTION ->
                 DefaultObjectViewAdapter.ObjectViewHolder(
-                    inflater.inflate(R.layout.item_list_object, parent, false)
+                    inflater.inflate(R.layout.item_list_object_small, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition

@@ -34,7 +34,7 @@ class SlashObjectTypesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            R.layout.item_slash_widget_object_type -> {
+            R.layout.item_list_object_small -> {
                 ObjectTypeMenuHolder(
                     view = inflater.inflate(viewType, parent, false)
                 ).apply {
@@ -72,7 +72,7 @@ class SlashObjectTypesAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is SlashItem.ObjectType -> R.layout.item_slash_widget_object_type
+        is SlashItem.ObjectType -> R.layout.item_list_object_small
         is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
         else -> throw IllegalArgumentException("Wrong item type:${items[position]} for SlashObjectTypeAdapter")
     }

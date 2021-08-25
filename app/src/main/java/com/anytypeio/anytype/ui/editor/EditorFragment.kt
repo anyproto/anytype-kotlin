@@ -5,18 +5,19 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -40,7 +41,6 @@ import androidx.transition.TransitionSet
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
@@ -153,7 +153,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private val scrollAndMoveTopMargin by lazy {
-        dimen(R.dimen.dp_48)
+        0
     }
 
     private val scrollAndMoveStateListener by lazy {
@@ -293,11 +293,22 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private val titleVisibilityDetector by lazy {
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
+                topToolbar.setBackgroundColor(0)
                 topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
                 topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
+                if (pageAdapter.views.isNotEmpty()) {
+                    val firstView = pageAdapter.views.first()
+                    if (firstView is BlockView.Title && firstView.hasCover) {
+                        topToolbar.setStyle(overCover = true)
+                    } else {
+                        topToolbar.setStyle(overCover = false)
+                    }
+                }
             } else {
+                topToolbar.setBackgroundColor(Color.WHITE)
                 topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
                 topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
+                topToolbar.setStyle(overCover = false)
             }
         }
     }
@@ -658,9 +669,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
         vm.isSyncStatusVisible.onEach { isSyncStatusVisible ->
             if (isSyncStatusVisible)
-                topToolbar.status.visible()
+                topToolbar.findViewById<ViewGroup>(R.id.statusContainer).visible()
             else
-                topToolbar.status.invisible()
+                topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
         }.launchIn(lifecycleScope)
         vm.isUndoEnabled.onEach {
             // TODO
@@ -672,7 +683,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun bindSyncStatus(status: SyncStatus?) {
         topToolbar.status.bind(status)
-        val tvStatus = topToolbar.findViewById<TextView>(R.id.tvStatus)
+        if (status == null) {
+            topToolbar.hideStatusContainer()
+        } else {
+            topToolbar.showStatusContainer()
+        }
+        val tvStatus = topToolbar.statusText
         when (status) {
             SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
             SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
@@ -1019,14 +1035,39 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             view is BlockView.Title.Basic || view is BlockView.Title.Profile
         }?.let { view ->
             when (view) {
-                is BlockView.Title.Basic -> resetTopToolbarTitle(
-                    view.text,
-                    view.emoji,
-                    view.image
-                )
-                is BlockView.Title.Profile -> resetTopToolbarTitle(view.text, null, view.image)
-                else -> {
+                is BlockView.Title.Basic -> {
+                    resetTopToolbarTitle(
+                        text = view.text,
+                        emoji = view.emoji,
+                        image = view.image
+                    )
+                    if (view.hasCover) {
+                        val mng = recycler.layoutManager as LinearLayoutManager
+                        val pos = mng.findFirstVisibleItemPosition()
+                        if (pos == -1 || pos == 0) {
+                            topToolbar.setStyle(overCover = true)
+                        }
+                    } else {
+                        topToolbar.setStyle(overCover = false)
+                    }
                 }
+                is BlockView.Title.Profile -> {
+                    resetTopToolbarTitle(
+                        text = view.text,
+                        emoji = null,
+                        image = view.image
+                    )
+                    if (view.hasCover) {
+                        val mng = recycler.layoutManager as LinearLayoutManager
+                        val pos = mng.findFirstVisibleItemPosition()
+                        if (pos == -1 || pos == 0) {
+                            topToolbar.setStyle(overCover = true)
+                        }
+                    } else {
+                        topToolbar.setStyle(overCover = false)
+                    }
+                }
+                else -> {}
             }
         }
     }

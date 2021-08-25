@@ -24,11 +24,32 @@
         app:behavior_skipCollapsed="true"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/editor_recycler_bottom_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/item_block_title" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
+            android:id="@+id/topToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <FrameLayout
             android:id="@+id/select"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@color/white"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:translationY="-48dp"
@@ -41,38 +62,6 @@
                 android:text="@string/select_all" />
 
         </FrameLayout>
-
-        <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
-            android:id="@+id/topToolbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/default_toolbar_height"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
-            android:id="@+id/searchToolbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/white"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="48dp"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/editor_recycler_bottom_padding"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:itemCount="1"
-            tools:listitem="@layout/item_block_title" />
 
         <com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
             android:id="@+id/toolbar"
@@ -133,10 +122,10 @@
 
         <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveHintWidget
             android:id="@+id/scrollAndMoveHint"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/white"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -150,6 +139,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
+            android:id="@+id/searchToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/white"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/blocker"

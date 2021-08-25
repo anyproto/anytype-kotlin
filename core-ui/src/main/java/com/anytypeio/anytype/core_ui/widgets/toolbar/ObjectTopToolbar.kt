@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.widgets.toolbar
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -27,5 +29,29 @@ class ObjectTopToolbar @JvmOverloads constructor(
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_object_top_toolbar, this)
         container.alpha = 0f
+    }
+
+    fun setStyle(
+        overCover: Boolean
+    ) {
+        if (overCover) {
+            menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
+            ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            statusContainer.setBackgroundResource(R.drawable.rect_object_menu_button_default)
+            statusText.setTextColor(Color.WHITE)
+        } else {
+            menu.background = null
+            ivThreeDots.imageTintList = null
+            statusContainer.background = null
+            statusText.setTextColor(context.getColor(R.color.default_status_text_color))
+        }
+    }
+
+    fun hideStatusContainer() {
+        statusContainer.alpha = 0f
+    }
+
+    fun showStatusContainer() {
+        statusContainer.animate().alpha(1f).setDuration(300).start()
     }
 }

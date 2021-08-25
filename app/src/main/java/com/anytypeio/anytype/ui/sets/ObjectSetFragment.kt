@@ -20,6 +20,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.core.view.marginBottom
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -347,16 +348,20 @@ open class ObjectSetFragment :
         coverGradient: String?
     ) {
         val ivCover = objectHeader.findViewById<ImageView>(R.id.cover)
+        val container = objectHeader.findViewById<FrameLayout>(R.id.coverAndIconContainer)
         when {
             coverColor != null -> {
                 ivCover?.apply {
+                    visible()
                     setImageDrawable(null)
                     setBackgroundColor(coverColor.color)
                 }
+                container.updatePadding(top = 0)
                 onObjectCoverUpdated()
             }
             coverImage != null -> {
                 ivCover?.apply {
+                    visible()
                     setBackgroundColor(0)
                     Glide
                         .with(this)
@@ -364,10 +369,12 @@ open class ObjectSetFragment :
                         .centerCrop()
                         .into(this)
                 }
+                container.updatePadding(top = 0)
                 onObjectCoverUpdated()
             }
             coverGradient != null -> {
                 ivCover?.apply {
+                    visible()
                     setImageDrawable(null)
                     setBackgroundColor(0)
                     when (coverGradient) {
@@ -377,13 +384,17 @@ open class ObjectSetFragment :
                         CoverGradient.TEAL -> setBackgroundResource(com.anytypeio.anytype.core_ui.R.drawable.cover_gradient_teal)
                     }
                 }
+                container.updatePadding(top = 0)
                 onObjectCoverUpdated()
             }
             else -> {
                 ivCover?.apply {
+                    gone()
                     setImageDrawable(null)
                     setBackgroundColor(0)
                 }
+                container.updatePadding(top = dimen(R.dimen.dp_48))
+                onCoverRemoved()
             }
         }
     }
@@ -401,6 +412,13 @@ open class ObjectSetFragment :
                 imageTintList = ColorStateList.valueOf(Color.WHITE)
             }
         }
+    }
+
+    private fun onCoverRemoved() {
+        topToolbarThreeDotsButton.background = null
+        topToolbarThreeDotsIcon.imageTintList = null
+        topToolbarStatusContainer.background = null
+        topToolbarStatusText.setTextColor(requireContext().getColor(R.color.default_status_text_color))
     }
 
     private fun observeCommands(command: ObjectSetCommand) {

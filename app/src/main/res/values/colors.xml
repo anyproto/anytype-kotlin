@@ -20,6 +20,5 @@
 
     <color name="orange_button_background_color">#FFB522</color>
     <color name="default_dashboard_background_color">#0066C3</color>
-    <color name="default_status_text_color">#929082</color>
 
 </resources>

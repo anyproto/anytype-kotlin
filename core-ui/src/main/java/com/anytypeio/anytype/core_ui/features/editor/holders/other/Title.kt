@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Editable
 import android.text.Spannable
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -10,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -89,6 +91,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     setImageDrawable(null)
                     setBackgroundColor(coverColor.color)
                 }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = 0)
             }
             coverImage != null -> {
                 ivCover?.apply {
@@ -100,6 +103,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         .centerCrop()
                         .into(this)
                 }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = 0)
             }
             coverGradient != null -> {
                 ivCover?.apply {
@@ -113,6 +117,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     visible()
                 }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = 0)
             }
             else -> {
                 ivCover?.apply {
@@ -120,6 +125,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     setBackgroundColor(0)
                     gone()
                 }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = dimen(R.dimen.dp_48))
             }
         }
     }

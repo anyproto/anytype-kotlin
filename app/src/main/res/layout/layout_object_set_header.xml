@@ -14,11 +14,12 @@
         <ImageView
             android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="188dp"
+            android:layout_height="@dimen/default_cover_height"
             android:layout_marginBottom="16dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_document_cover"
             android:scaleType="fitXY"
+            android:visibility="gone"
             tools:background="@color/orange" />
 
         <FrameLayout

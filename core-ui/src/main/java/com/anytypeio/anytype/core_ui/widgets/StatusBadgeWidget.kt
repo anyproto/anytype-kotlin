@@ -30,7 +30,7 @@ class StatusBadgeWidget @JvmOverloads constructor(
             SyncStatus.SYNCED -> tint(
                 color = context.color(R.color.sync_status_green)
             )
-            else -> tint(Color.WHITE)
+            else -> tint(Color.TRANSPARENT)
         }
     }
 }

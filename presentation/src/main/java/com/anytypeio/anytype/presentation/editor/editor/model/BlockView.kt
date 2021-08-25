@@ -447,6 +447,8 @@ sealed class BlockView : ViewType, Parcelable {
         abstract var coverImage: Url?
         abstract var coverGradient: String?
 
+        val hasCover get() = coverColor != null || coverImage != null || coverGradient != null
+
         /**
          * UI-model for a basic-layout title block.
          * @property id block's id
@@ -467,7 +469,6 @@ sealed class BlockView : ViewType, Parcelable {
             override val searchFields: @RawValue List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
-            val hasCover get() = coverColor != null || coverImage != null || coverGradient != null
         }
 
         /**

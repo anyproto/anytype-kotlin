@@ -129,5 +129,6 @@
     <color name="default_object_basic_avatar_background_color">#F3F2EC</color>
     <color name="default_object_basic_avatar_text_color">#CBC9BD</color>
     <color name="RelationPlaceholderTextColor">#929082</color>
+    <color name="default_status_text_color">#929082</color>
 
 </resources>

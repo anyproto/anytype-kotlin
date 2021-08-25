@@ -84,6 +84,10 @@ class MoveToViewModel(
         }
     }
 
+    override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
+        objects.value = data
+    }
+
     sealed class Command {
         object Exit : Command()
         data class Move(val target: Id) : Command()

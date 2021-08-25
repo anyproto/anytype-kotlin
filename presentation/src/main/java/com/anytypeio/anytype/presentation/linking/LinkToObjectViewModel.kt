@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -74,6 +75,12 @@ class LinkToObjectViewModel(
     override fun onBottomSheetHidden() {
         viewModelScope.launch {
             commands.emit(Command.Exit)
+        }
+    }
+
+    override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
+        objects.value = data.filter {
+            SupportedLayouts.layouts.contains(it.layout)
         }
     }
 

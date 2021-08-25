@@ -33,7 +33,7 @@ open class ObjectSearchViewModel(
     }
 
     protected val types = MutableStateFlow(emptyList<ObjectType>())
-    private val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())
+    protected val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -119,11 +119,15 @@ open class ObjectSearchViewModel(
             searchQuery.collectLatest { query ->
                 val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
-                    success = { raw -> objects.value = raw.map { ObjectWrapper.Basic(it) } },
+                    success = { raw -> setObjects(raw.map { ObjectWrapper.Basic(it) }) },
                     failure = { Timber.e(it, "Error while searching for objects") }
                 )
             }
         }
+    }
+
+    open suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
+        objects.value = data
     }
 
     fun onSearchTextChanged(searchText: String) {
@@ -131,7 +135,7 @@ open class ObjectSearchViewModel(
     }
 
     open fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
-        when(layout) {
+        when (layout) {
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,

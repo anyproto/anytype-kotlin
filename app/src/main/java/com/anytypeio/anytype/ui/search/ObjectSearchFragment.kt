@@ -50,7 +50,7 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {}
                     override fun onStateChanged(bottomSheet: View, newState: Int) {
                         if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            vm.onBottomSheetHidden()
+                            vm.onDialogCancelled()
                         }
                     }
                 }

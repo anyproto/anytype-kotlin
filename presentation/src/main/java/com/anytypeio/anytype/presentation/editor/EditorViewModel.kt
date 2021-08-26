@@ -1556,7 +1556,7 @@ class EditorViewModel(
             ActionItemType.MoveTo -> {
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
-                proceedWithMoveToButtonClicked(id)
+                proceedWithMoveToButtonClicked(block = id, position = null)
             }
             ActionItemType.Style -> {
                 viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
@@ -2107,7 +2107,7 @@ class EditorViewModel(
                     )
                 )
                 orchestrator.stores.views.update(
-                    views.exitSingleStylingMode(
+                    views.updateCursorAndEditMode(
                         target = target,
                         cursor = cursor
                     )
@@ -2144,7 +2144,7 @@ class EditorViewModel(
                 )
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnExit)
                 orchestrator.stores.views.update(
-                    views.exitSingleStylingMode(
+                    views.updateCursorAndEditMode(
                         target = target,
                         cursor = cursor
                     )
@@ -4647,11 +4647,11 @@ class EditorViewModel(
             }
             SlashItem.Actions.MoveTo -> {
                 onHideKeyboardClicked()
-                proceedWithMoveToButtonClicked(targetId)
+                proceedWithMoveToButtonClicked(block = targetId, position = slashStartIndex)
             }
             SlashItem.Actions.LinkTo -> {
                 onHideKeyboardClicked()
-                proceedWithLinkToButtonClicked(targetId)
+                proceedWithLinkToButtonClicked(block = targetId, position = slashStartIndex)
             }
         }
     }
@@ -4856,13 +4856,13 @@ class EditorViewModel(
     //endregion
 
     //region MOVE TO
-    private fun proceedWithMoveToButtonClicked(id: String) {
+    private fun proceedWithMoveToButtonClicked(block: String, position: Int?) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_MOVE_TO
         )
 
-        dispatch(Command.OpenMoveToScreen(block = id))
+        dispatch(Command.OpenMoveToScreen(block = block, position = position))
     }
 
     fun proceedWithMoveToAction(target: Id, block: Id) {
@@ -4879,15 +4879,57 @@ class EditorViewModel(
             )
         }
     }
+
+    fun proceedWithMoveToExit(block: Id, position: Int?) {
+        Timber.d("proceedWithMoveToExit, block:[$block], position:[$position]")
+        if (position != null) {
+            proceedWithSettingTextSelection(
+                block = block,
+                textSelection = position
+            )
+        }
+    }
+
+    private fun proceedWithSettingTextSelection(block: Id, textSelection: Int?) {
+        mode = EditorMode.Edit
+        val range = IntRange(textSelection ?: 0, textSelection ?: 0)
+        val cursor = if (textSelection != null) {
+            Editor.Cursor.Range(range)
+        } else {
+            Editor.Cursor.End
+        }
+
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    id = block,
+                    cursor = cursor
+                )
+            )
+            orchestrator.stores.textSelection.update(
+                Editor.TextSelection(block, range)
+            )
+
+            orchestrator.stores.views.update(
+                views.updateCursorAndEditMode(
+                    target = block,
+                    cursor = range.first
+                )
+            )
+        }
+        viewModelScope.launch {
+            renderCommand.send(Unit)
+        }
+    }
     //endregion
 
     //region LINK TO
-    private fun proceedWithLinkToButtonClicked(block: Id) {
+    private fun proceedWithLinkToButtonClicked(block: Id, position: Int?) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_LINK_TO
         )
-        dispatch(Command.OpenLinkToScreen(target = block))
+        dispatch(Command.OpenLinkToScreen(target = block, position = position))
     }
 
     fun proceedWithLinkToAction(link: Id, target: Id) {
@@ -4912,6 +4954,16 @@ class EditorViewModel(
         } else {
             Timber.e("Can't find target block for link")
             _toasts.offer("Error while creating link")
+        }
+    }
+
+    fun proceedWithLinkToExit(block: Id, position: Int?) {
+        Timber.d("proceedWithLinkToExit, block:[$block], position:[$position]")
+        if (position != null) {
+            proceedWithSettingTextSelection(
+                block = block,
+                textSelection = position
+            )
         }
     }
     //endregion

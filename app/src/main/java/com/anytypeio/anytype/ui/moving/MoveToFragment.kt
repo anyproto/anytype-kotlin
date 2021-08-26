@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.moving
 
+import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -41,6 +42,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
     private lateinit var filterInputField: EditText
 
     private val block get() = arg<Id>(ARG_BLOCK)
+    private val position get() = argOrNull<Int>(ARG_POSITION)
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
@@ -61,12 +63,13 @@ class MoveToFragment : BaseBottomSheetFragment() {
         BottomSheetBehavior.from(sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
+            skipCollapsed = true
             addBottomSheetCallback(
                 object : BottomSheetBehavior.BottomSheetCallback() {
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {}
                     override fun onStateChanged(bottomSheet: View, newState: Int) {
                         if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            vm.onBottomSheetHidden()
+                            vm.onDialogCancelled()
                         }
                     }
                 }
@@ -86,6 +89,11 @@ class MoveToFragment : BaseBottomSheetFragment() {
         super.onStart()
         vm.onStart()
         expand()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        vm.onDialogCancelled()
     }
 
     private fun observe(state: ObjectSearchView) {
@@ -130,7 +138,15 @@ class MoveToFragment : BaseBottomSheetFragment() {
 
     private fun execute(command: MoveToViewModel.Command) {
         when (command) {
-            MoveToViewModel.Command.Exit -> dismiss()
+            MoveToViewModel.Command.Exit -> {
+                withParent<OnMoveToAction> {
+                    onMoveToClose(
+                        block = block,
+                        position = position
+                    )
+                }
+                dismiss()
+            }
             is MoveToViewModel.Command.Move -> {
                 withParent<OnMoveToAction> {
                     onMoveTo(
@@ -200,10 +216,12 @@ class MoveToFragment : BaseBottomSheetFragment() {
 
     companion object {
         const val ARG_BLOCK = "arg.move_to.blocks"
+        const val ARG_POSITION = "arg.move_to.position"
 
-        fun new(block: Id) = MoveToFragment().apply {
+        fun new(block: Id, position: Int?) = MoveToFragment().apply {
             arguments = bundleOf(
-                ARG_BLOCK to block
+                ARG_BLOCK to block,
+                ARG_POSITION to position
             )
         }
     }
@@ -211,4 +229,5 @@ class MoveToFragment : BaseBottomSheetFragment() {
 
 interface OnMoveToAction {
     fun onMoveTo(target: Id, block: Id)
+    fun onMoveToClose(block: Id, position: Int?)
 }

@@ -72,7 +72,7 @@ class LinkToObjectViewModel(
         }
     }
 
-    override fun onBottomSheetHidden() {
+    override fun onDialogCancelled() {
         viewModelScope.launch {
             commands.emit(Command.Exit)
         }

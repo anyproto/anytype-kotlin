@@ -970,7 +970,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = MoveToFragment.new(
-                            block = command.block
+                            block = command.block,
+                            position = command.position
                         )
                         fr.show(childFragmentManager, null)
                     }
@@ -980,7 +981,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = LinkToObjectFragment.new(
-                            target = command.target
+                            target = command.target,
+                            position = command.position
                         )
                         fr.show(childFragmentManager, null)
                     }
@@ -1752,10 +1754,24 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         )
     }
 
+    override fun onMoveToClose(block: Id, position: Int?) {
+        vm.proceedWithMoveToExit(
+            block = block,
+            position = position
+        )
+    }
+
     override fun onLinkTo(link: Id, target: Id) {
         vm.proceedWithLinkToAction(
             link = link,
             target = target
+        )
+    }
+
+    override fun onLinkToClose(block: Id, position: Int?) {
+        vm.proceedWithLinkToExit(
+            block = block,
+            position = position
         )
     }
 

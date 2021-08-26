@@ -294,7 +294,7 @@ fun List<BlockView>.enterSAM(
     }
 }
 
-fun List<BlockView>.exitSingleStylingMode(
+fun List<BlockView>.updateCursorAndEditMode(
     target: Id,
     cursor: Int?
 ): List<BlockView> = map { view ->

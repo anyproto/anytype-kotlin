@@ -151,7 +151,7 @@ open class ObjectSearchViewModel(
         }
     }
 
-    open fun onBottomSheetHidden() {
+    open fun onDialogCancelled() {
         navigateToDesktop()
     }
 

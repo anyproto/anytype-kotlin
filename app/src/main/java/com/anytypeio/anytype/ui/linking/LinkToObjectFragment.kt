@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.linking
 
+import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -42,6 +43,7 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
     private lateinit var filterInputField: EditText
 
     private val target get() = arg<Id>(ARG_TARGET)
+    private val position get() = argOrNull<Int>(ARG_POSITION)
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
@@ -62,12 +64,13 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
         BottomSheetBehavior.from(sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
+            skipCollapsed = true
             addBottomSheetCallback(
                 object : BottomSheetBehavior.BottomSheetCallback() {
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {}
                     override fun onStateChanged(bottomSheet: View, newState: Int) {
                         if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            vm.onBottomSheetHidden()
+                            vm.onDialogCancelled()
                         }
                     }
                 }
@@ -87,6 +90,11 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
         super.onStart()
         vm.onStart()
         expand()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        vm.onDialogCancelled()
     }
 
     private fun observe(state: ObjectSearchView) {
@@ -131,7 +139,15 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
 
     private fun execute(command: LinkToObjectViewModel.Command) {
         when (command) {
-            LinkToObjectViewModel.Command.Exit -> dismiss()
+            LinkToObjectViewModel.Command.Exit -> {
+                withParent<OnLinkToAction> {
+                    onLinkToClose(
+                        block = target,
+                        position = position
+                    )
+                }
+                dismiss()
+            }
             is LinkToObjectViewModel.Command.Link -> {
                 withParent<OnLinkToAction> {
                     onLinkTo(
@@ -201,10 +217,12 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
 
     companion object {
         const val ARG_TARGET = "arg.link_to.target"
+        const val ARG_POSITION = "arg.link_to.position"
 
-        fun new(target: Id) = LinkToObjectFragment().apply {
+        fun new(target: Id, position: Int?) = LinkToObjectFragment().apply {
             arguments = bundleOf(
-                ARG_TARGET to target
+                ARG_TARGET to target,
+                ARG_POSITION to position
             )
         }
     }
@@ -212,4 +230,5 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
 
 interface OnLinkToAction {
     fun onLinkTo(link: Id, target: Id)
+    fun onLinkToClose(block: Id, position: Int?)
 }

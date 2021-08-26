@@ -45,23 +45,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/select"
-            android:layout_width="match_parent"
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectTopToolbarWidget
+            android:id="@+id/multiSelectTopToolbar"
+            android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/white"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
             android:translationY="-48dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/selectText"
-                style="@style/EditorMultiSelectSelectAllButtonTextStyle"
-                android:text="@string/select_all" />
-
-        </FrameLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
             android:id="@+id/toolbar"

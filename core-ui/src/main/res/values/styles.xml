@@ -768,4 +768,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="EditorMultiSelectSelectAllButtonTextStyle">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

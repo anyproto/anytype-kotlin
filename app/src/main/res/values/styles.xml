@@ -87,15 +87,6 @@
         <item name="android:background">@drawable/selector_pin_code_keyboard</item>
     </style>
 
-    <style name="EditorMultiSelectSelectAllButtonTextStyle">
-        <item name="android:fontFamily">@font/graphik_regular</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">#ACA996</item>
-    </style>
-
     <style name="SyncFromCloudDialog" parent="Theme.MaterialComponents.Dialog.Alert">
         <item name="android:windowNoTitle">true</item>
         <item name="android:background">#fff</item>

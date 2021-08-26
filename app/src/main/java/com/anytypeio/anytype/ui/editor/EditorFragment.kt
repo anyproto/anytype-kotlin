@@ -502,9 +502,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .onEach { vm.onMultiSelectStyleButtonClicked() }
             .launchIn(lifecycleScope)
 
-        select
+        multiSelectTopToolbar
+            .selectText
             .clicks()
             .onEach { vm.onMultiSelectModeSelectAllClicked() }
+            .launchIn(lifecycleScope)
+
+        multiSelectTopToolbar
+            .doneButton
+            .clicks()
+            .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
         bottomToolbar
@@ -1132,11 +1139,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         state.multiSelect.apply {
             if (isVisible) {
-                select.visible()
+                multiSelectTopToolbar.visible()
                 if (count == 0) {
-                    selectText.setText(R.string.select_all)
+                    multiSelectTopToolbar.selectText.setText(R.string.select_all)
                 } else {
-                    selectText.text = getString(R.string.unselect_all, count)
+                    multiSelectTopToolbar.selectText.text = getString(R.string.unselect_all, count)
                 }
                 bottomMenu.update(count)
                 if (!bottomMenu.isShowing) {
@@ -1444,7 +1451,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
             recycler.addOnScrollListener(scrollAndMoveStateListener)
             bottomMenu.showScrollAndMoveModeControls()
-            select.invisible()
+            multiSelectTopToolbar.invisible()
 
             scrollAndMoveHint.showWithAnimation()
 
@@ -1487,7 +1494,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun hideSelectButton() {
         ObjectAnimator.ofFloat(
-            select,
+            multiSelectTopToolbar,
             SELECT_BUTTON_ANIMATION_PROPERTY,
             -requireContext().dimen(R.dimen.dp_48)
         ).apply {
@@ -1507,7 +1514,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun showSelectButton() {
         ObjectAnimator.ofFloat(
-            select,
+            multiSelectTopToolbar,
             SELECT_BUTTON_ANIMATION_PROPERTY,
             0f
         ).apply {

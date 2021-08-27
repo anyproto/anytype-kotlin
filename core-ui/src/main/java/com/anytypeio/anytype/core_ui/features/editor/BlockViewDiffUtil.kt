@@ -147,6 +147,13 @@ class BlockViewDiffUtil(
                 changes.add(LOADING_STATE_CHANGED)
         }
 
+        if (newBlock is BlockView.Page && oldBlock is BlockView.Page) {
+            if (newBlock.text != oldBlock.text)
+                changes.add(OBJECT_TITLE_CHANGED)
+            if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)
+                changes.add(OBJECT_ICON_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -178,6 +185,8 @@ class BlockViewDiffUtil(
         )
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
         val isTitleCheckboxChanged: Boolean get() = changes.contains(TITLE_CHECKBOX_CHANGED)
+        val isObjectTitleChanged: Boolean get() = changes.contains(OBJECT_TITLE_CHANGED)
+        val isObjectIconChanged: Boolean get() = changes.contains(OBJECT_ICON_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
@@ -208,5 +217,7 @@ class BlockViewDiffUtil(
         const val COVER_CHANGED = 16
         const val TITLE_CHECKBOX_CHANGED = 17
         const val GHOST_EDITOR_SELECTION_CHANGED = 18
+        const val OBJECT_TITLE_CHANGED = 19
+        const val OBJECT_ICON_CHANGED = 20
     }
 }

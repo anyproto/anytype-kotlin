@@ -43,12 +43,30 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
 
         itemView.isSelected = item.isSelected
 
-        title.enableReadMode()
-        val text = if (item.text.isNullOrEmpty()) untitled else item.text
-        title.setText(text, TextView.BufferType.EDITABLE)
+        applyText(item)
 
         applySearchHighlight(item)
 
+        applyImageOrEmoji(item)
+
+        title.setOnClickListener { clicked(ListenerType.Page(item.id)) }
+        title.setOnLongClickListener(
+            EditorLongClickListener(
+                t = item.id,
+                click = { onBlockLongClick(itemView, it, clicked) }
+            )
+        )
+
+        bindLoading(item.isLoading)
+    }
+
+    private fun applyText(item: BlockView.Page) {
+        title.enableReadMode()
+        val text = if (item.text.isNullOrEmpty()) untitled else item.text
+        title.setText(text, TextView.BufferType.EDITABLE)
+    }
+
+    private fun applyImageOrEmoji(item: BlockView.Page) {
         when {
             item.emoji != null -> {
                 icon.setImageDrawable(null)
@@ -84,16 +102,6 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
                 image.setImageDrawable(null)
             }
         }
-
-        title.setOnClickListener { clicked(ListenerType.Page(item.id)) }
-        title.setOnLongClickListener(
-            EditorLongClickListener(
-                t = item.id,
-                click = { onBlockLongClick(itemView, it, clicked) }
-            )
-        )
-
-        bindLoading(item.isLoading)
     }
 
     private fun bindLoading(isLoading: Boolean) {
@@ -157,6 +165,10 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
             }
             if (payload.isLoadingChanged)
                 bindLoading(item.isLoading)
+            if (payload.isObjectTitleChanged)
+                applyText(item)
+            if (payload.isObjectIconChanged)
+                applyImageOrEmoji(item)
         }
     }
 }

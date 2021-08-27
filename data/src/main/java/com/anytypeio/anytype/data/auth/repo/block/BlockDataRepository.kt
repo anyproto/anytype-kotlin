@@ -89,8 +89,8 @@ class BlockDataRepository(
 
     override suspend fun duplicate(
         command: Command.Duplicate
-    ): Pair<Id, Payload> = factory.remote.duplicate(command).let { (id, payload) ->
-        Pair(id, payload)
+    ): Pair<List<Id>, Payload> = factory.remote.duplicate(command).let { (ids, payload) ->
+        Pair(ids, payload)
     }
 
     override suspend fun createDocument(

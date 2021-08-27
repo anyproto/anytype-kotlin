@@ -478,18 +478,18 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun duplicate(command: Command.Duplicate): Pair<String, Payload> {
+    fun duplicate(command: Command.Duplicate): Pair<List<Id>, Payload> {
         val request = BlockList.Duplicate.Request(
             contextId = command.context,
-            targetId = command.original,
-            blockIds = listOf(command.original),
+            targetId = command.target,
+            blockIds = command.blocks,
             position = Block.Position.Bottom
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockListDuplicate(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return Pair(response.blockIds.first(), response.event.toPayload())
+        return Pair(response.blockIds, response.event.toPayload())
     }
 
     @Throws(Exception::class)

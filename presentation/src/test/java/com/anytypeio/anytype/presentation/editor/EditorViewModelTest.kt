@@ -1629,8 +1629,9 @@ open class EditorViewModelTest {
             verify(duplicateBlock, times(1)).invoke(
                 params = eq(
                     DuplicateBlock.Params(
-                        original = child,
-                        context = root
+                        target = child,
+                        context = root,
+                        blocks = listOf(child)
                     )
                 )
             )
@@ -3434,7 +3435,8 @@ open class EditorViewModelTest {
                 params = eq(
                     DuplicateBlock.Params(
                         context = root,
-                        original = paragraph.id
+                        target = paragraph.id,
+                        blocks = listOf(paragraph.id)
                     )
                 )
             )
@@ -3449,7 +3451,7 @@ open class EditorViewModelTest {
         duplicateBlock.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Pair(
-                    newBlockId,
+                    listOf(newBlockId),
                     Payload(
                         context = root,
                         events = emptyList()

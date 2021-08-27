@@ -6,7 +6,7 @@ interface BlockDataStore {
 
     suspend fun create(command: Command.Create): Pair<Id, Payload>
     suspend fun replace(command: Command.Replace): Pair<Id, Payload>
-    suspend fun duplicate(command: Command.Duplicate): Pair<Id, Payload>
+    suspend fun duplicate(command: Command.Duplicate): Pair<List<Id>, Payload>
     suspend fun split(command: Command.Split): Pair<Id, Payload>
 
     suspend fun merge(command: Command.Merge): Payload

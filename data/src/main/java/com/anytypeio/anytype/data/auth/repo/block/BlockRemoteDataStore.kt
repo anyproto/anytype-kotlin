@@ -78,7 +78,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun duplicate(
         command: Command.Duplicate
-    ): Pair<String, Payload> = remote.duplicate(command)
+    ): Pair<List<Id>, Payload> = remote.duplicate(command)
 
     override suspend fun unlink(
         command: Command.Unlink

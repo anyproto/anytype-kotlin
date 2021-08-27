@@ -65,7 +65,8 @@ sealed class Intent {
 
         class Duplicate(
             val context: Id,
-            val target: Id
+            val target: Id,
+            val blocks: List<Id>
         ) : CRUD()
 
         class Unlink(

@@ -158,11 +158,12 @@ class Orchestrator(
                     duplicateBlock(
                         params = DuplicateBlock.Params(
                             context = intent.context,
-                            original = intent.target
+                            blocks = intent.blocks,
+                            target = intent.target
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = { (id, payload) ->
+                        success = { (ids, payload) ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_DUPLICATE,
                                 props = Props.empty(),
@@ -171,7 +172,7 @@ class Orchestrator(
                                     middleware = System.currentTimeMillis()
                                 )
                             )
-                            stores.focus.update(Focus(id = id, cursor = Cursor.End))
+                            stores.focus.update(Focus(id = ids.last(), cursor = Cursor.End))
                             proxies.payloads.send(payload)
                             sendEvent(event)
                         }

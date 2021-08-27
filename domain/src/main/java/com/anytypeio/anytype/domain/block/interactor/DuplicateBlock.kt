@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.domain.block.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for block duplication.
@@ -13,13 +13,14 @@ import com.anytypeio.anytype.core_models.Payload
  */
 open class DuplicateBlock(
     private val repo: BlockRepository
-) : BaseUseCase<Pair<Id, Payload>, DuplicateBlock.Params>() {
+) : BaseUseCase<Pair<List<Id>, Payload>, DuplicateBlock.Params>() {
 
     override suspend fun run(params: Params) = try {
         repo.duplicate(
             command = Command.Duplicate(
                 context = params.context,
-                original = params.original
+                target = params.target,
+                blocks = params.blocks
             )
         ).let {
             Either.Right(it)
@@ -30,10 +31,11 @@ open class DuplicateBlock(
 
     /**
      * @property context context id
-     * @property original id of the original block id, which we need to duplicate
+     * @property blocks id of the target blocks, which we need to duplicate
      */
     data class Params(
         val context: Id,
-        val original: Id
+        val target: Id,
+        val blocks: List<Id>
     )
 }

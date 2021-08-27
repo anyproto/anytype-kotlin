@@ -22,7 +22,7 @@ interface BlockRepository {
      * Duplicates target block
      * @return id of the new block and payload events.
      */
-    suspend fun duplicate(command: Command.Duplicate): Pair<Id, Payload>
+    suspend fun duplicate(command: Command.Duplicate): Pair<List<Id>, Payload>
 
     /**
      * Creates a new block.

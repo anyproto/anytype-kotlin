@@ -205,7 +205,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         val params = DuplicateBlock.Params(
             context = root,
-            original = block.id
+            target = block.id,
+            blocks = listOf(block.id)
         )
         verifyBlocking(duplicateBlock, times(1)) { invoke(params) }
     }
@@ -242,7 +243,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         val params = DuplicateBlock.Params(
             context = root,
-            original = block.id
+            target = block.id,
+            blocks = listOf(block.id)
         )
         verifyBlocking(duplicateBlock, times(1)) { invoke(params) }
     }

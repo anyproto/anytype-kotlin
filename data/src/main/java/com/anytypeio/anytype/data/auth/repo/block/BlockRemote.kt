@@ -6,7 +6,7 @@ interface BlockRemote {
 
     suspend fun create(command: Command.Create): Pair<String, Payload>
     suspend fun replace(command: Command.Replace): Pair<String, Payload>
-    suspend fun duplicate(command: Command.Duplicate): Pair<String, Payload>
+    suspend fun duplicate(command: Command.Duplicate): Pair<List<Id>, Payload>
     suspend fun split(command: Command.Split): Pair<Id, Payload>
 
     suspend fun merge(command: Command.Merge): Payload

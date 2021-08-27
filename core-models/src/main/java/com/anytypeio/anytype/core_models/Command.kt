@@ -179,11 +179,12 @@ sealed class Command {
     /**
      * Command for block duplication
      * @property context context id
-     * @property original id of the original block, which we need to duplicate
+     * @property blocks id of the target blocks, which we need to duplicate
      */
     class Duplicate(
         val context: Id,
-        val original: Id
+        val target: Id,
+        val blocks: List<Id>
     )
 
     /**

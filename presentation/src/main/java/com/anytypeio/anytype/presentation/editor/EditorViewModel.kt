@@ -1546,7 +1546,7 @@ class EditorViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Duplicate -> {
-                duplicateBlock(target = id)
+                duplicateBlock(blocks = listOf(id))
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
             }
@@ -1675,12 +1675,13 @@ class EditorViewModel(
         }
     }
 
-    private fun duplicateBlock(target: String) {
+    private fun duplicateBlock(blocks: List<Id>) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Duplicate(
                     context = context,
-                    target = target
+                    target = blocks.last(),
+                    blocks = blocks
                 )
             )
         }
@@ -4628,7 +4629,7 @@ class EditorViewModel(
                 proceedWithUnlinking(targetId)
             }
             SlashItem.Actions.Duplicate -> {
-                duplicateBlock(targetId)
+                duplicateBlock(listOf(targetId))
             }
             SlashItem.Actions.Move -> {
                 viewModelScope.launch {

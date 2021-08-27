@@ -521,3 +521,7 @@ message Relations {
     repeated Relation relations = 1;
 }
 
+message RelationOptions {
+    repeated Relation.Option options = 1;
+}
+

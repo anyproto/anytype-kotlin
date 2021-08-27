@@ -2547,6 +2547,30 @@ message Rpc {
         }
     }
 
+    message DownloadFile {
+        message Request {
+            string hash = 1;
+            string path = 2; // path to save file. Temp directory is used if empty
+        }
+
+        message Response {
+            Error error = 1;
+            string localPath = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    NOT_FOUND = 3;
+                }
+            }
+        }
+    }
+
     message Navigation {
         enum Context {
             Navigation = 0;
@@ -3093,7 +3117,56 @@ message Rpc {
                 }
             }
         }
+        message Graph {
+            message Request {
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
+                int32 limit = 2;
+                // additional filter by objectTypes
+                repeated string objectTypeFilter = 3;
+            }
 
+            message Node {
+                string id = 1;
+                string type = 2;
+                string name = 3;
+                int32 layout = 4;
+                string description = 5;
+                string iconImage = 6;
+                string iconEmoji = 7;
+            }
+
+            message Edge {
+                enum Type {
+                    Link = 0;
+                    Relation = 1;
+                }
+                string source = 1;
+                string target = 2;
+                string name = 3;
+                Type type = 4;
+                string description = 5;
+                string iconImage = 6;
+                string iconEmoji = 7;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Node nodes = 2;
+                repeated Edge edges = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
 
         message SetLayout {
             message Request {
@@ -3204,6 +3277,9 @@ message Rpc {
             Markdown = 0;
             Protobuf = 1;
             JSON = 2;
+            DOT = 3;
+            SVG = 4;
+            GRAPH_JSON = 5;
         }
     }
 

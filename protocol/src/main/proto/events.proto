@@ -738,6 +738,7 @@ message Model {
             DropFiles = 0;
             Import = 1;
             Export = 2;
+            SaveFile = 3;
         }
 
         enum State {

@@ -23,7 +23,7 @@ class SlashTextWatcher(
      * Position of [SLASH_CHAR] character
      */
     private var slashCharPosition = NO_SLASH_POSITION
-    private var filter: String = ""
+    private var filter: CharSequence = ""
 
     override fun afterTextChanged(s: Editable?) {}
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -38,12 +38,11 @@ class SlashTextWatcher(
         proceedWithFilter(
             text = s,
             start = start,
-            count = count,
-            before = before
+            count = count
         )
     }
 
-    fun onDismiss() {
+    private fun onDismiss() {
         slashCharPosition = NO_SLASH_POSITION
         filter = ""
     }
@@ -52,26 +51,18 @@ class SlashTextWatcher(
      * Check for new added char is [SLASH_CHAR] and send [SlashTextWatcherState.Start] event
      */
     private fun proceedWithStart(text: CharSequence, start: Int, count: Int) {
-        if (SlashHelper.isSlashCharAdded(text = text, start = start, count = count)) {
-            slashCharPosition = start
+        val slashPosition = SlashHelper.getSlashPosition(text = text, start = start, count = count)
+        if (slashPosition != NO_SLASH_POSITION) {
+            slashCharPosition = slashPosition
             filter = ""
-            proceedWithState(SlashTextWatcherState.Start(start = start))
+            proceedWithState(SlashTextWatcherState.Start(start = slashCharPosition))
         }
     }
 
-    private fun proceedWithFilter(text: CharSequence, start: Int, count: Int, before: Int) {
-        if (isSlashCharVisible()) {
-            if (isStartPositionBeforeSlash(start = start, slashPos = slashCharPosition)) {
-                stopSlashWatcher()
-            } else {
-                filter = SlashHelper.getUpdatedFilter(
-                    filter = filter,
-                    replacement = text.subSequence(startIndex = start, endIndex = start + count),
-                    replacementStart = start - slashCharPosition,
-                    before = before
-                )
-                proceedWithState(SlashTextWatcherState.Filter(filter))
-            }
+    private fun proceedWithFilter(text: CharSequence, start: Int, count: Int) {
+        if (isSlashCharVisible() && slashCharPosition < text.length && start + count <= text.length) {
+            filter = text.subSequence(startIndex = slashCharPosition, endIndex = start + count)
+            proceedWithState(SlashTextWatcherState.Filter(filter))
         }
     }
 
@@ -101,14 +92,11 @@ class SlashTextWatcher(
             Timber.d("proceedWithState, state:[$state]")
             onSlashEvent(state)
         } else {
-            Timber.d("proceedWithState, Locked slash text watcher. Skipping event...")
+            Timber.d("proceedWithState, Locked slash text watcher. Skipping event[$state]...")
         }
     }
 
     private fun isSlashCharVisible(): Boolean = slashCharPosition != NO_SLASH_POSITION
-
-    private fun isStartPositionBeforeSlash(start: Int, slashPos: Int): Boolean =
-        start - slashPos < 0
 
     companion object {
         const val SLASH_CHAR = '/'

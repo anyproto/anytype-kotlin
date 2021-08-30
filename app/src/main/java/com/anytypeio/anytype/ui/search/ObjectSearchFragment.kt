@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.search
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
@@ -61,6 +62,13 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView>(R.layout.fragme
         clearSearchText = searchView.findViewById(R.id.clearSearchText)
         filterInputField = searchView.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
+        filterInputField.imeOptions = EditorInfo.IME_ACTION_DONE
+        filterInputField.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                return@setOnEditorActionListener false
+            }
+            true
+        }
         initialize()
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
@@ -77,6 +78,13 @@ class MoveToFragment : BaseBottomSheetFragment() {
         clearSearchText = searchView.findViewById(R.id.clearSearchText)
         filterInputField = searchView.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
+        filterInputField.imeOptions = EditorInfo.IME_ACTION_DONE
+        filterInputField.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                return@setOnEditorActionListener false
+            }
+            true
+        }
         initialize()
     }
 

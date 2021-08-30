@@ -21,10 +21,9 @@ import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapte
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.moving.MoveToView
 import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
-import com.anytypeio.anytype.presentation.search.ObjectSearchView
-import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_object_search.*
 import kotlinx.coroutines.launch
@@ -75,7 +74,6 @@ class MoveToFragment : BaseBottomSheetFragment() {
                 }
             )
         }
-        vm.state.observe(viewLifecycleOwner, { observe(it) })
         clearSearchText = searchView.findViewById(R.id.clearSearchText)
         filterInputField = searchView.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
@@ -84,6 +82,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         lifecycleScope.launch {
+            jobs += subscribe(vm.viewState) { observe(it) }
             jobs += subscribe(vm.commands) { execute(it) }
         }
         super.onStart()
@@ -96,41 +95,47 @@ class MoveToFragment : BaseBottomSheetFragment() {
         vm.onDialogCancelled()
     }
 
-    private fun observe(state: ObjectSearchView) {
+    private fun observe(state: MoveToView) {
         when (state) {
-            ObjectSearchView.Loading -> {
+            MoveToView.Loading -> {
                 recyclerView.invisible()
                 tvScreenStateMessage.invisible()
                 tvScreenStateSubMessage.invisible()
                 progressBar.visible()
             }
-            is ObjectSearchView.Success -> {
+            is MoveToView.Success -> {
                 progressBar.invisible()
                 tvScreenStateMessage.invisible()
                 tvScreenStateSubMessage.invisible()
                 recyclerView.visible()
                 moveToAdapter.submitList(state.objects)
             }
-            ObjectSearchView.EmptyPages -> {
+            MoveToView.EmptyPages -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = getString(R.string.search_empty_pages)
                 tvScreenStateSubMessage.invisible()
             }
-            is ObjectSearchView.NoResults -> {
+            is MoveToView.NoResults -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = getString(R.string.search_no_results, state.searchText)
                 tvScreenStateSubMessage.visible()
             }
-            is ObjectSearchView.Error -> {
+            is MoveToView.Error -> {
                 progressBar.invisible()
                 recyclerView.invisible()
                 tvScreenStateMessage.visible()
                 tvScreenStateMessage.text = state.error
                 tvScreenStateSubMessage.invisible()
+            }
+            MoveToView.Init -> {
+                recyclerView.invisible()
+                tvScreenStateMessage.invisible()
+                tvScreenStateSubMessage.invisible()
+                progressBar.invisible()
             }
             else -> Timber.d("Skipping state: $state")
         }
@@ -168,7 +173,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
         tvScreenStateMessage.invisible()
         progressBar.invisible()
         clearSearchText.setOnClickListener {
-            filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
+            filterInputField.setText(EMPTY_FILTER_TEXT)
             clearSearchText.invisible()
         }
         filterInputField.doAfterTextChanged { newText ->
@@ -217,6 +222,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
     companion object {
         const val ARG_BLOCK = "arg.move_to.blocks"
         const val ARG_POSITION = "arg.move_to.position"
+        const val EMPTY_FILTER_TEXT = ""
 
         fun new(block: Id, position: Int?) = MoveToFragment().apply {
             arguments = bundleOf(

@@ -2726,22 +2726,30 @@ class EditorViewModel(
         renderizePipeline.send(blocks)
     }
 
-    private fun onPageClicked(target: String) {
-        val view = views.find { it.id == target }
+    private fun onPageClicked(block: Id) {
+        val view = views.find { it.id == block }
         if (view is BlockView.Loadable && !view.isLoading) {
-            proceedWithOpeningPage(
-                target = blocks.first { it.id == target }.content<Content.Link>().target
-            )
+            val target = blocks.firstOrNull { it.id == block }?.content<Content.Link>()?.target
+            if (target != null) {
+                proceedWithOpeningObjectByLayout(target = target)
+            } else {
+                _toasts.offer("Couldn't find the target of the link")
+                Timber.e("Error while getting target of Block Page")
+            }
         } else {
             _toasts.offer("Still syncing...")
         }
     }
 
     private fun onMentionClicked(target: String) {
+        proceedWithOpeningObjectByLayout(target)
+    }
+
+    private fun proceedWithOpeningObjectByLayout(target: String) {
         proceedWithClearingFocus()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
-        when(wrapper.layout) {
+        when (wrapper.layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.TODO,

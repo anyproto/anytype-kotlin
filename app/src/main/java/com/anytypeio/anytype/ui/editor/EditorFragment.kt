@@ -977,6 +977,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = MoveToFragment.new(
+                            ctx = ctx,
                             block = command.block,
                             position = command.position
                         )

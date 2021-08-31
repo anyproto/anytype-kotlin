@@ -63,30 +63,34 @@ class MoveToViewModel(
         }
     }
 
-    fun onStart() {
-        getObjectTypes()
+    fun onStart(ctx: Id) {
+        getObjectTypes(ctx)
     }
 
-    private fun startProcessingSearchQuery() {
+    private fun startProcessingSearchQuery(ctx: Id) {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
-                    success = { raw -> setObjects(raw.map { ObjectWrapper.Basic(it) }) },
+                    success = { raw ->
+                        setObjects(
+                            ctx = ctx,
+                            data = raw.map { ObjectWrapper.Basic(it) })
+                    },
                     failure = { Timber.e(it, "Error while searching for objects") }
                 )
             }
         }
     }
 
-    private fun getObjectTypes() {
+    private fun getObjectTypes(ctx: Id) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(filterArchivedObjects = true)
             getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = {
                     types.value = it
-                    startProcessingSearchQuery()
+                    startProcessingSearchQuery(ctx)
                 }
             )
         }
@@ -153,10 +157,11 @@ class MoveToViewModel(
         userInput.value = searchText
     }
 
-    fun setObjects(data: List<ObjectWrapper.Basic>) {
-        objects.value = data.filter {
-            SupportedLayouts.layouts.contains(it.layout)
-        }
+    fun setObjects(ctx: Id, data: List<ObjectWrapper.Basic>) {
+        objects.value = data
+            .filter {
+                SupportedLayouts.layouts.contains(it.layout) && it.id != ctx
+            }
     }
 
     sealed class Command {

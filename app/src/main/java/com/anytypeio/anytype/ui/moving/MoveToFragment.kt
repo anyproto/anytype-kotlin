@@ -41,6 +41,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText
 
+    private val ctx get() = arg<Id>(ARG_CTX)
     private val block get() = arg<Id>(ARG_BLOCK)
     private val position get() = argOrNull<Int>(ARG_POSITION)
 
@@ -94,7 +95,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
             jobs += subscribe(vm.commands) { execute(it) }
         }
         super.onStart()
-        vm.onStart()
+        vm.onStart(ctx = ctx)
         expand()
     }
 
@@ -228,12 +229,14 @@ class MoveToFragment : BaseBottomSheetFragment() {
     }
 
     companion object {
+        const val ARG_CTX = "arg.move_to.ctx"
         const val ARG_BLOCK = "arg.move_to.blocks"
         const val ARG_POSITION = "arg.move_to.position"
         const val EMPTY_FILTER_TEXT = ""
 
-        fun new(block: Id, position: Int?) = MoveToFragment().apply {
+        fun new(ctx: Id, block: Id, position: Int?) = MoveToFragment().apply {
             arguments = bundleOf(
+                ARG_CTX to ctx,
                 ARG_BLOCK to block,
                 ARG_POSITION to position
             )

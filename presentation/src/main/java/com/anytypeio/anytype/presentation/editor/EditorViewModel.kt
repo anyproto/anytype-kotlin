@@ -4863,16 +4863,22 @@ class EditorViewModel(
             eventName = EventsDictionary.SCREEN_MOVE_TO
         )
 
-        dispatch(Command.OpenMoveToScreen(block = block, position = position))
+        dispatch(
+            Command.OpenMoveToScreen(
+                block = block,
+                position = position,
+                ctx = context
+            )
+        )
     }
 
     fun proceedWithMoveToAction(target: Id, block: Id) {
-        Timber.d("onMoveToTargetClicked, target:[$target], block:[$block]")
+        Timber.d("onMoveToTargetClicked, targetContext:[$target], block:[$block]")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Move(
                     context = context,
-                    target = target,
+                    target = "",
                     targetContext = target,
                     blocks = listOf(block),
                     position = Position.BOTTOM

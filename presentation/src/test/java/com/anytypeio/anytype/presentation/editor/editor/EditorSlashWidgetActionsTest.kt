@@ -522,7 +522,9 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
             .assertHasValue()
             .assertValue { result ->
                 val command = result.peekContent()
-                command is Command.OpenMoveToScreen && command.block == block.id
+                command is Command.OpenMoveToScreen
+                        && command.block == block.id
+                        && command.ctx == root
             }
     }
     //endregion

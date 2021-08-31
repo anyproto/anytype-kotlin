@@ -35,7 +35,7 @@ class Move(
     /**
      * Params for moving a group of blocks.
      * @param context context for this action (i.e. a page's id or a dashboard's id)
-     * @param targetId id of the target block (i.e. target of a drag-and-drop action)
+     * @param targetId id of the target block (i.e. target of a drag-and-drop action). Can be empty.
      * @param blockIds id of the blocks that are being dragged and dropped (as opposed to the target block).
      * @param targetContext context for target (used primarily for cross-page drag-and-drop)
      * @param position position of the blocks that are being dragged and dropped related to the target block

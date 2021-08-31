@@ -73,7 +73,7 @@ sealed class Command {
         val isArchived: Boolean
     ) : Command()
 
-    object OpenProfileMenu: Command()
+    object OpenProfileMenu : Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()
     data class OpenObjectLayout(val ctx: String) : Command()
@@ -89,21 +89,32 @@ sealed class Command {
         data class SelectLanguage(val target: String) : Dialog()
     }
 
-    sealed class OpenObjectRelationScreen: Command(){
+    sealed class OpenObjectRelationScreen : Command() {
         data class List(val ctx: String, val target: String?) : OpenObjectRelationScreen()
         data class Add(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
-            data class Default(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
-            data class Text(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
-            data class Date(val ctx: Id, val target: Id, val relation: Id) : OpenObjectRelationScreen.Value()
+            data class Default(val ctx: Id, val target: Id, val relation: Id) :
+                OpenObjectRelationScreen.Value()
+
+            data class Text(val ctx: Id, val target: Id, val relation: Id) :
+                OpenObjectRelationScreen.Value()
+
+            data class Date(val ctx: Id, val target: Id, val relation: Id) :
+                OpenObjectRelationScreen.Value()
         }
     }
 
-    object AddSlashWidgetTriggerToFocusedBlock: Command()
+    object AddSlashWidgetTriggerToFocusedBlock : Command()
 
-    data class OpenChangeObjectTypeScreen(val ctx: Id, val smartBlockType: SmartBlockType): Command()
+    data class OpenChangeObjectTypeScreen(val ctx: Id, val smartBlockType: SmartBlockType) :
+        Command()
 
-    data class OpenMoveToScreen(val ctx: Id, val blocks: List<Id>, val position: Int?): Command()
+    data class OpenMoveToScreen(
+        val ctx: Id,
+        val blocks: List<Id>,
+        val restorePosition: Int?,
+        val restoreBlock: Id?
+    ) : Command()
 
-    data class OpenLinkToScreen(val target: Id, val position: Int?): Command()
+    data class OpenLinkToScreen(val target: Id, val position: Int?) : Command()
 }

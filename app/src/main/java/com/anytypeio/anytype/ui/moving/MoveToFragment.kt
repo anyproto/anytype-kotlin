@@ -43,7 +43,8 @@ class MoveToFragment : BaseBottomSheetFragment() {
 
     private val blocks get() = arg<List<Id>>(ARG_BLOCKS)
     private val ctx get() = arg<Id>(ARG_CTX)
-    private val position get() = argOrNull<Int>(ARG_POSITION)
+    private val restorePosition get() = argOrNull<Int>(ARG_RESTORE_POSITION)
+    private val restoreBlock get() = argOrNull<Id>(ARG_RESTORE_BLOCK)
 
     private val moveToAdapter by lazy {
         DefaultObjectViewAdapter(
@@ -156,7 +157,8 @@ class MoveToFragment : BaseBottomSheetFragment() {
                 withParent<OnMoveToAction> {
                     onMoveToClose(
                         blocks = blocks,
-                        position = position
+                        restorePosition = restorePosition,
+                        restoreBlock = restoreBlock
                     )
                 }
                 dismiss()
@@ -231,14 +233,21 @@ class MoveToFragment : BaseBottomSheetFragment() {
     companion object {
         const val ARG_BLOCKS = "arg.move_to.blocks"
         const val ARG_CTX = "arg.move_to.ctx"
-        const val ARG_POSITION = "arg.move_to.position"
+        const val ARG_RESTORE_POSITION = "arg.move_to.position"
+        const val ARG_RESTORE_BLOCK = "arg.move_to.restore_block"
         const val EMPTY_FILTER_TEXT = ""
 
-        fun new(ctx: Id, blocks: List<Id>, position: Int?) = MoveToFragment().apply {
+        fun new(
+            ctx: Id,
+            blocks: List<Id>,
+            restorePosition: Int?,
+            restoreBlock: Id?
+        ) = MoveToFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_BLOCKS to blocks,
-                ARG_POSITION to position
+                ARG_RESTORE_POSITION to restorePosition,
+                ARG_RESTORE_BLOCK to restoreBlock
             )
         }
     }
@@ -246,5 +255,5 @@ class MoveToFragment : BaseBottomSheetFragment() {
 
 interface OnMoveToAction {
     fun onMoveTo(target: Id, blocks: List<Id>)
-    fun onMoveToClose(blocks: List<Id>, position: Int?)
+    fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?)
 }

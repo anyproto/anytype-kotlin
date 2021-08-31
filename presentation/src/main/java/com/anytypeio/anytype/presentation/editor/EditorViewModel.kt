@@ -1556,7 +1556,11 @@ class EditorViewModel(
             ActionItemType.MoveTo -> {
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
-                proceedWithMoveToButtonClicked(blocks = listOf(id), position = null)
+                proceedWithMoveToButtonClicked(
+                    blocks = listOf(id),
+                    restorePosition = null,
+                    restoreBlock = null
+                )
             }
             ActionItemType.Style -> {
                 viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
@@ -4656,7 +4660,11 @@ class EditorViewModel(
             }
             SlashItem.Actions.MoveTo -> {
                 onHideKeyboardClicked()
-                proceedWithMoveToButtonClicked(blocks = listOf(targetId), position = slashStartIndex)
+                proceedWithMoveToButtonClicked(
+                    blocks = listOf(targetId),
+                    restorePosition = slashStartIndex,
+                    restoreBlock = targetId
+                )
             }
             SlashItem.Actions.LinkTo -> {
                 onHideKeyboardClicked()
@@ -4865,7 +4873,11 @@ class EditorViewModel(
     //endregion
 
     //region MOVE TO
-    private fun proceedWithMoveToButtonClicked(blocks: List<Id>, position: Int?) {
+    private fun proceedWithMoveToButtonClicked(
+        blocks: List<Id>,
+        restorePosition: Int?,
+        restoreBlock: Id?
+    ) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_MOVE_TO
@@ -4874,7 +4886,8 @@ class EditorViewModel(
         dispatch(
             Command.OpenMoveToScreen(
                 blocks = blocks,
-                position = position,
+                restorePosition = restorePosition,
+                restoreBlock = restoreBlock,
                 ctx = context
             )
         )
@@ -4895,16 +4908,18 @@ class EditorViewModel(
         }
     }
 
-    fun proceedWithMoveToExit(blocks: List<Id>, position: Int?) {
-        Timber.d("proceedWithMoveToExit, blocks:[$blocks], position:[$position]")
-//        if (position != null) {
-//            proceedWithSettingTextSelection(
-//                blocks = blocks,
-//                textSelection = position
-//            )
-//        }
-        // TODO Probably we don't actually need to restore selection, because move-to can also be done via multi-select mode?
-        // Rethink this and discuss with Konstantin after completing new action menu.
+    fun proceedWithMoveToExit(
+        blocks: List<Id>,
+        restorePosition: Int?,
+        restoreBlock: Id?
+    ) {
+        Timber.d("proceedWithMoveToExit, blocks:[$blocks], restoreBlock:[$restoreBlock] position:[$restorePosition]")
+        if (restorePosition != null && restoreBlock != null) {
+            proceedWithSettingTextSelection(
+                block = restoreBlock,
+                textSelection = restorePosition
+            )
+        }
     }
 
     private fun proceedWithSettingTextSelection(block: Id, textSelection: Int?) {

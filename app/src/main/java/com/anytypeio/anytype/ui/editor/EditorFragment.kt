@@ -979,7 +979,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         val fr = MoveToFragment.new(
                             ctx = ctx,
                             blocks = command.blocks,
-                            position = command.position
+                            restorePosition = command.restorePosition,
+                            restoreBlock = command.restoreBlock
                         )
                         fr.show(childFragmentManager, null)
                     }
@@ -1762,10 +1763,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         )
     }
 
-    override fun onMoveToClose(blocks: List<Id>, position: Int?) {
+    override fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?) {
         vm.proceedWithMoveToExit(
             blocks = blocks,
-            position = position
+            restorePosition = restorePosition,
+            restoreBlock = restoreBlock
         )
     }
 

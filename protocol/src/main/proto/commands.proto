@@ -20,8 +20,8 @@ message Rpc {
         message Files {
             message Request {
                 string contextId = 1;
-                string dropTargetId = 2;
-                anytype.model.Block.Position position = 3;
+                string dropTargetId = 2; // id of the simple block to insert considering position
+                anytype.model.Block.Position position = 3;  // position relatively to the dropTargetId simple block
                 repeated string localFilePaths = 4;
             }
 
@@ -99,8 +99,8 @@ message Rpc {
                 string contextId = 1;
                 repeated string blockIds = 2;
                 string targetContextId = 3;
-                string dropTargetId = 4;
-                anytype.model.Block.Position position = 5;
+                string dropTargetId = 4; // id of the simple block to insert considering position
+                anytype.model.Block.Position position = 5; // position relatively to the dropTargetId simple block
             }
 
             message Response {
@@ -126,8 +126,8 @@ message Rpc {
                 string contextId = 1;
                 repeated string blockIds = 2;
                 google.protobuf.Struct details = 3; // page details
-                string dropTargetId = 4;
-                anytype.model.Block.Position position = 5;
+                string dropTargetId = 4; // id of the simple block to insert considering position
+                anytype.model.Block.Position position = 5; // position relatively to the dropTargetId simple block
             }
 
             message Response {

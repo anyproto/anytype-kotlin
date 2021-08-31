@@ -978,7 +978,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = MoveToFragment.new(
                             ctx = ctx,
-                            block = command.block,
+                            blocks = command.blocks,
                             position = command.position
                         )
                         fr.show(childFragmentManager, null)
@@ -1755,16 +1755,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         )
     }
 
-    override fun onMoveTo(target: Id, block: Id) {
+    override fun onMoveTo(target: Id, blocks: List<Id>) {
         vm.proceedWithMoveToAction(
             target = target,
-            block = block
+            blocks = blocks
         )
     }
 
-    override fun onMoveToClose(block: Id, position: Int?) {
+    override fun onMoveToClose(blocks: List<Id>, position: Int?) {
         vm.proceedWithMoveToExit(
-            block = block,
+            blocks = blocks,
             position = position
         )
     }

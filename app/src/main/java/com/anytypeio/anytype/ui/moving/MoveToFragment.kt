@@ -41,8 +41,8 @@ class MoveToFragment : BaseBottomSheetFragment() {
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText
 
+    private val blocks get() = arg<List<Id>>(ARG_BLOCKS)
     private val ctx get() = arg<Id>(ARG_CTX)
-    private val block get() = arg<Id>(ARG_BLOCK)
     private val position get() = argOrNull<Int>(ARG_POSITION)
 
     private val moveToAdapter by lazy {
@@ -155,7 +155,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
             MoveToViewModel.Command.Exit -> {
                 withParent<OnMoveToAction> {
                     onMoveToClose(
-                        block = block,
+                        blocks = blocks,
                         position = position
                     )
                 }
@@ -165,7 +165,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
                 withParent<OnMoveToAction> {
                     onMoveTo(
                         target = command.target,
-                        block = block
+                        blocks = blocks
                     )
                 }
                 dismiss()
@@ -229,15 +229,15 @@ class MoveToFragment : BaseBottomSheetFragment() {
     }
 
     companion object {
+        const val ARG_BLOCKS = "arg.move_to.blocks"
         const val ARG_CTX = "arg.move_to.ctx"
-        const val ARG_BLOCK = "arg.move_to.blocks"
         const val ARG_POSITION = "arg.move_to.position"
         const val EMPTY_FILTER_TEXT = ""
 
-        fun new(ctx: Id, block: Id, position: Int?) = MoveToFragment().apply {
+        fun new(ctx: Id, blocks: List<Id>, position: Int?) = MoveToFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
-                ARG_BLOCK to block,
+                ARG_BLOCKS to blocks,
                 ARG_POSITION to position
             )
         }
@@ -245,6 +245,6 @@ class MoveToFragment : BaseBottomSheetFragment() {
 }
 
 interface OnMoveToAction {
-    fun onMoveTo(target: Id, block: Id)
-    fun onMoveToClose(block: Id, position: Int?)
+    fun onMoveTo(target: Id, blocks: List<Id>)
+    fun onMoveToClose(blocks: List<Id>, position: Int?)
 }

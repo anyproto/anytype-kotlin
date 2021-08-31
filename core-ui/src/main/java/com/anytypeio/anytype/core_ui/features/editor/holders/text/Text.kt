@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.TextBlockHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
-import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -65,9 +64,7 @@ abstract class Text(
 
             observe(
                 item = item,
-                clicked = clicked,
                 onTextChanged = onTextChanged,
-                onSelectionChanged = onSelectionChanged,
                 onBackPressedCallback = onBackPressedCallback
             )
         }
@@ -138,34 +135,16 @@ abstract class Text(
 
     fun observe(
         item: BlockView.TextBlockProps,
-        clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         onBackPressedCallback: (() -> Boolean)? = null
     ) {
 
         content.apply {
-            setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = {
-                        // TODO do not call this method directly, ask permission from vm
-                        enableReadMode()
-                        onBlockLongClick(root, it, clicked)
-                    }
-                )
-            )
-
             addTextChangedListener(
                 DefaultTextWatcher { text ->
                     onTextChanged(item.id, text)
                 }
             )
-
-//            selectionWatcher = {
-//                onSelectionChanged(item.id, it)
-//            }
-
             backButtonWatcher = onBackPressedCallback
         }
     }

@@ -557,6 +557,23 @@ class BlockAdapter(
         }
 
         if (holder is Text) {
+            holder.content.setOnLongClickListener { view ->
+                if (view != null && !view.hasFocus()) {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos != RecyclerView.NO_POSITION) {
+                        holder.onBlockLongClick(
+                            root = holder.itemView,
+                            clicked = onClickListener,
+                            target = blocks[pos].id
+                        )
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            }
             holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
@@ -583,6 +600,9 @@ class BlockAdapter(
                 }
             }
         }
+
+        // TODO set long click listener for other blocks (and remove these listeners from view holder bind methods)
+        // TODO think also about simple click listeners refactoring.
 
         return holder
     }

@@ -11,11 +11,13 @@ import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
+import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.multilineIme
 import timber.log.Timber
 
@@ -225,6 +227,35 @@ class TextInputWidget : AppCompatEditText {
 
     fun setDefaultMovementMethod() {
         movementMethod = defaultMovementMethod
+    }
+
+    fun setFocus() {
+        // Scheduling a runnable that shows the keyboard in the next UI loop.
+        post {
+            this.apply {
+                if (!hasFocus()) {
+                    if (requestFocus()) {
+                        context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+                    } else {
+                        Timber.d("Couldn't gain focus")
+                    }
+                } else {
+                    Timber.d("Already had focus")
+                }
+            }
+        }
+    }
+
+    fun enableEnterKeyDetector(
+        onEnterClicked: (IntRange) -> Unit
+    ) {
+        setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == TEXT_INPUT_WIDGET_ACTION_GO) {
+                onEnterClicked.invoke(v.selectionStart..v.selectionEnd)
+                return@setOnEditorActionListener true
+            }
+            false
+        }
     }
 
     /**

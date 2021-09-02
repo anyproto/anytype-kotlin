@@ -77,7 +77,7 @@ abstract class Text(
                 onTextInputClicked(item.id)
             }
             enableEnterKeyDetector(
-                onSplitLineEnterClicked = { range ->
+                onEnterClicked = { range ->
                     content.text?.let { editable ->
                         onSplitLineEnterClicked(
                             item.id,

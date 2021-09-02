@@ -370,7 +370,11 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        is BlockView.Description -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Description -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)

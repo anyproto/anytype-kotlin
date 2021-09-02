@@ -120,7 +120,8 @@ class HighlightingBlockTest {
             onMentionEvent = {},
             onBackPressedCallback = { false },
             onCoverClicked = {},
-            onSlashEvent = {}
+            onSlashEvent = {},
+            onKeyPressedEvent = {}
         )
     }
 }

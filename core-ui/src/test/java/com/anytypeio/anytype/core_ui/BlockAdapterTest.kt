@@ -3326,7 +3326,8 @@ class BlockAdapterTest {
             onMentionEvent = {},
             onBackPressedCallback = { false },
             onCoverClicked = {},
-            onSlashEvent = {}
+            onSlashEvent = {},
+            onKeyPressedEvent = {}
         )
     }
 }

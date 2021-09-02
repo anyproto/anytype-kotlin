@@ -381,7 +381,8 @@ class BlockAdapterCursorBindingTest {
             onMentionEvent = {},
             onBackPressedCallback = { false },
             onCoverClicked = {},
-            onSlashEvent = {}
+            onSlashEvent = {},
+            onKeyPressedEvent = {}
         )
     }
 }

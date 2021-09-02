@@ -937,16 +937,10 @@ class EditorViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
-        val block = blocks.first { it.id == target }
-        val content = block.content.asText()
-        if (content.style == Content.Text.Style.TITLE) {
-            onEndLineEnterTitleClicked()
+        if (text.isEndLineClick(range)) {
+            onEndLineEnterClicked(target, text, marks)
         } else {
-            if (text.isEndLineClick(range)) {
-                onEndLineEnterClicked(target, text, marks)
-            } else {
-                proceedWithSplitEvent(target, range, text, marks)
-            }
+            proceedWithSplitEvent(target, range, text, marks)
         }
     }
 
@@ -988,16 +982,6 @@ class EditorViewModel(
                 )
             )
         }
-    }
-
-    private fun onEndLineEnterTitleClicked() {
-        val page = blocks.first { it.id == context }
-        val next = page.children.getOrElse(0) { "" }
-        proceedWithCreatingNewTextBlock(
-            id = next,
-            style = Content.Text.Style.P,
-            position = Position.TOP
-        )
     }
 
     fun onEndLineEnterClicked(
@@ -4997,6 +4981,68 @@ class EditorViewModel(
                 textSelection = position
             )
         }
+    }
+    //endregion
+
+    //region KEY EVENTS
+    fun onKeyPressedEvent(event: KeyPressedEvent) {
+        Timber.d("onKeyPressedEvent, event:[$event]")
+        when (event) {
+            is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
+                proceedWithTitleEnterClicked(
+                    title = event.target,
+                    text = event.text,
+                    range = event.range
+                )
+            }
+            is KeyPressedEvent.OnDescriptionBlockEnterKeyEvent -> {
+                proceedWithDescriptionEnterClicked(
+                    description = event.target,
+                    text = event.text,
+                    range = event.range
+                )
+            }
+        }
+    }
+
+    private fun proceedWithTitleEnterClicked(
+        title: Id,
+        text: String,
+        range: IntRange
+    ) {
+        if (text.isEndLineClick(range)) {
+            onEndLineEnterTitleClicked(title)
+        } else {
+            proceedWithSplitEvent(title, range, text, emptyList())
+        }
+    }
+
+    private fun onEndLineEnterTitleClicked(title: Id) {
+        val titlePosition = blocks.indexOfFirst { it.id == title }
+        val someBlock = blocks.elementAtOrNull(titlePosition + 1)
+        val content = someBlock?.content as? Content.Text
+        if (content?.style == Content.Text.Style.DESCRIPTION) {
+            proceedWithSettingTextSelection(
+                block = someBlock.id,
+                textSelection = content.text.length
+            )
+        } else {
+            val page = blocks.first { it.id == context }
+            val next = page.children.getOrElse(0) { "" }
+            proceedWithCreatingNewTextBlock(
+                id = next,
+                style = Content.Text.Style.P,
+                position = Position.TOP
+            )
+        }
+    }
+
+    private fun proceedWithDescriptionEnterClicked(
+        description: Id,
+        text: String,
+        range: IntRange
+    ) {
+        proceedWithSplitEvent(description, range, text, emptyList())
     }
     //endregion
 }

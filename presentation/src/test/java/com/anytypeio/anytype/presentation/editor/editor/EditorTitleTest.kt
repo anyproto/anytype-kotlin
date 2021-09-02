@@ -3,8 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -19,6 +18,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyZeroInteractions
@@ -227,7 +227,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send create block intent when split happens in title`() {
+    fun `should send split intent when split happens in title`() {
         // SETUP
 
         val page = Block(
@@ -275,13 +275,32 @@ class EditorTitleTest : EditorPresentationTestSetup() {
             range = 2..2
         )
 
-        verifyBlocking(createBlock, times(1)) { invoke(
-            params = CreateBlock.Params(
-                context = root,
-                target = header.id,
-                position = Position.TOP,
-                prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        text = text,
+                        marks = emptyList(),
+                        target = title.id
+                    )
+                )
             )
-        )}
+        }
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verifyBlocking(splitBlock, times(1)) {
+            invoke(
+                params = eq(
+                    SplitBlock.Params(
+                        context = root,
+                        block = title,
+                        range = 2..2,
+                        isToggled = null
+                    )
+                )
+            )
+        }
     }
 }

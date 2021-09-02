@@ -53,7 +53,8 @@ open class BlockAdapterTestSetup {
             onMentionEvent = {},
             onBackPressedCallback = { false },
             onCoverClicked = {},
-            onSlashEvent = {}
+            onSlashEvent = {},
+            onKeyPressedEvent = {}
         )
     }
 }

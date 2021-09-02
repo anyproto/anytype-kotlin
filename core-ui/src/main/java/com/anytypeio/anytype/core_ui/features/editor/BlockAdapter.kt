@@ -72,6 +72,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -125,7 +126,8 @@ class BlockAdapter(
     private val clipboardInterceptor: ClipboardInterceptor,
     private val onMentionEvent: (MentionEvent) -> Unit,
     private val onSlashEvent: (SlashEvent) -> Unit,
-    private val onBackPressedCallback: () -> Boolean
+    private val onBackPressedCallback: () -> Boolean,
+    private val onKeyPressedEvent: (KeyPressedEvent) -> Unit
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     val views: List<BlockView> get() = blocks
@@ -152,7 +154,20 @@ class BlockAdapter(
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    with(content) {
+                        enableEnterKeyDetector(
+                            onEnterClicked = { range ->
+                                onTitleEnterKeyListener(
+                                    views = views,
+                                    textView = content,
+                                    range = range,
+                                    onKeyPressedEvent = onKeyPressedEvent
+                                )
+                            }
+                        )
+                    }
+                }
             }
             HOLDER_PROFILE_TITLE -> {
                 Title.Profile(
@@ -161,7 +176,20 @@ class BlockAdapter(
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    with(content) {
+                        enableEnterKeyDetector(
+                            onEnterClicked = { range ->
+                                onTitleEnterKeyListener(
+                                    views = views,
+                                    textView = content,
+                                    range = range,
+                                    onKeyPressedEvent = onKeyPressedEvent
+                                )
+                            }
+                        )
+                    }
+                }
             }
             HOLDER_TODO_TITLE -> {
                 Title.Todo(
@@ -177,6 +205,18 @@ class BlockAdapter(
                         view.isChecked = !view.isChecked
                         checkbox.isSelected = view.isChecked
                         onTitleCheckboxClicked(view)
+                    }
+                    with(content) {
+                        enableEnterKeyDetector(
+                            onEnterClicked = { range ->
+                                onTitleEnterKeyListener(
+                                    views = views,
+                                    textView = content,
+                                    range = range,
+                                    onKeyPressedEvent = onKeyPressedEvent
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -267,36 +307,48 @@ class BlockAdapter(
                         false
                     )
                 ).apply {
-                    itemView.tvBlockDescription.addTextChangedListener(
-                        DefaultTextWatcher { editable ->
-                            val pos = bindingAdapterPosition
-                            if (pos != RecyclerView.NO_POSITION) {
-                                val view = views[pos]
-                                check(view is BlockView.Description)
-                                view.description = editable.toString()
-                                onDescriptionChanged(view)
-                            }
-                        }
-                    )
-                    itemView.tvBlockDescription.setOnFocusChangeListener { v, hasFocus ->
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onFocusChanged(blocks[pos].id, hasFocus)
-                        }
-                    }
-                    itemView.tvBlockDescription.setOnEditorActionListener { v, actionId, _ ->
-                        if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
-                            val pos = bindingAdapterPosition
-                            if (pos != RecyclerView.NO_POSITION) {
-                                onSplitDescription(
-                                    views[pos].id,
-                                    v.editableText,
-                                    v.selectionStart..v.selectionEnd
+                    with(content) {
+                        enableEnterKeyDetector(
+                            onEnterClicked = { range ->
+                                onDescriptionEnterKeyListener(
+                                    views = views,
+                                    textView = content,
+                                    range = range,
+                                    onKeyPressedEvent = onKeyPressedEvent
                                 )
-                                return@setOnEditorActionListener true
+                            }
+                        )
+                        addTextChangedListener(
+                            DefaultTextWatcher { editable ->
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    val view = views[pos]
+                                    check(view is BlockView.Description)
+                                    view.description = editable.toString()
+                                    onDescriptionChanged(view)
+                                }
+                            }
+                        )
+                        setOnFocusChangeListener { _, hasFocus ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                onFocusChanged(blocks[pos].id, hasFocus)
                             }
                         }
-                        false
+                        setOnEditorActionListener { v, actionId, _ ->
+                            if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    onSplitDescription(
+                                        views[pos].id,
+                                        v.editableText,
+                                        v.selectionStart..v.selectionEnd
+                                    )
+                                    return@setOnEditorActionListener true
+                                }
+                            }
+                            false
+                        }
                     }
                 }
             }
@@ -854,7 +906,12 @@ class BlockAdapter(
                     is DividerDots -> onBindViewHolder(holder, position)
                     is RelationViewHolder.Placeholder -> onBindViewHolder(holder, position)
                     is RelationViewHolder -> onBindViewHolder(holder, position)
-                    is Description -> onBindViewHolder(holder, position)
+                    is Description -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Description
+                        )
+                    }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
             }
@@ -1034,17 +1091,6 @@ class BlockAdapter(
                         onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked
                     )
-                    enableEnterKeyDetector(
-                        onSplitLineEnterClicked = { range ->
-                            holder.content.text?.let { editable ->
-                                onSplitLineEnterClicked(
-                                    blocks[holder.adapterPosition].id,
-                                    editable,
-                                    range
-                                )
-                            }
-                        }
-                    )
                     setTextInputClickListener {
                         if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                             content.context.imm()
@@ -1064,17 +1110,6 @@ class BlockAdapter(
                         onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked
                     )
-                    enableEnterKeyDetector(
-                        onSplitLineEnterClicked = { range ->
-                            holder.content.text?.let { editable ->
-                                onSplitLineEnterClicked(
-                                    blocks[holder.adapterPosition].id,
-                                    editable,
-                                    range
-                                )
-                            }
-                        }
-                    )
                     setTextInputClickListener {
                         if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                             content.context.imm()
@@ -1093,17 +1128,6 @@ class BlockAdapter(
                         onFocusChanged = onFocusChanged,
                         onProfileIconClicked = onProfileIconClicked,
                         onCoverClicked = onCoverClicked
-                    )
-                    enableEnterKeyDetector(
-                        onSplitLineEnterClicked = { range ->
-                            holder.content.text?.let { editable ->
-                                onSplitLineEnterClicked(
-                                    blocks[holder.adapterPosition].id,
-                                    editable,
-                                    range
-                                )
-                            }
-                        }
                     )
                     setTextInputClickListener {
                         if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {

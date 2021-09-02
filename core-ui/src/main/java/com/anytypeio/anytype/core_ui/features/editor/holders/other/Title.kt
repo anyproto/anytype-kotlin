@@ -5,13 +5,11 @@ import android.text.Spannable
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -25,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -214,6 +213,27 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             focus()
         } else
             content.clearFocus()
+    }
+
+    fun onTitleEnterKeyListener(
+        views: List<BlockView>,
+        textView: TextView,
+        range: IntRange,
+        onKeyPressedEvent: (KeyPressedEvent) -> Unit
+    ) {
+        val pos = bindingAdapterPosition
+        val text = textView.text.toString()
+        if (pos != RecyclerView.NO_POSITION) {
+            val view = views[pos]
+            check(view is BlockView.Title)
+            onKeyPressedEvent.invoke(
+                KeyPressedEvent.OnTitleBlockEnterKeyEvent(
+                    target = view.id,
+                    text = text,
+                    range = range
+                )
+            )
+        }
     }
 
     override fun select(item: BlockView.Selectable) = Unit

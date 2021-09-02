@@ -63,7 +63,7 @@ class DescriptionTesting : EditorTestSetup() {
                 style = Block.Content.Text.Style.DESCRIPTION
             ),
             fields = Block.Fields.empty(),
-            children = listOf(title.id)
+            children = emptyList()
         )
 
         val header = Block(
@@ -113,7 +113,7 @@ class DescriptionTesting : EditorTestSetup() {
                 style = Block.Content.Text.Style.DESCRIPTION
             ),
             fields = Block.Fields.empty(),
-            children = listOf(title.id)
+            children = emptyList()
         )
 
         val header = Block(

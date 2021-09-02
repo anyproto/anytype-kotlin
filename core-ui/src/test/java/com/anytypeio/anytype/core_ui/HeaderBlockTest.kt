@@ -389,7 +389,8 @@ class HeaderBlockTest {
             onMentionEvent = {},
             onBackPressedCallback = { false },
             onCoverClicked = {},
-            onSlashEvent = {}
+            onSlashEvent = {},
+            onKeyPressedEvent = {}
         )
     }
 }

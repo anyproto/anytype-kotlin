@@ -238,7 +238,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             clipboardInterceptor = this,
             onMentionEvent = vm::onMentionEvent,
             onSlashEvent = vm::onSlashTextWatcherEvent,
-            onBackPressedCallback = { vm.onBackPressedCallback() }
+            onBackPressedCallback = { vm.onBackPressedCallback() },
+            onKeyPressedEvent = vm::onKeyPressedEvent
         )
     }
 

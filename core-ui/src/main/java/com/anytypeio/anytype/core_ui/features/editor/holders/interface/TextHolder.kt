@@ -2,9 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.`interface`
 
 import android.view.Gravity
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -86,20 +84,7 @@ interface TextHolder {
     fun focus() {
         Timber.d("Requesting focus")
         content.apply {
-            // Sheduling a runnable that shows the keyboard in the next UI loop.
-            post {
-                content.apply {
-                    if (!hasFocus()) {
-                        if (requestFocus()) {
-                            context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
-                        } else {
-                            Timber.d("Couldn't gain focus")
-                        }
-                    } else {
-                        Timber.d("Already had focus")
-                    }
-                }
-            }
+            this.setFocus()
         }
     }
 
@@ -116,18 +101,6 @@ interface TextHolder {
                 }
             }
         )
-    }
-
-    fun enableEnterKeyDetector(
-        onSplitLineEnterClicked: (IntRange) -> Unit
-    ) {
-        content.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
-                onSplitLineEnterClicked.invoke(v.selectionStart..v.selectionEnd)
-                return@setOnEditorActionListener true
-            }
-            false
-        }
     }
 
     fun setTextInputClickListener(onTextInputClicked: () -> Unit) {

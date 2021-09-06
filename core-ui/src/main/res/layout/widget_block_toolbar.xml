@@ -6,6 +6,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/slashWidgetButton"
         android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/changeStyleButton"
@@ -26,6 +27,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/changeStyleButton"
         android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/blockActionsButton"
@@ -45,29 +47,9 @@
 
     <FrameLayout
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:id="@+id/blockActionsButton"
+        android:id="@+id/enterScrollAndMoveButton"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/multiSelectModeButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/changeStyleButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <ImageView
-            android:id="@+id/blockActionsIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_block_toolbar_block_actions" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:id="@+id/multiSelectModeButton"
-        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/hideKeyboardButton"
@@ -81,13 +63,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_block_toolbar_multi_select_mode" />
+            android:src="@drawable/ic_block_toolbar_move" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:id="@+id/blockMentionButton"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/multiSelectModeButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/changeStyleButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/blockActionsIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_mention" />
 
     </FrameLayout>
 
     <FrameLayout
         android:id="@+id/hideKeyboardButton"
         android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,12 +101,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <ImageView
+        <TextView
+            style="@style/DefaultOrangeTextButtonStyle"
+            android:text="@string/done"
             android:id="@+id/hideKeyboardIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_block_toolbar_hide_keyboard" />
+            android:layout_gravity="center" />
 
     </FrameLayout>
 

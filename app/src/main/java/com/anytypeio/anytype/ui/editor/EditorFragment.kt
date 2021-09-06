@@ -443,8 +443,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
 
         toolbar.apply {
-            enterMultiSelectModeClicks()
-                .onEach { vm.onEnterMultiSelectModeClicked() }
+            enterScrollAndMoveButton()
+                .onEach { toast("TODO") }
                 .launchIn(lifecycleScope)
             openSlashWidgetClicks()
                 .onEach { vm.onStartSlashWidgetClicked() }
@@ -455,8 +455,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             changeStyleClicks()
                 .onEach { vm.onBlockToolbarStyleClicked() }
                 .launchIn(lifecycleScope)
-            openBlockActionClicks()
-                .onEach { vm.onBlockToolbarBlockActionsClicked() }
+            mentionClicks()
+                .onEach { toast("TODO") }
                 .launchIn(lifecycleScope)
         }
 

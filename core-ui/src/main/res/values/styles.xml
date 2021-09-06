@@ -480,7 +480,7 @@
     </style>
 
     <style name="DefaultOrangeTextButtonStyle">
-        <item name="android:textColor">#F6A927</item>
+        <item name="android:textColor">#F09C0E</item>
         <item name="android:textSize">17sp</item>
         <item name="fontFamily">@font/inter_regular</item>
     </style>

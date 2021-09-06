@@ -18,7 +18,6 @@
     <color name="auth_divider">#DFDDD0</color>
     <color name="hint_color">#ACA996</color>
 
-    <color name="orange_button_background_color">#FFB522</color>
     <color name="default_dashboard_background_color">#0066C3</color>
 
 </resources>

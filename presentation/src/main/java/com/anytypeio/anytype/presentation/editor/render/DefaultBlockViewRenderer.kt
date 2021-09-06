@@ -35,7 +35,8 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         relations: List<Relation>,
-        restrictions: List<ObjectRestriction>
+        restrictions: List<ObjectRestriction>,
+        selection: Set<Id>
     ): List<BlockView> {
 
         val children = getValue(anchor)
@@ -85,7 +86,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -98,7 +100,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -113,7 +116,8 @@ class DefaultBlockViewRenderer(
                                     number = counter.current(),
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -126,7 +130,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -141,7 +146,8 @@ class DefaultBlockViewRenderer(
                                     indent = indent,
                                     isEmpty = block.children.isEmpty(),
                                     focus = focus,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (toggleStateHolder.isToggled(block.id)) {
@@ -154,7 +160,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -168,7 +175,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -181,7 +189,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -195,7 +204,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -208,7 +218,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -222,7 +233,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -235,7 +247,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -249,7 +262,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -262,7 +276,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -276,7 +291,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -289,7 +305,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -319,7 +336,8 @@ class DefaultBlockViewRenderer(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    details = details
+                                    details = details,
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -332,14 +350,24 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             counter.reset()
-                            result.add(code(mode, block, content, focus, indent))
+                            result.add(
+                                code(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    selection = selection
+                                )
+                            )
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
@@ -350,7 +378,8 @@ class DefaultBlockViewRenderer(
                                         root = root,
                                         details = details,
                                         relations = relations,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        selection = selection
                                     )
                                 )
                             }
@@ -359,16 +388,25 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Bookmark -> {
                     counter.reset()
-                    result.add(bookmark(mode, content, block, indent))
+                    result.add(
+                        bookmark(
+                            mode = mode,
+                            content = content,
+                            block = block,
+                            indent = indent,
+                            selection = selection
+                        )
+                    )
                 }
                 is Content.Divider -> {
                     counter.reset()
                     result.add(
                         divider(
-                            id = block.id,
+                            block = block,
                             content = content,
                             indent = indent,
-                            mode = mode
+                            mode = mode,
+                            selection = selection
                         )
                     )
                 }
@@ -380,13 +418,22 @@ class DefaultBlockViewRenderer(
                             content = content,
                             indent = indent,
                             details = details,
-                            mode = mode
+                            mode = mode,
+                            selection = selection
                         )
                     )
                 }
                 is Content.File -> {
                     counter.reset()
-                    result.add(file(mode, content, block, indent))
+                    result.add(
+                        file(
+                            mode = mode,
+                            content = content,
+                            block = block,
+                            indent = indent,
+                            selection = selection
+                        )
+                    )
                 }
                 is Content.Layout -> {
                     counter.reset()
@@ -399,7 +446,8 @@ class DefaultBlockViewRenderer(
                             root = root,
                             details = details,
                             relations = relations,
-                            restrictions = restrictions
+                            restrictions = restrictions,
+                            selection = selection
                         )
                     )
                 }
@@ -441,7 +489,8 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Paragraph = BlockView.Text.Paragraph(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -453,7 +502,11 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun description(
@@ -482,7 +535,8 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Header.Three = BlockView.Text.Header.Three(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -494,7 +548,11 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun headerTwo(
@@ -503,7 +561,8 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Header.Two = BlockView.Text.Header.Two(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -515,7 +574,11 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun headerOne(
@@ -524,7 +587,8 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Header.One = BlockView.Text.Header.One(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -536,7 +600,11 @@ class DefaultBlockViewRenderer(
         indent = indent,
         alignment = content.align?.toView(),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun checkbox(
@@ -545,7 +613,8 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Checkbox = BlockView.Text.Checkbox(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -557,7 +626,11 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         indent = indent,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun bulleted(
@@ -566,7 +639,8 @@ class DefaultBlockViewRenderer(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Bulleted = BlockView.Text.Bulleted(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -577,7 +651,11 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun code(
@@ -585,7 +663,8 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         focus: Focus,
-        indent: Int
+        indent: Int,
+        selection: Set<Id>
     ): BlockView.Code = BlockView.Code(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -595,7 +674,11 @@ class DefaultBlockViewRenderer(
         isFocused = block.id == focus.id,
         indent = indent,
         lang = block.fields.lang,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun highlight(
@@ -604,7 +687,8 @@ class DefaultBlockViewRenderer(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Highlight = BlockView.Text.Highlight(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -615,7 +699,11 @@ class DefaultBlockViewRenderer(
         color = content.color,
         backgroundColor = content.backgroundColor,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun toggle(
@@ -625,7 +713,8 @@ class DefaultBlockViewRenderer(
         indent: Int,
         focus: Focus,
         isEmpty: Boolean,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Toggle = BlockView.Text.Toggle(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -638,7 +727,11 @@ class DefaultBlockViewRenderer(
         toggled = toggleStateHolder.isToggled(block.id),
         isEmpty = isEmpty,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun numbered(
@@ -648,7 +741,8 @@ class DefaultBlockViewRenderer(
         number: Int,
         focus: Focus,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Text.Numbered = BlockView.Text.Numbered(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -660,14 +754,19 @@ class DefaultBlockViewRenderer(
         indent = indent,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun bookmark(
         mode: EditorMode,
         content: Content.Bookmark,
         block: Block,
-        indent: Int
+        indent: Int,
+        selection: Set<Id>
     ): BlockView = content.url?.let { url ->
         if (content.title != null && content.description != null) {
             BlockView.Media.Bookmark(
@@ -679,7 +778,11 @@ class DefaultBlockViewRenderer(
                 faviconUrl = content.favicon?.let { urlBuilder.image(it) },
                 indent = indent,
                 mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                isSelected = checkIfSelected(mode, block)
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                )
             )
         } else {
             BlockView.Error.Bookmark(
@@ -687,39 +790,48 @@ class DefaultBlockViewRenderer(
                 url = url,
                 indent = indent,
                 mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-                isSelected = checkIfSelected(mode, block)
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                )
             )
         }
     } ?: BlockView.MediaPlaceholder.Bookmark(
         id = block.id,
         indent = indent,
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun divider(
-        id: Id,
+        block: Block,
         content: Content.Divider,
         indent: Int,
-        mode: EditorMode
+        mode: EditorMode,
+        selection: Set<Id>
     ): BlockView = when (content.style) {
         Content.Divider.Style.LINE -> BlockView.DividerLine(
-            id = id,
+            id = block.id,
             indent = indent,
-            isSelected = when (mode) {
-                is EditorMode.Styling.Single -> mode.target == id
-                is EditorMode.Styling.Multi -> mode.targets.contains(id)
-                else -> false
-            }
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
         )
         Content.Divider.Style.DOTS -> BlockView.DividerDots(
-            id = id,
+            id = block.id,
             indent = indent,
-            isSelected = when (mode) {
-                is EditorMode.Styling.Single -> mode.target == id
-                is EditorMode.Styling.Multi -> mode.targets.contains(id)
-                else -> false
-            }
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
         )
     }
 
@@ -727,35 +839,52 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         content: Content.File,
         block: Block,
-        indent: Int
+        indent: Int,
+        selection: Set<Id>
     ): BlockView = when (content.type) {
         Content.File.Type.IMAGE -> content.toPictureView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(mode, block)
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
         )
         Content.File.Type.FILE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(mode, block)
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(mode, block)
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
         )
         Content.File.Type.NONE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(mode, block)
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }
@@ -924,7 +1053,8 @@ class DefaultBlockViewRenderer(
         content: Content.Link,
         indent: Int,
         details: Block.Details,
-        mode: EditorMode
+        mode: EditorMode,
+        selection: Set<Id>
     ): BlockView {
         val isArchived = details.details[content.target]?.isArchived
         return if (isArchived == true) {
@@ -933,7 +1063,8 @@ class DefaultBlockViewRenderer(
                 content = content,
                 indent = indent,
                 details = details,
-                mode = mode
+                mode = mode,
+                selection = selection
             )
         } else {
             page(
@@ -941,7 +1072,8 @@ class DefaultBlockViewRenderer(
                 content = content,
                 indent = indent,
                 details = details,
-                mode = mode
+                mode = mode,
+                selection = selection
             )
         }
     }
@@ -951,7 +1083,8 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Link,
         indent: Int,
-        details: Block.Details
+        details: Block.Details,
+        selection: Set<Id>
     ): BlockView.Page = BlockView.Page(
         id = block.id,
         isEmpty = true,
@@ -970,7 +1103,11 @@ class DefaultBlockViewRenderer(
         text = details.details[content.target]?.name,
         indent = indent,
         isLoading = !details.details.containsKey(content.target),
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun pageArchive(
@@ -978,7 +1115,8 @@ class DefaultBlockViewRenderer(
         content: Content.Link,
         indent: Int,
         details: Block.Details,
-        mode: EditorMode
+        mode: EditorMode,
+        selection: Set<Id>
     ): BlockView.PageArchive = BlockView.PageArchive(
         id = block.id,
         isEmpty = true,
@@ -996,7 +1134,11 @@ class DefaultBlockViewRenderer(
         },
         text = details.details[content.target]?.name,
         indent = indent,
-        isSelected = checkIfSelected(mode, block)
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
     )
 
     private fun setCursor(
@@ -1111,10 +1253,12 @@ class DefaultBlockViewRenderer(
 
     private fun checkIfSelected(
         mode: Editor.Mode,
-        block: Block
+        block: Block,
+        selection: Set<Id>
     ) = when (mode) {
         is EditorMode.Styling.Single -> mode.target == block.id
         is EditorMode.Styling.Multi -> mode.targets.contains(block.id)
+        is EditorMode.Select -> selection.contains(block.id)
         else -> false
     }
 }

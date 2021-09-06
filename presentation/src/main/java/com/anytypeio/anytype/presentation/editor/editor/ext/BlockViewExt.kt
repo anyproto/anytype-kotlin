@@ -290,6 +290,24 @@ fun List<BlockView>.enterSAM(
         is BlockView.Description -> view.copy(
             mode = BlockView.Mode.READ
         )
+        is BlockView.Relation.Placeholder -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.Relation.Related -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.Page -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.PageArchive -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.DividerDots -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.DividerLine -> view.copy(
+            isSelected = isSelected
+        )
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }

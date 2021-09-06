@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.editor.editor.*
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
@@ -3462,7 +3463,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should enter multi-select mode and select blocks`() {
+    fun `should enter multi-select mode and select blocks, and exit into edit mode when all blocks are unselected`() {
 
         // SETUP
 
@@ -3565,19 +3566,14 @@ open class EditorViewModelTest {
 
         testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
 
-        vm.onEnterMultiSelectModeClicked()
-
-        coroutineTestRule.advanceTime(150)
-
-        testObserver.assertValue(
-            ViewState.Success(
-                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
-                    view.copy(mode = BlockView.Mode.READ)
-                }
+        vm.onClickListener(
+            clicked = ListenerType.LongClick(
+                target = paragraphs[0].id,
+                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
             )
         )
 
-        vm.onTextInputClicked(target = paragraphs[0].id)
+        coroutineTestRule.advanceTime(150)
 
         testObserver.assertValue(
             ViewState.Success(
@@ -3644,13 +3640,11 @@ open class EditorViewModelTest {
 
         vm.onTextInputClicked(target = paragraphs[2].id)
 
-        testObserver.assertValue(
-            ViewState.Success(
-                listOf(titleView.copy(mode = BlockView.Mode.READ)) + initial.map { view ->
-                    view.copy(mode = BlockView.Mode.READ)
-                }
-            )
-        )
+        // At this momemnt, we expect that all blocks are unselected, therefore we should exit to read mode.
+
+        coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
+
+        testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
     }
 
     @Test
@@ -4837,77 +4831,6 @@ open class EditorViewModelTest {
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
-        )
-    }
-
-    @Test
-    fun `should clear focus and selection after main toolbar action clicked `() {
-
-        val id1 = MockDataFactory.randomUuid()
-        val blocks = listOf(
-            Block(
-                id = id1,
-                content = Block.Content.Text(
-                    marks = listOf(),
-                    text = MockDataFactory.randomString(),
-                    style = Block.Content.Text.Style.P,
-                    align = Block.Align.AlignLeft
-                ),
-                children = emptyList(),
-                fields = Block.Fields.empty()
-            )
-        )
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields.empty(),
-                content = Block.Content.Smart(),
-                children = blocks.map { it.id }
-            )
-        ) + blocks
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-
-        // TESTING
-
-        val stateBefore = vm.controlPanelViewState.value
-
-        assertNotNull(stateBefore)
-
-        assertTrue(stateBefore.navigationToolbar.isVisible)
-        assertFalse(stateBefore.stylingToolbar.isVisible)
-
-        vm.onSelectionChanged(blocks[0].id, 0..3)
-
-        vm.onMeasure(blocks[0].id, BlockDimensions(0, 0, 0, 0, 0, 0))
-
-        val focus = vm.focus.test()
-
-        focus.assertValue { id -> id.isEmpty() }
-
-        vm.controlPanelViewState.test().assertValue(
-            ControlPanelState.init()
         )
     }
 }

@@ -8,10 +8,18 @@ import com.anytypeio.anytype.core_models.Id
 /**
  * Maps blocks to its children using id as a key
  */
-fun List<Block>.asMap(): Map<String, List<Block>> {
-    val map: MutableMap<String, List<Block>> = mutableMapOf()
+fun List<Block>.asMap(): Map<Id, List<Block>> {
+    val map: MutableMap<Id, List<Block>> = mutableMapOf()
     forEach { block ->
         map[block.id] = block.children.mapNotNull { child -> find { it.id == child } }
+    }
+    return map
+}
+
+fun List<Block>.graph() : Map<Id, List<Id>> {
+    val map: MutableMap<Id, List<Id>> = mutableMapOf()
+    forEach { block ->
+        map[block.id] = block.children.mapNotNull { child -> find { it.id == child }?.id }
     }
     return map
 }
@@ -25,6 +33,21 @@ fun Map<Id, List<Block>>.descendants(parent: Id): List<Id> {
     val result = mutableListOf<Id>().apply { addAll(ids) }
     ids.forEach { id -> result.addAll(descendants(id)) }
     return result
+}
+
+/**
+ * @return ids of only parent blocks from given selection, excluding all children (nested blocks)
+ */
+fun List<Block>.parents(selection: Iterable<Id>) : List<Id> {
+    val excluded = mutableListOf<Id>()
+    forEach { block ->
+        if (selection.contains(block.id)) {
+            block.children.forEach { child ->
+                if (selection.contains(child)) excluded.add(child)
+            }
+        }
+    }
+    return selection - excluded
 }
 
 /**

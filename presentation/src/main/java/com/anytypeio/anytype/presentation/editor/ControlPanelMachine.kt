@@ -53,7 +53,7 @@ sealed class ControlPanelMachine {
 
         fun onEvent(event: Event) =
             scope.launch { channel.send(event) }
-                //.also { Timber.d("Event: $event") }
+        //.also { Timber.d("Event: $event") }
 
         /**
          * @return a stream of immutable states, as processed by [Reducer].
@@ -144,9 +144,9 @@ sealed class ControlPanelMachine {
         sealed class MarkupToolbar : Event() {
             object OnMarkupColorToggleClicked : MarkupToolbar()
             object OnMarkupHighlightToggleClicked : MarkupToolbar()
-            object OnMarkupToolbarUrlClicked: MarkupToolbar()
-            object OnMarkupUrlSet: MarkupToolbar()
-            object OnBlockerClicked: MarkupToolbar()
+            object OnMarkupToolbarUrlClicked : MarkupToolbar()
+            object OnMarkupUrlSet : MarkupToolbar()
+            object OnBlockerClicked : MarkupToolbar()
         }
 
         /**
@@ -167,7 +167,7 @@ sealed class ControlPanelMachine {
          * Multi-select-related events
          */
         sealed class MultiSelect : Event() {
-            object OnEnter : MultiSelect()
+            data class OnEnter(val count: Int = 0) : MultiSelect()
             object OnExit : MultiSelect()
             object OnDelete : MultiSelect()
             object OnTurnInto : MultiSelect()
@@ -177,7 +177,7 @@ sealed class ControlPanelMachine {
         /**
          * Read mode events
          */
-        sealed class ReadMode: Event() {
+        sealed class ReadMode : Event() {
             object OnEnter : ReadMode()
             object OnExit : ReadMode()
         }
@@ -214,7 +214,7 @@ sealed class ControlPanelMachine {
             ) : Slash()
 
             object OnStop : Slash()
-            object OnStopAndClearFocus: Slash()
+            object OnStopAndClearFocus : Slash()
         }
 
         sealed class OnRefresh : Event() {
@@ -265,7 +265,7 @@ sealed class ControlPanelMachine {
                                 ),
                                 markupMainToolbar = state.markupMainToolbar.copy(
                                     isVisible = true,
-                                    style= event.target.style(event.selection),
+                                    style = event.target.style(event.selection),
                                     supportedTypes = event.target.content.let { content ->
                                         if (content is TextBlock) {
                                             content.getSupportedMarkupTypes()
@@ -707,7 +707,9 @@ sealed class ControlPanelMachine {
             }
             is Event.StylingToolbar.OnCloseMulti -> {
                 state.copy(
-                    stylingToolbar = Toolbar.Styling.reset()
+                    stylingToolbar = Toolbar.Styling.reset(),
+                    styleColorToolbar = Toolbar.Styling.Color(),
+                    styleExtraToolbar = Toolbar.Styling.Other()
                 )
             }
             is Event.StylingToolbar.OnExit -> {
@@ -858,11 +860,13 @@ sealed class ControlPanelMachine {
                 ),
                 multiSelect = state.multiSelect.copy(
                     isVisible = true,
-                    count = NO_BLOCK_SELECTED
+                    count = event.count
                 ),
                 navigationToolbar = state.navigationToolbar.copy(
                     isVisible = false
-                )
+                ),
+                slashWidget = Toolbar.SlashWidget.reset(),
+                mentionToolbar = Toolbar.MentionToolbar.reset()
             )
             is Event.MultiSelect.OnExit -> state.copy(
                 multiSelect = state.multiSelect.copy(
@@ -876,7 +880,10 @@ sealed class ControlPanelMachine {
                 ),
                 navigationToolbar = state.navigationToolbar.copy(
                     isVisible = true
-                )
+                ),
+                styleColorToolbar = Toolbar.Styling.Color(),
+                styleExtraToolbar = Toolbar.Styling.Other(),
+                stylingToolbar = Toolbar.Styling.reset()
             )
             is Event.MultiSelect.OnDelete -> state.copy(
                 multiSelect = state.multiSelect.copy(
@@ -965,28 +972,19 @@ sealed class ControlPanelMachine {
                 slashWidget = Toolbar.SlashWidget.reset()
             )
             is Event.SAM.OnApply -> {
-                if (state.multiSelect.isQuickScrollAndMoveMode) {
-                    state.copy(
-                        multiSelect = state.multiSelect.copy(
-                            isVisible = false,
-                            isScrollAndMoveEnabled = false,
-                            count = NO_BLOCK_SELECTED
-                        ),
-                        mainToolbar = state.mainToolbar.copy(
-                            isVisible = false
-                        ),
-                        navigationToolbar = state.navigationToolbar.copy(
-                            isVisible = true
-                        )
+                state.copy(
+                    multiSelect = state.multiSelect.copy(
+                        isVisible = false,
+                        isScrollAndMoveEnabled = false,
+                        count = NO_BLOCK_SELECTED
+                    ),
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = true
                     )
-                } else {
-                    state.copy(
-                        multiSelect = state.multiSelect.copy(
-                            count = NO_BLOCK_SELECTED,
-                            isScrollAndMoveEnabled = false
-                        )
-                    )
-                }
+                )
             }
         }
 

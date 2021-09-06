@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_CREATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_MENTION_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ACTION_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ADD_BLOCK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_BOOKMARK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_ICON_MENU
@@ -145,6 +144,8 @@ class EditorViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     StateReducer<List<Block>, Event> by reducer {
+
+    val actions = MutableStateFlow<List<ActionItemType>>(emptyList())
 
     val isSyncStatusVisible = MutableStateFlow(true)
     val syncStatus = MutableStateFlow<SyncStatus?>(null)
@@ -479,7 +480,8 @@ class EditorViewModel(
                     root = models.first { it.id == context },
                     details = details,
                     relations = orchestrator.stores.relations.current(),
-                    restrictions = orchestrator.stores.objectRestrictions.current()
+                    restrictions = orchestrator.stores.objectRestrictions.current(),
+                    selection = currentSelection()
                 )
             }
             .catch { error ->
@@ -1159,7 +1161,7 @@ class EditorViewModel(
         }
     }
 
-    private fun onBlockLongPressedClicked(target: String, dimensions: BlockDimensions) {
+    private fun onBlockLongPressedClicked(target: Id, dimensions: BlockDimensions) {
         val views = orchestrator.stores.views.current()
         val view = views.find { it.id == target }
 
@@ -1189,21 +1191,86 @@ class EditorViewModel(
             }
         }
 
-        if (view != null) {
-            onEnterActionMode()
-            dispatch(
-                Command.OpenActionBar(
-                    block = view,
-                    dimensions = dimensions
-                )
-            )
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = POPUP_ACTION_MENU
-            )
+        toggleSelection(target)
+
+        val descendants = blocks.asMap().descendants(parent = target)
+
+        if (isSelected(target)) {
+            descendants.forEach { child -> select(child) }
         } else {
-            Timber.e("Could not open action menu on long click. Target view was missing.")
+            descendants.forEach { child -> unselect(child) }
         }
+
+        mode = EditorMode.Select
+
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            orchestrator.stores.views.update(
+                views.enterSAM(targets = currentSelection())
+            )
+            renderCommand.send(Unit)
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter(currentSelection().size))
+        }
+
+        proceedWithUpdatingActionsForCurrentSelection()
+    }
+
+    private fun proceedWithUpdatingActionsForCurrentSelection() {
+        val isMultiMode = currentSelection().size > 1
+
+        val targetActions = mutableSetOf<ActionItemType>().apply {
+            addAll(ActionItemType.default)
+        }
+        val excludedActions = mutableSetOf<ActionItemType>()
+
+        if (isMultiMode) {
+            excludedActions.add(ActionItemType.AddBelow)
+            excludedActions.add(ActionItemType.Divider)
+            excludedActions.add(ActionItemType.DividerExtended)
+        }
+
+        blocks.forEach { block ->
+            if (currentSelection().contains(block.id)) {
+                when (block.content) {
+                    is Content.Bookmark -> {
+                        excludedActions.add(ActionItemType.Style)
+                        excludedActions.add(ActionItemType.Download)
+                    }
+                    is Content.Divider -> {
+                        excludedActions.add(ActionItemType.Style)
+                        excludedActions.add(ActionItemType.Download)
+                    }
+                    is Content.File -> {
+                        excludedActions.add(ActionItemType.Style)
+                        if (!isMultiMode) {
+                            targetActions.add(ActionItemType.Download)
+                        }
+                    }
+                    is Content.Link -> {
+                        excludedActions.add(ActionItemType.Style)
+                        excludedActions.add(ActionItemType.Download)
+                    }
+                    is Content.Page -> {
+                        excludedActions.add(ActionItemType.Style)
+                        excludedActions.add(ActionItemType.Download)
+                    }
+                    is Content.RelationBlock -> {
+                        excludedActions.add(ActionItemType.Style)
+                        excludedActions.add(ActionItemType.Download)
+                    }
+                    is Content.Text -> {
+                        excludedActions.add(ActionItemType.Download)
+                    }
+                    else -> {
+                        // do nothing
+                    }
+                }
+            }
+        }
+
+        targetActions.removeAll(excludedActions)
+
+        actions.value = targetActions.toList()
     }
 
     fun onEditorContextMenuStyleClicked(selection: IntRange) {
@@ -1530,7 +1597,10 @@ class EditorViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Duplicate -> {
-                duplicateBlock(blocks = listOf(id))
+                duplicateBlock(
+                    blocks = listOf(id),
+                    target = id
+                )
                 onExitActionMode()
                 dispatch(Command.PopBackStack)
             }
@@ -1663,12 +1733,15 @@ class EditorViewModel(
         }
     }
 
-    private fun duplicateBlock(blocks: List<Id>) {
+    private fun duplicateBlock(
+        blocks: List<Id>,
+        target: Id
+    ) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Duplicate(
                     context = context,
-                    target = blocks.last(),
+                    target = target,
                     blocks = blocks
                 )
             )
@@ -2179,6 +2252,7 @@ class EditorViewModel(
         }
     }
 
+    @Deprecated("To be deleted")
     fun onMeasure(target: Id, dimensions: BlockDimensions) {
         Timber.d("onMeasure, target:[$target] dimensions:[$dimensions]")
         proceedWithClearingFocus()
@@ -2197,41 +2271,6 @@ class EditorViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = POPUP_ADD_BLOCK
-        )
-    }
-
-    fun onEnterMultiSelectModeClicked() {
-        Timber.d("onEnterMultiSelectModeClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter)
-        mode = EditorMode.Select
-        viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
-        viewModelScope.launch {
-            delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
-            refresh()
-        }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_MULTI_SELECT_MENU
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_ENTER_MS
-        )
-    }
-
-    fun onExitMultiSelectModeClicked() {
-        Timber.d("onExitMultiSelectModeClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
-        mode = EditorMode.Edit
-        clearSelections()
-        viewModelScope.launch {
-            delay(DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
-            orchestrator.stores.focus.update(Editor.Focus.empty())
-            refresh()
-        }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_DONE
         )
     }
 
@@ -2283,133 +2322,6 @@ class EditorViewModel(
         viewModelScope.launch { refresh() }
     }
 
-    fun onMultiSelectModeDeleteClicked() {
-        Timber.d("onMultiSelectModeDeleteClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnDelete)
-
-        val exclude = mutableSetOf<String>()
-
-        val selected = currentSelection().toList()
-
-        blocks.filter { selected.contains(it.id) }.forEach { block ->
-            block.children.forEach { if (selected.contains(it)) exclude.add(it) }
-        }
-
-        clearSelections()
-
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.CRUD.Unlink(
-                    context = context,
-                    targets = selected - exclude,
-                    next = null,
-                    previous = null,
-                    effects = listOf(SideEffect.ClearMultiSelectSelection)
-                )
-            )
-        }
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_DELETE
-        )
-    }
-
-    fun onMultiSelectCopyClicked() {
-        Timber.d("onMultiSelectCopyClicked, ")
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Clipboard.Copy(
-                    context = context,
-                    blocks = blocks.filter { block ->
-                        currentSelection().contains(block.id)
-                    },
-                    range = null
-                )
-            )
-        }
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_COPY
-        )
-    }
-
-    fun onMultiSelectModeSelectAllClicked() {
-        Timber.d("onMultiSelectModeSelectAllClicked, ")
-        (stateData.value as ViewState.Success).let { state ->
-            if (currentSelection().isEmpty()) {
-                onSelectAllClicked(state)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_MS_SELECT_ALL
-                )
-            } else {
-                onUnselectAllClicked(state)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_MS_UNSELECT_ALL
-                )
-            }
-        }
-    }
-
-    private fun onSelectAllClicked(state: ViewState.Success) =
-        state.blocks.map { block ->
-            if (block is BlockView.Selectable) {
-                select(block.id)
-            }
-            block.updateSelection(newSelection = true)
-        }.let {
-            onMultiSelectModeBlockClicked()
-            stateData.postValue(ViewState.Success(it))
-        }
-
-    private fun onUnselectAllClicked(state: ViewState.Success) =
-        state.blocks.map { block ->
-            unselect(block.id)
-            block.updateSelection(newSelection = false)
-        }.let {
-            onMultiSelectModeBlockClicked()
-            stateData.postValue(ViewState.Success(it))
-        }
-
-    fun onMultiSelectStyleButtonClicked() {
-        proceedWithMultiStyleToolbarEvent()
-    }
-
-    fun onMultiSelectTurnIntoButtonClicked() {
-        Timber.d("onMultiSelectTurnIntoButtonClicked, ")
-
-        val targets = currentSelection()
-
-        val blocks = blocks.filter { targets.contains(it.id) }
-
-        val hasTextBlocks = blocks.any { it.content is Content.Text }
-
-        when {
-            hasTextBlocks -> {
-                proceedUpdateBlockStyle(
-                    targets = currentSelection().toList(),
-                    uiBlock = UiBlock.PAGE,
-                    action = {
-                        clearSelections()
-                        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
-                    },
-                    errorAction = { _toasts.offer("Cannot convert selected blocks to PAGE") }
-                )
-            }
-            else -> {
-                _toasts.offer("Cannot turn selected blocks into page")
-            }
-        }
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_TURN_INTO
-        )
-    }
-
     fun onOpenPageNavigationButtonClicked() {
         Timber.d("onOpenPageNavigationButtonClicked, ")
         viewModelScope.sendEvent(
@@ -2426,19 +2338,6 @@ class EditorViewModel(
     }
 
     // ----------------- Turn Into -----------------------------------------
-
-    fun onTurnIntoMultiSelectBlockClicked(uiBlock: UiBlock) {
-        Timber.d("onTurnIntoMultiSelectBlockClicked, uiBlock:[$uiBlock]")
-        proceedUpdateBlockStyle(
-            targets = currentSelection().toList(),
-            uiBlock = uiBlock,
-            action = {
-                clearSelections()
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
-            },
-            errorAction = { _toasts.offer("Cannot convert selected blocks to $uiBlock") }
-        )
-    }
 
     fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
         Timber.d("onTurnIntoBlockClicked, taget:[$target] uiBlock:[$uiBlock]")
@@ -3093,6 +2992,7 @@ class EditorViewModel(
 
     private fun onBlockMultiSelectClicked(target: Id) {
         proceedWithTogglingSelection(target)
+        proceedWithUpdatingActionsForCurrentSelection()
     }
 
     private fun proceedWithTogglingSelection(target: Id) {
@@ -3118,16 +3018,19 @@ class EditorViewModel(
                 descendants.forEach { child -> unselect(child) }
             }
 
-            onMultiSelectModeBlockClicked()
+            if (currentSelection().isNotEmpty()) {
+                onMultiSelectModeBlockClicked()
+                val update = state.blocks.map { view ->
+                    if (view.id == target || descendants.contains(view.id))
+                        view.updateSelection(newSelection = isSelected(target))
+                    else
+                        view
+                }
 
-            val update = state.blocks.map { view ->
-                if (view.id == target || descendants.contains(view.id))
-                    view.updateSelection(newSelection = isSelected(target))
-                else
-                    view
+                stateData.postValue(ViewState.Success(update))
+            } else {
+                proceedWithExitingMultiSelectMode()
             }
-
-            stateData.postValue(ViewState.Success(update))
         }
     }
 
@@ -3243,11 +3146,7 @@ class EditorViewModel(
 
             clearSelections()
 
-            mode = if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
-                EditorMode.Edit
-            } else {
-                EditorMode.Select
-            }
+            mode = EditorMode.Edit
 
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
 
@@ -3277,11 +3176,7 @@ class EditorViewModel(
 
             clearSelections()
 
-            mode = if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
-                EditorMode.Edit
-            } else {
-                EditorMode.Select
-            }
+            mode = EditorMode.Edit
 
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
 
@@ -3443,7 +3338,7 @@ class EditorViewModel(
             is ListenerType.LongClick -> {
                 when (mode) {
                     EditorMode.Edit -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
-                    EditorMode.Select -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.target)
                     else -> Unit
                 }
             }
@@ -4625,7 +4520,10 @@ class EditorViewModel(
                 proceedWithUnlinking(targetId)
             }
             SlashItem.Actions.Duplicate -> {
-                duplicateBlock(listOf(targetId))
+                duplicateBlock(
+                    blocks = listOf(targetId),
+                    target = targetId
+                )
             }
             SlashItem.Actions.Move -> {
                 viewModelScope.launch {
@@ -4880,6 +4778,10 @@ class EditorViewModel(
     fun proceedWithMoveToAction(target: Id, blocks: List<Id>) {
         Timber.d("onMoveToTargetClicked, target:[$target], blocks:[$blocks]")
         viewModelScope.launch {
+            if (mode == EditorMode.Select) {
+                mode = EditorMode.Edit
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
+            }
             orchestrator.proxies.intents.send(
                 Intent.Document.Move(
                     context = context,
@@ -5045,5 +4947,246 @@ class EditorViewModel(
     ) {
         proceedWithSplitEvent(description, range, text, emptyList())
     }
+    //endregion
+
+
+    //region multi-select
+
+    fun onBlockActionPanelHidden() {
+        proceedWithExitingMultiSelectMode()
+    }
+
+    fun onMultiSelectAction(action: ActionItemType) {
+        when(action) {
+            ActionItemType.AddBelow -> {
+                onMultiSelectAddBelow()
+            }
+            ActionItemType.Delete -> {
+                onMultiSelectModeDeleteClicked()
+            }
+            ActionItemType.Duplicate -> {
+                onMultiSelectDuplicateClicked()
+            }
+            ActionItemType.MoveTo -> {
+                proceedWithMoveToButtonClicked(
+                    blocks = currentSelection().toList(),
+                    restoreBlock = null,
+                    restorePosition = null
+                )
+            }
+            ActionItemType.SAM -> { onEnterScrollAndMoveClicked() }
+            ActionItemType.Style -> { onMultiSelectStyleButtonClicked() }
+            else -> {
+                _toasts.trySend("TODO")
+            }
+        }
+    }
+
+    private fun onMultiSelectAddBelow() {
+        mode = EditorMode.Edit
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
+        val target = currentSelection().first()
+        clearSelections()
+        proceedWithCreatingNewTextBlock(
+            id = target,
+            style = Content.Text.Style.P
+        )
+    }
+
+    fun onMultiSelectModeDeleteClicked() {
+        Timber.d("onMultiSelectModeDeleteClicked, ")
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnDelete)
+
+        val exclude = mutableSetOf<String>()
+
+        val selected = currentSelection().toList()
+
+        blocks.filter { selected.contains(it.id) }.forEach { block ->
+            block.children.forEach { if (selected.contains(it)) exclude.add(it) }
+        }
+
+        clearSelections()
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.CRUD.Unlink(
+                    context = context,
+                    targets = selected - exclude,
+                    next = null,
+                    previous = null,
+                    effects = listOf(SideEffect.ClearMultiSelectSelection)
+                )
+            )
+        }
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_DELETE
+        )
+
+        proceedWithExitingMultiSelectMode()
+    }
+
+    private fun onMultiSelectDuplicateClicked() {
+        val parents = blocks.parents(currentSelection())
+        val targets = views.mapNotNull { view ->
+            if (parents.contains(view.id))
+                view.id
+            else
+                null
+        }
+        duplicateBlock(
+            blocks = targets,
+            target = targets.last()
+        )
+    }
+
+    fun onMultiSelectCopyClicked() {
+        Timber.d("onMultiSelectCopyClicked, ")
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Clipboard.Copy(
+                    context = context,
+                    blocks = blocks.filter { block ->
+                        currentSelection().contains(block.id)
+                    },
+                    range = null
+                )
+            )
+        }
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_COPY
+        )
+    }
+
+    fun onMultiSelectModeSelectAllClicked() {
+        Timber.d("onMultiSelectModeSelectAllClicked, ")
+        (stateData.value as ViewState.Success).let { state ->
+            if (currentSelection().isEmpty()) {
+                onSelectAllClicked(state)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_MS_SELECT_ALL
+                )
+            } else {
+                onUnselectAllClicked(state)
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.BTN_MS_UNSELECT_ALL
+                )
+            }
+        }
+    }
+
+    private fun onSelectAllClicked(state: ViewState.Success) =
+        state.blocks.map { block ->
+            if (block is BlockView.Selectable) {
+                select(block.id)
+            }
+            block.updateSelection(newSelection = true)
+        }.let {
+            onMultiSelectModeBlockClicked()
+            stateData.postValue(ViewState.Success(it))
+        }
+
+    private fun onUnselectAllClicked(state: ViewState.Success) =
+        state.blocks.map { block ->
+            unselect(block.id)
+            block.updateSelection(newSelection = false)
+        }.let {
+            onMultiSelectModeBlockClicked()
+            stateData.postValue(ViewState.Success(it))
+        }
+
+    fun onMultiSelectStyleButtonClicked() {
+        proceedWithMultiStyleToolbarEvent()
+    }
+
+    fun onMultiSelectTurnIntoButtonClicked() {
+        Timber.d("onMultiSelectTurnIntoButtonClicked, ")
+
+        val targets = currentSelection()
+
+        val blocks = blocks.filter { targets.contains(it.id) }
+
+        val hasTextBlocks = blocks.any { it.content is Content.Text }
+
+        when {
+            hasTextBlocks -> {
+                proceedUpdateBlockStyle(
+                    targets = currentSelection().toList(),
+                    uiBlock = UiBlock.PAGE,
+                    action = {
+                        clearSelections()
+                        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
+                    },
+                    errorAction = { _toasts.offer("Cannot convert selected blocks to PAGE") }
+                )
+            }
+            else -> {
+                _toasts.offer("Cannot turn selected blocks into page")
+            }
+        }
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_TURN_INTO
+        )
+    }
+
+    fun onExitMultiSelectModeClicked() {
+        proceedWithExitingMultiSelectMode()
+    }
+
+    private fun proceedWithExitingMultiSelectMode() {
+        Timber.d("onExitMultiSelectModeClicked, ")
+        mode = EditorMode.Edit
+        clearSelections()
+        viewModelScope.launch {
+            delay(DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            refresh()
+        }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_MS_DONE
+        )
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
+    }
+
+    fun onEnterMultiSelectModeClicked() {
+        Timber.d("onEnterMultiSelectModeClicked, ")
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter())
+        mode = EditorMode.Select
+        viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
+        viewModelScope.launch {
+            delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
+            refresh()
+        }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = POPUP_MULTI_SELECT_MENU
+        )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.BTN_ENTER_MS
+        )
+    }
+
+    fun onTurnIntoMultiSelectBlockClicked(uiBlock: UiBlock) {
+        Timber.d("onTurnIntoMultiSelectBlockClicked, uiBlock:[$uiBlock]")
+        proceedUpdateBlockStyle(
+            targets = currentSelection().toList(),
+            uiBlock = uiBlock,
+            action = {
+                clearSelections()
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
+            },
+            errorAction = { _toasts.offer("Cannot convert selected blocks to $uiBlock") }
+        )
+    }
+
     //endregion
 }

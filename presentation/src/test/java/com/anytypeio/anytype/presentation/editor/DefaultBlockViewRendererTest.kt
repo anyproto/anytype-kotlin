@@ -47,7 +47,8 @@ class DefaultBlockViewRendererTest {
             indent = indent,
             details = details,
             relations = emptyList(),
-            restrictions = restrictions
+            restrictions = restrictions,
+            selection = emptySet()
         )
     }
 

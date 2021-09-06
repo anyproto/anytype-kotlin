@@ -518,4 +518,21 @@ open class EditorPresentationTestSetup {
             on { isDataViewEnabled() } doReturn isDataViewEnabled
         }
     }
+
+    fun stubDuplicateBlock(
+        new: Id,
+        events: List<Event>
+    ) {
+        duplicateBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    listOf(new),
+                    Payload(
+                        context = root,
+                        events = events
+                    )
+                )
+            )
+        }
+    }
 }

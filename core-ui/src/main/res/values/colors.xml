@@ -130,5 +130,8 @@
     <color name="default_object_basic_avatar_text_color">#CBC9BD</color>
     <color name="RelationPlaceholderTextColor">#929082</color>
     <color name="default_status_text_color">#929082</color>
+    <color name="default_grey">#929082</color>
+
+    <color name="orange_button_background_color">#FFB522</color>
 
 </resources>

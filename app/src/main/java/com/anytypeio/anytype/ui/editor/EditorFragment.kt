@@ -145,6 +145,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     styleToolbarColors.id -> {
                         vm.onCloseBlockStyleColorToolbarClicked()
                     }
+                    blockActionToolbar.id -> {
+                        vm.onBlockActionPanelHidden()
+                    }
                 }
             }
         }
@@ -480,16 +483,18 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .onEach { vm.onEnterScrollAndMoveClicked() }
             .launchIn(lifecycleScope)
 
-        bottomMenu
-            .applyScrollAndMoveClicks()
+        scrollAndMoveBottomAction
+            .apply
+            .clicks()
             .onEach {
                 vm.onApplyScrollAndMoveClicked()
                 onApplyScrollAndMoveClicked()
             }
             .launchIn(lifecycleScope)
 
-        bottomMenu
-            .exitScrollAndMoveClicks()
+        scrollAndMoveBottomAction
+            .cancel
+            .clicks()
             .onEach { vm.onExitScrollAndMoveClicked() }
             .launchIn(lifecycleScope)
 
@@ -532,9 +537,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         topToolbar.menu
             .clicks()
-            .onEach {
-                vm.onDocumentMenuClicked()
-            }
+            .onEach { vm.onDocumentMenuClicked() }
             .launchIn(lifecycleScope)
 
         markupToolbar
@@ -561,6 +564,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .onApply()
             .onEach { vm.onSetLink(it) }
             .launchIn(lifecycleScope)
+
+        blockActionToolbar.actionListener = { action -> vm.onMultiSelectAction(action) }
 
         markupColorToolbar.onColorClickedListener = { color ->
             if (color is MarkupColorView.Text) {
@@ -631,6 +636,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         BottomSheetBehavior.from(styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun onApplyScrollAndMoveClicked() {
@@ -687,6 +693,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.isRedoEnabled.onEach {
             // TODO
         }.launchIn(lifecycleScope)
+
+        with(lifecycleScope) {
+            subscribe(vm.actions) { blockActionToolbar.bind(it) }
+        }
     }
 
     private fun bindSyncStatus(status: SyncStatus?) {
@@ -1141,6 +1151,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
 
         state.multiSelect.apply {
+            val behavior = BottomSheetBehavior.from(blockActionToolbar)
             if (isVisible) {
                 multiSelectTopToolbar.visible()
                 if (count == 0) {
@@ -1152,19 +1163,28 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 if (!bottomMenu.isShowing) {
                     recycler.apply { itemAnimator = DefaultItemAnimator() }
                     hideSoftInput()
-                    Timber.d("Hiding top menu")
                     topToolbar.invisible()
-                    lifecycleScope.launch {
-                        delay(DELAY_BEFORE_INIT_SAM_SEARCH)
-                        activity?.runOnUiThread {
-                            bottomMenu.showWithAnimation()
-                            showSelectButton()
+                    if (!state.multiSelect.isScrollAndMoveEnabled) {
+                        lifecycleScope.launch {
+                            delay(DELAY_BEFORE_INIT_SAM_SEARCH)
+                            activity?.runOnUiThread {
+                                behavior.apply {
+                                    setState(BottomSheetBehavior.STATE_EXPANDED)
+                                    addBottomSheetCallback(onHideBottomSheetCallback)
+                                }
+                                showSelectButton()
+                            }
                         }
+                    } else {
+                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     }
                 }
             } else {
                 recycler.apply { itemAnimator = null }
-                bottomMenu.hideWithAnimation()
+                behavior.apply {
+                    setState(BottomSheetBehavior.STATE_HIDDEN)
+                    removeBottomSheetCallback(onHideBottomSheetCallback)
+                }
                 hideSelectButton()
             }
             if (isScrollAndMoveEnabled)
@@ -1284,6 +1304,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
     }
 
+    private fun hideBlockActionPanel() {
+        BottomSheetBehavior.from(blockActionToolbar).apply {
+            setState(BottomSheetBehavior.STATE_HIDDEN)
+        }
+    }
+
     private fun setMainMarkupToolbarState(state: ControlPanelState) {
         if (state.markupMainToolbar.isVisible) {
             markupToolbar.setProps(
@@ -1323,7 +1349,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         } else {
             markupToolbar.invisible()
             if (markupColorToolbar.translationY == 0f) {
-                //recycler.smoothScrollBy(0, -markupColorToolbar.height)
                 markupColorToolbar.translationY = dimen(R.dimen.dp_104).toFloat()
             }
         }
@@ -1453,12 +1478,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             showTargeterWithAnimation()
 
             recycler.addOnScrollListener(scrollAndMoveStateListener)
-            bottomMenu.showScrollAndMoveModeControls()
             multiSelectTopToolbar.invisible()
 
             scrollAndMoveHint.showWithAnimation()
+            scrollAndMoveBottomAction.show()
 
-            bottomMenu.hideMultiSelectControls()
+            hideBlockActionPanel()
 
             lifecycleScope.launch {
                 delay(300)
@@ -1490,6 +1515,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             removeOnScrollListener(scrollAndMoveStateListener)
         }
         scrollAndMoveHint.hideWithAnimation()
+        scrollAndMoveBottomAction.hide()
         targeter.invisible()
         bottomMenu.hideScrollAndMoveModeControls()
         scrollAndMoveTargetDescriptor.clear()

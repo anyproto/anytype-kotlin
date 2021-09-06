@@ -145,7 +145,8 @@ class ArchiveViewModel(
                     root = models.first { it.id == context },
                     details = details,
                     relations = emptyList(),
-                    restrictions = emptyList()
+                    restrictions = emptyList(),
+                    selection = emptySet()
                 )
             }
             .map { views -> views.filterNot { it is BlockView.Page } }

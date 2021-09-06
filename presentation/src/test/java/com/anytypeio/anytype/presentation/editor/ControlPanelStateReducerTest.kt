@@ -455,7 +455,7 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = nonSelected,
-                event = ControlPanelMachine.Event.MultiSelect.OnEnter
+                event = ControlPanelMachine.Event.MultiSelect.OnEnter()
             )
         }
 
@@ -1554,7 +1554,7 @@ class ControlPanelStateReducerTest {
         val stateAfterEnterMultiSelect = runBlocking {
             reducer.reduce(
                 state = stateAfterFocus,
-                event = ControlPanelMachine.Event.MultiSelect.OnEnter
+                event = ControlPanelMachine.Event.MultiSelect.OnEnter()
             )
         }
 

@@ -33,7 +33,6 @@ abstract class Text(
         onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: (() -> Boolean)? = null
     ) {
-
         indentize(item)
         select(item)
 

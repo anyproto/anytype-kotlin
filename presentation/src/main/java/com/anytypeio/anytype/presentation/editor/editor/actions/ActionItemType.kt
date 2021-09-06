@@ -15,4 +15,15 @@ sealed class ActionItemType {
     object AddCaption : ActionItemType()
     object Divider : ActionItemType()
     object DividerExtended : ActionItemType()
+
+    companion object {
+        val default = listOf(
+            AddBelow,
+            Delete,
+            Style,
+            Duplicate,
+            SAM,
+            MoveTo
+        )
+    }
 }

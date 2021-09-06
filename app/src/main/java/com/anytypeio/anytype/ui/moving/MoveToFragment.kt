@@ -165,6 +165,9 @@ class MoveToFragment : BaseBottomSheetFragment() {
                 dismiss()
             }
             is MoveToViewModel.Command.Move -> {
+                if (restorePosition == null && restoreBlock == null) {
+                    hideSoftInput()
+                }
                 withParent<OnMoveToAction> {
                     onMoveTo(
                         target = command.target,

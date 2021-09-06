@@ -5,5 +5,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class BlockDimensions(
-    val left: Int, val top: Int, val bottom: Int, val right: Int, val width: Int, val height: Int
+    val left: Int = 0,
+    val top: Int = 0,
+    val bottom: Int = 0,
+    val right: Int = 0,
+    val width: Int = 0,
+    val height: Int = 0
 ) : Parcelable

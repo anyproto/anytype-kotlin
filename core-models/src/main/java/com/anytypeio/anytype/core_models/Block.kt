@@ -172,6 +172,7 @@ data class Block(
          * Page icon.
          * @property name conventional emoji short name.
          */
+        @Deprecated("To be deleted")
         data class Icon(
             val name: String
         ) : Content()

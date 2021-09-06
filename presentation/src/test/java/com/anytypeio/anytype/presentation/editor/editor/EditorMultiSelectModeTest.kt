@@ -8,10 +8,12 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -416,7 +418,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should select all children when selecting parent and unselect children when unselecting parent`() {
+    fun `should select all children when selecting parent and unselect children when unselecting parent and exit multi-select mode`() {
 
         // SETUP
 
@@ -506,6 +508,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document)
         stubInterceptEvents()
+        stubInterceptThreadStatus()
 
         val vm = buildViewModel()
 
@@ -516,7 +519,12 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         // Try entering multi-select mode
 
         vm.apply {
-            onBlockFocusChanged(id = parent.id, hasFocus = true)
+            onClickListener(
+                clicked = ListenerType.LongClick(
+                    target = parent.id,
+                    dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
+                )
+            )
             onEnterMultiSelectModeClicked()
         }
 
@@ -533,7 +541,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val parentView = BlockView.Text.Paragraph(
             id = parent.id,
-            isSelected = false,
+            isSelected = true,
             isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
@@ -544,7 +552,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val child1View = BlockView.Text.Paragraph(
             id = child1.id,
-            isSelected = false,
+            isSelected = true,
             isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
@@ -555,7 +563,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val child2View = BlockView.Text.Paragraph(
             id = child2.id,
-            isSelected = false,
+            isSelected = true,
             isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
@@ -566,7 +574,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val grandchild1View = BlockView.Text.Paragraph(
             id = grandchild1.id,
-            isSelected = false,
+            isSelected = true,
             isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
@@ -577,7 +585,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val grandchild2View = BlockView.Text.Paragraph(
             id = grandchild2.id,
-            isSelected = false,
+            isSelected = true,
             isFocused = false,
             marks = emptyList(),
             backgroundColor = null,
@@ -614,11 +622,11 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 ViewState.Success(
                     blocks = listOf(
                         title,
-                        parentView.copy(isSelected = true),
-                        child1View.copy(isSelected = true),
-                        grandchild1View.copy(isSelected = true),
-                        child2View.copy(isSelected = true),
-                        grandchild2View.copy(isSelected = true)
+                        parentView,
+                        child1View,
+                        grandchild1View,
+                        child2View,
+                        grandchild2View
                     )
                 )
             )
@@ -630,18 +638,20 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             target = parent.id
         )
 
+        coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
+
         // Checking whether parent and its children are not selected
 
         vm.state.test().apply {
             assertValue(
                 ViewState.Success(
                     blocks = listOf(
-                        title,
-                        parentView.copy(isSelected = false),
-                        child1View.copy(isSelected = false),
-                        grandchild1View.copy(isSelected = false),
-                        child2View.copy(isSelected = false),
-                        grandchild2View.copy(isSelected = false)
+                        title.copy(mode = BlockView.Mode.EDIT),
+                        parentView.copy(isSelected = false, mode = BlockView.Mode.EDIT),
+                        child1View.copy(isSelected = false, mode = BlockView.Mode.EDIT),
+                        grandchild1View.copy(isSelected = false, mode = BlockView.Mode.EDIT),
+                        child2View.copy(isSelected = false, mode = BlockView.Mode.EDIT),
+                        grandchild2View.copy(isSelected = false, mode = BlockView.Mode.EDIT)
                     )
                 )
             )
@@ -1131,6 +1141,182 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         clearPendingCoroutines()
     }
 
+    @Test
+    fun `should exit multi-select mode when selecting one block and then unselecting it`() {
+
+        // SETUP
+
+        val title = MockBlockFactory.title()
+        val header = MockBlockFactory.header(children = listOf(title.id))
+        val a = MockBlockFactory.paragraph()
+        val b = MockBlockFactory.paragraph()
+        val c = MockBlockFactory.paragraph()
+
+        val smart = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, a.id, b.id, c.id)
+        )
+
+        val document = listOf(smart, header, title, a, b, c)
+
+        stubOpenDocument(document = document)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        // Simulating long tap on "b" block, in order to enter multi-select mode.
+
+        vm.onClickListener(
+            ListenerType.LongClick(
+                target = b.id,
+                dimensions = BlockDimensions()
+            )
+        )
+
+        // "a" block must now be selected.
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                mainToolbar = ControlPanelState.Toolbar.Main(),
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = true,
+                    count = 1
+                )
+            )
+        )
+
+        // Tapping on "a" block, in order to unselect it and exit multi-select mode
+
+        vm.onTextInputClicked(target = b.id)
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                mainToolbar = ControlPanelState.Toolbar.Main(),
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = true),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false,
+                    count = 0
+                )
+            )
+        )
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should process a long click in multi-select mode the same way as a simple click`() {
+        // SETUP
+
+        val title = MockBlockFactory.title()
+        val header = MockBlockFactory.header(children = listOf(title.id))
+        val a = MockBlockFactory.paragraph()
+        val b = MockBlockFactory.paragraph()
+        val c = MockBlockFactory.paragraph()
+
+        val smart = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, a.id, b.id, c.id)
+        )
+
+        val document = listOf(smart, header, title, a, b, c)
+
+        stubOpenDocument(document = document)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        // Selecting blocks "a", "b" and "c"
+
+        vm.onClickListener(
+            ListenerType.LongClick(
+                target = b.id,
+                dimensions = BlockDimensions()
+            )
+        )
+
+        vm.onClickListener(
+            ListenerType.LongClick(
+                target = c.id,
+                dimensions = BlockDimensions()
+            )
+        )
+
+        vm.onClickListener(
+            ListenerType.LongClick(
+                target = a.id,
+                dimensions = BlockDimensions()
+            )
+        )
+
+        // Checking that all blocks are selected by now
+
+        vm.controlPanelViewState.test().assertValue(
+            ControlPanelState(
+                mainToolbar = ControlPanelState.Toolbar.Main(),
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
+                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = true,
+                    count = 3
+                )
+            )
+        )
+
+        vm.state.test().assertValue(
+            ViewState.Success(
+                listOf(
+                    BlockView.Title.Basic(
+                        id = title.id,
+                        text = title.content<TXT>().text,
+                        mode = BlockView.Mode.READ,
+                    ),
+                    BlockView.Text.Paragraph(
+                        id = a.id,
+                        text = a.content<TXT>().text,
+                        mode = BlockView.Mode.READ,
+                        isSelected = true
+                    ),
+                    BlockView.Text.Paragraph(
+                        id = b.id,
+                        text = b.content<TXT>().text,
+                        mode = BlockView.Mode.READ,
+                        isSelected = true
+                    ),
+                    BlockView.Text.Paragraph(
+                        id = c.id,
+                        text = c.content<TXT>().text,
+                        mode = BlockView.Mode.READ,
+                        isSelected = true
+                    )
+                )
+            )
+        )
+
+        clearPendingCoroutines()
+    }
 
     private fun clearPendingCoroutines() {
         coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)

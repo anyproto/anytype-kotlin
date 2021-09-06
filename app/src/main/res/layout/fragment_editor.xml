@@ -122,6 +122,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveActionWidget
+            android:id="@+id/scrollAndMoveBottomAction"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@color/white"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
         <com.anytypeio.anytype.core_ui.features.editor.slash.SlashWidget
             android:id="@+id/slashWidget"
             android:layout_width="match_parent"
@@ -189,6 +199,17 @@
             android:src="@drawable/ic_scroll_and_move_target_anchor" />
 
     </FrameLayout>
+
+    <com.anytypeio.anytype.core_ui.widgets.BlockActionWidget
+        android:id="@+id/blockActionToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:behavior_hideable="true"
+        app:behavior_skipCollapsed="false"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        app:layout_behavior="@string/bottom_sheet_behavior" />
 
     <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
         android:id="@+id/styleToolbarMain"

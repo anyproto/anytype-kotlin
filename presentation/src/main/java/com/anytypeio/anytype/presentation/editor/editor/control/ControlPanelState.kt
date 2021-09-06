@@ -52,7 +52,7 @@ data class ControlPanelState(
          * @property isVisible defines whether the toolbar is visible or not
          */
         data class Main(
-            override val isVisible: Boolean
+            override val isVisible: Boolean = false
         ) : Toolbar()
 
         /**

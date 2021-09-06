@@ -7,7 +7,9 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
@@ -319,7 +321,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should exit scroll-and-move mode on apply-scroll-and-move event`() {
+    fun `should exit scroll-and-move mode and enter in edit-mode on apply-scroll-and-move event`() {
 
         val a = Block(
             id = MockDataFactory.randomUuid(),
@@ -372,13 +374,13 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         vm.onStart(root)
 
         vm.apply {
-            onBlockFocusChanged(
-                id = a.id,
-                hasFocus = true
+            onClickListener(
+                clicked = ListenerType.LongClick(
+                    target = a.id,
+                    dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
+                )
             )
-            onEnterMultiSelectModeClicked()
-            onTextInputClicked(a.id)
-            onEnterScrollAndMoveClicked()
+            onMultiSelectAction(ActionItemType.SAM)
             onApplyScrollAndMove(
                 target = b.id,
                 ratio = 0.9f
@@ -389,7 +391,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
             assertValue(
                 ControlPanelState(
                     navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                        isVisible = false
+                        isVisible = true
                     ),
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
@@ -399,7 +401,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                         mode = null
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                        isVisible = true,
+                        isVisible = false,
                         isScrollAndMoveEnabled = false,
                         count = 0
                     ),

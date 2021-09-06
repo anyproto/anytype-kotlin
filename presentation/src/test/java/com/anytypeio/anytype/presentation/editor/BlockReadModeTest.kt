@@ -117,7 +117,7 @@ class BlockReadModeTest : EditorViewModelTest() {
     }
 
     @Test
-    fun `should be in read mode after long clicked on block`() {
+    fun `all blocks should be in read mode after long-pressing a simple block and this clicked block should be selected`() {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
@@ -139,11 +139,27 @@ class BlockReadModeTest : EditorViewModelTest() {
 
         val testObserver = vm.state.test()
 
-        val initial = blockViewsReadMode
-
         testObserver.assertValue(
             ViewState.Success(
-                blocks = listOf(titleReadModeView) + initial
+                blocks = listOf(titleReadModeView) + listOf<BlockView>(
+                    blocks[0].let { p ->
+                        BlockView.Text.Paragraph(
+                            id = p.id,
+                            marks = emptyList(),
+                            text = p.content<Block.Content.Text>().text,
+                            mode = BlockView.Mode.READ
+                        )
+                    },
+                    blocks[1].let { p ->
+                        BlockView.Text.Paragraph(
+                            id = p.id,
+                            marks = emptyList(),
+                            text = p.content<Block.Content.Text>().text,
+                            mode = BlockView.Mode.READ,
+                            isSelected = true
+                        )
+                    }
+                )
             )
         )
     }

@@ -146,6 +146,7 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
     }
 
     private fun execute(command: LinkToObjectViewModel.Command) {
+        hideSoftInput()
         when (command) {
             LinkToObjectViewModel.Command.Exit -> {
                 withParent<OnLinkToAction> {

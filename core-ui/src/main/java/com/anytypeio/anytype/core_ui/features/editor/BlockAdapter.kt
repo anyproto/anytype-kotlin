@@ -166,6 +166,16 @@ class BlockAdapter(
                                 )
                             }
                         )
+                        selectionWatcher = { selection ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                if (view is BlockView.Title.Basic) {
+                                    view.cursor = selection.last
+                                }
+                                onSelectionChanged(view.id, selection)
+                            }
+                        }
                     }
                 }
             }
@@ -188,6 +198,16 @@ class BlockAdapter(
                                 )
                             }
                         )
+                        selectionWatcher = { selection ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                if (view is BlockView.Title.Profile) {
+                                    view.cursor = selection.last
+                                }
+                                onSelectionChanged(view.id, selection)
+                            }
+                        }
                     }
                 }
             }
@@ -217,6 +237,16 @@ class BlockAdapter(
                                 )
                             }
                         )
+                        selectionWatcher = { selection ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                if (view is BlockView.Title.Todo) {
+                                    view.cursor = selection.last
+                                }
+                                onSelectionChanged(view.id, selection)
+                            }
+                        }
                     }
                 }
             }
@@ -324,7 +354,7 @@ class BlockAdapter(
                                 if (pos != RecyclerView.NO_POSITION) {
                                     val view = views[pos]
                                     check(view is BlockView.Description)
-                                    view.description = editable.toString()
+                                    view.text = editable.toString()
                                     onDescriptionChanged(view)
                                 }
                             }
@@ -348,6 +378,16 @@ class BlockAdapter(
                                 }
                             }
                             false
+                        }
+                        selectionWatcher = { selection ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                if (view is BlockView.Description) {
+                                    view.cursor = selection.last
+                                }
+                                onSelectionChanged(view.id, selection)
+                            }
                         }
                     }
                 }

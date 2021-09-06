@@ -816,7 +816,7 @@ class EditorViewModel(
         val new = views.map { if (it.id == view.id) view else it }
         val update = TextUpdate.Default(
             target = view.id,
-            text = view.description ?: EMPTY_TEXT,
+            text = view.text,
             markup = emptyList()
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
@@ -5011,20 +5011,21 @@ class EditorViewModel(
         range: IntRange
     ) {
         if (text.isEndLineClick(range)) {
-            onEndLineEnterTitleClicked(title)
+            onEndLineEnterTitleClicked()
         } else {
             proceedWithSplitEvent(title, range, text, emptyList())
         }
     }
 
-    private fun onEndLineEnterTitleClicked(title: Id) {
-        val titlePosition = blocks.indexOfFirst { it.id == title }
-        val someBlock = blocks.elementAtOrNull(titlePosition + 1)
-        val content = someBlock?.content as? Content.Text
-        if (content?.style == Content.Text.Style.DESCRIPTION) {
+    private fun onEndLineEnterTitleClicked() {
+        val description = blocks.firstOrNull { block ->
+            val cnt = block.content
+            cnt is Content.Text && cnt.style == Content.Text.Style.DESCRIPTION
+        }
+        if (description != null) {
             proceedWithSettingTextSelection(
-                block = someBlock.id,
-                textSelection = content.text.length
+                block = description.id,
+                textSelection = description.content<Content.Text>().text.length
             )
         } else {
             val page = blocks.first { it.id == context }

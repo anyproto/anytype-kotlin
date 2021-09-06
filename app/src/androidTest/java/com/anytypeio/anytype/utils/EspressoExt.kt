@@ -43,6 +43,14 @@ fun ViewInteraction.checkIsSelected() {
     check(matches(ViewMatchers.isSelected()))
 }
 
+fun ViewInteraction.checkIsFocused() {
+    check(matches(ViewMatchers.isFocused()))
+}
+
+fun ViewInteraction.checkIsNotFocused() {
+    check(matches(not(ViewMatchers.isFocused())))
+}
+
 fun ViewInteraction.checkIsDisplayed() {
     check(matches(isDisplayed()))
 }

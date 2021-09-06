@@ -434,10 +434,12 @@ sealed class BlockView : ViewType, Parcelable {
     data class Description(
         override val id: String,
         override val mode: Mode = Mode.EDIT,
+        override var text: String,
         override var isFocused: Boolean = false,
-        override val cursor: Int? = null,
-        var description: String?,
-    ): BlockView(), Focusable, Cursor, Permission {
+        override var cursor: Int? = null,
+        override val color: String? = null,
+        override val backgroundColor: String? = null
+    ): BlockView(), TextSupport, Focusable, Cursor, Permission {
         override fun getViewType(): Int = HOLDER_DESCRIPTION
     }
 

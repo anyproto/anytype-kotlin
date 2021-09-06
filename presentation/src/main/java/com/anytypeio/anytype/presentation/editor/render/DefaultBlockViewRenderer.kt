@@ -304,7 +304,8 @@ class DefaultBlockViewRenderer(
                                         block = block,
                                         content = content,
                                         mode = mode,
-                                        restrictions = restrictions
+                                        restrictions = restrictions,
+                                        focus = focus
                                     )
                                 )
                             }
@@ -459,7 +460,8 @@ class DefaultBlockViewRenderer(
         block: Block,
         content: Content.Text,
         mode: EditorMode,
-        restrictions: List<ObjectRestriction>
+        restrictions: List<ObjectRestriction>,
+        focus: Focus
     ): BlockView.Description {
         val blockMode = if (restrictions.contains(ObjectRestriction.RELATIONS)) {
             BlockView.Mode.READ
@@ -468,8 +470,9 @@ class DefaultBlockViewRenderer(
         }
         return BlockView.Description(
             id = block.id,
-            description = content.text.ifEmpty { null },
-            mode = blockMode
+            text = content.text,
+            mode = blockMode,
+            isFocused = block.id == focus.id
         )
     }
 

@@ -161,6 +161,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
                         restoreBlock = restoreBlock
                     )
                 }
+                hideSoftInput()
                 dismiss()
             }
             is MoveToViewModel.Command.Move -> {
@@ -170,6 +171,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
                         blocks = blocks
                     )
                 }
+                hideSoftInput()
                 dismiss()
             }
         }

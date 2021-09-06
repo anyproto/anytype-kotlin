@@ -531,7 +531,7 @@ class BlockViewDiffUtilTest {
 
         val oldBlock = BlockView.Description(
             id = id,
-            description = text,
+            text = text,
             mode = BlockView.Mode.EDIT
         )
 

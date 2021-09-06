@@ -20,13 +20,16 @@ class Description(view: View) : BlockViewHolder(view) {
     ) {
         if (view.mode == BlockView.Mode.READ) {
             enableReadMode()
+            content.pauseTextWatchers {
+                setContent(view)
+            }
         } else {
             enableEditMode()
+            content.pauseTextWatchers {
+                setContent(view)
+            }
             setCursor(view)
             setFocus(view)
-        }
-        content.pauseTextWatchers {
-            content.setText(view.description, TextView.BufferType.EDITABLE)
         }
     }
 
@@ -35,6 +38,14 @@ class Description(view: View) : BlockViewHolder(view) {
         item: BlockView.Description
     ) {
         payloads.forEach { payload ->
+
+            if (payload.textChanged()) {
+                content.pauseSelectionWatcher {
+                    content.pauseTextWatchers {
+                        setContent(item)
+                    }
+                }
+            }
 
             if (payload.readWriteModeChanged()) {
                 if (item.mode == BlockView.Mode.EDIT) {
@@ -80,6 +91,10 @@ class Description(view: View) : BlockViewHolder(view) {
         } else {
             content.clearFocus()
         }
+    }
+
+    fun setContent(item: BlockView.Description) {
+        content.setText(item.text, TextView.BufferType.EDITABLE)
     }
 
     fun enableReadMode() {

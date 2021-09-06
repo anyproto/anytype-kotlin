@@ -989,6 +989,70 @@ class EditorSplitTest : EditorPresentationTestSetup() {
     }
 
     @Test
+    fun `Empty title with desc and featured then Enter then set cursor to end of description when description block is at the end of childrens`() {
+        val title = createTitle(text = "")
+        val featured = createFeaturedBlock()
+        val description = createDescription(description = MockDataFactory.randomString())
+        val header = createHeader(
+            title = title.id,
+            description = description.id,
+            featured = featured.id
+        )
+        val block = createBlock()
+        val page = createPage(root = root, children = listOf(header.id, block.id))
+        val relation2 = Relation(
+            key = MockDataFactory.randomString(),
+            name = "Year",
+            format = Relation.Format.NUMBER,
+            source = Relation.Source.values().random()
+        )
+        val doc = listOf(page, header, title, featured, block, description)
+        setupInteractions(
+            doc = doc,
+            details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
+            relations = listOf()
+        )
+        val vm = buildViewModel()
+        vm.onStart(root)
+
+        val range = IntRange(start = 0, endInclusive = 0)
+
+        vm.onSelectionChanged(
+            id = title.id,
+            selection = range
+        )
+
+        vm.onBlockFocusChanged(
+            id = title.id,
+            hasFocus = true
+        )
+
+        vm.onKeyPressedEvent(
+            KeyPressedEvent.OnTitleBlockEnterKeyEvent(
+                target = title.id,
+                text = title.content<Block.Content.Text>().text,
+                range = range
+            )
+        )
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+
+        verifyZeroInteractions(createBlock)
+        verifyZeroInteractions(splitBlock)
+        verifyZeroInteractions(mergeBlocks)
+        verifyZeroInteractions(updateText)
+
+        val selection = orchestrator.stores.textSelection.current()
+        val descLength = description.content.asText().text.length
+        val expectedSelection = IntRange(descLength, descLength)
+        assertEquals(expected = expectedSelection, actual = selection.selection)
+
+        val focus = orchestrator.stores.focus.current()
+        val expectedFocus = description.id
+        assertEquals(expected = expectedFocus, actual = focus.id)
+    }
+
+    @Test
     fun `Not empty title with desc and featured then cursor not at the end then Enter then split command`() {
         val title = createTitle(text = "FooBar")
         val featured = createFeaturedBlock()

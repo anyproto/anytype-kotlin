@@ -1818,7 +1818,7 @@ class BlockAdapterTest {
             actual = holder.content.isTextSelectable
         )
 
-        assertNull(holder.content.selectionWatcher)
+        assertNotNull(holder.content.selectionWatcher)
     }
 
     @Test

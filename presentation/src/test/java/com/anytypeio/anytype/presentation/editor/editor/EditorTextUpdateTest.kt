@@ -104,7 +104,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
 
         vm.onTextBlockTextChanged(updated)
 
-        vm.onBottomSheetHidden()
+        vm.onHomeButtonClicked()
 
         val inOrder = inOrder(updateText, closePage)
 
@@ -191,7 +191,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
             )
         }
 
-        vm.onBottomSheetHidden()
+        vm.onHomeButtonClicked()
 
         verifyBlocking(closePage, times(1)) {
             invoke(CloseBlock.Params(id = root))

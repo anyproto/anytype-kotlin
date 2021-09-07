@@ -412,7 +412,7 @@
     <string name="enter_url">Enter URL</string>
     <string name="enter_email">Enter e-mail</string>
     <string name="enter_phone">Enter phone</string>
-    <string name="scroll_to_select_position">Scroll to select position</string>
+    <string name="scroll_to_select_position">Scroll to select new position</string>
     <string name="block_action_add_below">Add below</string>
 
 </resources>

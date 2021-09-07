@@ -117,7 +117,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@color/white"
-            android:visibility="gone"
+            android:translationY="-48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -126,8 +126,8 @@
             android:id="@+id/scrollAndMoveBottomAction"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:background="@color/white"
             android:visibility="gone"
+            android:background="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

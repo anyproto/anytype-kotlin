@@ -52,7 +52,6 @@ import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScroll
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_ui.reactive.layoutChanges
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -447,7 +446,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         toolbar.apply {
             enterScrollAndMoveButton()
-                .onEach { toast("TODO") }
+                .onEach {
+                    lifecycleScope.launch {
+                        hideSoftInput()
+                        delay(100)
+                        vm.onQuickBlockMoveClicked()
+                    }
+                }
                 .launchIn(lifecycleScope)
             openSlashWidgetClicks()
                 .onEach { vm.onStartSlashWidgetClicked() }
@@ -1465,13 +1470,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun enterScrollAndMove() {
         if (recycler.itemDecorationCount == 0 || recycler.getItemDecorationAt(0) !is ScrollAndMoveTargetHighlighter) {
 
-            val offset = recycler.computeVerticalScrollOffset()
-
-            lifecycleScope.launch {
-                recycler.layoutChanges().take(1).collect {
-                    if (offset < screen.y / 3) recycler.scrollBy(0, screen.y / 3)
-                }
-            }
+//            val offset = recycler.computeVerticalScrollOffset()
+//
+//            lifecycleScope.launch {
+//                recycler.layoutChanges().take(1).collect {
+//                    if (offset < screen.y / 3) recycler.scrollBy(0, screen.y / 3)
+//                }
+//            }
 
             recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
 
@@ -1480,7 +1485,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             recycler.addOnScrollListener(scrollAndMoveStateListener)
             multiSelectTopToolbar.invisible()
 
-            scrollAndMoveHint.showWithAnimation()
+            showTopScrollAndMoveToolbar()
             scrollAndMoveBottomAction.show()
 
             hideBlockActionPanel()
@@ -1514,7 +1519,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             removeItemDecoration(scrollAndMoveTargetHighlighter)
             removeOnScrollListener(scrollAndMoveStateListener)
         }
-        scrollAndMoveHint.hideWithAnimation()
+        hideTopScrollAndMoveToolbar()
         scrollAndMoveBottomAction.hide()
         targeter.invisible()
         bottomMenu.hideScrollAndMoveModeControls()
@@ -1534,13 +1539,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
     }
 
-    override fun onClipboardAction(action: ClipboardInterceptor.Action) {
-        when (action) {
-            is ClipboardInterceptor.Action.Copy -> vm.onCopy(action.selection)
-            is ClipboardInterceptor.Action.Paste -> vm.onPaste(action.selection)
-        }
-    }
-
     private fun showSelectButton() {
         ObjectAnimator.ofFloat(
             multiSelectTopToolbar,
@@ -1550,6 +1548,37 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
             interpolator = DecelerateInterpolator()
             start()
+        }
+    }
+
+    private fun hideTopScrollAndMoveToolbar() {
+        ObjectAnimator.ofFloat(
+            scrollAndMoveHint,
+            SELECT_BUTTON_ANIMATION_PROPERTY,
+            -requireContext().dimen(R.dimen.dp_48)
+        ).apply {
+            duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
+            interpolator = DecelerateInterpolator()
+            start()
+        }
+    }
+
+    private fun showTopScrollAndMoveToolbar() {
+        ObjectAnimator.ofFloat(
+            scrollAndMoveHint,
+            SELECT_BUTTON_ANIMATION_PROPERTY,
+            0f
+        ).apply {
+            duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
+            interpolator = DecelerateInterpolator()
+            start()
+        }
+    }
+
+    override fun onClipboardAction(action: ClipboardInterceptor.Action) {
+        when (action) {
+            is ClipboardInterceptor.Action.Copy -> vm.onCopy(action.selection)
+            is ClipboardInterceptor.Action.Paste -> vm.onPaste(action.selection)
         }
     }
 

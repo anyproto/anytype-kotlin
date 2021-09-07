@@ -2291,6 +2291,7 @@ class EditorViewModel(
             eventName = EventsDictionary.BTN_SCROLL_MOVE_CANCEL
         )
         if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
+            clearSelections()
             mode = EditorMode.Edit
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnExit)
             viewModelScope.launch { refresh() }
@@ -4949,8 +4950,7 @@ class EditorViewModel(
     }
     //endregion
 
-
-    //region multi-select
+    //region MULTI-SELECT
 
     fun onBlockActionPanelHidden() {
         proceedWithExitingMultiSelectMode()
@@ -5186,6 +5186,28 @@ class EditorViewModel(
             },
             errorAction = { _toasts.offer("Cannot convert selected blocks to $uiBlock") }
         )
+    }
+
+    //endregion
+
+    //region SAM
+
+    fun onQuickBlockMoveClicked() {
+        val target = orchestrator.stores.focus.current().id
+        toggleSelection(target)
+        val descendants = blocks.asMap().descendants(parent = target)
+        if (isSelected(target)) {
+            descendants.forEach { child -> select(child) }
+        } else {
+            descendants.forEach { child -> unselect(child) }
+        }
+        viewModelScope.launch {
+            mode = EditorMode.SAM
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            orchestrator.stores.views.update(views.enterSAM(currentSelection()))
+            renderCommand.send(Unit)
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(1))
+        }
     }
 
     //endregion

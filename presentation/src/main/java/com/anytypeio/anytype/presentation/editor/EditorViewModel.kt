@@ -4781,6 +4781,7 @@ class EditorViewModel(
         viewModelScope.launch {
             if (mode == EditorMode.Select) {
                 mode = EditorMode.Edit
+                clearSelections()
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
             }
             orchestrator.proxies.intents.send(

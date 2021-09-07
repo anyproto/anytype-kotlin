@@ -702,8 +702,8 @@ class EditorViewModel(
         proceedWithExitingBack()
     }
 
-    fun onBottomSheetHidden() {
-        Timber.d("onBottomSheetHidden, ")
+    fun onHomeButtonClicked() {
+        Timber.d("onHomeButtonClicked, ")
         proceedWithExitingToDashboard()
     }
 

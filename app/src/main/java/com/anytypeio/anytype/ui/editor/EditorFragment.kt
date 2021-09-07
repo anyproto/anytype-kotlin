@@ -420,22 +420,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             OutsideClickDetector(vm::onOutsideClicked)
         )
 
-        BottomSheetBehavior.from(sheet).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            isHideable = true
-            addBottomSheetCallback(
-                object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            activity?.hideSoftInput()
-                            vm.onBottomSheetHidden()
-                        }
-                    }
-                }
-            )
-        }
-
         recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
@@ -526,13 +510,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .launchIn(lifecycleScope)
 
         bottomToolbar
-            .navigationClicks()
-            .onEach { vm.onOpenPageNavigationButtonClicked() }
+            .homeClicks()
+            .onEach { vm.onHomeButtonClicked() }
             .launchIn(lifecycleScope)
 
         bottomToolbar
-            .addPageClick()
-            .onEach { vm.onPlusButtonPressed() }
+            .backClicks()
+            .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
         bottomToolbar

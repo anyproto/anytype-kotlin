@@ -3,33 +3,23 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import kotlinx.android.synthetic.main.widget_page_bottom_toolbar.view.*
+import kotlinx.android.synthetic.main.widget_main_bottom_toolbar.view.*
 
-class MainBottomToolbar : ConstraintLayout {
+class MainBottomToolbar @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : LinearLayout(context, attrs) {
 
-    constructor(context: Context) : this(context, null)
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet?
-    ) : this(context, attrs, 0)
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
-        inflate(context)
+    init {
+        LayoutInflater.from(context).inflate(R.layout.widget_main_bottom_toolbar, this, true)
+        isBaselineAligned = false
+        orientation = HORIZONTAL
     }
 
     fun searchClicks() = btnSearch.clicks()
-    fun navigationClicks() = btnNavigation.clicks()
-    fun addPageClick() = btnAddDoc.clicks()
-
-    private fun inflate(context: Context) {
-        LayoutInflater.from(context).inflate(R.layout.widget_page_bottom_toolbar, this, true)
-    }
+    fun homeClicks() = btnHome.clicks()
+    fun backClicks() = btnBack.clicks()
 }

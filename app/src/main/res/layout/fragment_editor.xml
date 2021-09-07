@@ -5,7 +5,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_dashboard_background_color">
+    android:background="@color/white">
 
     <View
         android:id="@+id/placeholder"
@@ -18,11 +18,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="true"
-        app:layout_behavior="@string/bottom_sheet_behavior">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
@@ -168,7 +164,7 @@
     <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
         android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/default_toolbar_height"
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
         android:clickable="true"

@@ -4866,45 +4866,6 @@ class EditorViewModel(
         )
     }
 
-    fun onMultiSelectModeSelectAllClicked() {
-        Timber.d("onMultiSelectModeSelectAllClicked, ")
-        (stateData.value as ViewState.Success).let { state ->
-            if (currentSelection().isEmpty()) {
-                onSelectAllClicked(state)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_MS_SELECT_ALL
-                )
-            } else {
-                onUnselectAllClicked(state)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_MS_UNSELECT_ALL
-                )
-            }
-        }
-    }
-
-    private fun onSelectAllClicked(state: ViewState.Success) =
-        state.blocks.map { block ->
-            if (block is BlockView.Selectable) {
-                select(block.id)
-            }
-            block.updateSelection(newSelection = true)
-        }.let {
-            onMultiSelectModeBlockClicked()
-            stateData.postValue(ViewState.Success(it))
-        }
-
-    private fun onUnselectAllClicked(state: ViewState.Success) =
-        state.blocks.map { block ->
-            unselect(block.id)
-            block.updateSelection(newSelection = false)
-        }.let {
-            onMultiSelectModeBlockClicked()
-            stateData.postValue(ViewState.Success(it))
-        }
-
     fun onMultiSelectStyleButtonClicked() {
         proceedWithMultiStyleToolbarEvent()
     }

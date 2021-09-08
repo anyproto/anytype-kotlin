@@ -119,8 +119,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="hint_paste_or_type_a_url">Paste or type a URL</string>
     <string name="content_description_menu_icon">Menu icon</string>
     <string name="add_new">Add new</string>
-    <string name="select_all">Select all</string>
-    <string name="unselect_all">Unselect all (%1$d)</string>
     <string name="failed_to_launch_wallet">Failed to launch wallet after retry.</string>
 
     <string name="pickit_drive">Drive file was selected</string>
@@ -232,5 +230,10 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="provide_name">Provide name for new object</string>
     <string name="migration_in_progress_message">Migration in progress. It can take up to 5 minutes…</string>
     <string name="soon">Soon</string>
+
+    <string name="one_selected_block">1 selected block</string>
+    <string name="number_selected_blocks">%1$d selected blocks</string>
+    <string name="select_all">Select all</string>
+    <string name="unselect_all">Unselect all (%1$d)</string>
 
 </resources>

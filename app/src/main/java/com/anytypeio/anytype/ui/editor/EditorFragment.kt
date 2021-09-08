@@ -498,12 +498,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .launchIn(lifecycleScope)
 
         multiSelectTopToolbar
-            .selectText
-            .clicks()
-            .onEach { vm.onMultiSelectModeSelectAllClicked() }
-            .launchIn(lifecycleScope)
-
-        multiSelectTopToolbar
             .doneButton
             .clicks()
             .onEach { vm.onExitMultiSelectModeClicked() }
@@ -1150,10 +1144,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             val behavior = BottomSheetBehavior.from(blockActionToolbar)
             if (isVisible) {
                 multiSelectTopToolbar.visible()
-                if (count == 0) {
-                    multiSelectTopToolbar.selectText.setText(R.string.select_all)
-                } else {
-                    multiSelectTopToolbar.selectText.text = getString(R.string.unselect_all, count)
+                when {
+                    count > 1 -> {
+                        multiSelectTopToolbar.selectText.text = getString(R.string.number_selected_blocks, count)
+                    }
+                    count == 1 -> {
+                        multiSelectTopToolbar.selectText.setText(R.string.one_selected_block)
+                    }
+                    else -> {
+                        multiSelectTopToolbar.selectText.text = null
+                    }
                 }
                 bottomMenu.update(count)
                 if (!bottomMenu.isShowing) {

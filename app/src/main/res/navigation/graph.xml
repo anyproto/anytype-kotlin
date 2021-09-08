@@ -12,7 +12,15 @@
             android:id="@+id/pageScreen"
             android:name="com.anytypeio.anytype.ui.editor.EditorFragment"
             android:label="Page screen"
-            tools:layout="@layout/fragment_editor" />
+            tools:layout="@layout/fragment_editor" >
+            <action
+                android:id="@+id/action_pageScreen_to_objectCoverScreen"
+                app:destination="@id/objectCoverScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </fragment>
         <dialog
             android:id="@+id/objectRelationListScreen"
             android:name="com.anytypeio.anytype.ui.relations.RelationListFragment"

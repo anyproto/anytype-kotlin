@@ -871,8 +871,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     fr.show(childFragmentManager, null)
                 }
                 is Command.OpenCoverGallery -> {
-                    val fr = DocCoverSliderFragment.new(command.ctx)
-                    fr.show(childFragmentManager, null)
+                    findNavController().navigate(
+                        R.id.action_pageScreen_to_objectCoverScreen,
+                        bundleOf(DocCoverSliderFragment.CTX_KEY to command.ctx)
+                    )
                 }
                 is Command.OpenObjectLayout -> {
                     val fr = ObjectLayoutFragment.new(command.ctx).apply {

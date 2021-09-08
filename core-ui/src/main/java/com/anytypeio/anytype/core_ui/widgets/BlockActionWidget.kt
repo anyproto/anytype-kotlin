@@ -22,7 +22,7 @@ class BlockActionWidget @JvmOverloads constructor(
 
     var actionListener : (ActionItemType) -> Unit = {}
 
-    private val blockActionAdapter = Adapter { action -> actionListener(action) }
+    val blockActionAdapter = Adapter { action -> actionListener(action) }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_block_action, this)
@@ -36,13 +36,7 @@ class BlockActionWidget @JvmOverloads constructor(
         blockActionAdapter.submitList(actions)
     }
 
-    sealed class BlockAction {
-        object Delete : BlockAction()
-        object Duplicate: BlockAction()
-        object AddBelow : BlockAction()
-    }
-
-    internal class Adapter(
+    class Adapter(
         val onActionClicked: (ActionItemType) -> Unit
     ) : ListAdapter<ActionItemType, Adapter.VH>(Differ) {
 
@@ -98,7 +92,7 @@ class BlockActionWidget @JvmOverloads constructor(
                         icon.setImageResource(R.drawable.ic_block_action_download)
                     }
                     else -> {
-                        title.setText(action::class.simpleName)
+                        title.text = action::class.simpleName
                     }
                 }
             }

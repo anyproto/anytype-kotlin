@@ -142,7 +142,7 @@ class EditorViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     StateReducer<List<Block>, Event> by reducer {
 
-    val actions = MutableStateFlow<List<ActionItemType>>(emptyList())
+    val actions = MutableStateFlow(ActionItemType.default)
 
     val isSyncStatusVisible = MutableStateFlow(true)
     val syncStatus = MutableStateFlow<SyncStatus?>(null)
@@ -154,7 +154,7 @@ class EditorViewModel(
 
     private val session = MutableStateFlow(Session.IDLE)
 
-    private val views: List<BlockView> get() = orchestrator.stores.views.current()
+    val views: List<BlockView> get() = orchestrator.stores.views.current()
 
     val pending: Queue<Restore> = LinkedList()
     val restore: Queue<Restore> = LinkedList()
@@ -1207,6 +1207,9 @@ class EditorViewModel(
             )
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter(currentSelection().size))
+            if (isSelected(target)) {
+                dispatch(Command.ScrollToActionMenu(target = target))
+            }
         }
 
         proceedWithUpdatingActionsForCurrentSelection()
@@ -3016,8 +3019,10 @@ class EditorViewModel(
                     else
                         view
                 }
-
                 stateData.postValue(ViewState.Success(update))
+                if (isSelected(target)) {
+                    dispatch(Command.ScrollToActionMenu(target = target))
+                }
             } else {
                 proceedWithExitingMultiSelectMode()
             }

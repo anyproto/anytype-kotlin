@@ -100,6 +100,7 @@ import kotlinx.coroutines.launch
 import permissions.dispatcher.*
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.math.abs
 
 const val REQUEST_FILE_CODE = 745
 
@@ -182,6 +183,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private val markupColorToolbarFooter by lazy { MarkupColorToolbarFooter(screen) }
     private val slashWidgetFooter by lazy { SlashWidgetFooterItemDecorator(screen) }
     private val styleToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
+    private val actionToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
 
     private val vm by viewModels<EditorViewModel> { factory }
 
@@ -823,6 +825,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 is Command.CloseKeyboard -> {
                     hideSoftInput()
                 }
+                is Command.ScrollToActionMenu -> {
+                    proceedWithScrollingToActionMenu(command)
+                }
                 is Command.Measure -> {
                     val views = pageAdapter.views
                     val position = views.indexOfFirst { it.id == command.target }
@@ -1003,6 +1008,25 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
     }
 
+    private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu): Unit {
+        val lastSelected = (vm.state.value as ViewState.Success).blocks.indexOfLast { it.id == command.target }
+        if (lastSelected != -1) {
+            val lm = recycler.layoutManager as LinearLayoutManager
+            val targetView = lm.findViewByPosition(lastSelected)
+            if (targetView != null) {
+                val behavior = BottomSheetBehavior.from(blockActionToolbar)
+                val toolbarTop: Float = if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    blockActionToolbar.y - blockActionToolbar.measuredHeight
+                } else {
+                    blockActionToolbar.y
+                }
+                val targetBottom = targetView.y + targetView.measuredHeight
+                val delta = toolbarTop - targetBottom
+                if (delta < 0) recycler.smoothScrollBy(0, abs(delta.toInt()))
+            }
+        }
+    }
+
     private fun blurContainer() {
         Blurry.with(context)
             .radius(12)
@@ -1163,6 +1187,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     hideSoftInput()
                     topToolbar.invisible()
                     if (!state.multiSelect.isScrollAndMoveEnabled) {
+                        recycler.addItemDecoration(actionToolbarFooter)
                         lifecycleScope.launch {
                             delay(DELAY_BEFORE_INIT_SAM_SEARCH)
                             activity?.runOnUiThread {
@@ -1184,6 +1209,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                 }
                 hideSelectButton()
+                recycler.removeItemDecoration(actionToolbarFooter)
             }
             if (isScrollAndMoveEnabled)
                 enterScrollAndMove()

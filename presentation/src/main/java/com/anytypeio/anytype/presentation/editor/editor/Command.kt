@@ -38,6 +38,7 @@ sealed class Command {
     data class OpenAddBlockPanel(val ctx: Id) : Command()
 
     data class Measure(val target: Id) : Command()
+    data class ScrollToActionMenu(val target: Id?) : Command()
 
     data class OpenTurnIntoPanel(
         val target: Id,

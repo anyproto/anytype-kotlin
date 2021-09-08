@@ -10,14 +10,12 @@ import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.jraska.livedata.test
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyNoMoreInteractions
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -329,81 +327,5 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(turnIntoDocument, times(1)) { invoke(params) }
-    }
-
-    @Test
-    fun `should not invoke turnIntoDocument for file in multi-select mode`() {
-
-        // SETUP
-
-        val child1 = Block(
-            id = "CHILD1",
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomUuid(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
-            )
-        )
-
-        val child2 = Block(
-            id = "CHILD2",
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File(
-                type = Block.Content.File.Type.IMAGE,
-                state = Block.Content.File.State.DONE
-            )
-        )
-
-        val parent = Block(
-            id = "PARENT",
-            fields = Block.Fields.empty(),
-            children = listOf(child1.id, child2.id),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(parent.id)
-        )
-
-        val document = listOf(page, parent, child1, child2)
-
-        stubOpenDocument(document = document)
-        stubInterceptThreadStatus()
-        stubInterceptEvents(InterceptEvents.Params(context = root))
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        val params = TurnIntoDocument.Params(
-            context = root,
-            targets = listOf(child1.id, child2.id)
-        )
-
-        stubTurnIntoDocument(params = params)
-
-        vm.apply {
-            onStart(root)
-            onBlockFocusChanged(id = child1.id, hasFocus = true)
-            onEnterMultiSelectModeClicked()
-            coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
-            onClickListener(ListenerType.Picture.View(child2.id))
-            onMultiSelectTurnIntoButtonClicked()
-        }
-
-        // Verify there was no command for opening turn-into panel.
-
-        verifyNoMoreInteractions(turnIntoDocument)
-        vm.commands.test().assertNoValue()
     }
 }

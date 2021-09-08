@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
+import com.anytypeio.anytype.utils.espresso.*
 import org.hamcrest.Matchers.not
 
 fun <T : BlockViewHolder> Int.scrollTo(position: Int) {

@@ -31,8 +31,8 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
-import com.anytypeio.anytype.utils.WithTextColor
-import com.anytypeio.anytype.utils.WithTextColorRes
+import com.anytypeio.anytype.utils.espresso.WithTextColor
+import com.anytypeio.anytype.utils.espresso.WithTextColorRes
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before

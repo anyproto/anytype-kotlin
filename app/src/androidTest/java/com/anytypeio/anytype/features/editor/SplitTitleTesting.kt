@@ -16,6 +16,7 @@ import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.espresso.SetEditTextSelectionAction
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before

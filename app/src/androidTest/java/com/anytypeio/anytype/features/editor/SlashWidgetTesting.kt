@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.espresso.SetEditTextSelectionAction
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -1049,7 +1050,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 

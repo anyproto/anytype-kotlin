@@ -92,7 +92,7 @@ open class EditorTestSetup {
     lateinit var updateCheckbox: UpdateCheckbox
     @Mock
     lateinit var unlinkBlocks: UnlinkBlocks
-    @Mock
+
     lateinit var getListPages: GetListPages
     @Mock
     lateinit var duplicateBlock: DuplicateBlock
@@ -201,6 +201,7 @@ open class EditorTestSetup {
         updateFields = UpdateFields(repo)
         setObjectType = SetObjectType(repo)
         createNewDocument = CreateNewDocument(repo, documentEmojiIconProvider)
+        getListPages = GetListPages(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadFile = DownloadFile(
             downloader = mock(),
@@ -388,6 +389,12 @@ open class EditorTestSetup {
     fun stubGetObjectTypes(objectTypes: List<ObjectType>) {
         repo.stub {
             onBlocking { getObjectTypes() } doReturn objectTypes
+        }
+    }
+
+    fun stubGetListPages(pages: List<DocumentInfo>) {
+        repo.stub {
+            onBlocking { getListPages() } doReturn pages
         }
     }
 

@@ -448,7 +448,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 .onEach { vm.onBlockToolbarStyleClicked() }
                 .launchIn(lifecycleScope)
             mentionClicks()
-                .onEach { toast("TODO") }
+                .onEach { vm.onStartMentionWidgetClicked() }
                 .launchIn(lifecycleScope)
         }
 
@@ -994,6 +994,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                             position = command.position
                         )
                         fr.show(childFragmentManager, null)
+                    }
+                }
+                is Command.AddMentionWidgetTriggerToFocusedBlock -> {
+                    recycler.findFocus()?.let { child: View? ->
+                        if (child is TextInputWidget) {
+                            child.text?.insert(child.selectionStart, "@")
+                        }
                     }
                 }
             }

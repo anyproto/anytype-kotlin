@@ -2622,10 +2622,6 @@ class EditorViewModel(
         }
     }
 
-    private fun onMentionClicked(target: String) {
-        proceedWithOpeningObjectByLayout(target)
-    }
-
     private fun proceedWithOpeningObjectByLayout(target: String) {
         proceedWithClearingFocus()
         val details = orchestrator.stores.details.current()
@@ -3690,143 +3686,6 @@ class EditorViewModel(
             eventName = EventsDictionary.SCREEN_SEARCH
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
-    }
-
-    fun onMentionEvent(mentionEvent: MentionEvent) {
-        Timber.d("onMentionEvent, mentionEvent:[$mentionEvent]")
-        when (mentionEvent) {
-            is MentionEvent.MentionSuggestText -> {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Mentions.OnQuery(
-                        text = mentionEvent.text.toString()
-                    )
-                )
-            }
-            is MentionEvent.MentionSuggestStart -> {
-                mentionFrom = mentionEvent.mentionStart
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Mentions.OnStart(
-                        cursorCoordinate = mentionEvent.cursorCoordinate,
-                        mentionFrom = mentionEvent.mentionStart
-                    )
-                )
-                viewModelScope.launch {
-                    getListPages.invoke(Unit).proceed(
-                        failure = { it.timber() },
-                        success = { response ->
-                            val objectTypes = objectTypesProvider.get()
-                            val objectViews = response.listPages.map { pages ->
-                                pages.toMentionView(
-                                    objectTypes = objectTypes,
-                                    urlBuilder = urlBuilder
-                                )
-                            }
-                            controlPanelInteractor.onEvent(
-                                ControlPanelMachine.Event.Mentions.OnResult(objectViews)
-                            )
-                        }
-                    )
-                }
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = POPUP_MENTION_MENU
-                )
-            }
-            MentionEvent.MentionSuggestStop -> {
-                mentionFrom = -1
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Mentions.OnStop
-                )
-            }
-        }
-    }
-
-    fun onAddMentionNewPageClicked(name: String) {
-        Timber.d("onAddMentionNewPageClicked, name:[$name]")
-
-        val params = CreateNewDocument.Params(
-            name = name.removePrefix(MENTION_PREFIX)
-        )
-
-        val startTime = System.currentTimeMillis()
-
-        viewModelScope.launch {
-            createNewDocument(
-                params = params
-            ).proceed(
-                failure = {
-                    Timber.e(it, "Error while creating new page with params: $params")
-                },
-                success = { result ->
-                    val middleTime = System.currentTimeMillis()
-                    onCreateMentionInText(
-                        id = result.id,
-                        name = result.name.getMentionName(MENTION_TITLE_EMPTY),
-                        mentionTrigger = name
-                    )
-                    analytics.registerEvent(
-                        EventAnalytics.Anytype(
-                            name = PAGE_MENTION_CREATE,
-                            props = Props.empty(),
-                            duration = EventAnalytics.Duration(
-                                start = startTime,
-                                middleware = middleTime,
-                                render = middleTime
-                            )
-                        )
-                    )
-                }
-            )
-        }
-    }
-
-    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String) {
-        Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
-        onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
-    }
-
-    fun onCreateMentionInText(id: Id, name: String, mentionTrigger: String) {
-        Timber.d("onCreateMentionInText, id:[$id], name:[$name], mentionTrigger:[$mentionFrom]")
-
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
-
-        val target = blocks.first { it.id == focus.value }
-
-        val new = target.addMention(
-            mentionText = name,
-            mentionId = id,
-            from = mentionFrom,
-            mentionTrigger = mentionTrigger
-        )
-
-        blocks = blocks.map { block ->
-            if (block.id != target.id)
-                block
-            else
-                new
-        }
-
-        viewModelScope.launch {
-            val position = mentionFrom + name.length + 1
-            orchestrator.stores.focus.update(
-                t = Editor.Focus(
-                    id = new.id,
-                    cursor = Editor.Cursor.Range(IntRange(position, position))
-                )
-            )
-            refresh()
-        }
-
-        viewModelScope.launch {
-            proceedWithUpdatingText(
-                intent = Intent.Text.UpdateText(
-                    context = context,
-                    target = new.id,
-                    text = new.content<Content.Text>().text,
-                    marks = new.content<Content.Text>().marks
-                )
-            )
-        }
     }
 
     private fun onMultiSelectModeBlockClicked() {
@@ -5156,5 +5015,152 @@ class EditorViewModel(
         }
     }
 
+    //endregion
+
+    //region MENTION WIDGET
+    fun onStartMentionWidgetClicked() {
+        dispatch(Command.AddMentionWidgetTriggerToFocusedBlock)
+    }
+
+    fun onMentionEvent(mentionEvent: MentionEvent) {
+        Timber.d("onMentionEvent, mentionEvent:[$mentionEvent]")
+        when (mentionEvent) {
+            is MentionEvent.MentionSuggestText -> {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.Mentions.OnQuery(
+                        text = mentionEvent.text.toString()
+                    )
+                )
+            }
+            is MentionEvent.MentionSuggestStart -> {
+                mentionFrom = mentionEvent.mentionStart
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.Mentions.OnStart(
+                        cursorCoordinate = mentionEvent.cursorCoordinate,
+                        mentionFrom = mentionEvent.mentionStart
+                    )
+                )
+                viewModelScope.launch {
+                    getListPages.invoke(Unit).proceed(
+                        failure = { it.timber() },
+                        success = { response ->
+                            val objectTypes = objectTypesProvider.get()
+                            val objectViews = response.listPages.map { pages ->
+                                pages.toMentionView(
+                                    objectTypes = objectTypes,
+                                    urlBuilder = urlBuilder
+                                )
+                            }
+                            controlPanelInteractor.onEvent(
+                                ControlPanelMachine.Event.Mentions.OnResult(objectViews)
+                            )
+                        }
+                    )
+                }
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = POPUP_MENTION_MENU
+                )
+            }
+            MentionEvent.MentionSuggestStop -> {
+                mentionFrom = -1
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.Mentions.OnStop
+                )
+            }
+        }
+    }
+
+    fun onAddMentionNewPageClicked(name: String) {
+        Timber.d("onAddMentionNewPageClicked, name:[$name]")
+
+        val params = CreateNewDocument.Params(
+            name = name.removePrefix(MENTION_PREFIX)
+        )
+
+        val startTime = System.currentTimeMillis()
+
+        viewModelScope.launch {
+            createNewDocument(
+                params = params
+            ).proceed(
+                failure = {
+                    Timber.e(it, "Error while creating new page with params: $params")
+                },
+                success = { result ->
+                    val middleTime = System.currentTimeMillis()
+                    onCreateMentionInText(
+                        id = result.id,
+                        name = result.name.getMentionName(MENTION_TITLE_EMPTY),
+                        mentionTrigger = name
+                    )
+                    analytics.registerEvent(
+                        EventAnalytics.Anytype(
+                            name = PAGE_MENTION_CREATE,
+                            props = Props.empty(),
+                            duration = EventAnalytics.Duration(
+                                start = startTime,
+                                middleware = middleTime,
+                                render = middleTime
+                            )
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String) {
+        Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
+        onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+    }
+
+    fun onCreateMentionInText(id: Id, name: String, mentionTrigger: String) {
+        Timber.d("onCreateMentionInText, id:[$id], name:[$name], mentionTrigger:[$mentionFrom]")
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
+
+        val target = blocks.first { it.id == focus.value }
+
+        val new = target.addMention(
+            mentionText = name,
+            mentionId = id,
+            from = mentionFrom,
+            mentionTrigger = mentionTrigger
+        )
+
+        blocks = blocks.map { block ->
+            if (block.id != target.id)
+                block
+            else
+                new
+        }
+
+        viewModelScope.launch {
+            val position = mentionFrom + name.length + 1
+            orchestrator.stores.focus.update(
+                t = Editor.Focus(
+                    id = new.id,
+                    cursor = Editor.Cursor.Range(IntRange(position, position))
+                )
+            )
+            refresh()
+        }
+
+        viewModelScope.launch {
+            proceedWithUpdatingText(
+                intent = Intent.Text.UpdateText(
+                    context = context,
+                    target = new.id,
+                    text = new.content<Content.Text>().text,
+                    marks = new.content<Content.Text>().marks
+                )
+            )
+        }
+    }
+
+    private fun onMentionClicked(target: String) {
+        proceedWithOpeningObjectByLayout(target)
+    }
     //endregion
 }

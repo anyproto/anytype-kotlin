@@ -3661,20 +3661,29 @@ class EditorViewModel(
 
         _toasts.offer("Downloading file in background...")
 
-        val block = blocks.first { it.id == id }
-        val file = block.content<Content.File>()
+        val block = blocks.firstOrNull { it.id == id }
+        val content = block?.content
 
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Media.DownloadFile(
-                    url = when (file.type) {
-                        Content.File.Type.IMAGE -> urlBuilder.image(file.hash)
-                        else -> urlBuilder.file(file.hash)
-                    },
-                    name = file.name.orEmpty()
+        if (content is Content.File && content.state == Content.File.State.DONE) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Media.DownloadFile(
+                        url = when (content.type) {
+                            Content.File.Type.IMAGE -> urlBuilder.image(content.hash)
+                            else -> urlBuilder.file(content.hash)
+                        },
+                        name = content.name.orEmpty()
+                    )
                 )
-            )
+            }
+        } else {
+            Timber.e("Block is not File or with wrong state, can't proceed with download")
         }
+    }
+
+    private fun startDownloadingFiles(ids: List<String>) {
+        Timber.d("startDownloadingFiles, ids:[$ids]")
+        ids.forEach { id -> startDownloadingFile(id) }
     }
 
     fun onPageSearchClicked() {
@@ -4781,6 +4790,9 @@ class EditorViewModel(
             }
             ActionItemType.SAM -> { onEnterScrollAndMoveClicked() }
             ActionItemType.Style -> { onMultiSelectStyleButtonClicked() }
+            ActionItemType.Download -> {
+                startDownloadingFiles(ids = currentSelection().toList())
+            }
             else -> {
                 _toasts.trySend("TODO")
             }

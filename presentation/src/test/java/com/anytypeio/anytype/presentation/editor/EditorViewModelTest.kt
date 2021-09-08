@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -218,9 +217,6 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var setObjectType: SetObjectType
-
-    @Mock
-    lateinit var getFlavourConfig: GetFlavourConfig
 
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
@@ -3919,8 +3915,7 @@ open class EditorViewModelTest {
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
                 counter = Counter.Default(),
-                coverImageHashProvider = coverImageHashProvider,
-                getFlavourConfig = getFlavourConfig
+                coverImageHashProvider = coverImageHashProvider
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
@@ -3971,7 +3966,6 @@ open class EditorViewModelTest {
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig,
             objectTypesProvider = objectTypesProvider
         )
     }

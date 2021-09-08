@@ -72,8 +72,7 @@ sealed class HomeDashboardStateMachine {
             val blocks: List<Block>,
             val details: Block.Details,
             val builder: UrlBuilder,
-            val objectTypes: List<ObjectType>,
-            val isDataViewEnabled: Boolean
+            val objectTypes: List<ObjectType>
         ) : Event()
 
         data class OnShowProfile(
@@ -166,7 +165,6 @@ sealed class HomeDashboardStateMachine {
                             builder = event.builder,
                             objectTypes = event.objectTypes
                         )
-                        .filterBySets(isDataViewEnabled = event.isDataViewEnabled)
 
                     val childrenIdsList = event.blocks.getChildrenIdsList(
                         parent = event.context
@@ -276,14 +274,6 @@ sealed class HomeDashboardStateMachine {
                     )
                 }
             }
-        }
-
-        private fun List<DashboardView>.filterBySets(
-            isDataViewEnabled: Boolean
-        ): List<DashboardView> = if (isDataViewEnabled) {
-            this
-        } else {
-            this.filter { it !is DashboardView.ObjectSet }
         }
     }
 }

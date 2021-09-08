@@ -162,12 +162,6 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
             ObjectMenuViewModelBase.Command.OpenSetRelations -> {
                 toast(COMING_SOON_MSG)
             }
-            ObjectMenuViewModelBase.Command.HideSetsLogic -> {
-                optionLayout.gone()
-                divider3.gone()
-                optionRelations.gone()
-                divider4.gone()
-            }
         }
     }
 

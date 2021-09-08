@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -78,7 +77,6 @@ open class EditorTestSetup {
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
     lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
-    lateinit var getFlavourConfig: GetFlavourConfig
 
     @Mock
     lateinit var openPage: OpenPage
@@ -204,7 +202,6 @@ open class EditorTestSetup {
         setObjectType = SetObjectType(repo)
         createNewDocument = CreateNewDocument(repo, documentEmojiIconProvider)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
-        getFlavourConfig = GetFlavourConfig(flavourConfigProvider)
         downloadFile = DownloadFile(
             downloader = mock(),
             context = Dispatchers.Main
@@ -245,8 +242,7 @@ open class EditorTestSetup {
                 urlBuilder = urlBuilder,
                 counter = Counter.Default(),
                 toggleStateHolder = ToggleStateHolder.Default(),
-                coverImageHashProvider = coverImageHashProvider,
-                getFlavourConfig = getFlavourConfig
+                coverImageHashProvider = coverImageHashProvider
             ),
             getListPages = getListPages,
             orchestrator = Orchestrator(
@@ -299,7 +295,6 @@ open class EditorTestSetup {
             detailModificationManager = InternalDetailModificationManager(stores.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig,
             objectTypesProvider = objectTypesProvider
         )
     }
@@ -387,12 +382,6 @@ open class EditorTestSetup {
     fun stubUpdateText() {
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
-        }
-    }
-
-    fun stubGetFlavorConfig() {
-        flavourConfigProvider.stub {
-            on { get() } doReturn FlavourConfig()
         }
     }
 

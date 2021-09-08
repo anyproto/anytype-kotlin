@@ -39,7 +39,6 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -59,8 +58,7 @@ import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeCatego
 import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeTypesForDotsDivider
 import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeTypesForLineDivider
 import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeTypesForText
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludedCategoriesForTextExperimental
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludedCategoriesForTextStable
+import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludedCategoriesForText
 import com.anytypeio.anytype.presentation.editor.editor.*
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -135,7 +133,6 @@ class EditorViewModel(
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val getFlavourConfig: GetFlavourConfig,
     private val objectTypesProvider: ObjectTypesProvider
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -1558,11 +1555,7 @@ class EditorViewModel(
                 val target = blocks.first { it.id == id }
                 when (val content = target.content) {
                     is Content.Text -> {
-                        val categories = if (getFlavourConfig.isDataViewEnabled()) {
-                            excludedCategoriesForTextExperimental()
-                        } else {
-                            excludedCategoriesForTextStable()
-                        }
+                        val categories = excludedCategoriesForText()
                         excludedCategories.addAll(categories)
                         excludedTypes.addAll(excludeTypesForText())
                     }
@@ -3722,13 +3715,7 @@ class EditorViewModel(
                         failure = { it.timber() },
                         success = { response ->
                             val objectTypes = objectTypesProvider.get()
-                            val objectViews = response.listPages.filter { obj ->
-                                if (getFlavourConfig.isDataViewEnabled()) {
-                                    true
-                                } else {
-                                    obj.smartBlockType != SmartBlockType.SET
-                                }
-                            }.map { pages ->
+                            val objectViews = response.listPages.map { pages ->
                                 pages.toMentionView(
                                     objectTypes = objectTypes,
                                     urlBuilder = urlBuilder
@@ -4057,11 +4044,7 @@ class EditorViewModel(
                     return
                 }
                 if (event.filter.length == 1) {
-                    val mainItems = if (getFlavourConfig.isDataViewEnabled()) {
-                        SlashExtensions.getExperimentalSlashWidgetMainItems()
-                    } else {
-                        SlashExtensions.getStableSlashWidgetMainItems()
-                    }
+                    val mainItems = SlashExtensions.getSlashWidgetMainItems()
                     val widgetState = SlashWidgetState.UpdateItems.empty()
                         .copy(mainItems = mainItems)
                     val panelEvent = ControlPanelMachine.Event.Slash.OnFilterChange(
@@ -4070,36 +4053,12 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-
-                if (getFlavourConfig.isDataViewEnabled()) {
-                    getObjectTypes { objectTypes ->
-                        getRelations { relations ->
-                            val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
-                                text = event.filter,
-                                objectTypes = objectTypes.toView(),
-                                relations = relations,
-                                viewType = slashViewType
-                            )
-                            incFilterSearchEmptyCount(widgetState)
-                            val panelEvent = if (filterSearchEmptyCount == SLASH_EMPTY_SEARCH_MAX) {
-                                filterSearchEmptyCount = 0
-                                slashStartIndex = 0
-                                slashFilter = ""
-                                slashViewType = 0
-                                ControlPanelMachine.Event.Slash.OnStop
-                            } else {
-                                ControlPanelMachine.Event.Slash.OnFilterChange(widgetState)
-                            }
-                            controlPanelInteractor.onEvent(panelEvent)
-                        }
-                    }
-                } else {
-                    getObjectTypes { objectTypes ->
-                        val filter = objectTypes.filter { it.url == ObjectType.PAGE_URL }
+                getObjectTypes { objectTypes ->
+                    getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
-                            objectTypes = filter.toView(),
-                            relations = emptyList(),
+                            objectTypes = objectTypes.toView(),
+                            relations = relations,
                             viewType = slashViewType
                         )
                         incFilterSearchEmptyCount(widgetState)
@@ -4115,7 +4074,6 @@ class EditorViewModel(
                         controlPanelInteractor.onEvent(panelEvent)
                     }
                 }
-
             }
             SlashEvent.Stop -> {
                 slashStartIndex = 0
@@ -4400,20 +4358,11 @@ class EditorViewModel(
     }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectType>) {
-        if (getFlavourConfig.isDataViewEnabled()) {
-            onSlashWidgetStateChanged(
-                SlashWidgetState.UpdateItems.empty().copy(
-                    objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
-                )
+        onSlashWidgetStateChanged(
+            SlashWidgetState.UpdateItems.empty().copy(
+                objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = objectTypes)
             )
-        } else {
-            val filter = objectTypes.filter { it.url == ObjectType.PAGE_URL }
-            onSlashWidgetStateChanged(
-                SlashWidgetState.UpdateItems.empty().copy(
-                    objectItems = SlashExtensions.getSlashWidgetObjectTypeItems(objectTypes = filter)
-                )
-            )
-        }
+        )
     }
 
     private fun proceedWithRelations(relations: List<SlashRelationView>) {
@@ -4582,11 +4531,7 @@ class EditorViewModel(
     }
 
     private fun onSlashBackClicked() {
-        val items = if (getFlavourConfig.isDataViewEnabled()) {
-            SlashExtensions.getExperimentalSlashWidgetMainItems()
-        } else {
-            SlashExtensions.getStableSlashWidgetMainItems()
-        }
+        val items = SlashExtensions.getSlashWidgetMainItems()
         val widgetState = SlashWidgetState.UpdateItems.empty().copy(
             mainItems = items
         )

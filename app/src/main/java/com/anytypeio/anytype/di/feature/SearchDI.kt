@@ -4,7 +4,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
@@ -46,13 +45,11 @@ object ObjectSearchModule {
         urlBuilder: UrlBuilder,
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
-        getFlavourConfig: GetFlavourConfig,
         analytics: Analytics
     ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         getObjectTypes = getObjectTypes,
-        getFlavourConfig = getFlavourConfig,
         analytics = analytics
     )
 }

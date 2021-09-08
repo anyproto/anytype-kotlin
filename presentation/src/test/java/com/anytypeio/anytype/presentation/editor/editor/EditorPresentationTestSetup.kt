@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -190,9 +189,6 @@ open class EditorPresentationTestSetup {
     lateinit var setObjectType: SetObjectType
 
     @Mock
-    lateinit var getFlavourConfig: GetFlavourConfig
-
-    @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -266,8 +262,7 @@ open class EditorPresentationTestSetup {
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
                 counter = Counter.Default(),
-                coverImageHashProvider = coverImageHashProvider,
-                getFlavourConfig = getFlavourConfig
+                coverImageHashProvider = coverImageHashProvider
             ),
             archiveDocument = archiveDocument,
             createDocument = createDocument,
@@ -280,7 +275,6 @@ open class EditorPresentationTestSetup {
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig,
             objectTypesProvider = objectTypesProvider
         )
     }
@@ -326,16 +320,12 @@ open class EditorPresentationTestSetup {
     fun stubInterceptEvents(
         params: InterceptEvents.Params = InterceptEvents.Params(context = root),
         flow: Flow<List<Event>> = flowOf(),
-        stubInterceptThreadStatus: Boolean = true,
-        isDataViewEnabled: Boolean = true
+        stubInterceptThreadStatus: Boolean = true
     ) {
         interceptEvents.stub {
             onBlocking { build(params) } doReturn flow
         }
         if (stubInterceptThreadStatus) stubInterceptThreadStatus()
-        getFlavourConfig.stub {
-            on { isDataViewEnabled() } doReturn isDataViewEnabled
-        }
     }
 
     fun stubInterceptThreadStatus() {
@@ -508,14 +498,6 @@ open class EditorPresentationTestSetup {
             } doReturn Either.Right(
                 Payload(context = root, events = emptyList())
             )
-        }
-    }
-
-    fun stubGetFlavourConfig(
-        isDataViewEnabled: Boolean
-    ) {
-        getFlavourConfig.stub {
-            on { isDataViewEnabled() } doReturn isDataViewEnabled
         }
     }
 

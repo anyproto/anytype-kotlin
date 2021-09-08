@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -19,8 +18,7 @@ class MoveToViewModel(
     urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
-    private val analytics: Analytics,
-    private val getFlavourConfig: GetFlavourConfig
+    private val analytics: Analytics
 ) : ViewModel() {
 
     private val _viewState: MutableStateFlow<MoveToView> = MutableStateFlow(MoveToView.Init)
@@ -98,13 +96,9 @@ class MoveToViewModel(
 
     private fun getSearchObjectsParams(): SearchObjects.Params {
 
-        val filteredTypes = if (getFlavourConfig.isDataViewEnabled()) {
-            types.value
-                .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
-                .map { objectType -> objectType.url }
-        } else {
-            listOf(ObjectTypeConst.PAGE)
-        }
+        val filteredTypes = types.value
+            .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
+            .map { objectType -> objectType.url }
 
         val filters = listOf(
             DVFilter(

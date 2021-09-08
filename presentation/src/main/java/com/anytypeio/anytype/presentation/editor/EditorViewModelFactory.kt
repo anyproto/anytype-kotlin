@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -49,7 +48,6 @@ open class EditorViewModelFactory(
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val getFlavourConfig: GetFlavourConfig,
     private val objectTypesProvider: ObjectTypesProvider
 ) : ViewModelProvider.Factory {
 
@@ -79,7 +77,6 @@ open class EditorViewModelFactory(
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            getFlavourConfig = getFlavourConfig,
             objectTypesProvider = objectTypesProvider
         ) as T
     }

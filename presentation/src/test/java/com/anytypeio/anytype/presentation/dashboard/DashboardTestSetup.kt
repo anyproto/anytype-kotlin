@@ -74,9 +74,6 @@ open class DashboardTestSetup {
     lateinit var gateway: Gateway
 
     @Mock
-    lateinit var getFlavourConfig: GetFlavourConfig
-
-    @Mock
     lateinit var analytics: Analytics
 
     @Mock
@@ -102,7 +99,6 @@ open class DashboardTestSetup {
         interceptEvents = interceptEvents,
         eventConverter = HomeDashboardEventConverter.DefaultConverter(
             builder = builder,
-            getFlavourConfig = getFlavourConfig,
             objectTypesProvider = objectTypesProvider
         ),
         getDebugSettings = getDebugSettings,
@@ -111,7 +107,6 @@ open class DashboardTestSetup {
         searchRecentObjects = searchRecentObjects,
         searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
-        getFlavourConfig = getFlavourConfig,
         urlBuilder = builder
     )
 

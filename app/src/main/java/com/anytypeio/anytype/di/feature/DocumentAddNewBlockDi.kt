@@ -2,7 +2,6 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.presentation.editor.picker.DocumentAddBlockViewModelFactory
 import com.anytypeio.anytype.ui.editor.modals.AddBlockFragment
 import dagger.Module
@@ -30,7 +29,6 @@ object DocumentAddNewBlockModule {
     @PerModal
     fun provideFactory(
         getObjectTypes: GetObjectTypes,
-        getFlavourConfig: GetFlavourConfig
     ): DocumentAddBlockViewModelFactory =
-        DocumentAddBlockViewModelFactory(getObjectTypes, getFlavourConfig)
+        DocumentAddBlockViewModelFactory(getObjectTypes)
 }

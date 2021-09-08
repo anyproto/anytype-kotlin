@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -16,25 +15,19 @@ class LinkToObjectViewModel(
     urlBuilder: UrlBuilder,
     searchObjects: SearchObjects,
     getObjectTypes: GetObjectTypes,
-    analytics: Analytics,
-    private val getFlavourConfig: GetFlavourConfig
+    analytics: Analytics
 ) : ObjectSearchViewModel(
     urlBuilder = urlBuilder,
     getObjectTypes = getObjectTypes,
     searchObjects = searchObjects,
-    analytics = analytics,
-    getFlavourConfig = getFlavourConfig,
+    analytics = analytics
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     override fun getSearchObjectsParams(): SearchObjects.Params {
 
-        val filteredTypes = if (getFlavourConfig.isDataViewEnabled()) {
-            types.value.map { objectType -> objectType.url }
-        } else {
-            listOf(ObjectTypeConst.PAGE)
-        }
+        val filteredTypes = types.value.map { objectType -> objectType.url }
 
         val filters = listOf(
             DVFilter(

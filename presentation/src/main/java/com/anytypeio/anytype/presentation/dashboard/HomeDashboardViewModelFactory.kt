@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -28,7 +27,6 @@ class HomeDashboardViewModelFactory(
     private val searchRecentObjects: SearchRecentObjects,
     private val searchInboxObjects: SearchInboxObjects,
     private val searchObjectSets: SearchObjectSets,
-    private val getFlavourConfig: GetFlavourConfig,
     private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
 
@@ -49,7 +47,6 @@ class HomeDashboardViewModelFactory(
             searchRecentObjects = searchRecentObjects,
             searchInboxObjects = searchInboxObjects,
             searchObjectSets = searchObjectSets,
-            getFlavourConfig = getFlavourConfig,
             urlBuilder = urlBuilder
         ) as T
     }

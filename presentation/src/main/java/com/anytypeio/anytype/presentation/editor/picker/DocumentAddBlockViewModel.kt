@@ -5,18 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.picker.AddBlockView.Companion.itemsExperimental
-import com.anytypeio.anytype.presentation.editor.picker.AddBlockView.Companion.itemsStable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DocumentAddBlockViewModel(
-    private val getObjectTypes: GetObjectTypes,
-    private val getFlavourConfig: GetFlavourConfig
+    private val getObjectTypes: GetObjectTypes
 ) : ViewModel() {
 
     val views = MutableStateFlow<List<AddBlockView>>(emptyList())
@@ -24,17 +21,13 @@ class DocumentAddBlockViewModel(
     var objectTypes : List<ObjectType> = emptyList()
 
     fun onStart() {
-        if (getFlavourConfig.isDataViewEnabled()) {
-            views.value = listOf(AddBlockView.AddBlockHeader) + itemsExperimental()
-            viewModelScope.launch {
-                val params = GetObjectTypes.Params(filterArchivedObjects = true)
-                getObjectTypes.invoke(params).proceed(
-                    failure = { Timber.e("Error getting object type list:${it.message}") },
-                    success = { addObjectTypes(it) }
-                )
-            }
-        } else {
-            views.value = listOf(AddBlockView.AddBlockHeader) + itemsStable()
+        views.value = listOf(AddBlockView.AddBlockHeader) + itemsExperimental()
+        viewModelScope.launch {
+            val params = GetObjectTypes.Params(filterArchivedObjects = true)
+            getObjectTypes.invoke(params).proceed(
+                failure = { Timber.e("Error getting object type list:${it.message}") },
+                success = { addObjectTypes(it) }
+            )
         }
     }
 
@@ -68,15 +61,11 @@ class DocumentAddBlockViewModel(
 }
 
 class DocumentAddBlockViewModelFactory(
-    private val getObjectTypes: GetObjectTypes,
-    private val getFlavourConfig: GetFlavourConfig
+    private val getObjectTypes: GetObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return DocumentAddBlockViewModel(
-            getObjectTypes,
-            getFlavourConfig
-        ) as T
+        return DocumentAddBlockViewModel(getObjectTypes) as T
     }
 }

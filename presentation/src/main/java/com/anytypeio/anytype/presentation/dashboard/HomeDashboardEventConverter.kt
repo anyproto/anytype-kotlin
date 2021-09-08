@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.dashboard
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import timber.log.Timber
 
@@ -13,7 +12,6 @@ interface HomeDashboardEventConverter {
 
     class DefaultConverter(
         private val builder: UrlBuilder,
-        private val getFlavourConfig: GetFlavourConfig,
         private val objectTypesProvider: ObjectTypesProvider
     ) : HomeDashboardEventConverter {
 
@@ -33,8 +31,7 @@ interface HomeDashboardEventConverter {
                         context = event.context,
                         details = event.details,
                         builder = builder,
-                        objectTypes = objectTypesProvider.get(),
-                        isDataViewEnabled = getFlavourConfig.isDataViewEnabled()
+                        objectTypes = objectTypesProvider.get()
                     )
                 }
                 SmartBlockType.PROFILE_PAGE -> {

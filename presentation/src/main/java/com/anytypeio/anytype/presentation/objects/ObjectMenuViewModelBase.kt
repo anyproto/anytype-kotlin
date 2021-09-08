@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
@@ -147,7 +146,6 @@ abstract class ObjectMenuViewModelBase(
         object OpenSetLayout : Command()
         object OpenObjectRelations : Command()
         object OpenSetRelations : Command()
-        object HideSetsLogic : Command()
     }
 
     companion object {
@@ -167,7 +165,6 @@ class ObjectMenuViewModel(
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     checkIsFavorite: CheckIsFavorite,
-    private val getFlavourConfig: GetFlavourConfig,
     storage: Editor.Storage,
     private val analytics: Analytics
 ) : ObjectMenuViewModelBase(
@@ -180,11 +177,6 @@ class ObjectMenuViewModel(
     private val objectRestrictions = storage.objectRestrictions.current()
 
     override fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
-        if (!getFlavourConfig.isDataViewEnabled()) {
-            viewModelScope.launch {
-                commands.emit(Command.HideSetsLogic)
-            }
-        }
         checkIsFavorite(ctx = ctx, isArchived = isArchived, isProfile = isProfile)
     }
 
@@ -292,7 +284,6 @@ class ObjectMenuViewModel(
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val checkIsFavorite: CheckIsFavorite,
-        private val getFlavourConfig: GetFlavourConfig,
         private val storage: Editor.Storage,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
@@ -302,7 +293,6 @@ class ObjectMenuViewModel(
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 checkIsFavorite = checkIsFavorite,
-                getFlavourConfig = getFlavourConfig,
                 storage = storage,
                 analytics = analytics
             ) as T
@@ -315,7 +305,6 @@ class ObjectSetMenuViewModel(
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     checkIsFavorite: CheckIsFavorite,
-    private val getFlavourConfig: GetFlavourConfig,
     private val analytics: Analytics,
     state: StateFlow<ObjectSet>
 ) : ObjectMenuViewModelBase(
@@ -328,11 +317,6 @@ class ObjectSetMenuViewModel(
     private val objectRestrictions = state.value.objectRestrictions
 
     override fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
-        if (!getFlavourConfig.isDataViewEnabled()) {
-            viewModelScope.launch {
-                commands.emit(Command.HideSetsLogic)
-            }
-        }
         checkIsFavorite(ctx = ctx, isArchived = isArchived, isProfile = isProfile)
     }
 
@@ -342,7 +326,6 @@ class ObjectSetMenuViewModel(
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val checkIsFavorite: CheckIsFavorite,
-        private val getFlavourConfig: GetFlavourConfig,
         private val analytics: Analytics,
         private val state: StateFlow<ObjectSet>
     ) : ViewModelProvider.Factory {
@@ -352,7 +335,6 @@ class ObjectSetMenuViewModel(
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 checkIsFavorite = checkIsFavorite,
-                getFlavourConfig = getFlavourConfig,
                 analytics = analytics,
                 state = state
             ) as T

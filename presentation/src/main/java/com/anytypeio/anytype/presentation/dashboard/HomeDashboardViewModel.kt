@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -57,7 +56,6 @@ class HomeDashboardViewModel(
     private val searchRecentObjects: SearchRecentObjects,
     private val searchInboxObjects: SearchInboxObjects,
     private val searchObjectSets: SearchObjectSets,
-    private val getFlavourConfig: GetFlavourConfig,
     private val urlBuilder: UrlBuilder
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
@@ -82,13 +80,11 @@ class HomeDashboardViewModel(
     val recent = MutableStateFlow(emptyList<DashboardView>())
     val inbox = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
-    val isDataViewEnabled = MutableStateFlow(false)
 
     private val views: List<DashboardView>
         get() = stateData.value?.blocks ?: emptyList()
 
     init {
-        isDataViewEnabled.value = getFlavourConfig.isDataViewEnabled()
         startProcessingState()
         proceedWithGettingConfig()
     }
@@ -388,9 +384,7 @@ class HomeDashboardViewModel(
         proceedWithArchivedObjectSearch()
         proceedWithRecentObjectSearch()
         proceedWithInboxObjectSearch()
-        if (isDataViewEnabled.value) {
-            proceedWithSetsObjectSearch()
-        }
+        proceedWithSetsObjectSearch()
     }
 
     private fun proceedWithArchivedObjectSearch() {
@@ -399,31 +393,27 @@ class HomeDashboardViewModel(
                 success = { objects ->
                     archived.value = objects
                         .map { ObjectWrapper.Basic(it) }
-                        .mapNotNull { obj ->
+                        .map { obj ->
                             val layout = obj.layout
                             val oType = stateData.value?.findOTypeById(obj.type)
-                            if (layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
-                                null
-                            } else {
-                                DashboardView.Document(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.name,
-                                    isArchived = true,
-                                    isLoading = false,
-                                    emoji = obj.iconEmoji,
-                                    image = obj.iconImage,
-                                    type = obj.type.firstOrNull(),
-                                    typeName = oType?.name,
-                                    layout = obj.layout,
-                                    done = obj.done,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = layout,
-                                        builder = urlBuilder
-                                    )
+                            DashboardView.Document(
+                                id = obj.id,
+                                target = obj.id,
+                                title = obj.name,
+                                isArchived = true,
+                                isLoading = false,
+                                emoji = obj.iconEmoji,
+                                image = obj.iconImage,
+                                type = obj.type.firstOrNull(),
+                                typeName = oType?.name,
+                                layout = obj.layout,
+                                done = obj.done,
+                                icon = ObjectIcon.from(
+                                    obj = obj,
+                                    layout = layout,
+                                    builder = urlBuilder
                                 )
-                            }
+                            )
                         }
                 },
                 failure = { Timber.e(it, "Error while searching for archived objects") }
@@ -438,26 +428,22 @@ class HomeDashboardViewModel(
                     Timber.d("Found ${objects.size} recent objects")
                     recent.value = objects
                         .map { ObjectWrapper.Basic(it) }
-                        .mapNotNull { obj ->
+                        .map { obj ->
                             val oType = stateData.value?.findOTypeById(obj.type)
                             val layout = obj.layout
                             if (layout == ObjectType.Layout.SET) {
-                                if (isDataViewEnabled.value) {
-                                    DashboardView.ObjectSet(
-                                        id = obj.id,
-                                        target = obj.id,
-                                        title = obj.name,
-                                        isArchived = obj.isArchived ?: false,
-                                        isLoading = false,
-                                        icon = ObjectIcon.from(
-                                            obj = obj,
-                                            layout = obj.layout,
-                                            builder = urlBuilder
-                                        )
+                                DashboardView.ObjectSet(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.name,
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
                                     )
-                                } else {
-                                    null
-                                }
+                                )
                             } else {
                                 DashboardView.Document(
                                     id = obj.id,
@@ -491,31 +477,26 @@ class HomeDashboardViewModel(
                 success = { objects ->
                     inbox.value = objects
                         .map { ObjectWrapper.Basic(it) }
-                        .mapNotNull { obj ->
-                            val layout = obj.layout
+                        .map { obj ->
                             val oType = stateData.value?.findOTypeById(obj.type)
-                            if (layout == ObjectType.Layout.SET && !isDataViewEnabled.value) {
-                                null
-                            } else {
-                                DashboardView.Document(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.name,
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    emoji = obj.iconEmoji,
-                                    image = obj.iconImage,
-                                    type = obj.type.firstOrNull(),
-                                    typeName = oType?.name,
+                            DashboardView.Document(
+                                id = obj.id,
+                                target = obj.id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                emoji = obj.iconEmoji,
+                                image = obj.iconImage,
+                                type = obj.type.firstOrNull(),
+                                typeName = oType?.name,
+                                layout = obj.layout,
+                                done = obj.done,
+                                icon = ObjectIcon.from(
+                                    obj = obj,
                                     layout = obj.layout,
-                                    done = obj.done,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
-                                    )
+                                    builder = urlBuilder
                                 )
-                            }
+                            )
                         }
                 },
                 failure = { Timber.e(it, "Error while searching for inbox objects") }

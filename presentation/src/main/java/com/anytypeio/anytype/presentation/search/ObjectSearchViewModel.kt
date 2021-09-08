@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -22,8 +21,7 @@ open class ObjectSearchViewModel(
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
-    private val analytics: Analytics,
-    getFlavourConfig: GetFlavourConfig
+    private val analytics: Analytics
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
@@ -37,10 +35,7 @@ open class ObjectSearchViewModel(
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
-    private val supportedObjectTypes = if (getFlavourConfig.isDataViewEnabled())
-        listOf(ObjectTypeConst.PAGE, ObjectTypeConst.SET)
-    else
-        listOf(ObjectTypeConst.PAGE)
+    private val supportedObjectTypes = listOf(ObjectTypeConst.PAGE, ObjectTypeConst.SET)
 
     init {
         viewModelScope.launch {

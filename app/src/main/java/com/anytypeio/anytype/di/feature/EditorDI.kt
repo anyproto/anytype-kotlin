@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -146,7 +145,6 @@ object EditorSessionModule {
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
         getCompatibleObjectTypes: GetCompatibleObjectTypes,
-        getFlavourConfig: GetFlavourConfig,
         objectTypesProvider: ObjectTypesProvider
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
@@ -172,7 +170,6 @@ object EditorSessionModule {
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
         getCompatibleObjectTypes = getCompatibleObjectTypes,
-        getFlavourConfig = getFlavourConfig,
         objectTypesProvider = objectTypesProvider
     )
 
@@ -182,14 +179,12 @@ object EditorSessionModule {
         urlBuilder: UrlBuilder,
         toggleStateHolder: ToggleStateHolder,
         counter: Counter,
-        coverImageHashProvider: CoverImageHashProvider,
-        getFlavourConfig: GetFlavourConfig
+        coverImageHashProvider: CoverImageHashProvider
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         counter = counter,
-        coverImageHashProvider = coverImageHashProvider,
-        getFlavourConfig = getFlavourConfig
+        coverImageHashProvider = coverImageHashProvider
     )
 
     @JvmStatic

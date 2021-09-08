@@ -255,7 +255,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {OBJECTS}
     @Test
-    fun `should return Update command with only Page object type item when click on Objects item`() {
+    fun `should return Update command with all object types item when click on Objects item`() {
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -324,9 +324,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             isReadOnly = false
         )
 
-        stubInterceptEvents(
-            isDataViewEnabled = false
-        )
+        stubInterceptEvents()
         stubOpenDocument(document = doc)
         stubGetObjectTypes(
             objectTypes = listOf(type1, type2, type3)
@@ -365,11 +363,25 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val expectedObjectItems = listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
             SlashItem.ObjectType(
+                url = type1.url,
+                name = type1.name,
+                emoji = type1.emoji,
+                description = type1.description,
+                layout = type1.layout
+            ),
+            SlashItem.ObjectType(
                 url = type2.url,
                 name = type2.name,
                 emoji = type2.emoji,
                 description = type2.description,
                 layout = type2.layout
+            ),
+            SlashItem.ObjectType(
+                url = type3.url,
+                name = type3.name,
+                emoji = type3.emoji,
+                description = type3.description,
+                layout = type3.layout
             )
         )
 

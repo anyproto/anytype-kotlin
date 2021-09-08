@@ -139,13 +139,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.subscribe(vm.isDataViewEnabled) { isEnabled ->
-            val items = if (isEnabled) tabs else tabsNoSets
-            dashboardPagerAdapter.setItems(items)
-            TabLayoutMediator(tabsLayout, dashboardPager) { tab, position ->
-                tab.text = items[position].title
-            }.attach()
-        }
         lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
         lifecycleScope.subscribe(vm.inbox) { dashboardInboxAdapter.update(it) }
@@ -217,6 +210,10 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
         dashboardPager.apply {
             adapter = dashboardPagerAdapter
+            dashboardPagerAdapter.setItems(tabs)
+            TabLayoutMediator(tabsLayout, dashboardPager) { tab, position ->
+                tab.text = tabs[position].title
+            }.attach()
         }
 
         bottomToolbar
@@ -264,15 +261,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
             TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
             TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
             TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS),
-            TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
-        )
-    }
-
-    private val tabsNoSets by lazy {
-        listOf(
-            TabItem(getString(R.string.inbox), DashboardPager.TYPE_INBOX),
-            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
-            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
             TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
         )
     }

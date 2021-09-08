@@ -43,22 +43,11 @@ object SlashExtensions {
     const val SLASH_EMPTY_SEARCH_MAX = 3
 
     //region {SLASH ITEMS FOR WIDGET}
-    fun getExperimentalSlashWidgetMainItems() = listOf(
+    fun getSlashWidgetMainItems() = listOf(
         SlashItem.Main.Style,
         SlashItem.Main.Media,
         SlashItem.Main.Objects,
         SlashItem.Main.Relations,
-        SlashItem.Main.Other,
-        SlashItem.Main.Actions,
-        SlashItem.Main.Alignment,
-        SlashItem.Main.Color,
-        SlashItem.Main.Background,
-    )
-
-    fun getStableSlashWidgetMainItems() = listOf(
-        SlashItem.Main.Style,
-        SlashItem.Main.Media,
-        SlashItem.Main.Objects,
         SlashItem.Main.Other,
         SlashItem.Main.Actions,
         SlashItem.Main.Alignment,

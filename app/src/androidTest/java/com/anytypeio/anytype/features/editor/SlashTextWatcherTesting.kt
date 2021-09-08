@@ -96,7 +96,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -137,7 +136,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -180,7 +178,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -221,7 +218,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -263,7 +259,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -306,7 +301,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -347,7 +341,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -390,7 +383,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -448,7 +440,6 @@ class SlashTextWatcherTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 

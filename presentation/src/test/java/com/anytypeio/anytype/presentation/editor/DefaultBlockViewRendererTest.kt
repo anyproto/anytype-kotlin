@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -61,9 +60,6 @@ class DefaultBlockViewRendererTest {
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
-    @Mock
-    lateinit var getFlavourConfig: GetFlavourConfig
-
     private lateinit var renderer: DefaultBlockViewRenderer
 
     private lateinit var wrapper: BlockViewRenderWrapper
@@ -76,8 +72,7 @@ class DefaultBlockViewRendererTest {
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
             counter = Counter.Default(),
-            coverImageHashProvider = coverImageHashProvider,
-            getFlavourConfig = getFlavourConfig
+            coverImageHashProvider = coverImageHashProvider
         )
     }
 

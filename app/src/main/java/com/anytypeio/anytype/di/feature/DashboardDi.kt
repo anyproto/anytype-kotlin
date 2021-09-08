@@ -8,7 +8,6 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -61,7 +60,6 @@ object HomeDashboardModule {
         searchRecentObjects: SearchRecentObjects,
         searchInboxObjects: SearchInboxObjects,
         searchObjectSets: SearchObjectSets,
-        getFlavourConfig: GetFlavourConfig,
         urlBuilder: UrlBuilder
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
@@ -78,7 +76,6 @@ object HomeDashboardModule {
         searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
         analytics = analytics,
-        getFlavourConfig = getFlavourConfig,
         urlBuilder = urlBuilder
     )
 
@@ -153,12 +150,10 @@ object HomeDashboardModule {
     @PerScreen
     fun provideEventConverter(
         builder: UrlBuilder,
-        getFlavourConfig: GetFlavourConfig,
         objectTypesProvider: ObjectTypesProvider
     ): HomeDashboardEventConverter {
         return HomeDashboardEventConverter.DefaultConverter(
             builder = builder,
-            getFlavourConfig = getFlavourConfig,
             objectTypesProvider = objectTypesProvider
         )
     }

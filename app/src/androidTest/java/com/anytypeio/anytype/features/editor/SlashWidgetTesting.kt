@@ -656,7 +656,6 @@ class SlashWidgetTesting : EditorTestSetup() {
                 )
             )
         )
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -749,7 +748,6 @@ class SlashWidgetTesting : EditorTestSetup() {
                 )
             )
         )
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -847,7 +845,6 @@ class SlashWidgetTesting : EditorTestSetup() {
                 )
             )
         )
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -941,7 +938,6 @@ class SlashWidgetTesting : EditorTestSetup() {
                 )
             )
         )
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -996,7 +992,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 
@@ -1101,7 +1096,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
-        stubGetFlavorConfig()
 
         launchFragment(args)
 

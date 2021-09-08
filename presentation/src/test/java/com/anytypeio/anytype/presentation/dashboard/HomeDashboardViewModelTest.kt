@@ -78,9 +78,6 @@ class HomeDashboardViewModelTest {
     lateinit var analytics: Analytics
 
     @Mock
-    lateinit var getFlavourConfig: GetFlavourConfig
-
-    @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     private lateinit var vm: HomeDashboardViewModel
@@ -109,7 +106,6 @@ class HomeDashboardViewModelTest {
             interceptEvents = interceptEvents,
             eventConverter = HomeDashboardEventConverter.DefaultConverter(
                 builder = builder,
-                getFlavourConfig = getFlavourConfig,
                 objectTypesProvider = objectTypesProvider
             ),
             getDebugSettings = getDebugSettings,
@@ -118,7 +114,6 @@ class HomeDashboardViewModelTest {
             searchRecentObjects = searchRecentObjects,
             searchInboxObjects = searchInboxObjects,
             searchObjectSets = searchObjectSets,
-            getFlavourConfig = getFlavourConfig,
             urlBuilder = builder
         )
     }

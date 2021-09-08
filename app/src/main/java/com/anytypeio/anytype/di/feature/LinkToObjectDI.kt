@@ -4,7 +4,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
@@ -38,14 +37,12 @@ object LinkToObjectModule {
         urlBuilder: UrlBuilder,
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
-        getFlavourConfig: GetFlavourConfig,
         analytics: Analytics
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         urlBuilder = urlBuilder,
         getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
-        analytics = analytics,
-        getFlavourConfig = getFlavourConfig
+        analytics = analytics
     )
 
     @JvmStatic

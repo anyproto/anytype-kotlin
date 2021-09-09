@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DefaultDocumentContainerStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:orientation="horizontal"
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/item_block_multi_select_mode_selector">
+
+    <View
+        android:layout_gravity="center_vertical"
+        android:id="@+id/indentator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
+
+    <ImageView
+        android:id="@+id/ivUnsupportedBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_unsupported_block" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/tvUnsupportedBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:text="@string/unsupported_block"
+        android:textColor="#CBC9BD"
+        android:textSize="15sp" />
+
+</LinearLayout>

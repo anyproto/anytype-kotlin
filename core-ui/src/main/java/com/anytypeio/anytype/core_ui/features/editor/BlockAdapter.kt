@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELAT
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TODO_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_UNSUPPORTED
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.synthetic.main.item_block_description.view.*
@@ -645,6 +646,7 @@ class BlockAdapter(
                     )
                 )
             }
+            HOLDER_UNSUPPORTED -> Unsupported(parent)
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
 
@@ -1364,6 +1366,9 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.FeaturedRelation,
                     click = onClickListener
                 )
+            }
+            is Unsupported -> {
+                holder.bind(item = blocks[position] as BlockView.Unsupported)
             }
         }
 

@@ -53,6 +53,8 @@ object Types {
     const val HOLDER_FEATURED_RELATION = 47
     const val HOLDER_OBJECT_TYPE = 48
 
+    const val HOLDER_UNSUPPORTED = 49
+
     const val FOCUS_TIMEOUT_MILLIS = 16L
     const val KEYBOARD_SHOW_DELAY = 16L
 }

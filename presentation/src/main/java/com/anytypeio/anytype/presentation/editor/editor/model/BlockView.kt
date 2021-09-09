@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELAT
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TOGGLE
+import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_UNSUPPORTED
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO_PLACEHOLDER
@@ -937,6 +938,15 @@ sealed class BlockView : ViewType, Parcelable {
                 is DocumentRelationView.ObjectType -> HOLDER_OBJECT_TYPE
             }
         }
+    }
+
+    @Parcelize
+    data class Unsupported(
+        override val id: String,
+        override val indent: Int,
+        override val isSelected: Boolean = false
+    ) : BlockView(), Indentable, Selectable {
+        override fun getViewType(): Int = HOLDER_UNSUPPORTED
     }
 
     enum class Mode { READ, EDIT }

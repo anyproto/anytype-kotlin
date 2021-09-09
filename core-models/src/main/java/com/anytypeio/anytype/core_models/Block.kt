@@ -286,6 +286,8 @@ data class Block(
                 enum class ConditionType { TEXT, NUMBER, SELECT, CHECKBOX }
             }
         }
+
+        object Latex : Content()
     }
 
     /**

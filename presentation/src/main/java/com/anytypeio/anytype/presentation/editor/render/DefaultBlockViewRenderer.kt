@@ -85,7 +85,7 @@ class DefaultBlockViewRenderer(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                     selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -474,6 +474,17 @@ class DefaultBlockViewRenderer(
                     if (featured.relations.isNotEmpty()) {
                         result.add(featured)
                     }
+                }
+                is Content.Latex -> {
+                    counter.reset()
+                    result.add(
+                        latex(
+                            block = block,
+                            indent = indent,
+                            selection = selection,
+                            mode = mode
+                        )
+                    )
                 }
             }
         }
@@ -1150,16 +1161,20 @@ class DefaultBlockViewRenderer(
         )
     )
 
-    private fun setCursor(
-        focus: Focus,
-        content: Content.Text
-    ): Int? = focus.cursor?.let { cursor ->
-        when (cursor) {
-            is Cursor.Start -> 0
-            is Cursor.End -> content.text.length
-            is Cursor.Range -> cursor.range.first
-        }
-    }
+    private fun latex(
+        block: Block,
+        indent: Int,
+        mode: EditorMode,
+        selection: Set<Id>
+    ) = BlockView.Unsupported(
+        id = block.id,
+        indent = indent,
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
+    )
 
     private fun relation(
         ctx: Id,
@@ -1269,5 +1284,16 @@ class DefaultBlockViewRenderer(
         is EditorMode.Styling.Multi -> mode.targets.contains(block.id)
         is EditorMode.Select -> selection.contains(block.id)
         else -> false
+    }
+
+    private fun setCursor(
+        focus: Focus,
+        content: Content.Text
+    ): Int? = focus.cursor?.let { cursor ->
+        when (cursor) {
+            is Cursor.Start -> 0
+            is Cursor.End -> content.text.length
+            is Cursor.Range -> cursor.range.first
+        }
     }
 }

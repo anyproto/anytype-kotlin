@@ -5,6 +5,7 @@ import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Types
 
+@Deprecated("Legacy")
 object BlockActionToolbarFactory {
 
     fun newInstance(block: BlockView, dimensions: BlockDimensions) = when (block) {
@@ -45,6 +46,7 @@ object BlockActionToolbarFactory {
         is BlockView.Relation.Related -> newInstance(block, dimensions)
         is BlockView.Description -> TODO()
         is BlockView.FeaturedRelation -> TODO()
+        is BlockView.Unsupported -> TODO()
     }
 
     fun newInstance(

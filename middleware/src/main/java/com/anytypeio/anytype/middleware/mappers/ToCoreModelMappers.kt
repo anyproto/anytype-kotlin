@@ -119,6 +119,14 @@ fun List<MBlock>.toCoreModels(
                 content = Block.Content.FeaturedRelations
             )
         }
+        block.latex != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = Block.Content.Latex
+            )
+        }
         else -> {
             Timber.d("Ignoring content type: $block")
             null

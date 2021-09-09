@@ -428,7 +428,8 @@ open class ObjectSetFragment :
                     R.id.objectSetMainMenuScreen,
                     bundleOf(
                         ObjectMenuBaseFragment.CTX_KEY to command.ctx,
-                        ObjectMenuBaseFragment.IS_ARCHIVED to command.isArchived,
+                        ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
+                        ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
                         ObjectMenuBaseFragment.IS_PROFILE_KEY to false
                     )
                 )

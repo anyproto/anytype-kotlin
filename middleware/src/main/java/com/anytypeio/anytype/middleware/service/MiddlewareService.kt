@@ -194,4 +194,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun featuredRelationsRemove(request: Object.FeaturedRelation.Remove.Request): Object.FeaturedRelation.Remove.Response
+
+    @Throws(Exception::class)
+    fun setIsFavorite(request: Object.SetIsFavorite.Request): Object.SetIsFavorite.Response
 }

@@ -1419,4 +1419,18 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
+
+    fun setIsFavorite(
+        ctx: Id,
+        isFavorite: Boolean
+    ) : Payload {
+        val request = Rpc.Object.SetIsFavorite.Request(
+            contextId = ctx,
+            isFavorite = isFavorite
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.setIsFavorite(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
 }

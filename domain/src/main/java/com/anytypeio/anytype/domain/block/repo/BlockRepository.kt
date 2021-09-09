@@ -226,4 +226,6 @@ interface BlockRepository {
 
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
+
+    fun setIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
 }

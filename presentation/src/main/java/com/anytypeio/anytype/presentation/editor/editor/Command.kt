@@ -64,10 +64,11 @@ sealed class Command {
     ) : Command()
 
     data class OpenDocumentMenu(
-        val isArchived: Boolean
+        val isArchived: Boolean,
+        val isFavorite: Boolean
     ) : Command()
 
-    object OpenProfileMenu : Command()
+    data class OpenProfileMenu(val isFavorite: Boolean) : Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()
     data class OpenObjectLayout(val ctx: String) : Command()

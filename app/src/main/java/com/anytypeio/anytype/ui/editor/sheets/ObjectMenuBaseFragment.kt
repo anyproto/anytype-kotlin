@@ -14,7 +14,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectAction
@@ -32,7 +35,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
     protected val ctx get() = arg<String>(CTX_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
-    private val isArchived get() = arg<Boolean>(IS_ARCHIVED)
+    private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
+    private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
 
     abstract val vm : ObjectMenuViewModelBase
 
@@ -105,8 +109,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         }
         super.onStart()
         vm.onStart(
-            ctx = ctx,
             isArchived = isArchived,
+            isFavorite = isFavorite,
             isProfile = isProfile
         )
     }
@@ -167,8 +171,9 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
     companion object {
         const val CTX_KEY = "arg.doc-menu-bottom-sheet.ctx"
-        const val IS_ARCHIVED = "arg.doc-menu-bottom-sheet.is-archived"
+        const val IS_ARCHIVED_KEY = "arg.doc-menu-bottom-sheet.is-archived"
         const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
+        const val IS_FAVORITE_KEY = "arg.doc-menu-bottom-sheet.is-favorite"
         const val COMING_SOON_MSG = "Coming soon..."
     }
 
@@ -202,12 +207,14 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
         fun new(
             ctx: Id,
             isProfile: Boolean = false,
-            isArchived: Boolean
+            isArchived: Boolean,
+            isFavorite: Boolean
         ) = ObjectMenuFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
-                IS_ARCHIVED to isArchived,
-                IS_PROFILE_KEY to isProfile
+                IS_ARCHIVED_KEY to isArchived,
+                IS_PROFILE_KEY to isProfile,
+                IS_FAVORITE_KEY to isFavorite
             )
         }
     }

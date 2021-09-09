@@ -1022,8 +1022,11 @@ class EditorViewModel(
             check(content is Content.Smart)
             when (content.type) {
                 SmartBlockType.PROFILE_PAGE -> {
+                    val details = orchestrator.stores.details.current().details
                     dispatch(
-                        command = Command.OpenProfileMenu
+                        command = Command.OpenProfileMenu(
+                            isFavorite = details[context]?.isFavorite ?: false
+                        )
                     )
                     viewModelScope.sendEvent(
                         analytics = analytics,
@@ -1035,7 +1038,8 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(
                         command = Command.OpenDocumentMenu(
-                            isArchived = details[context]?.isArchived ?: false
+                            isArchived = details[context]?.isArchived ?: false,
+                            isFavorite = details[context]?.isFavorite ?: false,
                         )
                     )
                     viewModelScope.sendEvent(
@@ -1048,7 +1052,8 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
                     dispatch(
                         command = Command.OpenDocumentMenu(
-                            isArchived = details[context]?.isArchived ?: false
+                            isArchived = details[context]?.isArchived ?: false,
+                            isFavorite = details[context]?.isFavorite ?: false,
                         )
                     )
                     viewModelScope.sendEvent(

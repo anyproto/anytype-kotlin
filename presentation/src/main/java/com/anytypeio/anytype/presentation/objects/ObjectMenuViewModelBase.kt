@@ -7,14 +7,15 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
-import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,7 @@ abstract class ObjectMenuViewModelBase(
     private val archiveDocument: ArchiveDocument,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
-    private val checkIsFavorite: CheckIsFavorite
+    private val dispatcher: Dispatcher<Payload>
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
@@ -37,25 +38,14 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onLayoutClicked()
     abstract fun onRelationsClicked()
     abstract fun onHistoryClicked()
-    abstract fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean)
-    abstract fun onActionClicked(ctx: Id, action: ObjectAction)
-
-    protected fun checkIsFavorite(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
-        viewModelScope.launch {
-            checkIsFavorite(CheckIsFavorite.Params(ctx)).process(
-                failure = {
-                    Timber.e(it, "Error while checking is-favorite status for object")
-                },
-                success = { isFavorite ->
-                    actions.value = buildActions(
-                        isArchived = isArchived,
-                        isFavorite = isFavorite,
-                        isProfile = isProfile
-                    )
-                }
-            )
-        }
+    fun onStart(isFavorite: Boolean, isArchived: Boolean, isProfile: Boolean) {
+        actions.value = buildActions(
+            isArchived = isArchived,
+            isFavorite = isFavorite,
+            isProfile = isProfile
+        )
     }
+    abstract fun onActionClicked(ctx: Id, action: ObjectAction)
 
     protected open fun buildActions(
         isArchived: Boolean,
@@ -78,7 +68,7 @@ abstract class ObjectMenuViewModelBase(
         add(ObjectAction.USE_AS_TEMPLATE)
     }
 
-    private fun proceedWithRemovingFromFavorites(ctx: Id) {
+    protected fun proceedWithRemovingFromFavorites(ctx: Id) {
         viewModelScope.launch {
             removeFromFavorite(
                 RemoveFromFavorite.Params(
@@ -87,6 +77,7 @@ abstract class ObjectMenuViewModelBase(
             ).process(
                 failure = { Timber.e(it, "Error while removing from favorite.") },
                 success = {
+                    dispatcher.send(it)
                     _toasts.emit(REMOVE_FROM_FAVORITE_SUCCESS_MSG).also {
                         isDismissed.value = true
                     }
@@ -95,7 +86,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    private fun proceedWithAddingToFavorites(ctx: Id) {
+    protected fun proceedWithAddingToFavorites(ctx: Id) {
         viewModelScope.launch {
             addToFavorite(
                 AddToFavorite.Params(
@@ -104,6 +95,7 @@ abstract class ObjectMenuViewModelBase(
             ).process(
                 failure = { Timber.e(it, "Error while adding to favorites.") },
                 success = {
+                    dispatcher.send(it)
                     _toasts.emit(ADD_TO_FAVORITE_SUCCESS_MSG).also {
                         isDismissed.value = true
                     }
@@ -164,21 +156,17 @@ class ObjectMenuViewModel(
     archiveDocument: ArchiveDocument,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
-    checkIsFavorite: CheckIsFavorite,
     storage: Editor.Storage,
+    dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    checkIsFavorite = checkIsFavorite
+    dispatcher = dispatcher
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
-
-    override fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
-        checkIsFavorite(ctx = ctx, isArchived = isArchived, isProfile = isProfile)
-    }
 
     override fun onIconClicked() {
         viewModelScope.launch {
@@ -257,20 +245,18 @@ class ObjectMenuViewModel(
                 )
             }
             ObjectAction.ADD_TO_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_OBJ_MENU_FAVORITE
                 )
-                //proceedWithAddingToFavorites(ctx)
+                proceedWithAddingToFavorites(ctx)
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_OBJ_MENU_UNFAVORITE
                 )
-                //proceedWithRemovingFromFavorites(ctx)
+                proceedWithRemovingFromFavorites(ctx)
             }
             else -> {
                 viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
@@ -283,18 +269,18 @@ class ObjectMenuViewModel(
         private val archiveDocument: ArchiveDocument,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
-        private val checkIsFavorite: CheckIsFavorite,
         private val storage: Editor.Storage,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val dispatcher: Dispatcher<Payload>
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
                 archiveDocument = archiveDocument,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
-                checkIsFavorite = checkIsFavorite,
                 storage = storage,
-                analytics = analytics
+                analytics = analytics,
+                dispatcher = dispatcher
             ) as T
         }
     }
@@ -304,28 +290,24 @@ class ObjectSetMenuViewModel(
     archiveDocument: ArchiveDocument,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
-    checkIsFavorite: CheckIsFavorite,
+    dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     state: StateFlow<ObjectSet>
 ) : ObjectMenuViewModelBase(
     archiveDocument = archiveDocument,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    checkIsFavorite = checkIsFavorite
+    dispatcher = dispatcher
 ) {
 
     private val objectRestrictions = state.value.objectRestrictions
-
-    override fun onStart(ctx: Id, isArchived: Boolean, isProfile: Boolean) {
-        checkIsFavorite(ctx = ctx, isArchived = isArchived, isProfile = isProfile)
-    }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val archiveDocument: ArchiveDocument,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
-        private val checkIsFavorite: CheckIsFavorite,
+        private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val state: StateFlow<ObjectSet>
     ) : ViewModelProvider.Factory {
@@ -334,9 +316,9 @@ class ObjectSetMenuViewModel(
                 archiveDocument = archiveDocument,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
-                checkIsFavorite = checkIsFavorite,
                 analytics = analytics,
-                state = state
+                state = state,
+                dispatcher = dispatcher
             ) as T
         }
     }
@@ -435,16 +417,14 @@ class ObjectSetMenuViewModel(
                 )
             }
             ObjectAction.ADD_TO_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-                //proceedWithAddingToFavorites(ctx)
+                proceedWithAddingToFavorites(ctx)
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_SET_MENU_FAVORITE
                 )
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-                //proceedWithRemovingFromFavorites(ctx)
+                proceedWithRemovingFromFavorites(ctx)
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_SET_MENU_UNFAVORITE

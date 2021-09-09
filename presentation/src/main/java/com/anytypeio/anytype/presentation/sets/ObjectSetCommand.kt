@@ -8,7 +8,8 @@ sealed class ObjectSetCommand {
 
         data class Menu(
             val ctx: Id,
-            val isArchived: Boolean
+            val isArchived: Boolean,
+            val isFavorite: Boolean
         ) : Modal()
 
         data class CreateViewer(

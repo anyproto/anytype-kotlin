@@ -838,7 +838,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     hideKeyboard()
                     val fr = ObjectMenuFragment.new(
                         ctx = ctx,
-                        isArchived = command.isArchived
+                        isArchived = command.isArchived,
+                        isFavorite = command.isFavorite
                     )
                     fr.show(childFragmentManager, null)
                 }
@@ -847,7 +848,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     val fr = ObjectMenuFragment.new(
                         ctx = ctx,
                         isProfile = true,
-                        isArchived = false
+                        isArchived = false,
+                        isFavorite = command.isFavorite
                     )
                     fr.show(childFragmentManager, null)
                 }

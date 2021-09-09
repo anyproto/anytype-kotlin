@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectSetMenuViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
@@ -80,14 +82,16 @@ object ObjectMenuModule {
         removeFromFavorite: RemoveFromFavorite,
         checkIsFavorite: CheckIsFavorite,
         storage: Editor.Storage,
-        analytics: Analytics
+        analytics: Analytics,
+        dispatcher: Dispatcher<Payload>
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         checkIsFavorite = checkIsFavorite,
         storage = storage,
-        analytics = analytics
+        analytics = analytics,
+        dispatcher = dispatcher
     )
 }
 
@@ -102,13 +106,15 @@ object ObjectSetMenuModule {
         removeFromFavorite: RemoveFromFavorite,
         checkIsFavorite: CheckIsFavorite,
         analytics: Analytics,
-        state: StateFlow<ObjectSet>
+        state: StateFlow<ObjectSet>,
+        dispatcher: Dispatcher<Payload>
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         checkIsFavorite = checkIsFavorite,
         analytics = analytics,
-        state = state
+        state = state,
+        dispatcher = dispatcher
     )
 }

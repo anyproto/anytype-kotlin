@@ -769,4 +769,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun setIsFavorite(request: Object.SetIsFavorite.Request): Object.SetIsFavorite.Response {
+        val encoded = Service.objectSetIsFavorite(
+            Object.SetIsFavorite.Request.ADAPTER.encode(request)
+        )
+        val response = Object.SetIsFavorite.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.SetIsFavorite.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

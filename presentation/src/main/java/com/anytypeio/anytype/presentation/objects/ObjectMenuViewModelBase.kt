@@ -81,7 +81,7 @@ abstract class ObjectMenuViewModelBase(
         add(ObjectAction.USE_AS_TEMPLATE)
     }
 
-    private fun proceedWithRemovingFromFavorites(ctx: Id) {
+    protected fun proceedWithRemovingFromFavorites(ctx: Id) {
         viewModelScope.launch {
             removeFromFavorite(
                 RemoveFromFavorite.Params(
@@ -99,7 +99,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    private fun proceedWithAddingToFavorites(ctx: Id) {
+    protected fun proceedWithAddingToFavorites(ctx: Id) {
         viewModelScope.launch {
             addToFavorite(
                 AddToFavorite.Params(
@@ -264,20 +264,18 @@ class ObjectMenuViewModel(
                 )
             }
             ObjectAction.ADD_TO_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_OBJ_MENU_FAVORITE
                 )
-                //proceedWithAddingToFavorites(ctx)
+                proceedWithAddingToFavorites(ctx)
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_OBJ_MENU_UNFAVORITE
                 )
-                //proceedWithRemovingFromFavorites(ctx)
+                proceedWithRemovingFromFavorites(ctx)
             }
             else -> {
                 viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }

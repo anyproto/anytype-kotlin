@@ -12,7 +12,7 @@ class CreateNewDocument(
 ) : BaseUseCase<CreateNewDocument.Result, CreateNewDocument.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Result> = safe {
-        val emoji = documentEmojiProvider.random()
+        val emoji = null
         val id = repo.createNewDocument(
             command = Command.CreateNewDocument(
                 name = params.name,
@@ -33,6 +33,6 @@ class CreateNewDocument(
     data class Result(
         val id: String,
         val name: String,
-        val emoji: String
+        val emoji: String?
     )
 }

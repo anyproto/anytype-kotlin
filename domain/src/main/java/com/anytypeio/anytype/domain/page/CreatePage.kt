@@ -17,7 +17,7 @@ class CreatePage(
     override suspend fun run(params: Params) = safe {
         repo.createPage(
             ctx = params.ctx,
-            emoji = documentEmojiIconProvider.random()
+            emoji = null
         )
     }
 

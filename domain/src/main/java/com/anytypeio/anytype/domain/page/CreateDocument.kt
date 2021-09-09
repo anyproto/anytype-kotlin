@@ -21,7 +21,7 @@ class CreateDocument(
                 context = params.context,
                 target = params.target,
                 position = params.position,
-                emoji = documentEmojiProvider.random(),
+                emoji = null,
                 type = null,
                 layout = null
             )

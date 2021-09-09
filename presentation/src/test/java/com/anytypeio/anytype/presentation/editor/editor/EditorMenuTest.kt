@@ -47,7 +47,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenProfileMenu
+            value.peekContent() == Command.OpenProfileMenu(isFavorite = false)
         }
     }
 
@@ -97,7 +97,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenDocumentMenu(isArchived = false)
+            value.peekContent() == Command.OpenDocumentMenu(isArchived = false, isFavorite = false)
         }
     }
 
@@ -127,7 +127,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         observer.assertValue { value ->
             value.peekContent() == Command.OpenDocumentMenu(
-                isArchived = false
+                isArchived = false,
+                isFavorite = false
             )
         }
     }

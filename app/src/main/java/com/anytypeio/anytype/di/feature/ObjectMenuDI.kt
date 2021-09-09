@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
-import com.anytypeio.anytype.domain.dashboard.interactor.CheckIsFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.page.ArchiveDocument
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -62,13 +61,6 @@ object ObjectMenuModuleBase {
     fun provideRemoveFromFavoriteUseCase(
         repo: BlockRepository
     ) : RemoveFromFavorite = RemoveFromFavorite(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideCheckIsFavoriteUseCase(
-        repo: BlockRepository
-    ) : CheckIsFavorite = CheckIsFavorite(repo = repo)
 }
 
 @Module
@@ -80,7 +72,6 @@ object ObjectMenuModule {
         archiveDocument: ArchiveDocument,
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
-        checkIsFavorite: CheckIsFavorite,
         storage: Editor.Storage,
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>
@@ -88,7 +79,6 @@ object ObjectMenuModule {
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
-        checkIsFavorite = checkIsFavorite,
         storage = storage,
         analytics = analytics,
         dispatcher = dispatcher
@@ -104,7 +94,6 @@ object ObjectSetMenuModule {
         archiveDocument: ArchiveDocument,
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
-        checkIsFavorite: CheckIsFavorite,
         analytics: Analytics,
         state: StateFlow<ObjectSet>,
         dispatcher: Dispatcher<Payload>
@@ -112,7 +101,6 @@ object ObjectSetMenuModule {
         archiveDocument = archiveDocument,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
-        checkIsFavorite = checkIsFavorite,
         analytics = analytics,
         state = state,
         dispatcher = dispatcher

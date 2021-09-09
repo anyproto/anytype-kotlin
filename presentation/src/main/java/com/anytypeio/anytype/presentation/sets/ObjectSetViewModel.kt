@@ -718,7 +718,8 @@ class ObjectSetViewModel(
             dispatch(
                 ObjectSetCommand.Modal.Menu(
                     ctx = context,
-                    isArchived = set.details[context]?.isArchived ?: false
+                    isArchived = set.details[context]?.isArchived ?: false,
+                    isFavorite = set.details[context]?.isFavorite ?: false,
                 )
             )
         } else {

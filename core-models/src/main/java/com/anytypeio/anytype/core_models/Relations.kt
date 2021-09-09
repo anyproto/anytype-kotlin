@@ -13,6 +13,7 @@ object Relations {
     const val ICON_IMAGE = "iconImage"
     const val RELATION_FORMAT = "relationFormat"
     const val IS_ARCHIVED = "isArchived"
+    const val IS_FAVORITE = "isFavorite"
     const val IS_READ_ONLY = "isReadonly"
     const val IS_HIDDEN = "isHidden"
     const val LAST_OPENED_DATE = "lastOpenedDate"

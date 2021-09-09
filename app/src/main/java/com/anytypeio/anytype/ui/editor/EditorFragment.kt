@@ -431,14 +431,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
 
         toolbar.apply {
-            enterScrollAndMoveButton()
-                .onEach {
-                    lifecycleScope.launch {
-                        hideSoftInput()
-                        delay(100)
-                        vm.onQuickBlockMoveClicked()
-                    }
-                }
+            blockActionsClick()
+                .onEach { vm.onBlockToolbarBlockActionsClicked() }
                 .launchIn(lifecycleScope)
             openSlashWidgetClicks()
                 .onEach { vm.onStartSlashWidgetClicked() }
@@ -1187,7 +1181,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     hideSoftInput()
                     topToolbar.invisible()
                     if (!state.multiSelect.isScrollAndMoveEnabled) {
-                        recycler.addItemDecoration(actionToolbarFooter)
+                        if (!recycler.containsItemDecoration(actionToolbarFooter)) {
+                            recycler.addItemDecoration(actionToolbarFooter)
+                        }
                         lifecycleScope.launch {
                             delay(DELAY_BEFORE_INIT_SAM_SEARCH)
                             activity?.runOnUiThread {

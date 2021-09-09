@@ -19,7 +19,7 @@ class BlockToolbarWidget  @JvmOverloads constructor(
     }
 
     fun hideKeyboardClicks() = hideKeyboardButton.clicks()
-    fun enterScrollAndMoveButton() = enterScrollAndMoveButton.clicks()
+    fun blockActionsClick() = btnBlockActions.clicks()
     fun openSlashWidgetClicks() = slashWidgetButton.clicks()
     fun changeStyleClicks() = changeStyleButton.clicks()
     fun mentionClicks() = blockMentionButton.clicks()

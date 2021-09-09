@@ -7,6 +7,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 
 fun View.invisible() {
@@ -48,6 +49,19 @@ fun Activity.hideSoftInput() {
 }
 
 fun Fragment.hideSoftInput() = requireActivity().hideSoftInput()
+
+fun RecyclerView.containsItemDecoration(decoration: RecyclerView.ItemDecoration) : Boolean {
+    if (itemDecorationCount > 0) {
+        for (i in 0..itemDecorationCount.dec()) {
+            val d = getItemDecorationAt(i)
+            if (d == decoration)
+                return true
+        }
+        return false
+    } else {
+        return false
+    }
+}
 
 val Activity.statusBarHeight : Int
     get() {

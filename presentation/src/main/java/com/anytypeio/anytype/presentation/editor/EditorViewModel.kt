@@ -1158,7 +1158,7 @@ class EditorViewModel(
         }
     }
 
-    private fun onBlockLongPressedClicked(target: Id, dimensions: BlockDimensions) {
+    private fun proceedWithEnteringActionMode(target: Id, scrollTarget: Boolean = true) {
         val views = orchestrator.stores.views.current()
         val view = views.find { it.id == target }
 
@@ -1207,7 +1207,7 @@ class EditorViewModel(
             )
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter(currentSelection().size))
-            if (isSelected(target)) {
+            if (isSelected(target) && scrollTarget) {
                 dispatch(Command.ScrollToActionMenu(target = target))
             }
         }
@@ -2239,11 +2239,11 @@ class EditorViewModel(
                 _toasts.trySend(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
             }
             else -> {
-                dispatch(Command.Measure(target = target))
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.BTN_BLOCK_ACTIONS
                 )
+                proceedWithEnteringActionMode(target = target, scrollTarget = false)
             }
         }
     }
@@ -2252,7 +2252,7 @@ class EditorViewModel(
     fun onMeasure(target: Id, dimensions: BlockDimensions) {
         Timber.d("onMeasure, target:[$target] dimensions:[$dimensions]")
         proceedWithClearingFocus()
-        onBlockLongPressedClicked(target, dimensions)
+        proceedWithEnteringActionMode(target)
     }
 
     @Deprecated("To be deleted")
@@ -3332,7 +3332,7 @@ class EditorViewModel(
             }
             is ListenerType.LongClick -> {
                 when (mode) {
-                    EditorMode.Edit -> onBlockLongPressedClicked(clicked.target, clicked.dimensions)
+                    EditorMode.Edit -> proceedWithEnteringActionMode(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.target)
                     else -> Unit
                 }

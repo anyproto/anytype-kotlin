@@ -25,7 +25,7 @@ class TextInputWidget : AppCompatEditText {
 
     companion object {
         const val TEXT_INPUT_WIDGET_ACTION_GO = EditorInfo.IME_ACTION_GO
-        const val TEXT_INPUT_WIDGET_INPUT_TYPE = TYPE_TEXT_FLAG_MULTI_LINE
+        const val TEXT_INPUT_WIDGET_INPUT_TYPE = TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
     }
 
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {

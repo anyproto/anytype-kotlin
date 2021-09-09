@@ -162,7 +162,7 @@ fun Int.addDot(): String = "$this."
 fun EditText.multilineIme(action: Int, inputType: Int) {
     imeOptions = action
     this.inputType = inputType
-    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
 }

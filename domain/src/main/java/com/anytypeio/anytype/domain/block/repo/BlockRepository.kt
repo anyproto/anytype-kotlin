@@ -14,8 +14,6 @@ interface BlockRepository {
     suspend fun move(command: Command.Move): Payload
     suspend fun unlink(command: Command.Unlink): Payload
 
-    suspend fun archiveDocument(command: Command.ArchiveDocument)
-
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
 
     /**
@@ -227,5 +225,6 @@ interface BlockRepository {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    fun setIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
+    fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
+    fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
 }

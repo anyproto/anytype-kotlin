@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
@@ -180,7 +181,7 @@ open class EditorViewModelTest {
     lateinit var createNewDocument: CreateNewDocument
 
     @Mock
-    lateinit var archiveDocument: ArchiveDocument
+    lateinit var setObjectIsArchived: SetObjectIsArchived
 
     @Mock
     lateinit var replaceBlock: ReplaceBlock
@@ -3053,12 +3054,11 @@ open class EditorViewModelTest {
         vm.onArchiveThisObjectClicked()
 
         runBlockingTest {
-            verify(archiveDocument, times(1)).invoke(
+            verify(setObjectIsArchived, times(1)).invoke(
                 params = eq(
-                    ArchiveDocument.Params(
+                    SetObjectIsArchived.Params(
                         context = root,
-                        targets = listOf(root),
-                        isArchived = true
+                            isArchived = true
                     )
                 )
             )
@@ -3114,11 +3114,10 @@ open class EditorViewModelTest {
         vm.onArchiveThisObjectClicked()
 
         runBlockingTest {
-            verify(archiveDocument, times(1)).invoke(
+            verify(setObjectIsArchived, times(1)).invoke(
                 params = eq(
-                    ArchiveDocument.Params(
+                    SetObjectIsArchived.Params(
                         context = root,
-                        targets = listOf(root),
                         isArchived = true
                     )
                 )
@@ -3135,15 +3134,19 @@ open class EditorViewModelTest {
     }
 
     private fun stubArchiveDocument(
-        params: ArchiveDocument.Params =
-            ArchiveDocument.Params(
+        params: SetObjectIsArchived.Params =
+            SetObjectIsArchived.Params(
                 context = root,
-                targets = listOf(root),
                 isArchived = true
             )
     ) {
-        archiveDocument.stub {
-            onBlocking { invoke(params = params) } doReturn Either.Right(Unit)
+        setObjectIsArchived.stub {
+            onBlocking { invoke(params = params) } doReturn Either.Right(
+                Payload(
+                    context = root,
+                    events = emptyList()
+                )
+            )
         }
     }
 
@@ -3917,7 +3920,7 @@ open class EditorViewModelTest {
                 counter = Counter.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            archiveDocument = archiveDocument,
+            setObjectIsArchived = setObjectIsArchived,
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             analytics = analytics,

@@ -42,7 +42,6 @@ interface BlockDataStore {
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun undo(command: Command.Undo): Payload
     suspend fun redo(command: Command.Redo): Payload
-    suspend fun archiveDocument(command: Command.ArchiveDocument)
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
     suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
@@ -172,5 +171,6 @@ interface BlockDataStore {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    fun setIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
+    fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
+    fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
 }

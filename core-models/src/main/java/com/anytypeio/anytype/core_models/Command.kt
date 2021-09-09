@@ -8,17 +8,6 @@ sealed class Command {
     )
 
     /**
-     * Command for archiving a document
-     * @property context id of the context
-     * @property target ids of the targets
-     */
-    class ArchiveDocument(
-        val context: Id,
-        val target: List<Id>,
-        val isArchived: Boolean
-    )
-
-    /**
      * Command for turning simple blocks into documents
      * @property context id of the context
      * @property targets id of the targets

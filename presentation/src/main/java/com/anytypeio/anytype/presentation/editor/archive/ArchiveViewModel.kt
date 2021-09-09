@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.asMap
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
@@ -18,7 +17,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.page.ArchiveDocument
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -49,7 +48,7 @@ sealed class ArchiveViewState {
 class ArchiveViewModel(
     private val openPage: OpenPage,
     private val closePage: CloseBlock,
-    private val archiveDocument: ArchiveDocument,
+    private val setObjectIsArchived: SetObjectIsArchived,
     private val interceptEvents: InterceptEvents,
     private val renderer: DefaultBlockViewRenderer,
     private val reducer: StateReducer<List<Block>, Event>,
@@ -197,31 +196,32 @@ class ArchiveViewModel(
     }
 
     fun onPutBackClicked() {
-        val selectedBlocks = selectionStateHolder.currentSelection().toList()
-        if (selectedBlocks.isNotEmpty()) {
-            val targets = mutableListOf<Id>()
-            selectedBlocks.forEach { id ->
-                targets.add(
-                    blocks.first { it.id == id }.content<Block.Content.Link>().target
-                )
-            }
-            selectionStateHolder.clearSelections()
-            viewModelScope.launch {
-                archiveDocument(
-                    ArchiveDocument.Params(
-                        context = context,
-                        targets = targets,
-                        isArchived = false
-                    )
-                ).proceed(
-                    failure = { Timber.e(it, "Error while archiving page") },
-                    success = {
-                        Timber.d("Success to unarchive pages!")
-                        selectionStateHolder.clearSelections()
-                    }
-                )
-            }
-        }
+        // TODO Will be implemented later.
+//        val selectedBlocks = selectionStateHolder.currentSelection().toList()
+//        if (selectedBlocks.isNotEmpty()) {
+//            val targets = mutableListOf<Id>()
+//            selectedBlocks.forEach { id ->
+//                targets.add(
+//                    blocks.first { it.id == id }.content<Block.Content.Link>().target
+//                )
+//            }
+//            selectionStateHolder.clearSelections()
+//            viewModelScope.launch {
+//                setObjectIsArchived(
+//                    SetObjectIsArchived.Params(
+//                        context = context,
+//                        targets = targets,
+//                        isArchived = false
+//                    )
+//                ).proceed(
+//                    failure = { Timber.e(it, "Error while archiving page") },
+//                    success = {
+//                        Timber.d("Success to unarchive pages!")
+//                        selectionStateHolder.clearSelections()
+//                    }
+//                )
+//            }
+//        }
     }
 
     fun onPageClicked(click: ListenerType) {

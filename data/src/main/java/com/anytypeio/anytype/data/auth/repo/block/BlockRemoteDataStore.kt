@@ -131,10 +131,6 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
     override suspend fun redo(command: Command.Redo) = remote.redo(command)
 
-    override suspend fun archiveDocument(
-        command: Command.ArchiveDocument
-    ) = remote.archiveDocument(command)
-
     override suspend fun turnIntoDocument(
         command: Command.TurnIntoDocument
     ): List<Id> = remote.turnIntoDocument(command)
@@ -392,8 +388,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         relations: List<Id>
     ): Payload = remote.removeFromFeaturedRelations(ctx, relations)
 
-    override fun setIsFavorite(
+    override fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
-    ): Payload = remote.setIsFavorite(ctx = ctx, isFavorite = isFavorite)
+    ): Payload = remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
+
+    override fun setObjectIsArchived(
+        ctx: Id,
+        isArchived: Boolean
+    ): Payload = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 }

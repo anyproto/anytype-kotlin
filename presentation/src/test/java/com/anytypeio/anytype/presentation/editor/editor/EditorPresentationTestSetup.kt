@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
@@ -156,7 +157,7 @@ open class EditorPresentationTestSetup {
     lateinit var createNewDocument: CreateNewDocument
 
     @Mock
-    lateinit var archiveDocument: ArchiveDocument
+    lateinit var setObjectIsArchived: SetObjectIsArchived
 
     @Mock
     lateinit var replaceBlock: ReplaceBlock
@@ -264,7 +265,7 @@ open class EditorPresentationTestSetup {
                 counter = Counter.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            archiveDocument = archiveDocument,
+            setObjectIsArchived = setObjectIsArchived,
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             analytics = analytics,

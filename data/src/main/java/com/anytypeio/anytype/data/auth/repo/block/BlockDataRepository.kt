@@ -181,10 +181,6 @@ class BlockDataRepository(
         Redo.Result.Exhausted
     }
 
-    override suspend fun archiveDocument(
-        command: Command.ArchiveDocument
-    ) = factory.remote.archiveDocument(command)
-
     override suspend fun turnIntoDocument(
         command: Command.TurnIntoDocument
     ): List<Id> = factory.remote.turnIntoDocument(command)
@@ -458,8 +454,13 @@ class BlockDataRepository(
         relations: List<Id>
     ): Payload = factory.remote.removeFromFeaturedRelations(ctx, relations)
 
-    override fun setIsFavorite(
+    override fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
-    ): Payload = factory.remote.setIsFavorite(ctx = ctx, isFavorite = isFavorite)
+    ): Payload = factory.remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
+
+    override fun setObjectIsArchived(
+        ctx: Id,
+        isArchived: Boolean
+    ): Payload = factory.remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 }

@@ -13,7 +13,7 @@ class AddToFavorite(
 ) : BaseUseCase<Payload, AddToFavorite.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.setIsFavorite(ctx = params.target, isFavorite = true)
+        repo.setObjectIsFavorite(ctx = params.target, isFavorite = true)
     }
 
     /**

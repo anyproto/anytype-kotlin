@@ -747,18 +747,6 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun archiveDocument(command: Command.ArchiveDocument) {
-        val request: BlockList.Set.Page.IsArchived.Request = BlockList.Set.Page.IsArchived.Request(
-            contextId = command.context,
-            blockIds = command.target,
-            isArchived = command.isArchived
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetPageIsArchived(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
     fun turnIntoDocument(command: Command.TurnIntoDocument): List<String> {
         val request = BlockList.ConvertChildrenToPages.Request(
             contextId = command.context,
@@ -1420,7 +1408,7 @@ class Middleware(
         return response.event.toPayload()
     }
 
-    fun setIsFavorite(
+    fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
     ) : Payload {
@@ -1429,7 +1417,21 @@ class Middleware(
             isFavorite = isFavorite
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.setIsFavorite(request)
+        val response = service.objectSetIsFavorite(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    fun setObjectIsArchived(
+        ctx: Id,
+        isArchived: Boolean
+    ) : Payload {
+        val request = Rpc.Object.SetIsArchived.Request(
+            contextId = ctx,
+            isArchived = isArchived
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetIsArchived(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }

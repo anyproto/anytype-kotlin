@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
-import com.anytypeio.anytype.domain.page.ArchiveDocument
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 abstract class ObjectMenuViewModelBase(
-    private val archiveDocument: ArchiveDocument,
+    private val setObjectIsArchived: SetObjectIsArchived,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
     private val dispatcher: Dispatcher<Payload>
@@ -106,11 +106,10 @@ abstract class ObjectMenuViewModelBase(
 
     fun proceedWithUpdatingArchivedStatus(ctx: Id, isArchived: Boolean) {
         viewModelScope.launch {
-            archiveDocument(
-                ArchiveDocument.Params(
+            setObjectIsArchived(
+                SetObjectIsArchived.Params(
                     context = ctx,
-                    isArchived = isArchived,
-                    targets = listOf(ctx)
+                    isArchived = isArchived
                 )
             ).process(
                 failure = {
@@ -153,14 +152,14 @@ abstract class ObjectMenuViewModelBase(
 }
 
 class ObjectMenuViewModel(
-    archiveDocument: ArchiveDocument,
+    setObjectIsArchived: SetObjectIsArchived,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     storage: Editor.Storage,
     dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics
 ) : ObjectMenuViewModelBase(
-    archiveDocument = archiveDocument,
+    setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
     dispatcher = dispatcher
@@ -266,7 +265,7 @@ class ObjectMenuViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val archiveDocument: ArchiveDocument,
+        private val setObjectIsArchived: SetObjectIsArchived,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val storage: Editor.Storage,
@@ -275,7 +274,7 @@ class ObjectMenuViewModel(
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
-                archiveDocument = archiveDocument,
+                setObjectIsArchived = setObjectIsArchived,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 storage = storage,
@@ -287,14 +286,14 @@ class ObjectMenuViewModel(
 }
 
 class ObjectSetMenuViewModel(
-    archiveDocument: ArchiveDocument,
+    setObjectIsArchived: SetObjectIsArchived,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     state: StateFlow<ObjectSet>
 ) : ObjectMenuViewModelBase(
-    archiveDocument = archiveDocument,
+    setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
     dispatcher = dispatcher
@@ -304,7 +303,7 @@ class ObjectSetMenuViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val archiveDocument: ArchiveDocument,
+        private val setObjectIsArchived: SetObjectIsArchived,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val dispatcher: Dispatcher<Payload>,
@@ -313,7 +312,7 @@ class ObjectSetMenuViewModel(
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
-                archiveDocument = archiveDocument,
+                setObjectIsArchived = setObjectIsArchived,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 analytics = analytics,

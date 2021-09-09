@@ -153,10 +153,6 @@ class BlockMiddleware(
         command: Command.Redo
     ): Payload = middleware.redo(command)
 
-    override suspend fun archiveDocument(
-        command: Command.ArchiveDocument
-    ) = middleware.archiveDocument(command)
-
     override suspend fun turnIntoDocument(
         command: Command.TurnIntoDocument
     ): List<String> = middleware.turnIntoDocument(command)
@@ -420,8 +416,13 @@ class BlockMiddleware(
         relations: List<Id>
     ): Payload = middleware.removeFromFeaturedRelations(ctx, relations)
 
-    override fun setIsFavorite(
+    override fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
-    ): Payload = middleware.setIsFavorite(ctx = ctx, isFavorite = isFavorite)
+    ): Payload = middleware.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
+
+    override fun setObjectIsArchived(
+        ctx: Id,
+        isArchived: Boolean
+    ): Payload = middleware.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 }

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -31,7 +32,7 @@ open class EditorViewModelFactory(
     private val createDocument: CreateDocument,
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
-    private val archiveDocument: ArchiveDocument,
+    private val setObjectIsArchived: SetObjectIsArchived,
     private val setDocCoverImage: SetDocCoverImage,
     private val removeDocCover: RemoveDocCover,
     private val interceptEvents: InterceptEvents,
@@ -56,7 +57,7 @@ open class EditorViewModelFactory(
         return EditorViewModel(
             openPage = openPage,
             closePage = closeObject,
-            archiveDocument = archiveDocument,
+            setObjectIsArchived = setObjectIsArchived,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,

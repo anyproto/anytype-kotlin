@@ -10,7 +10,7 @@ class RemoveFromFavorite(
 ) : BaseUseCase<Payload, RemoveFromFavorite.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.setIsFavorite(ctx = params.target, isFavorite = false)
+        repo.setObjectIsFavorite(ctx = params.target, isFavorite = false)
     }
 
     class Params(val target: Id)

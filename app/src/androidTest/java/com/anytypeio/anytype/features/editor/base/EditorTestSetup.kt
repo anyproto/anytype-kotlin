@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
@@ -58,7 +59,7 @@ import org.mockito.kotlin.stub
 open class EditorTestSetup {
 
     lateinit var createObject: CreateObject
-    lateinit var archiveDocument: ArchiveDocument
+    lateinit var setObjectIsArchived: SetObjectIsArchived
     lateinit var createDocument: CreateDocument
     lateinit var downloadFile: DownloadFile
     lateinit var undo: Undo
@@ -186,7 +187,7 @@ open class EditorTestSetup {
 
         splitBlock = SplitBlock(repo)
         createPage = CreatePage(repo, documentEmojiIconProvider)
-        archiveDocument = ArchiveDocument(repo)
+        setObjectIsArchived = SetObjectIsArchived(repo)
         createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)
         redo = Redo(repo)
@@ -236,7 +237,7 @@ open class EditorTestSetup {
             createPage = createPage,
             createObject = createObject,
             documentEventReducer = DocumentExternalEventReducer(),
-            archiveDocument = archiveDocument,
+            setObjectIsArchived = setObjectIsArchived,
             createDocument = createDocument,
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(

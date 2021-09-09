@@ -46,6 +46,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -116,7 +117,7 @@ class EditorViewModel(
     private val createDocument: CreateDocument,
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
-    private val archiveDocument: ArchiveDocument,
+    private val setObjectIsArchived: SetObjectIsArchived,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -2780,10 +2781,9 @@ class EditorViewModel(
         Timber.d("onArchiveThisPageClicked, ")
         dispatch(command = Command.CloseKeyboard)
         viewModelScope.launch {
-            archiveDocument(
-                ArchiveDocument.Params(
+            setObjectIsArchived(
+                SetObjectIsArchived.Params(
                     context = context,
-                    targets = listOf(context),
                     isArchived = isArchived
                 )
             ).proceed(

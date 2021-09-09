@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
@@ -137,7 +138,7 @@ object EditorSessionModule {
         removeDocCover: RemoveDocCover,
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
-        archiveDocument: ArchiveDocument,
+        setObjectIsArchived: SetObjectIsArchived,
         orchestrator: Orchestrator,
         getListPages: GetListPages,
         analytics: Analytics,
@@ -162,7 +163,7 @@ object EditorSessionModule {
         removeDocCover = removeDocCover,
         urlBuilder = urlBuilder,
         renderer = renderer,
-        archiveDocument = archiveDocument,
+        setObjectIsArchived = setObjectIsArchived,
         orchestrator = orchestrator,
         getListPages = getListPages,
         analytics = analytics,
@@ -553,7 +554,7 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideArchiveDocumentUseCase(
         repo: BlockRepository
-    ): ArchiveDocument = ArchiveDocument(
+    ): SetObjectIsArchived = SetObjectIsArchived(
         repo = repo
     )
 

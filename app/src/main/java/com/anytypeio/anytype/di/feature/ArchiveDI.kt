@@ -3,7 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.page.ArchiveDocument
+import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -43,7 +43,7 @@ object ArchiveModule {
     fun provideArchiveViewModelFactory(
         openPage: OpenPage,
         closePage: CloseBlock,
-        archiveDocument: ArchiveDocument,
+        setObjectIsArchived: SetObjectIsArchived,
         interceptEvents: InterceptEvents,
         renderer: DefaultBlockViewRenderer,
         selectionStateHolder: SelectionStateHolder,
@@ -53,7 +53,7 @@ object ArchiveModule {
     ): ArchiveViewModelFactory = ArchiveViewModelFactory(
         openPage = openPage,
         closePage = closePage,
-        archiveDocument = archiveDocument,
+        setObjectIsArchived = setObjectIsArchived,
         interceptEvents = interceptEvents,
         renderer = renderer,
         selectionStateHolder = selectionStateHolder,

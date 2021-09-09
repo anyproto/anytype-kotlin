@@ -721,28 +721,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
-                is Command.OpenDocumentIconActionMenu -> {
-//                    hideSoftInput()
-//                    recycler.smoothScrollToPosition(0)
-//                    val title = recycler.getChildAt(0)
-//                    val shared = title.findViewById<FrameLayout>(R.id.docEmojiIconContainer)
-//                    val fr = DocumentIconActionMenuFragment.new(
-//                        y = shared.y + dimen(R.dimen.dp_48),
-//                        emoji = command.emoji,
-//                        target = command.target,
-//                        ctx = ctx,
-//                        image = command.image
-//                    ).apply {
-//                        enterTransition = Fade()
-//                        exitTransition = Fade()
-//                        sharedElementEnterTransition = ChangeBounds()
-//                    }
-//                    childFragmentManager.beginTransaction()
-//                        .add(R.id.root, fr)
-//                        .addToBackStack(null)
-//                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
-//                        .commit()
-                }
                 is Command.OpenProfileIconActionMenu -> {
 //                    hideSoftInput()
 //                    recycler.smoothScrollToPosition(0)
@@ -766,10 +744,14 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 //                        .commit()
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
-                    ObjectIconPickerFragment.new(
-                        context = requireArguments().getString(ID_KEY, ID_EMPTY_VALUE),
-                        target = command.target
-                    ).show(childFragmentManager, null)
+                    hideSoftInput()
+                    findNavController().navigate(
+                        R.id.action_pageScreen_to_objectIconPickerScreen,
+                        bundleOf(
+                            ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
+                            ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to command.target
+                        )
+                    )
                 }
                 is Command.OpenAddBlockPanel -> {
                     hideKeyboard()

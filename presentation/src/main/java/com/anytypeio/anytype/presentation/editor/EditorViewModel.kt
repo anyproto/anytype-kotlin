@@ -3607,24 +3607,7 @@ class EditorViewModel(
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-            val details = orchestrator.stores.details.current()
-            dispatch(
-                Command.OpenDocumentIconActionMenu(
-                    target = context,
-                    emoji = details.details[context]?.iconEmoji?.let { name ->
-                        if (name.isNotEmpty())
-                            name
-                        else
-                            null
-                    },
-                    image = details.details[context]?.iconImage?.let { name ->
-                        if (name.isNotEmpty())
-                            urlBuilder.image(name)
-                        else
-                            null
-                    }
-                )
-            )
+            dispatch(Command.OpenDocumentEmojiIconPicker(target = context))
         } else {
             _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
         }

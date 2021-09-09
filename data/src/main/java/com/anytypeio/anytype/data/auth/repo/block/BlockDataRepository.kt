@@ -457,4 +457,9 @@ class BlockDataRepository(
         ctx: Id,
         relations: List<Id>
     ): Payload = factory.remote.removeFromFeaturedRelations(ctx, relations)
+
+    override fun setIsFavorite(
+        ctx: Id,
+        isFavorite: Boolean
+    ): Payload = factory.remote.setIsFavorite(ctx = ctx, isFavorite = isFavorite)
 }

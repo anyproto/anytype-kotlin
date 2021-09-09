@@ -419,4 +419,9 @@ class BlockMiddleware(
         ctx: Id,
         relations: List<Id>
     ): Payload = middleware.removeFromFeaturedRelations(ctx, relations)
+
+    override fun setIsFavorite(
+        ctx: Id,
+        isFavorite: Boolean
+    ): Payload = middleware.setIsFavorite(ctx = ctx, isFavorite = isFavorite)
 }

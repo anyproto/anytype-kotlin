@@ -391,4 +391,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx: Id,
         relations: List<Id>
     ): Payload = remote.removeFromFeaturedRelations(ctx, relations)
+
+    override fun setIsFavorite(
+        ctx: Id,
+        isFavorite: Boolean
+    ): Payload = remote.setIsFavorite(ctx = ctx, isFavorite = isFavorite)
 }

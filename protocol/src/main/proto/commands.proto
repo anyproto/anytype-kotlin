@@ -204,6 +204,29 @@ message Rpc {
                         }
                     }
                 }
+                message IsFavorite {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        bool isFavorite = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
             }
 
             // commands acceptable only for text blocks, others will be ignored
@@ -454,6 +477,31 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string blockId = 2;
+                ResponseEvent event = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message UpdateContent {
+            message Request {
+                string contextId = 1;
+                string blockId = 2;
+                anytype.model.Block block = 3;
+            }
+
+            message Response {
+                Error error = 1;
                 ResponseEvent event = 3;
 
                 message Error {
@@ -3172,6 +3220,54 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 anytype.model.ObjectType.Layout layout = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SetIsFavorite {
+            message Request {
+                string contextId = 1;
+                bool isFavorite = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SetIsArchived {
+            message Request {
+                string contextId = 1;
+                bool isArchived = 2;
             }
 
             message Response {

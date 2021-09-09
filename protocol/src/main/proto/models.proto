@@ -36,6 +36,8 @@ enum SmartBlockType {
     IndexedRelation = 0x201;
     BundledObjectType = 0x202;
     AnytypeProfile = 0x203;
+    Date = 0x204;
+
 }
 
 message Block {
@@ -59,8 +61,8 @@ message Block {
         Content.Dataview dataview = 21;
         Content.Relation relation = 22;
         Content.FeaturedRelations featuredRelations = 23;
+        Content.Latex latex = 24;
     }
-
 
     message Restrictions {
         bool read = 1;
@@ -211,6 +213,7 @@ message Block {
                 File = 1;
                 Image = 2;
                 Video = 3;
+                Audio = 4;
             }
 
             enum State {
@@ -238,6 +241,7 @@ message Block {
                 repeated Sort sorts = 4;
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
+				string coverRelationKey = 7; // Relation used for cover in gallery
 
                 enum Type {
                     Table = 0;
@@ -315,6 +319,10 @@ message Block {
 
         message Relation {
             string key = 1;
+        }
+
+        message Latex {
+            string text = 1;
         }
     }
 }

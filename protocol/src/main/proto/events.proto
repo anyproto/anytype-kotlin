@@ -739,6 +739,7 @@ message Model {
             Import = 1;
             Export = 2;
             SaveFile = 3;
+            RecoverAccount = 4;
         }
 
         enum State {

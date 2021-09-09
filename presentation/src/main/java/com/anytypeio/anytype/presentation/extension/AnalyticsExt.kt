@@ -104,4 +104,5 @@ fun Block.Prototype.File.getStyleName() = when (this.type) {
     Block.Content.File.Type.FILE -> "File"
     Block.Content.File.Type.IMAGE -> "Image"
     Block.Content.File.Type.VIDEO -> "Video"
+    Block.Content.File.Type.AUDIO -> "Audio"
 }

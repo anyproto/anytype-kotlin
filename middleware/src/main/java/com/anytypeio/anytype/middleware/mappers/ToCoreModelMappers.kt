@@ -223,6 +223,7 @@ fun MBFileType.toCoreModels(): Block.Content.File.Type = when (this) {
     MBFileType.File -> Block.Content.File.Type.FILE
     MBFileType.Image -> Block.Content.File.Type.IMAGE
     MBFileType.Video -> Block.Content.File.Type.VIDEO
+    MBFileType.Audio -> Block.Content.File.Type.AUDIO
 }
 
 fun MBDivStyle.toCoreModels(): Block.Content.Divider.Style = when (this) {
@@ -492,6 +493,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.BundledObjectType -> SmartBlockType.BUNDLED_OBJECT_TYPE
     MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
     MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
+    MSmartBlockType.Date -> SmartBlockType.DATE
 }
 
 // ---------------------- RESTRICTIONS ------------------------

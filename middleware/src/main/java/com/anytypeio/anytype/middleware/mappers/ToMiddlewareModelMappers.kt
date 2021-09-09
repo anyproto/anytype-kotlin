@@ -171,6 +171,7 @@ fun Block.Content.File.Type?.toMiddlewareModel(): MBFileType = when (this) {
     Block.Content.File.Type.FILE -> MBFileType.File
     Block.Content.File.Type.IMAGE -> MBFileType.Image
     Block.Content.File.Type.VIDEO -> MBFileType.Video
+    Block.Content.File.Type.AUDIO -> MBFileType.Audio
     null -> MBFileType.None
 }
 

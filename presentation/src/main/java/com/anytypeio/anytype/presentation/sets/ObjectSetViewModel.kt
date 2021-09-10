@@ -731,13 +731,18 @@ class ObjectSetViewModel(
         Timber.d("onIconClicked, ")
         val set = reducer.state.value
         if (set.isInitialized) {
-            val header = _header.value
             dispatch(
-                ObjectSetCommand.Modal.OpenIconActionMenu(
-                    ctx = context,
-                    emoji = header?.emoji,
-                    image = header?.image
-                )
+                ObjectSetCommand.Modal.OpenIconActionMenu(target = context)
+            )
+        }
+    }
+
+    fun onCoverClicked() {
+        Timber.d("onCoverClicked, ")
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            dispatch(
+                ObjectSetCommand.Modal.OpenCoverActionMenu(ctx = context)
             )
         }
     }

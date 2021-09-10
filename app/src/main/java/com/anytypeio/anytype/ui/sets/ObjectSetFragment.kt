@@ -52,6 +52,8 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment
+import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
@@ -313,16 +315,14 @@ open class ObjectSetFragment :
         this.title.setText(title.text)
         topToolbar.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
 
-        if (title.emoji != null) {
-            objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).visible()
-        } else {
-            objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).gone()
+        objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
+            if (title.emoji != null || title.image != null) visible() else gone()
+            setOnClickListener { vm.onIconClicked() }
         }
 
         objectHeader.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
 
         if (title.image != null) {
-            objectHeader.findViewById<ViewGroup>(R.id.docImageIconContainer).visible()
             objectHeader.findViewById<ImageView>(R.id.imageIcon).apply {
                 Glide
                     .with(this)
@@ -331,7 +331,6 @@ open class ObjectSetFragment :
                     .into(this)
             }
         } else {
-            objectHeader.findViewById<ViewGroup>(R.id.docImageIconContainer).gone()
             objectHeader.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
         }
 
@@ -349,6 +348,7 @@ open class ObjectSetFragment :
     ) {
         val ivCover = objectHeader.findViewById<ImageView>(R.id.cover)
         val container = objectHeader.findViewById<FrameLayout>(R.id.coverAndIconContainer)
+        container.setOnClickListener { vm.onCoverClicked() }
         when {
             coverColor != null -> {
                 ivCover?.apply {
@@ -525,7 +525,13 @@ open class ObjectSetFragment :
                 }
             }
             is ObjectSetCommand.Modal.OpenIconActionMenu -> {
-                //todo show edit icon widget
+                findNavController().navigate(
+                    R.id.action_objectSetScreen_to_objectSetIconPickerScreen,
+                    bundleOf(
+                        ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
+                        ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to command.target
+                    )
+                )
             }
             is ObjectSetCommand.Intent.Call -> {
                 try {
@@ -547,6 +553,12 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
                 val fr = ViewerSortFragment.new(ctx)
                 fr.show(childFragmentManager, EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
+                findNavController().navigate(
+                    R.id.action_objectSetScreen_to_objectCoverScreen,
+                    bundleOf(DocCoverSliderFragment.CTX_KEY to command.ctx)
+                )
             }
         }
     }

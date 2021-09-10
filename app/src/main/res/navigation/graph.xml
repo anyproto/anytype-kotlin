@@ -56,7 +56,22 @@
         <fragment
             android:id="@+id/objectSetScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetFragment"
-            android:label="ObjectSetScreen" />
+            android:label="ObjectSetScreen" >
+            <action
+                android:id="@+id/action_objectSetScreen_to_objectSetIconPickerScreen"
+                app:destination="@id/objectSetIconPickerScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/action_objectSetScreen_to_objectCoverScreen"
+                app:destination="@id/objectCoverScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </fragment>
         <dialog
             android:id="@+id/dataViewRelationValueScreen"
             android:name="com.anytypeio.anytype.ui.relations.RelationValueDVFragment"

@@ -68,9 +68,11 @@ sealed class ObjectSetCommand {
         data class SetNameForCreatedRecord(val ctx: String) : Modal()
 
         data class OpenIconActionMenu(
-            val ctx: Id,
-            val image: String?,
-            val emoji: String?
+            val target: Id
+        ) : Modal()
+
+        data class OpenCoverActionMenu(
+            val ctx: Id
         ) : Modal()
     }
 

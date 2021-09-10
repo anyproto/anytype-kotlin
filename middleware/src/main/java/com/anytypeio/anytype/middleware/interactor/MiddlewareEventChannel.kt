@@ -12,7 +12,7 @@ class MiddlewareEventChannel(
 ) : EventRemoteChannel {
 
     private fun filter(msg: anytype.Event.Message): Boolean {
-        // TODO move to class property
+        // TODO move to class property, also we should log non filtered events
         val events = listOf(
             msg.objectShow,
             msg.blockAdd,
@@ -28,10 +28,13 @@ class MiddlewareEventChannel(
             msg.blockSetFields,
             msg.blockSetBookmark,
             msg.blockSetAlign,
+            msg.blockSetDiv,
+            msg.blockSetRelation,
             msg.blockDataviewRecordsSet,
             msg.blockDataviewRelationSet,
             msg.blockDataviewRecordsUpdate,
             msg.blockDataviewViewDelete,
+            msg.blockDataviewViewSet,
             msg.objectRelationsAmend,
             msg.objectRelationsRemove,
             msg.objectRelationsSet

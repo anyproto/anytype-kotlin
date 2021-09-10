@@ -784,7 +784,7 @@ class MiddlewareServiceImplementation : MiddlewareService {
     }
 
     override fun objectSetIsArchived(request: Object.SetIsArchived.Request): Object.SetIsArchived.Response {
-        val encoded = Service.objectSetIsFavorite(
+        val encoded = Service.objectSetIsArchived(
             Object.SetIsArchived.Request.ADAPTER.encode(request)
         )
         val response = Object.SetIsArchived.Response.ADAPTER.decode(encoded)

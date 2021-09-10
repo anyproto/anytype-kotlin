@@ -1006,10 +1006,14 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun blurContainer() {
-        Blurry.with(context)
-            .radius(12)
-            .sampling(6)
-            .onto(root)
+        try {
+            Blurry.with(context)
+                .radius(12)
+                .sampling(6)
+                .onto(root)
+        } catch (e: Exception) {
+            Timber.e(e, "Blurry exception")
+        }
     }
 
     private fun navigateToBlockActionPreview(command: Command.OpenActionBar) {
@@ -1361,27 +1365,29 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun showMarkupColorToolbarWithAnimation() {
 
         val focus = recycler.findFocus()
-        check(focus is TextInputWidget)
-        val cursorCoord = focus.cursorYBottomCoordinate()
 
-        val parentBottom = calculateRectInWindow(recycler).bottom
-        val toolbarHeight = markupToolbar.height + markupColorToolbar.height
+        if (focus != null && focus is TextInputWidget) {
+            val cursorCoord = focus.cursorYBottomCoordinate()
 
-        val minPosY = parentBottom - toolbarHeight
+            val parentBottom = calculateRectInWindow(recycler).bottom
+            val toolbarHeight = markupToolbar.height + markupColorToolbar.height
 
-        if (minPosY <= cursorCoord) {
-            val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoord)
-            Timber.d("New scroll y: $scrollY")
-            recycler.post {
-                recycler.smoothScrollBy(0, scrollY)
+            val minPosY = parentBottom - toolbarHeight
+
+            if (minPosY <= cursorCoord) {
+                val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoord)
+                Timber.d("New scroll y: $scrollY")
+                recycler.post {
+                    recycler.smoothScrollBy(0, scrollY)
+                }
             }
-        }
 
-        markupColorToolbar
-            .animate()
-            .translationY(0f)
-            .setDuration(DEFAULT_ANIM_DURATION)
-            .start()
+            markupColorToolbar
+                .animate()
+                .translationY(0f)
+                .setDuration(DEFAULT_ANIM_DURATION)
+                .start()
+        }
     }
 
     private fun hideMarkupColorToolbarWithAnimation() {

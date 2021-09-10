@@ -145,14 +145,14 @@ fun ObjectSet.title(
 }
 
 fun ObjectSet.simpleRelations(viewerId: Id?): ArrayList<SimpleRelationView> {
-
-    val block = blocks.first { it.content is DV }
-
-    val dv = block.content as DV
-
-    val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
-
-    return viewer.viewerRelations.toSimpleRelations(dv.relations)
+    return if (isInitialized) {
+        val block = blocks.first { it.content is DV }
+        val dv = block.content as DV
+        val viewer = dv.viewers.find { it.id == viewerId } ?: dv.viewers.first()
+        viewer.viewerRelations.toSimpleRelations(dv.relations)
+    } else {
+        arrayListOf()
+    }
 }
 
 fun DVViewer.toViewRelation(relation: Relation): SimpleRelationView {

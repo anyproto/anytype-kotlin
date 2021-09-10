@@ -16,10 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.parsePath
-import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
@@ -30,8 +27,6 @@ import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseView
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
 import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -100,29 +95,33 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        vm.state().onEach { state ->
-            when (state) {
-                is ViewState.Success -> {
-                    if (filterInputField.text.isNotEmpty())
-                        clearSearchText.visible()
-                    else
-                        clearSearchText.invisible()
-                    emojiPickerAdapter.update(state.views)
-                    progressBar.invisible()
-                }
-                is ViewState.Loading -> {
-                    clearSearchText.invisible()
-                    progressBar.visible()
-                }
-                is ViewState.Init -> {
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.state()) { render(it) }
+        }
+        super.onStart()
+    }
+
+    private fun render(state: ViewState) {
+        when (state) {
+            is ViewState.Success -> {
+                if (filterInputField.text.isNotEmpty())
                     clearSearchText.visible()
-                    progressBar.invisible()
-                }
-                is ViewState.Exit -> dismiss()
+                else
+                    clearSearchText.invisible()
+                emojiPickerAdapter.update(state.views)
+                progressBar.invisible()
             }
-        }.launchIn(lifecycleScope)
+            is ViewState.Loading -> {
+                clearSearchText.invisible()
+                progressBar.visible()
+            }
+            is ViewState.Init -> {
+                clearSearchText.visible()
+                progressBar.invisible()
+            }
+            is ViewState.Exit -> dismiss()
+        }
     }
 
     override fun onDestroyView() {

@@ -1248,9 +1248,7 @@ class EditorViewModel(
                     }
                     is Content.File -> {
                         excludedActions.add(ActionItemType.Style)
-                        if (!isMultiMode) {
-                            targetActions.add(ActionItemType.Download)
-                        }
+                        targetActions.add(ActionItemType.Download)
                     }
                     is Content.Link -> {
                         excludedActions.add(ActionItemType.Style)
@@ -4785,6 +4783,7 @@ class EditorViewModel(
             ActionItemType.Style -> { onMultiSelectStyleButtonClicked() }
             ActionItemType.Download -> {
                 startDownloadingFiles(ids = currentSelection().toList())
+                proceedWithExitingMultiSelectMode()
             }
             else -> {
                 _toasts.trySend("TODO")

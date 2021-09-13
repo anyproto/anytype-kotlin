@@ -21,6 +21,7 @@ class RelationTextValueAdapter(
         val view = inflater.inflate(R.layout.item_object_relation_text, parent, false)
         return when (viewType) {
             TYPE_TEXT -> RelationTextHolder(view).apply {
+                itemView.textInputField.setHint(R.string.enter_text)
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
@@ -28,6 +29,7 @@ class RelationTextValueAdapter(
                 )
             }
             TYPE_TEXT_SHORT -> RelationTextShortHolder(view).apply {
+                itemView.textInputField.setHint(R.string.enter_text)
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
@@ -35,6 +37,7 @@ class RelationTextValueAdapter(
                 )
             }
             TYPE_URL -> RelationUrlHolder(view).apply {
+                itemView.textInputField.setHint(R.string.enter_url)
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
@@ -42,6 +45,7 @@ class RelationTextValueAdapter(
                 )
             }
             TYPE_PHONE -> RelationPhoneHolder(view).apply {
+                itemView.textInputField.setHint(R.string.enter_phone)
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
@@ -49,6 +53,7 @@ class RelationTextValueAdapter(
                 )
             }
             TYPE_EMAIL -> RelationEmailHolder(view).apply {
+                itemView.textInputField.setHint(R.string.enter_email)
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
@@ -56,6 +61,7 @@ class RelationTextValueAdapter(
                 )
             }
             TYPE_NUMBER -> RelationNumberHolder(view).apply {
+                itemView.textInputField.setHint(R.string.enter_number)
                 itemView.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)

@@ -17,7 +17,6 @@ class RelationTextHolder(view: View) : RelationBaseHolder(view) {
         if (view.value.isNullOrEmpty()) {
             textInputField.focusAndShowKeyboard()
         }
-        textInputField.setHint(R.string.dv_cell_description_hint)
         textInputField.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
         textInputField.isSingleLine = false
         btnAction.gone()
@@ -31,7 +30,6 @@ class RelationTextShortHolder(view: View) : RelationBaseHolder(view) {
         if (view.value.isNullOrEmpty()) {
             textInputField.focusAndShowKeyboard()
         }
-        textInputField.setHint(R.string.dv_cell_description_hint)
         textInputField.inputType = InputType.TYPE_CLASS_TEXT
         textInputField.isSingleLine = true
         btnAction.gone()
@@ -48,7 +46,6 @@ class RelationPhoneHolder(view: View) : RelationBaseHolder(view) {
             } else {
                 ivActionIcon.setImageResource(R.drawable.ic_cell_relation_call_with)
             }
-            textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_CLASS_PHONE
             btnAction.visible()
             btnAction.setOnClickListener {
@@ -67,7 +64,6 @@ class RelationEmailHolder(view: View) : RelationBaseHolder(view) {
             } else {
                 ivActionIcon.setImageResource(R.drawable.ic_cell_relation_go_to_mail_client)
             }
-            textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             btnAction.visible()
             btnAction.setOnClickListener {
@@ -86,7 +82,6 @@ class RelationUrlHolder(view: View) : RelationBaseHolder(view) {
             } else {
                 ivActionIcon.setImageResource(R.drawable.ic_cell_relation_go_to_link)
             }
-            textInputField.setHint(R.string.hint_empty)
             textInputField.inputType = InputType.TYPE_TEXT_VARIATION_URI
             btnAction.visible()
             btnAction.setOnClickListener {
@@ -102,7 +97,6 @@ class RelationNumberHolder(view: View) : RelationBaseHolder(view) {
         if (view.value.isNullOrEmpty()) {
             textInputField.focusAndShowKeyboard()
         }
-        textInputField.setHint(R.string.dv_cell_number_hint)
         textInputField.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
         btnAction.gone()
     }

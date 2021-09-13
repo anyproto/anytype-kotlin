@@ -68,7 +68,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private val dndBehavior by lazy {
         object : DefaultDragAndDropBehavior(
-            onItemMoved = { from, to -> editCellTagAdapter.onItemMove(from, to) },
+            onItemMoved = { from, to -> relationValueAdapter.onItemMove(from, to) },
             onItemDropped = { onItemDropped() }
         ) {
             override fun getMovementFlags(
@@ -84,7 +84,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         }
     }
 
-    protected val editCellTagAdapter by lazy {
+    protected val relationValueAdapter by lazy {
         RelationValueAdapter(
             onCreateOptionClicked = {},
             onTagClicked = {},
@@ -114,7 +114,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         super.onViewCreated(view, savedInstanceState)
         recycler.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = editCellTagAdapter
+            adapter = relationValueAdapter
         }
         dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
             setDrawable(drawable(R.drawable.divider_relations))
@@ -133,7 +133,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.isDimissed) { observeDismiss(it) }
         jobs += lifecycleScope.subscribe(vm.isEditing) { observeEditing(it) }
-        jobs += lifecycleScope.subscribe(vm.views) { editCellTagAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.name) { tvTagOrStatusRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading) }
@@ -414,7 +414,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
             obj = target,
             dv = dataview,
             relation = relation,
-            order = editCellTagAdapter.order()
+            order = relationValueAdapter.order()
         )
     }
 
@@ -583,7 +583,7 @@ class RelationValueFragment : RelationValueBaseFragment() {
         vm.onObjectValueOrderChanged(
             ctx = ctx,
             relation = relation,
-            order = editCellTagAdapter.order()
+            order = relationValueAdapter.order()
         )
     }
 

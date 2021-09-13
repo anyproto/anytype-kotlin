@@ -7,6 +7,6 @@ class GetDebugSettings(private val repo: InfrastructureRepository) :
     BaseUseCase<DebugSettings, Unit>() {
 
     override suspend fun run(params: Unit): Either<Throwable, DebugSettings> = safe {
-        DebugSettings(isAnytypeContextMenuEnabled = repo.getAnytypeContextMenu())
+        DebugSettings(isAnytypeContextMenuEnabled = false)
     }
 }

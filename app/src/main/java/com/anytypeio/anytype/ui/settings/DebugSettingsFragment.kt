@@ -1,8 +1,12 @@
 package com.anytypeio.anytype.ui.settings
 
 import android.content.ClipboardManager
+import android.content.ContentValues
 import android.content.Context.CLIPBOARD_SERVICE
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
@@ -15,6 +19,10 @@ import com.anytypeio.anytype.domain.config.UseCustomContextMenu
 import com.anytypeio.anytype.domain.dataview.interactor.DebugSync
 import kotlinx.android.synthetic.main.fragment_debug_settings.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
@@ -34,7 +42,7 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
         viewLifecycleOwner.lifecycleScope.launch {
             getDebugSettings(Unit).proceed(
                 failure = {},
-                success = { setContextMenuToggle(it.isAnytypeContextMenuEnabled) }
+                success = {}
             )
         }
 
@@ -42,7 +50,7 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
             viewLifecycleOwner.lifecycleScope.launch {
                 debugSync.invoke(Unit).proceed(
                     failure = {},
-                    success = { status -> setSyncStatus(status) }
+                    success = { status -> saveToFile(status) }
                 )
             }
         }
@@ -52,21 +60,52 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
             cm.text = tvSync.text
             requireContext().toast("Sync status is copied to the clipboard")
         }
+    }
 
-        anytypeContextMenuToggle.setOnCheckedChangeListener { _, isChecked ->
-            viewLifecycleOwner.lifecycleScope.launch {
-                useCustomContextMenu.invoke(UseCustomContextMenu.Params(isChecked))
+    private fun showStatus(msg: String) {
+        scrollContainer.visible()
+        tvSync.text = msg
+    }
+
+    private fun saveToFile(status: String) {
+        val date = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy-HH:mm:ss", Locale.getDefault())
+        val formattedDate = dateFormat.format(date)
+        val fileName = "DebugSync$formattedDate"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                val resolver = requireContext().contentResolver
+                val cv = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS)
+                }
+                val imageUri = resolver.insert(MediaStore.Files.getContentUri("external"), cv)
+                resolver.openOutputStream(imageUri!!).use { out ->
+                    out?.write(status.toByteArray())
+                }
+                Timber.d("Save debug sync to : Documents/$fileName.txt")
+                showStatus("DebugSync is saved to Documents/$fileName.txt")
+            } catch (e: Exception) {
+                Timber.d(e, "Can't create file")
+                showStatus("DebugSync error ${e.localizedMessage}")
+            }
+        } else {
+            try {
+                val fileDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                        .toString()
+                val file = File(fileDir, "$fileName.txt")
+                file.bufferedWriter().use { out ->
+                    out.write(status)
+                }
+                Timber.d("Save debug sync to : Documents/$fileName.txt")
+                showStatus("DebugSync is saved to Documents/$fileName.txt")
+            } catch (e: Exception) {
+                Timber.d(e, "Can't create file")
+                showStatus("DebugSync error ${e.localizedMessage}")
             }
         }
-    }
-
-    private fun setSyncStatus(status: String) {
-        scrollContainer.visible()
-        tvSync.text = status
-    }
-
-    private fun setContextMenuToggle(value: Boolean) {
-        anytypeContextMenuToggle.isChecked = value
     }
 
     override fun injectDependencies() {

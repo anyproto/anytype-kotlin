@@ -90,18 +90,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/name" />
 
             <ImageView
-                android:id="@+id/debugSettingsButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:alpha="0.5"
-                android:padding="8dp"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_debug_settings" />
-
-            <ImageView
                 android:id="@+id/ivArrowForward"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -280,5 +268,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/debugSettingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="16dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_debug_settings"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

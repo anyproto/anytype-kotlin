@@ -61,8 +61,8 @@ class SetupNewAccountViewModel(
             result.either(
                 fnL = { error ->
                     //todo Remove this, after adding proper error handling logic
-                    if (error.message?.contains("BAD_INVITE_CODE") == true) {
-                        _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invite code!"))
+                    if (error.message?.contains("not found") == true) {
+                        _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invitation code!"))
                         viewModelScope.launch {
                             delay(300)
                             navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))

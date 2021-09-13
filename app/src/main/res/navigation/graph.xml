@@ -44,7 +44,7 @@
             android:id="@+id/objectMainMenuScreen"
             android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment"
             android:label="Doc-Menu-Bottom-Sheet-Screen"/>
-        <fragment
+        <dialog
             android:id="@+id/objectCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment"
             android:label="Object-Cover-Screen"/>
@@ -84,7 +84,7 @@
             android:id="@+id/objectSetIconPickerScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
             android:label="Object-Set-Icon-Picker-Screen" />
-        <fragment
+        <dialog
             android:id="@+id/objectCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment"
             android:label="Object-Cover-Screen"/>

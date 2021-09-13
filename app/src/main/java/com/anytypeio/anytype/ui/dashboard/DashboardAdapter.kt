@@ -19,7 +19,9 @@ import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.facebook.shimmer.ShimmerFrameLayout
 import kotlinx.android.synthetic.main.item_dashboard_card_default.view.*
+import kotlinx.android.synthetic.main.item_dashboard_card_default.view.shimmer
 import kotlinx.android.synthetic.main.item_desktop_archive.view.*
+import kotlinx.android.synthetic.main.item_desktop_set_without_icon.view.*
 import timber.log.Timber
 
 class DashboardAdapter(
@@ -35,6 +37,7 @@ class DashboardAdapter(
         const val VIEW_TYPE_DOCUMENT_TASK = 2
         const val VIEW_TYPE_ARCHIVE = 3
         const val VIEW_TYPE_SET = 4
+        const val VIEW_TYPE_SET_WITHOUT_ICON = 5
 
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
     }
@@ -109,6 +112,21 @@ class DashboardAdapter(
                     itemView.typeTitle.setText(R.string.set)
                 }
             }
+            VIEW_TYPE_SET_WITHOUT_ICON -> {
+                ViewHolder.ObjectSetWithoutIconHolder(
+                    inflater.inflate(R.layout.item_desktop_set_without_icon, parent, false)
+                ).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.ObjectSet)
+                            onObjectSetClicked(item.target)
+                        }
+                    }
+                    itemView.tvSetTypeName.setText(R.string.set)
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -121,7 +139,10 @@ class DashboardAdapter(
                 else -> VIEW_TYPE_DOCUMENT_WITHOUT_ICON
             }
             is DashboardView.Archive -> VIEW_TYPE_ARCHIVE
-            is DashboardView.ObjectSet -> VIEW_TYPE_SET
+            is DashboardView.ObjectSet -> when (item.icon) {
+                ObjectIcon.None -> VIEW_TYPE_SET_WITHOUT_ICON
+                else -> VIEW_TYPE_SET
+            }
             else -> throw IllegalStateException("$UNEXPECTED_TYPE_ERROR_MESSAGE:\n$item")
         }
     }
@@ -157,6 +178,13 @@ class DashboardAdapter(
                     val item = data[position] as DashboardView.ObjectSet
                     bindTitle(item.title)
                     bindIcon(item.icon)
+                    bindLoading(item.isLoading)
+                }
+            }
+            is ViewHolder.ObjectSetWithoutIconHolder -> {
+                with(holder) {
+                    val item = data[position] as DashboardView.ObjectSet
+                    bindTitle(item.title)
                     bindLoading(item.isLoading)
                 }
             }
@@ -391,6 +419,31 @@ class DashboardAdapter(
 
             fun bindIcon(icon: ObjectIcon) {
                 itemView.iconWidget.bind(icon)
+            }
+        }
+
+        class ObjectSetWithoutIconHolder(itemView: View) : ViewHolder(itemView) {
+
+            private val tvTitle = itemView.findViewById<TextView>(R.id.tvSetTitle)
+            private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                }
+            }
+
+            fun bindTitle(title: String?) {
+                if (title.isNullOrEmpty())
+                    tvTitle.setText(R.string.untitled)
+                else
+                    tvTitle.text = title
             }
         }
     }

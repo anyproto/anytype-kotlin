@@ -1291,6 +1291,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         state.slashWidget.apply {
             if (isVisible) {
                 if (!slashWidget.isVisible) {
+                    slashWidget.scrollToTop()
                     showSlashWidget(this)
                 }
                 widgetState?.let {

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import kotlinx.android.synthetic.main.widget_editor_slash.view.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.onEach
 
 class SlashWidget @JvmOverloads constructor(
     context: Context,
@@ -20,7 +21,9 @@ class SlashWidget @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val _clickEvents = Channel<SlashItem>()
-    val clickEvents = _clickEvents.consumeAsFlow()
+    val clickEvents = _clickEvents.consumeAsFlow().onEach { event ->
+        if (event is SlashItem.Main) scrollToTop()
+    }
 
     private val mainAdapter by lazy {
         SlashMainAdapter(
@@ -138,6 +141,10 @@ class SlashWidget @JvmOverloads constructor(
                 backgroundAdapter.update(widgetState.backgroundItems)
             }
         }
+    }
+
+    fun scrollToTop() {
+        rvSlash?.scrollToPosition(0)
     }
 
     fun getWidgetMinHeight() = with(context.resources) {

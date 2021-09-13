@@ -478,7 +478,18 @@ class DefaultBlockViewRenderer(
                 is Content.Latex -> {
                     counter.reset()
                     result.add(
-                        latex(
+                        unsupported(
+                            block = block,
+                            indent = indent,
+                            selection = selection,
+                            mode = mode
+                        )
+                    )
+                }
+                is Content.Unsupported -> {
+                    counter.reset()
+                    result.add(
+                        unsupported(
                             block = block,
                             indent = indent,
                             selection = selection,
@@ -1161,7 +1172,7 @@ class DefaultBlockViewRenderer(
         )
     )
 
-    private fun latex(
+    private fun unsupported(
         block: Block,
         indent: Int,
         mode: EditorMode,

@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
-import timber.log.Timber
 
 // ---------------------- PAYLOAD ------------------------
 fun ResponseEvent?.toPayload(): Payload {
@@ -128,8 +127,12 @@ fun List<MBlock>.toCoreModels(
             )
         }
         else -> {
-            Timber.d("Ignoring content type: $block")
-            null
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = Block.Content.Unsupported
+            )
         }
     }
 }

@@ -288,6 +288,7 @@ data class Block(
         }
 
         object Latex : Content()
+        object Unsupported: Content()
     }
 
     /**

@@ -13,15 +13,15 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="14dp" />
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/tvDocTitle"
         style="@style/DashboardDocAlternativeTitleStyle"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_marginStart="34dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         tools:text="@string/default_text_placeholder" />
 
@@ -30,8 +30,8 @@
         style="@style/DashboardDocumentSubtitleStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="34dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="98dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/unknown_type"
         tools:text="Task" />

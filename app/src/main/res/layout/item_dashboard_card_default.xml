@@ -22,7 +22,7 @@
         android:hint="@string/untitled"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="79dp"
+        android:layout_marginTop="76dp"
         android:layout_marginEnd="16dp"
         tools:text="Movies" />
 
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="98dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/unknown_type"
         tools:text="Page" />
@@ -43,7 +43,7 @@
         android:layout_height="match_parent"
         app:shimmer_auto_start="false"
         app:shimmer_duration="2000"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"

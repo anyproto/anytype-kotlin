@@ -147,7 +147,6 @@ class EditDataViewViewerViewModel(
                     if (nextViewerId != null) {
                         proceedWithSettingActiveView(ctx, state, nextViewerId)
                     } else {
-                        _toasts.emit("Something went wrong")
                         isDismissed.emit(true)
                     }
                 }

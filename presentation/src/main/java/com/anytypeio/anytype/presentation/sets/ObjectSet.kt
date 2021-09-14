@@ -32,6 +32,7 @@ data class ObjectSet(
 
     companion object {
         fun init() = ObjectSet()
+        fun reset() = ObjectSet()
     }
 
     /**

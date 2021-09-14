@@ -19,7 +19,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".StyleToolbarActivity">
+        <activity
+            android:name=".LatexActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,12 +30,12 @@
         </activity>
         <activity
             android:name=".search.SearchOnPageActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize">
-        </activity>
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".DisabledAnimationActivity" />
         <activity android:name=".ScrollAndMove" />
         <activity android:name=".StyleActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".StyleToolbarActivity"/>
     </application>
 
 </manifest>

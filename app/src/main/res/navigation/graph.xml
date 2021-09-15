@@ -46,7 +46,7 @@
             android:label="Doc-Menu-Bottom-Sheet-Screen"/>
         <dialog
             android:id="@+id/objectCoverScreen"
-            android:name="com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment"
+            android:name="com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment"
             android:label="Object-Cover-Screen"/>
     </navigation>
 
@@ -65,8 +65,8 @@
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
             <action
-                android:id="@+id/action_objectSetScreen_to_objectCoverScreen"
-                app:destination="@id/objectCoverScreen"
+                android:id="@+id/action_objectSetScreen_to_objectSetCoverScreen"
+                app:destination="@id/objectSetCoverScreen"
                 app:enterAnim="@anim/nav_default_enter_anim"
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -85,8 +85,8 @@
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
             android:label="Object-Set-Icon-Picker-Screen" />
         <dialog
-            android:id="@+id/objectCoverScreen"
-            android:name="com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment"
+            android:id="@+id/objectSetCoverScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment"
             android:label="Object-Cover-Screen"/>
     </navigation>
 

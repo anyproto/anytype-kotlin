@@ -17,18 +17,19 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectCoverPickerViewModel
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.presentation.objects.CoverSliderBaseViewModel
+import com.anytypeio.anytype.presentation.objects.CoverSliderObjectSetViewModel
+import com.anytypeio.anytype.presentation.objects.CoverSliderObjectViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_doc_cover_slider.*
 import javax.inject.Inject
 
-class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
+abstract class CoverSliderBaseFragment : BaseBottomSheetFragment(), DocCoverAction {
 
-    private val ctx get() = arg<String>(CTX_KEY)
+    abstract val ctx: String
 
-    @Inject
-    lateinit var factory: ObjectCoverPickerViewModel.Factory
-    private val vm by viewModels<ObjectCoverPickerViewModel> { factory }
+    abstract val vm: CoverSliderBaseViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,9 +47,23 @@ class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
             }
         }.attach()
         lifecycleScope.subscribe(btnRemove.clicks()) { onRemoveCover() }
-        lifecycleScope.subscribe(vm.isDismissed) { isDismissed ->
-            if (isDismissed) findNavController().popBackStack()
+    }
+
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.isDismissed) { isDismissed ->
+                if (isDismissed) findNavController().popBackStack()
+            }
         }
+        super.onStart()
+    }
+
+    override fun onColorPicked(color: CoverColor) {
+        vm.onSolidColorSelected(ctx = ctx, color = color)
+    }
+
+    override fun onGradientPicked(gradient: String) {
+        vm.onGradientColorSelected(ctx = ctx, gradient = gradient)
     }
 
     override fun onImagePicked(path: String) {
@@ -64,7 +79,7 @@ class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
     }
 
     private inner class SliderAdapter(
-        fr: DocCoverSliderFragment
+        fr: CoverSliderBaseFragment
     ) : FragmentStateAdapter(fr) {
 
         val ctx = fr.ctx
@@ -73,31 +88,67 @@ class DocCoverSliderFragment : BaseBottomSheetFragment(), DocCoverAction {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> DocCoverGalleryFragment.new(ctx)
-                1 -> UploadCoverImageFragment.new(ctx)
+                0 -> SelectCoverGalleryFragment.new(ctx)
+                1 -> UploadCoverImageFragment()
                 else -> throw IllegalStateException()
             }
         }
     }
+}
+
+class CoverSliderObjectFragment : CoverSliderBaseFragment() {
+
+    override val ctx get() = arg<String>(CTX_KEY)
+
+    @Inject
+    lateinit var factory: CoverSliderObjectViewModel.Factory
+    override val vm by viewModels<CoverSliderObjectViewModel> { factory }
 
     override fun injectDependencies() {
-        componentManager().objectCoverPickerComponent.get(ctx).inject(this)
+        componentManager().objectCoverSliderComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectCoverPickerComponent.release(ctx)
+        componentManager().objectCoverSliderComponent.release(ctx)
     }
 
     companion object {
-        fun new(ctx: Id): DocCoverSliderFragment = DocCoverSliderFragment().apply {
+        const val CTX_KEY = "arg.object-cover-slider.ctx"
+
+        fun new(ctx: Id) = CoverSliderObjectFragment().apply {
             arguments = bundleOf(CTX_KEY to ctx)
         }
+    }
+}
 
-        const val CTX_KEY = "arg.doc-cover-slider.ctx"
+class CoverSliderObjectSetFragment : CoverSliderBaseFragment() {
+
+    override val ctx get() = arg<String>(CTX_KEY)
+
+    @Inject
+    lateinit var factory: CoverSliderObjectSetViewModel.Factory
+    override val vm by viewModels<CoverSliderObjectSetViewModel> { factory }
+
+    override fun injectDependencies() {
+        componentManager().objectSetCoverSliderComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectSetCoverSliderComponent.release(ctx)
+    }
+
+    companion object {
+        const val CTX_KEY = "arg.object-set-cover-slider.ctx"
+
+        fun new(ctx: Id) = CoverSliderObjectSetFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx)
+        }
     }
 }
 
 interface DocCoverAction {
+    fun onColorPicked(color: CoverColor)
+    fun onGradientPicked(gradient: String)
     fun onImagePicked(path: String)
     fun onImageSelected(hash: String)
     fun onRemoveCover()

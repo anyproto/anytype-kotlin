@@ -16,8 +16,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.cover.RemoveDocCover
-import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
@@ -149,12 +147,6 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var downloadFile: DownloadFile
-
-    @Mock
-    lateinit var setDocCoverImage: SetDocCoverImage
-
-    @Mock
-    lateinit var removeDocCover: RemoveDocCover
 
     @Mock
     lateinit var uploadBlock: UploadBlock
@@ -3964,8 +3956,6 @@ open class EditorViewModelTest {
                 setObjectType = setObjectType
             ),
             dispatcher = Dispatcher.Default(),
-            setDocCoverImage = setDocCoverImage,
-            removeDocCover = removeDocCover,
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,

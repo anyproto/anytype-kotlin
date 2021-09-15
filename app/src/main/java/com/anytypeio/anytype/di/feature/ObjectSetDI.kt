@@ -69,6 +69,7 @@ interface ObjectSetSubComponent {
 
     fun objectSetMenuComponent() : ObjectSetMenuComponent.Builder
     fun objectSetIconPickerComponent() : ObjectSetIconPickerComponent.Builder
+    fun objectSetCoverSliderComponent() : ObjectSetCoverSliderComponent.Builder
 }
 
 @Module

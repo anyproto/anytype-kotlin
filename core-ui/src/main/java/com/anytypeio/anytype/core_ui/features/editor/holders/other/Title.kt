@@ -271,6 +271,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
+                image.setOnClickListener { onPageIconClicked() }
             }
             setupIconVisibility(item)
         }

@@ -71,8 +71,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.editor.cover.DocCoverAction
-import com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment
+import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.*
@@ -113,7 +112,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     RelationDateValueFragment.DateValueEditReceiver,
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
-    DocCoverAction,
     OnMoveToAction,
     OnLinkToAction,
     PickiTCallbacks {
@@ -856,7 +854,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 is Command.OpenCoverGallery -> {
                     findNavController().navigate(
                         R.id.action_pageScreen_to_objectCoverScreen,
-                        bundleOf(DocCoverSliderFragment.CTX_KEY to command.ctx)
+                        bundleOf(CoverSliderObjectFragment.CTX_KEY to command.ctx)
                     )
                 }
                 is Command.OpenObjectLayout -> {
@@ -1770,18 +1768,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onDownloadClicked() {
         vm.onDownloadClicked()
-    }
-
-    override fun onImagePicked(path: String) {
-        vm.onDocCoverImagePicked(path)
-    }
-
-    override fun onImageSelected(hash: String) {
-        vm.onDocCoverImageSelected(hash)
-    }
-
-    override fun onRemoveCover() {
-        vm.onRemoveCover()
     }
 
     override fun onDismissBlockActionToolbar() {

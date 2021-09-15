@@ -18,24 +18,24 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.editor.cover.SelectDocCoverViewModel
+import com.anytypeio.anytype.presentation.editor.cover.SelectCoverViewModel
 import kotlinx.android.synthetic.main.fragment_doc_cover_gallery.*
 import javax.inject.Inject
 
-class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery) {
+class SelectCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery) {
 
     @Inject
-    lateinit var factory: SelectDocCoverViewModel.Factory
+    lateinit var factory: SelectCoverViewModel.Factory
 
-    private val vm by viewModels<SelectDocCoverViewModel> { factory }
+    private val vm by viewModels<SelectCoverViewModel> { factory }
 
     private val ctx: String get() = arg(CTX_KEY)
 
     private val docCoverGalleryAdapter by lazy {
         DocCoverGalleryAdapter(
-            onSolidColorClicked = { vm.onSolidColorSelected(color = it, ctx = ctx) },
-            onGradientClicked = { vm.onGradientColorSelected(gradient = it, ctx = ctx) },
-            onImageClicked = { withParent<DocCoverAction> { onImageSelected(it) } }
+            onSolidColorClicked = vm::onSolidColorSelected,
+            onGradientClicked = vm::onGradientColorSelected,
+            onImageClicked = vm::onImageSelected
         )
     }
 
@@ -83,24 +83,39 @@ class DocCoverGalleryFragment : BaseFragment(R.layout.fragment_doc_cover_gallery
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        lifecycleScope.subscribe(vm.views) { docCoverGalleryAdapter.views = it }
-        lifecycleScope.subscribe(vm.isDismissed) {
-            if (it) findNavController().popBackStack()
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.views) { docCoverGalleryAdapter.views = it }
+            jobs += subscribe(vm.isDismissed) { if (it) findNavController().popBackStack() }
+            jobs += subscribe(vm.commands) { observe(it) }
+        }
+        super.onStart()
+    }
+
+    private fun observe(command: SelectCoverViewModel.Command) {
+        when (command) {
+            is SelectCoverViewModel.Command.OnColorSelected -> {
+                withParent<DocCoverAction> { onColorPicked(command.color) }
+            }
+            is SelectCoverViewModel.Command.OnGradientSelected -> {
+                withParent<DocCoverAction> { onGradientPicked(command.gradient) }
+            }
+            is SelectCoverViewModel.Command.OnImageSelected -> {
+                withParent<DocCoverAction> { onImageSelected(command.hash) }
+            }
         }
     }
 
     override fun injectDependencies() {
-        componentManager().docCoverGalleryComponent.get(ctx).inject(this)
+        componentManager().coverGalleryComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().docCoverGalleryComponent.release(ctx)
+        componentManager().coverGalleryComponent.release(ctx)
     }
 
     companion object {
-        fun new(ctx: Id): DocCoverGalleryFragment = DocCoverGalleryFragment().apply {
+        fun new(ctx: Id): SelectCoverGalleryFragment = SelectCoverGalleryFragment().apply {
             arguments = bundleOf(CTX_KEY to ctx)
         }
 

@@ -52,7 +52,7 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment
+import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -316,7 +316,12 @@ open class ObjectSetFragment :
         topToolbar.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
 
         objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
-            if (title.emoji != null || title.image != null) visible() else gone()
+            if (title.emoji != null) visible() else gone()
+            setOnClickListener { vm.onIconClicked() }
+        }
+
+        objectHeader.findViewById<ViewGroup>(R.id.docImageIconContainer).apply {
+            if (title.image != null) visible() else gone()
             setOnClickListener { vm.onIconClicked() }
         }
 
@@ -348,7 +353,7 @@ open class ObjectSetFragment :
     ) {
         val ivCover = objectHeader.findViewById<ImageView>(R.id.cover)
         val container = objectHeader.findViewById<FrameLayout>(R.id.coverAndIconContainer)
-        container.setOnClickListener { vm.onCoverClicked() }
+        ivCover.setOnClickListener { vm.onCoverClicked() }
         when {
             coverColor != null -> {
                 ivCover?.apply {
@@ -556,8 +561,8 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
                 findNavController().navigate(
-                    R.id.action_objectSetScreen_to_objectCoverScreen,
-                    bundleOf(DocCoverSliderFragment.CTX_KEY to command.ctx)
+                    R.id.action_objectSetScreen_to_objectSetCoverScreen,
+                    bundleOf(CoverSliderObjectSetFragment.CTX_KEY to command.ctx)
                 )
             }
         }

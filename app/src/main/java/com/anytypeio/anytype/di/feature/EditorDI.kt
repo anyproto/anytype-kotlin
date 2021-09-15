@@ -18,8 +18,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.cover.RemoveDocCover
-import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
@@ -81,10 +79,9 @@ interface EditorSubComponent {
     fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
 
-    fun docCoverGalleryComponentBuilder(): SelectDocCoverSubComponent.Builder
-    fun objectCoverPickerComponent() : ObjectCoverPickerComponent.Builder
+    fun docCoverGalleryComponentBuilder(): SelectCoverSubComponent.Builder
+    fun objectCoverSliderComponent() : ObjectCoverSliderComponent.Builder
     fun objectMenuComponent() : ObjectMenuComponent.Builder
-    fun uploadDocCoverImageComponentBuilder(): UploadDocCoverImageSubComponent.Builder
 
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
 
@@ -134,8 +131,6 @@ object EditorSessionModule {
         createObject: CreateObject,
         createNewDocument: CreateNewDocument,
         documentExternalEventReducer: DocumentExternalEventReducer,
-        setDocCoverImage: SetDocCoverImage,
-        removeDocCover: RemoveDocCover,
         urlBuilder: UrlBuilder,
         renderer: DefaultBlockViewRenderer,
         setObjectIsArchived: SetObjectIsArchived,
@@ -159,8 +154,6 @@ object EditorSessionModule {
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         documentEventReducer = documentExternalEventReducer,
-        setDocCoverImage = setDocCoverImage,
-        removeDocCover = removeDocCover,
         urlBuilder = urlBuilder,
         renderer = renderer,
         setObjectIsArchived = setObjectIsArchived,
@@ -688,20 +681,6 @@ object EditorUseCaseModule {
     ) : DetailModificationManager = InternalDetailModificationManager(
         store = storage.details
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSetDocCoverImageUseCase(
-        repo: BlockRepository
-    ): SetDocCoverImage = SetDocCoverImage(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideRemoveDocCoverUseCase(
-        repo: BlockRepository
-    ): RemoveDocCover = RemoveDocCover(repo)
 
     @JvmStatic
     @Provides

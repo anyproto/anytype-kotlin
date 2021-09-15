@@ -461,19 +461,27 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val docCoverGalleryComponent = DependentComponentMap { ctx ->
+    val coverGalleryComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
             .docCoverGalleryComponentBuilder()
-            .module(SelectDocCoverModule)
+            .module(SelectCoverModule)
             .build()
     }
 
-    val objectCoverPickerComponent = DependentComponentMap { ctx ->
+    val objectCoverSliderComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
-            .objectCoverPickerComponent()
-            .module(ObjectCoverPickerModule)
+            .objectCoverSliderComponent()
+            .module(ObjectCoverSliderModule)
+            .build()
+    }
+
+    val objectSetCoverSliderComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectSetCoverSliderComponent()
+            .module(ObjectSetCoverSliderModule)
             .build()
     }
 
@@ -492,14 +500,6 @@ class ComponentManager(private val main: MainComponent) {
             .objectSetMenuComponent()
             .base(ObjectMenuModuleBase)
             .module(ObjectSetMenuModule)
-            .build()
-    }
-
-    val uploadDocCoverImageComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
-            .uploadDocCoverImageComponentBuilder()
-            .module(UploadDocCoverImageModule)
             .build()
     }
 

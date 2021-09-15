@@ -23,7 +23,8 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModelBase
-import com.anytypeio.anytype.ui.editor.cover.DocCoverSliderFragment
+import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment
+import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.android.synthetic.main.fragment_object_menu.*
@@ -120,7 +121,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
             ObjectMenuViewModelBase.Command.OpenObjectCover -> {
                 findNavController().navigate(
                     R.id.objectCoverScreen,
-                    bundleOf(DocCoverSliderFragment.CTX_KEY to ctx)
+                    bundleOf(CoverSliderObjectFragment.CTX_KEY to ctx)
                 )
             }
             ObjectMenuViewModelBase.Command.OpenObjectIcons -> {
@@ -147,8 +148,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
             }
             ObjectMenuViewModelBase.Command.OpenSetCover -> {
                 findNavController().navigate(
-                    R.id.objectCoverScreen,
-                    bundleOf(DocCoverSliderFragment.CTX_KEY to ctx)
+                    R.id.objectSetCoverScreen,
+                    bundleOf(CoverSliderObjectSetFragment.CTX_KEY to ctx)
                 )
             }
             ObjectMenuViewModelBase.Command.OpenSetIcons -> {

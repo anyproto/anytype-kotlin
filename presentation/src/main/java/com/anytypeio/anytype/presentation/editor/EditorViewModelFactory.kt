@@ -10,8 +10,6 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
-import com.anytypeio.anytype.domain.cover.RemoveDocCover
-import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -33,8 +31,6 @@ open class EditorViewModelFactory(
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
     private val setObjectIsArchived: SetObjectIsArchived,
-    private val setDocCoverImage: SetDocCoverImage,
-    private val removeDocCover: RemoveDocCover,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -69,8 +65,6 @@ open class EditorViewModelFactory(
             renderer = renderer,
             createDocument = createDocument,
             createNewDocument = createNewDocument,
-            setDocCoverImage = setDocCoverImage,
-            removeDocCover = removeDocCover,
             orchestrator = orchestrator,
             getListPages = getListPages,
             analytics = analytics,

@@ -123,8 +123,6 @@ class EditorViewModel(
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val reducer: StateReducer<List<Block>, Event>,
-    private val setDocCoverImage: SetDocCoverImage,
-    private val removeDocCover: RemoveDocCover,
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val orchestrator: Orchestrator,
@@ -2822,64 +2820,6 @@ class EditorViewModel(
     fun onLayoutDialogDismissed() {
         Timber.d("onLayoutDialogDismissed, ")
         proceedWithOpeningObjectMenu()
-    }
-
-    fun onDocCoverImagePicked(path: String) {
-        Timber.d("onDocCoverImagePicked, path:[$path]")
-        if (path.endsWith(FORMAT_WEBP, true)) {
-            _toasts.trySend(ERROR_UNSUPPORTED_WEBP)
-            Timber.d("onDocCoverImagePicked, not allowed to add WEBP format")
-            return
-        }
-        viewModelScope.launch {
-            setDocCoverImage(
-                SetDocCoverImage.Params.FromPath(
-                    context = context,
-                    path = path
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while setting doc cover image") },
-                success = { orchestrator.proxies.payloads.send(it) }
-            )
-        }
-    }
-
-    fun onDocCoverImageSelected(hash: String) {
-        Timber.d("onDocCoverImageSelected, hash:[$hash]")
-        viewModelScope.launch {
-            setDocCoverImage(
-                SetDocCoverImage.Params.FromHash(
-                    context = context,
-                    hash = hash
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while setting doc cover image") },
-                success = {
-                    orchestrator.proxies.payloads.send(it)
-                    detailModificationManager.setDocCoverImage(
-                        target = context,
-                        hash = hash
-                    )
-                }
-            )
-        }
-    }
-
-    fun onRemoveCover() {
-        Timber.d("onRemoveCover, ")
-        viewModelScope.launch {
-            removeDocCover(
-                RemoveDocCover.Params(
-                    ctx = context
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while removing doc cover") },
-                success = {
-                    orchestrator.proxies.payloads.send(it)
-                    detailModificationManager.removeDocCover(context)
-                }
-            )
-        }
     }
 
     fun onAddBookmarkBlockClicked() {

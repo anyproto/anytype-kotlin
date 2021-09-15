@@ -7,28 +7,27 @@ import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverColor
 import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
-import com.anytypeio.anytype.presentation.objects.CoverSliderObjectViewModel
+import com.anytypeio.anytype.presentation.objects.CoverSliderObjectSetViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment
+import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [ObjectCoverSliderModule::class])
+@Subcomponent(modules = [ObjectSetCoverSliderModule::class])
 @PerModal
-interface ObjectCoverSliderComponent {
+interface ObjectSetCoverSliderComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: ObjectCoverSliderModule): Builder
-        fun build(): ObjectCoverSliderComponent
+        fun module(module: ObjectSetCoverSliderModule): Builder
+        fun build(): ObjectSetCoverSliderComponent
     }
 
-    fun inject(fragment: CoverSliderObjectFragment)
+    fun inject(fragment: CoverSliderObjectSetFragment)
 }
 
 @Module
-object ObjectCoverSliderModule {
+object ObjectSetCoverSliderModule {
 
     @JvmStatic
     @Provides
@@ -66,14 +65,12 @@ object ObjectCoverSliderModule {
         setCoverColor: SetDocCoverColor,
         setCoverGradient: SetDocCoverGradient,
         removeCover: RemoveDocCover,
-        dispatcher: Dispatcher<Payload>,
-        details: DetailModificationManager
-    ): CoverSliderObjectViewModel.Factory = CoverSliderObjectViewModel.Factory(
+        dispatcher: Dispatcher<Payload>
+    ): CoverSliderObjectSetViewModel.Factory = CoverSliderObjectSetViewModel.Factory(
         setCoverImage = setCoverImage,
         setCoverColor = setCoverColor,
         setCoverGradient = setCoverGradient,
         removeCover = removeCover,
-        dispatcher = dispatcher,
-        details = details
+        dispatcher = dispatcher
     )
 }

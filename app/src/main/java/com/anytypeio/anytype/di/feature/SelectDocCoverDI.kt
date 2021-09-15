@@ -1,88 +1,35 @@
 package com.anytypeio.anytype.di.feature;
 
-import android.content.Context
-import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
-import com.anytypeio.anytype.device.DeviceCoverCollectionProvider
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.cover.*
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.editor.cover.SelectDocCoverViewModel
-import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
-import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.editor.cover.DocCoverGalleryFragment
-import com.google.gson.Gson
+import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
+import com.anytypeio.anytype.presentation.editor.cover.SelectCoverViewModel
+import com.anytypeio.anytype.ui.editor.cover.SelectCoverGalleryFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [SelectDocCoverModule::class])
+@Subcomponent(modules = [SelectCoverModule::class])
 @PerModal
-interface SelectDocCoverSubComponent {
+interface SelectCoverSubComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: SelectDocCoverModule): Builder
-        fun build(): SelectDocCoverSubComponent
+        fun module(module: SelectCoverModule): Builder
+        fun build(): SelectCoverSubComponent
     }
 
-    fun inject(fragment: DocCoverGalleryFragment)
+    fun inject(fragment: SelectCoverGalleryFragment)
 }
 
 @Module
-object SelectDocCoverModule {
+object SelectCoverModule {
 
     @JvmStatic
     @Provides
     @PerModal
     fun provideSelectDocCoverViewModelFactory(
-        setDocCoverColor: SetDocCoverColor,
-        setDocCoverGradient: SetDocCoverGradient,
-        payloadDispatcher: Dispatcher<Payload>,
-        getCoverCollection: GetCoverImageCollection,
-        getCoverGradientCollection: GetCoverGradientCollection,
-        urlBuilder: UrlBuilder,
-        detailModificationManager: DetailModificationManager
-    ): SelectDocCoverViewModel.Factory = SelectDocCoverViewModel.Factory(
-        setDocCoverColor = setDocCoverColor,
-        setDocCoverGradient = setDocCoverGradient,
-        dispatcher = payloadDispatcher,
-        getCoverCollection = getCoverCollection,
-        getCoverGradientCollection = getCoverGradientCollection,
-        urlBuilder = urlBuilder,
-        details = detailModificationManager
-    )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSetDocCoverColorUseCase(
-        repo: BlockRepository
-    ): SetDocCoverColor = SetDocCoverColor(repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSetDocCoverGradientUseCase(
-        repo: BlockRepository
-    ): SetDocCoverGradient = SetDocCoverGradient(repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideGetCoverCollection(
-        provider: CoverCollectionProvider
-    ): GetCoverImageCollection = GetCoverImageCollection(provider)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideGetCoverCollectionProvider(
-        context: Context
-    ): CoverCollectionProvider = DeviceCoverCollectionProvider(
-        context = context,
-        gson = Gson()
-    )
+        getCoverGradientCollection: GetCoverGradientCollection
+    ): SelectCoverViewModel.Factory = SelectCoverViewModel.Factory(getCoverGradientCollection)
 
     @JvmStatic
     @Provides

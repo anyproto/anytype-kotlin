@@ -8,23 +8,17 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
-import com.anytypeio.anytype.di.common.componentManager
 import kotlinx.android.synthetic.main.fragment_upload_cover_image.*
 import timber.log.Timber
 
 class UploadCoverImageFragment : BaseFragment(R.layout.fragment_upload_cover_image) {
-
-    private val ctx get() = arg<String>(CTX_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,23 +69,11 @@ class UploadCoverImageFragment : BaseFragment(R.layout.fragment_upload_cover_ima
         }
     }
 
-    override fun injectDependencies() {
-        componentManager().uploadDocCoverImageComponent.get(ctx).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().uploadDocCoverImageComponent.release(ctx)
-    }
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
 
     companion object {
-
-        fun new(ctx: Id): UploadCoverImageFragment = UploadCoverImageFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
-        }
-
         private const val SELECT_IMAGE_CODE = 1
         private const val REQUEST_PERMISSION_CODE = 2
-
-        const val CTX_KEY = "arg.upload-cover-image.ctx"
     }
 }

@@ -1,12 +1,38 @@
 # Change log for Android @Anytype app.
 
-## Version 0.2.8 (WIP)
+## Version 0.3.0
 
-### New features & enhancements 🚀
+### New features & enhancements
 
-* Data View | Setting and rendering covers (#1747)
-* Relations | Enhanced: Added format-specific placeholders (#1740)
-* Dashboard | Sort results in inbox tab by lastModifiedDate #1748
+* Editor | Our new fancy action bar will give you more power (#1755, #1781, #1782)
+* Objects & sets | Favorite & unfavorite what you need to (#1792)
+* Data View | No more secret calls. It’s now available for everyone! (#1780)
+* Data View | Customise your Sets with cover images on desktop & mobile (#1747)
+* Objects | You can now add or change a cover or icon by tapping it (#1779, #1783)
+* Relations | You can now remove relations from your objects (#1741)
+
+### Design & UX
+
+* Editor | Ever close an object because you swiped the bottom sheet down? Well, that bug is gone! Bye-bye, bottom sheet swipe! (#1773)
+* Editor | Create a link to an object via the “/”-widget (#1746)
+* Editor | Enhanced “/”-widget triggering (#1761)
+* Redesign | New main bottom toolbar (#1773)
+* Redesign | New text-edit block toolbar (#1771)
+* Redesign | Headers for objects and sets (#1744, #1749)
+* Redesign | Move-to screen (#1739)
+* Redesign | Link-to screen (#1746, #1751)
+* Relations | Added format-specific placeholders (#1740)
+
+### Fixes & tech
+
+* Editor | Allow duplicating several blocks and support duplication for nested blocks (#1756)
+* Editor | Improved file type/extension recognition for file block (#1810)
+* Editor | Fixed: Capitalize when starting a new sentence (#1785)
+* Editor | Fixed: Split-block logic for title block and description block (#1769)
+* Editor | Open objects based on their layout for mentions and links (#1765)
+* Dashboard | Sort results in “inbox” tab by lastModifiedDate (#1748)
+* Objects | New objects now created by-default without icons (#1788)
+* Data View | Fixed: Remove incorrect error message when deleting a view from dataview (#1805)
 
 ## Version 0.2.7
 

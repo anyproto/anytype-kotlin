@@ -151,8 +151,8 @@
     <dimen name="dv_tag_text_size">15sp</dimen>
     <dimen name="edit_tag_list_text_margin_start">36dp</dimen>
 
-    <dimen name="relation_view_padding_top">12dp</dimen>
-    <dimen name="relation_view_padding_bottom">12dp</dimen>
+    <dimen name="relation_view_padding_top">5dp</dimen>
+    <dimen name="relation_view_padding_bottom">7dp</dimen>
 
     <dimen name="slash_widget_item_height">55dp</dimen>
     <dimen name="data_view_divider_height">0.5dp</dimen>

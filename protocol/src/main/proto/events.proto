@@ -43,6 +43,9 @@ message Event {
             Block.Set.Bookmark blockSetBookmark = 14;
             Block.Set.Align blockSetAlign = 15;
             Block.Set.Div blockSetDiv = 17;
+            Block.Set.Relation blockSetRelation = 21;
+            Block.Set.Latex blockSetLatex = 25;
+
             Block.Dataview.RecordsSet blockDataviewRecordsSet = 18;
             Block.Dataview.RecordsUpdate blockDataviewRecordsUpdate = 26;
             Block.Dataview.RecordsInsert blockDataviewRecordsInsert = 27;
@@ -54,7 +57,7 @@ message Event {
             Block.Dataview.RelationDelete blockDataviewRelationDelete = 24;
             Block.Dataview.RelationSet blockDataviewRelationSet = 23;
 
-            Block.Set.Relation blockSetRelation = 21;
+
             User.Block.Join userBlockJoin = 31;
             User.Block.Left userBlockLeft = 32;
             User.Block.SelectRange userBlockSelectRange = 33;
@@ -262,6 +265,13 @@ message Event {
                     string value = 1;
                 }
 
+            }
+            message Latex {
+                string id = 1;
+                Text text = 2;
+                message Text {
+                    string value = 1;
+                }
             }
 
             message Div {

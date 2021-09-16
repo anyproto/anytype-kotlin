@@ -1924,10 +1924,13 @@ message Rpc {
         message CreatePage {
             message Request {
                 string contextId = 1; // id of the context block
-                string targetId = 2; // id of the closest block
-                google.protobuf.Struct details = 3; // page details
-                anytype.model.Block.Position position = 4;
+                google.protobuf.Struct details = 3; // new page details
                 string templateId = 5; // optional template id for creating from template
+
+                // link block params
+                string targetId = 2; // id of the closest simple block
+                anytype.model.Block.Position position = 4;
+                google.protobuf.Struct fields = 6; // link block fields
             }
 
             message Response {

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class DataViewObjectRelationProvider(
@@ -18,11 +19,11 @@ class DataViewObjectRelationProvider(
         return dv.relations.first { it.key == relation }
     }
 
-    override fun subscribe(relation: Id): Flow<Relation> {
-        return objectSetState.map { state ->
+    override fun subscribe(relation: Id): Flow<Relation> = objectSetState
+        .filter { state -> state.isInitialized }
+        .map { state ->
             val block = state.dataview
             val dv = block.content as DV
             dv.relations.first { it.key == relation }
         }
-    }
 }

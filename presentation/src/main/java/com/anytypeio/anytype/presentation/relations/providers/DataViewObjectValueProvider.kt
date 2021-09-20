@@ -5,8 +5,8 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.viewerById
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class DataViewObjectValueProvider(
@@ -21,12 +21,12 @@ class DataViewObjectValueProvider(
         return records.records.first { it[ObjectSetConfig.ID_KEY] == target }
     }
 
-    override fun subscribe(target: Id): Flow<Map<String, Any?>> {
-        return objectSetState.map { state ->
+    override fun subscribe(target: Id) = objectSetState
+        .filter { state -> state.isInitialized }
+        .map { state ->
             val viewer = state.viewerById(session.currentViewerId).id
             val records = state.viewerDb[viewer]
             checkNotNull(records) { "Could not found records for: $viewer" }
             records.records.first { it[ObjectSetConfig.ID_KEY] == target }
         }
-    }
 }

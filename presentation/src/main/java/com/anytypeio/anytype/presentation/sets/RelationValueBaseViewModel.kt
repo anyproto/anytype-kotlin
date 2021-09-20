@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.addIds
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -50,6 +51,7 @@ abstract class RelationValueBaseViewModel(
     val isLoading = MutableStateFlow<Boolean>(false)
 
     fun onStart(objectId: Id, relationId: Id) {
+        Timber.d("onStart")
         jobs += viewModelScope.launch {
             val s1 = relations.subscribe(relationId)
             val s2 = values.subscribe(objectId)
@@ -60,10 +62,8 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onStop() {
-        jobs.apply {
-            forEach { it.cancel() }
-            clear()
-        }
+        Timber.d("onStop")
+        jobs.cancel()
     }
 
     private fun initDataViewUIState(relation: Relation, record: Map<String, Any?>, relationId: Id) {

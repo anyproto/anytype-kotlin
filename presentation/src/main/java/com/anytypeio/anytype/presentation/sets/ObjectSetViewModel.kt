@@ -360,6 +360,12 @@ class ObjectSetViewModel(
         if (cell.key == Relations.NAME) return
 
         val state = reducer.state.value
+
+        if (!state.isInitialized) {
+            Timber.e("State was not initialized or cleared when cell is clicked")
+            return
+        }
+
         val block = state.dataview
         val dv = block.content as DV
         val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id

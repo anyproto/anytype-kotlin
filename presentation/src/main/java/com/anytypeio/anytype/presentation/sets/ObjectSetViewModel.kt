@@ -30,7 +30,10 @@ import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.relations.*
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.relations.render
+import com.anytypeio.anytype.presentation.relations.tabs
+import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -368,8 +371,8 @@ class ObjectSetViewModel(
 
         val block = state.dataview
         val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId }?.id
-            ?: dv.viewers.first().id
+        val viewer =
+            dv.viewers.find { it.id == session.currentViewerId }?.id ?: dv.viewers.first().id
 
         if (dv.isRelationReadOnly(relationKey = cell.key)) {
             val relation = dv.relations.first { it.key == cell.key }
@@ -377,10 +380,7 @@ class ObjectSetViewModel(
                 // TODO terrible workaround, which must be removed in the future!
                 if (cell is CellView.Object && cell.objects.isNotEmpty()) {
                     val obj = cell.objects.first()
-                    onObjectClicked(
-                        id = obj.id,
-                        types = obj.types
-                    )
+                    onRelationObjectClicked(target = obj.id)
                     return
                 } else {
                     toast(NOT_ALLOWED_CELL)
@@ -451,58 +451,40 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onObjectClicked(id: Id, types: List<String>?) {
-        Timber.d("onObjectClicked, id:[$id], type:[$types]")
-
-        if (types.isNullOrEmpty()) {
-            Timber.e("onObjectClicked, types is null or empty, layout type unknown")
-            toast(OBJECT_TYPE_UNKNOWN)
-            return
-        }
-
-        val targetType = reducer.state.value.objectTypes.getObjectTypeById(types)
-
-        if (targetType != null) {
-            when (targetType.layout) {
-                ObjectType.Layout.BASIC, ObjectType.Layout.PROFILE -> {
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id)))
-                }
-                ObjectType.Layout.SET -> {
-                    viewModelScope.launch {
-                        navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(id)))
-                    }
-                }
-                else -> Timber.d("Unexpected layout: ${targetType.layout}")
-            }
-        } else {
-            Timber.e("onObjectClicked, types is null or empty, layout type unknown")
-            toast(OBJECT_TYPE_UNKNOWN)
+    /**
+     *  @param [target] Object is a dependent object, therefore we look for data in details.
+     */
+    private fun onRelationObjectClicked(target: Id) {
+        Timber.d("onCellObjectClicked, id:[$target]")
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            val obj = ObjectWrapper.Basic(set.details[target]?.map ?: emptyMap())
+            proceedWithNavigation(
+                target = target,
+                layout = obj.layout
+            )
         }
     }
 
-    fun onObjectHeaderClicked(id: Id, type: String?) {
-        Timber.d("onObjectHeaderClicked, id:[$id], type:[$type]")
+    /**
+     * @param [target] object is a record contained in this set.
+     */
+    fun onObjectHeaderClicked(target: Id) {
+        Timber.d("onObjectHeaderClicked, id:[$target]")
         val set = reducer.state.value
-        val objectType = set.objectTypes.find { it.url == type }
-        if (objectType == null) {
-            toast("Object type not found: $type")
-            return
-        }
-        when (objectType.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.IMAGE,
-            ObjectType.Layout.FILE -> {
-                navigate(
-                    EventWrapper(
-                        AppNavigation.Command.OpenObject(
-                            id = id
-                        )
-                    )
+        if (set.isInitialized) {
+            val viewer = session.currentViewerId ?: set.viewers.first().id
+            val records = reducer.state.value.viewerDb[viewer] ?: return
+            val record = records.records.find { rec -> rec[Relations.ID] == target }
+            if (record != null) {
+                val obj = ObjectWrapper.Basic(record)
+                proceedWithNavigation(
+                    target = target,
+                    layout = obj.layout
                 )
+            } else {
+                toast("Record not found. Please, try again later.")
             }
-            else -> toast("Routing not implemented for this object type: $objectType")
         }
     }
 
@@ -908,6 +890,49 @@ class ObjectSetViewModel(
     }
 
     //endregion
+
+    //region NAVIGATION
+
+    private fun proceedWithNavigation(target: Id, layout: ObjectType.Layout?) {
+        when (layout) {
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.IMAGE,
+            ObjectType.Layout.FILE -> {
+                viewModelScope.launch {
+                    closeBlock(CloseBlock.Params(context)).process(
+                        success = {
+                            navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
+                        },
+                        failure = {
+                            Timber.e(it, "Error while closing object set: $context")
+                            navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
+                        }
+                    )
+                }
+            }
+            ObjectType.Layout.SET -> {
+                viewModelScope.launch {
+                    closeBlock(CloseBlock.Params(context)).process(
+                        success = {
+                            navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                        },
+                        failure = {
+                            Timber.e(it, "Error while closing object set: $context")
+                            navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                        }
+                    )
+                }
+            }
+            else -> {
+                toast("Unexpected layout: $layout")
+                Timber.e("Unexpected layout: $layout")
+            }
+        }
+    }
+
+    //endregion NAVIGATION
 
     override fun onCleared() {
         super.onCleared()

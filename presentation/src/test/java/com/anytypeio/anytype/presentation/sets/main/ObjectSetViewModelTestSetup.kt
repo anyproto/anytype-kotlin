@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
@@ -101,6 +102,14 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
+    fun stubInterceptThreadStatus(
+        params: InterceptThreadStatus.Params = InterceptThreadStatus.Params(ctx = root)
+    ) {
+        interceptThreadStatus.stub {
+            onBlocking { build(params) } doReturn emptyFlow()
+        }
+    }
+
     fun stubOpenObjectSet(
         doc: List<Block> = emptyList(),
         details: Block.Details = Block.Details(),
@@ -154,6 +163,12 @@ open class ObjectSetViewModelTestSetup {
                     events = events
                 )
             )
+        }
+    }
+
+    fun stubCloseBlock() {
+        closeBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
     }
 }

@@ -49,6 +49,7 @@ ext {
     junit_version = '4.12'
     kluent_version = '1.14'
     timber_junit = '1.0.1'
+    turbine_version = '0.6.1'
     coroutine_testing_version = '1.4.3'
     live_data_testing_version = '1.2.0'
     mockito_kotlin_version = '3.2.0'
@@ -147,7 +148,8 @@ ext {
             coroutineTesting:   "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_testing_version",
             assertj:            "com.squareup.assertj:assertj-android:1.0.0",
             androidXTestCore:   "androidx.test:core:$androidx_test_core_version",
-            timberJUnit:        "net.lachlanmckee:timber-junit-rule:$timber_junit"
+            timberJUnit:        "net.lachlanmckee:timber-junit-rule:$timber_junit",
+            turbine:            "app.cash.turbine:turbine:$turbine_version"
     ]
 
     acceptanceTesting = [

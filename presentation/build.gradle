@@ -88,4 +88,5 @@ dependencies {
     testImplementation unitTestDependencies.androidXTestCore
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.timberJUnit
+    testImplementation unitTestDependencies.turbine
 }

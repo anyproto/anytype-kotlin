@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -18,7 +19,7 @@ import timber.log.Timber
 
 class ViewerGridAdapter(
     private val onCellClicked: (CellView) -> Unit,
-    private val onObjectHeaderClicked: (String, String?) -> Unit
+    private val onObjectHeaderClicked: (Id) -> Unit
 ) : ListAdapter<Viewer.GridView.Row, ViewerGridAdapter.RecordHolder>(GridDiffUtil) {
 
     var recordNamePositionX = 0f
@@ -40,7 +41,7 @@ class ViewerGridAdapter(
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val item = getItem(pos)
-                    onObjectHeaderClicked(item.id, item.type)
+                    onObjectHeaderClicked(item.id)
                 }
             }
         }

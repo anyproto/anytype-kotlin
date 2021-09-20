@@ -292,8 +292,6 @@ open class EditorTestSetup {
             interceptThreadStatus = interceptThreadStatus,
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
-            setDocCoverImage = setDocCoverImage,
-            removeDocCover = removeDocCover,
             detailModificationManager = InternalDetailModificationManager(stores.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,

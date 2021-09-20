@@ -18,5 +18,5 @@ class InterceptThreadStatus(
         return channel.observe(params.ctx).flowOn(context)
     }
 
-    class Params(val ctx: Id)
+    data class Params(val ctx: Id)
 }

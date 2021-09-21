@@ -339,9 +339,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         vm.onGridCellClicked(state.rows.first().cells.last())
 
         verifyBlocking(closeBlock, times(1)) {
-            invoke(
-                CloseBlock.Params(root)
-            )
+            invoke(CloseBlock.Params(root))
         }
     }
 

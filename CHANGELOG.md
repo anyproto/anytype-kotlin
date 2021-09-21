@@ -1,5 +1,12 @@
 # Change log for Android @Anytype app.
 
+## Version 0.3.1
+
+### Fixes & tech
+
+* Sets | Do not crash when opening an object contained in a relation (#1819)
+* Editor | Open relation-value screen for all relations in featured relations block (#1820)
+
 ## Version 0.3.0
 
 ### New features & enhancements

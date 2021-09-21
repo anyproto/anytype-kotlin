@@ -57,10 +57,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     if (relation.value == null) {
                         view.alpha = 0.5f
-                        view.setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
                     ids.add(view.id)
@@ -86,6 +86,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
                         addView(view)
                         ids.add(view.id)
@@ -108,6 +109,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
                         addView(view)
                         ids.add(view.id)
@@ -134,6 +136,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             if (color != null) {
                                 setTextColor(color.text)
                             }
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
                         addView(view)
                         ids.add(view.id)
@@ -161,6 +164,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
                                 background.setDrawableColor(color.background)
                             }
+                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
                         addView(view)
                         ids.add(view.id)

@@ -39,8 +39,6 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.cover.RemoveDocCover
-import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
@@ -2233,7 +2231,8 @@ class EditorViewModel(
     fun onBlockToolbarBlockActionsClicked() {
         Timber.d("onBlockToolbarBlockActionsClicked, ")
         val target = orchestrator.stores.focus.current().id
-        when (views.first { it.id == target }) {
+        val view = views.find { it.id == target } ?: return
+        when (view) {
             is BlockView.Title -> {
                 _toasts.trySend(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
             }

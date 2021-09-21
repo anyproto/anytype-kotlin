@@ -26,19 +26,25 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_relation_default -> {
                 ViewHolder.Default(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onRelationClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onCheckboxClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onCheckboxClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.ivActionDelete).setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val view = items[bindingAdapterPosition]
+                            val view = items[pos]
                             check(view is RelationListViewModel.Model.Item)
                             onDeleteClicked(view)
                         }
@@ -48,19 +54,25 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_relation_checkbox -> {
                 ViewHolder.Checkbox(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onRelationClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onCheckboxClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onCheckboxClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.ivActionDelete).setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val view = items[bindingAdapterPosition]
+                            val view = items[pos]
                             check(view is RelationListViewModel.Model.Item)
                             onDeleteClicked(view)
                         }
@@ -70,19 +82,25 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_relation_object -> {
                 ViewHolder.Object(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onRelationClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onCheckboxClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onCheckboxClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.ivActionDelete).setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val view = items[bindingAdapterPosition]
+                            val view = items[pos]
                             check(view is RelationListViewModel.Model.Item)
                             onDeleteClicked(view)
                         }
@@ -92,19 +110,25 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_relation_status -> {
                 ViewHolder.Status(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onRelationClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onCheckboxClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onCheckboxClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.ivActionDelete).setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val view = items[bindingAdapterPosition]
+                            val view = items[pos]
                             check(view is RelationListViewModel.Model.Item)
                             onDeleteClicked(view)
                         }
@@ -114,19 +138,25 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_relation_tag -> {
                 ViewHolder.Tags(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onRelationClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onCheckboxClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onCheckboxClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.ivActionDelete).setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val view = items[bindingAdapterPosition]
+                            val view = items[pos]
                             check(view is RelationListViewModel.Model.Item)
                             onDeleteClicked(view)
                         }
@@ -136,19 +166,25 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_relation_file -> {
                 ViewHolder.File(view = inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onRelationClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onRelationClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.featuredRelationCheckbox).setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is RelationListViewModel.Model.Item)
-                        onCheckboxClicked(view)
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = items[pos]
+                            check(view is RelationListViewModel.Model.Item)
+                            onCheckboxClicked(view)
+                        }
                     }
                     itemView.findViewById<View>(R.id.ivActionDelete).setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            val view = items[bindingAdapterPosition]
+                            val view = items[pos]
                             check(view is RelationListViewModel.Model.Item)
                             onDeleteClicked(view)
                         }

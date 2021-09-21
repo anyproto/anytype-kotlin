@@ -59,6 +59,9 @@ interface Span {
             } catch (e: IllegalArgumentException) {
                 e.timber()
                 context.toast("Couldn't parse url")
+            } catch (e: NullPointerException) {
+                e.timber()
+                context.toast("Couldn't parse url. String was null")
             }
         }
 

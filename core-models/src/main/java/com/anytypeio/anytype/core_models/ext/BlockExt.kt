@@ -231,7 +231,7 @@ fun Block.supportNesting(): Boolean {
  * also removed all chars in range [from]..[to]
  */
 fun String.replaceRangeWithWord(replace: String, from: Int, to: Int): String {
-    check(from in 0..this.length && to in 0..this.length)
+    check(from in 0..this.length && to in 0..this.length) { "Unexpected parameters: [${from}, ${to}], length: $length" }
     val start = this.substring(0, from)
     val end = this.substring(to, this.length)
     return "$start$replace$end"

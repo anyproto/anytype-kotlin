@@ -716,6 +716,7 @@ class DefaultBlockViewRenderer(
         text = content.text,
         marks = content.marks(details = details, urlBuilder = urlBuilder),
         indent = indent,
+        alignment = content.align?.toView(),
         color = content.color,
         backgroundColor = content.backgroundColor,
         cursor = if (block.id == focus.id) setCursor(focus, content) else null,

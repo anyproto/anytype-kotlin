@@ -11,7 +11,10 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.*
+import com.anytypeio.anytype.domain.config.DebugSettings
+import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -65,9 +68,6 @@ open class DashboardTestSetup {
     lateinit var searchRecentObjects: SearchRecentObjects
 
     @Mock
-    lateinit var searchInboxObjects: SearchInboxObjects
-
-    @Mock
     lateinit var move: Move
 
     @Mock
@@ -105,7 +105,6 @@ open class DashboardTestSetup {
         analytics = analytics,
         searchArchivedObjects = searchArchivedObjects,
         searchRecentObjects = searchRecentObjects,
-        searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
         urlBuilder = builder
     )

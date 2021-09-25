@@ -25,7 +25,6 @@ class HomeDashboardViewModelFactory(
     private val analytics: Analytics,
     private val searchArchivedObjects: SearchArchivedObjects,
     private val searchRecentObjects: SearchRecentObjects,
-    private val searchInboxObjects: SearchInboxObjects,
     private val searchObjectSets: SearchObjectSets,
     private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
@@ -45,7 +44,6 @@ class HomeDashboardViewModelFactory(
             analytics = analytics,
             searchArchivedObjects = searchArchivedObjects,
             searchRecentObjects = searchRecentObjects,
-            searchInboxObjects = searchInboxObjects,
             searchObjectSets = searchObjectSets,
             urlBuilder = urlBuilder
         ) as T

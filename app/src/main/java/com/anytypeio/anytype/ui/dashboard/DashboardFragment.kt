@@ -79,15 +79,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         )
     }
 
-    private val dashboardInboxAdapter by lazy {
-        DashboardAdapter(
-            data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.INBOX) },
-            onArchiveClicked = {},
-            onObjectSetClicked = { vm.onObjectSetClicked(it) }
-        )
-    }
-
     private val dashboardSetsAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
@@ -110,7 +101,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         DashboardPager(
             defaultAdapter = dashboardDefaultAdapter,
             recentAdapter = dashboardRecentAdapter,
-            inboxAdapter = dashboardInboxAdapter,
             setsAdapter = dashboardSetsAdapter,
             archiveAdapter = dashboardArchiveAdapter,
             dndBehavior = dndBehavior,
@@ -141,7 +131,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         super.onStart()
         lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
-        lifecycleScope.subscribe(vm.inbox) { dashboardInboxAdapter.update(it) }
         lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
         lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
     }
@@ -257,9 +246,8 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     private val tabs by lazy {
         listOf(
-            TabItem(getString(R.string.inbox), DashboardPager.TYPE_INBOX),
-            TabItem(getString(R.string.recent), DashboardPager.TYPE_RECENT),
             TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
+            TabItem(getString(R.string.history), DashboardPager.TYPE_RECENT),
             TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS),
             TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
         )

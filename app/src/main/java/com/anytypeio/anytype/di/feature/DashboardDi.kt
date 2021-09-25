@@ -58,7 +58,6 @@ object HomeDashboardModule {
         analytics: Analytics,
         searchArchivedObjects: SearchArchivedObjects,
         searchRecentObjects: SearchRecentObjects,
-        searchInboxObjects: SearchInboxObjects,
         searchObjectSets: SearchObjectSets,
         urlBuilder: UrlBuilder
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
@@ -73,7 +72,6 @@ object HomeDashboardModule {
         getDebugSettings = getDebugSettings,
         searchArchivedObjects = searchArchivedObjects,
         searchRecentObjects = searchRecentObjects,
-        searchInboxObjects = searchInboxObjects,
         searchObjectSets = searchObjectSets,
         analytics = analytics,
         urlBuilder = urlBuilder
@@ -182,15 +180,6 @@ object HomeDashboardModule {
     fun provideSearchRecentObjectsUseCase(
         repo: BlockRepository
     ) : SearchRecentObjects = SearchRecentObjects(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSearchInboxObjectsUseCase(
-        repo: BlockRepository
-    ) : SearchInboxObjects = SearchInboxObjects(
         repo = repo
     )
 

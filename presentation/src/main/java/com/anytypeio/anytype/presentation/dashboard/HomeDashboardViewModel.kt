@@ -54,7 +54,6 @@ class HomeDashboardViewModel(
     private val analytics: Analytics,
     private val searchArchivedObjects: SearchArchivedObjects,
     private val searchRecentObjects: SearchRecentObjects,
-    private val searchInboxObjects: SearchInboxObjects,
     private val searchObjectSets: SearchObjectSets,
     private val urlBuilder: UrlBuilder
 ) : ViewStateViewModel<State>(),
@@ -307,7 +306,6 @@ class HomeDashboardViewModel(
             val view = when (tab) {
                 TAB.FAVOURITE -> views.find { it is DashboardView.Document && it.target == target }
                 TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
-                TAB.INBOX -> inbox.value.find { it is DashboardView.Document && it.target == target }
                 TAB.ARCHIVE -> archived.value.find { it.target == target }
                 else -> null
             }
@@ -383,7 +381,6 @@ class HomeDashboardViewModel(
     private fun proceedWithObjectSearch() {
         proceedWithArchivedObjectSearch()
         proceedWithRecentObjectSearch()
-        proceedWithInboxObjectSearch()
         proceedWithSetsObjectSearch()
     }
 
@@ -471,39 +468,6 @@ class HomeDashboardViewModel(
         }
     }
 
-    private fun proceedWithInboxObjectSearch() {
-        viewModelScope.launch {
-            searchInboxObjects(Unit).process(
-                success = { objects ->
-                    inbox.value = objects
-                        .map { ObjectWrapper.Basic(it) }
-                        .map { obj ->
-                            val oType = stateData.value?.findOTypeById(obj.type)
-                            DashboardView.Document(
-                                id = obj.id,
-                                target = obj.id,
-                                title = obj.name,
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                emoji = obj.iconEmoji,
-                                image = obj.iconImage,
-                                type = obj.type.firstOrNull(),
-                                typeName = oType?.name,
-                                layout = obj.layout,
-                                done = obj.done,
-                                icon = ObjectIcon.from(
-                                    obj = obj,
-                                    layout = obj.layout,
-                                    builder = urlBuilder
-                                )
-                            )
-                        }
-                },
-                failure = { Timber.e(it, "Error while searching for inbox objects") }
-            )
-        }
-    }
-
     private fun proceedWithSetsObjectSearch() {
         viewModelScope.launch {
             searchObjectSets(Unit).process(
@@ -524,15 +488,6 @@ class HomeDashboardViewModel(
                     }
                 },
                 failure = { Timber.e(it, "Error while searching for sets") }
-            )
-        }
-    }
-
-    fun onCreateNewObjectSetClicked() {
-        closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
-            result.either(
-                fnL = { e -> Timber.e(e, "Error while closing a dashobard") },
-                fnR = { navigate(EventWrapper(AppNavigation.Command.OpenCreateSetScreen(ctx))) }
             )
         }
     }

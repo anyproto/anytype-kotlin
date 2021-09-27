@@ -25,6 +25,7 @@ object Relations {
     const val FILE_MIME_TYPE = "fileMimeType"
 
     const val NUMBER_DEFAULT_VALUE = "0"
+    const val RELATION_NAME_EMPTY = "Untitled"
 
     val defaultRelations = listOf(
         ID,

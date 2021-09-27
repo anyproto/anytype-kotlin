@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.mapper.*
@@ -511,23 +512,30 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Paragraph = BlockView.Text.Paragraph(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        isFocused = block.id == focus.id,
-        color = content.color,
-        backgroundColor = content.backgroundColor,
-        indent = indent,
-        alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Paragraph {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Paragraph(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            marks = normalizedMarks,
+            isFocused = block.id == focus.id,
+            color = content.color,
+            backgroundColor = content.backgroundColor,
+            indent = indent,
+            alignment = content.align?.toView(),
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun description(
         block: Block,
@@ -635,23 +643,30 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Checkbox = BlockView.Text.Checkbox(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        isChecked = content.isChecked == true,
-        color = content.color,
-        backgroundColor = content.backgroundColor,
-        isFocused = block.id == focus.id,
-        indent = indent,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Checkbox {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Checkbox(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            marks = normalizedMarks,
+            isChecked = content.isChecked == true,
+            color = content.color,
+            backgroundColor = content.backgroundColor,
+            isFocused = block.id == focus.id,
+            indent = indent,
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun bulleted(
         mode: EditorMode,
@@ -661,22 +676,29 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Bulleted = BlockView.Text.Bulleted(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        indent = indent,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        isFocused = block.id == focus.id,
-        color = content.color,
-        backgroundColor = content.backgroundColor,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Bulleted {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Bulleted(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            indent = indent,
+            marks = normalizedMarks,
+            isFocused = block.id == focus.id,
+            color = content.color,
+            backgroundColor = content.backgroundColor,
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun code(
         mode: EditorMode,
@@ -709,23 +731,29 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Highlight = BlockView.Text.Highlight(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        isFocused = block.id == focus.id,
-        text = content.text,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        indent = indent,
-        alignment = content.align?.toView(),
-        color = content.color,
-        backgroundColor = content.backgroundColor,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Highlight {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Highlight(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            isFocused = block.id == focus.id,
+            text = normalizedText,
+            marks = normalizedMarks,
+            indent = indent,
+            alignment = content.align?.toView(),color = content.color,
+            backgroundColor = content.backgroundColor,
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun toggle(
         mode: EditorMode,
@@ -736,24 +764,31 @@ class DefaultBlockViewRenderer(
         isEmpty: Boolean,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Toggle = BlockView.Text.Toggle(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        color = content.color,
-        backgroundColor = content.backgroundColor,
-        indent = indent,
-        isFocused = block.id == focus.id,
-        toggled = toggleStateHolder.isToggled(block.id),
-        isEmpty = isEmpty,
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Toggle {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Toggle(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            marks = normalizedMarks,
+            color = content.color,
+            backgroundColor = content.backgroundColor,
+            indent = indent,
+            isFocused = block.id == focus.id,
+            toggled = toggleStateHolder.isToggled(block.id),
+            isEmpty = isEmpty,
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun numbered(
         mode: EditorMode,
@@ -764,23 +799,30 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Numbered = BlockView.Text.Numbered(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        number = number,
-        isFocused = block.id == focus.id,
-        color = content.color,
-        backgroundColor = content.backgroundColor,
-        indent = indent,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Numbered {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Numbered(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            number = number,
+            isFocused = block.id == focus.id,
+            color = content.color,
+            backgroundColor = content.backgroundColor,
+            indent = indent,
+            marks = normalizedMarks,
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun bookmark(
         mode: EditorMode,

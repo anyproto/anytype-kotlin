@@ -155,18 +155,9 @@ open class EditorTestSetup {
     lateinit var documentEmojiIconProvider: DocumentEmojiIconProvider
 
     @Mock
-    lateinit var flavourConfigProvider: FlavourConfigProvider
-
-    @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     val root: String = "rootId123"
-
-    private val config = Config(
-        home = MockDataFactory.randomUuid(),
-        gateway = MockDataFactory.randomString(),
-        profile = MockDataFactory.randomUuid()
-    )
 
     private val urlBuilder by lazy {
         UrlBuilder(

@@ -44,6 +44,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
+import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
@@ -936,11 +937,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     fr.show(childFragmentManager, null)
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
-                    recycler.findFocus()?.let { child: View? ->
-                        if (child is TextInputWidget) {
-                            child.text?.insert(child.selectionStart, "/")
-                        }
-                    }
+                    recycler.addTextFromSelectedStart(text = "/")
                 }
                 is Command.OpenChangeObjectTypeScreen -> {
                     val fr = ObjectTypeChangeFragment.new(
@@ -974,11 +971,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     }
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
-                    recycler.findFocus()?.let { child: View? ->
-                        if (child is TextInputWidget) {
-                            child.text?.insert(child.selectionStart, "@")
-                        }
-                    }
+                    recycler.addTextFromSelectedStart(text = "@")
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class MarkupExtensionTest {
 
@@ -333,5 +334,93 @@ class MarkupExtensionTest {
             expected = expected,
             actual = result
         )
+    }
+
+    @Test
+    fun `should update marks ranges with negative length 4`() {
+        val given = listOf(
+            Markup.Mark(
+                from = 0,
+                to = 18,
+                type = Markup.Type.BOLD
+            ),
+            Markup.Mark(
+                from = 6,
+                to = 12,
+                type = Markup.Type.MENTION,
+                param = "3M6"
+            )
+        )
+
+        val from = 6
+        val length = -1
+
+        val result = given.shift(
+            from = from,
+            length = length
+        )
+
+        val expected = listOf(
+            Markup.Mark(
+                from = 0,
+                to = 17,
+                type = Markup.Type.BOLD
+            ),
+            Markup.Mark(
+                from = 6,
+                to = 11,
+                type = Markup.Type.MENTION,
+                param = "3M6"
+            )
+        )
+
+        kotlin.test.assertEquals(
+            expected = expected,
+            actual = result
+        )
+    }
+
+    @Test
+    fun shouldUpdateMutableListMentions() {
+
+        val mentionTarget = MockDataFactory.randomUuid()
+
+        val marks = mutableListOf(
+            Markup.Mark(
+                from = 6,
+                to = 9,
+                param = mentionTarget,
+                extras = mapOf(
+                    "image" to null, "emoji" to "😁", "isLoading" to "false"
+                ),
+                type = Markup.Type.MENTION
+            ),
+            Markup.Mark(
+                from = 10,
+                to = 13,
+                type = Markup.Type.BOLD
+            )
+        )
+
+        marks.shift(start = 6, length = 1)
+
+        val expected = mutableListOf(
+            Markup.Mark(
+                from = 6,
+                to = 10,
+                param = mentionTarget,
+                extras = mapOf(
+                    "image" to null, "emoji" to "😁", "isLoading" to "false"
+                ),
+                type = Markup.Type.MENTION
+            ),
+            Markup.Mark(
+                from = 11,
+                to = 14,
+                type = Markup.Type.BOLD
+            )
+        )
+
+        assertEquals(expected, marks)
     }
 }

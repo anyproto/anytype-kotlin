@@ -11,6 +11,14 @@ fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
     this[index2] = tmp
 }
 
+fun <T> MutableList<T>.mapInPlace(
+    mutator: (T) -> T,
+) {
+    for (i in this.indices) {
+        this[i] = mutator(this[i])
+    }
+}
+
 inline fun <reified T> MutableList<T>.shift(srcIndex: Int, dstIndex: Int) =
     if (srcIndex < dstIndex) shiftUp(srcIndex, dstIndex) else shiftDown(srcIndex, dstIndex)
 

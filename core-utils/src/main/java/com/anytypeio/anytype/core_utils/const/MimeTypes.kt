@@ -2,6 +2,11 @@ package com.anytypeio.anytype.core_utils.const
 
 object MimeTypes {
 
+    /** See
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+     */
+
+
     private const val PDF = "application/pdf"
 
     private val IMAGES = listOf(
@@ -22,6 +27,10 @@ object MimeTypes {
         "application/msword",
         "text/css",
         "application/x-csh",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/json",
+        "application/ld+json"
     )
 
     private val VIDEOS = listOf(
@@ -57,7 +66,21 @@ object MimeTypes {
         "multipart/x-zip",
         "application/x-bzip",
         "application/x-bzip2",
-        "application/gzip"
+        "application/gzip",
+        "application/vnd.rar",
+        "application/java-archive",
+        "application/x-tar",
+        "application/x-7z-compressed"
+    )
+
+    private val TABLE = listOf(
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    private val PRESENTATION = listOf(
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     )
 
     enum class Category {
@@ -71,6 +94,8 @@ object MimeTypes {
         VIDEOS.contains(mime) -> Category.VIDEO
         AUDIOS.contains(mime) -> Category.AUDIO
         ARCHIVE.contains(mime) -> Category.ARCHIVE
+        TABLE.contains(mime) -> Category.TABLE
+        PRESENTATION.contains(mime) -> Category.PRESENTATION
         else -> Category.OTHER
     }
 }

@@ -8,8 +8,12 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
@@ -95,5 +99,25 @@ fun EditText.setInputTypeBaseOnFormat(format: ColumnView.Format) = when (format)
         inputType = InputType.TYPE_CLASS_PHONE
     }
     else -> {
+    }
+}
+
+fun RecyclerView.addTextFromSelectedStart(text: String) {
+    this.findFocus()?.let { child: View? ->
+        if (child is TextInputWidget) {
+            val selectionStart = child.selectionStart
+            val length = child.text?.length
+            if (length != null && selectionStart in 0..length) {
+                try {
+                    child.text?.insert(child.selectionStart, text)
+                } catch (e: Exception) {
+                    this.context.toast("Error, can't set $text")
+                }
+            } else {
+                if (BuildConfig.DEBUG) {
+                    this.context.toast("Selection position error, can't set $text")
+                }
+            }
+        }
     }
 }

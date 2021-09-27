@@ -239,7 +239,7 @@ fun Block.Content.Text.marks(
                     image = null
                     isLoading = Markup.Mark.IS_LOADING_VALUE
                 }
-
+                //TODO image emoji isLoading should be replaced with Constants
                 Markup.Mark(
                     from = mark.range.first,
                     to = mark.range.last,
@@ -463,7 +463,7 @@ fun DocumentInfo.toMentionView(
 
 fun Block.Fields.getName(): String =
     this.name.let { name ->
-        if (name.isNullOrBlank()) "Untitled" else name
+        if (name.isNullOrBlank()) Relations.RELATION_NAME_EMPTY else name
     }
 
 fun Markup.Mark.mark(): Block.Content.Text.Mark = when (type) {

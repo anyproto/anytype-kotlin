@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
+import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 
@@ -155,25 +156,33 @@ fun Overlap.inside(): Boolean =
  * @param length defines the number of positions to shift, could be negative
  * @return shifted Marks
  */
-fun List<Markup.Mark>.shift(from: Int, length: Int): List<Markup.Mark> {
-    val updated = arrayListOf<Markup.Mark>()
-    this.map { mark ->
-        var newFrom = mark.from
-        var newTo = mark.to
-        if ((newFrom <= from) && (newTo > from)) {
+fun List<Markup.Mark>.shift(from: Int, length: Int): List<Markup.Mark> =
+    map { it.updateRanges(start = from, length = length) }
+
+/**
+ * Recalculate marks ranges in mutable list
+ *
+ * @param start start position for shifting markup ranges
+ * @param length defines the number of positions to shift, could be negative
+ * @return Same mutable list with shifted Marks
+ */
+fun MutableList<Markup.Mark>.shift(start: Int, length: Int) {
+    this.mapInPlace { it.updateRanges(start = start, length = length) }
+}
+
+private fun Markup.Mark.updateRanges(start: Int, length: Int): Markup.Mark {
+    var newFrom = this.from
+    var newTo = this.to
+    if ((newFrom <= start) && (newTo > start)) {
+        newTo += length
+    } else {
+        if (newFrom >= start) {
+            newFrom += length
             newTo += length
-        } else {
-            if (newFrom >= from) {
-                newFrom += length
-                newTo += length
-            }
         }
-        updated.add(
-            mark.copy(
-                from = newFrom,
-                to = newTo
-            )
-        )
     }
-    return updated
+    return this.copy(
+        from = newFrom,
+        to = newTo
+    )
 }

@@ -23,18 +23,15 @@ abstract class Header(
     fun bind(
         block: BlockView.Text.Header,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = block,
-        onSelectionChanged = onSelectionChanged,
         onTextChanged = { _, editable ->
             block.apply {
                 text = editable.toString()
@@ -46,7 +43,6 @@ abstract class Header(
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onTextInputClicked = onTextInputClicked,
         onBackPressedCallback = onBackPressedCallback
     ).also {
         setupMentionWatcher(onMentionEvent)

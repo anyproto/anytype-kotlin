@@ -36,7 +36,6 @@ class Toggle(
     fun bind(
         item: BlockView.Text.Toggle,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         onToggleClicked: (String) -> Unit,
         onTogglePlaceholderClicked: (String) -> Unit,
         clicked: (ListenerType) -> Unit,
@@ -45,7 +44,6 @@ class Toggle(
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
@@ -56,12 +54,10 @@ class Toggle(
             }
             onTextBlockTextChanged(item)
         },
-        onSelectionChanged = onSelectionChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onTextInputClicked = onTextInputClicked,
         onBackPressedCallback = onBackPressedCallback
     ).also {
         toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION

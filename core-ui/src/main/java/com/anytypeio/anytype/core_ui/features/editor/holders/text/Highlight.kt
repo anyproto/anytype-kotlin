@@ -51,12 +51,10 @@ class Highlight(
             }
             onTextBlockTextChanged(item)
         },
-        onSelectionChanged = onSelectionChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onTextInputClicked = onTextInputClicked,
         onBackPressedCallback = onBackPressedCallback
     ).also {
         setupMentionWatcher(onMentionEvent)

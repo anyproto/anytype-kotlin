@@ -36,14 +36,12 @@ class Numbered(
     fun bind(
         item: BlockView.Text.Numbered,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
@@ -54,12 +52,10 @@ class Numbered(
             }
             onTextBlockTextChanged(item)
         },
-        onSelectionChanged = onSelectionChanged,
         clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-        onTextInputClicked = onTextInputClicked,
         onBackPressedCallback = onBackPressedCallback
     ).also {
         setNumber(item)

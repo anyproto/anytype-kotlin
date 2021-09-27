@@ -1,11 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
-import android.os.Build
-import android.os.Build.VERSION_CODES.N
-import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
@@ -13,7 +9,6 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.TextBlockHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
-import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Checkable
@@ -26,11 +21,9 @@ abstract class Text(
         item: BlockView.TextBlockProps,
         clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: (() -> Boolean)? = null
     ) {
         indentize(item)
@@ -69,12 +62,6 @@ abstract class Text(
         }
 
         content.apply {
-            setOnClickListener {
-                if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
-                    content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
-                }
-                onTextInputClicked(item.id)
-            }
             enableEnterKeyDetector(
                 onEnterClicked = { range ->
                     content.text?.let { editable ->

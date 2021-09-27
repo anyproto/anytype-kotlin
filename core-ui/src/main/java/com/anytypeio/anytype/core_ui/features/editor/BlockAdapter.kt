@@ -671,7 +671,9 @@ class BlockAdapter(
             holder.content.setOnClickListener { view ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
-                    view.context.imm().showSoftInput(view, InputMethodManager.SHOW_FORCED)
+                    if (view.hasFocus()) {
+                        view.context.imm().showSoftInput(view, InputMethodManager.SHOW_FORCED)
+                    }
                     onTextInputClicked(blocks[pos].id)
                 }
             }

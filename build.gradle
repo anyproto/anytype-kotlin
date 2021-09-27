@@ -7,8 +7,8 @@ buildscript {
     ext.nav_version = '2.3.0'
     ext.dokka_version = '1.4.32'
 
-    ext.compile_sdk = 29
-    ext.target_sdk = 29
+    ext.compile_sdk = 30
+    ext.target_sdk = 30
     ext.min_sdk = 24
 
     ext.application_id = 'com.anytypeio.anytype'

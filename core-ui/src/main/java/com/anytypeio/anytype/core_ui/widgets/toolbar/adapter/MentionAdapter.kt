@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
-import com.anytypeio.anytype.presentation.editor.editor.mention.filterMentionsBy
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
 class MentionAdapter(
@@ -15,8 +14,6 @@ class MentionAdapter(
     private val onClicked: (DefaultObjectView, String) -> Unit,
     private val newClicked: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private val filteredData = mutableListOf<DefaultObjectView>()
 
     fun setData(mentions: List<DefaultObjectView>) {
         if (mentions.isEmpty()) {
@@ -30,10 +27,13 @@ class MentionAdapter(
 
     fun updateFilter(filter: String) {
         mentionFilter = filter
-        filteredData.clear()
-        val filteredMentions = data.filterMentionsBy(text = mentionFilter)
-        filteredData.addAll(filteredMentions)
-        notifyDataSetChanged()
+    }
+
+    fun clear() {
+        mentionFilter = ""
+        val size = data.size
+        data.clear()
+        notifyItemRangeRemoved(0, size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -53,7 +53,7 @@ class MentionAdapter(
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            onClicked(filteredData[pos - 1], mentionFilter)
+                            onClicked(data[pos - 1], mentionFilter)
                         }
                     }
                 }
@@ -61,7 +61,7 @@ class MentionAdapter(
         }
     }
 
-    override fun getItemCount(): Int = filteredData.size + 1
+    override fun getItemCount(): Int = data.size + 1
 
     override fun getItemViewType(position: Int): Int = when (position) {
         POSITION_NEW_PAGE -> TYPE_NEW_PAGE
@@ -70,7 +70,7 @@ class MentionAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is DefaultObjectViewAdapter.ObjectViewHolder) {
-            holder.bind(filteredData[position - 1])
+            holder.bind(data[position - 1])
         }
     }
 

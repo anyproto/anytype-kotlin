@@ -28,27 +28,8 @@ class LinkToObjectViewModel(
     override fun getSearchObjectsParams(): SearchObjects.Params {
 
         val filteredTypes = types.value.map { objectType -> objectType.url }
-
-        val filters = listOf(
-            DVFilter(
-                condition = DVFilterCondition.EQUAL,
-                value = false,
-                relationKey = Relations.IS_ARCHIVED,
-                operator = DVFilterOperator.AND
-            ),
-            DVFilter(
-                relationKey = Relations.IS_HIDDEN,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
-            )
-        )
-
-        val sorts = listOf(
-            DVSort(
-                relationKey = Relations.LAST_OPENED_DATE,
-                type = DVSortType.DESC
-            )
-        )
+        val filters = LinkToConstants.filters
+        val sorts = LinkToConstants.sorts
 
         return SearchObjects.Params(
             limit = SEARCH_LIMIT,

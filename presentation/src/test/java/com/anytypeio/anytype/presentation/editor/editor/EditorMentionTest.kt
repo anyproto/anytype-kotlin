@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import MockDataFactory
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
@@ -12,7 +13,6 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.page.CreateNewDocument
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
@@ -22,6 +22,8 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import net.lachlanmckee.timberjunit.TimberTestRule
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +31,8 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.*
+import kotlin.test.assertEquals
+import kotlin.time.ExperimentalTime
 import kotlin.test.assertEquals
 
 class EditorMentionTest : EditorPresentationTestSetup() {
@@ -133,8 +137,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
 
-        getListPages.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(GetListPages.Response(emptyList()))
+        searchObjects.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
         }
 
         val vm = buildViewModel()
@@ -285,8 +289,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
 
-        getListPages.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(GetListPages.Response(emptyList()))
+        searchObjects.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
         }
 
         Mockito.`when`(documentEmojiIconProvider.random()).thenReturn(emoji)
@@ -451,8 +455,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
 
-        getListPages.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(GetListPages.Response(emptyList()))
+        searchObjects.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
         }
 
         Mockito.`when`(documentEmojiIconProvider.random()).thenReturn(emoji)
@@ -585,8 +589,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
 
-        getListPages.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(GetListPages.Response(emptyList()))
+        searchObjects.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
         }
 
         val vm = buildViewModel()
@@ -658,6 +662,121 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
+
+        clearPendingCoroutines()
+    }
+
+    @ExperimentalTime
+    @Test
+    fun `test mention filters`() {
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Start end",
+                marks = listOf(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(a.id)
+        )
+
+        val document = listOf(page, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+        stubUpdateText()
+        stubSearchObjects()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        //TESTING
+
+        runBlocking {
+            vm.mentionSearchQuery.test {
+                vm.apply {
+                    onBlockFocusChanged(
+                        id = a.id,
+                        hasFocus = true
+                    )
+                    onSelectionChanged(
+                        id = a.id,
+                        selection = IntRange(6, 6)
+                    )
+                    vm.onMentionEvent(
+                        MentionEvent.MentionSuggestStart(
+                            cursorCoordinate = 999,
+                            mentionStart = 6
+                        )
+                    )
+                    vm.onMentionEvent(
+                        MentionEvent.MentionSuggestText(text = "@")
+                    )
+                    vm.onTextBlockTextChanged(
+                        view = BlockView.Text.Paragraph(
+                            id = a.id,
+                            marks = emptyList(),
+                            text = "Start @end"
+                        )
+                    )
+                    onSelectionChanged(
+                        id = a.id,
+                        selection = IntRange(7, 7)
+                    )
+                }
+
+                assertEquals(
+                    expected = "@", actual = expectMostRecentItem()
+                )
+
+                vm.onMentionEvent(
+                    MentionEvent.MentionSuggestText(text = "@t")
+                )
+                vm.onTextBlockTextChanged(
+                    view = BlockView.Text.Paragraph(
+                        id = a.id,
+                        marks = emptyList(),
+                        text = "Start @tend"
+                    )
+                )
+                vm.onSelectionChanged(
+                    id = a.id,
+                    selection = IntRange(8, 8)
+                )
+                assertEquals(
+                    expected = "@t", actual = expectMostRecentItem()
+                )
+
+                vm.onMentionEvent(
+                    MentionEvent.MentionSuggestText(text = "@to")
+                )
+                vm.onTextBlockTextChanged(
+                    view = BlockView.Text.Paragraph(
+                        id = a.id,
+                        marks = emptyList(),
+                        text = "Start @toend"
+                    )
+                )
+                vm.onSelectionChanged(
+                    id = a.id,
+                    selection = IntRange(9, 9)
+                )
+                assertEquals(
+                    expected = "@to", actual = expectMostRecentItem()
+                )
+            }
+        }
+
+        clearPendingCoroutines()
     }
 
     @Test

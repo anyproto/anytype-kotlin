@@ -1275,6 +1275,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
             } else {
                 mentionSuggesterToolbar.invisible()
+                mentionSuggesterToolbar.clear()
                 recycler.removeItemDecoration(footerMentionDecorator)
             }
         }

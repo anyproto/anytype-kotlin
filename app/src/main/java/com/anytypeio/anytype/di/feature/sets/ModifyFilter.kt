@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature.sets;
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -55,11 +54,4 @@ object ModifyFilterModule {
         urlBuilder = urlBuilder,
         objectTypesProvider = objectTypesProvider
     )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSearchObjectsUseCase(
-        repo: BlockRepository
-    ): SearchObjects = SearchObjects(repo = repo)
 }

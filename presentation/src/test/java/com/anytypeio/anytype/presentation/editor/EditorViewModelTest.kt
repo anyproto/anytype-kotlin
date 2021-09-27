@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -24,7 +25,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -131,9 +131,6 @@ open class EditorViewModelTest {
     lateinit var splitBlock: SplitBlock
 
     @Mock
-    lateinit var getListPages: GetListPages
-
-    @Mock
     lateinit var createPage: CreatePage
 
     @Mock
@@ -210,6 +207,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var setObjectType: SetObjectType
+
+    @Mock
+    lateinit var searchObjects: SearchObjects
 
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
@@ -3895,7 +3895,6 @@ open class EditorViewModelTest {
         updateDetail = UpdateDetail(repo)
 
         vm = EditorViewModel(
-            getListPages = getListPages,
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,
@@ -3959,7 +3958,8 @@ open class EditorViewModelTest {
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider
+            objectTypesProvider = objectTypesProvider,
+            searchObjects = searchObjects
         )
     }
 

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
@@ -29,7 +30,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
@@ -135,13 +135,13 @@ object EditorSessionModule {
         renderer: DefaultBlockViewRenderer,
         setObjectIsArchived: SetObjectIsArchived,
         orchestrator: Orchestrator,
-        getListPages: GetListPages,
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>,
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
         getCompatibleObjectTypes: GetCompatibleObjectTypes,
-        objectTypesProvider: ObjectTypesProvider
+        objectTypesProvider: ObjectTypesProvider,
+        searchObjects: SearchObjects
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -158,13 +158,13 @@ object EditorSessionModule {
         renderer = renderer,
         setObjectIsArchived = setObjectIsArchived,
         orchestrator = orchestrator,
-        getListPages = getListPages,
         analytics = analytics,
         dispatcher = dispatcher,
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
         getCompatibleObjectTypes = getCompatibleObjectTypes,
-        objectTypesProvider = objectTypesProvider
+        objectTypesProvider = objectTypesProvider,
+        searchObjects = searchObjects
     )
 
     @JvmStatic
@@ -290,11 +290,6 @@ object EditorSessionModule {
  */
 @Module
 object EditorUseCaseModule {
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun getListPages(repo: BlockRepository): GetListPages = GetListPages(repo = repo)
 
     @JvmStatic
     @Provides
@@ -721,4 +716,11 @@ object EditorUseCaseModule {
     fun provideGetCompatibleObjectTypesUseCase(
         repository: BlockRepository
     ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun searchObjects(
+        repo: BlockRepository
+    ): SearchObjects = SearchObjects(repo = repo)
 }

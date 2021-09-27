@@ -111,6 +111,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
+            ObjectIcon.None -> removeIcon()
         }
     }
 
@@ -220,5 +221,11 @@ class ObjectIconWidget @JvmOverloads constructor(
         emojiContainer.invisible()
         rectangularIconContainer.invisible()
         ivImage.invisible()
+    }
+
+    fun removeIcon() {
+        ivEmoji.setImageDrawable(null)
+        ivImage.setImageDrawable(null)
+        ivCheckbox.invisible()
     }
 }

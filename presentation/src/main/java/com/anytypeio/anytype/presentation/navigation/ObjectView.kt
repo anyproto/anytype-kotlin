@@ -7,6 +7,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 data class DefaultObjectView(
     val id: Id,
     val name: String,
+    val type: String? = null,
     val typeName: String? = null,
     val typeLayout: ObjectType.Layout? = null,
     val icon: ObjectIcon = ObjectIcon.None

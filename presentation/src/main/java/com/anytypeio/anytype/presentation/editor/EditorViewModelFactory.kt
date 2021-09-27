@@ -11,11 +11,11 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -39,13 +39,13 @@ open class EditorViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val orchestrator: Orchestrator,
-    private val getListPages: GetListPages,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val objectTypesProvider: ObjectTypesProvider
+    private val objectTypesProvider: ObjectTypesProvider,
+    private val searchObjects: SearchObjects
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -66,13 +66,13 @@ open class EditorViewModelFactory(
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             orchestrator = orchestrator,
-            getListPages = getListPages,
             analytics = analytics,
             dispatcher = dispatcher,
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider
+            objectTypesProvider = objectTypesProvider,
+            searchObjects = searchObjects
         ) as T
     }
 }

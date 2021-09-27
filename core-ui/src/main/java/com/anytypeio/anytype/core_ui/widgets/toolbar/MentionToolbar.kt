@@ -4,11 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
+import com.anytypeio.anytype.core_utils.ui.NpaLinearLayoutManager
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import kotlinx.android.synthetic.main.widget_mention_menu.view.*
 
@@ -20,6 +18,17 @@ class MentionToolbar @JvmOverloads constructor(
 
     private var mentionClick: ((DefaultObjectView, String) -> Unit)? = null
     private var newPageClick: ((String) -> Unit)? = null
+    private val mentionAdapter by lazy {
+        MentionAdapter(
+            data = arrayListOf(),
+            onClicked = { objectView, filter ->
+                mentionClick?.invoke(objectView, filter)
+            },
+            newClicked = { name ->
+                newPageClick?.invoke(name)
+            }
+        )
+    }
 
     init {
         LayoutInflater
@@ -38,26 +47,22 @@ class MentionToolbar @JvmOverloads constructor(
 
     private fun setup(context: Context) {
         with(recyclerView) {
-            val lm = LinearLayoutManager(context)
+            val lm = NpaLinearLayoutManager(context)
             layoutManager = lm
-            adapter = MentionAdapter(
-                data = arrayListOf(),
-                onClicked = { objectView, filter ->
-                    mentionClick?.invoke(objectView, filter)
-                },
-                newClicked = { name ->
-                    newPageClick?.invoke(name)
-                }
-            )
+            adapter = mentionAdapter
         }
     }
 
     fun addItems(items: List<DefaultObjectView>) {
-        (recyclerView.adapter as? MentionAdapter)?.setData(items)
+        mentionAdapter.setData(items)
     }
 
     fun updateFilter(filter: String) {
-        (recyclerView.adapter as? MentionAdapter)?.updateFilter(filter)
+        mentionAdapter.updateFilter(filter)
+    }
+
+    fun clear() {
+        mentionAdapter.clear()
     }
 
     fun getMentionSuggesterWidgetMinHeight() = with(context.resources) {

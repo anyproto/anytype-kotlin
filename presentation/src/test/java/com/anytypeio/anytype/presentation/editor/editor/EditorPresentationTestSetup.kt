@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -23,7 +24,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -63,9 +63,6 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var updateText: UpdateText
-
-    @Mock
-    lateinit var getListPages: GetListPages
 
     @Mock
     lateinit var updateCheckbox: UpdateCheckbox
@@ -184,6 +181,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
+    @Mock
+    lateinit var searchObjects: SearchObjects
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -240,7 +240,6 @@ open class EditorPresentationTestSetup {
         )
 
         return EditorViewModel(
-            getListPages = getListPages,
             openPage = openPage,
             closePage = closePage,
             createPage = createPage,
@@ -266,7 +265,8 @@ open class EditorPresentationTestSetup {
             detailModificationManager = InternalDetailModificationManager(storage.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider
+            objectTypesProvider = objectTypesProvider,
+            searchObjects = searchObjects
         )
     }
 
@@ -506,6 +506,12 @@ open class EditorPresentationTestSetup {
                     )
                 )
             )
+        }
+    }
+
+    fun stubSearchObjects() {
+        searchObjects.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
         }
     }
 }

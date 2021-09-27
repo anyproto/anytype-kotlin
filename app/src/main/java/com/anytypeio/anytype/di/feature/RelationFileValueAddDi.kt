@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.relations.RelationFileValueAddViewModel
@@ -40,11 +39,4 @@ object RelationFileValueAddModule {
         RelationFileValueAddViewModel.Factory(
             relations, values, searchObjects, urlBuilder
         )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideSearchObjectsUseCase(
-        repo: BlockRepository
-    ): SearchObjects = SearchObjects(repo = repo)
 }

@@ -8,10 +8,8 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.getTypePrettyName
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -446,20 +444,6 @@ fun DocumentInfo.toView(
         )
     )
 }
-
-fun DocumentInfo.toMentionView(
-    urlBuilder: UrlBuilder, objectTypes: List<ObjectType>
-) = DefaultObjectView(
-    id = id,
-    name = obj.name.orEmpty(),
-    typeName = objectTypes.getTypePrettyName(type = obj.type.firstOrNull()),
-    typeLayout = obj.layout,
-    icon = ObjectIcon.from(
-        obj = obj,
-        layout = obj.layout,
-        builder = urlBuilder
-    )
-)
 
 fun Block.Fields.getName(): String =
     this.name.let { name ->

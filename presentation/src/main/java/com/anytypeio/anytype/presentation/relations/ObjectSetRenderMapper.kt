@@ -9,6 +9,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewState

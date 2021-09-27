@@ -26,9 +26,11 @@ open class ObjectSearchViewModel(
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     private val userInput = MutableStateFlow(EMPTY_QUERY)
-    private val searchQuery = userInput.take(1).onCompletion {
-        emitAll(userInput.debounce(DEBOUNCE_DURATION).distinctUntilChanged())
-    }
+    private val searchQuery = userInput
+        .take(1)
+        .onCompletion {
+            emitAll(userInput.debounce(DEBOUNCE_DURATION).distinctUntilChanged())
+        }
 
     protected val types = MutableStateFlow(emptyList<ObjectType>())
     protected val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())

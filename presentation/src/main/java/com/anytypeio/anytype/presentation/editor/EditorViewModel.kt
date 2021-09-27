@@ -13,7 +13,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_BOOKMARK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_ICON_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MARKUP_LINK
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MENTION_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MULTI_SELECT_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_ICON_MENU
 import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_MENU
@@ -40,13 +39,13 @@ import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
-import com.anytypeio.anytype.domain.page.navigation.GetListPages
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -64,6 +63,7 @@ import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.ext.*
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -89,14 +89,17 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.linking.LinkToConstants
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
-import com.anytypeio.anytype.presentation.mapper.toMentionView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.toDefaultObjectView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.views
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -124,13 +127,13 @@ class EditorViewModel(
     private val urlBuilder: UrlBuilder,
     private val renderer: DefaultBlockViewRenderer,
     private val orchestrator: Orchestrator,
-    private val getListPages: GetListPages,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
-    private val objectTypesProvider: ObjectTypesProvider
+    private val objectTypesProvider: ObjectTypesProvider,
+    private val searchObjects: SearchObjects
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -198,11 +201,6 @@ class EditorViewModel(
      * Open gallery and search media files for block with that id
      */
     private var mediaBlockId = ""
-
-    /**
-     * Current position of last mentionFilter or -1 if none
-     */
-    private var mentionFrom = -1
 
     /**
      * Currently pending text update. If null, it is not present or already dispatched.
@@ -4922,6 +4920,14 @@ class EditorViewModel(
     //endregion
 
     //region MENTION WIDGET
+    /**
+     * Current position of last mentionFilter or -1 if none
+     */
+    private var mentionFrom = -1
+    private val mentionFilter = MutableStateFlow("")
+    val mentionSearchQuery = mentionFilter.asStateFlow()
+    private var jobMentionFilter: Job? = null
+
     fun onStartMentionWidgetClicked() {
         dispatch(Command.AddMentionWidgetTriggerToFocusedBlock)
     }
@@ -4930,6 +4936,7 @@ class EditorViewModel(
         Timber.d("onMentionEvent, mentionEvent:[$mentionEvent]")
         when (mentionEvent) {
             is MentionEvent.MentionSuggestText -> {
+                mentionFilter.value = mentionEvent.text.toString()
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.Mentions.OnQuery(
                         text = mentionEvent.text.toString()
@@ -4944,33 +4951,23 @@ class EditorViewModel(
                         mentionFrom = mentionEvent.mentionStart
                     )
                 )
-                viewModelScope.launch {
-                    getListPages.invoke(Unit).proceed(
-                        failure = { it.timber() },
-                        success = { response ->
-                            val objectTypes = objectTypesProvider.get()
-                            val objectViews = response.listPages.map { pages ->
-                                pages.toMentionView(
-                                    objectTypes = objectTypes,
-                                    urlBuilder = urlBuilder
-                                )
-                            }
-                            controlPanelInteractor.onEvent(
-                                ControlPanelMachine.Event.Mentions.OnResult(objectViews)
-                            )
-                        }
-                    )
+                jobMentionFilter?.cancel()
+                mentionFilter.value = ""
+                jobMentionFilter = viewModelScope.launch {
+                    mentionSearchQuery
+                        .debounce(300)
+                        .collect { onMentionFilter(it) }
                 }
                 viewModelScope.sendEvent(
                     analytics = analytics,
-                    eventName = POPUP_MENTION_MENU
+                    eventName = EventsDictionary.POPUP_MENTION_MENU
                 )
             }
             MentionEvent.MentionSuggestStop -> {
                 mentionFrom = -1
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.Mentions.OnStop
-                )
+                jobMentionFilter?.cancel()
+                mentionFilter.value = ""
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnStop)
             }
         }
     }
@@ -5065,6 +5062,44 @@ class EditorViewModel(
 
     private fun onMentionClicked(target: String) {
         proceedWithOpeningObjectByLayout(target)
+    }
+
+    private suspend fun onMentionFilter(filter: String) {
+        controlPanelViewState.value?.let { state ->
+            if (!state.mentionToolbar.isVisible) {
+                jobMentionFilter?.cancel()
+                return
+            }
+            val filters = LinkToConstants.filters
+            val sorts = LinkToConstants.sorts
+            val fullText = filter.removePrefix(MENTION_PREFIX)
+            val params = SearchObjects.Params(
+                limit = ObjectSearchViewModel.SEARCH_LIMIT,
+                filters = filters,
+                sorts = sorts,
+                fulltext = fullText
+            )
+            viewModelScope.launch {
+                searchObjects(params).process(
+                    success = { raw ->
+                        val objects = raw.toDefaultObjectView(
+                            objectTypes = objectTypesProvider.get(),
+                            urlBuilder = urlBuilder
+                        ).filter {
+                            SupportedLayouts.layouts.contains(it.typeLayout)
+                                    && it.type != ObjectTypeConst.TEMPLATE
+                        }
+                        controlPanelInteractor.onEvent(
+                            ControlPanelMachine.Event.Mentions.OnResult(
+                                objects,
+                                filter
+                            )
+                        )
+                    },
+                    failure = { Timber.e(it, "Error while searching for mention objects") }
+                )
+            }
+        }
     }
     //endregion
 }

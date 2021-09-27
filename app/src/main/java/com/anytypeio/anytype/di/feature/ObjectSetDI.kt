@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewSubComponent
@@ -269,4 +270,11 @@ object ObjectSetModule {
     ): SetObjectIsArchived = SetObjectIsArchived(
         repo = repo
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchObjectsUseCase(
+        repo: BlockRepository
+    ): SearchObjects = SearchObjects(repo = repo)
 }

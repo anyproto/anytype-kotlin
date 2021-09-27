@@ -198,7 +198,7 @@ sealed class ControlPanelMachine {
         sealed class Mentions : Event() {
             data class OnStart(val cursorCoordinate: Int, val mentionFrom: Int) : Mentions()
             data class OnQuery(val text: String) : Mentions()
-            data class OnResult(val mentions: List<DefaultObjectView>) : Mentions()
+            data class OnResult(val mentions: List<DefaultObjectView>, val text: String) : Mentions()
             object OnMentionClicked : Mentions()
             object OnStop : Mentions()
         }
@@ -787,6 +787,7 @@ sealed class ControlPanelMachine {
             is Event.Mentions.OnResult -> state.copy(
                 mentionToolbar = state.mentionToolbar.copy(
                     mentions = event.mentions,
+                    mentionFilter = event.text,
                     updateList = true
                 )
             )

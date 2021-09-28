@@ -26,6 +26,8 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
@@ -1112,6 +1114,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun render(state: ControlPanelState) {
+
+        val insets = ViewCompat.getRootWindowInsets(root)
+
         if (state.navigationToolbar.isVisible) {
             placeholder.requestFocus()
             hideKeyboard()
@@ -1157,21 +1162,28 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 bottomMenu.update(count)
                 if (!bottomMenu.isShowing) {
                     recycler.apply { itemAnimator = DefaultItemAnimator() }
-                    hideSoftInput()
+
+                    proceedWithHidingSoftInput()
+
                     topToolbar.invisible()
+
                     if (!state.multiSelect.isScrollAndMoveEnabled) {
                         if (!recycler.containsItemDecoration(actionToolbarFooter)) {
                             recycler.addItemDecoration(actionToolbarFooter)
                         }
                         lifecycleScope.launch {
-                            delay(DELAY_BEFORE_INIT_SAM_SEARCH)
-                            activity?.runOnUiThread {
-                                behavior.apply {
-                                    setState(BottomSheetBehavior.STATE_EXPANDED)
-                                    addBottomSheetCallback(onHideBottomSheetCallback)
+                            if (insets != null) {
+                                if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                                    delay(DELAY_HIDE_KEYBOARD)
                                 }
-                                showSelectButton()
+                            } else {
+                                delay(DELAY_HIDE_KEYBOARD)
                             }
+                            behavior.apply {
+                                setState(BottomSheetBehavior.STATE_EXPANDED)
+                                addBottomSheetCallback(onHideBottomSheetCallback)
+                            }
+                            showSelectButton()
                         }
                     } else {
                         behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
@@ -1201,8 +1213,14 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         if (recycler.itemDecorationCount == 0) {
                             recycler.addItemDecoration(styleToolbarFooter)
                         }
-                        hideSoftInput()
-                        delay(DEFAULT_ANIM_DURATION)
+                        proceedWithHidingSoftInput()
+                        if (insets != null) {
+                            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                                delay(DELAY_HIDE_KEYBOARD)
+                            }
+                        } else {
+                            delay(DELAY_HIDE_KEYBOARD)
+                        }
                         behavior.apply {
                             setState(BottomSheetBehavior.STATE_EXPANDED)
                             addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1302,6 +1320,19 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             } else {
                 searchToolbar.gone()
             }
+        }
+    }
+
+    private fun proceedWithHidingSoftInput() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val controller = root.windowInsetsController
+            if (controller != null) {
+                controller.hide(WindowInsetsCompat.Type.ime())
+            } else {
+                hideSoftInput()
+            }
+        } else {
+            hideSoftInput()
         }
     }
 
@@ -1849,7 +1880,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         const val TARGETER_ANIMATION_PROPERTY = "translationY"
 
         const val SAM_DEBOUNCE = 100L
-        const val DELAY_BEFORE_INIT_SAM_SEARCH = 300L
+        const val DELAY_HIDE_KEYBOARD = 300L
 
         const val TAG_ALERT = "tag.alert"
         const val TAG_LINK = "tag.link"

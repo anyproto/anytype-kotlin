@@ -95,6 +95,7 @@ import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_editor.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -118,6 +119,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     OnMoveToAction,
     OnLinkToAction,
     PickiTCallbacks {
+
+    private val keyboardDelayJobs = mutableListOf<Job>()
 
     private val ctx get() = arg<Id>(ID_KEY)
 
@@ -1115,6 +1118,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun render(state: ControlPanelState) {
 
+        keyboardDelayJobs.cancel()
+
         val insets = ViewCompat.getRootWindowInsets(root)
 
         if (state.navigationToolbar.isVisible) {
@@ -1171,7 +1176,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         if (!recycler.containsItemDecoration(actionToolbarFooter)) {
                             recycler.addItemDecoration(actionToolbarFooter)
                         }
-                        lifecycleScope.launch {
+                        keyboardDelayJobs += lifecycleScope.launch {
                             if (insets != null) {
                                 if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
                                     delay(DELAY_HIDE_KEYBOARD)
@@ -1209,7 +1214,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             if (isVisible) {
                 styleToolbarMain.setSelectedStyle(style)
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
-                    lifecycleScope.launch {
+                    keyboardDelayJobs += lifecycleScope.launch {
                         if (recycler.itemDecorationCount == 0) {
                             recycler.addItemDecoration(styleToolbarFooter)
                         }

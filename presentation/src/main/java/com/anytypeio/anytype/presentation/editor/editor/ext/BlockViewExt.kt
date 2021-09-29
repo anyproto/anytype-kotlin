@@ -850,138 +850,65 @@ fun BlockView.Text.cutPartOfText(
     from: Int,
     partLength: Int
 ): BlockView.Text {
-    check(from >= 0) { Timber.e("From should be positive or zero") }
     check(partLength >= 0) { Timber.e("partLength should be positive or zero") }
-    val empty = ""
     val to = from + partLength
     val length = -partLength
+    var updatedText = text
+    var updatedMarks = marks
+    var updatedCursor = cursor
+    if (from <= to && from in 0..text.length && to in 0..text.length) {
+        updatedText = text.removeRange(startIndex = from, endIndex = to)
+        updatedMarks = marks.shift(from, length)
+        updatedCursor = from
+    } else {
+        Timber.e("Error while trying to cut part of text, from:$from, partLength:$partLength, textSize:${text.length} ")
+    }
     return when (this) {
-        is BlockView.Text.Bulleted -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Checkbox -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Header.One -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Header.Three -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Header.Two -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Highlight -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Numbered -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Paragraph -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
-        is BlockView.Text.Toggle -> {
-            this.copy(
-                text = text.replaceRangeWithWord(
-                    replace = empty,
-                    from = from,
-                    to = to
-                ),
-                marks = marks.shift(
-                    from = from,
-                    length = length
-                ),
-                cursor = from
-            )
-        }
+        is BlockView.Text.Bulleted -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Checkbox -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Header.One -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Header.Three -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Header.Two -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Highlight -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Numbered -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Paragraph -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
+        is BlockView.Text.Toggle -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
     }
 }
 

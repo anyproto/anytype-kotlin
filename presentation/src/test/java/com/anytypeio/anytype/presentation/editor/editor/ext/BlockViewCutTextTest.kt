@@ -172,13 +172,16 @@ class BlockViewCutTextTest {
         )
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `should throw exception when from is negative`() {
+    @Test
+    fun `should return original text and marks when from is less zero`() {
 
         val blockView = BlockView.Text.Paragraph(
             id = MockDataFactory.randomUuid(),
             text = "Anytype",
-            marks = listOf(),
+            marks = listOf(
+                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
+                Markup.Mark(from = 3, to = 5, type = Markup.Type.ITALIC)
+            ),
             isFocused = true,
             cursor = null,
             color = "red",
@@ -191,9 +194,71 @@ class BlockViewCutTextTest {
 
         //TESTING
 
-        blockView.cutPartOfText(
+        val result = blockView.cutPartOfText(
             from = -1,
             partLength = 7
         )
+
+        assertEquals(expected = blockView, actual = result)
+    }
+
+    @Test
+    fun `should return original text and marks when from is bigger then text length`() {
+
+        val blockView = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = "Anytype",
+            marks = listOf(
+                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
+                Markup.Mark(from = 3, to = 5, type = Markup.Type.ITALIC)
+            ),
+            isFocused = true,
+            cursor = null,
+            color = "red",
+            backgroundColor = "blue",
+            isSelected = false,
+            alignment = Alignment.CENTER,
+            indent = 100,
+            mode = BlockView.Mode.EDIT
+        )
+
+        //TESTING
+
+        val result = blockView.cutPartOfText(
+            from = 8,
+            partLength = 1
+        )
+
+        assertEquals(expected = blockView, actual = result)
+    }
+
+    @Test
+    fun `should return original text and marks when to is bigger then text length`() {
+
+        val blockView = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = "Anytype",
+            marks = listOf(
+                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
+                Markup.Mark(from = 3, to = 5, type = Markup.Type.ITALIC)
+            ),
+            isFocused = true,
+            cursor = null,
+            color = "red",
+            backgroundColor = "blue",
+            isSelected = false,
+            alignment = Alignment.CENTER,
+            indent = 100,
+            mode = BlockView.Mode.EDIT
+        )
+
+        //TESTING
+
+        val result = blockView.cutPartOfText(
+            from = 5,
+            partLength = 3
+        )
+
+        assertEquals(expected = blockView, actual = result)
     }
 }

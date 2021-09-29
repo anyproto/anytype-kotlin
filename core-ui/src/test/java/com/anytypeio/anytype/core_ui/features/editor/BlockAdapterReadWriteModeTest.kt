@@ -20,66 +20,6 @@ import kotlin.test.assertEquals
 class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
 
     @Test
-    fun `text-input click listener should be enabled when switching from read to edit mode`() {
-
-        // Setup
-
-        var trigger = 0
-
-        val block = BlockView.Text.Paragraph(
-            mode = BlockView.Mode.READ,
-            text = MockDataFactory.randomString(),
-            id = MockDataFactory.randomUuid()
-        )
-
-        val views = listOf(block)
-
-        val updated = listOf(block.copy(mode = BlockView.Mode.EDIT))
-
-        val adapter = buildAdapter(
-            views = views,
-            onTextInputClicked = { trigger += 1 }
-        )
-
-        val recycler = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-            this.adapter = adapter
-        }
-
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
-
-        adapter.onBindViewHolder(holder, 0)
-
-        check(holder is Paragraph)
-
-        // Testing
-
-        val payloads: MutableList<Any> = mutableListOf(
-            BlockViewDiffUtil.Payload(
-                changes = listOf(BlockViewDiffUtil.READ_WRITE_MODE_CHANGED)
-            )
-        )
-
-        holder.content.performClick()
-
-        adapter.updateWithDiffUtil(items = updated)
-
-        assertEquals(
-            expected = 1,
-            actual = trigger
-        )
-
-        adapter.onBindViewHolder(holder, 0, payloads = payloads)
-
-        holder.content.performClick()
-
-        assertEquals(
-            expected = 2,
-            actual = trigger
-        )
-    }
-
-    @Test
     fun `endline-enter press listener should be enabled when switching from read to edit mode`() {
 
         // Setup

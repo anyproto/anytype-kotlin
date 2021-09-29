@@ -256,6 +256,10 @@ sealed class SlashItem {
     data class Relation(val relation: SlashRelationView.Item) : SlashItem() {
         override fun getSearchName(): String = relation.view.name
     }
+
+    object RelationNew: SlashItem() {
+        override fun getSearchName(): String = SlashConst.SLASH_RELATION_NEW
+    }
     //endregion
 
     //region OTHER

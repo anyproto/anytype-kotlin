@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewMod
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_relation_add.*
+import java.io.Serializable
 import javax.inject.Inject
 
 
@@ -34,7 +36,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     abstract val vm: RelationAddBaseViewModel
 
-    protected val ctx get() = arg<Id>(CTX_KEY)
+    abstract val ctx: String
 
     private lateinit var searchRelationInput: EditText
     lateinit var clearSearchText: View
@@ -116,6 +118,8 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
 class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
+    override val ctx get() = arg<Id>(CTX_KEY)
+
     @Inject
     lateinit var factory: RelationAddToObjectViewModel.Factory
     override val vm: RelationAddToObjectViewModel by viewModels { factory }
@@ -142,7 +146,7 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     }
 
     companion object {
-        fun new(ctx: Id): RelationAddToObjectFragment = RelationAddToObjectFragment().apply {
+        fun new(ctx: Id) = RelationAddToObjectFragment().apply {
             arguments = bundleOf(CTX_KEY to ctx)
         }
     }
@@ -151,6 +155,7 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
 class RelationAddToDataViewFragment : RelationAddBaseFragment() {
 
     private val dv get() = arg<Id>(DV_KEY)
+    override val ctx get() = arg<Id>(CTX_KEY)
 
     @Inject
     lateinit var factory: RelationAddToDataViewViewModel.Factory
@@ -192,3 +197,47 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
         private const val VIEWER_KEY = "arg.relation-add-to-data-view.viewer"
     }
 }
+
+class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
+
+    override val ctx get() = arg<Id>(CTX_KEY)
+    private val target get() = arg<Id>(TARGET_KEY)
+
+    @Inject
+    lateinit var factory: RelationAddToObjectViewModel.Factory
+    override val vm: RelationAddToObjectViewModel by viewModels { factory }
+
+    override fun onRelationSelected(ctx: Id, relation: Id) {
+        findNavController().run {
+            val result = RelationAddResult(target = target, relation = relation)
+            previousBackStackEntry?.savedStateHandle?.set(RELATION_ADD_RESULT_KEY, result)
+            popBackStack()
+        }
+    }
+
+    override fun onCreateFromScratchClicked() {
+        findNavController().navigate(
+            R.id.action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment,
+            bundleOf(
+                RelationCreateFromScratchBaseFragment.CTX_KEY to ctx,
+                RelationCreateFromScratchBaseFragment.QUERY_KEY to createFromScratchAdapter.query,
+                RelationCreateFromScratchForObjectBlockFragment.TARGET_KEY to target
+            )
+        )
+    }
+
+    override fun injectDependencies() {
+        componentManager().relationAddToObjectComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().relationAddToObjectComponent.release(ctx)
+    }
+
+    companion object {
+        const val TARGET_KEY = "arg.relation-add-to-object-block.target"
+        const val RELATION_ADD_RESULT_KEY = "arg.relation-add-to-object-block.result"
+    }
+}
+
+data class RelationAddResult(val target: String, val relation: String) : Serializable

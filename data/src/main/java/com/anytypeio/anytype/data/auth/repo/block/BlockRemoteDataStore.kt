@@ -336,7 +336,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx: Id,
         name: String,
         format: RelationFormat
-    ): Payload = remote.addNewRelationToObject(
+    ): Pair<Id, Payload> = remote.addNewRelationToObject(
         ctx = ctx,
         format = format,
         name = name

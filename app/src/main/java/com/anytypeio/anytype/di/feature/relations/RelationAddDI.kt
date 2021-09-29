@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
+import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
 import dagger.Module
 import dagger.Provides
@@ -31,6 +32,7 @@ interface RelationAddToObjectSubComponent {
     }
 
     fun inject(fragment: RelationAddToObjectFragment)
+    fun inject(fragment: RelationAddToObjectBlockFragment)
 }
 
 @Module

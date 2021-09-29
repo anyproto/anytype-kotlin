@@ -50,4 +50,6 @@ object SlashConst {
     const val SLASH_STYLE_CODE = "Code"
 
     const val SLASH_BACK = "Back"
+
+    const val SLASH_RELATION_NEW = "Relation new"
 }

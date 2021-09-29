@@ -361,7 +361,7 @@ class BlockMiddleware(
         ctx: Id,
         name: String,
         format: RelationFormat
-    ): Payload = middleware.addNewRelationToObject(
+    ): Pair<Id, Payload> = middleware.addNewRelationToObject(
         ctx = ctx,
         format = format,
         name = name

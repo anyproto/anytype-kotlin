@@ -31,8 +31,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -86,10 +85,10 @@ import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
-import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
-import com.anytypeio.anytype.ui.relations.RelationListFragment
-import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
-import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.relations.*
+import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
+import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment.Companion.RELATION_ADD_RESULT_KEY
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment.Companion.RELATION_NEW_RESULT_KEY
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
@@ -620,6 +619,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+
+        observeNavBackStack()
     }
 
     private fun onApplyScrollAndMoveClicked() {
@@ -977,6 +978,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
                     recycler.addTextFromSelectedStart(text = "@")
+                }
+                is Command.OpenAddRelationScreen -> {
+                    hideSoftInput()
+                    findNavController().navigate(
+                        R.id.action_pageScreen_to_relationAddToObjectBlockFragment,
+                        bundleOf(
+                            CTX_KEY to command.ctx,
+                            RelationAddToObjectBlockFragment.TARGET_KEY to command.target
+                        )
+                    )
                 }
             }
         }
@@ -1863,17 +1874,52 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         )
     }
 
+    private fun observeNavBackStack() {
+        findNavController().run {
+            val navBackStackEntry = getBackStackEntry(R.id.pageScreen)
+            val savedStateHandle = navBackStackEntry.savedStateHandle
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    proceedWithResult(savedStateHandle)
+                }
+            }
+            navBackStackEntry.lifecycle.addObserver(observer)
+            viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    navBackStackEntry.lifecycle.removeObserver(observer)
+                }
+            })
+        }
+    }
+
+    private fun proceedWithResult(savedStateHandle: SavedStateHandle) {
+        if (savedStateHandle.contains(RELATION_ADD_RESULT_KEY)) {
+            val resultRelationAdd = savedStateHandle.get<RelationAddResult>(RELATION_ADD_RESULT_KEY)
+            savedStateHandle.remove<RelationAddResult>(RELATION_ADD_RESULT_KEY)
+            if (resultRelationAdd != null) {
+                vm.proceedWithAddingRelationToTarget(
+                    target = resultRelationAdd.target,
+                    relation = resultRelationAdd.relation
+                )
+            }
+        }
+        if (savedStateHandle.contains(RELATION_NEW_RESULT_KEY)) {
+            val resultRelationNew = savedStateHandle.get<RelationNewResult>(RELATION_NEW_RESULT_KEY)
+            savedStateHandle.remove<RelationNewResult>(RELATION_NEW_RESULT_KEY)
+            if (resultRelationNew != null) {
+                vm.proceedWithAddingRelationToTarget(
+                    target = resultRelationNew.target,
+                    relation = resultRelationNew.relation
+                )
+            }
+        }
+    }
+
     //------------ End of Anytype Custom Context Menu ------------
 
     companion object {
         const val ID_KEY = "id"
         const val DEBUG_SETTINGS = "debug_settings"
-        const val ID_EMPTY_VALUE = ""
-
-        const val NOT_IMPLEMENTED_MESSAGE = "Not implemented."
-
-        const val FAB_SHOW_ANIMATION_START_DELAY = 250L
-        const val FAB_SHOW_ANIMATION_DURATION = 100L
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_TOOLBAR_ANIM_DURATION = 150L

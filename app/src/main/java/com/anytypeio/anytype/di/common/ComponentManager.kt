@@ -2,10 +2,7 @@ package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
-import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
-import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
-import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewModule
-import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectModule
+import com.anytypeio.anytype.di.feature.relations.*
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
@@ -524,6 +521,14 @@ class ComponentManager(private val main: MainComponent) {
             .get(ctx)
             .relationCreateFromScratchForObjectComponent()
             .module(RelationCreateFromScratchForObjectModule)
+            .build()
+    }
+
+    val relationCreateFromScratchForObjectBlockComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .relationCreateFromScratchForObjectBlockComponent()
+            .module(RelationCreateFromScratchForObjectBlockModule)
             .build()
     }
 

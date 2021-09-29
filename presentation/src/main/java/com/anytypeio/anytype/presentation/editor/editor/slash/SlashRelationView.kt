@@ -17,4 +17,7 @@ sealed class SlashRelationView : DefaultObjectDiffIdentifier {
             override val identifier: String get() = javaClass.name
         }
     }
+    object RelationNew : SlashRelationView() {
+        override val identifier: String get() = javaClass.name
+    }
 }

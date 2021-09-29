@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,10 +24,12 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
+import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectBlockViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_relation_create_from_scratch.*
+import java.io.Serializable
 import javax.inject.Inject
 
 abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment() {
@@ -34,7 +37,7 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
     abstract val vm: RelationCreateFromScratchBaseViewModel
 
     protected val ctx get() = arg<Id>(CTX_KEY)
-    protected val query get() = arg<Id>(QUERY_KEY)
+    private val query get() = arg<Id>(QUERY_KEY)
 
     private val nameInputAdapter = RelationNameInputAdapter {
         vm.onNameChanged(it)
@@ -150,10 +153,60 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
     }
 
     companion object {
-        fun new(ctx: Id, dv: Id, query: String) = RelationCreateFromScratchForDataViewFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, QUERY_KEY to query)
-        }
+        fun new(ctx: Id, dv: Id, query: String) =
+            RelationCreateFromScratchForDataViewFragment().apply {
+                arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, QUERY_KEY to query)
+            }
 
         const val DV_KEY = "arg.relation-create-from-scratch-for-data-view.ctx"
     }
 }
+
+class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratchBaseFragment() {
+
+    private val target get() = arg<String>(TARGET_KEY)
+
+    @Inject
+    lateinit var factory: RelationCreateFromScratchForObjectBlockViewModel.Factory
+    override val vm: RelationCreateFromScratchForObjectBlockViewModel by viewModels { factory }
+
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.commands) { observeCommands(it) }
+        }
+        super.onStart()
+    }
+
+    private fun observeCommands(command: RelationCreateFromScratchForObjectBlockViewModel.Command) {
+        when (command) {
+            is RelationCreateFromScratchForObjectBlockViewModel.Command.OnSuccess -> {
+                val result = RelationNewResult(
+                    target = target,
+                    relation = command.relation
+                )
+                val editorScreenEntry = findNavController().getBackStackEntry(R.id.pageScreen)
+                editorScreenEntry.savedStateHandle.set(RELATION_NEW_RESULT_KEY, result)
+                findNavController().popBackStack(R.id.pageScreen, false)
+            }
+        }
+    }
+
+    override fun onCreateRelationClicked() {
+        vm.onCreateRelationClicked(ctx)
+    }
+
+    override fun injectDependencies() {
+        componentManager().relationCreateFromScratchForObjectBlockComponent.get(ctx).inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().relationCreateFromScratchForObjectBlockComponent.release(ctx)
+    }
+
+    companion object {
+        const val TARGET_KEY = "arg.rel-create-object-block.target"
+        const val RELATION_NEW_RESULT_KEY = "arg.rel-create-object-block.result"
+    }
+}
+
+data class RelationNewResult(val target: String, val relation: String) : Serializable

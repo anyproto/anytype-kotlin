@@ -200,7 +200,7 @@ interface BlockRepository {
 
     suspend fun addRelationToObject(ctx: Id, relation: Id): Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload
-    suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat): Payload
+    suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat): Pair<Id, Payload>
 
     suspend fun debugSync(): String
 

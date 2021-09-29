@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -125,6 +126,15 @@ class SlashRelationsAdapter(
                     }
                 }
             }
+            R.layout.item_relation_add_new -> {
+                RelationNewHolder(
+                    view = inflater.inflate(viewType, parent, false)
+                ).apply {
+                    itemView.setOnClickListener {
+                        clicks(SlashItem.RelationNew)
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -191,7 +201,9 @@ class SlashRelationsAdapter(
                 else -> R.layout.item_relation_list_relation_default
             }
         }
-        is SlashRelationView.Section -> R.layout.item_slash_widget_subheader
+        is SlashRelationView.Section.SubheaderWithBack -> R.layout.item_slash_widget_subheader
+        SlashRelationView.Section.Subheader -> R.layout.item_slash_widget_subheader
+        SlashRelationView.RelationNew -> R.layout.item_relation_add_new
     }
 
     fun update(update: List<SlashRelationView>) {

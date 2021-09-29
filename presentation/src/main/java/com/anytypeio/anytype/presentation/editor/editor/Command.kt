@@ -113,4 +113,9 @@ sealed class Command {
     ) : Command()
 
     data class OpenLinkToScreen(val target: Id, val position: Int?) : Command()
+
+    data class OpenAddRelationScreen(
+        val ctx: Id,
+        val target: Id
+    ) : Command()
 }

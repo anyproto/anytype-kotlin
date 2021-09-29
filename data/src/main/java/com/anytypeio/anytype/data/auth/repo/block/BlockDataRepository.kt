@@ -417,7 +417,7 @@ class BlockDataRepository(
         ctx: Id,
         name: String,
         format: RelationFormat
-    ): Payload = factory.remote.addNewRelationToObject(
+    ): Pair<Id, Payload> = factory.remote.addNewRelationToObject(
         ctx = ctx,
         format = format,
         name = name

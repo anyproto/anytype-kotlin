@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import MockDataFactory
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -15,7 +18,9 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
+import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -23,6 +28,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import kotlin.test.assertEquals
 
 class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
@@ -31,6 +37,14 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
+
+    @get:Rule
+    val timberTestRule: TimberTestRule = TimberTestRule.builder()
+        .minPriority(Log.DEBUG)
+        .showThread(true)
+        .showTimestamp(false)
+        .onlyLogWhenTestFails(true)
+        .build()
 
     @Before
     fun setup() {
@@ -384,5 +398,87 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().assertValue { value ->
             !value.mainToolbar.isVisible && value.navigationToolbar.isVisible && !value.slashWidget.isVisible
         }
+    }
+
+    @Test
+    fun `should remove slash filter after adding new relation`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val r1 = MockTypicalDocumentFactory.relation("Ad")
+        val r2 = MockTypicalDocumentFactory.relation("De")
+        val r3 = MockTypicalDocumentFactory.relation("HJ")
+        val value1 = MockDataFactory.randomString()
+        val value2 = MockDataFactory.randomString()
+        val value3 = MockDataFactory.randomString()
+        val fields = Block.Fields(mapOf(r1.key to value1, r2.key to value2, r3.key to value3))
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubUpdateText()
+        stubCreateBlock(root = root)
+        stubGetObjectTypes(objectTypes = listOf())
+        stubOpenDocument(doc, customDetails, listOf(r1, r2, r3))
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        val selection = IntRange(1, 1)
+
+        //TESTING
+
+        vm.apply {
+            onSelectionChanged(
+                id = a.id,
+                selection = selection
+            )
+            onBlockFocusChanged(
+                id = a.id,
+                hasFocus = true
+            )
+
+            val view = BlockView.Text.Paragraph(
+                id = a.id,
+                text = a.content<TXT>().text
+            )
+
+            onSlashTextWatcherEvent(
+                SlashEvent.Start(
+                    cursorCoordinate = 100,
+                    slashStart = 13
+                )
+            )
+            onSlashTextWatcherEvent(
+                event = SlashEvent.Filter(
+                    filter = "/",
+                    viewType = 0
+                )
+            )
+            onTextBlockTextChanged(
+                view = view.copy(text = "Jggig xtstdt /")
+            )
+            onSelectionChanged(
+                id = a.id,
+                selection = IntRange(14, 14)
+            )
+            onSlashItemClicked(SlashItem.Main.Relations)
+            onSlashItemClicked(SlashItem.RelationNew)
+
+            //open RelationListScreen
+            //open RelationCreateScreen
+            proceedWithAddingRelationToTarget(
+                target = a.id,
+                relation = MockDataFactory.randomUuid()
+            )
+        }
+
+        val result = vm.blocks.find { it.id == a.id }
+
+        assertEquals("Jggig xtstdt ", result?.content<TXT>()?.text)
+
+        clearPendingCoroutines()
+    }
+
+    private fun clearPendingCoroutines() {
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 }

@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  */
 class AddNewRelationToObject(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, AddNewRelationToObject.Params>() {
+) : BaseUseCase<Pair<Id, Payload>, AddNewRelationToObject.Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.addNewRelationToObject(

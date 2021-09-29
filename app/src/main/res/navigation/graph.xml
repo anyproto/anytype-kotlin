@@ -27,6 +27,13 @@
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/action_pageScreen_to_relationAddToObjectBlockFragment"
+                app:destination="@id/relationAddToObjectBlockFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         </fragment>
         <dialog
             android:id="@+id/objectRelationListScreen"
@@ -48,6 +55,23 @@
             android:id="@+id/objectCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment"
             android:label="Object-Cover-Screen"/>
+        <dialog
+            android:id="@+id/relationAddToObjectBlockFragment"
+            android:name="com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment"
+            android:label="RelationAddToObjectBlockFragment" >
+            <action
+                android:id="@+id/action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment"
+                app:destination="@id/relationCreateFromScratchForObjectBlockFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </dialog>
+
+        <dialog
+            android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
+            android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
+            android:label="RelationCreateFromScratchForObjectBlockFragment" />
     </navigation>
 
     <navigation

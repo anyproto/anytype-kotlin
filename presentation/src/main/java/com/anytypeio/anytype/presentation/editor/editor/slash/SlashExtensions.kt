@@ -129,7 +129,10 @@ object SlashExtensions {
         listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
 
     fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
-        listOf(SlashRelationView.Section.SubheaderWithBack) + relations
+        listOf(
+            SlashRelationView.Section.SubheaderWithBack,
+            SlashRelationView.RelationNew
+        ) + relations
 
     fun getSlashWidgetColorItems(code: String?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->

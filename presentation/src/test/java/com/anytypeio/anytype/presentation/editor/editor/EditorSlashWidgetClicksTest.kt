@@ -514,6 +514,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val expectedRelationItems = listOf(
             SlashRelationView.Section.SubheaderWithBack,
+            SlashRelationView.RelationNew,
             SlashRelationView.Item(
                 view = DocumentRelationView.Default(
                     relationId = relation1.key,

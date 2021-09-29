@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -72,7 +73,7 @@ class RelationCreateFromScratchForObjectViewModel(
     fun onCreateRelationClicked(ctx: Id) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val format =  views.value.first { it.isSelected }.format
+            val format = views.value.first { it.isSelected }.format
             addNewRelationToObject(
                 AddNewRelationToObject.Params(
                     ctx = ctx,
@@ -80,7 +81,7 @@ class RelationCreateFromScratchForObjectViewModel(
                     name = name.value
                 )
             ).process(
-                success = {
+                success = { (_, payload) ->
                     viewModelScope.sendEvent(
                         analytics = analytics,
                         eventName = OBJECT_RELATION_CREATE,
@@ -88,7 +89,7 @@ class RelationCreateFromScratchForObjectViewModel(
                         startTime = startTime,
                         middleTime = System.currentTimeMillis()
                     )
-                    dispatcher.send(it).also { isDismissed.value = true }
+                    dispatcher.send(payload).also { isDismissed.value = true }
                 },
                 failure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
@@ -110,6 +111,63 @@ class RelationCreateFromScratchForObjectViewModel(
                 analytics = analytics
             ) as T
         }
+    }
+}
+
+class RelationCreateFromScratchForObjectBlockViewModel(
+    private val addNewRelationToObject: AddNewRelationToObject,
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
+) : RelationCreateFromScratchBaseViewModel() {
+
+    val commands = MutableSharedFlow<Command>(replay = 0)
+
+    fun onCreateRelationClicked(ctx: Id) {
+        val startTime = System.currentTimeMillis()
+        viewModelScope.launch {
+            val format = views.value.first { it.isSelected }.format
+            addNewRelationToObject(
+                AddNewRelationToObject.Params(
+                    ctx = ctx,
+                    format = format,
+                    name = name.value
+                )
+            ).process(
+                success = { (relation, payload) ->
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = OBJECT_RELATION_CREATE,
+                        props = Props(mapOf(PROP_RELATION_FORMAT to format.name)),
+                        startTime = startTime,
+                        middleTime = System.currentTimeMillis()
+                    )
+                    dispatcher.send(payload)
+                    commands.emit(Command.OnSuccess(relation))
+                },
+                failure = {
+                    Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
+                }
+            )
+        }
+    }
+
+    class Factory(
+        private val addNewRelationToObject: AddNewRelationToObject,
+        private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return RelationCreateFromScratchForObjectBlockViewModel(
+                dispatcher = dispatcher,
+                addNewRelationToObject = addNewRelationToObject,
+                analytics = analytics
+            ) as T
+        }
+    }
+
+    sealed class Command {
+        data class OnSuccess(val relation: Id) : Command()
     }
 }
 

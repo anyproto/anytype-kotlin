@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -94,7 +95,7 @@ open class EditorTestSetup {
     @Mock
     lateinit var unlinkBlocks: UnlinkBlocks
 
-    lateinit var getListPages: GetListPages
+    lateinit var getSearchObjects: SearchObjects
     @Mock
     lateinit var duplicateBlock: DuplicateBlock
 
@@ -193,7 +194,7 @@ open class EditorTestSetup {
         updateFields = UpdateFields(repo)
         setObjectType = SetObjectType(repo)
         createNewDocument = CreateNewDocument(repo, documentEmojiIconProvider)
-        getListPages = GetListPages(repo)
+        getSearchObjects = SearchObjects(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadFile = DownloadFile(
             downloader = mock(),
@@ -237,7 +238,6 @@ open class EditorTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            getListPages = getListPages,
             orchestrator = Orchestrator(
                 createBlock = createBlock,
                 splitBlock = splitBlock,
@@ -286,7 +286,8 @@ open class EditorTestSetup {
             detailModificationManager = InternalDetailModificationManager(stores.details),
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
-            objectTypesProvider = objectTypesProvider
+            objectTypesProvider = objectTypesProvider,
+            searchObjects = getSearchObjects
         )
     }
 

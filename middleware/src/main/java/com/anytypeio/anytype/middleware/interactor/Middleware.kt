@@ -1355,7 +1355,7 @@ class Middleware(
         return response.event.toPayload()
     }
 
-    fun addNewRelationToObject(ctx: Id, format: RelationFormat, name: String): Payload {
+    fun addNewRelationToObject(ctx: Id, format: RelationFormat, name: String): Pair<Id, Payload> {
         val request = Rpc.Object.RelationAdd.Request(
             contextId = ctx,
             relation = MRelation(
@@ -1366,7 +1366,10 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectRelationAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
+        return Pair(
+            first = response.relation?.key.orEmpty(),
+            second = response.event.toPayload()
+        )
     }
 
     fun deleteRelationFromObject(ctx: Id, relation: Id) : Payload {

@@ -187,6 +187,7 @@ dependencies {
     androidTestImplementation unitTestDependencies.kotlinTest
     androidTestImplementation acceptanceTesting.testRules
     androidTestImplementation acceptanceTesting.disableAnimation
+    androidTestImplementation acceptanceTesting.navigationTesting
 
     androidTestImplementation(unitTestDependencies.coroutineTesting) {
         exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"

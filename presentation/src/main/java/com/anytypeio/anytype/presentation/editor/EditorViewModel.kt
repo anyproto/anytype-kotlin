@@ -63,7 +63,6 @@ import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.ext.*
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -3882,6 +3881,27 @@ class EditorViewModel(
         }
     }
 
+    fun proceedWithAddingRelationToTarget(target: Id, relation: Id) {
+        Timber.d("proceedWithAddingRelationToTarget, target:[$target], relation:[$relation]")
+        val newBlockView = cutSlashFilterFromViews(target)
+
+        // cut text from List<Block> and send TextUpdate Intent
+        if (newBlockView != null) {
+            cutSlashFilterFromBlocksAndSendUpdate(
+                targetId = target,
+                text = newBlockView.text,
+                marks = newBlockView.marks.map { it.mark() }
+            )
+            onSlashRelationItemClicked(
+                relation = relation,
+                targetId = target,
+                isBlockEmpty = newBlockView.text.isEmpty()
+            )
+        } else {
+            Timber.e("cutSlashFilter error, BlockView is null on targetId:$target")
+        }
+    }
+
     private fun proceedWithSlashItem(item: SlashItem, targetId: Id) {
         when (item) {
             is SlashItem.Main.Style -> {
@@ -4006,7 +4026,11 @@ class EditorViewModel(
             }
             is SlashItem.Relation -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
-                onSlashRelationItemClicked(item, targetId, isBlockEmpty)
+                onSlashRelationItemClicked(
+                    relation = item.relation.view.relationId,
+                    targetId = targetId,
+                    isBlockEmpty = isBlockEmpty
+                )
             }
             is SlashItem.Other.Line -> {
                 cutSlashFilter(targetId = targetId)
@@ -4041,6 +4065,11 @@ class EditorViewModel(
             is SlashItem.Subheader -> {
                 Timber.d("Click on Slash Subheader, do nothing")
             }
+            SlashItem.RelationNew -> {
+                dispatch(
+                    Command.OpenAddRelationScreen(ctx = context, target = targetId)
+                )
+            }
         }
     }
 
@@ -4067,6 +4096,7 @@ class EditorViewModel(
     }
 
     private fun cutSlashFilterFromViews(targetId: Id): BlockView.Text? {
+        Timber.d("cutSlashFilterFromViews, targetId:[$targetId], slashStartIndex:[$slashStartIndex], slashFilter:[$slashFilter]")
         val blockView = views.firstOrNull { it.id == targetId }
         if (blockView is BlockView.Text) {
             val new = blockView.cutPartOfText(
@@ -4349,21 +4379,21 @@ class EditorViewModel(
     }
 
     private fun onSlashRelationItemClicked(
-        item: SlashItem.Relation, targetId: Id, isBlockEmpty: Boolean
+        relation: Id, targetId: Id, isBlockEmpty: Boolean
     ) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStopAndClearFocus)
         val intent = if (isBlockEmpty) {
             Intent.CRUD.Replace(
                 context = context,
                 target = targetId,
-                prototype = Prototype.Relation(key = item.relation.view.relationId)
+                prototype = Prototype.Relation(key = relation)
             )
         } else {
             Intent.CRUD.Create(
                 context = context,
                 target = targetId,
                 position = Position.BOTTOM,
-                prototype = Prototype.Relation(key = item.relation.view.relationId)
+                prototype = Prototype.Relation(key = relation)
             )
         }
         viewModelScope.launch {

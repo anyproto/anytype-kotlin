@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -75,6 +76,7 @@ interface EditorSubComponent {
     fun documentRelationSubComponent(): DocumentRelationSubComponent.Builder
     fun relationAddToObjectComponent() : RelationAddToObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectComponent() : RelationCreateFromScratchForObjectSubComponent.Builder
+    fun relationCreateFromScratchForObjectBlockComponent() : RelationCreateFromScratchForObjectBlockSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
     fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder

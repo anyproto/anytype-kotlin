@@ -163,7 +163,8 @@ ext {
             mockitoKotlin:      "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin_version",
             mockitoAndroid:     "org.mockito:mockito-android:$mockito_android_version",
             disableAnimation:   "com.bartoszlipinski:disable-animations-rule:$disable_animation_version",
-            fragmentTesting:    "androidx.fragment:fragment-testing:$fragment_version"
+            fragmentTesting:    "androidx.fragment:fragment-testing:$fragment_version",
+            navigationTesting:  "androidx.navigation:navigation-testing:$navigation_version"
     ]
 
     development = [

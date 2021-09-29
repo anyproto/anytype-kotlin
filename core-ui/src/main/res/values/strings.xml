@@ -418,5 +418,6 @@
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="unsupported_block">Unsupported block</string>
+    <string name="new_relation">New relation</string>
 
 </resources>

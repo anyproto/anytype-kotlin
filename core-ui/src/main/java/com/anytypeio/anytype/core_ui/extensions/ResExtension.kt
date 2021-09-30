@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.extensions
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.webkit.MimeTypeMap
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -239,14 +240,21 @@ fun DVSortType.text(format: Relation.Format): Int = when (format) {
     }
 }
 
-fun String.getMimeIcon(): Int = when (MimeTypes.category(this)) {
-    MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
-    MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
-    MimeTypes.Category.AUDIO -> R.drawable.ic_mime_music
-    MimeTypes.Category.TEXT -> R.drawable.ic_mime_text
-    MimeTypes.Category.VIDEO -> R.drawable.ic_mime_video
-    MimeTypes.Category.ARCHIVE -> R.drawable.ic_mime_archive
-    MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
-    MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
-    MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
+fun String?.getMimeIcon(name: String?): Int {
+    var mime = this
+    if (mime.isNullOrBlank()) {
+        val extension = MimeTypeMap.getFileExtensionFromUrl(name)
+        mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+    return when (MimeTypes.category(mime)) {
+        MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
+        MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
+        MimeTypes.Category.AUDIO -> R.drawable.ic_mime_music
+        MimeTypes.Category.TEXT -> R.drawable.ic_mime_text
+        MimeTypes.Category.VIDEO -> R.drawable.ic_mime_video
+        MimeTypes.Category.ARCHIVE -> R.drawable.ic_mime_archive
+        MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
+        MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
+        MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
+    }
 }

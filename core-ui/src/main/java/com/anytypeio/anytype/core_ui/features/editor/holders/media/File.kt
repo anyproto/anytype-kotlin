@@ -11,8 +11,8 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -55,17 +55,8 @@ class File(view: View) : Media(view) {
 
         applySearchHighlight(item)
 
-        when (item.mime?.let { MimeTypes.category(it) }) {
-            MimeTypes.Category.PDF -> icon.setImageResource(R.drawable.ic_mime_pdf)
-            MimeTypes.Category.IMAGE -> icon.setImageResource(R.drawable.ic_mime_image)
-            MimeTypes.Category.AUDIO -> icon.setImageResource(R.drawable.ic_mime_music)
-            MimeTypes.Category.TEXT -> icon.setImageResource(R.drawable.ic_mime_text)
-            MimeTypes.Category.VIDEO -> icon.setImageResource(R.drawable.ic_mime_video)
-            MimeTypes.Category.ARCHIVE -> icon.setImageResource(R.drawable.ic_mime_archive)
-            MimeTypes.Category.TABLE -> icon.setImageResource(R.drawable.ic_mime_table)
-            MimeTypes.Category.PRESENTATION -> icon.setImageResource(R.drawable.ic_mime_presentation)
-            MimeTypes.Category.OTHER -> icon.setImageResource(R.drawable.ic_mime_other)
-        }
+        val mimeIcon = item.mime.getMimeIcon(item.name)
+        icon.setImageResource(mimeIcon)
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {

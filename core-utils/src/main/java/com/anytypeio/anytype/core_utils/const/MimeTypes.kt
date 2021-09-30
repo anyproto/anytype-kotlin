@@ -29,8 +29,11 @@ object MimeTypes {
         "application/x-csh",
         "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
         "application/json",
-        "application/ld+json"
+        "application/ld+json",
+        "application/msword",
+        "text/comma-separated-values"
     )
 
     private val VIDEOS = listOf(
@@ -54,7 +57,11 @@ object MimeTypes {
         "audio/ac3",
         "audio/mpeg",
         "audio/midi",
-        "audio/x-midi"
+        "audio/x-midi",
+        "audio/m4a",
+        "audio/mp3",
+        "audio/x-flac",
+        "audio/flac"
     )
 
     private val ARCHIVE = listOf(
@@ -87,7 +94,7 @@ object MimeTypes {
         IMAGE, PDF, TEXT, AUDIO, VIDEO, ARCHIVE, OTHER, TABLE, PRESENTATION
     }
 
-    fun category(mime: String): Category = when {
+    fun category(mime: String?): Category = when {
         mime == PDF -> Category.PDF
         IMAGES.contains(mime) -> Category.IMAGE
         TEXTS.contains(mime) -> Category.TEXT

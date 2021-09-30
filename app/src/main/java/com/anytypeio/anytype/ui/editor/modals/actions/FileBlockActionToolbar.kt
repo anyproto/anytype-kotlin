@@ -13,8 +13,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -71,17 +71,8 @@ class FileBlockActionToolbar : BlockActionToolbar() {
             }
         }
         view.findViewById<ImageView>(R.id.fileIcon).apply {
-            when (item.mime?.let { MimeTypes.category(it) }) {
-                MimeTypes.Category.PDF -> setImageResource(R.drawable.ic_mime_pdf)
-                MimeTypes.Category.IMAGE -> setImageResource(R.drawable.ic_mime_image)
-                MimeTypes.Category.AUDIO -> setImageResource(R.drawable.ic_mime_music)
-                MimeTypes.Category.TEXT -> setImageResource(R.drawable.ic_mime_text)
-                MimeTypes.Category.VIDEO -> setImageResource(R.drawable.ic_mime_video)
-                MimeTypes.Category.ARCHIVE -> setImageResource(R.drawable.ic_mime_archive)
-                MimeTypes.Category.TABLE -> setImageResource(R.drawable.ic_mime_table)
-                MimeTypes.Category.PRESENTATION -> setImageResource(R.drawable.ic_mime_presentation)
-                MimeTypes.Category.OTHER -> setImageResource(R.drawable.ic_mime_other)
-            }
+            val mimeIcon = item.mime.getMimeIcon(item.name)
+            setImageResource(mimeIcon)
         }
         setConstraints()
     }

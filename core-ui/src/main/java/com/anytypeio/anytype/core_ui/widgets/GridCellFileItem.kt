@@ -23,7 +23,8 @@ class GridCellFileItem @JvmOverloads constructor(
         tvName.text = name
         if (mime != null) {
             ivIcon.visible()
-            ivIcon.setImageResource(mime.getMimeIcon())
+            val mimeIcon = mime.getMimeIcon(name)
+            ivIcon.setImageResource(mimeIcon)
         } else {
             ivIcon.gone()
         }

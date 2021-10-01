@@ -241,10 +241,10 @@ fun DVSortType.text(format: Relation.Format): Int = when (format) {
 }
 
 fun String?.getMimeIcon(name: String?): Int {
-    var mime = this
+    val extension = MimeTypeMap.getFileExtensionFromUrl(name)
+    var mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     if (mime.isNullOrBlank()) {
-        val extension = MimeTypeMap.getFileExtensionFromUrl(name)
-        mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+        mime = this
     }
     return when (MimeTypes.category(mime)) {
         MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf

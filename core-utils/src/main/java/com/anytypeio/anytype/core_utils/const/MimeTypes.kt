@@ -32,7 +32,6 @@ object MimeTypes {
         "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
         "application/json",
         "application/ld+json",
-        "application/msword",
         "text/comma-separated-values"
     )
 
@@ -51,6 +50,7 @@ object MimeTypes {
         "audio/mp4",
         "audio/wave",
         "audio/wav",
+        "audio/x-wav",
         "audio/webm",
         "audio/ogg",
         "audio/aac",

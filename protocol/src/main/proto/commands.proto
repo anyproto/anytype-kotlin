@@ -882,6 +882,32 @@ message Rpc {
                 }
             }
 
+            message Latex {
+                message Text {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string text = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
             message Text {
                 message TText {
                     message Request {
@@ -1957,7 +1983,7 @@ message Rpc {
             message Request {
                 string contextId = 1; // id of the context block
                 string targetId = 2; // id of the closest block
-                string objectTypeUrl = 3;
+                repeated string source = 3;
                 google.protobuf.Struct details = 4; // details
 
                 anytype.model.Block.Position position = 5;
@@ -2039,6 +2065,51 @@ message Rpc {
         }
     }
 
+    message Workspace {
+        message Create {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+                string workspaceId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message Select {
+            message Request {
+                string workspaceId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+    }
     /*
      * Namespace, that aggregates subtopics and actions, that relates to wallet.
     */
@@ -2800,7 +2871,7 @@ message Rpc {
     message Set {
         message Create {
             message Request {
-                string objectTypeUrl = 1;
+                repeated string source = 1;
                 google.protobuf.Struct details = 2; // if omitted the name of page will be the same with object type
                 string templateId = 3; // optional template id for creating from template
             }
@@ -2974,6 +3045,51 @@ message Rpc {
     }
 
     message Object {
+        message ShareByLink {
+            message Request {
+                string objectId = 1;
+            }
+
+            message Response {
+                string link = 1;
+                Error error = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message AddWithShareLink {
+            message Request {
+                string link = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message RelationAdd {
             message Request {
                 string contextId = 1;
@@ -3149,6 +3265,7 @@ message Rpc {
                 repeated string objectTypeFilter = 6;
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
+                bool ignoreWorkspace = 8;
             }
 
             message Response {
@@ -3336,6 +3453,30 @@ message Rpc {
                             BAD_INPUT = 2;
                             // ...
                         }
+                    }
+                }
+            }
+        }
+
+        message ToSet {
+            message Request {
+                string contextId = 1;
+                repeated string source = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                string setId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
                     }
                 }
             }

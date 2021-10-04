@@ -37,7 +37,7 @@ enum SmartBlockType {
     BundledObjectType = 0x202;
     AnytypeProfile = 0x203;
     Date = 0x204;
-
+    Workspace = 0x205;
 }
 
 message Block {
@@ -228,7 +228,7 @@ message Block {
         }
 
         message Dataview {
-            string source = 1;
+            repeated string source = 1;
             repeated View views = 2;
             // index 3 is deprecated, was used for schemaURL in old-format sets
             repeated model.Relation relations = 4;
@@ -242,12 +242,21 @@ message Block {
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
 				string coverRelationKey = 7; // Relation used for cover in gallery
+                bool hideIcon = 8; // Hide icon near name 
+                Size cardSize = 9; // Gallery card size
+                bool coverFit = 10; // Image fits container
 
                 enum Type {
                     Table = 0;
                     List = 1;
                     Gallery = 2;
                     Kanban = 3;
+                }
+
+                enum Size {
+                    Small = 0;
+                    Medium = 1;
+                    Large = 2;
                 }
             }
 
@@ -411,6 +420,15 @@ message Restrictions {
     }
 }
 
+message ThreadDeeplinkPayload {
+    string key = 1;
+    repeated string addrs = 2;
+}
+
+message ThreadCreateQueueEntry {
+    string collectionThread = 1;
+    string threadId = 2;
+}
 
 message ObjectType {
     string url = 1; // leave empty in case you want to create the new one

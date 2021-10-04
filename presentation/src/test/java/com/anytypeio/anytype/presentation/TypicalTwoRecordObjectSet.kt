@@ -113,7 +113,7 @@ class TypicalTwoRecordObjectSet {
     val dv = Block(
         id = MockDataFactory.randomUuid(),
         content = DV(
-            source = MockDataFactory.randomString(),
+            sources = listOf(MockDataFactory.randomString()),
             relations = relations,
             viewers = listOf(viewer1, viewer2)
         ),

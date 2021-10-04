@@ -25,6 +25,7 @@ message Event {
             Object.Relations.Amend objectRelationsAmend = 52;
             Object.Relations.Remove objectRelationsRemove = 53;
 
+            Object.Remove objectRemove = 54;
             Object.Show objectShow = 30;
 
             Block.Add blockAdd = 2;
@@ -160,6 +161,11 @@ message Event {
             repeated anytype.model.ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
             repeated anytype.model.Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
             anytype.model.Restrictions restrictions = 8; // object restrictions
+        }
+
+        message Remove {
+            // notifies that objects were removed
+            repeated string ids = 1;
         }
     }
     message Block {
@@ -569,7 +575,7 @@ message Event {
 
             message SourceSet {
                 string id = 1; // dataview block's id
-                string source = 2;
+                repeated string source = 2;
             }
 
             message RelationDelete {

@@ -83,7 +83,7 @@ class ObjectSetReducer {
                             }
                             block.copy(
                                 content = content.copy(
-                                    source = content.source,
+                                    sources = content.sources,
                                     relations = content.relations,
                                     viewers = result
                                 )

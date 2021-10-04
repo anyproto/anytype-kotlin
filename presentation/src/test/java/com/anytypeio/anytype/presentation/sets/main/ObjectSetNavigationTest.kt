@@ -96,7 +96,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     private val dv = Block(
         id = MockDataFactory.randomUuid(),
         content = DV(
-            source = MockDataFactory.randomString(),
+            sources = listOf(MockDataFactory.randomString()),
             relations = objectRelations,
             viewers = listOf(viewer)
         ),

@@ -111,7 +111,7 @@ class TagAndStatusTests {
         val dataView = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.DataView(
-                source = "source://1",
+                sources = listOf("source://1"),
                 viewers = listOf(viewerGrid),
                 relations = dataViewRelations
             ),
@@ -262,7 +262,7 @@ class TagAndStatusTests {
         val dataView = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.DataView(
-                source = "source://1",
+                sources = listOf("source://1"),
                 viewers = listOf(viewerGrid),
                 relations = dataViewRelations
             ),

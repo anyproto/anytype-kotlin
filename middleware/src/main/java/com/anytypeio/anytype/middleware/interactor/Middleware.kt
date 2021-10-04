@@ -971,10 +971,16 @@ class Middleware(
         objectType: String?
     ): Response.Set.Create {
 
+        val source = if (objectType != null) {
+            listOf(objectType)
+        } else {
+            listOf()
+        }
+
         val request = Rpc.Block.CreateSet.Request(
             contextId = contextId,
             targetId = targetId.orEmpty(),
-            objectTypeUrl = objectType.orEmpty(),
+            source = source,
             position = position.toMiddlewareModel()
         )
 

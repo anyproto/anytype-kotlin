@@ -132,7 +132,7 @@ class ObjectSetReducerTest {
         val dataView = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.DataView(
-                source = "source://1",
+                sources = listOf("source://1"),
                 viewers = listOf(viewerGrid),
                 relations = dataViewRelations
             ),
@@ -176,7 +176,7 @@ class ObjectSetReducerTest {
         val expectedDataView = Block(
             id = dataView.id,
             content = Block.Content.DataView(
-                source = (dataView.content as Block.Content.DataView).source,
+                sources = (dataView.content as Block.Content.DataView).sources,
                 viewers = listOf(
                     Block.Content.DataView.Viewer(
                         id = viewerGrid.id,
@@ -288,7 +288,7 @@ class ObjectSetReducerTest {
         val dataView = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.DataView(
-                source = "source://1",
+                sources = listOf("source://1"),
                 viewers = listOf(viewerGrid, viewerList),
                 relations = dataViewRelations
             ),
@@ -328,7 +328,7 @@ class ObjectSetReducerTest {
         val expectedDataView = Block(
             id = dataView.id,
             content = Block.Content.DataView(
-                source = (dataView.content as Block.Content.DataView).source,
+                sources = (dataView.content as Block.Content.DataView).sources,
                 viewers = listOf(
                     Block.Content.DataView.Viewer(
                         id = viewerGrid.id,

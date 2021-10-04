@@ -78,7 +78,7 @@ fun ObjectSet.render(
         Block.Content.DataView.Viewer.Type.GRID -> {
             Viewer.GridView(
                 id = viewer.id,
-                source = dv.source,
+                source = dv.sources.firstOrNull().orEmpty(),
                 name = viewer.name,
                 columns = columns,
                 rows = rows

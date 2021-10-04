@@ -208,7 +208,7 @@ fun MBlock.toCoreModelsBookmark(): Block.Content.Bookmark {
 fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
     val content = checkNotNull(dataview)
     return Block.Content.DataView(
-        source = content.source,
+        sources = content.source,
         viewers = content.views.map { it.toCoreModels() },
         relations = content.relations.map { it.toCoreModels() }
     )
@@ -505,6 +505,7 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.AnytypeProfile -> SmartBlockType.ANYTYPE_PROFILE
     MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
     MSmartBlockType.Date -> SmartBlockType.DATE
+    MSmartBlockType.Workspace -> SmartBlockType.WORKSPACE
 }
 
 // ---------------------- RESTRICTIONS ------------------------

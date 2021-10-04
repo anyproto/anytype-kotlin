@@ -223,7 +223,7 @@ data class Block(
         data class RelationBlock(val key: Id?, val background: String? = null) : Content()
 
         data class DataView(
-            val source: String,
+            val sources: List<String>,
             val viewers: List<Viewer>,
             val relations: List<Relation>
         ) : Content() {

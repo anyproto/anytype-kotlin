@@ -1,15 +1,32 @@
 # Change log for Android @Anytype app.
 
+## Version 0.3.2
+
+### New features & enhancements 🚀
+
+* Editor | Create a new relation via “/”-widget (#1829)
+* Editor | Create date objects (today, yesterday, etc.) via @-mention (#1822)
+* Editor | Titles of mentionned objects are no longer static. They are now synced (#1775)
+
+### Design & UX 🔳
+
+* Dashboard | Removed "Inbox" tab (#1824)
+
+### Fixes & tech 🚒
+
+* Editor | Better mime types recognition for file blocks (#1832, #1834)
+* Editor | Fixed: should not show style panel along with keyboard when focusing a block, for which style panel was opened (#1830)
+
 ## Version 0.3.1
 
-### Fixes & tech
+### Fixes & tech 🚒
 
 * Sets | Do not crash when opening an object contained in a relation (#1819)
 * Editor | Open relation-value screen for all relations in featured relations block (#1820)
 
 ## Version 0.3.0
 
-### New features & enhancements
+### New features & enhancements 🚀
 
 * Editor | Our new fancy action bar will give you more power (#1755, #1781, #1782)
 * Objects & sets | Favorite & unfavorite what you need to (#1792)
@@ -18,7 +35,7 @@
 * Objects | You can now add or change a cover or icon by tapping it (#1779, #1783)
 * Relations | You can now remove relations from your objects (#1741)
 
-### Design & UX
+### Design & UX 🔳
 
 * Editor | Ever close an object because you swiped the bottom sheet down? Well, that bug is gone! Bye-bye, bottom sheet swipe! (#1773)
 * Editor | Create a link to an object via the “/”-widget (#1746)
@@ -30,7 +47,7 @@
 * Redesign | Link-to screen (#1746, #1751)
 * Relations | Added format-specific placeholders (#1740)
 
-### Fixes & tech
+### Fixes & tech 🚒
 
 * Editor | Allow duplicating several blocks and support duplication for nested blocks (#1756)
 * Editor | Improved file type/extension recognition for file block (#1810)

@@ -7,7 +7,10 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_RELATION_ADD
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_ADD
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -72,6 +75,8 @@ class RelationAddToObjectViewModel(
     private val analytics: Analytics
 ) : RelationAddBaseViewModel(objectRelationList = objectRelationList) {
 
+    val commands = MutableSharedFlow<Command>(replay = 0)
+
     fun onRelationSelected(ctx: Id, relation: Id) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
@@ -88,7 +93,10 @@ class RelationAddToObjectViewModel(
                         startTime = startTime,
                         middleTime = System.currentTimeMillis()
                     )
-                    dispatcher.send(it).also { isDismissed.value = true }
+                    dispatcher.send(it).also {
+                        commands.emit(Command.OnRelationAdd(relation = relation))
+                        isDismissed.value = true
+                    }
                 },
                 failure = {
                     Timber.e(it, ERROR_MESSAGE)
@@ -113,6 +121,10 @@ class RelationAddToObjectViewModel(
                 analytics = analytics
             ) as T
         }
+    }
+
+    sealed class Command {
+        data class OnRelationAdd(val relation: Id) : Command()
     }
 }
 

@@ -207,11 +207,26 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToObjectViewModel.Factory
     override val vm: RelationAddToObjectViewModel by viewModels { factory }
 
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.commands) { execute(it) }
+        }
+        super.onStart()
+    }
+
     override fun onRelationSelected(ctx: Id, relation: Id) {
-        findNavController().run {
-            val result = RelationAddResult(target = target, relation = relation)
-            previousBackStackEntry?.savedStateHandle?.set(RELATION_ADD_RESULT_KEY, result)
-            popBackStack()
+        vm.onRelationSelected(ctx, relation)
+    }
+
+    private fun execute(command: RelationAddToObjectViewModel.Command) {
+        when (command) {
+            is RelationAddToObjectViewModel.Command.OnRelationAdd -> {
+                findNavController().run {
+                    val result = RelationAddResult(target = target, relation = command.relation)
+                    previousBackStackEntry?.savedStateHandle?.set(RELATION_ADD_RESULT_KEY, result)
+                    popBackStack()
+                }
+            }
         }
     }
 

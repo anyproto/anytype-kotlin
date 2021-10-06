@@ -6,7 +6,7 @@
 
 * Editor | Create a new relation via “/”-widget (#1829)
 * Editor | Create date objects (today, yesterday, etc.) via @-mention (#1822)
-* Editor | Titles of mentionned objects are no longer static. They are now synced (#1775)
+* Editor | Titles of mentioned objects are no longer static. They are now synced (#1775)
 
 ### Design & UX 🔳
 
@@ -16,6 +16,7 @@
 
 * Editor | Better mime types recognition for file blocks (#1832, #1834)
 * Editor | Fixed: should not show style panel along with keyboard when focusing a block, for which style panel was opened (#1830)
+* Global search | Fixed: should close keyboard on exit (#1838)
 
 ## Version 0.3.1
 

@@ -14,8 +14,9 @@
 
 ### Fixes & tech 🚒
 
-* Editor | Better mime types recognition for file blocks (#1832, #1834)
+* Editor | Enhanced: Better mime types recognition for file blocks (#1832, #1834)
 * Editor | Fixed: should not show style panel along with keyboard when focusing a block, for which style panel was opened (#1830)
+* Editor | Fixed: should not add empty space below when duplicating the last block in multi-select mode (#1837)
 * Global search | Fixed: should close keyboard on exit (#1838)
 
 ## Version 0.3.1

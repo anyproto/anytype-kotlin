@@ -1041,6 +1041,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         when (state) {
             is ViewState.Success -> {
                 pageAdapter.updateWithDiffUtil(state.blocks)
+                recycler.invalidateItemDecorations()
                 resetDocumentTitle(state)
             }
             is ViewState.OpenLinkScreen -> {

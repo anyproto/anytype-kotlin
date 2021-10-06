@@ -14,12 +14,10 @@ open class MentionFooterItemDecorator(private val screen: Point) : RecyclerView.
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        parent.adapter?.itemCount?.let { size ->
-            when (parent.getChildAdapterPosition(view)) {
-                size - 1 -> {
-                    outRect.bottom = screen.y / 2
-                }
-            }
+        val adapter = parent.adapter ?: return
+        val pos = parent.getChildAdapterPosition(view)
+        if (pos == adapter.itemCount - 1) {
+            outRect.bottom = screen.y / 2
         }
     }
 }

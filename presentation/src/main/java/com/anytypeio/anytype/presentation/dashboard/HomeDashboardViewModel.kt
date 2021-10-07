@@ -422,7 +422,6 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             searchRecentObjects(Unit).process(
                 success = { objects ->
-                    Timber.d("Found ${objects.size} recent objects")
                     recent.value = objects
                         .map { ObjectWrapper.Basic(it) }
                         .map { obj ->

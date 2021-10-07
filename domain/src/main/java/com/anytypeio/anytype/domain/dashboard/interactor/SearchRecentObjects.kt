@@ -18,6 +18,12 @@ class SearchRecentObjects(
                 value = false,
                 relationKey = Relations.IS_ARCHIVED,
                 operator = DVFilterOperator.AND
+            ),
+            DVFilter(
+                condition = DVFilterCondition.NOT_IN,
+                value = RECENT_FILTERED_TYPES,
+                relationKey = Relations.TYPE,
+                operator = DVFilterOperator.AND
             )
         )
         val sorts = listOf(
@@ -31,8 +37,7 @@ class SearchRecentObjects(
             filters = filters,
             fulltext = EMPTY_TEXT,
             offset = INIT_OFFSET,
-            limit = LIMIT,
-            objectTypeFilter = listOf(ObjectTypeConst.SET, ObjectTypeConst.PAGE)
+            limit = LIMIT
         )
     }
 
@@ -40,5 +45,14 @@ class SearchRecentObjects(
         private const val EMPTY_TEXT = ""
         private const val LIMIT = 30
         private const val INIT_OFFSET = 0
+
+        val RECENT_FILTERED_TYPES = listOf(
+            "_otobjectType",
+            "_otrelation",
+            "_otimage",
+            "_otfile",
+            "_otprofile",
+            "_ottemplate"
+        )
     }
 }

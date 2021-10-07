@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
@@ -56,9 +57,7 @@ object HomeDashboardModule {
         eventConverter: HomeDashboardEventConverter,
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
-        searchArchivedObjects: SearchArchivedObjects,
-        searchRecentObjects: SearchRecentObjects,
-        searchObjectSets: SearchObjectSets,
+        searchObjects: SearchObjects,
         urlBuilder: UrlBuilder
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
@@ -70,9 +69,7 @@ object HomeDashboardModule {
         interceptEvents = interceptEvents,
         eventConverter = eventConverter,
         getDebugSettings = getDebugSettings,
-        searchArchivedObjects = searchArchivedObjects,
-        searchRecentObjects = searchRecentObjects,
-        searchObjectSets = searchObjectSets,
+        searchObjects = searchObjects,
         analytics = analytics,
         urlBuilder = urlBuilder
     )
@@ -168,27 +165,9 @@ object HomeDashboardModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideSearchArchivedObjectsUseCase(
+    fun provideSearchObjects(
         repo: BlockRepository
-    ) : SearchArchivedObjects = SearchArchivedObjects(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSearchRecentObjectsUseCase(
-        repo: BlockRepository
-    ) : SearchRecentObjects = SearchRecentObjects(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSearchObjectSetsUseCase(
-        repo: BlockRepository
-    ) : SearchObjectSets = SearchObjectSets(
+    ) : SearchObjects = SearchObjects(
         repo = repo
     )
 }

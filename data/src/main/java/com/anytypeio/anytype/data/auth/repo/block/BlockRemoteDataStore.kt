@@ -313,15 +313,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int,
-        objectTypeFilter: List<Id>
+        limit: Int
     ): List<Map<String, Any?>> = remote.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
         offset = offset,
-        limit = limit,
-        objectTypeFilter = objectTypeFilter
+        limit = limit
     )
 
     override suspend fun relationListAvailable(ctx: Id): List<Relation> =

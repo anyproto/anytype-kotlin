@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -52,9 +54,7 @@ class HomeDashboardViewModel(
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
-    private val searchArchivedObjects: SearchArchivedObjects,
-    private val searchRecentObjects: SearchRecentObjects,
-    private val searchObjectSets: SearchObjectSets,
+    private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
@@ -310,7 +310,7 @@ class HomeDashboardViewModel(
                 else -> null
             }
             if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
-                if (view.type != ObjectTypeConst.TEMPLATE) {
+                if (view.type != ObjectType.TEMPLATE_URL) {
                     if (view.layout == ObjectType.Layout.SET) {
                         proceedWithOpeningObjectSet(target)
                     } else {
@@ -386,7 +386,11 @@ class HomeDashboardViewModel(
 
     private fun proceedWithArchivedObjectSearch() {
         viewModelScope.launch {
-            searchArchivedObjects(Unit).process(
+            val params = SearchObjects.Params(
+                filters = ObjectSearchConstants.filterTabArchive,
+                sorts = ObjectSearchConstants.sortTabArchive
+            )
+            searchObjects(params).process(
                 success = { objects ->
                     archived.value = objects
                         .map { ObjectWrapper.Basic(it) }
@@ -420,7 +424,12 @@ class HomeDashboardViewModel(
 
     private fun proceedWithRecentObjectSearch() {
         viewModelScope.launch {
-            searchRecentObjects(Unit).process(
+            val params = SearchObjects.Params(
+                filters = ObjectSearchConstants.filterTabHistory,
+                sorts = ObjectSearchConstants.sortTabHistory,
+                limit = ObjectSearchConstants.limitTabHistory
+            )
+            searchObjects(params).process(
                 success = { objects ->
                     recent.value = objects
                         .map { ObjectWrapper.Basic(it) }
@@ -469,7 +478,11 @@ class HomeDashboardViewModel(
 
     private fun proceedWithSetsObjectSearch() {
         viewModelScope.launch {
-            searchObjectSets(Unit).process(
+            val params = SearchObjects.Params(
+                filters = ObjectSearchConstants.filterTabSets,
+                sorts = ObjectSearchConstants.sortTabSets
+            )
+            searchObjects(params).process(
                 success = { objects ->
                     sets.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
                         DashboardView.ObjectSet(

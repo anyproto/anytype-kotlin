@@ -88,7 +88,6 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.linking.LinkToConstants
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -98,6 +97,7 @@ import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toDefaultObjectView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.views
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -5100,14 +5100,11 @@ class EditorViewModel(
                 jobMentionFilter?.cancel()
                 return
             }
-            val filters = LinkToConstants.filters
-            val sorts = LinkToConstants.sorts
-            val fullText = filter.removePrefix(MENTION_PREFIX)
             val params = SearchObjects.Params(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
-                filters = filters,
-                sorts = sorts,
-                fulltext = fullText
+                filters = ObjectSearchConstants.filterLinkTo,
+                sorts = ObjectSearchConstants.sortLinkTo,
+                fulltext = filter.removePrefix(MENTION_PREFIX)
             )
             viewModelScope.launch {
                 searchObjects(params).process(
@@ -5117,7 +5114,7 @@ class EditorViewModel(
                             urlBuilder = urlBuilder
                         ).filter {
                             SupportedLayouts.layouts.contains(it.typeLayout)
-                                    && it.type != ObjectTypeConst.TEMPLATE
+                                    && it.type != ObjectType.TEMPLATE_URL
                         }
                         controlPanelInteractor.onEvent(
                             ControlPanelMachine.Event.Mentions.OnResult(

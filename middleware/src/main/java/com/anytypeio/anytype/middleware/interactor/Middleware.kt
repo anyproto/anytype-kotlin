@@ -1168,15 +1168,13 @@ class Middleware(
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int,
-        objectTypeFilter: List<Id>
+        limit: Int
     ): List<Map<String, Any?>> {
         val request = Rpc.Object.Search.Request(
             sorts = sorts.map { it.toMiddlewareModel() },
             filters = filters.map { it.toMiddlewareModel() },
             fullText = fulltext,
             offset = offset,
-            objectTypeFilter = objectTypeFilter,
             limit = limit
         )
         if (BuildConfig.DEBUG) logRequest(request)

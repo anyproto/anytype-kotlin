@@ -3,7 +3,9 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -11,6 +13,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -115,14 +118,8 @@ class RelationObjectValueAddViewModel(
 
     private fun proceedWithSearchObjects(ids: List<String>, relation: Relation) {
 
-        val filters = relation.searchObjectsFilter().addIsHiddenFilter()
-
-        val sorts = arrayListOf(
-            DVSort(
-                relationKey = ObjectSetConfig.LAST_OPENED_DATE_KEY,
-                type = Block.Content.DataView.Sort.Type.DESC
-            )
-        )
+        val filters = ObjectSearchConstants.filterAddObjectToRelation(relation.objectTypes)
+        val sorts = ObjectSearchConstants.sortAddObjectToRelation
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
@@ -130,8 +127,7 @@ class RelationObjectValueAddViewModel(
                     filters = filters,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
-                    limit = SearchObjects.LIMIT,
-                    objectTypeFilter = listOf(ObjectTypeConst.PAGE, ObjectTypeConst.SET)
+                    limit = SearchObjects.LIMIT
                 )
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },

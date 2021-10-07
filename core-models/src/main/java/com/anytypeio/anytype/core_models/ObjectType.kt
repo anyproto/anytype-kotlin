@@ -44,7 +44,17 @@ data class ObjectType(
         val emoji: String
     )
 
+    /**
+     * Keys for predefined, bundled object types.
+     */
     companion object {
         const val PAGE_URL = "_otpage"
+        const val OBJECT_TYPE_URL = "_otobjectType"
+        const val RELATION_URL = "_otrelation"
+        const val TEMPLATE_URL = "_ottemplate"
+        const val IMAGE_URL = "_otimage"
+        const val FILE_URL = "_otfile"
+        const val SET_URL = "_otset"
+        const val PROFILE_URL = "_otprofile" //contains User Profile page and Anytype Person page
     }
 }

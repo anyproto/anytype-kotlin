@@ -3,13 +3,17 @@ package com.anytypeio.anytype.presentation.moving
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -100,37 +104,10 @@ class MoveToViewModel(
             .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
             .map { objectType -> objectType.url }
 
-        val filters = listOf(
-            DVFilter(
-                condition = DVFilterCondition.EQUAL,
-                value = false,
-                relationKey = Relations.IS_ARCHIVED,
-                operator = DVFilterOperator.AND
-            ),
-            DVFilter(
-                relationKey = Relations.IS_HIDDEN,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
-            ),
-            DVFilter(
-                relationKey = Relations.IS_READ_ONLY,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
-            )
-        )
-
-        val sorts = listOf(
-            DVSort(
-                relationKey = Relations.NAME,
-                type = DVSortType.ASC
-            )
-        )
-
         return SearchObjects.Params(
             limit = SEARCH_LIMIT,
-            objectTypeFilter = filteredTypes,
-            filters = filters,
-            sorts = sorts,
+            filters = ObjectSearchConstants.filterMoveTo(filteredTypes),
+            sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY
         )
     }

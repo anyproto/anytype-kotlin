@@ -29,16 +29,9 @@ object ObjectSetConfig {
      */
     const val TYPE_KEY = "type"
 
-    /**
-     * Object layout key.
-     */
-    const val LAYOUT_KEY = "layout"
-
     const val FILE_EXT_KEY = "fileExt"
 
     const val FILE_MIME_KEY = "fileMimeType"
-
-    const val LAST_OPENED_DATE_KEY = "lastOpenedDate"
 
     const val DEFAULT_LIMIT = 50
 }

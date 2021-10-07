@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -59,13 +60,7 @@ open class DashboardTestSetup {
     lateinit var getDebugSettings: GetDebugSettings
 
     @Mock
-    lateinit var searchArchivedObjects: SearchArchivedObjects
-
-    @Mock
-    lateinit var searchObjectSets: SearchObjectSets
-
-    @Mock
-    lateinit var searchRecentObjects: SearchRecentObjects
+    lateinit var searchObjects: SearchObjects
 
     @Mock
     lateinit var move: Move
@@ -103,9 +98,7 @@ open class DashboardTestSetup {
         ),
         getDebugSettings = getDebugSettings,
         analytics = analytics,
-        searchArchivedObjects = searchArchivedObjects,
-        searchRecentObjects = searchRecentObjects,
-        searchObjectSets = searchObjectSets,
+        searchObjects = searchObjects,
         urlBuilder = builder
     )
 

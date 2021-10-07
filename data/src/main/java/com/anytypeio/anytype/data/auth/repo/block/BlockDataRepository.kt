@@ -392,15 +392,13 @@ class BlockDataRepository(
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int,
-        objectTypeFilter: List<Id>
+        limit: Int
     ): List<Map<String, Any?>> = factory.remote.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
         offset = offset,
-        limit = limit,
-        objectTypeFilter = objectTypeFilter
+        limit = limit
     )
 
     override suspend fun relationListAvailable(ctx: Id) = factory.remote.relationListAvailable(ctx)

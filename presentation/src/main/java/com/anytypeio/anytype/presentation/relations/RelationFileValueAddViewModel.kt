@@ -117,7 +117,7 @@ class RelationFileValueAddViewModel(
             .addIsHiddenFilter()
         val sorts = arrayListOf(
             DVSort(
-                relationKey = ObjectSetConfig.LAST_OPENED_DATE_KEY,
+                relationKey = Relations.LAST_OPENED_DATE,
                 type = Block.Content.DataView.Sort.Type.DESC
             )
         )

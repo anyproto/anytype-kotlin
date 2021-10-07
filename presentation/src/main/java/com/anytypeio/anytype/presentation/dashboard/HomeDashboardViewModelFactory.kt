@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreatePage
@@ -23,9 +24,7 @@ class HomeDashboardViewModelFactory(
     private val eventConverter: HomeDashboardEventConverter,
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
-    private val searchArchivedObjects: SearchArchivedObjects,
-    private val searchRecentObjects: SearchRecentObjects,
-    private val searchObjectSets: SearchObjectSets,
+    private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
 
@@ -42,9 +41,7 @@ class HomeDashboardViewModelFactory(
             eventConverter = eventConverter,
             getDebugSettings = getDebugSettings,
             analytics = analytics,
-            searchArchivedObjects = searchArchivedObjects,
-            searchRecentObjects = searchRecentObjects,
-            searchObjectSets = searchObjectSets,
+            searchObjects = searchObjects,
             urlBuilder = urlBuilder
         ) as T
     }

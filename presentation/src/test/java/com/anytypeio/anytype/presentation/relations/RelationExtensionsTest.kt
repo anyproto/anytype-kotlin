@@ -1,10 +1,7 @@
 package com.anytypeio.anytype.presentation.relations
 
 import MockDataFactory
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -108,7 +105,7 @@ class RelationExtensionsTest {
             isHidden = true,
             isReadOnly = true,
             isMulti = false,
-            objectTypes = listOf("_otobjectType")
+            objectTypes = listOf(ObjectType.OBJECT_TYPE_URL)
         )
 
         val relation2 = Relation(

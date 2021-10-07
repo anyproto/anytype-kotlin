@@ -16,6 +16,7 @@ import com.anytypeio.anytype.presentation.extension.toConditionView
 import com.anytypeio.anytype.presentation.extension.type
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.relations.*
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -255,15 +256,8 @@ open class FilterViewModel(
         relation: Relation,
         objectTypes: List<ObjectType>
     ) {
-        val filters = relation
-            .searchObjectsFilter()
-            .addIsHiddenFilter()
-        val sorts = arrayListOf(
-            DVSort(
-                relationKey = ObjectSetConfig.LAST_OPENED_DATE_KEY,
-                type = Block.Content.DataView.Sort.Type.DESC
-            )
-        )
+        val filters = ObjectSearchConstants.filterAddObjectToFilter(relation.objectTypes)
+        val sorts = ObjectSearchConstants.sortAddObjectToFilter
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
@@ -271,8 +265,7 @@ open class FilterViewModel(
                     filters = filters,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
-                    limit = SearchObjects.LIMIT,
-                    objectTypeFilter = listOf(ObjectTypeConst.PAGE, ObjectTypeConst.PAGE)
+                    limit = SearchObjects.LIMIT
                 )
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },

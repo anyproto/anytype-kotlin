@@ -1341,16 +1341,18 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun proceedWithHidingSoftInput() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val controller = root.windowInsetsController
-            if (controller != null) {
-                controller.hide(WindowInsetsCompat.Type.ime())
-            } else {
-                hideSoftInput()
-            }
-        } else {
-            hideSoftInput()
-        }
+        // TODO enable when switching to API 30
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            val controller = root.windowInsetsController
+//            if (controller != null) {
+//                controller.hide(WindowInsetsCompat.Type.ime())
+//            } else {
+//                hideSoftInput()
+//            }
+//        } else {
+//            hideSoftInput()
+//        }
+        hideSoftInput()
     }
 
     private fun hideBlockActionPanel() {

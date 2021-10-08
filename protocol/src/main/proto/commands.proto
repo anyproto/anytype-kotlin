@@ -3262,7 +3262,7 @@ message Rpc {
                 int32 offset = 4;
                 int32 limit = 5;
                 // additional filter by objectTypes
-                repeated string objectTypeFilter = 6;
+                repeated string objectTypeFilter = 6; // deprecated, to be removed
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
                 bool ignoreWorkspace = 8;

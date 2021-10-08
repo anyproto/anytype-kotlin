@@ -256,13 +256,11 @@ open class FilterViewModel(
         relation: Relation,
         objectTypes: List<ObjectType>
     ) {
-        val filters = ObjectSearchConstants.filterAddObjectToFilter(relation.objectTypes)
-        val sorts = ObjectSearchConstants.sortAddObjectToFilter
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
-                    sorts = sorts,
-                    filters = filters,
+                    sorts = ObjectSearchConstants.sortAddObjectToFilter,
+                    filters = ObjectSearchConstants.filterAddObjectToFilter,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
                     limit = SearchObjects.LIMIT

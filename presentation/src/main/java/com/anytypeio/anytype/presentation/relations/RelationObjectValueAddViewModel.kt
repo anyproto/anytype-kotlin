@@ -117,14 +117,11 @@ class RelationObjectValueAddViewModel(
     }
 
     private fun proceedWithSearchObjects(ids: List<String>, relation: Relation) {
-
-        val filters = ObjectSearchConstants.filterAddObjectToRelation(relation.objectTypes)
-        val sorts = ObjectSearchConstants.sortAddObjectToRelation
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
-                    sorts = sorts,
-                    filters = filters,
+                    sorts = ObjectSearchConstants.sortAddObjectToRelation,
+                    filters = ObjectSearchConstants.filterAddObjectToRelation,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
                     limit = SearchObjects.LIMIT

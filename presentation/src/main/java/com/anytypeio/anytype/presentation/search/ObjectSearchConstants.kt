@@ -130,6 +130,15 @@ object ObjectSearchConstants {
             relationKey = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(
+                OBJECT_TYPE_URL,
+                RELATION_URL,
+                TEMPLATE_URL
+            )
         )
     )
 
@@ -152,6 +161,15 @@ object ObjectSearchConstants {
             relationKey = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(
+                OBJECT_TYPE_URL,
+                RELATION_URL,
+                TEMPLATE_URL
+            )
         )
     )
 

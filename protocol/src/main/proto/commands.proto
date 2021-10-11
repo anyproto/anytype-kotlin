@@ -3301,6 +3301,8 @@ message Rpc {
                 string description = 5;
                 string iconImage = 6;
                 string iconEmoji = 7;
+                bool done = 8;
+                int32 relationFormat = 9;
             }
 
             message Edge {

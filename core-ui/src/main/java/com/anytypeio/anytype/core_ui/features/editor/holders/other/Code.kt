@@ -28,7 +28,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import timber.log.Timber
 
-class Code(view: View) : BlockViewHolder(view) {
+class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolder {
 
     val menu: TextView
         get() = itemView.code_menu

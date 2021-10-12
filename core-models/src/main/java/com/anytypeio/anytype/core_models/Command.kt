@@ -158,7 +158,7 @@ sealed class Command {
     )
 
     class Move(
-        val contextId: Id,
+        val ctx: Id,
         val targetId: Id,
         val targetContextId: Id,
         val blockIds: List<String>,

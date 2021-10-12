@@ -139,7 +139,9 @@ class AddRelationTagValueTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 
@@ -276,7 +278,9 @@ class AddRelationTagValueTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 
@@ -368,7 +372,9 @@ class AddRelationTagValueTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 
@@ -469,7 +475,9 @@ class AddRelationTagValueTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 

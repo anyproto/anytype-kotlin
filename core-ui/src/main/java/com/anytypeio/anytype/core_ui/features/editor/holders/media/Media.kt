@@ -1,15 +1,21 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
+import android.annotation.SuppressLint
 import android.view.View
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
-import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
-abstract class Media(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
+@SuppressLint("ClickableViewAccessibility")
+abstract class Media(view: View) : BlockViewHolder(view),
+    BlockViewHolder.IndentableHolder,
+    BlockViewHolder.DragAndDropHolder,
+    SupportCustomTouchProcessor {
 
     abstract val root: View
     abstract val clickContainer: View
@@ -17,20 +23,28 @@ abstract class Media(view: View) : BlockViewHolder(view), BlockViewHolder.Indent
     abstract override fun indentize(item: BlockView.Indentable)
     abstract fun select(isSelected: Boolean)
 
+    override val editorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> itemView.onTouchEvent(e) }
+    )
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
+
     fun bind(
         item: BlockView.Media,
         clicked: (ListenerType) -> Unit
     ) {
         indentize(item)
         select(item.isSelected)
-        with(clickContainer) {
+        with(itemView) {
             setOnClickListener { onMediaBlockClicked(item, clicked) }
-            setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = { mediaLongClick(root, it, clicked) }
-                )
-            )
+//            setOnLongClickListener(
+//                EditorLongClickListener(
+//                    t = item.id,
+//                    click = { mediaLongClick(root, it, clicked) }
+//                )
+//            )
         }
     }
 

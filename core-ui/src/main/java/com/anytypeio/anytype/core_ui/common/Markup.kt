@@ -217,6 +217,7 @@ fun Editable.setMentionSpan(
         if (!isLoading) {
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(widget: View) {
+                    // TODO consider pausing text watchers. Otherwise, redundant text watcher events will be triggered.
                     (widget as? TextInputWidget)?.enableReadMode()
                     click?.invoke(mark.param!!)
                 }

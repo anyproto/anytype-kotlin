@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.invisible

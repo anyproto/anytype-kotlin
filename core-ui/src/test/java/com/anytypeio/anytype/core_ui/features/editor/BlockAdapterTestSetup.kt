@@ -54,7 +54,14 @@ open class BlockAdapterTestSetup {
             onBackPressedCallback = { false },
             onCoverClicked = {},
             onSlashEvent = {},
-            onKeyPressedEvent = {}
+            onKeyPressedEvent = {},
+            onDragListener = EditorDragAndDropListener(
+                onDragEnded = {},
+                onDragExited = {},
+                onDragLocation = { _,_ -> },
+                onDrop = { _,_ -> }
+            ),
+            onDragAndDropTrigger = { true }
         )
     }
 }

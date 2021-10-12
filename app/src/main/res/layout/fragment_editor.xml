@@ -249,4 +249,13 @@
         app:cardUseCompatPadding="true"
         app:layout_behavior="@string/bottom_sheet_behavior" />
 
+    <View
+        android:visibility="invisible"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:id="@+id/dndTargetLine"
+        android:background="@color/orange"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,9 +8,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.*
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -25,7 +23,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_block_page_archived.view.*
 
-class PageArchive(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder,
+class PageArchive(view: View) : BlockViewHolder(view),
+    BlockViewHolder.IndentableHolder,
+    BlockViewHolder.DragAndDropHolder,
+    SupportCustomTouchProcessor,
     SupportNesting {
 
     private val untitled = itemView.resources.getString(R.string.untitled)
@@ -35,6 +36,14 @@ class PageArchive(view: View) : BlockViewHolder(view), BlockViewHolder.Indentabl
     private val image = itemView.linkImage
     private val title = itemView.pageTitle
     private val guideline = itemView.pageGuideline
+
+    override val editorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> itemView.onTouchEvent(e) }
+    )
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
 
     fun bind(
         item: BlockView.PageArchive,

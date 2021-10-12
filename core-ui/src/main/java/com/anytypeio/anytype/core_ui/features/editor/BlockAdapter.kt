@@ -5,6 +5,7 @@ import android.os.Build.VERSION_CODES.N
 import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DiffUtil
@@ -50,10 +51,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setup
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setupPlaceholder
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
+import com.anytypeio.anytype.core_ui.features.editor.holders.media.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
@@ -128,7 +126,9 @@ class BlockAdapter(
     private val onMentionEvent: (MentionEvent) -> Unit,
     private val onSlashEvent: (SlashEvent) -> Unit,
     private val onBackPressedCallback: () -> Boolean,
-    private val onKeyPressedEvent: (KeyPressedEvent) -> Unit
+    private val onKeyPressedEvent: (KeyPressedEvent) -> Unit,
+    private val onDragAndDropTrigger: (RecyclerView.ViewHolder) -> Boolean,
+    private val onDragListener: View.OnDragListener
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     val views: List<BlockView> get() = blocks
@@ -651,29 +651,22 @@ class BlockAdapter(
         }
 
         if (holder is Text) {
-            holder.content.setOnLongClickListener { view ->
-                if (view != null && !view.hasFocus()) {
-                    val pos = holder.bindingAdapterPosition
-                    if (pos != RecyclerView.NO_POSITION) {
-                        holder.onBlockLongClick(
-                            root = holder.itemView,
-                            clicked = onClickListener,
-                            target = blocks[pos].id
-                        )
-                        true
-                    } else {
-                        false
-                    }
-                } else {
-                    false
+            holder.content.setOnDragListener(onDragListener)
+            holder.content.editorTouchProcessor.onLongClick = {
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onClickListener(ListenerType.LongClick(target = blocks[pos].id))
                 }
+            }
+            holder.content.editorTouchProcessor.onDragAndDropTrigger = {
+                onDragAndDropTrigger(holder)
             }
             holder.content.setOnClickListener { view ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
-                    if (view.hasFocus()) {
-                        view.context.imm().showSoftInput(view, InputMethodManager.SHOW_FORCED)
-                    }
+//                    if (view.hasFocus()) {
+//                        view.context.imm().showSoftInput(view, InputMethodManager.SHOW_FORCED)
+//                    }
                     onTextInputClicked(blocks[pos].id)
                 }
             }
@@ -685,12 +678,11 @@ class BlockAdapter(
                         item.isFocused = hasFocus
                     }
                     onFocusChanged(item.id, hasFocus)
-                    if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
-                        if (hasFocus) {
-                            holder.content.context.imm()
-                                .showSoftInput(holder.content, InputMethodManager.SHOW_FORCED)
-                        }
-                    }
+//                    if (hasFocus) {
+//                        holder.content.context
+//                            .imm()
+//                            .showSoftInput(holder.content, InputMethodManager.SHOW_FORCED)
+//                    }
                 }
             }
             holder.content.selectionWatcher = { selection ->
@@ -703,10 +695,28 @@ class BlockAdapter(
                     onSelectionChanged(view.id, selection)
                 }
             }
+        } else {
+            if (holder !is SupportCustomTouchProcessor) {
+                holder.itemView.setOnLongClickListener {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos != RecyclerView.NO_POSITION) {
+                        onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                    }
+                    true
+                }
+            } else {
+                holder.editorTouchProcessor.onLongClick = {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos != RecyclerView.NO_POSITION) {
+                        onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                    }
+                }
+                holder.editorTouchProcessor.onDragAndDropTrigger = {
+                    onDragAndDropTrigger(holder)
+                }
+            }
+            holder.itemView.setOnDragListener(onDragListener)
         }
-
-        // TODO set long click listener for other blocks (and remove these listeners from view holder bind methods)
-        // TODO think also about simple click listeners refactoring.
 
         return holder
     }

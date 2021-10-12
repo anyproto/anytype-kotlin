@@ -24,7 +24,11 @@ import kotlinx.android.synthetic.main.item_document_relation_object.view.*
 import kotlinx.android.synthetic.main.item_document_relation_tag.view.*
 import timber.log.Timber
 
-sealed class RelationViewHolder(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
+sealed class RelationViewHolder(
+    view: View
+) : BlockViewHolder(view),
+    BlockViewHolder.DragAndDropHolder,
+    BlockViewHolder.IndentableHolder {
 
     fun setIsFeatured(isFeatured: Boolean) {
         itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {

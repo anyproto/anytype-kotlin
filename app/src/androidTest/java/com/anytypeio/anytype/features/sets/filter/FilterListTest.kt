@@ -127,7 +127,9 @@ class FilterListTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 
@@ -218,7 +220,9 @@ class FilterListTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 
@@ -309,7 +313,9 @@ class FilterListTest {
             content = Block.Content.DataView(
                 relations = listOf(relation),
                 viewers = listOf(viewer),
-                source = MockDataFactory.randomUuid()
+                sources = listOf(
+                    MockDataFactory.randomUuid()
+                )
             )
         )
 

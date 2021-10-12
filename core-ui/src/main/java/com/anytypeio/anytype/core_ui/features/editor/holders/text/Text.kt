@@ -9,13 +9,14 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.TextBlockHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Checkable
 
 abstract class Text(
     view: View
-) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder {
+) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder, BlockViewHolder.DragAndDropHolder {
 
     fun bind(
         item: BlockView.TextBlockProps,

@@ -461,7 +461,7 @@ class Middleware(
         val position: Block.Position = command.position.toMiddlewareModel()
 
         val request: BlockList.Move.Request = BlockList.Move.Request(
-            contextId = command.contextId,
+            contextId = command.ctx,
             targetContextId = command.targetContextId,
             position = position,
             blockIds = command.blockIds,

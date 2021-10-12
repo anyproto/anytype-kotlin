@@ -1,35 +1,29 @@
 package com.anytypeio.anytype.domain.block.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.block.interactor.Move.Params
 import com.anytypeio.anytype.core_models.Command.Move
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.interactor.Move.Params
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for moving a group of blocks (cross-document, inside one document, one block after another, etc).
  * @see Params for details.
  */
-class Move(
-    private val repo: BlockRepository
-) : BaseUseCase<Payload, Params>() {
+class Move(private val repo: BlockRepository) : BaseUseCase<Payload, Params>() {
 
-    override suspend fun run(params: Params) = try {
+    override suspend fun run(params: Params) = safe {
         repo.move(
             command = Move(
-                contextId = params.context,
+                ctx = params.context,
                 targetId = params.targetId,
                 targetContextId = params.targetContext,
                 position = params.position,
                 blockIds = params.blockIds
             )
-        ).let {
-            Either.Right(it)
-        }
-    } catch (t: Throwable) {
-        Either.Left(t)
+        )
     }
 
     /**
@@ -42,10 +36,10 @@ class Move(
      * @see Position for details
      */
     data class Params(
-        val context: String,
-        val targetId: String,
-        val targetContext: String,
-        val blockIds: List<String>,
+        val context: Id,
+        val targetId: Id,
+        val targetContext: Id,
+        val blockIds: List<Id>,
         val position: Position
     )
 }

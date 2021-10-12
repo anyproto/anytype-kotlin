@@ -141,7 +141,9 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        source = MockDataFactory.randomUuid()
+                        sources = listOf(
+                            MockDataFactory.randomUuid()
+                        )
                     )
                 )
             ),
@@ -214,7 +216,9 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        source = MockDataFactory.randomUuid()
+                        sources = listOf(
+                            MockDataFactory.randomUuid()
+                        )
                     )
                 )
             ),
@@ -307,7 +311,9 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        source = MockDataFactory.randomUuid()
+                        sources = listOf(
+                            MockDataFactory.randomUuid()
+                        )
                     )
                 )
             ),
@@ -386,7 +392,9 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        source = MockDataFactory.randomUuid()
+                        sources = listOf(
+                            MockDataFactory.randomUuid()
+                        )
                     )
                 )
             ),
@@ -475,7 +483,9 @@ class DisplayRelationStatusValueTest {
                             )
                         ),
                         viewers = listOf(viewer),
-                        source = MockDataFactory.randomUuid()
+                        sources = listOf(
+                            MockDataFactory.randomUuid()
+                        )
                     )
                 )
             ),

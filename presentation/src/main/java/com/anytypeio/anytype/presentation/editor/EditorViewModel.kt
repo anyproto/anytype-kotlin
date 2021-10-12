@@ -162,7 +162,7 @@ class EditorViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private var mode: EditorMode = EditorMode.Edit
+    var mode: EditorMode = EditorMode.Edit
 
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
@@ -3024,6 +3024,8 @@ class EditorViewModel(
             }
         }
 
+
+
         val targetBlock = blocks.first { it.id == target }
 
         val parent = blocks.find { it.children.contains(target) }?.id
@@ -3268,7 +3270,12 @@ class EditorViewModel(
             }
             is ListenerType.Mention -> {
                 when (mode) {
-                    EditorMode.Edit -> onMentionClicked(clicked.target)
+                    EditorMode.Edit -> {
+                        viewModelScope.launch {
+                            orchestrator.stores.focus.update(Editor.Focus.empty())
+                        }
+                        onMentionClicked(clicked.target)
+                    }
                     else -> Unit
                 }
             }
@@ -3717,8 +3724,7 @@ class EditorViewModel(
         const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
-        const val CANNOT_MOVE_PARENT_INTO_CHILD =
-            "Cannot move parent into child. Please, check selected blocks."
+        const val CANNOT_MOVE_PARENT_INTO_CHILD = "Cannot move parent into child."
 
         const val CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR =
             "Opening action menu for title currently not supported"
@@ -5102,6 +5108,39 @@ class EditorViewModel(
                     failure = { Timber.e(it, "Error while searching for mention objects") }
                 )
             }
+        }
+    }
+
+    fun onDragAndDrop(
+        dragged: Id,
+        target: Id,
+        position: Position
+    ) {
+        val descendants = blocks.asMap().descendants(parent = dragged)
+
+        if (descendants.contains(target)) {
+            _toasts.trySend(CANNOT_MOVE_PARENT_INTO_CHILD)
+            return
+        }
+
+        val targetBlock = blocks.find { it.id == target }
+
+        val targetContext = if (targetBlock?.content is Content.Link) {
+            targetBlock.content<Content.Link>().target
+        } else {
+            context
+        }
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.Move(
+                    context = context,
+                    target = target,
+                    targetContext = targetContext,
+                    blocks = listOf(dragged),
+                    position = position
+                )
+            )
         }
     }
     //endregion

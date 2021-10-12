@@ -370,7 +370,7 @@ class MiddlewareTest {
         val context = MockDataFactory.randomUuid()
 
         val command = Command.Move(
-            contextId = context,
+            ctx = context,
             targetContextId = context,
             blockIds = listOf(MockDataFactory.randomUuid()),
             targetId = MockDataFactory.randomUuid(),
@@ -380,8 +380,8 @@ class MiddlewareTest {
         val position = Block.Position.Top
 
         val request = Rpc.BlockList.Move.Request(
-            contextId = command.contextId,
-            targetContextId = command.contextId,
+            contextId = command.ctx,
+            targetContextId = command.ctx,
             position = position,
             blockIds = command.blockIds,
             dropTargetId = command.targetId

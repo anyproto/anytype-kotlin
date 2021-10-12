@@ -47,7 +47,7 @@
 
     </FrameLayout>
 
-    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+    <TextView
         android:id="@+id/pageTitle"
         style="@style/BlockPageContentStyle"
         android:layout_width="0dp"

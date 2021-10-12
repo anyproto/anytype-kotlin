@@ -38,7 +38,7 @@ sealed class ListenerType {
         data class SelectLanguage(val target: String) : Code()
     }
 
-    data class LongClick(val target: String, val dimensions: BlockDimensions) : ListenerType()
+    data class LongClick(val target: String, val dimensions: BlockDimensions = BlockDimensions()) : ListenerType()
 
     data class EditableBlock(val target: String) : ListenerType()
 

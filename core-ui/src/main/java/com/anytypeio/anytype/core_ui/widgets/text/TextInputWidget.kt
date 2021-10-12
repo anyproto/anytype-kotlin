@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.text
 
-import android.R
+import android.R.id.paste
+import android.R.id.copy
 import android.content.Context
 import android.graphics.Canvas
 import android.text.InputType
@@ -9,11 +10,14 @@ import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.view.DragEvent
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
@@ -23,21 +27,27 @@ import timber.log.Timber
 
 class TextInputWidget : AppCompatEditText {
 
-    companion object {
-        const val TEXT_INPUT_WIDGET_ACTION_GO = EditorInfo.IME_ACTION_GO
-        const val TEXT_INPUT_WIDGET_INPUT_TYPE = TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        setup()
+        setupHighlightHelpers(context, attrs)
+        setOnLongClickListener { view -> view != null && !view.hasFocus() }
     }
 
-    override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
-        return if (event != null
-            && event.keyCode == KeyEvent.KEYCODE_BACK
-            && event.action == KeyEvent.ACTION_UP
-            && backButtonWatcher?.invoke() == true
-        ) {
-            true
-        } else {
-            super.onKeyPreIme(keyCode, event)
-        }
+    constructor(
+        context: Context,
+        attrs: AttributeSet,
+        defStyle: Int
+    ) : super(context, attrs, defStyle) {
+        setup()
+        setupHighlightHelpers(context, attrs)
+        setOnLongClickListener { view -> view != null && !view.hasFocus() }
+    }
+
+    val editorTouchProcessor by lazy {
+        EditorTouchProcessor(
+            fallback = { e -> super.onTouchEvent(e) }
+        )
     }
 
     private val watchers: MutableList<TextWatcher> = mutableListOf()
@@ -53,22 +63,7 @@ class TextInputWidget : AppCompatEditText {
      */
     var backButtonWatcher: (() -> Boolean)? = null
 
-    var isSelectionWatcherBlocked = false
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        setup()
-        setupHighlightHelpers(context, attrs)
-    }
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet,
-        defStyle: Int
-    ) : super(context, attrs, defStyle) {
-        setup()
-        setupHighlightHelpers(context, attrs)
-    }
+    private var isSelectionWatcherBlocked = false
 
     private fun setup() {
         enableEditMode()
@@ -82,12 +77,30 @@ class TextInputWidget : AppCompatEditText {
         setTextIsSelectable(true)
     }
 
+    override fun dispatchDragEvent(event: DragEvent?): Boolean {
+        return super.dispatchDragEvent(event)
+    }
+
+    override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
+        return if (event != null
+            && event.keyCode == KeyEvent.KEYCODE_BACK
+            && event.action == KeyEvent.ACTION_UP
+            && backButtonWatcher?.invoke() == true
+        ) {
+            true
+        } else {
+            super.onKeyPreIme(keyCode, event)
+        }
+    }
+
     fun enableReadMode() {
-        inputType = InputType.TYPE_NULL
-        setRawInputType(InputType.TYPE_NULL)
-        maxLines = Integer.MAX_VALUE
-        setHorizontallyScrolling(false)
-        setTextIsSelectable(false)
+        pauseTextWatchers {
+            inputType = InputType.TYPE_NULL
+            setRawInputType(InputType.TYPE_NULL)
+            maxLines = Integer.MAX_VALUE
+            setHorizontallyScrolling(false)
+            setTextIsSelectable(false)
+        }
     }
 
     private fun setupHighlightHelpers(context: Context, attrs: AttributeSet) {
@@ -169,7 +182,7 @@ class TextInputWidget : AppCompatEditText {
             Timber.d("New selection: $selStart - $selEnd")
             selectionWatcher?.invoke(selStart..selEnd)
         } else {
-            Timber.d("Ignored selection change: focused: $isFocused, watcherBlocked: $isSelectionWatcherBlocked")
+            //Timber.d("Ignored selection change: focused: $isFocused, watcherBlocked: $isSelectionWatcherBlocked")
         }
         super.onSelectionChanged(selStart, selEnd)
     }
@@ -182,7 +195,7 @@ class TextInputWidget : AppCompatEditText {
         var consumed = false
 
         when (id) {
-            R.id.paste -> {
+            paste -> {
                 if (clipboardInterceptor != null) {
                     clipboardInterceptor?.onClipboardAction(
                         ClipboardInterceptor.Action.Paste(
@@ -192,7 +205,7 @@ class TextInputWidget : AppCompatEditText {
                     consumed = true
                 }
             }
-            R.id.copy -> {
+            copy -> {
                 if (clipboardInterceptor != null) {
                     clipboardInterceptor?.onClipboardAction(
                         ClipboardInterceptor.Action.Copy(
@@ -258,11 +271,22 @@ class TextInputWidget : AppCompatEditText {
         }
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (hasFocus()) return super.onTouchEvent(event)
+        return editorTouchProcessor.process(this, event)
+    }
+
     /**
      *  Makes all links in the TextView object active.
      */
     private fun makeLinksActive() {
         Linkify.addLinks(this, Linkify.ALL)
         movementMethod = CustomBetterLinkMovementMethod
+    }
+
+    companion object {
+        const val TEXT_INPUT_WIDGET_ACTION_GO = EditorInfo.IME_ACTION_GO
+        const val TEXT_INPUT_WIDGET_INPUT_TYPE =
+            TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
     }
 }

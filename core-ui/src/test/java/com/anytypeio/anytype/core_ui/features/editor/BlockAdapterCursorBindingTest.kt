@@ -382,7 +382,16 @@ class BlockAdapterCursorBindingTest {
             onBackPressedCallback = { false },
             onCoverClicked = {},
             onSlashEvent = {},
-            onKeyPressedEvent = {}
+            onKeyPressedEvent = {},
+            onDragAndDropTrigger = { true },
+            onDescriptionChanged = {},
+            onTitleCheckboxClicked = {},
+            onDragListener = EditorDragAndDropListener(
+                onDragEnded = {},
+                onDragExited = {},
+                onDragLocation = { _,_ -> },
+                onDrop = { _,_ -> }
+            )
         )
     }
 }

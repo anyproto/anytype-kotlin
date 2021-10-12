@@ -5,15 +5,27 @@ import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
-import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import kotlinx.android.synthetic.main.item_block_divider_line.view.*
 
-open class Divider(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder {
+open class Divider(view: View) : BlockViewHolder(view),
+    BlockViewHolder.IndentableHolder,
+    BlockViewHolder.DragAndDropHolder,
+    SupportCustomTouchProcessor {
 
     val divider: View get() = itemView.divider
+
+    override val editorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> itemView.onTouchEvent(e) }
+    )
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
 
     fun bind(
         id: String,
@@ -24,12 +36,6 @@ open class Divider(view: View) : BlockViewHolder(view), BlockViewHolder.Indentab
         indentize(item)
         isSelected = isItemSelected
         setOnClickListener { clicked(ListenerType.DividerClick(id)) }
-        setOnLongClickListener(
-            EditorLongClickListener(
-                t = id,
-                click = { onBlockLongClick(itemView, it, clicked) }
-            )
-        )
     }
 
     override fun indentize(item: BlockView.Indentable) {

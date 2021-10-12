@@ -15,6 +15,15 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
  */
 open class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+    interface DragAndDropHolder {
+        fun setIsDragged(isDragged: Boolean) {
+            // TODO
+        }
+        fun setIsTargeted(isTargeted: Boolean) {
+            // TODO
+        }
+    }
+
     interface IndentableHolder {
         fun indentize(item: BlockView.Indentable)
         fun processIndentChange(

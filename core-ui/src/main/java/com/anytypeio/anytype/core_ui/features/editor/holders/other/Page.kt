@@ -6,10 +6,7 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
-import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
+import com.anytypeio.anytype.core_ui.features.editor.*
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -23,7 +20,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.item_block_page.view.*
 import timber.log.Timber
 
-class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder, SupportNesting {
+class Page(view: View) :
+    BlockViewHolder(view),
+    BlockViewHolder.IndentableHolder,
+    BlockViewHolder.DragAndDropHolder,
+    SupportCustomTouchProcessor,
+    SupportNesting {
 
     private val untitled = itemView.resources.getString(R.string.untitled)
     private val iconContainer = itemView.pageIconContainer
@@ -34,6 +36,14 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
     private val guideline = itemView.pageGuideline
     private val progress = itemView.progress
     private val syncing = itemView.syncing
+
+    override val editorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> itemView.onTouchEvent(e) }
+    )
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
 
     fun bind(
         item: BlockView.Page,
@@ -49,19 +59,13 @@ class Page(view: View) : BlockViewHolder(view), BlockViewHolder.IndentableHolder
 
         applyImageOrEmoji(item)
 
-        title.setOnClickListener { clicked(ListenerType.Page(item.id)) }
-        title.setOnLongClickListener(
-            EditorLongClickListener(
-                t = item.id,
-                click = { onBlockLongClick(itemView, it, clicked) }
-            )
-        )
+        itemView.setOnClickListener { clicked(ListenerType.Page(item.id)) }
 
         bindLoading(item.isLoading)
     }
 
     private fun applyText(item: BlockView.Page) {
-        title.enableReadMode()
+        //title.enableReadMode()
         val text = if (item.text.isNullOrEmpty()) untitled else item.text
         title.setText(text, TextView.BufferType.EDITABLE)
     }

@@ -39,6 +39,7 @@ fun ObjectSet.render(
     index: Int = 0,
     ctx: Id,
     builder: UrlBuilder,
+    useFallbackView: Boolean = false
 ): ObjectSetViewState {
 
     val block = blocks.first { it.content is DV }
@@ -84,11 +85,21 @@ fun ObjectSet.render(
             )
         }
         else -> {
-            Viewer.Unsupported(
-                id = viewer.id,
-                title = viewer.name,
-                error = "This view type (${viewer.type.name.lowercase()}) is not supported on Android. Coming soon..."
-            )
+            if (useFallbackView) {
+                Viewer.GridView(
+                    id = viewer.id,
+                    source = dv.sources.firstOrNull().orEmpty(),
+                    name = viewer.name,
+                    columns = columns,
+                    rows = rows
+                )
+            } else {
+                Viewer.Unsupported(
+                    id = viewer.id,
+                    title = viewer.name,
+                    error = "This view type (${viewer.type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
+                )
+            }
         }
     }
 

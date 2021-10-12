@@ -167,6 +167,7 @@ open class ObjectSetFragment :
             subscribe(menuButton.clicks()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
+            subscribe(unsupportedViewError.clicks()) { vm.onUnsupportedViewErrorClicked() }
             subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
                 vm.onViewerFiltersClicked()
             }
@@ -299,6 +300,7 @@ open class ObjectSetFragment :
         dataViewHeader.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer.title
         when (viewer) {
             is Viewer.GridView -> {
+                unsupportedViewError.text = null
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
             }
@@ -306,7 +308,10 @@ open class ObjectSetFragment :
                 // TODO
             }
             is Viewer.Unsupported -> {
-                tvError.text = viewer.error
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                unsupportedViewError.visible()
+                unsupportedViewError.text = viewer.error
             }
         }
     }

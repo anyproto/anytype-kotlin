@@ -934,6 +934,21 @@ class ObjectSetViewModel(
 
     //endregion NAVIGATION
 
+    fun onUnsupportedViewErrorClicked() {
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
+            val state = set.render(
+                index = viewerIndex,
+                ctx = context,
+                builder = urlBuilder,
+                useFallbackView = true
+            )
+            _viewerGrid.value = state.viewer
+            _header.value = state.title
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         titleUpdateChannel.cancel()

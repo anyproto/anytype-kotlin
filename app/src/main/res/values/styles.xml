@@ -263,4 +263,11 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="dataViewUnsupportedViewErrorStyle">
+        <item name="android:padding">32dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/anytype_text_grey</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>

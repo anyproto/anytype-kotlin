@@ -471,11 +471,9 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideCreatePageUseCase(
-        repo: BlockRepository,
-        documentEmojiIconProvider: DocumentEmojiIconProvider
+        repo: BlockRepository
     ): CreatePage = CreatePage(
-        repo = repo,
-        documentEmojiIconProvider = documentEmojiIconProvider
+        repo = repo
     )
 
     @JvmStatic

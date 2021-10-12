@@ -6,7 +6,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 
-fun List<ObjectType>.toView(): List<SlashItem.ObjectType> = map { oType ->
+fun List<ObjectType>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
         url = oType.url,
         name = oType.name,
@@ -126,7 +126,7 @@ object SlashExtensions {
         }
 
     fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectType>): List<SlashItem> =
-        listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toView()
+        listOf(SlashItem.Subheader.ObjectTypeWithBlack) + objectTypes.toSlashItemView()
 
     fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
         listOf(

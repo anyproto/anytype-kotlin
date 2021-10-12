@@ -605,6 +605,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             newPageClick = vm::onAddMentionNewPageClicked
         )
 
+        objectTypesToolbar.setupClicks(
+            onItemClick = vm::onObjectTypesWidgetItemClicked,
+            onSearchClick = vm::onObjectTypesWidgetSearchClicked,
+            onDoneClick = vm::onObjectTypesWidgetDoneClicked
+        )
+
         lifecycleScope.launch {
             slashWidget.clickEvents.collect { item ->
                 vm.onSlashItemClicked(item)
@@ -946,6 +952,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     recycler.addTextFromSelectedStart(text = "/")
                 }
                 is Command.OpenChangeObjectTypeScreen -> {
+                    hideKeyboard()
                     val fr = ObjectTypeChangeFragment.new(
                         ctx = command.ctx,
                         smartBlockType = command.smartBlockType
@@ -1336,6 +1343,16 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 searchToolbar.focus()
             } else {
                 searchToolbar.gone()
+            }
+        }
+
+        state.objectTypesToolbar.apply {
+            if (isVisible) {
+                objectTypesToolbar.visible()
+                objectTypesToolbar.update(data)
+            } else {
+                objectTypesToolbar.gone()
+                objectTypesToolbar.clear()
             }
         }
     }

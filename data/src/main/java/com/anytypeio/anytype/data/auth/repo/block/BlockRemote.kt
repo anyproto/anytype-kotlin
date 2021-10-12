@@ -23,7 +23,7 @@ interface BlockRemote {
     suspend fun updateCheckbox(command: Command.UpdateCheckbox): Payload
     suspend fun move(command: Command.Move): Payload
     suspend fun getConfig(): Config
-    suspend fun createPage(ctx: Id?, emoji: String?): Id
+    suspend fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?): Id
     suspend fun createPage(command: Command.CreateNewDocument): String
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload

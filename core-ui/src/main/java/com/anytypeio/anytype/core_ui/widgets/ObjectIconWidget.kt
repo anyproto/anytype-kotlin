@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -212,6 +213,15 @@ class ObjectIconWidget @JvmOverloads constructor(
             rectangularIconContainer.gone()
             ivImage.setImageDrawable(null)
         }
+    }
+
+    fun setImageDrawable(drawable: Drawable) {
+        ivCheckbox.invisible()
+        initialContainer.invisible()
+        rectangularIconContainer.invisible()
+        ivImage.invisible()
+        emojiContainer.visible()
+        ivEmoji.setImageDrawable(drawable)
     }
 
     fun setCheckbox(isChecked: Boolean?) {

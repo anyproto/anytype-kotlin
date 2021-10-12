@@ -8,6 +8,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 /**
  * Control panels are UI-elements that allow user to interact with blocks on a page.
@@ -27,7 +28,8 @@ data class ControlPanelState(
     val multiSelect: Toolbar.MultiSelect,
     val mentionToolbar: Toolbar.MentionToolbar,
     val slashWidget: Toolbar.SlashWidget,
-    val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar(isVisible = false)
+    val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar(isVisible = false),
+    val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes(isVisible = false)
 ) {
 
     sealed class Toolbar {
@@ -239,6 +241,18 @@ data class ControlPanelState(
                 )
             }
         }
+
+        data class ObjectTypes(
+            override val isVisible: Boolean,
+            val data: List<ObjectTypeView> = emptyList()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): ObjectTypes = ObjectTypes(
+                    isVisible = false,
+                    data = listOf()
+                )
+            }
+        }
     }
 
     /**
@@ -290,7 +304,8 @@ data class ControlPanelState(
             searchToolbar = Toolbar.SearchToolbar(
                 isVisible = false
             ),
-            slashWidget = Toolbar.SlashWidget.reset()
+            slashWidget = Toolbar.SlashWidget.reset(),
+            objectTypesToolbar = Toolbar.ObjectTypes.reset()
         )
     }
 }

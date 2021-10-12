@@ -29,6 +29,7 @@ class Middleware(
     private val nameKey = "name"
     private val typeKey = "type"
     private val layoutKey = "layout"
+    private val isDraftKey = "isDraft"
 
     @Throws(Exception::class)
     fun getConfig(): Config {
@@ -182,12 +183,11 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createPage(ctx: Id?, emoji: String?): Id {
+    fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?): Id {
 
-        val details = if (emoji != null)
-            mapOf(iconEmojiKey to emoji)
-        else
-            emptyMap()
+        val details: MutableMap<String, Any> = mutableMapOf()
+        emoji?.let { details[iconEmojiKey] = it}
+        isDraft?.let { details[isDraftKey] = it }
 
         val request = Rpc.Block.CreatePage.Request(
             contextId = ctx.orEmpty(),

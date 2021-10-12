@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.extension.isInRange
 import com.anytypeio.anytype.presentation.extension.style
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -224,6 +225,11 @@ sealed class ControlPanelMachine {
 
         object OnDocumentMenuClicked : Event()
         object OnDocumentIconClicked : Event()
+
+        sealed class ObjectTypesWidgetEvent : Event() {
+            data class Show(val data: List<ObjectTypeView>) : ObjectTypesWidgetEvent()
+            object Hide : ObjectTypesWidgetEvent()
+        }
     }
 
     /**
@@ -273,6 +279,9 @@ sealed class ControlPanelMachine {
                                             emptyList()
                                         }
                                     }
+                                ),
+                                objectTypesToolbar = state.objectTypesToolbar.copy(
+                                    isVisible = false
                                 )
                             )
                         }
@@ -286,12 +295,18 @@ sealed class ControlPanelMachine {
                                 markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
                                 markupColorToolbar = state.markupColorToolbar.copy(
                                     isVisible = false
+                                ),
+                                objectTypesToolbar = state.objectTypesToolbar.copy(
+                                    isVisible = false
                                 )
                             )
                         } else {
                             state.copy(
                                 markupMainToolbar = state.markupMainToolbar.copy(
                                     style = event.target.style(event.selection)
+                                ),
+                                objectTypesToolbar = state.objectTypesToolbar.copy(
+                                    isVisible = false
                                 )
                             )
                         }
@@ -421,7 +436,8 @@ sealed class ControlPanelMachine {
                         navigationToolbar = state.navigationToolbar.copy(
                             isVisible = false
                         ),
-                        slashWidget = Toolbar.SlashWidget.reset()
+                        slashWidget = Toolbar.SlashWidget.reset(),
+                        objectTypesToolbar = Toolbar.ObjectTypes.reset()
                     )
                 } else {
                     state.copy(
@@ -469,7 +485,8 @@ sealed class ControlPanelMachine {
                     ),
                     navigationToolbar = state.navigationToolbar.copy(
                         isVisible = false
-                    )
+                    ),
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset()
                 )
             }
             is Event.OnRefresh.StyleToolbar -> {
@@ -498,7 +515,8 @@ sealed class ControlPanelMachine {
                     count = 0
                 ),
                 stylingToolbar = Toolbar.Styling.reset(),
-                navigationToolbar = Toolbar.Navigation(isVisible = false)
+                navigationToolbar = Toolbar.Navigation(isVisible = false),
+                objectTypesToolbar = Toolbar.ObjectTypes.reset()
             )
             is Event.SearchToolbar.OnExitSearchMode -> state.copy(
                 searchToolbar = state.searchToolbar.copy(isVisible = false),
@@ -540,19 +558,38 @@ sealed class ControlPanelMachine {
                                 isVisible = false
                             ),
                             mentionToolbar = Toolbar.MentionToolbar.reset(),
-                            slashWidget = Toolbar.SlashWidget.reset()
+                            slashWidget = Toolbar.SlashWidget.reset(),
+                            objectTypesToolbar = Toolbar.ObjectTypes.reset()
                         )
                     }
                 }
             }
             Event.OnDocumentMenuClicked -> {
                 state.copy(
-                    slashWidget = Toolbar.SlashWidget.reset()
+                    slashWidget = Toolbar.SlashWidget.reset(),
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset()
                 )
             }
             Event.OnDocumentIconClicked -> {
                 state.copy(
-                    slashWidget = Toolbar.SlashWidget.reset()
+                    slashWidget = Toolbar.SlashWidget.reset(),
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset()
+                )
+            }
+            is Event.ObjectTypesWidgetEvent.Show -> {
+                state.copy(
+                    objectTypesToolbar = state.objectTypesToolbar.copy(
+                        isVisible = true,
+                        data = event.data
+                    )
+                )
+            }
+            Event.ObjectTypesWidgetEvent.Hide -> {
+                state.copy(
+                    objectTypesToolbar = state.objectTypesToolbar.copy(
+                        isVisible = false,
+                        data = listOf()
+                    )
                 )
             }
         }

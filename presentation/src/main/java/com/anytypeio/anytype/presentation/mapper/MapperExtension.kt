@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -694,4 +695,14 @@ fun Relation.Format.toView() = when (this) {
     Relation.Format.OBJECT -> ColumnView.Format.OBJECT
     Relation.Format.TAG -> ColumnView.Format.TAG
     Relation.Format.RELATIONS -> ColumnView.Format.RELATIONS
+}
+
+fun List<ObjectType>.toObjectTypeView(): List<ObjectTypeView.Item> = map { oType ->
+    ObjectTypeView.Item(
+        id = oType.url,
+        name = oType.name,
+        emoji = oType.emoji,
+        description = oType.description,
+        layout = oType.layout
+    )
 }

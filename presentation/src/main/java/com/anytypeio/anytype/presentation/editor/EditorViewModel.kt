@@ -90,9 +90,11 @@ import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
+import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toDefaultObjectView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -177,9 +179,6 @@ class EditorViewModel(
 
     private val markupActionPipeline = Proxy.Subject<MarkupAction>()
 
-    private val titleChannel = Channel<String>()
-    private val titleChanges = titleChannel.consumeAsFlow()
-
     /**
      * Currently opened document id.
      */
@@ -212,7 +211,6 @@ class EditorViewModel(
     init {
         startHandlingTextChanges()
         startProcessingFocusChanges()
-        startProcessingTitleChanges()
         startProcessingControlPanelViewState()
         startProcessingInternalDetailModifications()
         startObservingPayload()
@@ -253,24 +251,6 @@ class EditorViewModel(
         }
     }
 
-    private fun startProcessingTitleChanges() {
-        titleChanges
-            .debounce(TEXT_CHANGES_DEBOUNCE_DURATION)
-            .onEach { update -> proceedWithUpdatingDocumentTitle(update) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun proceedWithUpdatingDocumentTitle(update: String) {
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Document.UpdateTitle(
-                    context = context,
-                    title = update
-                )
-            )
-        }
-    }
-
     private fun startObservingPayload() {
         viewModelScope.launch {
             orchestrator
@@ -305,6 +285,8 @@ class EditorViewModel(
                 orchestrator.stores.relations.update(event.relations)
                 orchestrator.stores.objectTypes.update(event.objectTypes)
                 orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
+                orchestrator.stores.objectIsDraft.set(event.details, context)
+                showObjectTypesWidget()
             }
             if (event is Event.Command.Details) {
                 orchestrator.stores.details.apply { update(current().process(event)) }
@@ -800,6 +782,7 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        viewModelScope.launch { checkObjectIsDraft() }
     }
 
     fun onDescriptionBlockTextChanged(view: BlockView.Description) {
@@ -3453,16 +3436,10 @@ class EditorViewModel(
                     Timber.d("No interaction allowed with this object type")
                     return
                 }
-                val block = blocks.firstOrNull { it.id == context }
-                val smartBlockType = if (block?.content is Content.Smart) {
-                    block.content<Content.Smart>().type
-                } else {
-                    SmartBlockType.PAGE
-                }
                 dispatch(
                     Command.OpenChangeObjectTypeScreen(
                         ctx = context,
-                        smartBlockType = smartBlockType
+                        smartBlockType = getObjectSmartBlockType()
                     )
                 )
                 viewModelScope.sendEvent(
@@ -3497,7 +3474,7 @@ class EditorViewModel(
         val startTime = System.currentTimeMillis()
         createPage(
             scope = viewModelScope,
-            params = CreatePage.Params(null)
+            params = CreatePage.Params(ctx = null, isDraft = true)
         ) { result ->
             result.either(
                 fnL = { Timber.e(it, "Error while creating a new page on home dashboard") },
@@ -3777,7 +3754,6 @@ class EditorViewModel(
         renderizePipeline.cancel()
 
         controlPanelInteractor.channel.cancel()
-        titleChannel.cancel()
 
         Timber.d("onCleared, ")
     }
@@ -3852,7 +3828,7 @@ class EditorViewModel(
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
-                            objectTypes = objectTypes.toView(),
+                            objectTypes = objectTypes.toSlashItemView(),
                             relations = relations,
                             viewType = slashViewType
                         )
@@ -5126,6 +5102,82 @@ class EditorViewModel(
                     failure = { Timber.e(it, "Error while searching for mention objects") }
                 )
             }
+        }
+    }
+    //endregion
+
+    //region OBJECT TYPES WIDGET
+    fun onObjectTypesWidgetItemClicked(id: Id) {
+        Timber.d("onObjectTypesWidgetItemClicked, id:[$id]")
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide
+        )
+        onObjectTypeChanged(id)
+    }
+
+    fun onObjectTypesWidgetSearchClicked() {
+        Timber.d("onObjectTypesWidgetSearchClicked, ")
+        dispatch(
+            Command.OpenChangeObjectTypeScreen(
+                ctx = context,
+                smartBlockType = getObjectSmartBlockType()
+            )
+        )
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
+        )
+    }
+
+    fun onObjectTypesWidgetDoneClicked() {
+        Timber.d("onObjectTypesWidgetDoneClicked, ")
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide
+        )
+    }
+
+    private fun showObjectTypesWidget() {
+        val restrictions = orchestrator.stores.objectRestrictions.current()
+        if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
+            _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+            Timber.d("No interaction allowed with this object type")
+            return
+        }
+        val isDraft = orchestrator.stores.objectIsDraft.current()
+        if (isDraft) {
+            val smartBlockType = getObjectSmartBlockType()
+            viewModelScope.launch {
+                getCompatibleObjectTypes.invoke(
+                    GetCompatibleObjectTypes.Params(smartBlockType)
+                ).proceed(
+                    failure = { Timber.e(it, "Error while getting object types") },
+                    success = { objectTypes ->
+                        val views = listOf(ObjectTypeView.Search()) + objectTypes.toObjectTypeView()
+                        controlPanelInteractor.onEvent(
+                            ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(views)
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    private suspend fun checkObjectIsDraft() {
+        val isDraft = orchestrator.stores.objectIsDraft.current()
+        if (isDraft) {
+            orchestrator.stores.objectIsDraft.set(state = false)
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide
+            )
+        }
+    }
+
+    private fun getObjectSmartBlockType(): SmartBlockType {
+        val block = blocks.firstOrNull { it.id == context }
+        return if (block?.content is Content.Smart) {
+            block.content<Content.Smart>().type
+        } else {
+            SmartBlockType.PAGE
         }
     }
     //endregion

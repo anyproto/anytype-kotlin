@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -35,26 +36,17 @@ class ObjectTypeChangeViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },
-                success = { objectTypes ->
-                    views.emit(toObjectTypeViews(objectTypes = objectTypes))
-                }
+                success = { setViews(it) }
             )
         }
+    }
+
+    private fun setViews(objectTypes: List<ObjectType>) {
+        views.value = objectTypes.toObjectTypeView()
     }
 
     fun onQueryChanged(input: String) {
         userInput.value = input
-    }
-
-    private fun toObjectTypeViews(objectTypes: List<ObjectType>): List<ObjectTypeView.Item> {
-        return objectTypes.map { objectType ->
-            ObjectTypeView.Item(
-                id = objectType.url,
-                name = objectType.name,
-                emoji = objectType.emoji,
-                description = objectType.description
-            )
-        }
     }
 
     companion object {

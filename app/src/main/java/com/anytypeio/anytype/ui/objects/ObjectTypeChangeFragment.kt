@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.SmartBlockType
-import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeBaseAdapter
+import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -33,14 +33,15 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     lateinit var factory: ObjectTypeChangeViewModelFactory
 
     private val objectTypeAdapter by lazy {
-        ObjectTypeBaseAdapter(
+        ObjectTypeVerticalAdapter(
             onItemClick = { id ->
                 withParent<OnFragmentInteractionListener> {
                     onObjectTypePicked(id)
                 }
                 view?.rootView?.hideKeyboard()
                 dismiss()
-            }
+            },
+            data = arrayListOf()
         )
     }
 
@@ -59,7 +60,7 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     }
 
     private fun observeViews(views: List<ObjectTypeView.Item>) {
-        objectTypeAdapter.submitList(views)
+        objectTypeAdapter.update(views)
     }
 
     override fun onStart() {

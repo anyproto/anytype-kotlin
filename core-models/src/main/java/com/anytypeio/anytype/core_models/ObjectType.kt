@@ -57,6 +57,7 @@ data class ObjectType(
         const val VIDEO_URL = "_otvideo"
         const val AUDIO_URL = "_otaudio"
         const val SET_URL = "_otset"
+        const val DATE_URL = "_otdate"
         const val PROFILE_URL = "_otprofile" //contains User Profile page and Anytype Person page
     }
 }

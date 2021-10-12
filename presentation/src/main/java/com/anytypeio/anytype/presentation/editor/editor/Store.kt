@@ -76,6 +76,14 @@ interface Store<T> {
     class Relations : State<List<Relation>>(emptyList())
     class ObjectTypes : State<List<ObjectType>>(emptyList())
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
-
+    class ObjectIsDraft : State<Boolean>(false) {
+        suspend fun set(state: Boolean) {
+            super.update(state)
+        }
+        suspend fun set(details: Block.Details, ctx: Id) {
+            val isDraft = details.details[ctx]?.isDraft ?: false
+            super.update(isDraft)
+        }
+    }
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }

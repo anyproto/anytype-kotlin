@@ -172,7 +172,7 @@ class HomeDashboardViewModel(
 
     fun onAddNewDocumentClicked() {
         val startTime = System.currentTimeMillis()
-        createPage.invoke(viewModelScope, CreatePage.Params(ctx = null)) { result ->
+        createPage.invoke(viewModelScope, CreatePage.Params(ctx = null, isDraft = true)) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },
                 fnR = { id ->

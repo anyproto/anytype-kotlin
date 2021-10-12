@@ -33,6 +33,7 @@ interface Editor {
         val objectTypes: Store.ObjectTypes = Store.ObjectTypes()
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
+        val objectIsDraft: Store.ObjectIsDraft = Store.ObjectIsDraft()
     }
 
     class Proxer(

@@ -2407,7 +2407,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should proceed with creating a new page on on-plus-button-clicked event`() {
+    fun `should proceed with creating a new page with is draft true on on-plus-button-clicked event`() {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
@@ -2444,7 +2444,7 @@ open class EditorViewModelTest {
 
         verify(createPage, times(1)).invoke(
             scope = any(),
-            params = eq(CreatePage.Params(null)),
+            params = eq(CreatePage.Params(null, true)),
             onResult = any()
         )
     }

@@ -46,6 +46,7 @@ data class Block(
             }
         val layout: Double? by default
         val id: Id? by default
+        val isDraft: Boolean? by default
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())

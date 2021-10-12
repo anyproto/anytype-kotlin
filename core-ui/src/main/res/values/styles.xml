@@ -485,6 +485,12 @@
         <item name="fontFamily">@font/inter_regular</item>
     </style>
 
+    <style name="DefaultTextButtonStyle">
+        <item name="android:textColor">@color/grey_50</item>
+        <item name="android:textSize">17sp</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
     <style name="ViewerFilterTitleStyle">
         <item name="android:textColor">#2C2B27</item>
         <item name="android:textSize">15sp</item>
@@ -795,6 +801,16 @@
         <item name="android:gravity">center</item>
         <item name="android:stateListAnimator">@animator/scale_shrink</item>
         <item name="android:background">@drawable/rectangle_stroke_button</item>
+    </style>
+
+    <style name="ObjectTypeNameStyle">
+        <item name="android:textColor">@color/default_grey</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="ObjectTypeNameSmallStyle" parent="ObjectTypeNameStyle">
+        <item name="android:textSize">11sp</item>
     </style>
 
 </resources>

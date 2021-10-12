@@ -178,7 +178,7 @@ open class EditorTestSetup {
         MockitoAnnotations.openMocks(this)
 
         splitBlock = SplitBlock(repo)
-        createPage = CreatePage(repo, documentEmojiIconProvider)
+        createPage = CreatePage(repo)
         setObjectIsArchived = SetObjectIsArchived(repo)
         createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)

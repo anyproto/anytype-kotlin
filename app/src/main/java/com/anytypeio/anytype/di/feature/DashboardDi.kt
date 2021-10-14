@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -87,9 +88,11 @@ object HomeDashboardModule {
     @Provides
     @PerScreen
     fun provideOpenDashboardUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        auth: AuthRepository
     ): OpenDashboard = OpenDashboard(
-        repo = repo
+        repo = repo,
+        auth = auth
     )
 
     @JvmStatic

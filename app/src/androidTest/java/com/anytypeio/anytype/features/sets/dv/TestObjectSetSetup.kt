@@ -6,6 +6,7 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -46,6 +47,10 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var repo: BlockRepository
+
+    @Mock
+    lateinit var auth: AuthRepository
+
     @Mock
     lateinit var gateway: Gateway
     @Mock
@@ -88,7 +93,7 @@ abstract class TestObjectSetSetup {
 
         addDataViewRelation = AddNewRelationToDataView(repo)
         updateText = UpdateText(repo)
-        openObjectSet = OpenObjectSet(repo)
+        openObjectSet = OpenObjectSet(repo, auth)
         createDataViewRecord = CreateDataViewRecord(repo)
         updateDataViewRecord = UpdateDataViewRecord(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)

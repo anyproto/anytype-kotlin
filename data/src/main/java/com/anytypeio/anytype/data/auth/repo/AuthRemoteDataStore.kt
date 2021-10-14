@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 
@@ -71,4 +73,16 @@ class AuthRemoteDataStore(
     }
 
     override suspend fun getVersion(): String = authRemote.getVersion()
+
+    override suspend fun saveLastOpenedObject(id: Id) {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun getLastOpenedObject(): Id? {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun clearLastOpenedObject() {
+        throw UnsupportedOperationException()
+    }
 }

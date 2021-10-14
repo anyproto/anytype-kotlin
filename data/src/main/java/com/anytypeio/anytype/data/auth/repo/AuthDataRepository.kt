@@ -7,6 +7,8 @@ import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import kotlinx.coroutines.flow.map
 
 class AuthDataRepository(
@@ -77,4 +79,8 @@ class AuthDataRepository(
     }
 
     override suspend fun getVersion(): String = factory.remote.getVersion()
+
+    override suspend fun saveLastOpenedObjectId(id: Id) { factory.cache.saveLastOpenedObject(id) }
+    override suspend fun getLastOpenedObjectId(): Id? = factory.cache.getLastOpenedObject()
+    override suspend fun clearLastOpenedObject() { factory.cache.clearLastOpenedObject() }
 }

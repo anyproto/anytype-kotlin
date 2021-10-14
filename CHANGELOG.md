@@ -1,5 +1,20 @@
 # Change log for Android @Anytype app.
 
+## Version 0.3.3 (WIP)
+
+### New features & enhancements 🚀
+
+* App: Restoring the last opened object or the last opened set on application start (#1851)
+* App: Drafts without any history will be deleted after close (#1833)
+* Editor | Drag & drop (position above, below or inside) (#1848)
+* Sets | Grid as fallback view: views not supported on Android can be seen as grid (#1850)
+
+### Design & UX 🔳
+
+### Fixes & tech 🚒
+
+
+
 ## Version 0.3.2
 
 ### New features & enhancements 🚀

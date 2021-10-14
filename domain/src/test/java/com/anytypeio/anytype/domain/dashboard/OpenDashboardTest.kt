@@ -4,6 +4,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,12 +24,15 @@ class OpenDashboardTest {
     @Mock
     lateinit var repo: BlockRepository
 
+    @Mock
+    lateinit var auth: AuthRepository
+
     private lateinit var usecase: OpenDashboard
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        usecase = OpenDashboard(repo = repo)
+        usecase = OpenDashboard(repo = repo, auth = auth)
     }
 
     @Test

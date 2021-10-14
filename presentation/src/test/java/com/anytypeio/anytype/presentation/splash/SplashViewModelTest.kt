@@ -6,9 +6,11 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -47,9 +49,13 @@ class SplashViewModelTest {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var auth: AuthRepository
+
+    @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
-    lateinit var storeObjectTypes: StoreObjectTypes
+    private lateinit var storeObjectTypes: StoreObjectTypes
+    private lateinit var getLastOpenedObject: GetLastOpenedObject
 
     lateinit var vm: SplashViewModel
 
@@ -61,12 +67,17 @@ class SplashViewModelTest {
             repo = repo,
             objectTypesProvider = objectTypesProvider
         )
+        getLastOpenedObject = GetLastOpenedObject(
+            authRepo = auth,
+            blockRepo = repo
+        )
         vm = SplashViewModel(
             checkAuthorizationStatus = checkAuthorizationStatus,
             launchAccount = launchAccount,
             launchWallet = launchWallet,
             analytics = analytics,
-            storeObjectTypes = storeObjectTypes
+            storeObjectTypes = storeObjectTypes,
+            getLastOpenedObject = getLastOpenedObject
         )
     }
 
@@ -79,6 +90,7 @@ class SplashViewModelTest {
         stubCheckAuthStatus(response)
         stubLaunchWallet()
         stubLaunchAccount()
+        stubGetLastOpenedObject()
 
         runBlocking {
             verify(checkAuthorizationStatus, times(0)).invoke(any(), any(), any())
@@ -96,6 +108,7 @@ class SplashViewModelTest {
         stubCheckAuthStatus(response)
         stubLaunchWallet()
         stubLaunchAccount()
+        stubGetLastOpenedObject()
 
         vm.onResume()
 
@@ -114,6 +127,7 @@ class SplashViewModelTest {
         stubCheckAuthStatus(response)
         stubLaunchWallet()
         stubLaunchAccount()
+        stubGetLastOpenedObject()
 
         vm.onResume()
 
@@ -132,6 +146,7 @@ class SplashViewModelTest {
         stubCheckAuthStatus(response)
         stubLaunchWallet()
         stubLaunchAccount()
+        stubGetLastOpenedObject()
 
         vm.onResume()
 
@@ -172,6 +187,7 @@ class SplashViewModelTest {
         val response = Either.Right(status)
 
         stubCheckAuthStatus(response)
+        stubGetLastOpenedObject()
 
         vm.onResume()
 
@@ -227,6 +243,14 @@ class SplashViewModelTest {
     private fun stubLaunchAccount() {
         launchAccount.stub {
             onBlocking { invoke(any()) } doReturn Either.Right("accountId")
+        }
+    }
+
+    private fun stubGetLastOpenedObject() {
+        auth.stub {
+            onBlocking {
+                getLastOpenedObjectId()
+            } doReturn null
         }
     }
 }

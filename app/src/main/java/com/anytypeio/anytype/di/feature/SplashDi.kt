@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
+import com.squareup.wire.get
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -47,13 +49,15 @@ object SplashModule {
         launchAccount: LaunchAccount,
         launchWallet: LaunchWallet,
         analytics: Analytics,
-        storeObjectTypes: StoreObjectTypes
+        storeObjectTypes: StoreObjectTypes,
+        getLastOpenedObject: GetLastOpenedObject
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
         launchAccount = launchAccount,
         launchWallet = launchWallet,
         analytics = analytics,
-        storeObjectTypes = storeObjectTypes
+        storeObjectTypes = storeObjectTypes,
+        getLastOpenedObject = getLastOpenedObject
     )
 
     @JvmStatic
@@ -97,4 +101,15 @@ object SplashModule {
         repo: BlockRepository,
         objectTypesProvider: ObjectTypesProvider
     ) : StoreObjectTypes = StoreObjectTypes(repo, objectTypesProvider)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getLastOpenedObject(
+        repo: BlockRepository,
+        auth: AuthRepository
+    ) : GetLastOpenedObject = GetLastOpenedObject(
+        authRepo = auth,
+        blockRepo = repo
+    )
 }

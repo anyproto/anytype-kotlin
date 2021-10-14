@@ -12,6 +12,7 @@ import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForOb
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -297,9 +298,11 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideOpenPageUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        auth: AuthRepository
     ): OpenPage = OpenPage(
-        repo = repo
+        repo = repo,
+        auth = auth
     )
 
     @JvmStatic

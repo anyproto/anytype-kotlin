@@ -11,15 +11,18 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -33,7 +36,8 @@ class SplashViewModel(
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount,
-    private val storeObjectTypes: StoreObjectTypes
+    private val storeObjectTypes: StoreObjectTypes,
+    private val getLastOpenedObject: GetLastOpenedObject
 ) : ViewModel() {
 
     val state = MutableLiveData<ViewState<Nothing>>()
@@ -106,9 +110,41 @@ class SplashViewModel(
             storeObjectTypes.invoke(Unit).process(
                 failure = {
                     Timber.e(it, "Error while store account object types")
-                    navigateToDashboard()
+                    handleNavigation()
                 },
-                success = { navigateToDashboard() }
+                success = { handleNavigation() }
+            )
+        }
+    }
+
+    private fun handleNavigation() {
+        viewModelScope.launch {
+            getLastOpenedObject(BaseUseCase.None).process(
+                failure = { navigateToDashboard() },
+                success = { response ->
+                    when(response) {
+                        is GetLastOpenedObject.Response.Success -> {
+                            if (SupportedLayouts.layouts.contains(response.obj.layout)) {
+                                if (response.obj.layout == ObjectType.Layout.SET) {
+                                    navigation.postValue(
+                                        EventWrapper(
+                                            AppNavigation.Command.LaunchObjectSetFromSplash(response.obj.id)
+                                        )
+                                    )
+                                } else {
+                                    navigation.postValue(
+                                        EventWrapper(
+                                            AppNavigation.Command.LaunchObjectFromSplash(response.obj.id)
+                                        )
+                                    )
+                                }
+                            } else {
+                                navigateToDashboard()
+                            }
+                        }
+                        else -> navigateToDashboard()
+                    }
+                }
             )
         }
     }

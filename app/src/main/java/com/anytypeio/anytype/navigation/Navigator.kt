@@ -105,6 +105,20 @@ class Navigator : AppNavigation {
         )
     }
 
+    override fun launchObjectFromSplash(id: Id) {
+        navController?.navigate(
+            R.id.action_splashScreen_to_objectScreen,
+            bundleOf(EditorFragment.ID_KEY to id),
+        )
+    }
+
+    override fun launchObjectSetFromSplash(id: Id) {
+        navController?.navigate(
+            R.id.action_splashScreen_to_objectSetScreen,
+            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
+        )
+    }
+
     override fun openKeychainScreen() {
         navController?.navigate(R.id.action_open_keychain)
     }
@@ -149,11 +163,17 @@ class Navigator : AppNavigation {
     }
 
     override fun exit() {
-        navController?.popBackStack()
+        val popped = navController?.popBackStack()
+        if (popped == false) {
+            navController?.navigate(R.id.desktopScreen)
+        }
     }
 
     override fun exitToDesktop() {
-        navController?.popBackStack(R.id.desktopScreen, false)
+        val popped = navController?.popBackStack(R.id.desktopScreen, false)
+        if (popped == false) {
+            navController?.navigate(R.id.desktopScreen)
+        }
     }
 
     override fun openDebugSettings() {

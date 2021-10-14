@@ -42,6 +42,8 @@ abstract class NavigationFragment(
             is Command.OpenObjectSet -> navigation.openObjectSet(command.target)
             is Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
             is Command.LaunchDocument -> navigation.launchDocument(command.id)
+            is Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(command.target)
+            is Command.LaunchObjectSetFromSplash -> navigation.launchObjectSetFromSplash(command.target)
             is Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()
             is Command.OpenEditDatabase -> navigation.openEditDatabase()
             is Command.OpenKeychainScreen -> navigation.openKeychainScreen()

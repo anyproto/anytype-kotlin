@@ -3,6 +3,8 @@ package com.anytypeio.anytype.domain.auth.repo
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -49,4 +51,8 @@ interface AuthRepository {
     suspend fun setCurrentAccount(id: String)
 
     suspend fun getVersion(): String
+
+    suspend fun saveLastOpenedObjectId(id: Id)
+    suspend fun getLastOpenedObjectId() : Id?
+    suspend fun clearLastOpenedObject()
 }

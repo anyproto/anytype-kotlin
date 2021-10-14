@@ -13,6 +13,7 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.*
@@ -118,7 +119,10 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideOpenObjectSetUseCase(repo: BlockRepository): OpenObjectSet = OpenObjectSet(repo)
+    fun provideOpenObjectSetUseCase(
+        repo: BlockRepository,
+        auth: AuthRepository
+    ): OpenObjectSet = OpenObjectSet(repo = repo, auth = auth)
 
     @JvmStatic
     @Provides

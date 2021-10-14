@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -33,4 +35,8 @@ interface AuthDataStore {
     suspend fun setCurrentAccount(id: String)
 
     suspend fun getVersion(): String
+
+    suspend fun saveLastOpenedObject(id: Id)
+    suspend fun getLastOpenedObject() : Id?
+    suspend fun clearLastOpenedObject()
 }

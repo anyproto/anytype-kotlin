@@ -4,6 +4,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 
 /**
  * Use-case for opening a dashboard by sending a special request.
@@ -11,7 +12,8 @@ import com.anytypeio.anytype.core_models.Payload
  * @property repo
  */
 class OpenDashboard(
-    private val repo: BlockRepository
+    private val repo: BlockRepository,
+    private val auth: AuthRepository,
 ) : BaseUseCase<Payload, OpenDashboard.Param?>() {
 
     override suspend fun run(params: Param?) = try {
@@ -20,7 +22,9 @@ class OpenDashboard(
                 contextId = params.contextId,
                 id = params.id
             ).let {
-                Either.Right(it)
+                Either.Right(it).also {
+                    auth.clearLastOpenedObject()
+                }
             }
         else {
             repo.getConfig().let { config ->
@@ -28,7 +32,9 @@ class OpenDashboard(
                     contextId = config.home,
                     id = config.home
                 ).let {
-                    Either.Right(it)
+                    Either.Right(it).also {
+                        auth.clearLastOpenedObject()
+                    }
                 }
             }
         }

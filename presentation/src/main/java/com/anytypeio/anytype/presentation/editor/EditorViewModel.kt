@@ -134,7 +134,7 @@ class EditorViewModel(
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
     private val objectTypesProvider: ObjectTypesProvider,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,

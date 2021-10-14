@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
@@ -18,7 +19,8 @@ class SplashViewModelFactory(
     private val launchAccount: LaunchAccount,
     private val launchWallet: LaunchWallet,
     private val analytics: Analytics,
-    private val storeObjectTypes: StoreObjectTypes
+    private val storeObjectTypes: StoreObjectTypes,
+    private val getLastOpenedObject: GetLastOpenedObject
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -28,6 +30,7 @@ class SplashViewModelFactory(
             launchAccount = launchAccount,
             launchWallet = launchWallet,
             analytics = analytics,
-            storeObjectTypes = storeObjectTypes
+            storeObjectTypes = storeObjectTypes,
+            getLastOpenedObject = getLastOpenedObject
         ) as T
 }

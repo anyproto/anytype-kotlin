@@ -74,6 +74,7 @@ class DefaultAuthCache(
         encryptedPrefs
             .edit()
             .remove(MNEMONIC_KEY)
+            .remove(LAST_OPENED_OBJECT_KEY)
             .remove(CURRENT_ACCOUNT_ID_KEY)
             .apply()
     }
@@ -88,8 +89,21 @@ class DefaultAuthCache(
         encryptedPrefs.edit().putString(CURRENT_ACCOUNT_ID_KEY, id).apply()
     }
 
+    override suspend fun saveLastOpenedObject(id: String) {
+        encryptedPrefs.edit().putString(LAST_OPENED_OBJECT_KEY, id).apply()
+    }
+
+    override suspend fun getLastOpenedObject(): String? {
+        return encryptedPrefs.getString(LAST_OPENED_OBJECT_KEY, null)
+    }
+
+    override suspend fun clearLastOpenedObject() {
+        encryptedPrefs.edit().remove(LAST_OPENED_OBJECT_KEY).apply()
+    }
+
     companion object {
         const val MNEMONIC_KEY = "mnemonic"
+        const val LAST_OPENED_OBJECT_KEY = "last_opened_object"
         const val CURRENT_ACCOUNT_ID_KEY = "current_account"
     }
 }

@@ -5,7 +5,10 @@ import android.text.Editable
 import android.text.InputType.*
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.view.DragEvent
+import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatEditText
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.library_syntax_highlighter.*
 import timber.log.Timber
@@ -21,10 +24,17 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     var selectionWatcher: ((IntRange) -> Unit)? = null
 
+    val editorTouchProcessor by lazy {
+        EditorTouchProcessor(
+            fallback = { e -> super.onTouchEvent(e) }
+        )
+    }
+
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         setup()
         setupSyntaxHighlighter()
+        setOnLongClickListener { view -> view != null && !view.hasFocus() }
     }
 
     constructor(
@@ -34,6 +44,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     ) : super(context, attrs, defStyle) {
         setup()
         setupSyntaxHighlighter()
+        setOnLongClickListener { view -> view != null && !view.hasFocus() }
     }
 
     private fun setup() {
@@ -117,5 +128,12 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
             }
             highlight()
         }
+    }
+
+    override fun onDragEvent(event: DragEvent?): Boolean = true
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (hasFocus()) return super.onTouchEvent(event)
+        return editorTouchProcessor.process(this, event)
     }
 }

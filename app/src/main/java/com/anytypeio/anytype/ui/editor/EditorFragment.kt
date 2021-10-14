@@ -54,6 +54,9 @@ import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_ui.features.editor.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
+import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
@@ -1986,10 +1989,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     item
                 )
 
-                val shadow = if (vh is Text) {
-                    TextInputDragShadow(vh.content.id, vh.itemView)
-                } else {
-                    DefaultEditorDragShadow(vh.itemView)
+                val shadow = when (vh) {
+                    is Text -> TextInputDragShadow(vh.content.id, vh.itemView)
+                    is Code -> TextInputDragShadow(vh.content.id, vh.itemView)
+                    else -> DefaultEditorDragShadow(vh.itemView)
                 }
 
                 vh.itemView.startDragAndDrop(
@@ -2032,8 +2035,15 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 } else {
                     when (ratio) {
                         in DragAndDropConfig.topHalfRange -> {
-                            if (handleDragAbove(vh, ratio))
-                                return
+                            if (vh is FeaturedRelationListViewHolder) {
+                                dndTargetLine.invisible()
+                            } else if (vh is Title) {
+                                dndTargetLine.invisible()
+                            } else {
+                                dndTargetLine.visible()
+                                if (handleDragAbove(vh, ratio))
+                                    return
+                            }
                         }
                         in DragAndDropConfig.bottomHalfRange -> {
                             if (handleDragBelow(vh, ratio))

@@ -24,12 +24,8 @@ abstract class Media(view: View) : BlockViewHolder(view),
     abstract fun select(isSelected: Boolean)
 
     override val editorTouchProcessor = EditorTouchProcessor(
-        fallback = { e -> itemView.onTouchEvent(e) }
+        fallback = { e -> clickContainer.onTouchEvent(e) }
     )
-
-    init {
-        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-    }
 
     fun bind(
         item: BlockView.Media,
@@ -37,14 +33,8 @@ abstract class Media(view: View) : BlockViewHolder(view),
     ) {
         indentize(item)
         select(item.isSelected)
-        with(itemView) {
+        with(clickContainer) {
             setOnClickListener { onMediaBlockClicked(item, clicked) }
-//            setOnLongClickListener(
-//                EditorLongClickListener(
-//                    t = item.id,
-//                    click = { mediaLongClick(root, it, clicked) }
-//                )
-//            )
         }
     }
 

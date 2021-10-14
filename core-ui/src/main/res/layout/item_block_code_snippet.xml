@@ -49,6 +49,8 @@
                 android:fontFamily="monospace"
                 android:paddingTop="23dp"
                 android:paddingBottom="30dp"
+                android:focusable="true"
+                android:textIsSelectable="true"
                 tools:text="@string/default_text_placeholder" />
         </HorizontalScrollView>
 

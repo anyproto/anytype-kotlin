@@ -22,6 +22,10 @@ class Video(view: View) : Media(view) {
     override val clickContainer: View =
         itemView.playerView.findViewById<FrameLayout>(R.id.exo_controller)
 
+    init {
+        clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
+
     fun bind(item: BlockView.Media.Video, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
         itemView.playerView.visibility = View.VISIBLE

@@ -4,7 +4,6 @@
         <attr name="text_size" format="dimension" />
     </declare-styleable>
     <declare-styleable name="ObjectIconWidget">
-
         <attr name="emojiSize" format="dimension" />
         <attr name="imageSize" format="dimension" />
         <attr name="checkboxSize" format="dimension" />
@@ -13,7 +12,6 @@
         <attr name="hasEmojiRounded8Background" format="boolean" />
         <attr name="hasInitialRounded8Background" format="boolean" />
         <attr name="initialTextSize" format="dimension" />
-
     </declare-styleable>
     <declare-styleable name="ObjectIconTextWidget">
         <attr name="nameTextSize" format="dimension" />
@@ -44,5 +42,8 @@
         <attr name="title" format="string" />
         <attr name="subtitle" format="string" />
         <attr name="icon" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="TextInputWidget">
+        <attr name="ignoreDragAndDrop" format="boolean"/>
     </declare-styleable>
 </resources>

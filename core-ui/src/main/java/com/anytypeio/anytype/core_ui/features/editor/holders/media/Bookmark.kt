@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -37,6 +38,14 @@ class Bookmark(view: View) : Media(view) {
     private val error = itemView.loadBookmarkPictureError
     private val card = itemView.bookmarkRoot
     override val clickContainer: View = card
+
+    override val editorTouchProcessor: EditorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> clickContainer.onTouchEvent(e) }
+    )
+
+    init {
+        clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
 
     private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 

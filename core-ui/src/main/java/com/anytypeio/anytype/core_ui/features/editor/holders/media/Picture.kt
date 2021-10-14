@@ -26,6 +26,10 @@ class Picture(view: View) : Media(view) {
     private val image = itemView.image
     private val error = itemView.error
 
+    init {
+        clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
+
     private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
 
         override fun onLoadFailed(

@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
@@ -32,6 +33,10 @@ class TextInputWidget : AppCompatEditText {
         setup()
         setupHighlightHelpers(context, attrs)
         setOnLongClickListener { view -> view != null && !view.hasFocus() }
+        context.obtainStyledAttributes(attrs, R.styleable.TextInputWidget).apply {
+            ignoreDragAndDrop = getBoolean(R.styleable.TextInputWidget_ignoreDragAndDrop, false)
+            recycle()
+        }
     }
 
     constructor(
@@ -42,7 +47,13 @@ class TextInputWidget : AppCompatEditText {
         setup()
         setupHighlightHelpers(context, attrs)
         setOnLongClickListener { view -> view != null && !view.hasFocus() }
+        context.obtainStyledAttributes(attrs, R.styleable.TextInputWidget).apply {
+            ignoreDragAndDrop = getBoolean(R.styleable.TextInputWidget_ignoreDragAndDrop, false)
+            recycle()
+        }
     }
+
+    private var ignoreDragAndDrop = false
 
     val editorTouchProcessor by lazy {
         EditorTouchProcessor(
@@ -274,6 +285,13 @@ class TextInputWidget : AppCompatEditText {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (hasFocus()) return super.onTouchEvent(event)
         return editorTouchProcessor.process(this, event)
+    }
+
+    override fun onDragEvent(event: DragEvent?): Boolean {
+        return if (ignoreDragAndDrop)
+            true
+        else
+            super.onDragEvent(event)
     }
 
     /**

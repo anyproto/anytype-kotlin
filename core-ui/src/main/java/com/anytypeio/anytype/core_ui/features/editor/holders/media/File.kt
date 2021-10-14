@@ -28,6 +28,10 @@ class File(view: View) : Media(view) {
     private val icon = itemView.fileIcon
     private val name = itemView.filename
 
+    init {
+        clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
+
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
         name.enableReadMode()

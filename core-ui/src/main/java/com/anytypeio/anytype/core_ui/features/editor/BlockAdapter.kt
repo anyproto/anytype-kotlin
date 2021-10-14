@@ -697,12 +697,40 @@ class BlockAdapter(
             }
         } else {
             if (holder !is SupportCustomTouchProcessor) {
-                holder.itemView.setOnLongClickListener {
-                    val pos = holder.bindingAdapterPosition
-                    if (pos != RecyclerView.NO_POSITION) {
-                        onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                when (holder) {
+                    is RelationViewHolder -> {
+                        val processor = EditorTouchProcessor(
+                            fallback = { holder.itemView.onTouchEvent(it) },
+                            onLongClick = {
+                                val pos = holder.bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                                }
+                            },
+                            onDragAndDropTrigger = { onDragAndDropTrigger(holder) }
+                        )
+                        holder.itemView.setOnTouchListener { v, e -> processor.process(v,e) }
                     }
-                    true
+                    is Code -> {
+                        holder.editorTouchProcessor.onLongClick = {
+                            val pos = holder.bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                            }
+                        }
+                        holder.editorTouchProcessor.onDragAndDropTrigger = {
+                            onDragAndDropTrigger(holder)
+                        }
+                    }
+                    else -> {
+                        holder.itemView.setOnLongClickListener {
+                            val pos = holder.bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                            }
+                            true
+                        }
+                    }
                 }
             } else {
                 holder.editorTouchProcessor.onLongClick = {

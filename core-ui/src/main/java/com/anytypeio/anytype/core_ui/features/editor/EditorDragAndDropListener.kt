@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor
 import android.graphics.Canvas
 import android.view.DragEvent
 import android.view.View
+import android.widget.EditText
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import timber.log.Timber
 
@@ -41,7 +42,7 @@ class EditorDragAndDropListener(
 class DefaultEditorDragShadow(view: View) : View.DragShadowBuilder(view)
 class TextInputDragShadow(private val textInputId: Int?, parent: View) : View.DragShadowBuilder(parent) {
 
-    val input: TextInputWidget? get() {
+    val input: EditText? get() {
         return if (textInputId != null)
             view.findViewById(textInputId)
         else

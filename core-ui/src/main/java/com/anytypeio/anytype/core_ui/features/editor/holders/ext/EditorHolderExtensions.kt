@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -21,16 +22,6 @@ fun RelationViewHolder.setup(adapter: BlockAdapter): RelationViewHolder {
             val view = adapter.views[bindingAdapterPosition]
             check(view is BlockView.Relation)
             adapter.onClickListener(ListenerType.Relation.Related(view))
-        }
-        setOnLongClickListener {
-            val view = adapter.views[bindingAdapterPosition]
-            check(view is BlockView.Relation)
-            this@setup.onBlockLongClick(
-                root = this,
-                target = view.id,
-                clicked = adapter.onClickListener
-            )
-            true
         }
     }
     return this

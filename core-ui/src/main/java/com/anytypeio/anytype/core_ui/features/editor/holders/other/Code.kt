@@ -15,6 +15,8 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.ThemeColorCode
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
@@ -39,6 +41,14 @@ class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolde
     val container: LinearLayout
         get() = itemView.snippetContainer
 
+    val editorTouchProcessor = EditorTouchProcessor(
+        fallback = { e -> itemView.onTouchEvent(e) }
+    )
+
+    init {
+        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+    }
+
     fun bind(
         item: BlockView.Code,
         onTextChanged: (String, Editable) -> Unit,
@@ -57,16 +67,6 @@ class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolde
             content.enableEditMode()
 
             select(item)
-
-            content.setOnLongClickListener(
-                EditorLongClickListener(
-                    t = item.id,
-                    click = {
-                        content.enableReadMode()
-                        onBlockLongClick(root, it, clicked)
-                    }
-                )
-            )
 
             content.clearTextWatchers()
 
@@ -97,7 +97,7 @@ class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolde
             content.selectionWatcher = { onSelectionChanged(item.id, it) }
         }
 
-        content.setOnClickListener {
+        itemView.setOnClickListener {
             onTextInputClicked(item.id)
             if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                 content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)

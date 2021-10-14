@@ -31,7 +31,8 @@ data class ObjectType(
         FILE(6),
         DASHBOARD(7),
         IMAGE(8),
-        DATABASE(20),
+        NOTE(9),
+        DATABASE(20)
     }
 
     /**

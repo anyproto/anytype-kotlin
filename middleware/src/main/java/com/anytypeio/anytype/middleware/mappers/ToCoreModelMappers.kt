@@ -422,6 +422,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.dashboard -> ObjectType.Layout.DASHBOARD
     MOTypeLayout.database -> ObjectType.Layout.DATABASE
     MOTypeLayout.image -> ObjectType.Layout.IMAGE
+    MOTypeLayout.note -> ObjectType.Layout.NOTE
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

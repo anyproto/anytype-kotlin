@@ -55,6 +55,7 @@ message Event {
             Block.Dataview.SourceSet blockDataviewSourceSet = 35;
             Block.Dataview.ViewSet blockDataviewViewSet = 19;
             Block.Dataview.ViewDelete blockDataviewViewDelete = 20;
+            Block.Dataview.ViewOrder blockDataviewViewOrder = 29;
             Block.Dataview.RelationDelete blockDataviewRelationDelete = 24;
             Block.Dataview.RelationSet blockDataviewRelationSet = 23;
 
@@ -571,6 +572,12 @@ message Event {
             message ViewDelete {
                 string id = 1; // dataview block's id
                 string viewId = 2; // view id to remove
+            }
+
+
+            message ViewOrder {
+                string id = 1; // dataview block's id
+                repeated string viewIds = 2; // view ids in new order
             }
 
             message SourceSet {

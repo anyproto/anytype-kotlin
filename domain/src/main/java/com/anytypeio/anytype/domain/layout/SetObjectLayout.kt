@@ -13,12 +13,12 @@ class SetObjectLayout(private val repo: BlockRepository): BaseUseCase<Payload, S
         repo.updateDetail(
             ctx = params.ctx,
             key = Relations.LAYOUT,
-            value = params.layout.code.toDouble()
+            value = params.code.toDouble()
         )
     }
 
     data class Params(
         val ctx: Id,
-        val layout: ObjectType.Layout
+        val code: Int
     )
 }

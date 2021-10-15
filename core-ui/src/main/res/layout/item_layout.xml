@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        android:contentDescription="@string/content_desc_layout_icon"
+        tools:src="@drawable/ic_layout_basic" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/ObjectLayoutChooseButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="14dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        tools:text="Task" />
+
+    <ImageView
+        android:id="@+id/ivChecked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        android:src="@drawable/ic_option_checked_black" />
+
+</FrameLayout>

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
 fun Context.drawable(
@@ -257,4 +258,32 @@ fun String?.getMimeIcon(name: String?): Int {
         MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
         MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
     }
+}
+
+fun ObjectLayoutView.getIconSize24(): Int? = when (this) {
+    is ObjectLayoutView.Basic -> R.drawable.ic_layout_basic
+    is ObjectLayoutView.Image -> null
+    is ObjectLayoutView.Note -> null
+    is ObjectLayoutView.Profile -> R.drawable.ic_layout_profile
+    is ObjectLayoutView.Set -> R.drawable.ic_layout_set
+    is ObjectLayoutView.Todo -> R.drawable.ic_layout_todo
+    is ObjectLayoutView.Dashboard -> null
+    is ObjectLayoutView.Database -> null
+    is ObjectLayoutView.File -> null
+    is ObjectLayoutView.ObjectType -> null
+    is ObjectLayoutView.Relation -> null
+}
+
+fun ObjectLayoutView.getName(): Int? = when (this) {
+    is ObjectLayoutView.Basic -> R.string.name_layout_basic
+    is ObjectLayoutView.Image -> null
+    is ObjectLayoutView.Note -> R.string.name_layout_note
+    is ObjectLayoutView.Profile -> R.string.name_layout_profile
+    is ObjectLayoutView.Set -> R.string.name_layout_set
+    is ObjectLayoutView.Todo -> R.string.name_layout_todo
+    is ObjectLayoutView.Dashboard -> null
+    is ObjectLayoutView.Database -> null
+    is ObjectLayoutView.File -> null
+    is ObjectLayoutView.ObjectType -> null
+    is ObjectLayoutView.Relation -> null
 }

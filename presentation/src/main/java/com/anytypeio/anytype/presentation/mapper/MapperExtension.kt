@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
@@ -705,4 +706,20 @@ fun List<ObjectType>.toObjectTypeView(): List<ObjectTypeView.Item> = map { oType
         description = oType.description,
         layout = oType.layout
     )
+}
+
+fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
+    when (layout) {
+        ObjectType.Layout.BASIC -> ObjectLayoutView.Basic(id = layout.code, isSelected = false)
+        ObjectType.Layout.PROFILE -> ObjectLayoutView.Profile(id = layout.code, isSelected = false)
+        ObjectType.Layout.TODO -> ObjectLayoutView.Todo(id = layout.code, isSelected = false)
+        ObjectType.Layout.SET -> ObjectLayoutView.Set(id = layout.code, isSelected = false)
+        ObjectType.Layout.OBJECT_TYPE -> ObjectLayoutView.ObjectType(id = layout.code, isSelected = false)
+        ObjectType.Layout.RELATION -> ObjectLayoutView.Relation(id = layout.code, isSelected = false)
+        ObjectType.Layout.FILE -> ObjectLayoutView.File(id = layout.code, isSelected = false)
+        ObjectType.Layout.DASHBOARD -> ObjectLayoutView.Dashboard(id = layout.code, isSelected = false)
+        ObjectType.Layout.IMAGE -> ObjectLayoutView.Image(id = layout.code, isSelected = false)
+        ObjectType.Layout.NOTE -> ObjectLayoutView.Note(id = layout.code, isSelected = false)
+        ObjectType.Layout.DATABASE -> ObjectLayoutView.Database(id = layout.code, isSelected = false)
+    }
 }

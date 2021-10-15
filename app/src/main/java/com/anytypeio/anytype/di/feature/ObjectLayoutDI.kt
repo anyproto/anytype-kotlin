@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.layout.GetSupportedObjectLayouts
 import com.anytypeio.anytype.domain.layout.SetObjectLayout
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.layout.ObjectLayoutViewModel
@@ -32,11 +33,13 @@ object ObjectLayoutModule {
     fun provideViewModelFactory(
         dispatcher: Dispatcher<Payload>,
         setObjectLayout: SetObjectLayout,
+        getSupportedObjectLayouts: GetSupportedObjectLayouts,
         storage: Editor.Storage
     ): ObjectLayoutViewModel.Factory = ObjectLayoutViewModel.Factory(
         dispatcher = dispatcher,
         setObjectLayout = setObjectLayout,
-        storage = storage
+        storage = storage,
+        getSupportedObjectLayouts = getSupportedObjectLayouts
     )
 
     @JvmStatic
@@ -47,4 +50,10 @@ object ObjectLayoutModule {
     ): SetObjectLayout = SetObjectLayout(
         repo = repo
     )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideGetObjectSupportLayoutsUseCase(): GetSupportedObjectLayouts =
+        GetSupportedObjectLayouts()
 }

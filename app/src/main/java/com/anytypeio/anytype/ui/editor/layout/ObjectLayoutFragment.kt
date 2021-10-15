@@ -8,18 +8,21 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.common.FooterAdapter
+import com.anytypeio.anytype.core_ui.features.objects.ObjectLayoutAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.layout.ObjectLayoutViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import kotlinx.android.synthetic.main.fragment_object_layout.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ObjectLayoutFragment : BaseBottomSheetFragment() {
@@ -32,6 +35,18 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
 
     var onDismissListener: (() -> Unit)? = null
 
+    private val adapterLayouts by lazy {
+        ObjectLayoutAdapter(
+            onItemClick = { code -> vm.onLayoutClicked(ctx, code) }
+        )
+    }
+
+    private val adapterFooter by lazy {
+        FooterAdapter()
+    }
+
+    private val adapterConcat = ConcatAdapter(adapterLayouts, adapterFooter)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,46 +55,16 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launch {
-            subscribe(vm.layout) { layout ->
-                when(layout) {
-                    ObjectType.Layout.BASIC -> {
-                        basic.isSelected = true
-                        profile.isSelected = false
-                        todo.isSelected = false
-                    }
-                    ObjectType.Layout.PROFILE -> {
-                        basic.isSelected = false
-                        profile.isSelected = true
-                        todo.isSelected = false
-                    }
-                    ObjectType.Layout.TODO -> {
-                        basic.isSelected = false
-                        profile.isSelected = false
-                        todo.isSelected = true
-                    }
-                    else -> toast("Unexpected layout: $layout")
+        with(rvLayouts) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = adapterConcat
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(R.drawable.divider_layouts))
                 }
-            }
-            subscribe(profile.clicks()) {
-                vm.onLayoutClicked(
-                    ctx = ctx,
-                    layout = ObjectType.Layout.PROFILE
-                )
-            }
-            subscribe(basic.clicks()) {
-                vm.onLayoutClicked(
-                    ctx = ctx,
-                    layout = ObjectType.Layout.BASIC
-                )
-            }
-            subscribe(todo.clicks()) {
-                vm.onLayoutClicked(
-                    ctx = ctx,
-                    layout = ObjectType.Layout.TODO
-                )
-            }
+            )
         }
+        vm.onStart(ctx)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -88,13 +73,14 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
     }
 
     override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.views) { observeState(it) }
+        }
         super.onStart()
-        vm.onStart(ctx)
     }
 
-    override fun onStop() {
-        super.onStop()
-        vm.onStop()
+    private fun observeState(views: List<ObjectLayoutView>) {
+        adapterLayouts.update(views)
     }
 
     override fun injectDependencies() {

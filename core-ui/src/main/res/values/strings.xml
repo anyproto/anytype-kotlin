@@ -245,6 +245,7 @@
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
     <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
     <string name="content_desc_object_icon">Object image or emoji</string>
+    <string name="content_desc_layout_icon">Layout icon</string>
     <string name="move">Move</string>
     <string name="move_to">Move to</string>
     <string name="link_to">Link to</string>
@@ -420,5 +421,11 @@
     <string name="unsupported_block">Unsupported block</string>
     <string name="new_relation">New relation</string>
     <string name="change_type">Change type</string>
+    <string name="choose_layout_type">Choose layout type</string>
+    <string name="name_layout_basic">Basic</string>
+    <string name="name_layout_profile">Profile</string>
+    <string name="name_layout_todo">Task</string>
+    <string name="name_layout_set">Set</string>
+    <string name="name_layout_note">Note</string>
 
 </resources>

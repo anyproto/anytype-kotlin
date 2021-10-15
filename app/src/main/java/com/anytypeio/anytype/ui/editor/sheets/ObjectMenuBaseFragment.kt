@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment
+import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.android.synthetic.main.fragment_object_menu.*
@@ -134,7 +135,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
                 )
             }
             ObjectMenuViewModelBase.Command.OpenObjectLayout -> {
-                toast(COMING_SOON_MSG)
+                val fr = ObjectLayoutFragment.new(ctx)
+                fr.show(childFragmentManager, null)
             }
             ObjectMenuViewModelBase.Command.OpenObjectRelations -> {
                 findNavController().navigate(

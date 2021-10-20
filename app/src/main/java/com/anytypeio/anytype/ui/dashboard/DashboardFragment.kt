@@ -165,7 +165,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                 requireActivity().toast("Error: ${state.error}")
             }
             state.isInitialzed -> {
-                bottomToolbar.visible()
                 state.blocks.let { views ->
                     val profile = views.filterIsInstance<DashboardView.Profile>()
                     val links = views.filter { it !is DashboardView.Profile && it !is DashboardView.Archive }.groupBy { it.isArchived }
@@ -204,11 +203,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                 tab.text = tabs[position].title
             }.attach()
         }
-
-        bottomToolbar
-            .navigationClicks()
-            .onEach { vm.onPageNavigationClicked() }
-            .launchIn(lifecycleScope)
 
         btnAddDoc
             .clicks()

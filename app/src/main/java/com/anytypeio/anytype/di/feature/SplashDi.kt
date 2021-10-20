@@ -11,7 +11,10 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.SetDefaultPageType
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
 import com.squareup.wire.get
@@ -50,14 +53,18 @@ object SplashModule {
         launchWallet: LaunchWallet,
         analytics: Analytics,
         storeObjectTypes: StoreObjectTypes,
-        getLastOpenedObject: GetLastOpenedObject
+        getLastOpenedObject: GetLastOpenedObject,
+        getDefaultPageType: GetDefaultPageType,
+        setDefaultPageType: SetDefaultPageType
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
         launchAccount = launchAccount,
         launchWallet = launchWallet,
         analytics = analytics,
         storeObjectTypes = storeObjectTypes,
-        getLastOpenedObject = getLastOpenedObject
+        getLastOpenedObject = getLastOpenedObject,
+        setDefaultPageType = setDefaultPageType,
+        getDefaultPageType = getDefaultPageType
     )
 
     @JvmStatic
@@ -112,4 +119,16 @@ object SplashModule {
         authRepo = auth,
         blockRepo = repo
     )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultPageType =
+        GetDefaultPageType(repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultPageType =
+        SetDefaultPageType(repo)
 }

@@ -221,6 +221,10 @@ class Navigator : AppNavigation {
         )
     }
 
+    override fun openUserSettingsScreen() {
+        navController?.navigate(R.id.action_profileScreen_to_userSettingsFragment)
+    }
+
     fun bind(navController: NavController) {
         this.navController = navController
     }

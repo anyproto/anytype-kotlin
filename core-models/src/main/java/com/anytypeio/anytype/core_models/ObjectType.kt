@@ -60,5 +60,6 @@ data class ObjectType(
         const val SET_URL = "_otset"
         const val DATE_URL = "_otdate"
         const val PROFILE_URL = "_otprofile" //contains User Profile page and Anytype Person page
+        const val NOTE_URL = "_otnote"
     }
 }

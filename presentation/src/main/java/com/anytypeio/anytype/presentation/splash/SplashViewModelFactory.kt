@@ -8,6 +8,8 @@ import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.SetDefaultPageType
 
 /**
  * Created by Konstantin Ivanov
@@ -20,7 +22,9 @@ class SplashViewModelFactory(
     private val launchWallet: LaunchWallet,
     private val analytics: Analytics,
     private val storeObjectTypes: StoreObjectTypes,
-    private val getLastOpenedObject: GetLastOpenedObject
+    private val getLastOpenedObject: GetLastOpenedObject,
+    private val getDefaultPageType: GetDefaultPageType,
+    private val setDefaultPageType: SetDefaultPageType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -31,6 +35,8 @@ class SplashViewModelFactory(
             launchWallet = launchWallet,
             analytics = analytics,
             storeObjectTypes = storeObjectTypes,
-            getLastOpenedObject = getLastOpenedObject
+            getLastOpenedObject = getLastOpenedObject,
+            getDefaultPageType = getDefaultPageType,
+            setDefaultPageType = setDefaultPageType
         ) as T
 }

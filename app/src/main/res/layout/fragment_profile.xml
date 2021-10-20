@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".ui.profile.ProfileFragment"
     android:background="@color/default_dashboard_background_color"
     android:scrollbars="none">
 
@@ -200,7 +201,6 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="31dp"
                 android:contentDescription="@string/content_desc_pin"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/secondDivider"
                 app:srcCompat="@drawable/ic_pin_code" />
@@ -218,6 +218,43 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/pinIcon"
                 app:layout_constraintTop_toTopOf="@+id/pinIcon" />
+
+            <View
+                android:id="@+id/thirdDivider"
+                style="@style/ProfileItemDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pinIcon" />
+
+            <ImageView
+                android:id="@+id/userSettingsIcon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="31dp"
+                android:contentDescription="@string/content_desc_pin"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/thirdDivider"
+                app:srcCompat="@drawable/ic_settings" />
+
+            <TextView
+                android:id="@+id/userSettingsText"
+                style="@style/ProfileItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:drawableEnd="@drawable/ic_profile_forward"
+                android:text="@string/user_settings"
+                app:layout_constraintBottom_toBottomOf="@+id/userSettingsIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/userSettingsIcon"
+                app:layout_constraintTop_toTopOf="@+id/userSettingsIcon" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

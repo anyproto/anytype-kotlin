@@ -61,6 +61,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
                 keychainPhrase.setOnClickListener { vm.onKeyChainPhraseClicked() }
                 backButton.setOnClickListener { vm.onBackButtonClicked() }
                 profileCardContainer.setOnClickListener { vm.onProfileCardClicked() }
+                userSettingsText.setOnClickListener { vm.onUserSettingsClicked() }
 
                 if (BuildConfig.DEBUG) {
                     with(debugSettingsButton) {
@@ -78,6 +79,8 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
                 )
                 state.data.avatar?.let { avatar.icon(it) }
             }
+            is ViewState.Error -> {}
+            ViewState.Loading -> {}
         }
     }
 

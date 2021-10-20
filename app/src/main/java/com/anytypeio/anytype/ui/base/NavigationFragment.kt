@@ -47,6 +47,7 @@ abstract class NavigationFragment(
             is Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()
             is Command.OpenEditDatabase -> navigation.openEditDatabase()
             is Command.OpenKeychainScreen -> navigation.openKeychainScreen()
+            is Command.OpenUserSettingsScreen -> navigation.openUserSettingsScreen()
             is Command.OpenContactsScreen -> navigation.openContacts()
             is Command.OpenSwitchDisplayView -> navigation.openSwitchDisplayView()
             is Command.OpenCustomizeDisplayView -> navigation.openCustomizeDisplayView()

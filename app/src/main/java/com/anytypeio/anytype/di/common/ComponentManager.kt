@@ -172,6 +172,12 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val userSettingsComponent = Component {
+        main.userSettingsComponentBuilder()
+            .module(UserSettingsModule)
+            .build()
+    }
+
     val linkToObjectComponent = Component {
         main.linkToObjectBuilder()
             .module(LinkToObjectModule)

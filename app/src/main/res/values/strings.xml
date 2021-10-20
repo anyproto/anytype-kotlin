@@ -81,6 +81,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="description_arrow_icon">Arrow icon</string>
     <string name="keychain_phrase">Keychain phrase</string>
     <string name="pin_code">Pin code</string>
+    <string name="user_settings">User settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
     <string name="log_out">Log out</string>

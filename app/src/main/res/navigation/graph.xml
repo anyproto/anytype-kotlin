@@ -163,6 +163,13 @@
         <action
             android:id="@+id/action_profileScreen_to_debugSettingsFragment"
             app:destination="@id/debugSettingsFragment" />
+        <action
+            android:id="@+id/action_profileScreen_to_userSettingsFragment"
+            app:destination="@id/userSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/createAccountScreen"
@@ -448,5 +455,10 @@
         android:name="com.anytypeio.anytype.ui.sets.CreateObjectSetFragment"
         android:label="CreateSetScreen"
         tools:layout="@layout/fragment_create_set" />
+    <dialog
+        android:id="@+id/userSettingsFragment"
+        android:name="com.anytypeio.anytype.ui.settings.UserSettingsFragment"
+        android:label="fragment_user_settings"
+        tools:layout="@layout/fragment_user_settings" />
 
 </navigation>

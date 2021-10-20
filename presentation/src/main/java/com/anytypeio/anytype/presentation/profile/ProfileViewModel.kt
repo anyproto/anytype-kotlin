@@ -152,6 +152,10 @@ open class ProfileViewModel(
         )
     }
 
+    fun onUserSettingsClicked() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenUserSettingsScreen))
+    }
+
     private fun sendEvent(startTime: Long) {
         val middleTime = System.currentTimeMillis()
         viewModelScope.sendEvent(

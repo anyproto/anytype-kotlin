@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.database.repo.DatabaseRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.middleware.EventProxy
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
+import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -252,4 +254,18 @@ object DataModule {
     fun provideObjectTypesProvider(): ObjectTypesProvider {
         return DefaultObjectTypesProvider()
     }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideUserSettingsCache(
+        @Named("default") prefs: SharedPreferences,
+    ): UserSettingsCache = DefaultUserSettingsCache(prefs)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideUserSettingsRepo(
+        cache: UserSettingsCache
+    ): UserSettingsRepository = UserSettingsDataRepository(cache)
 }

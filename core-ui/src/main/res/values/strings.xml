@@ -422,10 +422,18 @@
     <string name="new_relation">New relation</string>
     <string name="change_type">Change type</string>
     <string name="choose_layout_type">Choose layout type</string>
+    <string name="user_settings_title">User settings</string>
+    <string name="default_object_type_title">Default object type</string>
     <string name="name_layout_basic">Basic</string>
     <string name="name_layout_profile">Profile</string>
     <string name="name_layout_todo">Task</string>
     <string name="name_layout_set">Set</string>
     <string name="name_layout_note">Note</string>
+    <string name="name_type_note">Note</string>
+    <string name="name_type_note_icon">🗒</string>
+    <string name="name_type_note_subtitle">A brief record of points written down as an aid to memory</string>
+    <string name="name_type_page">Page</string>
+    <string name="name_type_page_icon">📄</string>
+    <string name="name_type_page_subtitle">Proto type to start with</string>
 
 </resources>

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.splash
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -11,9 +10,10 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.core_models.ObjectType.Companion.NOTE_URL
+import com.anytypeio.anytype.core_models.ObjectType.Companion.PAGE_URL
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -21,8 +21,10 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
-import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.SetDefaultPageType
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -37,20 +39,63 @@ class SplashViewModel(
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount,
     private val storeObjectTypes: StoreObjectTypes,
-    private val getLastOpenedObject: GetLastOpenedObject
+    private val getLastOpenedObject: GetLastOpenedObject,
+    private val getDefaultPageType: GetDefaultPageType,
+    private val setDefaultPageType: SetDefaultPageType
 ) : ViewModel() {
 
-    val state = MutableLiveData<ViewState<Nothing>>()
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
-    val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> = MutableLiveData()
+    init {
+        proceedWithUserSettings()
+    }
 
-    fun onResume() {
+    private fun proceedWithUserSettings() {
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).either(
-                fnL = { e -> Timber.e(e, "Error while checking auth status") },
-                fnR = { status ->
+            getDefaultPageType.invoke(Unit).process(
+                failure = {
+                    Timber.e(it, "Error while getting default page type")
+                    checkAuthorizationStatus()
+                },
+                success = { result ->
+                    Timber.d("getDefaultPageType: ${result.type}")
+                    if (result.type == null) {
+                        commands.emit(Command.CheckFirstInstall)
+                    } else {
+                        checkAuthorizationStatus()
+                    }
+                }
+            )
+        }
+    }
+
+    fun setDefaultUserSettings(isFirstInstall: Boolean) {
+        Timber.d("setDefaultUserSettings, isFirstInstall:[$isFirstInstall]")
+        val defaultType = if (isFirstInstall) {
+            DEFAULT_TYPE_FIRST_INSTALL
+        } else {
+            DEFAULT_TYPE_UPDATE
+        }
+        viewModelScope.launch {
+            val params = SetDefaultPageType.Params(defaultType)
+            Timber.d("Start to update Default Page Type:${params.type}")
+            setDefaultPageType.invoke(params).process(
+                failure = {
+                    Timber.e(it, "Error while setting default page type")
+                    checkAuthorizationStatus()
+                },
+                success = { checkAuthorizationStatus() }
+            )
+        }
+    }
+
+    private fun checkAuthorizationStatus() {
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
                     if (status == AuthStatus.UNAUTHORIZED)
-                        navigation.postValue(EventWrapper(AppNavigation.Command.OpenStartLoginScreen))
+                        commands.emit(Command.NavigateToLogin)
                     else
                         proceedWithLaunchingWallet()
                 }
@@ -74,12 +119,12 @@ class SplashViewModel(
     private fun retryLaunchingWallet() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            launchWallet(BaseUseCase.None).either(
-                fnL = { e ->
+            launchWallet(BaseUseCase.None).process(
+                failure = { e ->
                     Timber.e(e, "Error while retrying launching wallet")
-                    state.postValue(ViewState.Error(error = e.toString()))
+                    commands.emit(Command.Error(e.toString()))
                 },
-                fnR = {
+                success = {
                     sendEvent(startTime, WALLET_RECOVER, Props.empty())
                     proceedWithLaunchingAccount()
                 }
@@ -90,16 +135,16 @@ class SplashViewModel(
     private fun proceedWithLaunchingAccount() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            launchAccount(BaseUseCase.None).either(
-                fnR = { accountId ->
+            launchAccount(BaseUseCase.None).proceed(
+                success = { accountId ->
                     updateUserProps(accountId)
                     val props = Props(mapOf(PROP_ACCOUNT_ID to accountId))
                     sendEvent(startTime, ACCOUNT_SELECT, props)
                     proceedWithUpdatingObjectTypesStore()
                 },
-                fnL = { e ->
-                    state.postValue(ViewState.Error(error = ERROR_MESSAGE))
+                failure = { e ->
                     Timber.e(e, "Error while launching account")
+                    commands.emit(Command.Error(ERROR_MESSAGE))
                 }
             )
         }
@@ -120,37 +165,30 @@ class SplashViewModel(
     private fun handleNavigation() {
         viewModelScope.launch {
             getLastOpenedObject(BaseUseCase.None).process(
-                failure = { navigateToDashboard() },
+                failure = {
+                    Timber.e(it, "Error while getting last opened object")
+                    commands.emit(Command.NavigateToDashboard)
+                },
                 success = { response ->
-                    when(response) {
+                    when (response) {
                         is GetLastOpenedObject.Response.Success -> {
                             if (SupportedLayouts.layouts.contains(response.obj.layout)) {
-                                if (response.obj.layout == ObjectType.Layout.SET) {
-                                    navigation.postValue(
-                                        EventWrapper(
-                                            AppNavigation.Command.LaunchObjectSetFromSplash(response.obj.id)
-                                        )
-                                    )
-                                } else {
-                                    navigation.postValue(
-                                        EventWrapper(
-                                            AppNavigation.Command.LaunchObjectFromSplash(response.obj.id)
-                                        )
-                                    )
+                                val id = response.obj.id
+                                when (response.obj.layout) {
+                                    ObjectType.Layout.SET ->
+                                        commands.emit(Command.NavigateToObjectSet(id))
+                                    else ->
+                                        commands.emit(Command.NavigateToObject(id))
                                 }
                             } else {
-                                navigateToDashboard()
+                                commands.emit(Command.NavigateToDashboard)
                             }
                         }
-                        else -> navigateToDashboard()
+                        else -> commands.emit(Command.NavigateToDashboard)
                     }
                 }
             )
         }
-    }
-
-    private fun navigateToDashboard() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSplash))
     }
 
     private fun updateUserProps(id: String) {
@@ -172,7 +210,18 @@ class SplashViewModel(
         )
     }
 
+    sealed class Command {
+        object CheckFirstInstall : Command()
+        object NavigateToDashboard : Command()
+        object NavigateToLogin : Command()
+        data class NavigateToObject(val id: Id) : Command()
+        data class NavigateToObjectSet(val id: Id) : Command()
+        data class Error(val msg: String) : Command()
+    }
+
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
+        const val DEFAULT_TYPE_FIRST_INSTALL = NOTE_URL
+        const val DEFAULT_TYPE_UPDATE = PAGE_URL
     }
 }

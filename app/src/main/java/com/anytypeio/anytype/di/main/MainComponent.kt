@@ -40,4 +40,5 @@ interface MainComponent {
     fun createSetComponentBuilder(): CreateSetSubComponent.Builder
     fun createObjectTypeComponentBuilder(): CreateObjectTypeSubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
+    fun userSettingsComponentBuilder(): UserSettingsSubComponent.Builder
 }

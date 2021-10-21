@@ -314,6 +314,7 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.DATABASE -> MOTypeLayout.database
     ObjectType.Layout.IMAGE -> MOTypeLayout.image
     ObjectType.Layout.NOTE -> MOTypeLayout.note
+    ObjectType.Layout.SPACE -> MOTypeLayout.space
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

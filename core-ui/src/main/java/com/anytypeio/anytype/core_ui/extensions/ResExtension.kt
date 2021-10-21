@@ -272,6 +272,7 @@ fun ObjectLayoutView.getIconSize24(): Int? = when (this) {
     is ObjectLayoutView.File -> null
     is ObjectLayoutView.ObjectType -> null
     is ObjectLayoutView.Relation -> null
+    is ObjectLayoutView.Space -> null
 }
 
 fun ObjectLayoutView.getName(): Int? = when (this) {
@@ -286,4 +287,5 @@ fun ObjectLayoutView.getName(): Int? = when (this) {
     is ObjectLayoutView.File -> null
     is ObjectLayoutView.ObjectType -> null
     is ObjectLayoutView.Relation -> null
+    is ObjectLayoutView.Space -> null
 }

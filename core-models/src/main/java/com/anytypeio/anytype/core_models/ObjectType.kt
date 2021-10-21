@@ -32,6 +32,7 @@ data class ObjectType(
         DASHBOARD(7),
         IMAGE(8),
         NOTE(9),
+        SPACE(10),
         DATABASE(20)
     }
 

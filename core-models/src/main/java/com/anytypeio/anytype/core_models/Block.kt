@@ -139,7 +139,9 @@ data class Block(
                     LINK,
                     TEXT_COLOR,
                     BACKGROUND_COLOR,
-                    MENTION
+                    MENTION,
+                    EMOJI,
+                    OBJECT
                 }
             }
 

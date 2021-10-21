@@ -721,5 +721,6 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
         ObjectType.Layout.IMAGE -> ObjectLayoutView.Image(id = layout.code, isSelected = false)
         ObjectType.Layout.NOTE -> ObjectLayoutView.Note(id = layout.code, isSelected = false)
         ObjectType.Layout.DATABASE -> ObjectLayoutView.Database(id = layout.code, isSelected = false)
+        ObjectType.Layout.SPACE -> ObjectLayoutView.Space(id = layout.code, isSelected = false)
     }
 }

@@ -350,19 +350,6 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
-    override fun blockListSetPageIsArchived(request: BlockList.Set.Page.IsArchived.Request): BlockList.Set.Page.IsArchived.Response {
-        val encoded = Service.blockListSetPageIsArchived(
-            BlockList.Set.Page.IsArchived.Request.ADAPTER.encode(request)
-        )
-        val response = BlockList.Set.Page.IsArchived.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != BlockList.Set.Page.IsArchived.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
     override fun blockSetDetails(request: Block.Set.Details.Request): Block.Set.Details.Response {
         val encoded = Service.blockSetDetails(Block.Set.Details.Request.ADAPTER.encode(request))
         val response = Block.Set.Details.Response.ADAPTER.decode(encoded)

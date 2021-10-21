@@ -94,9 +94,6 @@ interface MiddlewareService {
     fun blockRedo(request: Block.Redo.Request): Block.Redo.Response
 
     @Throws(Exception::class)
-    fun blockListSetPageIsArchived(request: BlockList.Set.Page.IsArchived.Request): BlockList.Set.Page.IsArchived.Response
-
-    @Throws(Exception::class)
     fun blockSetDetails(request: Block.Set.Details.Request): Block.Set.Details.Response
 
     @Throws(Exception::class)

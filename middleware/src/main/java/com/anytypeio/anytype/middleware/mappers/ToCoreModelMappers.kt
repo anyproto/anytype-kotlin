@@ -301,6 +301,8 @@ fun MBMarkType.toCoreModels(): Block.Content.Text.Mark.Type = when (this) {
     MBMarkType.TextColor -> Block.Content.Text.Mark.Type.TEXT_COLOR
     MBMarkType.BackgroundColor -> Block.Content.Text.Mark.Type.BACKGROUND_COLOR
     MBMarkType.Mention -> Block.Content.Text.Mark.Type.MENTION
+    MBMarkType.Emoji -> Block.Content.Text.Mark.Type.EMOJI
+    MBMarkType.Object -> Block.Content.Text.Mark.Type.OBJECT
 }
 
 
@@ -423,6 +425,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.database -> ObjectType.Layout.DATABASE
     MOTypeLayout.image -> ObjectType.Layout.IMAGE
     MOTypeLayout.note -> ObjectType.Layout.NOTE
+    MOTypeLayout.space -> ObjectType.Layout.SPACE
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

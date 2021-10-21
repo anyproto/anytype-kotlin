@@ -793,6 +793,16 @@
         <item name="android:background">@drawable/rectangle_default_button</item>
     </style>
 
+    <style name="DefaultRedButtonStyle">
+        <item name="android:clickable">true</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:stateListAnimator">@animator/scale_shrink</item>
+        <item name="android:background">@drawable/rectangle_red_button</item>
+    </style>
+
     <style name="DefaultStrokeButtonStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:clickable">true</item>

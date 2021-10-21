@@ -138,6 +138,15 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
         lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
         lifecycleScope.subscribe(vm.count) { tvSelectedCount.text = "$it object selected" }
+        jobs += lifecycleScope.subscribe(vm.alerts) { alert ->
+            when(alert) {
+                is HomeDashboardViewModel.Alert.Delete -> {
+                    val dialog = DeleteAlertFragment.new(alert.count)
+                    dialog.onDeletionAccepted = { vm.onDeletionAccepted() }
+                    dialog.show(childFragmentManager, null)
+                }
+            }
+        }
         lifecycleScope.subscribe(vm.mode) { mode ->
             when(mode) {
                 HomeDashboardViewModel.Mode.DEFAULT -> {
@@ -188,6 +197,11 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         super.onPause()
         motionProgress = dashboardRoot.progress
         tabsLayout.removeOnTabSelectedListener(onTabSelectedListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        jobs.cancel()
     }
 
     override fun onResume() {

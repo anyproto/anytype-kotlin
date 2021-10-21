@@ -88,6 +88,8 @@ class HomeDashboardViewModel(
     val mode = MutableStateFlow(Mode.DEFAULT)
     val count = MutableStateFlow(0)
 
+    val alerts = MutableSharedFlow<Alert>(replay = 0)
+
     private val views: List<DashboardView>
         get() = stateData.value?.blocks ?: emptyList()
 
@@ -597,6 +599,20 @@ class HomeDashboardViewModel(
 
     fun onDeleteObjectsClicked() {
         viewModelScope.launch {
+            alerts.emit(
+                Alert.Delete(
+                    count = archived.value.count { it.isSelected }
+                )
+            )
+        }
+    }
+
+    fun onDeletionAccepted() {
+        proceedWithObjectDeletion()
+    }
+
+    private fun proceedWithObjectDeletion() {
+        viewModelScope.launch {
             mode.value = Mode.DEFAULT
             deleteObjects(
                 DeleteObjects.Params(
@@ -643,4 +659,8 @@ class HomeDashboardViewModel(
     enum class TAB { FAVOURITE, RECENT, INBOX, SETS, ARCHIVE }
 
     enum class Mode { DEFAULT, SELECTION }
+
+    sealed class Alert {
+        data class Delete(val count: Int) : Alert()
+    }
 }

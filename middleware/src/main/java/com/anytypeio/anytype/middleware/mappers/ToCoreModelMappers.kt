@@ -432,7 +432,7 @@ fun MRelationDataSource.source(): Relation.Source = when (this) {
     MRelationDataSource.details -> Relation.Source.DETAILS
     MRelationDataSource.derived -> Relation.Source.DERIVED
     MRelationDataSource.account -> Relation.Source.ACCOUNT
-    else -> throw IllegalStateException()
+    MRelationDataSource.local -> Relation.Source.LOCAL
 }
 
 fun MRelationFormat.format(): Relation.Format = when (this) {

@@ -38,7 +38,7 @@ data class Relation(
     }
 
     enum class Source {
-        DETAILS, DERIVED, ACCOUNT
+        DETAILS, DERIVED, ACCOUNT, LOCAL
     }
 
     data class Option(

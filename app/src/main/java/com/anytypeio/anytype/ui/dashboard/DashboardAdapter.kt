@@ -195,6 +195,8 @@ class DashboardAdapter(
                 }
             }
         }
+
+        holder.bindSelection(data[position].isSelected)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
@@ -250,6 +252,9 @@ class DashboardAdapter(
             if (payload.isLoadingChanged) {
                 bindLoading(item.isLoading)
             }
+            if (payload.isSelectionChanged) {
+                bindSelection(item.isSelected)
+            }
         }
     }
 
@@ -266,17 +271,28 @@ class DashboardAdapter(
             if (payload.isLoadingChanged) {
                 bindLoading(item.isLoading)
             }
+            if (payload.isSelectionChanged) {
+                bindSelection(item.isSelected)
+            }
         }
     }
 
     sealed class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        abstract fun bindSelection(isSelected: Boolean)
+
         class ArchiveHolder(itemView: View) : ViewHolder(itemView) {
+
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindTitle(title: String) {
                 if (title.isNotEmpty()) {
                     itemView.archiveTitle.text = title
                 }
+            }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
             }
         }
 
@@ -285,6 +301,7 @@ class DashboardAdapter(
             private val tvTitle = itemView.title
             private val tvSubtitle = itemView.typeTitle
             private val shimmer = itemView.shimmer
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindTitle(title: String?) {
                 if (title.isNullOrEmpty())
@@ -312,6 +329,10 @@ class DashboardAdapter(
                     tvTitle.visible()
                 }
             }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
+            }
         }
 
         class DocumentWithoutIconViewHolder(parent: ViewGroup) : ViewHolder(
@@ -325,6 +346,7 @@ class DashboardAdapter(
             private val tvTitle = itemView.findViewById<TextView>(R.id.tvDocTitle)
             private val tvSubtitle = itemView.findViewById<TextView>(R.id.tvDocTypeName)
             private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindTitle(title: String?) {
                 tvTitle.text = title
@@ -347,6 +369,10 @@ class DashboardAdapter(
                     tvSubtitle.visible()
                 }
             }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
+            }
         }
 
         class DocumentTaskViewHolder(parent: ViewGroup) : ViewHolder(
@@ -361,6 +387,7 @@ class DashboardAdapter(
             private val tvSubtitle = itemView.findViewById<TextView>(R.id.tvDocTypeName)
             private val checkbox = itemView.findViewById<ImageView>(R.id.ivCheckbox)
             private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindTitle(title: String?) {
                 tvTitle.text = title
@@ -391,12 +418,17 @@ class DashboardAdapter(
                     checkbox.setImageResource(R.drawable.ic_dashboard_task_checkbox_not_checked)
                 }
             }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
+            }
         }
 
         class ObjectSetHolder(itemView: View) : ViewHolder(itemView) {
 
             private val tvTitle = itemView.title
             private val shimmer = itemView.shimmer
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindLoading(isLoading: Boolean) {
                 if (isLoading) {
@@ -420,12 +452,17 @@ class DashboardAdapter(
             fun bindIcon(icon: ObjectIcon) {
                 itemView.iconWidget.bind(icon)
             }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
+            }
         }
 
         class ObjectSetWithoutIconHolder(itemView: View) : ViewHolder(itemView) {
 
             private val tvTitle = itemView.findViewById<TextView>(R.id.tvSetTitle)
             private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindLoading(isLoading: Boolean) {
                 if (isLoading) {
@@ -444,6 +481,10 @@ class DashboardAdapter(
                     tvTitle.setText(R.string.untitled)
                 else
                     tvTitle.text = title
+            }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
             }
         }
     }

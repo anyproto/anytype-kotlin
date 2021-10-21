@@ -23,10 +23,13 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
@@ -55,7 +58,9 @@ class HomeDashboardViewModel(
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
     private val searchObjects: SearchObjects,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val deleteObjects: DeleteObjects
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -79,6 +84,9 @@ class HomeDashboardViewModel(
     val recent = MutableStateFlow(emptyList<DashboardView>())
     val inbox = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
+
+    val mode = MutableStateFlow(Mode.DEFAULT)
+    val count = MutableStateFlow(0)
 
     private val views: List<DashboardView>
         get() = stateData.value?.blocks ?: emptyList()
@@ -303,24 +311,27 @@ class HomeDashboardViewModel(
 
     fun onTabObjectClicked(target: Id, isLoading: Boolean, tab: TAB = TAB.FAVOURITE) {
         if (!isLoading) {
-            val view = when (tab) {
-                TAB.FAVOURITE -> views.find { it is DashboardView.Document && it.target == target }
-                TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
-                TAB.ARCHIVE -> archived.value.find { it.target == target }
-                else -> null
-            }
-            if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
-                if (view.type != ObjectType.TEMPLATE_URL) {
-                    if (view.layout == ObjectType.Layout.SET) {
-                        proceedWithOpeningObjectSet(target)
+            if (tab == TAB.ARCHIVE) {
+                proceedWithClickInArchiveTab(target)
+            } else {
+                val view = when (tab) {
+                    TAB.FAVOURITE -> views.find { it is DashboardView.Document && it.target == target }
+                    TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
+                    else -> null
+                }
+                if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
+                    if (view.type != ObjectType.TEMPLATE_URL) {
+                        if (view.layout == ObjectType.Layout.SET) {
+                            proceedWithOpeningObjectSet(target)
+                        } else {
+                            proceedWithOpeningDocument(target)
+                        }
                     } else {
-                        proceedWithOpeningDocument(target)
+                        toast("Can't open a template on Android. Coming soon")
                     }
                 } else {
-                    toast("Can't open a template on Android. Coming soon")
+                    toast("Currently unsupported layout on Android")
                 }
-            } else {
-                toast("Currently unsupported layout on Android")
             }
         } else {
             toast("This object is still syncing.")
@@ -528,6 +539,83 @@ class HomeDashboardViewModel(
         }
     }
 
+    //region BIN SELECTION
+
+    private fun proceedWithClickInArchiveTab(target: Id) {
+        if (mode.value == Mode.DEFAULT) mode.value = Mode.SELECTION
+        proceedWithTogglingSelectionForTarget(target)
+    }
+
+    private fun proceedWithTogglingSelectionForTarget(target: Id) {
+        val updatedViews = archived.value.map { obj ->
+            if (obj.id == target) {
+                obj.copy(isSelected = !obj.isSelected)
+            } else {
+                obj
+            }
+        }
+        val updatedCount = updatedViews.count { it.isSelected }
+
+        archived.value = updatedViews
+        count.value = updatedCount
+
+        if (updatedCount == 0) {
+            mode.value = Mode.DEFAULT
+        }
+    }
+
+    fun onSelectAllClicked() {
+        archived.value = archived.value.map { obj -> obj.copy(isSelected = true) }
+        count.value = archived.value.size
+    }
+
+    fun onCancelSelectionClicked() {
+        mode.value = Mode.DEFAULT
+        archived.value = archived.value.map { obj -> obj.copy(isSelected = false) }
+        count.value = 0
+    }
+
+    fun onPutBackClicked() {
+        viewModelScope.launch {
+            mode.value = Mode.DEFAULT
+            setObjectListIsArchived(
+                SetObjectListIsArchived.Params(
+                    targets = archived.value.filter { it.isSelected }.map { it.id },
+                    isArchived = false
+                )
+            ).process(
+                failure = { e ->
+                    Timber.e(e, "Error while restoring objects from archive")
+                    proceedWithArchivedObjectSearch()
+                },
+                success = {
+                    proceedWithArchivedObjectSearch()
+                }
+            )
+        }
+    }
+
+    fun onDeleteObjectsClicked() {
+        viewModelScope.launch {
+            mode.value = Mode.DEFAULT
+            deleteObjects(
+                DeleteObjects.Params(
+                    targets = archived.value.filter { it.isSelected }.map { it.id }
+                )
+            ).process(
+                failure = { e ->
+                    Timber.e(e, "Error while deleting objects")
+                    proceedWithArchivedObjectSearch()
+                },
+                success = {
+                    proceedWithArchivedObjectSearch()
+                }
+            )
+        }
+    }
+
+    //endregion
+
     /**
      * Represents movements of blocks during block dragging action.
      * @param subject id of the block being dragged
@@ -553,4 +641,6 @@ class HomeDashboardViewModel(
     }
 
     enum class TAB { FAVOURITE, RECENT, INBOX, SETS, ARCHIVE }
+
+    enum class Mode { DEFAULT, SELECTION }
 }

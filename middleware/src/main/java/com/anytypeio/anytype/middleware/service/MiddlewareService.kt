@@ -197,4 +197,10 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectSetIsArchived(request: Object.SetIsArchived.Request): Object.SetIsArchived.Response
+
+    @Throws(Exception::class)
+    fun objectListSetIsArchived(request: ObjectList.Set.IsArchived.Request): ObjectList.Set.IsArchived.Response
+
+    @Throws(Exception::class)
+    fun objectListDelete(request: ObjectList.Delete.Request): ObjectList.Delete.Response
 }

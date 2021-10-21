@@ -11,6 +11,8 @@ import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 
 class HomeDashboardViewModelFactory(
@@ -25,7 +27,9 @@ class HomeDashboardViewModelFactory(
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
     private val searchObjects: SearchObjects,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val deleteObjects: DeleteObjects
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -42,7 +46,9 @@ class HomeDashboardViewModelFactory(
             getDebugSettings = getDebugSettings,
             analytics = analytics,
             searchObjects = searchObjects,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            deleteObjects = deleteObjects,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
     }
 }

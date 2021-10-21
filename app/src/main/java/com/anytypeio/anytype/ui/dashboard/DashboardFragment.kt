@@ -2,13 +2,17 @@ package com.anytypeio.anytype.ui.dashboard
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.LinearInterpolator
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
+import androidx.transition.TransitionSet
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
@@ -133,6 +137,51 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
         lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
         lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
+        lifecycleScope.subscribe(vm.count) { tvSelectedCount.text = "$it object selected" }
+        lifecycleScope.subscribe(vm.mode) { mode ->
+            when(mode) {
+                HomeDashboardViewModel.Mode.DEFAULT -> {
+                    selectionTopToolbar.invisible()
+                    tabsLayout.visible()
+                    val set = ConstraintSet().apply {
+                        clone(dashboardRoot)
+                        clear(R.id.selectionBottomToolbar, ConstraintSet.BOTTOM)
+                        connect(
+                            R.id.selectionBottomToolbar,
+                            ConstraintSet.TOP,
+                            R.id.dashboardRoot,
+                            ConstraintSet.BOTTOM
+                        )
+                    }
+                    val transitionSet = TransitionSet().apply {
+                        addTransition(ChangeBounds())
+                        duration = 100
+                    }
+                    TransitionManager.beginDelayedTransition(dashboardRoot, transitionSet)
+                    set.applyTo(dashboardRoot)
+                }
+                HomeDashboardViewModel.Mode.SELECTION -> {
+                    tabsLayout.invisible()
+                    selectionTopToolbar.visible()
+                    val set = ConstraintSet().apply {
+                        clone(dashboardRoot)
+                        clear(R.id.selectionBottomToolbar, ConstraintSet.TOP)
+                        connect(
+                            R.id.selectionBottomToolbar,
+                            ConstraintSet.BOTTOM,
+                            R.id.dashboardRoot,
+                            ConstraintSet.BOTTOM
+                        )
+                    }
+                    val transitionSet = TransitionSet().apply {
+                        addTransition(ChangeBounds())
+                        duration = 100
+                    }
+                    TransitionManager.beginDelayedTransition(dashboardRoot, transitionSet)
+                    set.applyTo(dashboardRoot)
+                }
+            }
+        }
     }
 
     override fun onPause() {
@@ -227,6 +276,26 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         avatarContainer
             .clicks()
             .onEach { vm.onAvatarClicked() }
+            .launchIn(lifecycleScope)
+
+        tvCancel
+            .clicks()
+            .onEach { vm.onCancelSelectionClicked() }
+            .launchIn(lifecycleScope)
+
+        tvSelectAll
+            .clicks()
+            .onEach { vm.onSelectAllClicked() }
+            .launchIn(lifecycleScope)
+
+        tvPutBack
+            .clicks()
+            .onEach { vm.onPutBackClicked() }
+            .launchIn(lifecycleScope)
+
+        tvDelete
+            .clicks()
+            .onEach { vm.onDeleteObjectsClicked() }
             .launchIn(lifecycleScope)
     }
 

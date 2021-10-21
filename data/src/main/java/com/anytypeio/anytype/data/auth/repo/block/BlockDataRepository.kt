@@ -462,4 +462,14 @@ class BlockDataRepository(
         ctx: Id,
         isArchived: Boolean
     ): Payload = factory.remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+
+    override fun setObjectListIsArchived(
+        targets: List<Id>,
+        isArchived: Boolean
+    ) = factory.remote.setObjectListIsArchived(
+        targets = targets,
+        isArchived = isArchived
+    )
+
+    override fun deleteObjects(targets: List<Id>) = factory.remote.deleteObjects(targets = targets)
 }

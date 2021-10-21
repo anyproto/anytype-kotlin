@@ -1442,4 +1442,24 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
+
+    fun setObjectListIsArchived(
+        targets: List<Id>,
+        isArchived: Boolean
+    ) {
+        val request = Rpc.ObjectList.Set.IsArchived.Request(
+            objectIds = targets,
+            isArchived = isArchived,
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectListSetIsArchived(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    fun deleteObjects(targets: List<Id>) {
+        val request = Rpc.ObjectList.Delete.Request(objectIds = targets)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectListDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
 }

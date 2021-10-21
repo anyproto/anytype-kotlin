@@ -396,4 +396,14 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx: Id,
         isArchived: Boolean
     ): Payload = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+
+    override fun setObjectListIsArchived(
+        targets: List<Id>,
+        isArchived: Boolean
+    ) = remote.setObjectListIsArchived(
+        targets = targets,
+        isArchived = isArchived
+    )
+
+    override fun deleteObjects(targets: List<Id>) = remote.deleteObjects(targets = targets)
 }

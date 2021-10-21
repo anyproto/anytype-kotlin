@@ -71,4 +71,14 @@
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
+    <ImageView
+        android:visibility="invisible"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:layout_gravity="end|bottom"
+        android:id="@+id/ivSelection"
+        android:src="@drawable/ic_bin_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 </androidx.cardview.widget.CardView>

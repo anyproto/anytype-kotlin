@@ -9,6 +9,7 @@ sealed class DashboardView {
 
     abstract val id: Id
     abstract val isArchived: Boolean
+    abstract val isSelected: Boolean
     abstract val isLoading: Boolean
 
     data class Profile(
@@ -16,6 +17,7 @@ sealed class DashboardView {
         val name: String,
         val avatar: Url? = null,
         override val isArchived: Boolean = false,
+        override val isSelected: Boolean = false,
         override val isLoading: Boolean = false
     ) : DashboardView()
 
@@ -30,6 +32,7 @@ sealed class DashboardView {
         val type: String? = null,
         val done: Boolean? = null,
         override val isArchived: Boolean,
+        override val isSelected: Boolean = false,
         override val isLoading: Boolean = false,
         val icon: ObjectIcon = ObjectIcon.None
     ) : DashboardView() {
@@ -41,6 +44,7 @@ sealed class DashboardView {
         val target: Id,
         val title: String,
         override val isArchived: Boolean = false,
+        override val isSelected: Boolean = false,
         override val isLoading: Boolean = false
     ) : DashboardView()
 
@@ -49,6 +53,7 @@ sealed class DashboardView {
         val target: Id,
         val title: String? = null,
         override val isArchived: Boolean,
+        override val isSelected: Boolean = false,
         override val isLoading: Boolean = false,
         val icon: ObjectIcon = ObjectIcon.None
     ) : DashboardView()

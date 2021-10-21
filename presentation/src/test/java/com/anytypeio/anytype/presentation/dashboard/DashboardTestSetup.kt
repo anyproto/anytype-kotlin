@@ -19,6 +19,8 @@ import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.flow.Flow
@@ -49,6 +51,12 @@ open class DashboardTestSetup {
 
     @Mock
     lateinit var closeDashboard: CloseDashboard
+
+    @Mock
+    lateinit var deleteObjects: DeleteObjects
+
+    @Mock
+    lateinit var setObjectListIsArchived: SetObjectListIsArchived
 
     @Mock
     lateinit var createPage: CreatePage
@@ -99,7 +107,9 @@ open class DashboardTestSetup {
         getDebugSettings = getDebugSettings,
         analytics = analytics,
         searchObjects = searchObjects,
-        urlBuilder = builder
+        urlBuilder = builder,
+        setObjectListIsArchived = setObjectListIsArchived,
+        deleteObjects = deleteObjects
     )
 
     fun stubGetConfig(response: Either.Right<Config>) {
@@ -157,6 +167,15 @@ open class DashboardTestSetup {
             onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
                 answer.getArgument<(Either<Throwable, Account>) -> Unit>(2)(accountResponse)
             }
+        }
+    }
+
+    fun stubSearchObjects(
+        params: SearchObjects.Params,
+        objects: List<Map<String, Any?>> = emptyList()
+    ) {
+        searchObjects.stub {
+            onBlocking { invoke(params) } doReturn Either.Right(objects)
         }
     }
 }

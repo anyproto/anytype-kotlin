@@ -423,4 +423,16 @@ class BlockMiddleware(
         ctx: Id,
         isArchived: Boolean
     ): Payload = middleware.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+
+    override fun deleteObjects(targets: List<Id>) = middleware.deleteObjects(
+        targets = targets
+    )
+
+    override fun setObjectListIsArchived(
+        targets: List<Id>,
+        isArchived: Boolean
+    ) = middleware.setObjectListIsArchived(
+        targets = targets,
+        isArchived = isArchived
+    )
 }

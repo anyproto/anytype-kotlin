@@ -16,6 +16,8 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
@@ -59,7 +61,9 @@ object HomeDashboardModule {
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
         searchObjects: SearchObjects,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        setObjectListIsArchived: SetObjectListIsArchived,
+        deleteObjects: DeleteObjects
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -72,7 +76,9 @@ object HomeDashboardModule {
         getDebugSettings = getDebugSettings,
         searchObjects = searchObjects,
         analytics = analytics,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        setObjectListIsArchived = setObjectListIsArchived,
+        deleteObjects = deleteObjects
     )
 
     @JvmStatic
@@ -169,6 +175,24 @@ object HomeDashboardModule {
     fun provideSearchObjects(
         repo: BlockRepository
     ) : SearchObjects = SearchObjects(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun deleteObjects(
+        repo: BlockRepository
+    ) : DeleteObjects = DeleteObjects(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun setObjectListIsArchived(
+        repo: BlockRepository
+    ) : SetObjectListIsArchived = SetObjectListIsArchived(
         repo = repo
     )
 }

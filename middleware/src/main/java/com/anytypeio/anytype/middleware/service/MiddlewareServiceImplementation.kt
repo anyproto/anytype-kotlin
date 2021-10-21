@@ -782,4 +782,30 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun objectListSetIsArchived(request: ObjectList.Set.IsArchived.Request): ObjectList.Set.IsArchived.Response {
+        val encoded = Service.objectListSetIsArchived(
+            ObjectList.Set.IsArchived.Request.ADAPTER.encode(request)
+        )
+        val response = ObjectList.Set.IsArchived.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ObjectList.Set.IsArchived.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectListDelete(request: ObjectList.Delete.Request): ObjectList.Delete.Response {
+        val encoded = Service.objectListDelete(
+            ObjectList.Delete.Request.ADAPTER.encode(request)
+        )
+        val response = ObjectList.Delete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ObjectList.Delete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

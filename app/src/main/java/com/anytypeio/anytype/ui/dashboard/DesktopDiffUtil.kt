@@ -64,6 +64,10 @@ class DesktopDiffUtil(
             }
         }
 
+        if (oldDoc.isSelected != newDoc.isSelected) {
+            changes.add(SELECTION_CHANGED)
+        }
+
         return if (changes.isNotEmpty()) {
             Payload(changes).also { Timber.d("Returning payload: $it") }
         } else {
@@ -76,6 +80,7 @@ class DesktopDiffUtil(
     ) {
 
         val isLoadingChanged: Boolean = changes.contains(LOADING_STATE_CHANGED)
+        val isSelectionChanged: Boolean = changes.contains(SELECTION_CHANGED)
 
         fun targetChanged() = changes.contains(TARGET_CHANGED)
         fun titleChanged() = changes.contains(TITLE_CHANGED)
@@ -89,5 +94,6 @@ class DesktopDiffUtil(
         const val EMOJI_CHANGED = 4
         const val IMAGE_CHANGED = 5
         const val LOADING_STATE_CHANGED = 6
+        const val SELECTION_CHANGED = 7
     }
 }

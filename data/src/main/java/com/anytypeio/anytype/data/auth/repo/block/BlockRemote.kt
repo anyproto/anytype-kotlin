@@ -175,4 +175,6 @@ interface BlockRemote {
 
     fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
     fun deleteObjects(targets: List<Id>)
+
+    fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
 }

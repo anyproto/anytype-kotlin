@@ -472,4 +472,7 @@ class BlockDataRepository(
     )
 
     override fun deleteObjects(targets: List<Id>) = factory.remote.deleteObjects(targets = targets)
+
+    override fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
+        factory.remote.setObjectLayout(ctx, layout)
 }

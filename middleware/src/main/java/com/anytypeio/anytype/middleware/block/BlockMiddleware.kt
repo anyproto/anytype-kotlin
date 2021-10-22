@@ -435,4 +435,7 @@ class BlockMiddleware(
         targets = targets,
         isArchived = isArchived
     )
+
+    override fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload =
+        middleware.setObjectLayout(ctx, layout)
 }

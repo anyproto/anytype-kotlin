@@ -1462,4 +1462,15 @@ class Middleware(
         val response = service.objectListDelete(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
+
+    fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload {
+        val request = Rpc.Object.SetLayout.Request(
+            contextId = ctx,
+            layout = layout.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetLayout(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
 }

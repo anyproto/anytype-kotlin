@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.layout.GetSupportedObjectLayouts
 import com.anytypeio.anytype.domain.layout.SetObjectLayout
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.mapper.toObjectLayout
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -72,16 +73,18 @@ class ObjectLayoutViewModel(
 
     fun onLayoutClicked(
         ctx: Id,
-        code: Int
+        layoutView: ObjectLayoutView
     ) {
+        val params = SetObjectLayout.Params(
+            ctx = ctx,
+            layout = layoutView.toObjectLayout()
+        )
         viewModelScope.launch {
-            setObjectLayout(
-                SetObjectLayout.Params(
-                    ctx = ctx,
-                    code = code
-                )
-            ).process(
-                failure = { Timber.e(it, ERROR_MESSAGE).also { _toasts.emit(ERROR_MESSAGE) } },
+            setObjectLayout(params).process(
+                failure = {
+                    Timber.e(it, ERROR_MESSAGE)
+                    _toasts.emit(ERROR_MESSAGE)
+                },
                 success = { dispatcher.send(it) }
             )
         }

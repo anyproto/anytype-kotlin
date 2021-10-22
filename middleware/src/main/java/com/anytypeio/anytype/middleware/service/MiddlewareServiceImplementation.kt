@@ -808,4 +808,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun objectSetLayout(request: Object.SetLayout.Request): Object.SetLayout.Response {
+        val encoded = Service.objectSetLayout(
+            Object.SetLayout.Request.ADAPTER.encode(request)
+        )
+        val response = Object.SetLayout.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.SetLayout.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

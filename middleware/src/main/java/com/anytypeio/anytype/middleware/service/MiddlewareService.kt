@@ -203,4 +203,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectListDelete(request: ObjectList.Delete.Request): ObjectList.Delete.Response
+
+    @Throws(Exception::class)
+    fun objectSetLayout(request: Object.SetLayout.Request): Object.SetLayout.Response
 }

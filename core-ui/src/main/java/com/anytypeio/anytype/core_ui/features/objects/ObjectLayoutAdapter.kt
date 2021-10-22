@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectLayoutHolder
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 
 class ObjectLayoutAdapter(
-    private val onItemClick: (Int) -> Unit
+    private val onItemClick: (ObjectLayoutView) -> Unit
 ) : AbstractAdapter<ObjectLayoutView>(emptyList()) {
 
     override fun onCreateViewHolder(
@@ -20,7 +20,7 @@ class ObjectLayoutAdapter(
         itemView.setOnClickListener {
             val position = bindingAdapterPosition
             if (position != RecyclerView.NO_POSITION) {
-                onItemClick(items[bindingAdapterPosition].id)
+                onItemClick(items[bindingAdapterPosition])
             }
         }
     }

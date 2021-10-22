@@ -37,7 +37,7 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
 
     private val adapterLayouts by lazy {
         ObjectLayoutAdapter(
-            onItemClick = { code -> vm.onLayoutClicked(ctx, code) }
+            onItemClick = { view -> vm.onLayoutClicked(ctx, view) }
         )
     }
 

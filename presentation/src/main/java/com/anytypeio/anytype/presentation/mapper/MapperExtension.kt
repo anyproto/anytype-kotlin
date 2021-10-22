@@ -724,3 +724,18 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
         ObjectType.Layout.SPACE -> ObjectLayoutView.Space(id = layout.code, isSelected = false)
     }
 }
+
+fun ObjectLayoutView.toObjectLayout() = when (this) {
+    is ObjectLayoutView.Basic -> ObjectType.Layout.BASIC
+    is ObjectLayoutView.Dashboard -> ObjectType.Layout.DASHBOARD
+    is ObjectLayoutView.Database -> ObjectType.Layout.DATABASE
+    is ObjectLayoutView.File -> ObjectType.Layout.FILE
+    is ObjectLayoutView.Image -> ObjectType.Layout.IMAGE
+    is ObjectLayoutView.Note -> ObjectType.Layout.NOTE
+    is ObjectLayoutView.ObjectType -> ObjectType.Layout.OBJECT_TYPE
+    is ObjectLayoutView.Profile -> ObjectType.Layout.PROFILE
+    is ObjectLayoutView.Relation -> ObjectType.Layout.RELATION
+    is ObjectLayoutView.Set -> ObjectType.Layout.SET
+    is ObjectLayoutView.Space -> ObjectType.Layout.SPACE
+    is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
+}

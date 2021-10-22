@@ -406,4 +406,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     )
 
     override fun deleteObjects(targets: List<Id>) = remote.deleteObjects(targets = targets)
+
+    override fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
+        remote.setObjectLayout(ctx, layout)
 }

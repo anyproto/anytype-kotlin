@@ -568,7 +568,7 @@ open class EditorViewModelTest {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val paragraph = Block(
@@ -587,7 +587,7 @@ open class EditorViewModelTest {
             events = listOf(
                 Event.Command.ShowObject(
                     context = root,
-                    blocks = listOf(smart, paragraph),
+                    blocks = listOf(smart, header, title, paragraph),
                     root = root
                 )
             )
@@ -1046,11 +1046,13 @@ open class EditorViewModelTest {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val blocks = listOf(
             page,
+            header,
+            title,
             paragraph
         )
 
@@ -1238,11 +1240,13 @@ open class EditorViewModelTest {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(child)
+            children = listOf(header.id, child)
         )
 
         val blocks = listOf(
             page,
+            header,
+            title,
             paragraph
         )
 
@@ -1284,6 +1288,8 @@ open class EditorViewModelTest {
 
         val expected = listOf(
             page,
+            header,
+            title,
             paragraphAfterChange
         )
 
@@ -1935,10 +1941,26 @@ open class EditorViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = Block.Content.Text.Style.TITLE
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
         )
 
         val events: Flow<List<Event.Command>> = flow {
@@ -2106,10 +2128,25 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = style
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = style
+                ),
+                children = emptyList()
+            )
         )
 
         val flow: Flow<List<Event.Command>> = flow {
@@ -2237,9 +2274,25 @@ open class EditorViewModelTest {
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                children = emptyList()
+            )
         )
 
         val flow: Flow<List<Event.Command>> = flow {
@@ -2309,7 +2362,7 @@ open class EditorViewModelTest {
                 params = eq(
                     SplitBlock.Params(
                         context = root,
-                        block = page[1],
+                        block = page[3],
                         range = 0..0,
                         isToggled = null
                     )
@@ -2333,8 +2386,10 @@ open class EditorViewModelTest {
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart(),
-                children = listOf(child)
+                children = listOf(header.id, child)
             ),
+            header,
+            title,
             Block(
                 id = child,
                 fields = Block.Fields(emptyMap()),
@@ -2399,7 +2454,7 @@ open class EditorViewModelTest {
                 params = eq(
                     SplitBlock.Params(
                         context = root,
-                        block = page[1],
+                        block = page[3],
                         range = 1..1,
                         isToggled = null
                     )

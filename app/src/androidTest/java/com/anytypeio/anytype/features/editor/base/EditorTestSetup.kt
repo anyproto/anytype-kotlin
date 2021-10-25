@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
@@ -125,6 +127,8 @@ open class EditorTestSetup {
     lateinit var turnIntoStyle: TurnIntoStyle
     lateinit var setObjectType: SetObjectType
 
+    lateinit var getDefaultEditorType: GetDefaultEditorType
+
     @Mock
     lateinit var updateDivider: UpdateDivider
 
@@ -136,6 +140,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var repo: BlockRepository
+
+    @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
@@ -219,6 +226,7 @@ open class EditorTestSetup {
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
         getCompatibleObjectTypes = GetCompatibleObjectTypes(repo)
+        getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
@@ -287,7 +295,8 @@ open class EditorTestSetup {
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
-            searchObjects = getSearchObjects
+            searchObjects = getSearchObjects,
+            getDefaultEditorType = getDefaultEditorType
         )
     }
 

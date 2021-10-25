@@ -35,6 +35,26 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -247,10 +267,10 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(a.id)
+            children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -307,6 +327,10 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
+                    BlockView.Title.Basic(
+                        id = title.id,
+                        text = title.content<Block.Content.Text>().text,
+                    ),
                     BlockView.Text.Paragraph(
                         id = a.id,
                         text = a.content<TXT>().text,
@@ -663,10 +687,10 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(parent.id)
+            children = listOf(header.id, parent.id)
         )
 
-        val document = listOf(page, parent, child)
+        val document = listOf(page, header, title, parent, child)
 
         stubOpenDocument(document)
         stubInterceptEvents()

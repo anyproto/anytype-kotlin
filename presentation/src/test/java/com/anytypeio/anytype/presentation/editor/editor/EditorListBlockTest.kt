@@ -4,6 +4,7 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
@@ -30,6 +31,26 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -43,10 +64,25 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val style = Block.Content.Text.Style.BULLET
         val child = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = style
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = style
+                ),
+                children = emptyList()
+            )
         )
 
         stubInterceptEvents()
@@ -97,10 +133,25 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val style = Block.Content.Text.Style.CHECKBOX
         val child = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = style
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = style
+                ),
+                children = emptyList()
+            )
         )
 
         stubInterceptEvents()
@@ -151,10 +202,25 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val style = Block.Content.Text.Style.NUMBERED
         val child = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = style
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = style
+                ),
+                children = emptyList()
+            )
         )
 
         stubInterceptEvents()
@@ -203,10 +269,25 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
         val style = Block.Content.Text.Style.TOGGLE
         val child = MockDataFactory.randomUuid()
 
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child,
-            style = style
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, child)
+            ),
+            header,
+            title,
+            Block(
+                id = child,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Text(
+                    text = MockDataFactory.randomString(),
+                    marks = emptyList(),
+                    style = style
+                ),
+                children = emptyList()
+            )
         )
 
         val target = page.last()

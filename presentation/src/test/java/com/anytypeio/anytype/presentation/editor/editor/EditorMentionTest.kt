@@ -46,6 +46,26 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     @Mock
     lateinit var documentEmojiIconProvider: DocumentEmojiIconProvider
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
         .minPriority(Log.DEBUG)
@@ -577,10 +597,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(a.id)
+            children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()

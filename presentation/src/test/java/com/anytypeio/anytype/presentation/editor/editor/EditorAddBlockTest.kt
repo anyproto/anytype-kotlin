@@ -23,6 +23,26 @@ class EditorAddBlockTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    val title = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Text(
+            text = MockDataFactory.randomString(),
+            style = Block.Content.Text.Style.TITLE,
+            marks = emptyList()
+        ),
+        children = emptyList(),
+        fields = Block.Fields.empty()
+    )
+
+    val header = Block(
+        id = MockDataFactory.randomUuid(),
+        content = Block.Content.Layout(
+            type = Block.Content.Layout.Type.HEADER
+        ),
+        fields = Block.Fields.empty(),
+        children = listOf(title.id)
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -51,8 +71,10 @@ class EditorAddBlockTest : EditorPresentationTestSetup() {
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart(),
-                children = listOf(block.id)
+                children = listOf(header.id, block.id)
             ),
+            header,
+            title,
             block
         )
 
@@ -112,8 +134,10 @@ class EditorAddBlockTest : EditorPresentationTestSetup() {
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart(),
-                children = listOf(block.id)
+                children = listOf(header.id, block.id)
             ),
+            header,
+            title,
             block
         )
 

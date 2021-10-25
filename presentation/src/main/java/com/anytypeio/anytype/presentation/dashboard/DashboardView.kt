@@ -31,6 +31,7 @@ sealed class DashboardView {
         val typeName: String? = null,
         val type: String? = null,
         val done: Boolean? = null,
+        val snippet: String? = null,
         override val isArchived: Boolean,
         override val isSelected: Boolean = false,
         override val isLoading: Boolean = false,

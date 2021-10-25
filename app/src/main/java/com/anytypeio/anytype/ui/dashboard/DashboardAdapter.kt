@@ -38,6 +38,7 @@ class DashboardAdapter(
         const val VIEW_TYPE_ARCHIVE = 3
         const val VIEW_TYPE_SET = 4
         const val VIEW_TYPE_SET_WITHOUT_ICON = 5
+        const val VIEW_TYPE_DOCUMENT_NOTE = 6
 
         const val UNEXPECTED_TYPE_ERROR_MESSAGE = "Unexpected type"
     }
@@ -127,6 +128,18 @@ class DashboardAdapter(
                     itemView.tvSetTypeName.setText(R.string.set)
                 }
             }
+            VIEW_TYPE_DOCUMENT_NOTE -> {
+                ViewHolder.DocumentNoteViewHolder(parent).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val item = data[pos]
+                            check(item is DashboardView.Document)
+                            onDocumentClicked(item.target, item.isLoading)
+                        }
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -135,6 +148,7 @@ class DashboardAdapter(
         return when (val item = data[position]) {
             is DashboardView.Document -> when {
                 item.layout == ObjectType.Layout.TODO -> VIEW_TYPE_DOCUMENT_TASK
+                item.layout == ObjectType.Layout.NOTE -> VIEW_TYPE_DOCUMENT_NOTE
                 item.hasIcon || item.layout == ObjectType.Layout.PROFILE -> VIEW_TYPE_DOCUMENT
                 else -> VIEW_TYPE_DOCUMENT_WITHOUT_ICON
             }
@@ -192,6 +206,14 @@ class DashboardAdapter(
                 with(holder) {
                     val item = data[position] as DashboardView.Archive
                     bindTitle(item.title)
+                }
+            }
+            is ViewHolder.DocumentNoteViewHolder -> {
+                with(holder) {
+                    val item = data[position] as DashboardView.Document
+                    holder.bindTitle(item.snippet)
+                    holder.bindSubtitle(item.typeName)
+                    holder.bindLoading(item.isLoading)
                 }
             }
         }
@@ -336,6 +358,46 @@ class DashboardAdapter(
         }
 
         class DocumentWithoutIconViewHolder(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_desktop_page_without_icon,
+                parent,
+                false
+            )
+        ) {
+
+            private val tvTitle = itemView.findViewById<TextView>(R.id.tvDocTitle)
+            private val tvSubtitle = itemView.findViewById<TextView>(R.id.tvDocTypeName)
+            private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)
+            private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
+
+            fun bindTitle(title: String?) {
+                tvTitle.text = title
+            }
+
+            fun bindSubtitle(type: String?) {
+                tvSubtitle.text = type
+            }
+
+            fun bindLoading(isLoading: Boolean) {
+                if (isLoading) {
+                    tvTitle.invisible()
+                    tvSubtitle.invisible()
+                    shimmer.startShimmer()
+                    shimmer.visible()
+                } else {
+                    shimmer.stopShimmer()
+                    shimmer.invisible()
+                    tvTitle.visible()
+                    tvSubtitle.visible()
+                }
+            }
+
+            override fun bindSelection(isSelected: Boolean) {
+                if (isSelected) selection.visible() else selection.invisible()
+            }
+        }
+
+        class DocumentNoteViewHolder(parent: ViewGroup) : ViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_desktop_page_without_icon,
                 parent,

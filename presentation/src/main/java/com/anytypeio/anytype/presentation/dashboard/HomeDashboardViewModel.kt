@@ -457,6 +457,7 @@ class HomeDashboardViewModel(
                                     isLoading = false,
                                     emoji = obj.iconEmoji,
                                     image = obj.iconImage,
+                                    snippet = obj.snippet,
                                     type = obj.type.firstOrNull(),
                                     typeName = oType?.name,
                                     layout = obj.layout,

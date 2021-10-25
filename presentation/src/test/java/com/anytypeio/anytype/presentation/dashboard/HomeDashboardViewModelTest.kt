@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -83,6 +84,9 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
+    @Mock
+    lateinit var getDefaultEditorType: GetDefaultEditorType
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = Config(
@@ -116,7 +120,8 @@ class HomeDashboardViewModelTest {
             searchObjects = searchObjects,
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived,
-            urlBuilder = builder
+            urlBuilder = builder,
+            getDefaultEditorType = getDefaultEditorType
         )
     }
 
@@ -305,6 +310,7 @@ class HomeDashboardViewModelTest {
     fun `should start creating page when requested from UI`() {
 
         stubObserveEvents()
+        stubGetDefaultObjectType(null)
 
         vm = buildViewModel()
 
@@ -322,6 +328,7 @@ class HomeDashboardViewModelTest {
         stubGetEditorSettings()
         stubCloseDashboard()
         stubCreatePage(id)
+        stubGetDefaultObjectType(null)
 
         vm = buildViewModel()
 
@@ -382,6 +389,12 @@ class HomeDashboardViewModelTest {
     private fun stubGetEditorSettings() {
         getDebugSettings.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(DebugSettings(true))
+        }
+    }
+
+    private fun stubGetDefaultObjectType(type: String?) {
+        getDefaultEditorType.stub {
+            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type))
         }
     }
 }

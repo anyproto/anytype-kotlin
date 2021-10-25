@@ -60,6 +60,7 @@ object EventsDictionary {
 
     const val PROP_STYLE = "style"
     const val PROP_TYPE = "objectType"
+    const val PROP_IS_DRAFT = "isDraft"
     const val PROP_LAYOUT = "layout"
     const val PROP_ACCOUNT_ID = "accountId"
     const val PROP_RELATION_FORMAT = "relationFormat"

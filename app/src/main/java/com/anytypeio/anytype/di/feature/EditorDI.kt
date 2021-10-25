@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
@@ -144,7 +146,8 @@ object EditorSessionModule {
         updateDetail: UpdateDetail,
         getCompatibleObjectTypes: GetCompatibleObjectTypes,
         objectTypesProvider: ObjectTypesProvider,
-        searchObjects: SearchObjects
+        searchObjects: SearchObjects,
+        getDefaultEditorType: GetDefaultEditorType
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -167,7 +170,8 @@ object EditorSessionModule {
         updateDetail = updateDetail,
         getCompatibleObjectTypes = getCompatibleObjectTypes,
         objectTypesProvider = objectTypesProvider,
-        searchObjects = searchObjects
+        searchObjects = searchObjects,
+        getDefaultEditorType = getDefaultEditorType
     )
 
     @JvmStatic
@@ -726,4 +730,10 @@ object EditorUseCaseModule {
     fun searchObjects(
         repo: BlockRepository
     ): SearchObjects = SearchObjects(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
+        GetDefaultEditorType(repo)
 }

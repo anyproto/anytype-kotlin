@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
@@ -45,7 +46,8 @@ open class EditorViewModelFactory(
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
     private val objectTypesProvider: ObjectTypesProvider,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val getDefaultEditorType: GetDefaultEditorType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -72,7 +74,8 @@ open class EditorViewModelFactory(
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            getDefaultEditorType = getDefaultEditorType
         ) as T
     }
 }

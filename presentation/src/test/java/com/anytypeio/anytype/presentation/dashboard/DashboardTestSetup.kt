@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -82,6 +83,9 @@ open class DashboardTestSetup {
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
+    @Mock
+    lateinit var getDefaultEditorType: GetDefaultEditorType
+
     lateinit var vm: HomeDashboardViewModel
 
     val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -108,6 +112,7 @@ open class DashboardTestSetup {
         analytics = analytics,
         searchObjects = searchObjects,
         urlBuilder = builder,
+        getDefaultEditorType = getDefaultEditorType,
         setObjectListIsArchived = setObjectListIsArchived,
         deleteObjects = deleteObjects
     )

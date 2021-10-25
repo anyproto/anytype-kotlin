@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
@@ -184,6 +185,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var searchObjects: SearchObjects
 
+    @Mock
+    lateinit var getDefaultEditorType: GetDefaultEditorType
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -266,7 +270,8 @@ open class EditorPresentationTestSetup {
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            getDefaultEditorType = getDefaultEditorType
         )
     }
 
@@ -512,6 +517,12 @@ open class EditorPresentationTestSetup {
     fun stubSearchObjects() {
         searchObjects.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(listOf())
+        }
+    }
+
+    fun stubGetDefaultObjectType(type: String?) {
+        getDefaultEditorType.stub {
+            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type))
         }
     }
 }

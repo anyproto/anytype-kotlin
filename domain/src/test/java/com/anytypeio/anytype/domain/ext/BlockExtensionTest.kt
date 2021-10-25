@@ -947,8 +947,8 @@ class BlockExtensionTest {
         assertEquals(expected = expected, actual = result)
     }
 
-    @Test(expected = NoSuchElementException::class)
-    fun `should throw NoSuchElementException when title block is not present in header childs`() {
+    @Test
+    fun `should return null when title block is not present in header childs`() {
 
         val root = MockDataFactory.randomUuid()
 
@@ -982,10 +982,12 @@ class BlockExtensionTest {
         val document = listOf(page, header, a)
 
         val result = document.title()
+
+        assertNull(result)
     }
 
-    @Test(expected = NoSuchElementException::class)
-    fun `should throw NoSuchElementException when header is not present`() {
+    @Test
+    fun `should return null when header is not present`() {
 
         val root = MockDataFactory.randomUuid()
 
@@ -1010,5 +1012,7 @@ class BlockExtensionTest {
         val document = listOf(page, a)
 
         val result = document.title()
+
+        assertNull(result)
     }
 }

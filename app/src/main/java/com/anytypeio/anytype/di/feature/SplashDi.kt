@@ -13,11 +13,10 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
-import com.squareup.wire.get
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -54,8 +53,8 @@ object SplashModule {
         analytics: Analytics,
         storeObjectTypes: StoreObjectTypes,
         getLastOpenedObject: GetLastOpenedObject,
-        getDefaultPageType: GetDefaultPageType,
-        setDefaultPageType: SetDefaultPageType
+        getDefaultEditorType: GetDefaultEditorType,
+        setDefaultEditorType: SetDefaultEditorType
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
         launchAccount = launchAccount,
@@ -63,8 +62,8 @@ object SplashModule {
         analytics = analytics,
         storeObjectTypes = storeObjectTypes,
         getLastOpenedObject = getLastOpenedObject,
-        setDefaultPageType = setDefaultPageType,
-        getDefaultPageType = getDefaultPageType
+        setDefaultEditorType = setDefaultEditorType,
+        getDefaultEditorType = getDefaultEditorType
     )
 
     @JvmStatic
@@ -123,12 +122,12 @@ object SplashModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultPageType =
-        GetDefaultPageType(repo)
+    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
+        GetDefaultEditorType(repo)
 
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultPageType =
-        SetDefaultPageType(repo)
+    fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultEditorType =
+        SetDefaultEditorType(repo)
 }

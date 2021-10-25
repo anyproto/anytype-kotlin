@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -27,6 +28,7 @@ class HomeDashboardViewModelFactory(
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
     private val searchObjects: SearchObjects,
+    private val getDefaultEditorType: GetDefaultEditorType,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects
@@ -47,6 +49,7 @@ class HomeDashboardViewModelFactory(
             analytics = analytics,
             searchObjects = searchObjects,
             urlBuilder = urlBuilder,
+            getDefaultEditorType = getDefaultEditorType,
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived
         ) as T

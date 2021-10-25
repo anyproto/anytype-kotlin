@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_IS_DRAFT
+import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_DASHBOARD
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_PROFILE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_ARCHIVE
@@ -27,6 +29,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -58,6 +61,7 @@ class HomeDashboardViewModel(
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
     private val searchObjects: SearchObjects,
+    private val getDefaultEditorType: GetDefaultEditorType,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects
@@ -181,25 +185,7 @@ class HomeDashboardViewModel(
     }
 
     fun onAddNewDocumentClicked() {
-        val startTime = System.currentTimeMillis()
-        createPage.invoke(viewModelScope, CreatePage.Params(ctx = null, isDraft = true)) { result ->
-            result.either(
-                fnL = { e -> Timber.e(e, "Error while creating a new page") },
-                fnR = { id ->
-                    val middle = System.currentTimeMillis()
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        startTime = startTime,
-                        middleTime = middle,
-                        renderTime = middle,
-                        eventName = PAGE_CREATE,
-                        props = Props.empty()
-                    )
-                    machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
-                    proceedWithOpeningDocument(id)
-                }
-            )
-        }
+        proceedWithGettingDefaultPageType()
     }
 
     /**
@@ -652,11 +638,53 @@ class HomeDashboardViewModel(
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.FILE,
             ObjectType.Layout.IMAGE,
-            ObjectType.Layout.SET
+            ObjectType.Layout.SET,
+            ObjectType.Layout.NOTE
         )
     }
 
     enum class TAB { FAVOURITE, RECENT, INBOX, SETS, ARCHIVE }
+
+    //region CREATE PAGE
+    private fun proceedWithGettingDefaultPageType() {
+        viewModelScope.launch {
+            getDefaultEditorType.invoke(Unit).proceed(
+                failure = { Timber.e(it, "Error while getting default page type") },
+                success = { response -> proceedWithCreatePage(type = response.type) }
+            )
+        }
+    }
+
+    private suspend fun proceedWithCreatePage(type: String?) {
+        val startTime = System.currentTimeMillis()
+        val isDraft = true
+        val params = CreatePage.Params(
+            ctx = null,
+            isDraft = isDraft,
+            type = type,
+            emoji = null
+        )
+        createPage.invoke(viewModelScope, params) { result ->
+            result.either(
+                fnL = { e -> Timber.e(e, "Error while creating a new page") },
+                fnR = { id ->
+                    val middle = System.currentTimeMillis()
+                    val props = Props(mapOf(PROP_TYPE to type, PROP_IS_DRAFT to isDraft))
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        startTime = startTime,
+                        middleTime = middle,
+                        renderTime = middle,
+                        eventName = PAGE_CREATE,
+                        props = props
+                    )
+                    machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
+                    proceedWithOpeningDocument(id)
+                }
+            )
+        }
+    }
+    //endregion
 
     enum class Mode { DEFAULT, SELECTION }
 

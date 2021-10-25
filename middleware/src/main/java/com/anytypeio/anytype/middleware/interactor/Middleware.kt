@@ -183,11 +183,12 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?): Id {
+    fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?, type: String?): Id {
 
         val details: MutableMap<String, Any> = mutableMapOf()
         emoji?.let { details[iconEmojiKey] = it}
         isDraft?.let { details[isDraftKey] = it }
+        type?.let { details[typeKey] = it }
 
         val request = Rpc.Block.CreatePage.Request(
             contextId = ctx.orEmpty(),

@@ -10,11 +10,12 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -61,6 +62,7 @@ object HomeDashboardModule {
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
         searchObjects: SearchObjects,
+        getDefaultEditorType: GetDefaultEditorType,
         urlBuilder: UrlBuilder,
         setObjectListIsArchived: SetObjectListIsArchived,
         deleteObjects: DeleteObjects
@@ -78,7 +80,8 @@ object HomeDashboardModule {
         analytics = analytics,
         urlBuilder = urlBuilder,
         setObjectListIsArchived = setObjectListIsArchived,
-        deleteObjects = deleteObjects
+        deleteObjects = deleteObjects,
+        getDefaultEditorType = getDefaultEditorType
     )
 
     @JvmStatic
@@ -177,6 +180,12 @@ object HomeDashboardModule {
     ) : SearchObjects = SearchObjects(
         repo = repo
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
+        GetDefaultEditorType(repo)
 
     @JvmStatic
     @Provides

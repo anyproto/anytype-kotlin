@@ -21,8 +21,8 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -40,8 +40,8 @@ class SplashViewModel(
     private val launchAccount: LaunchAccount,
     private val storeObjectTypes: StoreObjectTypes,
     private val getLastOpenedObject: GetLastOpenedObject,
-    private val getDefaultPageType: GetDefaultPageType,
-    private val setDefaultPageType: SetDefaultPageType
+    private val getDefaultEditorType: GetDefaultEditorType,
+    private val setDefaultEditorType: SetDefaultEditorType
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -52,7 +52,7 @@ class SplashViewModel(
 
     private fun proceedWithUserSettings() {
         viewModelScope.launch {
-            getDefaultPageType.invoke(Unit).process(
+            getDefaultEditorType.invoke(Unit).process(
                 failure = {
                     Timber.e(it, "Error while getting default page type")
                     checkAuthorizationStatus()
@@ -77,9 +77,9 @@ class SplashViewModel(
             DEFAULT_TYPE_UPDATE
         }
         viewModelScope.launch {
-            val params = SetDefaultPageType.Params(defaultType)
+            val params = SetDefaultEditorType.Params(defaultType)
             Timber.d("Start to update Default Page Type:${params.type}")
-            setDefaultPageType.invoke(params).process(
+            setDefaultEditorType.invoke(params).process(
                 failure = {
                     Timber.e(it, "Error while setting default page type")
                     checkAuthorizationStatus()

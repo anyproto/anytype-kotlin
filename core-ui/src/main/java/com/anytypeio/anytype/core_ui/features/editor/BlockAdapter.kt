@@ -76,6 +76,7 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FEATURED_RELATION
+import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NOTE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_FILE
@@ -250,6 +251,15 @@ class BlockAdapter(
                         }
                     }
                 }
+            }
+            HOLDER_NOTE_TITLE -> {
+                TitleNoteHolder(
+                    view = inflater.inflate(
+                        R.layout.item_block_note_title,
+                        parent,
+                        false
+                    )
+                )
             }
             HOLDER_HEADER_ONE -> {
                 HeaderOne(

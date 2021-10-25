@@ -3,9 +3,9 @@ package com.anytypeio.anytype.domain.launch
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
-class GetDefaultPageType(
+class GetDefaultEditorType(
     private val userSettingsRepository: UserSettingsRepository
-) : BaseUseCase<GetDefaultPageType.Response, Unit>() {
+) : BaseUseCase<GetDefaultEditorType.Response, Unit>() {
 
     override suspend fun run(params: Unit) = safe {
         Response(userSettingsRepository.getDefaultPageType())

@@ -16,12 +16,20 @@ class CreatePage(
         repo.createPage(
             ctx = params.ctx,
             emoji = null,
-            isDraft = params.isDraft
+            isDraft = params.isDraft,
+            type = params.type
         )
     }
 
     /**
      * @property [ctx] context (parent) for this new page.
+     * @property [type] type of created object
+     * @property [isDraft] should this object be in Draft state
      */
-    data class Params(val ctx: Id?, val isDraft: Boolean?)
+    data class Params(
+        val ctx: Id?,
+        val type: String?,
+        val emoji: String?,
+        val isDraft: Boolean?
+    )
 }

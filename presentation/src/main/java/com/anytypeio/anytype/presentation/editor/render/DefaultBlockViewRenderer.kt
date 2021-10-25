@@ -53,6 +53,9 @@ class DefaultBlockViewRenderer(
                         )
                     )
                 }
+                if (isLayoutNote(root, details)) {
+                    result.add(BlockView.TitleNote(id = BlockView.TitleNote.INTERNAL_ID))
+                }
             }
         }
 
@@ -472,6 +475,7 @@ class DefaultBlockViewRenderer(
                         relations = relations,
                         details = details
                     )
+
                     if (featured.relations.isNotEmpty()) {
                         result.add(featured)
                     }
@@ -1349,5 +1353,10 @@ class DefaultBlockViewRenderer(
             is Cursor.End -> content.text.length
             is Cursor.Range -> cursor.range.first
         }
+    }
+
+    private fun isLayoutNote(root: Block, details: Block.Details): Boolean {
+        val layoutCode = details.details[root.id]?.layout?.toInt()
+        return layoutCode == ObjectType.Layout.NOTE.code
     }
 }

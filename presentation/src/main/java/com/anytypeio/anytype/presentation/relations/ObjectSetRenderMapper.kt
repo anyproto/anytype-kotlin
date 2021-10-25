@@ -112,8 +112,8 @@ fun ObjectSet.render(
 fun ObjectSet.title(
     ctx: Id,
     urlBuilder: UrlBuilder
-): BlockView.Title.Basic {
-    val title = blocks.title()
+): BlockView.Title.Basic? {
+    val title = blocks.title() ?: return null
 
     val objectDetails = details[ctx]
 

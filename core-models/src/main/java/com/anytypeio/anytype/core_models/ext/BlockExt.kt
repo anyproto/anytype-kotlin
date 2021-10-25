@@ -52,16 +52,15 @@ fun List<Block>.parents(selection: Iterable<Id>) : List<Id> {
 
 /**
  * Finds title block for a [Document]
- * @return title block
- * @throws NoSuchElementException if there was no title block in this document.
+ * @return title block or null if there's no title present
  */
-fun Document.title(): Block {
-    val header = first { block ->
+fun Document.title(): Block? {
+    val header = firstOrNull { block ->
         val cnt = block.content
         cnt is Content.Layout && cnt.type == Content.Layout.Type.HEADER
-    }
+    } ?: return null
     val children = filter { header.children.contains(it.id) }
-    return children.first { child ->
+    return children.firstOrNull { child ->
         val cnt = child.content
         cnt is Content.Text && cnt.style == Content.Text.Style.TITLE
     }

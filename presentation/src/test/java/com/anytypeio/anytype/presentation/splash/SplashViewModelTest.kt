@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.splash
 
-import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ObjectType
@@ -15,8 +14,8 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -62,10 +61,10 @@ class SplashViewModelTest {
     private lateinit var getLastOpenedObject: GetLastOpenedObject
 
     @Mock
-    private lateinit var setDefaultPageType: SetDefaultPageType
+    private lateinit var setDefaultEditorType: SetDefaultEditorType
 
     @Mock
-    private lateinit var getDefaultPageType: GetDefaultPageType
+    private lateinit var getDefaultEditorType: GetDefaultEditorType
 
     lateinit var vm: SplashViewModel
 
@@ -90,8 +89,8 @@ class SplashViewModelTest {
             analytics = analytics,
             storeObjectTypes = storeObjectTypes,
             getLastOpenedObject = getLastOpenedObject,
-            setDefaultPageType = setDefaultPageType,
-            getDefaultPageType = getDefaultPageType
+            setDefaultEditorType = setDefaultEditorType,
+            getDefaultEditorType = getDefaultEditorType
         )
     }
 
@@ -125,14 +124,14 @@ class SplashViewModelTest {
         stubLaunchWallet()
         stubLaunchAccount()
         stubGetLastOpenedObject()
-        getDefaultPageType.stub {
+        getDefaultEditorType.stub {
             onBlocking { invoke(Unit) } doReturn Either.Left(Exception("error"))
         }
 
         initViewModel()
 
         runBlocking {
-            verify(getDefaultPageType, times(1)).invoke(any())
+            verify(getDefaultEditorType, times(1)).invoke(any())
             verify(checkAuthorizationStatus, times(1)).invoke(any())
         }
     }
@@ -151,7 +150,7 @@ class SplashViewModelTest {
         initViewModel()
 
         runBlocking {
-            verify(getDefaultPageType, times(1)).invoke(any())
+            verify(getDefaultEditorType, times(1)).invoke(any())
             verify(checkAuthorizationStatus, times(1)).invoke(any())
         }
     }
@@ -312,14 +311,14 @@ class SplashViewModelTest {
     }
 
     private fun stubGetDefaultObjectType(type: String?) {
-        getDefaultPageType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultPageType.Response(type))
+        getDefaultEditorType.stub {
+            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type))
         }
     }
 
     private fun stubSetDefaultObjectType(type: String) {
-        setDefaultPageType.stub {
-            onBlocking { invoke(SetDefaultPageType.Params(type)) } doReturn Either.Right(Unit)
+        setDefaultEditorType.stub {
+            onBlocking { invoke(SetDefaultEditorType.Params(type)) } doReturn Either.Right(Unit)
         }
     }
 }

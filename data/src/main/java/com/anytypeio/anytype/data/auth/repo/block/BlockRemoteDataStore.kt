@@ -18,8 +18,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun createPage(
         ctx: Id?,
         emoji: String?,
-        isDraft: Boolean?
-    ): Id = remote.createPage(ctx = ctx, emoji = emoji, isDraft = isDraft)
+        isDraft: Boolean?,
+        type: String?
+    ): Id = remote.createPage(ctx = ctx, emoji = emoji, isDraft = isDraft, type = type)
 
     override suspend fun openPage(id: String): Payload = remote.openPage(id)
     override suspend fun openProfile(id: String): Payload = remote.openProfile(id)

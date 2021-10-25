@@ -5,15 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class UserSettingsViewModel(
-    private val getDefaultPageType: GetDefaultPageType,
-    private val setDefaultPageType: SetDefaultPageType,
+    private val getDefaultEditorType: GetDefaultEditorType,
+    private val setDefaultEditorType: SetDefaultEditorType,
     private val analytics: Analytics
 ) : ViewModel() {
 
@@ -21,7 +21,7 @@ class UserSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultPageType.invoke(Unit).proceed(
+            getDefaultEditorType.invoke(Unit).proceed(
                 failure = { Timber.e(it, "Error while getting user settings") },
                 success = { response ->
                     if (response.type == ObjectType.NOTE_URL) {
@@ -44,7 +44,7 @@ class UserSettingsViewModel(
 
     private fun proceedWithUpdateType(type: String) {
         viewModelScope.launch {
-            setDefaultPageType.invoke(SetDefaultPageType.Params(type)).process(
+            setDefaultEditorType.invoke(SetDefaultEditorType.Params(type)).process(
                 failure = {
                     Timber.e(it, "Error while setting default object type")
                     commands.emit(Command.Exit)
@@ -62,16 +62,16 @@ class UserSettingsViewModel(
     }
 
     class Factory(
-        private val getDefaultPageType: GetDefaultPageType,
-        private val setDefaultPageType: SetDefaultPageType,
+        private val getDefaultEditorType: GetDefaultEditorType,
+        private val setDefaultEditorType: SetDefaultEditorType,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(
             modelClass: Class<T>
         ): T = UserSettingsViewModel(
-            getDefaultPageType = getDefaultPageType,
-            setDefaultPageType = setDefaultPageType,
+            getDefaultEditorType = getDefaultEditorType,
+            setDefaultEditorType = setDefaultEditorType,
             analytics = analytics
         ) as T
     }

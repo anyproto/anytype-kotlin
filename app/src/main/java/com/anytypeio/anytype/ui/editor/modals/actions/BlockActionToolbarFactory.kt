@@ -47,6 +47,7 @@ object BlockActionToolbarFactory {
         is BlockView.Description -> TODO()
         is BlockView.FeaturedRelation -> TODO()
         is BlockView.Unsupported -> TODO()
+        is BlockView.TitleNote -> TODO()
     }
 
     fun newInstance(

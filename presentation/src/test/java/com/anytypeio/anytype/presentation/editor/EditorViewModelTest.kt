@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
@@ -213,6 +214,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
+
+    @Mock
+    lateinit var getDefaultEditorType: GetDefaultEditorType
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -2407,49 +2411,6 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should proceed with creating a new page with is draft true on on-plus-button-clicked event`() {
-
-        val root = MockDataFactory.randomUuid()
-        val child = MockDataFactory.randomUuid()
-
-        val page = MockBlockFactory.makeOnePageWithOneTextBlock(
-            root = root,
-            child = child
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onPlusButtonPressed()
-
-        verify(createPage, times(1)).invoke(
-            scope = any(),
-            params = eq(CreatePage.Params(null, true)),
-            onResult = any()
-        )
-    }
-
-    @Test
     fun `should start downloading file`() {
 
         val root = MockDataFactory.randomUuid()
@@ -3885,6 +3846,12 @@ open class EditorViewModelTest {
         }
     }
 
+    private fun stubGetDefaultObjectType(type: String?) {
+        getDefaultEditorType.stub {
+            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type))
+        }
+    }
+
     fun buildViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
@@ -3915,6 +3882,7 @@ open class EditorViewModelTest {
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             analytics = analytics,
+            getDefaultEditorType = getDefaultEditorType,
             orchestrator = Orchestrator(
                 createBlock = createBlock,
                 replaceBlock = replaceBlock,

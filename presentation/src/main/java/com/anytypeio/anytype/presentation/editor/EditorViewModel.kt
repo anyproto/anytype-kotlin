@@ -97,6 +97,7 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.sortByType
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.views
@@ -5205,13 +5206,25 @@ class EditorViewModel(
             getCompatibleObjectTypes.invoke(params).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },
                 success = { objectTypes ->
-                    val views = listOf(ObjectTypeView.Search()) + objectTypes.toObjectTypeView()
-                    controlPanelInteractor.onEvent(
-                        ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(views)
+                    proceedWithSortingObjectTypesForObjectTypeWidget(
+                        views = objectTypes.toObjectTypeView()
                     )
                 }
             )
         }
+    }
+
+    private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView>) {
+        getDefaultEditorType.invoke(Unit).proceed(
+            failure = { Timber.e(it, "Error while getting default object type") },
+            success = { response ->
+                val sorted = listOf(ObjectTypeView.Search()) + views.toMutableList()
+                    .sortByType(response.type)
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(sorted)
+                )
+            }
+        )
     }
 
     private fun hideObjectTypesWidget() {

@@ -47,13 +47,13 @@ data class Block(
         val layout: Double? by default
         val id: Id? by default
         val isDraft: Boolean? by default
+        val snippet: String? by default
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
             const val DESCRIPTION_KEY = "description"
-            const val FEATURED_RELATIONS_KEY = "featuredRelations"
             const val IS_ARCHIVED_KEY = "isArchived"
         }
     }

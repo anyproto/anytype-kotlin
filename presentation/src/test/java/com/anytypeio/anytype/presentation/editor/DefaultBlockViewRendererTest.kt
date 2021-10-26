@@ -1827,6 +1827,202 @@ class DefaultBlockViewRendererTest {
         assertEquals(expected = expected, actual = result)
     }
 
+    @Test
+    fun `should update mentions text as snippet and as name, depending on layout in text blocks, sort marks and shift`() {
+
+        val title = MockTypicalDocumentFactory.title
+        val header = MockTypicalDocumentFactory.header
+
+        val mentionText1 = "Foobar"
+        val mentionTextUpdated1 = "FoobaraPpJd20"
+        val mentionText2 = "Anytype"
+        val mentionTextUpdated2 = "Anyt"
+        val source = "Start $mentionText1 middle end Hdm5K 6511 xFMoTKqe $mentionText2 sNmO2f"
+        val sourceUpdated =
+            "Start $mentionTextUpdated1 middle end Hdm5K 6511 xFMoTKqe $mentionTextUpdated2 sNmO2f"
+        val textColor = "F0So"
+        val mentionTarget1 = "mc412Q8"
+        val mentionTarget2 = "zd4h0852"
+        val link1 = "zH45s"
+        val link2 = "73EnYa"
+
+        val marks: List<Block.Content.Text.Mark> = listOf(
+            Block.Content.Text.Mark(
+                range = 20..23,
+                type = Block.Content.Text.Mark.Type.LINK,
+                param = link1
+            ),
+            Block.Content.Text.Mark(
+                range = 52..58,
+                type = Block.Content.Text.Mark.Type.LINK,
+                param = link2
+            ),
+            Block.Content.Text.Mark(
+                range = 24..29,
+                type = Block.Content.Text.Mark.Type.ITALIC
+            ),
+            Block.Content.Text.Mark(
+                range = 0..5,
+                type = Block.Content.Text.Mark.Type.TEXT_COLOR,
+                param = textColor
+            ),
+            Block.Content.Text.Mark(
+                range = 30..34,
+                type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            ),
+            Block.Content.Text.Mark(
+                range = 44..51,
+                type = Block.Content.Text.Mark.Type.MENTION,
+                param = mentionTarget2
+            ),
+            Block.Content.Text.Mark(
+                range = 6..12,
+                type = Block.Content.Text.Mark.Type.MENTION,
+                param = mentionTarget1
+            ),
+            Block.Content.Text.Mark(
+                range = 13..19,
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(),
+            content = Block.Content.Text(
+                text = source,
+                style = Block.Content.Text.Style.P,
+                marks = marks,
+                align = Block.Align.AlignLeft
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id, a.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
+        val fieldsUpdated1 = Block.Fields(
+            mapOf(
+                "name" to "XmN34",
+                "snippet" to mentionTextUpdated1,
+                "layout" to 9.0
+            )
+        )
+
+        val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
+        val fieldsUpdated2 = Block.Fields(
+            mapOf(
+                "name" to mentionTextUpdated2,
+                "iconEmoji" to randomEmoji2,
+                "layout" to 0.0
+            )
+        )
+
+        val detailsAmend = mapOf(
+            mentionTarget1 to fieldsUpdated1,
+            mentionTarget2 to fieldsUpdated2
+        )
+
+        val blocks = listOf(page, header, title, a)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(a.id),
+                indent = 0,
+                details = Block.Details(detailsAmend)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.Text.Paragraph(
+                id = a.id,
+                text = sourceUpdated,
+                marks = listOf(
+                    Markup.Mark(
+                        from = 0,
+                        to = 5,
+                        type = Markup.Type.TEXT_COLOR,
+                        param = textColor
+                    ),
+                    Markup.Mark(
+                        from = 6,
+                        to = 19,
+                        type = Markup.Type.MENTION,
+                        param = mentionTarget1,
+                        extras = mapOf(
+                            "image" to null,
+                            "emoji" to null,
+                            "isLoading" to "false"
+                        )
+                    ),
+                    Markup.Mark(
+                        from = 20,
+                        to = 26,
+                        type = Markup.Type.BOLD
+                    ),
+                    Markup.Mark(
+                        from = 27,
+                        to = 30,
+                        type = Markup.Type.LINK,
+                        param = link1
+                    ),
+                    Markup.Mark(
+                        from = 31,
+                        to = 36,
+                        type = Markup.Type.ITALIC
+                    ),
+                    Markup.Mark(
+                        from = 37,
+                        to = 41,
+                        type = Markup.Type.STRIKETHROUGH
+                    ),
+                    Markup.Mark(
+                        from = 51,
+                        to = 55,
+                        type = Markup.Type.MENTION,
+                        param = mentionTarget2,
+                        extras = mapOf(
+                            "image" to null,
+                            "emoji" to randomEmoji2,
+                            "isLoading" to "false"
+                        )
+                    ),
+                    Markup.Mark(
+                        from = 56,
+                        to = 62,
+                        type = Markup.Type.LINK,
+                        param = link2
+                    )
+                ),
+                isFocused = true,
+                alignment = Alignment.START
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
     @Test//Proper test
     fun `should return same text and marks`() {
 

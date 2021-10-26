@@ -1178,7 +1178,7 @@ class DefaultBlockViewRenderer(
             else
                 null
         },
-        text = details.details[content.target]?.name,
+        text = getProperPageName(id = content.target, details = details),
         indent = indent,
         isLoading = !details.details.containsKey(content.target),
         isSelected = checkIfSelected(
@@ -1358,5 +1358,14 @@ class DefaultBlockViewRenderer(
     private fun isLayoutNote(root: Block, details: Block.Details): Boolean {
         val layoutCode = details.details[root.id]?.layout?.toInt()
         return layoutCode == ObjectType.Layout.NOTE.code
+    }
+
+    private fun getProperPageName(id: Id, details: Block.Details): String? {
+        val layoutCode = details.details[id]?.layout?.toInt()
+        return if (layoutCode == ObjectType.Layout.NOTE.code) {
+            details.details[id]?.snippet?.replace("\n", "")
+        } else {
+            details.details[id]?.name
+        }
     }
 }

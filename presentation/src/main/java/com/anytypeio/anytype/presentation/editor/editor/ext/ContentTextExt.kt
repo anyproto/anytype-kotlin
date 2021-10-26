@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -22,7 +23,12 @@ fun Block.Content.Text.getTextAndMarks(
     try {
         updatedMarks.forEach { mark ->
             if (mark.type != Markup.Type.MENTION || mark.param == null) return@forEach
-            var newName = details.details[mark.param]?.name ?: return@forEach
+            val layoutCode = details.details[mark.param]?.layout?.toInt()
+            var newName = if (layoutCode == ObjectType.Layout.NOTE.code) {
+                details.details[mark.param]?.snippet?.replace("\n", "")
+            } else {
+                details.details[mark.param]?.name
+            } ?: return@forEach
             val oldName = updatedText.substring(mark.from, mark.to)
             if (newName != oldName) {
                 if (newName.isEmpty()) newName = Relations.RELATION_NAME_EMPTY

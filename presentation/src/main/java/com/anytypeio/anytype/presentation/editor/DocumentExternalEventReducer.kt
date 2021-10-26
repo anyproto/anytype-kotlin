@@ -2,6 +2,8 @@ package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -130,4 +132,45 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
 
         else -> state.also { Timber.d("Ignoring event: $event") }
     }
+}
+
+typealias Flag = Int
+
+object Flags {
+    const val FLAG_REFRESH : Flag = 0
+    val skipRefreshKeys = listOf(
+        Relations.NAME,
+        Relations.LAST_MODIFIED_DATE,
+        Relations.SNIPPET,
+        Relations.IS_DRAFT
+    )
+}
+
+fun List<Event>.flags(ctx: Id) : List<Flag> {
+    forEach { event ->
+        when(event) {
+            is Event.Command.Details.Amend -> {
+                if (event.target == ctx) {
+                    if (event.details.keys.any { key -> !Flags.skipRefreshKeys.contains(key) }) {
+                        return listOf(Flags.FLAG_REFRESH)
+                    }
+                } else {
+                    return listOf(Flags.FLAG_REFRESH)
+                }
+            }
+            is Event.Command.Details.Unset -> {
+                if (event.target == ctx) {
+                    if (event.keys.any { key -> !Flags.skipRefreshKeys.contains(key) }) {
+                        return listOf(Flags.FLAG_REFRESH)
+                    }
+                } else {
+                    return listOf(Flags.FLAG_REFRESH)
+                }
+            }
+            else -> {
+                return listOf(Flags.FLAG_REFRESH)
+            }
+        }
+    }
+    return emptyList()
 }

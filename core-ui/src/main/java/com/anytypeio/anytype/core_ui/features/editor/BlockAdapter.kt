@@ -1449,15 +1449,10 @@ class BlockAdapter(
     )
     fun updateWithDiffUtil(items: List<BlockView>) {
         if (BuildConfig.DEBUG) {
-            logDataSetUpdateEvent(items)
+            Timber.d("----------Blocks dispatched to adapter---------------------")
         }
         val result = DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
         blocks = items
         result.dispatchUpdatesTo(this)
-    }
-
-    private fun logDataSetUpdateEvent(items: List<BlockView>) {
-        Timber.d("----------Updating BlockView---------------------\n$items")
-        Timber.d("----------Finished Updating BlockView------------")
     }
 }

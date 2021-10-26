@@ -4,6 +4,7 @@ package com.anytypeio.anytype.core_models
  * Keys for predefined, bundled relations.
  */
 object Relations {
+
     const val ID = "id"
     const val COVER_TYPE = "coverType"
     const val DESCRIPTION = "description"
@@ -23,9 +24,8 @@ object Relations {
     const val FEATURED_RELATIONS = "featuredRelations"
     const val FILE_EXT = "fileExt"
     const val FILE_MIME_TYPE = "fileMimeType"
-
-    const val NUMBER_DEFAULT_VALUE = "0"
-    const val RELATION_NAME_EMPTY = "Untitled"
+    const val SNIPPET = "snippet"
+    const val IS_DRAFT = "isDraft"
 
     val defaultRelations = listOf(
         ID,
@@ -43,4 +43,7 @@ object Relations {
         FILE_EXT,
         FILE_MIME_TYPE
     )
+
+    const val NUMBER_DEFAULT_VALUE = "0"
+    const val RELATION_NAME_EMPTY = "Untitled"
 }

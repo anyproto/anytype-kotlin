@@ -262,7 +262,13 @@ class EditorViewModel(
                 .stream()
                 .filter { it.events.isNotEmpty() }
                 .map { payload -> processEvents(payload.events) }
-                .collect { viewModelScope.launch { refresh() } }
+                .collect { flags ->
+                    if (flags.contains(Flags.FLAG_REFRESH))
+                        refresh()
+                    else {
+                        Timber.d("----------Refresh skipped----------")
+                    }
+                }
         }
     }
 
@@ -279,27 +285,37 @@ class EditorViewModel(
         }
     }
 
-    private suspend fun processEvents(events: List<Event>) {
-        Timber.d("Blocks before handling events: $blocks")
-        Timber.d("Events: $events")
+    private suspend fun processEvents(events: List<Event>) : List<Flag> {
+        if (BuildConfig.DEBUG) {
+            Timber.d("Blocks before handling events: $blocks")
+            Timber.d("Events: $events")
+        }
         events.forEach { event ->
-            if (event is Event.Command.ShowObject) {
-                orchestrator.stores.details.update(event.details)
-                orchestrator.stores.relations.update(event.relations)
-                orchestrator.stores.objectTypes.update(event.objectTypes)
-                orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
-                val objectType = event.details.details[context]?.type?.firstOrNull()
-                proceedWithShowingObjectTypesWidget(objectType, event.blocks)
-            }
-            if (event is Event.Command.Details) {
-                orchestrator.stores.details.apply { update(current().process(event)) }
-            }
-            if (event is Event.Command.ObjectRelations) {
-                orchestrator.stores.relations.apply { update(current().process(event)) }
+            when (event) {
+                is Event.Command.ShowObject -> {
+                    orchestrator.stores.details.update(event.details)
+                    orchestrator.stores.relations.update(event.relations)
+                    orchestrator.stores.objectTypes.update(event.objectTypes)
+                    orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
+                    val objectType = event.details.details[context]?.type?.firstOrNull()
+                    proceedWithShowingObjectTypesWidget(objectType, event.blocks)
+                }
+                is Event.Command.Details -> {
+                    orchestrator.stores.details.apply { update(current().process(event)) }
+                }
+                is Event.Command.ObjectRelations -> {
+                    orchestrator.stores.relations.apply { update(current().process(event)) }
+                }
+                else -> {
+                    // do nothing
+                }
             }
             blocks = reduce(blocks, event)
         }
-        Timber.d("Blocks after handling events: $blocks")
+        if (BuildConfig.DEBUG) {
+            Timber.d("Blocks after handling events: $blocks")
+        }
+        return events.flags(context)
     }
 
     private fun startProcessingControlPanelViewState() {
@@ -558,7 +574,12 @@ class EditorViewModel(
             interceptEvents
                 .build(InterceptEvents.Params(context))
                 .map { events -> processEvents(events) }
-                .collect { refresh() }
+                .collect { flags ->
+                    if (flags.contains(Flags.FLAG_REFRESH))
+                        refresh()
+                    else
+                        Timber.d("----------Refresh skipped----------")
+                }
         }
 
         jobs += viewModelScope.launch {
@@ -2599,8 +2620,7 @@ class EditorViewModel(
 
     private suspend fun refresh() {
         if (BuildConfig.DEBUG) {
-            Timber.d("----------Refreshing Blocks---------------------\n$blocks")
-            Timber.d("----------Finished Refreshing Blocks------------")
+            Timber.d("----------Blocks dispatched to render pipeline----------")
         }
         renderizePipeline.send(blocks)
     }
@@ -4520,7 +4540,9 @@ class EditorViewModel(
     }
 
     fun proceedWithMoveToAction(target: Id, blocks: List<Id>) {
-        Timber.d("onMoveToTargetClicked, target:[$target], blocks:[$blocks]")
+        if (BuildConfig.DEBUG) {
+            Timber.d("onMoveToTargetClicked, target:[$target], blocks:[$blocks]")
+        }
         viewModelScope.launch {
             if (mode == EditorMode.Select) {
                 mode = EditorMode.Edit
@@ -4544,7 +4566,9 @@ class EditorViewModel(
         restorePosition: Int?,
         restoreBlock: Id?
     ) {
-        Timber.d("proceedWithMoveToExit, blocks:[$blocks], restoreBlock:[$restoreBlock] position:[$restorePosition]")
+        if (BuildConfig.DEBUG) {
+            Timber.d("proceedWithMoveToExit, blocks:[$blocks], restoreBlock:[$restoreBlock] position:[$restorePosition]")
+        }
         if (restorePosition != null && restoreBlock != null) {
             proceedWithSettingTextSelection(
                 block = restoreBlock,

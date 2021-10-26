@@ -379,6 +379,14 @@ message Account {
             string color = 2; // Color of the avatar, used if image not set.
         }
     }
+    message Config {
+        bool enableDataview = 1;
+        bool enableDebug = 2;
+        bool enableReleaseChannelSwitch = 3;
+        bool enableSpaces = 4;
+
+        google.protobuf.Struct extra = 100;
+    }
 }
 
 message LinkPreview {

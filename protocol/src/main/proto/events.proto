@@ -12,11 +12,13 @@ message Event {
     repeated Message messages = 1;
     string contextId = 2;
     anytype.model.Account initiator = 3;
+    string traceId = 4;
 
     message Message {
         oneof value {
             Account.Show accountShow = 1;
             Account.Details accountDetails = 201;
+            Account.Config.Update accountConfigUpdate = 202;
 
             Object.Details.Set objectDetailsSet = 16;
             Object.Details.Amend objectDetailsAmend = 50;
@@ -87,6 +89,12 @@ message Event {
         message Details {
             string profileId = 1;
             google.protobuf.Struct details = 2;
+        }
+
+        message Config {
+            message Update {
+                anytype.model.Account.Config config = 1;
+            }
         }
     }
 
@@ -748,6 +756,7 @@ message Event {
 message ResponseEvent {
     repeated Event.Message messages = 1;
     string contextId = 2;
+    string traceId = 4;
 }
 
 message Model {

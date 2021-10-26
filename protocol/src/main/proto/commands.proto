@@ -1759,6 +1759,7 @@ message Rpc {
             message Request {
                 string contextId = 1; // id of the context blo1k
                 string blockId = 2;
+                string traceId = 3;
             }
 
             message Response {
@@ -1773,6 +1774,8 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+
+                        NOT_FOUND = 3;
                         ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
                         // ...
                     }
@@ -1784,6 +1787,7 @@ message Rpc {
             message Request {
                 string contextId = 1; // id of the context blo1k
                 string blockId = 2;
+                string traceId = 3;
             }
 
             message Response {
@@ -1798,6 +1802,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        NOT_FOUND = 3;
                         ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
                         // ...
                     }
@@ -1832,6 +1837,7 @@ message Rpc {
         message OpenBreadcrumbs {
             message Request {
                 string contextId = 1; // id of the context blo1k
+                string traceId = 2;
             }
 
             message Response {
@@ -2250,6 +2256,7 @@ message Rpc {
             bool enableDataview = 1;
             bool enableDebug = 2;
             bool enableReleaseChannelSwitch = 3;
+            bool enableSpaces = 4;
 
             google.protobuf.Struct extra = 100;
         }
@@ -2800,12 +2807,14 @@ message Rpc {
             message Request {
                 string pageId = 1;
                 string versionId = 2;
+                string traceId = 3;
             }
 
             message Response {
                 Error error = 1;
                 Event.Object.Show objectShow = 2;
                 History.Versions.Version version = 3;
+                string traceId = 4;
 
                 message Error {
                     Code code = 1;

@@ -20,18 +20,9 @@ object ObjectSetConfig {
     const val EMOJI_KEY = "iconEmoji"
 
     /**
-     * Image url key
-     */
-    const val IMAGE_KEY = "iconImage"
-
-    /**
      * Object type key.
      */
     const val TYPE_KEY = "type"
-
-    const val FILE_EXT_KEY = "fileExt"
-
-    const val FILE_MIME_KEY = "fileMimeType"
 
     const val DEFAULT_LIMIT = 50
 }

@@ -10,9 +10,8 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -40,22 +39,10 @@ class MoveToViewModel(
     init {
         viewModelScope.launch {
             combine(objects, types) { listOfObjects, listOfTypes ->
-                listOfObjects.map { obj ->
-                    val targetType = listOfTypes.find { type ->
-                        obj.type.contains(type.url)
-                    }
-                    DefaultObjectView(
-                        id = obj.id,
-                        name = obj.name.orEmpty(),
-                        typeName = targetType?.name.orEmpty(),
-                        typeLayout = obj.layout,
-                        icon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = urlBuilder
-                        )
-                    )
-                }
+                listOfObjects.toView(
+                    urlBuilder = urlBuilder,
+                    objectTypes = listOfTypes
+                )
             }.collectLatest { views ->
                 if (views.isNotEmpty())
                     _viewState.value = MoveToView.Success(views)
@@ -74,10 +61,11 @@ class MoveToViewModel(
             searchQuery.collectLatest { query ->
                 val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
-                    success = { raw ->
+                    success = { objects ->
                         setObjects(
                             ctx = ctx,
-                            data = raw.map { ObjectWrapper.Basic(it) })
+                            data = objects
+                        )
                     },
                     failure = { Timber.e(it, "Error while searching for objects") }
                 )

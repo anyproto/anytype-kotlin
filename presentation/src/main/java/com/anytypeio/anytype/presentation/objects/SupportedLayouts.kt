@@ -10,6 +10,7 @@ object SupportedLayouts {
         ObjectType.Layout.IMAGE,
         ObjectType.Layout.PROFILE,
         ObjectType.Layout.SET,
-        ObjectType.Layout.TODO
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.NOTE
     )
 }

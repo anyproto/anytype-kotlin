@@ -217,27 +217,6 @@ fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterVi
             )
         }
 
-fun List<Map<String, Any?>>.toCreateFilterObjectView(
-    ids: List<*>? = null,
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
-): List<CreateFilterView.Object> =
-    this.map { record ->
-        val obj = ObjectWrapper.Basic(record)
-        val type = obj.type.firstOrNull()
-        CreateFilterView.Object(
-            id = obj.id,
-            type = objectTypes.find { it.url == type }?.name.orEmpty(),
-            name = obj.name.orEmpty(),
-            icon = ObjectIcon.from(
-                obj = obj,
-                layout = obj.layout,
-                builder = urlBuilder
-            ),
-            isSelected = ids?.contains(obj.id) ?: false
-        )
-    }
-
 fun Relation.toCreateFilterDateView(exactDayTimestamp: Long): List<CreateFilterView.Date> {
     val filterTime = Calendar.getInstance()
     if (exactDayTimestamp != EMPTY_TIMESTAMP) {

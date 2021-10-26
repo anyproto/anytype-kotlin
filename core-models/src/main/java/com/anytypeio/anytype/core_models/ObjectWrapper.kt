@@ -51,5 +51,9 @@ sealed class ObjectWrapper {
         val done: Boolean? by default
 
         val snippet: String? by default
+
+        val fileExt: String? by default
+
+        val fileMimeType: String? by default
     }
 }

@@ -16,7 +16,10 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_RECENT
 import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_SETS
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
@@ -41,6 +44,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.channels.Channel
@@ -307,7 +311,7 @@ class HomeDashboardViewModel(
                     TAB.RECENT -> recent.value.find { it is DashboardView.Document && it.target == target }
                     else -> null
                 }
-                if (view is DashboardView.Document && supportedLayouts.contains(view.layout)) {
+                if (view is DashboardView.Document && SupportedLayouts.layouts.contains(view.layout)) {
                     if (view.type != ObjectType.TEMPLATE_URL) {
                         if (view.layout == ObjectType.Layout.SET) {
                             proceedWithOpeningObjectSet(target)
@@ -392,7 +396,6 @@ class HomeDashboardViewModel(
             searchObjects(params).process(
                 success = { objects ->
                     archived.value = objects
-                        .map { ObjectWrapper.Basic(it) }
                         .map { obj ->
                             val layout = obj.layout
                             val oType = stateData.value?.findOTypeById(obj.type)
@@ -431,7 +434,6 @@ class HomeDashboardViewModel(
             searchObjects(params).process(
                 success = { objects ->
                     recent.value = objects
-                        .map { ObjectWrapper.Basic(it) }
                         .map { obj ->
                             val oType = stateData.value?.findOTypeById(obj.type)
                             val layout = obj.layout
@@ -484,17 +486,18 @@ class HomeDashboardViewModel(
             )
             searchObjects(params).process(
                 success = { objects ->
-                    sets.value = objects.map { ObjectWrapper.Basic(it) }.map { obj ->
-                        DashboardView.ObjectSet(
-                            id = obj.id,
-                            target = obj.id,
-                            title = obj.name,
-                            isArchived = obj.isArchived ?: false,
-                            isLoading = false,
-                            icon = ObjectIcon.from(
-                                obj = obj,
-                                layout = obj.layout,
-                                builder = urlBuilder
+                    sets.value = objects
+                        .map { obj ->
+                            DashboardView.ObjectSet(
+                                id = obj.id,
+                                target = obj.id,
+                                title = obj.name,
+                                isArchived = obj.isArchived ?: false,
+                                isLoading = false,
+                                icon = ObjectIcon.from(
+                                    obj = obj,
+                                    layout = obj.layout,
+                                    builder = urlBuilder
                             )
                         )
                     }
@@ -631,18 +634,6 @@ class HomeDashboardViewModel(
         val target: String,
         val direction: Position
     )
-
-    companion object {
-        val supportedLayouts = listOf(
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.FILE,
-            ObjectType.Layout.IMAGE,
-            ObjectType.Layout.SET,
-            ObjectType.Layout.NOTE
-        )
-    }
 
     enum class TAB { FAVOURITE, RECENT, INBOX, SETS, ARCHIVE }
 

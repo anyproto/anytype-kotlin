@@ -43,7 +43,7 @@ sealed class CreateFilterView {
     data class Object(
         val id: Id,
         val name: String,
-        val type: String?,
+        val typeName: String?,
         val icon: ObjectIcon,
         override val isSelected: Boolean
     ): CreateFilterView() {

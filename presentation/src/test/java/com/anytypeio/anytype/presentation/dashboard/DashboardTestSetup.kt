@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
@@ -15,7 +16,8 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
@@ -180,7 +182,7 @@ open class DashboardTestSetup {
         objects: List<Map<String, Any?>> = emptyList()
     ) {
         searchObjects.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(objects)
+            onBlocking { invoke(params) } doReturn Either.Right(objects.map { ObjectWrapper.Basic(it) })
         }
     }
 }

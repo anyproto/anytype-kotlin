@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.toRelationFileValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
@@ -132,26 +133,11 @@ class RelationFileValueAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },
-                success = {
-                    _views.value = it.mapNotNull { record ->
-                        val id = record[ObjectSetConfig.ID_KEY] as String
-                        val name = record[ObjectSetConfig.NAME_KEY] as String?
-                        val image = record[ObjectSetConfig.IMAGE_KEY] as String?
-                        val ext = record[ObjectSetConfig.FILE_EXT_KEY] as String?
-                        val mime = record[ObjectSetConfig.FILE_MIME_KEY] as String?
-                        if (id !in ids) {
-                            RelationValueBaseViewModel.RelationValueView.File(
-                                id = id,
-                                ext = ext.orEmpty(),
-                                mime = mime.orEmpty(),
-                                name = name.orEmpty(),
-                                image = if (image.isNullOrBlank()) null else urlBuilder.thumbnail(
-                                    image
-                                ),
-                                isSelected = false,
-                            )
-                        } else null
-                    }
+                success = { objects ->
+                    _views.value = objects.toRelationFileValueView(
+                        ids = ids,
+                        urlBuilder = urlBuilder
+                    )
                 }
             )
         }

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.extension.index
 import com.anytypeio.anytype.presentation.extension.toConditionView
 import com.anytypeio.anytype.presentation.extension.type
 import com.anytypeio.anytype.presentation.mapper.toDomain
+import com.anytypeio.anytype.presentation.objects.toCreateFilterObjectView
 import com.anytypeio.anytype.presentation.relations.*
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -192,7 +193,7 @@ open class FilterViewModel(
             proceedWithFilterValueList(
                 relation = relation,
                 filter = null,
-                objecttypes = objectTypesProvider.get()
+                objectTypes = objectTypesProvider.get()
             )
         } else {
             val filter = viewer.filters[index]
@@ -205,7 +206,7 @@ open class FilterViewModel(
             proceedWithFilterValueList(
                 relation = relation,
                 filter = filter,
-                objecttypes = objectTypesProvider.get()
+                objectTypes = objectTypesProvider.get()
             )
         }
     }
@@ -213,7 +214,7 @@ open class FilterViewModel(
     private fun proceedWithFilterValueList(
         relation: Relation,
         filter: DVFilter?,
-        objecttypes: List<ObjectType>
+        objectTypes: List<ObjectType>
     ) = when (relation.format) {
         Relation.Format.DATE -> {
             val timestamp = (filter?.value as? Double)?.toLong() ?: EMPTY_TIMESTAMP
@@ -237,8 +238,7 @@ open class FilterViewModel(
             val ids = filter?.value as? List<*>
             proceedWithSearchObjects(
                 ids = ids,
-                relation = relation,
-                objectTypes = objecttypes
+                objectTypes = objectTypes
             )
         }
         Relation.Format.CHECKBOX -> {
@@ -253,7 +253,6 @@ open class FilterViewModel(
 
     private fun proceedWithSearchObjects(
         ids: List<*>? = null,
-        relation: Relation,
         objectTypes: List<ObjectType>
     ) {
         viewModelScope.launch {
@@ -267,8 +266,8 @@ open class FilterViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },
-                success = {
-                    filterValueListState.value = it.toCreateFilterObjectView(
+                success = { objects ->
+                    filterValueListState.value = objects.toCreateFilterObjectView(
                         ids = ids,
                         urlBuilder = urlBuilder,
                         objectTypes = objectTypes

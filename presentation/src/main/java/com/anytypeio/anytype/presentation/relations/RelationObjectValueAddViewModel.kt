@@ -4,13 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -42,20 +40,17 @@ class RelationObjectValueAddViewModel(
         when (val ids = values[relation.key]) {
             is List<*> -> {
                 proceedWithSearchObjects(
-                    ids = ids.typeOf(),
-                    relation = relation
+                    ids = ids.typeOf()
                 )
             }
             is Id -> {
                 proceedWithSearchObjects(
-                    ids = listOf(ids),
-                    relation = relation
+                    ids = listOf(ids)
                 )
             }
             null -> {
                 proceedWithSearchObjects(
-                    ids = emptyList(),
-                    relation = relation
+                    ids = emptyList()
                 )
             }
         }
@@ -116,7 +111,7 @@ class RelationObjectValueAddViewModel(
         }
     }
 
-    private fun proceedWithSearchObjects(ids: List<String>, relation: Relation) {
+    private fun proceedWithSearchObjects(ids: List<String>) {
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
@@ -129,30 +124,11 @@ class RelationObjectValueAddViewModel(
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },
                 success = { objects ->
-                    _views.value = objects.mapNotNull { obj ->
-                        val wrapped = ObjectWrapper.Basic(obj)
-                        val id = wrapped.id
-                        val type = wrapped.type
-                        val targetType = objectTypesProvider.get().find { it.url == type.firstOrNull() }
-                        val name = wrapped.name
-                        val layout = wrapped.layout
-                        if (id !in ids) {
-                            RelationValueView.Object(
-                                id = id,
-                                typeName = targetType?.name,
-                                type = type.firstOrNull(),
-                                name = name.orEmpty(),
-                                icon = ObjectIcon.from(
-                                    obj = wrapped,
-                                    layout = wrapped.layout,
-                                    builder = urlBuilder
-                                ),
-                                isSelected = false,
-                                layout = layout,
-                                removeable = false
-                            )
-                        } else null
-                    }
+                    _views.value = objects.toRelationObjectValueView(
+                        ids = ids,
+                        urlBuilder = urlBuilder,
+                        objectTypes = objectTypesProvider.get()
+                    )
                 }
             )
         }

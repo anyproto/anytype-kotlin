@@ -81,7 +81,7 @@ class DefaultObjectViewAdapter(
         itemView.setOnClickListener {
             val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
-                onClick(getItem(pos).id, getItem(pos).typeLayout)
+                onClick(getItem(pos).id, getItem(pos).layout)
             }
         }
     }

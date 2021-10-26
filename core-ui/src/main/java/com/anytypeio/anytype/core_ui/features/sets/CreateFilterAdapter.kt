@@ -172,7 +172,7 @@ class CreateFilterAdapter(
         class Object(view: View) : ViewHolder(view) {
             fun bind(item: CreateFilterView.Object) = with(itemView) {
                 tvObjectName.text = item.name
-                tvObjectType.text = item.type
+                tvObjectType.text = item.typeName
                 ivSelectObjectIcon.isSelected = item.isSelected
                 objectIconWidget.setIcon(item.icon)
             }

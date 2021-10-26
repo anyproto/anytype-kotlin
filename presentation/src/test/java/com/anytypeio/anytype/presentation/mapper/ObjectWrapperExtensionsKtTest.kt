@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.presentation.mapper
 
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.toView
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -152,6 +154,52 @@ class ObjectWrapperExtensionsKtTest {
         val result = obj.getEmojiPath()
 
         assertNull(result)
+    }
+
+    @Test
+    fun `should map to view with snippet as name when layout is note`() {
+
+        val imageHash = "ycd79"
+
+        val obj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to "Ef6",
+                "name" to "LmL7R",
+                "snippet" to "OMr2Y",
+                "layout" to ObjectType.Layout.NOTE.code.toDouble()
+            )
+
+        )
+
+        val result = listOf(obj).toView(urlBuilder, objectTypes = listOf())
+
+        assertEquals(
+            expected = "OMr2Y",
+            actual = result.first().name
+        )
+    }
+
+    @Test
+    fun `should map to view with snippet as name when layout is not note`() {
+
+        val imageHash = "ycd79"
+
+        val obj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to "Ef6",
+                "name" to "LmL7R",
+                "snippet" to "OMr2Y",
+                "layout" to ObjectType.Layout.BASIC.code.toDouble()
+            )
+
+        )
+
+        val result = listOf(obj).toView(urlBuilder, objectTypes = listOf())
+
+        assertEquals(
+            expected = "LmL7R",
+            actual = result.first().name
+        )
     }
 
     fun stubUrlBuilder(hash: String?) {

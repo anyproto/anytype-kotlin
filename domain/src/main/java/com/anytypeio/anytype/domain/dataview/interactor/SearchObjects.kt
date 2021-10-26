@@ -2,22 +2,24 @@ package com.anytypeio.anytype.domain.dataview.interactor
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class SearchObjects(
     private val repo: BlockRepository
-) : BaseUseCase<List<Map<String, Any?>>, SearchObjects.Params>() {
+) : BaseUseCase<List<ObjectWrapper.Basic>, SearchObjects.Params>() {
 
-    override suspend fun run(params: Params): Either<Throwable, List<Map<String, Any?>>> = safe {
+    override suspend fun run(params: Params) = safe {
         repo.searchObjects(
             sorts = params.sorts,
             filters = params.filters,
             fulltext = params.fulltext,
             offset = params.offset,
             limit = params.limit
-        )
+        ).map { response ->
+            ObjectWrapper.Basic(response)
+        }
     }
 
     data class Params(

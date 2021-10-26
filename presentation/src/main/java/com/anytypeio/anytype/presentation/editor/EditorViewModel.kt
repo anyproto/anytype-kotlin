@@ -97,7 +97,7 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
-import com.anytypeio.anytype.presentation.objects.toDefaultObjectView
+import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -2626,6 +2626,7 @@ class EditorViewModel(
         when (wrapper.layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
+            ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE -> {
                 proceedWithOpeningPage(target = target)
@@ -5079,14 +5080,13 @@ class EditorViewModel(
             )
             viewModelScope.launch {
                 searchObjects(params).process(
-                    success = { raw ->
-                        val objects = raw.toDefaultObjectView(
-                            objectTypes = objectTypesProvider.get(),
-                            urlBuilder = urlBuilder
-                        ).filter {
-                            SupportedLayouts.layouts.contains(it.typeLayout)
-                                    && it.type != ObjectType.TEMPLATE_URL
-                        }
+                    success = { result ->
+                        val objects = result
+                            .toView(urlBuilder, objectTypesProvider.get())
+                            .filter {
+                                SupportedLayouts.layouts.contains(it.layout)
+                                        && it.type != ObjectType.TEMPLATE_URL
+                            }
                         controlPanelInteractor.onEvent(
                             ControlPanelMachine.Event.Mentions.OnResult(
                                 objects,

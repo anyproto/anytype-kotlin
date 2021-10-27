@@ -11,16 +11,23 @@ class DefaultFlavourConfigProvider : FlavourConfigProvider {
     private var config: FlavourConfig = FlavourConfig(
         enableDataView = false,
         enableDebug = false,
-        enableChannelSwitch = false
+        enableChannelSwitch = false,
+        enableSpaces = false
     )
 
     override fun get(): FlavourConfig = config
 
-    override fun set(enableDataView: Boolean, enableDebug: Boolean, enableChannelSwitch: Boolean) {
+    override fun set(
+        enableDataView: Boolean,
+        enableDebug: Boolean,
+        enableChannelSwitch: Boolean,
+        enableSpaces: Boolean
+    ) {
         config = FlavourConfig(
             enableDataView = enableDataView,
             enableDebug = enableDebug,
-            enableChannelSwitch = enableChannelSwitch
+            enableChannelSwitch = enableChannelSwitch,
+            enableSpaces = enableSpaces
         )
     }
 }
@@ -38,7 +45,12 @@ class ExperimentalFlavourConfigProvider : FlavourConfigProvider {
 
     override fun get(): FlavourConfig = config
 
-    override fun set(enableDataView: Boolean, enableDebug: Boolean, enableChannelSwitch: Boolean) {
+    override fun set(
+        enableDataView: Boolean,
+        enableDebug: Boolean,
+        enableChannelSwitch: Boolean,
+        enableSpaces: Boolean
+    ) {
         // Ignoring real config.
     }
 }

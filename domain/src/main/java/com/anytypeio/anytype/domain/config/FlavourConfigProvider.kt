@@ -9,6 +9,7 @@ interface FlavourConfigProvider {
     fun set(
         enableDataView: Boolean,
         enableDebug: Boolean,
-        enableChannelSwitch: Boolean
+        enableChannelSwitch: Boolean,
+        enableSpaces: Boolean
     )
 }

@@ -9,5 +9,6 @@ class SelectAccountResponse(
     val avatar: Account.Avatar?,
     val enableDataView: Boolean?,
     val enableDebug: Boolean?,
-    val enableChannelSwitch: Boolean?
+    val enableChannelSwitch: Boolean?,
+    val enableSpaces: Boolean?
 )

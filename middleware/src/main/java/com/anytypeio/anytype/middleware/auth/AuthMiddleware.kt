@@ -20,8 +20,10 @@ class AuthMiddleware(
 ) : AuthRemote {
 
     override suspend fun startAccount(
-        id: String, path: String
-    ) = middleware.selectAccount(id, path).let { response ->
+        id: String,
+        path: String
+    ): Pair<AccountEntity, FlavourConfigEntity> {
+        val response = middleware.selectAccount(id, path)
         val account = AccountEntity(
             id = response.id,
             name = response.name,
@@ -30,9 +32,10 @@ class AuthMiddleware(
         val flavourConfig = FlavourConfigEntity(
             enableDataView = response.enableDataView,
             enableDebug = response.enableDebug,
-            enableChannelSwitch = response.enableChannelSwitch
+            enableChannelSwitch = response.enableChannelSwitch,
+            enableSpaces = response.enableSpaces
         )
-        return@let Pair(account, flavourConfig)
+        return Pair(account, flavourConfig)
     }
 
     override suspend fun createAccount(

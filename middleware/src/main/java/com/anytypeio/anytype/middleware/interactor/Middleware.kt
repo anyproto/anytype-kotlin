@@ -155,7 +155,8 @@ class Middleware(
             avatar = acc.avatar,
             enableDataView = config?.enableDataview,
             enableDebug = config?.enableDebug,
-            enableChannelSwitch = config?.enableReleaseChannelSwitch
+            enableChannelSwitch = config?.enableReleaseChannelSwitch,
+            enableSpaces = config?.enableSpaces
         )
     }
 

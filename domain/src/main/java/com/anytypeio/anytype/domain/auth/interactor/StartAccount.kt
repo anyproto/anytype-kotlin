@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
@@ -11,29 +12,24 @@ import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 class StartAccount(
     private val repository: AuthRepository,
     private val flavourConfigProvider: FlavourConfigProvider
-) : BaseUseCase<String, StartAccount.Params>() {
+) : BaseUseCase<Id, StartAccount.Params>() {
 
-    override suspend fun run(params: Params) = try {
-        repository.startAccount(
+    override suspend fun run(params: Params) = safe {
+        val (account, config) = repository.startAccount(
             id = params.id,
             path = params.path
-        ).let { pair ->
-            val (account, config) = pair
-            with(repository) {
-                saveAccount(account)
-                setCurrentAccount(account.id)
-                flavourConfigProvider.set(
-                    enableDataView = config.enableDataView ?: false,
-                    enableDebug = config.enableDebug ?: false,
-                    enableChannelSwitch = config.enableChannelSwitch ?: false
-                )
-            }
-            account.id
-        }.let { accountId ->
-            Either.Right(accountId)
+        )
+        with(repository) {
+            saveAccount(account)
+            setCurrentAccount(account.id)
+            flavourConfigProvider.set(
+                enableDataView = config.enableDataView ?: false,
+                enableDebug = config.enableDebug ?: false,
+                enableChannelSwitch = config.enableChannelSwitch ?: false,
+                enableSpaces = config.enableSpaces ?: false
+            )
         }
-    } catch (e: Throwable) {
-        Either.Left(e)
+        account.id
     }
 
     /**

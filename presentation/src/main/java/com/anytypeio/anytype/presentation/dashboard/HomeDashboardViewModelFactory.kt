@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.*
@@ -31,7 +32,8 @@ class HomeDashboardViewModelFactory(
     private val getDefaultEditorType: GetDefaultEditorType,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val deleteObjects: DeleteObjects
+    private val deleteObjects: DeleteObjects,
+    private val flavourConfigProvider: FlavourConfigProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -51,7 +53,8 @@ class HomeDashboardViewModelFactory(
             urlBuilder = urlBuilder,
             getDefaultEditorType = getDefaultEditorType,
             deleteObjects = deleteObjects,
-            setObjectListIsArchived = setObjectListIsArchived
+            setObjectListIsArchived = setObjectListIsArchived,
+            flavourConfigProvider = flavourConfigProvider
         ) as T
     }
 }

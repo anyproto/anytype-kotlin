@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.item_dashboard_page.view.*
 import kotlinx.android.synthetic.main.item_dashboard_page_archived.view.*
 import kotlinx.android.synthetic.main.item_dashboard_recent.view.*
 import kotlinx.android.synthetic.main.item_dashboard_sets.view.*
+import kotlinx.android.synthetic.main.item_dashboard_shared.view.*
 
 class DashboardPager(
     private var items: List<TabItem>,
@@ -21,8 +22,11 @@ class DashboardPager(
     private val recentAdapter: DashboardAdapter,
     private val setsAdapter: DashboardAdapter,
     private val archiveAdapter: DashboardAdapter,
+    private val sharedAdapter: DashboardAdapter,
     private val dndBehavior: DashboardDragAndDropBehavior
 ): RecyclerView.Adapter<DashboardPager.ViewHolder>() {
+
+    fun getTitle(position: Int) : String = items[position].title
 
     fun setItems(items: List<TabItem>) {
         this.items = items
@@ -114,6 +118,26 @@ class DashboardPager(
                 }
             }
         }
+        R.layout.item_dashboard_shared -> {
+            ViewHolder.Shared(parent).apply {
+                itemView.rvDashboardShared.apply {
+                    val spacing = itemView.context.dimen(R.dimen.default_dashboard_item_spacing).toInt()
+                    val decoration = EqualSpacingItemDecoration(
+                        topSpacing = spacing,
+                        leftSpacing = spacing,
+                        rightSpacing = spacing,
+                        bottomSpacing = 0,
+                        displayMode = EqualSpacingItemDecoration.GRID,
+                        ignoreGridEdgesTop = true
+                    )
+                    layoutManager = GridLayoutManager(context, COLUMN_COUNT)
+                    overScrollMode = OVER_SCROLL_NEVER
+                    addItemDecoration(decoration)
+                    setHasFixedSize(true)
+                    adapter = sharedAdapter
+                }
+            }
+        }
          else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 
@@ -125,6 +149,7 @@ class DashboardPager(
         TYPE_RECENT -> R.layout.item_dashboard_recent
         TYPE_SETS-> R.layout.item_dashboard_sets
         TYPE_BIN -> R.layout.item_dashboard_page_archived
+        TYPE_SHARED -> R.layout.item_dashboard_shared
         else -> throw IllegalStateException("Unexpected item: ${items[position]}")
     }
 
@@ -134,6 +159,7 @@ class DashboardPager(
         const val TYPE_RECENT = 1
         const val TYPE_SETS = 3
         const val TYPE_BIN = 4
+        const val TYPE_SHARED = 5
     }
 
     sealed class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
@@ -161,6 +187,13 @@ class DashboardPager(
         class Archived(parent: ViewGroup) : ViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_dashboard_page_archived,
+                parent,
+                false
+            )
+        )
+        class Shared(parent: ViewGroup) : ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_dashboard_shared,
                 parent,
                 false
             )

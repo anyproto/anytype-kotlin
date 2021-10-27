@@ -252,4 +252,28 @@ object ObjectSearchConstants {
         )
     )
     //endregion
+
+    //region TAB SHARED
+
+    val filterTabShared = listOf(
+        DVFilter(
+            relationKey = Relations.TYPE,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectType.WORKSPACE_ID
+        ),
+        DVFilter(
+            relationKey = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.NOT_EMPTY,
+            value = null
+        )
+    )
+
+    val sortTabShared = listOf(
+        DVSort(
+            relationKey = Relations.NAME,
+            type = DVSortType.ASC
+        )
+    )
+
+    //endregion
 }

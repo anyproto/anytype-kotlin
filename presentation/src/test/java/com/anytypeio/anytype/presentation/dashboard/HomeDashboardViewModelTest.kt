@@ -9,10 +9,7 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.DebugSettings
-import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetConfig
-import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.*
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -85,6 +82,9 @@ class HomeDashboardViewModelTest {
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
+    lateinit var flavourConfigProvider: FlavourConfigProvider
+
+    @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
     private lateinit var vm: HomeDashboardViewModel
@@ -121,7 +121,8 @@ class HomeDashboardViewModelTest {
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived,
             urlBuilder = builder,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultEditorType = getDefaultEditorType,
+            flavourConfigProvider = flavourConfigProvider
         )
     }
 

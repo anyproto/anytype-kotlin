@@ -28,7 +28,8 @@ class LaunchAccount(
             flavourConfigProvider.set(
                 enableDataView = config.enableDataView ?: false,
                 enableDebug = config.enableDebug ?: false,
-                enableChannelSwitch = config.enableChannelSwitch ?: false
+                enableChannelSwitch = config.enableChannelSwitch ?: false,
+                enableSpaces = config.enableSpaces ?: false
             )
             Either.Right(account.id)
         }

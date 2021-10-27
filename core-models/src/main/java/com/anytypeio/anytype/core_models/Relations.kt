@@ -26,6 +26,7 @@ object Relations {
     const val FILE_MIME_TYPE = "fileMimeType"
     const val SNIPPET = "snippet"
     const val IS_DRAFT = "isDraft"
+    const val WORKSPACE_ID = "workspaceId"
 
     val defaultRelations = listOf(
         ID,

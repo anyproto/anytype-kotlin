@@ -20,7 +20,8 @@ fun FlavourConfigEntity.toDomain(): FlavourConfig {
     return FlavourConfig(
         enableDataView = enableDataView,
         enableDebug = enableDebug,
-        enableChannelSwitch = enableChannelSwitch
+        enableChannelSwitch = enableChannelSwitch,
+        enableSpaces = enableSpaces
     )
 }
 

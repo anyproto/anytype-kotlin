@@ -26,8 +26,10 @@ import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -68,7 +70,8 @@ class HomeDashboardViewModel(
     private val getDefaultEditorType: GetDefaultEditorType,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val deleteObjects: DeleteObjects
+    private val deleteObjects: DeleteObjects,
+    private val flavourConfigProvider: FlavourConfigProvider
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -88,10 +91,13 @@ class HomeDashboardViewModel(
     private var ctx: Id = ""
     private var profile: Id = ""
 
+    val tabs = MutableStateFlow(listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.ARCHIVE))
+
     val archived = MutableStateFlow(emptyList<DashboardView.Document>())
     val recent = MutableStateFlow(emptyList<DashboardView>())
     val inbox = MutableStateFlow(emptyList<DashboardView>())
     val sets = MutableStateFlow(emptyList<DashboardView>())
+    val shared = MutableStateFlow(emptyList<DashboardView>())
 
     val mode = MutableStateFlow(Mode.DEFAULT)
     val count = MutableStateFlow(0)
@@ -385,6 +391,10 @@ class HomeDashboardViewModel(
         proceedWithArchivedObjectSearch()
         proceedWithRecentObjectSearch()
         proceedWithSetsObjectSearch()
+        if (flavourConfigProvider.get().enableSpaces == true) {
+            tabs.value = listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.SHARED, TAB.ARCHIVE)
+            proceedWithSharedObjectsSearch()
+        }
     }
 
     private fun proceedWithArchivedObjectSearch() {
@@ -434,6 +444,59 @@ class HomeDashboardViewModel(
             searchObjects(params).process(
                 success = { objects ->
                     recent.value = objects
+                        .map { obj ->
+                            val oType = stateData.value?.findOTypeById(obj.type)
+                            val layout = obj.layout
+                            if (layout == ObjectType.Layout.SET) {
+                                DashboardView.ObjectSet(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.name,
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
+                                )
+                            } else {
+                                DashboardView.Document(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.name,
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    emoji = obj.iconEmoji,
+                                    image = obj.iconImage,
+                                    snippet = obj.snippet,
+                                    type = obj.type.firstOrNull(),
+                                    typeName = oType?.name,
+                                    layout = obj.layout,
+                                    done = obj.done,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
+                                )
+                            }
+                        }
+                },
+                failure = { Timber.e(it, "Error while searching for recent objects") }
+            )
+        }
+    }
+
+    private fun proceedWithSharedObjectsSearch() {
+        viewModelScope.launch {
+            val params = SearchObjects.Params(
+                filters = ObjectSearchConstants.filterTabShared,
+                sorts = ObjectSearchConstants.sortTabShared
+            )
+            searchObjects(params).process(
+                success = { objects ->
+                    shared.value = objects
                         .map { obj ->
                             val oType = stateData.value?.findOTypeById(obj.type)
                             val layout = obj.layout
@@ -635,7 +698,7 @@ class HomeDashboardViewModel(
         val direction: Position
     )
 
-    enum class TAB { FAVOURITE, RECENT, INBOX, SETS, ARCHIVE }
+        enum class TAB { FAVOURITE, RECENT, SETS, SHARED, ARCHIVE }
 
     //region CREATE PAGE
     private fun proceedWithGettingDefaultPageType() {
@@ -647,7 +710,7 @@ class HomeDashboardViewModel(
         }
     }
 
-    private suspend fun proceedWithCreatePage(type: String?) {
+    private fun proceedWithCreatePage(type: String?) {
         val startTime = System.currentTimeMillis()
         val isDraft = true
         val params = CreatePage.Params(

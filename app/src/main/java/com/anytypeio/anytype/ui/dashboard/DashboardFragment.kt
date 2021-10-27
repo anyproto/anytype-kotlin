@@ -83,6 +83,15 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         )
     }
 
+    private val dashboardSharedAdapter by lazy {
+        DashboardAdapter(
+            data = mutableListOf(),
+            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.SHARED) },
+            onArchiveClicked = {},
+            onObjectSetClicked = { vm.onObjectSetClicked(it) }
+        )
+    }
+
     private val dashboardSetsAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
@@ -107,6 +116,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
             recentAdapter = dashboardRecentAdapter,
             setsAdapter = dashboardSetsAdapter,
             archiveAdapter = dashboardArchiveAdapter,
+            sharedAdapter = dashboardSharedAdapter,
             dndBehavior = dndBehavior,
             items = listOf()
         )
@@ -133,11 +143,12 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.subscribe(vm.toasts) { toast(it) }
-        lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
-        lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
-        lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
-        lifecycleScope.subscribe(vm.count) { tvSelectedCount.text = "$it object selected" }
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+        jobs += lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.shared) { dashboardSharedAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
+        jobs += lifecycleScope.subscribe(vm.count) { tvSelectedCount.text = "$it object selected" }
         jobs += lifecycleScope.subscribe(vm.alerts) { alert ->
             when(alert) {
                 is HomeDashboardViewModel.Alert.Delete -> {
@@ -147,7 +158,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                 }
             }
         }
-        lifecycleScope.subscribe(vm.mode) { mode ->
+        jobs += lifecycleScope.subscribe(vm.mode) { mode ->
             when(mode) {
                 HomeDashboardViewModel.Mode.DEFAULT -> {
                     selectionTopToolbar.invisible()
@@ -190,6 +201,19 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                     set.applyTo(dashboardRoot)
                 }
             }
+        }
+        jobs += lifecycleScope.subscribe(vm.tabs) { tabs ->
+            dashboardPagerAdapter.setItems(
+                tabs.map { tab ->
+                    when(tab) {
+                        TAB.FAVOURITE -> TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES)
+                        TAB.RECENT -> TabItem(getString(R.string.history), DashboardPager.TYPE_RECENT)
+                        TAB.SETS -> TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS)
+                        TAB.SHARED -> TabItem(getString(R.string.shared), DashboardPager.TYPE_SHARED)
+                        TAB.ARCHIVE -> TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
+                    }
+                }
+            )
         }
     }
 
@@ -261,9 +285,8 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
         dashboardPager.apply {
             adapter = dashboardPagerAdapter
-            dashboardPagerAdapter.setItems(tabs)
             TabLayoutMediator(tabsLayout, dashboardPager) { tab, position ->
-                tab.text = tabs[position].title
+                tab.text = dashboardPagerAdapter.getTitle(position)
             }.attach()
         }
 
@@ -319,15 +342,6 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun releaseDependencies() {
         componentManager().dashboardComponent.release()
-    }
-
-    private val tabs by lazy {
-        listOf(
-            TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES),
-            TabItem(getString(R.string.history), DashboardPager.TYPE_RECENT),
-            TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS),
-            TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
-        )
     }
 }
 

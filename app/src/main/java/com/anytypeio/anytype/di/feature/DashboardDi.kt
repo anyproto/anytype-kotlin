@@ -7,10 +7,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.GetConfig
-import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.config.InfrastructureRepository
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.config.*
 import com.anytypeio.anytype.domain.dashboard.interactor.*
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -65,7 +62,8 @@ object HomeDashboardModule {
         getDefaultEditorType: GetDefaultEditorType,
         urlBuilder: UrlBuilder,
         setObjectListIsArchived: SetObjectListIsArchived,
-        deleteObjects: DeleteObjects
+        deleteObjects: DeleteObjects,
+        flavourConfigProvider: FlavourConfigProvider
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -81,7 +79,8 @@ object HomeDashboardModule {
         urlBuilder = urlBuilder,
         setObjectListIsArchived = setObjectListIsArchived,
         deleteObjects = deleteObjects,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        flavourConfigProvider = flavourConfigProvider
     )
 
     @JvmStatic

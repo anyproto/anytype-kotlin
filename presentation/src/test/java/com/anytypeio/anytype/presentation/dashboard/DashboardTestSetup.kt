@@ -12,10 +12,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.DebugSettings
-import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetConfig
-import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.*
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -86,6 +83,9 @@ open class DashboardTestSetup {
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
+    lateinit var flavourConfigProvider: FlavourConfigProvider
+
+    @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
     lateinit var vm: HomeDashboardViewModel
@@ -116,7 +116,8 @@ open class DashboardTestSetup {
         urlBuilder = builder,
         getDefaultEditorType = getDefaultEditorType,
         setObjectListIsArchived = setObjectListIsArchived,
-        deleteObjects = deleteObjects
+        deleteObjects = deleteObjects,
+        flavourConfigProvider = flavourConfigProvider
     )
 
     fun stubGetConfig(response: Either.Right<Config>) {

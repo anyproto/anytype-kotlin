@@ -241,5 +241,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
     <string name="delete_irrevocably">These objects will be deleted irrevocably. You can\'t undo this action.</string>
     <string name="delete_irrevocably_one_object">This object will be deleted irrevocably. You can\'t undo this action.</string>
+    <string name="shared">Shared</string>
 
 </resources>

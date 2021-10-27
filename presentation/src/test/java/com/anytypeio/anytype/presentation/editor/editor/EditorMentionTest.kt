@@ -22,7 +22,6 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import net.lachlanmckee.timberjunit.TimberTestRule
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -33,7 +32,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
-import kotlin.test.assertEquals
 
 class EditorMentionTest : EditorPresentationTestSetup() {
 
@@ -245,7 +243,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create new page with proper name and add new mention with page id`() {
+    fun `should create new page with proper name, default type and add new mention with page id`() {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -304,6 +302,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document)
         stubInterceptEvents()
+        stubGetDefaultObjectType(type = "_otnote")
 
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
@@ -319,7 +318,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onBlocking {
                 invoke(
                     CreateNewDocument.Params(
-                        name = newPageName
+                        name = newPageName,
+                        type = "_otnote"
                     )
                 )
             } doReturn Either.Right(
@@ -351,14 +351,15 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 )
             )
             onAddMentionNewPageClicked(
-                name = mentionTrigger
+                mentionText = mentionTrigger
             )
         }
 
         verifyBlocking(createNewDocument, times(1)) {
             invoke(
                 CreateNewDocument.Params(
-                    name = newPageName
+                    name = newPageName,
+                    type = "_otnote"
                 )
             )
         }
@@ -411,7 +412,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create new page with untitled name and add new mention with page id`() {
+    fun `should create new page with untitled name, default type and add new mention with page id`() {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -470,6 +471,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document)
         stubInterceptEvents()
+        stubGetDefaultObjectType(type = "_otarticle")
 
         updateText.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
@@ -485,7 +487,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onBlocking {
                 invoke(
                     CreateNewDocument.Params(
-                        name = newPageName
+                        name = newPageName,
+                        type = "_otarticle"
                     )
                 )
             } doReturn Either.Right(
@@ -517,14 +520,15 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 )
             )
             onAddMentionNewPageClicked(
-                name = mentionTrigger
+                mentionText = mentionTrigger
             )
         }
 
         verifyBlocking(createNewDocument, times(1)) {
             invoke(
                 CreateNewDocument.Params(
-                    name = newPageName
+                    name = newPageName,
+                    type = "_otarticle"
                 )
             )
         }

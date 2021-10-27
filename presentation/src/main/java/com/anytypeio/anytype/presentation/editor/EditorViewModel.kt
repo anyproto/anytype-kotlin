@@ -5015,11 +5015,25 @@ class EditorViewModel(
         }
     }
 
-    fun onAddMentionNewPageClicked(name: String) {
-        Timber.d("onAddMentionNewPageClicked, name:[$name]")
+    fun onAddMentionNewPageClicked(mentionText: String) {
+        Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
+        viewModelScope.launch {
+            getDefaultEditorType.invoke(Unit).proceed(
+                failure = {
+                    Timber.e(it, "Error while getting default object type")
+                    proceedWithCreateNewObject(objectType = null, mentionText = mentionText)
+                },
+                success = {
+                    proceedWithCreateNewObject(objectType = it.type, mentionText = mentionText)
+                }
+            )
+        }
+    }
 
+    private fun proceedWithCreateNewObject(objectType: String?, mentionText: String) {
         val params = CreateNewDocument.Params(
-            name = name.removePrefix(MENTION_PREFIX)
+            name = mentionText.removePrefix(MENTION_PREFIX),
+            type = objectType
         )
 
         val startTime = System.currentTimeMillis()
@@ -5036,7 +5050,7 @@ class EditorViewModel(
                     onCreateMentionInText(
                         id = result.id,
                         name = result.name.getMentionName(MENTION_TITLE_EMPTY),
-                        mentionTrigger = name
+                        mentionTrigger = mentionText
                     )
                     analytics.registerEvent(
                         EventAnalytics.Anytype(

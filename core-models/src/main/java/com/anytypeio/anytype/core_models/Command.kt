@@ -154,7 +154,8 @@ sealed class Command {
      */
     class CreateNewDocument(
         val name: String,
-        val emoji: String?
+        val emoji: String?,
+        val type: String?
     )
 
     class Move(

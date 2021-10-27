@@ -16,7 +16,8 @@ class CreateNewDocument(
         val id = repo.createNewDocument(
             command = Command.CreateNewDocument(
                 name = params.name,
-                emoji = emoji
+                emoji = emoji,
+                type = params.type
             )
         )
         Result(
@@ -27,7 +28,8 @@ class CreateNewDocument(
     }
 
     data class Params(
-        val name: String
+        val name: String,
+        val type: String?
     )
 
     data class Result(

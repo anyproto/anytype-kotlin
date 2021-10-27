@@ -444,6 +444,7 @@ class Middleware(
 
         command.emoji?.let { details[iconEmojiKey] = it }
         command.name.let { details[nameKey] = it }
+        command.type?.let { details[typeKey] = it }
 
         val request = Rpc.Page.Create.Request(details = details.toMap())
 

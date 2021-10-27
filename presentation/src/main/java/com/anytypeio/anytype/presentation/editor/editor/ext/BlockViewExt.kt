@@ -308,6 +308,9 @@ fun List<BlockView>.enterSAM(
         is BlockView.DividerLine -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.Latex -> view.copy(
+            isSelected = isSelected
+        )
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }
@@ -834,6 +837,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Code -> copy(isSelected = newSelection)
     is BlockView.Relation.Related -> copy(isSelected = newSelection)
     is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
+    is BlockView.Latex -> copy(isSelected = newSelection)
     else -> this.also {
         if (this is BlockView.Selectable)
             Timber.e("Error when change selection for Selectable BlockView $this")

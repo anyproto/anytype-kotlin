@@ -964,4 +964,38 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should detect latex changes`() {
+
+        val index = 0
+
+        val oldBlock = BlockView.Latex(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            latex = MockDataFactory.randomString(),
+            indent = MockDataFactory.randomInt()
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            latex = MockDataFactory.randomString()
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.LATEX_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
 }

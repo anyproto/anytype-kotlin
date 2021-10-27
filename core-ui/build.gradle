@@ -96,6 +96,7 @@ dependencies {
     implementation applicationDependencies.betterLinkMovement
     implementation applicationDependencies.exoPlayer
     implementation applicationDependencies.urlcleaner
+    implementation applicationDependencies.katex
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

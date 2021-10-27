@@ -42,6 +42,7 @@ ext {
     pickt_version = "0.1.14"
     zxing_version = "4.1.0"
     urlcleaner_version = "0.4.0"
+    katex_version = "1.0.2"
 
     // Unit Testing
     robolectric_version = '4.3.1'
@@ -112,6 +113,7 @@ ext {
             emojiCompat:                "androidx.emoji:emoji-appcompat:$emoji_compat_version",
             blurry:                     "jp.wasabeef:blurry:$blurry_version",
             photoView:                  "com.github.chrisbanes:PhotoView:$photo_view_version",
+            katex:                      "com.github.judemanutd:katexview:$katex_version",
             glide:                      "com.github.bumptech.glide:glide:$glide_version",
             glideCompiler:              "com.github.bumptech.glide:compiler:$glide_version",
             daggerCompiler:             "com.google.dagger:dagger-compiler:$dagger_version",

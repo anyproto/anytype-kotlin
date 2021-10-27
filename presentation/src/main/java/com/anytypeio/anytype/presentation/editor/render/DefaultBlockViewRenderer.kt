@@ -483,8 +483,9 @@ class DefaultBlockViewRenderer(
                 is Content.Latex -> {
                     counter.reset()
                     result.add(
-                        unsupported(
+                        latex(
                             block = block,
+                            content = content,
                             indent = indent,
                             selection = selection,
                             mode = mode
@@ -1227,6 +1228,24 @@ class DefaultBlockViewRenderer(
     ) = BlockView.Unsupported(
         id = block.id,
         indent = indent,
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
+    )
+
+    private fun latex(
+        block: Block,
+        content: Content.Latex,
+        indent: Int,
+        mode: EditorMode,
+        selection: Set<Id>
+    ) = BlockView.Latex(
+        id = block.id,
+        indent = indent,
+        latex = content.latex,
+        backgroundColor = content.background,
         isSelected = checkIfSelected(
             mode = mode,
             block = block,

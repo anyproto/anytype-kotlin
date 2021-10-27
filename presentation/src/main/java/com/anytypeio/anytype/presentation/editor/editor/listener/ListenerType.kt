@@ -50,6 +50,8 @@ sealed class ListenerType {
 
     data class DividerClick(val target: String) : ListenerType()
 
+    data class Latex(val id: Id) : ListenerType()
+
     sealed class Relation : ListenerType() {
         data class Placeholder(val target: Id) : Relation()
         data class Related(val value: BlockView.Relation) : Relation()

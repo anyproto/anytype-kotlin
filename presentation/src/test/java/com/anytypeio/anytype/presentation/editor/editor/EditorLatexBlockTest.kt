@@ -48,7 +48,7 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
     )
 
     @Test
-    fun `should render latex as unsupported block`() {
+    fun `should render latex block as latex view`() {
 
         // SETUP
 
@@ -56,7 +56,10 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Latex
+            content = Block.Content.Latex(
+                latex = MockDataFactory.randomString(),
+                background = null
+            )
         )
 
         val page = Block(
@@ -88,9 +91,10 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
                             text = title.content<TXT>().text,
                             mode = BlockView.Mode.EDIT
                         ),
-                        BlockView.Unsupported(
+                        BlockView.Latex(
                             id = latex.id,
                             isSelected = false,
+                            latex = latex.content<Block.Content.Latex>().latex,
                             indent = 0
                         )
                     )
@@ -100,7 +104,7 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should render latex as unsupported block with indent level equal to 1`() {
+    fun `should render latex block as latex view with indent level equal to 1`() {
 
         // SETUP
 
@@ -108,7 +112,10 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Latex
+            content = Block.Content.Latex(
+                latex = MockDataFactory.randomString(),
+                background = null
+            )
         )
 
         val p = MockBlockFactory.paragraph(
@@ -150,9 +157,10 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
                             text = p.content<TXT>().text,
                             mode = BlockView.Mode.EDIT
                         ),
-                        BlockView.Unsupported(
+                        BlockView.Latex(
                             id = latex.id,
                             isSelected = false,
+                            latex = latex.content<Block.Content.Latex>().latex,
                             indent = 1
                         )
                     )

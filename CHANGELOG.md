@@ -1,6 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.3.3 (WIP)
+## Version 0.4.0 (WIP)
+
+### New features & enhancements 🚀
+
+* Editor | Latex block in experimental mode. Based on WebView. (#1814)
+
+## Version 0.3.3
 
 ### New features & enhancements 🚀
 

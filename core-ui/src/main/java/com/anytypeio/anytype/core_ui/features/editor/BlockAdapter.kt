@@ -6,6 +6,7 @@ import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DiffUtil
@@ -77,6 +78,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FEATURED_RELATION
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NOTE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_LATEX
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_FILE
@@ -656,6 +658,21 @@ class BlockAdapter(
                     )
                 )
             }
+            HOLDER_LATEX -> Latex(parent).apply {
+                //latexView.isLongClickable = true
+                latexView.setOnTouchListener { v, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onClickListener(ListenerType.Latex(blocks[pos].id))
+                        }
+                        v.performClick()
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
             HOLDER_UNSUPPORTED -> Unsupported(parent)
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
@@ -1010,6 +1027,12 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position] as BlockView.Description
+                        )
+                    }
+                    is Latex -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Latex
                         )
                     }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
@@ -1413,6 +1436,9 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.FeaturedRelation,
                     click = onClickListener
                 )
+            }
+            is Latex -> {
+                holder.bind(item = blocks[position] as BlockView.Latex)
             }
             is Unsupported -> {
                 holder.bind(item = blocks[position] as BlockView.Unsupported)

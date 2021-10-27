@@ -1273,6 +1273,10 @@ class EditorViewModel(
                         excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                     }
+                    is Content.Latex -> {
+                        excludedActions.add(ActionItemType.Style)
+                        excludedActions.add(ActionItemType.Download)
+                    }
                     is Content.Text -> {
                         excludedActions.add(ActionItemType.Download)
                     }
@@ -3323,6 +3327,13 @@ class EditorViewModel(
             is ListenerType.DividerClick -> {
                 when (mode) {
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Latex -> {
+                when (mode) {
+                    EditorMode.Edit -> proceedWithEnteringActionMode(clicked.id)
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.id)
                     else -> Unit
                 }
             }

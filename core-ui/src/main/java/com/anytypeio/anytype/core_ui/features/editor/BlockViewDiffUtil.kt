@@ -154,6 +154,13 @@ class BlockViewDiffUtil(
                 changes.add(OBJECT_ICON_CHANGED)
         }
 
+        if (newBlock is BlockView.Latex && oldBlock is BlockView.Latex) {
+            if (newBlock.latex != oldBlock.latex)
+                changes.add(LATEX_CHANGED)
+            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+                changes.add(BACKGROUND_COLOR_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -188,6 +195,8 @@ class BlockViewDiffUtil(
         val isObjectTitleChanged: Boolean get() = changes.contains(OBJECT_TITLE_CHANGED)
         val isObjectIconChanged: Boolean get() = changes.contains(OBJECT_ICON_CHANGED)
 
+        val isLatexChanged: Boolean get() = changes.contains(LATEX_CHANGED)
+
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
@@ -219,5 +228,6 @@ class BlockViewDiffUtil(
         const val GHOST_EDITOR_SELECTION_CHANGED = 18
         const val OBJECT_TITLE_CHANGED = 19
         const val OBJECT_ICON_CHANGED = 20
+        const val LATEX_CHANGED = 21
     }
 }

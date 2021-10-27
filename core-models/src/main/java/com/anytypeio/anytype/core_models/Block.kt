@@ -290,7 +290,7 @@ data class Block(
             }
         }
 
-        object Latex : Content()
+        data class Latex(val latex: String, val background: String?) : Content()
         object Unsupported: Content()
     }
 

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_ARCHIVE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_BOOKMARK
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_BOOKMARK_ERROR
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HIGHLIGHT
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NOTE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_LATEX
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PAGE
@@ -441,7 +443,7 @@ sealed class BlockView : ViewType, Parcelable {
         override var cursor: Int? = null,
         override val color: String? = null,
         override val backgroundColor: String? = null
-    ): BlockView(), TextSupport, Focusable, Cursor, Permission {
+    ) : BlockView(), TextSupport, Focusable, Cursor, Permission {
         override fun getViewType(): Int = HOLDER_DESCRIPTION
     }
 
@@ -924,7 +926,7 @@ sealed class BlockView : ViewType, Parcelable {
     data class FeaturedRelation(
         override val id: String,
         val relations: @RawValue List<DocumentRelationView>
-    ): BlockView() {
+    ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }
 
@@ -965,6 +967,17 @@ sealed class BlockView : ViewType, Parcelable {
         override val isSelected: Boolean = false
     ) : BlockView(), Indentable, Selectable {
         override fun getViewType(): Int = HOLDER_UNSUPPORTED
+    }
+
+    @Parcelize
+    data class Latex(
+        override val id: String,
+        override val indent: Int,
+        override val isSelected: Boolean,
+        val latex: String,
+        val backgroundColor: String? = null
+    ) : BlockView(), Indentable, Selectable {
+        override fun getViewType(): Int = HOLDER_LATEX
     }
 
     enum class Mode { READ, EDIT }

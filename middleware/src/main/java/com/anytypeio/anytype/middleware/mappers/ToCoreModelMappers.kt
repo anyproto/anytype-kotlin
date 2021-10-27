@@ -123,7 +123,10 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = Block.Content.Latex
+                content = Block.Content.Latex(
+                    latex = block.latex?.text.orEmpty(),
+                    background = block.backgroundColor.ifEmpty { null }
+                )
             )
         }
         else -> {

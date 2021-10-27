@@ -898,6 +898,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.TODO,
+            ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE -> {
                 viewModelScope.launch {

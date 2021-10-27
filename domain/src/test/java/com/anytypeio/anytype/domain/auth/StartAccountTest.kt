@@ -161,7 +161,8 @@ class StartAccountTest {
         verify(flavourConfigProvider, times(1)).set(
             enableDataView = false,
             enableDebug = false,
-            enableChannelSwitch = false
+            enableChannelSwitch = false,
+            enableSpaces = false
         )
 
         assertTrue { result == Either.Right(account.id) }
@@ -205,7 +206,8 @@ class StartAccountTest {
         verify(flavourConfigProvider, times(1)).set(
             enableDataView = true,
             enableDebug = false,
-            enableChannelSwitch = true
+            enableChannelSwitch = true,
+            enableSpaces = false
         )
 
         assertTrue { result == Either.Right(account.id) }

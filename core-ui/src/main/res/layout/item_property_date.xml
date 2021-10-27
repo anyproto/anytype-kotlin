@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/propDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/propDate"
-        app:srcCompat="@drawable/ic_arrow_forward" />
+        app:srcCompat="@drawable/ic_arrow_forward_legacy" />
 
     <ImageView
         android:id="@+id/dateHide"

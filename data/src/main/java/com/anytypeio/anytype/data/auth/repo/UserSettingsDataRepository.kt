@@ -4,9 +4,9 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
 class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSettingsRepository {
 
-    override suspend fun setDefaultPageType(type: String) {
-        cache.setDefaultPageType(type)
+    override suspend fun setDefaultObjectType(type: String, name: String) {
+        cache.setDefaultObjectType(type, name)
     }
 
-    override suspend fun getDefaultPageType(): String? = cache.getDefaultPageType()
+    override suspend fun getDefaultObjectType(): Pair<String?, String?> = cache.getDefaultObjectType()
 }

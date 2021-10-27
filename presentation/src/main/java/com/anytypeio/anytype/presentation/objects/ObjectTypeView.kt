@@ -6,22 +6,18 @@ import com.anytypeio.anytype.core_models.ObjectType.Companion.PAGE_URL
 
 sealed class ObjectTypeView {
 
-    abstract val id: String
-
     data class Item(
-        override val id: String,
+        val id: String,
         val name: String,
         val description: String?,
         val emoji: String?,
         val layout: ObjectType.Layout
     ) : ObjectTypeView()
 
-    data class Search(
-        override val id: String = ""
-    ) : ObjectTypeView()
+    object Search: ObjectTypeView()
 }
 
-fun MutableList<ObjectTypeView>.sortByType(
+fun MutableList<ObjectTypeView.Item>.sortByType(
     defaultType: String?
 ): List<ObjectTypeView> {
     if (defaultType == NOTE_URL) {

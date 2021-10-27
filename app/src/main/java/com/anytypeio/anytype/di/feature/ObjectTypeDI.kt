@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
-import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
@@ -9,7 +10,7 @@ import dagger.Provides
 import dagger.Subcomponent
 
 @Subcomponent(modules = [ObjectTypeChangeModule::class])
-@PerModal
+@PerScreen
 interface ObjectTypeChangeSubComponent {
 
     @Subcomponent.Builder
@@ -26,7 +27,7 @@ object ObjectTypeChangeModule {
 
     @JvmStatic
     @Provides
-    @PerModal
+    @PerScreen
     fun provideObjectTypeViewModelFactory(
         getCompatibleObjectTypes: GetCompatibleObjectTypes
     ): ObjectTypeChangeViewModelFactory {
@@ -34,4 +35,11 @@ object ObjectTypeChangeModule {
             getCompatibleObjectTypes = getCompatibleObjectTypes
         )
     }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetCompatibleObjectTypesUseCase(
+        repository: BlockRepository
+    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
 }

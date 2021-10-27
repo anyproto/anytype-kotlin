@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/textURL"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textURL"
-        app:srcCompat="@drawable/ic_arrow_forward" />
+        app:srcCompat="@drawable/ic_arrow_forward_legacy" />
 
     <ImageView
         android:id="@+id/urlHide"

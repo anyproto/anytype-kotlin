@@ -5,26 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_object_type_change.*
 import javax.inject.Inject
 
 class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
 
-    private val ctx: String get() = argString(ARG_CTX)
     private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
 
     private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
@@ -34,13 +36,7 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
 
     private val objectTypeAdapter by lazy {
         ObjectTypeVerticalAdapter(
-            onItemClick = { id ->
-                withParent<OnFragmentInteractionListener> {
-                    onObjectTypePicked(id)
-                }
-                view?.rootView?.hideKeyboard()
-                dismiss()
-            },
+            onItemClick = ::onItemClicked,
             data = arrayListOf()
         )
     }
@@ -63,6 +59,13 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
         objectTypeAdapter.update(views)
     }
 
+    private fun onItemClicked(id: String, name: String) {
+        val bundle = bundleOf(OBJECT_TYPE_URL_KEY to id, OBJECT_TYPE_NAME_KEY to name)
+        setFragmentResult(OBJECT_TYPE_REQUEST_KEY, bundle)
+        view?.rootView?.hideKeyboard()
+        dismiss()
+    }
+
     override fun onStart() {
         with(lifecycleScope) {
             jobs += subscribe(vm.results) { observeViews(it) }
@@ -75,22 +78,17 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectTypeChangeComponent.get(ctx).inject(this)
+        componentManager().objectTypeChangeComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectTypeChangeComponent.release(ctx)
+        componentManager().objectTypeChangeComponent.release()
     }
 
     companion object {
-        fun new(ctx: String, smartBlockType: SmartBlockType) = ObjectTypeChangeFragment().apply {
-            arguments = bundleOf(
-                ARG_CTX to ctx,
-                ARG_SMART_BLOCK_TYPE to smartBlockType
-            )
-        }
-
-        const val ARG_CTX = "arg.object-type.ctx"
         const val ARG_SMART_BLOCK_TYPE = "arg.object-type.smart-block-type"
+        const val OBJECT_TYPE_URL_KEY = "object-type-url.key"
+        const val OBJECT_TYPE_NAME_KEY = "object-type-name.key"
+        const val OBJECT_TYPE_REQUEST_KEY = "object-type.request"
     }
 }

@@ -37,6 +37,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/relationsText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/relationsText"
-        app:srcCompat="@drawable/ic_arrow_forward" />
+        app:srcCompat="@drawable/ic_arrow_forward_legacy" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

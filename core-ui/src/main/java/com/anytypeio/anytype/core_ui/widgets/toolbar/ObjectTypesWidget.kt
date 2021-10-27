@@ -26,7 +26,7 @@ class ObjectTypesWidget @JvmOverloads constructor(
     private val typesAdapter by lazy {
         ObjectTypeHorizontalListAdapter(
             data = arrayListOf(),
-            onItemClick = { id -> onItemClick?.invoke(id) },
+            onItemClick = this::onItemClicked,
             onSearchClick = { onSearchClick?.invoke() }
         )
     }
@@ -87,5 +87,9 @@ class ObjectTypesWidget @JvmOverloads constructor(
         objectTypesRecycler.gone()
         iconArrowUp.gone()
         iconArrowDown.visible()
+    }
+
+    private fun onItemClicked(id: Id, name: String) {
+        onItemClick?.invoke(id)
     }
 }

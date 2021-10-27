@@ -116,7 +116,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubGetObjectTypes(objectTypes = listOf())
-        stubGetDefaultObjectType(null)
+        stubGetDefaultObjectType()
         stubOpenDocument(
             document = doc,
             details = customDetails,

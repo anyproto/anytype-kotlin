@@ -38,7 +38,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/filter"
-        app:srcCompat="@drawable/ic_arrow_forward" />
+        app:srcCompat="@drawable/ic_arrow_forward_legacy" />
 
     <TextView
         android:id="@+id/filterCount"

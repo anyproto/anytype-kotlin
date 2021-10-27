@@ -457,8 +457,14 @@
         tools:layout="@layout/fragment_create_set" />
     <dialog
         android:id="@+id/userSettingsFragment"
-        android:name="com.anytypeio.anytype.ui.settings.UserSettingsFragment"
+        android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
         android:label="fragment_user_settings"
-        tools:layout="@layout/fragment_user_settings" />
+        tools:layout="@layout/fragment_user_settings" >
+    </dialog>
+    <dialog
+        android:id="@+id/objectTypeChangeFragment"
+        android:name="com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment"
+        android:label="ObjectTypeChangeFragment"
+        tools:layout="@layout/fragment_object_type_change"/>
 
 </navigation>

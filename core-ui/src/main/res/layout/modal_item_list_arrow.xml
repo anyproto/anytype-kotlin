@@ -38,7 +38,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/list"
-        app:srcCompat="@drawable/ic_arrow_forward"
+        app:srcCompat="@drawable/ic_arrow_forward_legacy"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

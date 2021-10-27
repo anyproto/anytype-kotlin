@@ -5,27 +5,27 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
-import com.anytypeio.anytype.presentation.settings.UserSettingsViewModel
-import com.anytypeio.anytype.ui.settings.UserSettingsFragment
+import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
+import com.anytypeio.anytype.ui.settings.OtherSettingsFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
 @PerScreen
-@Subcomponent(modules = [UserSettingsModule::class])
-interface UserSettingsSubComponent {
+@Subcomponent(modules = [OtherSettingsModule::class])
+interface OtherSettingsSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: UserSettingsModule): Builder
-        fun build(): UserSettingsSubComponent
+        fun module(module: OtherSettingsModule): Builder
+        fun build(): OtherSettingsSubComponent
     }
 
-    fun inject(fragment: UserSettingsFragment)
+    fun inject(fragment: OtherSettingsFragment)
 }
 
 @Module
-object UserSettingsModule {
+object OtherSettingsModule {
 
     @JvmStatic
     @PerScreen
@@ -42,10 +42,10 @@ object UserSettingsModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideUserSettingsFabric(
+    fun provideOtherSettingsFactory(
         getDefaultEditorType: GetDefaultEditorType,
         setDefaultEditorType: SetDefaultEditorType,
         analytics: Analytics
-    ): UserSettingsViewModel.Factory =
-        UserSettingsViewModel.Factory(getDefaultEditorType, setDefaultEditorType, analytics)
+    ): OtherSettingsViewModel.Factory =
+        OtherSettingsViewModel.Factory(getDefaultEditorType, setDefaultEditorType, analytics)
 }

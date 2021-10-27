@@ -77,7 +77,7 @@ class SplashViewModel(
             DEFAULT_TYPE_UPDATE
         }
         viewModelScope.launch {
-            val params = SetDefaultEditorType.Params(defaultType)
+            val params = SetDefaultEditorType.Params(defaultType.first, defaultType.second)
             Timber.d("Start to update Default Page Type:${params.type}")
             setDefaultEditorType.invoke(params).process(
                 failure = {
@@ -221,7 +221,8 @@ class SplashViewModel(
 
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account..."
-        const val DEFAULT_TYPE_FIRST_INSTALL = NOTE_URL
-        const val DEFAULT_TYPE_UPDATE = PAGE_URL
+        //ToDo better to take the name from middleware (see GetLastOpenedObject use case)
+        val DEFAULT_TYPE_FIRST_INSTALL = Pair(NOTE_URL, "Note")
+        val DEFAULT_TYPE_UPDATE = Pair(PAGE_URL, "Page")
     }
 }

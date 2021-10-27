@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="20dp"
-                android:drawableEnd="@drawable/ic_arrow_forward"
+                android:drawableEnd="@drawable/ic_arrow_forward_legacy"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/or_scan_qr_code"

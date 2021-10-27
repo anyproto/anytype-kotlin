@@ -91,8 +91,6 @@ interface EditorSubComponent {
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
 
     fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
-
-    fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
 }
 
 
@@ -720,13 +718,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetCompatibleObjectTypesUseCase(
-        repository: BlockRepository
-    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun searchObjects(
         repo: BlockRepository
     ): SearchObjects = SearchObjects(repo = repo)
@@ -736,4 +727,11 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
         GetDefaultEditorType(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetCompatibleObjectTypesUseCase(
+        repository: BlockRepository
+    ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
 }

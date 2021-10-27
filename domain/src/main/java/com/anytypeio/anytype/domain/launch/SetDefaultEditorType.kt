@@ -7,7 +7,7 @@ class SetDefaultEditorType(private val repo: UserSettingsRepository) :
     BaseUseCase<Unit, SetDefaultEditorType.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.setDefaultPageType(params.type)
+        repo.setDefaultObjectType(params.type, params.name)
     }
 
     /**
@@ -15,6 +15,7 @@ class SetDefaultEditorType(private val repo: UserSettingsRepository) :
     @see ObjectTypeConst for possible values.
      **/
     class Params(
-        val type: String
+        val type: String,
+        val name: String
     )
 }

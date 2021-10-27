@@ -33,6 +33,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
@@ -409,6 +410,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setFragmentResultListener(ObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
+            val id = bundle.getString(ObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
+            onObjectTypePicked(id = id)
+        }
         pickiT = PickiT(requireContext(), this, requireActivity())
         setupOnBackPressedDispatcher()
         getEditorSettings()
@@ -738,7 +743,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.onSetRelationKeyClicked(blockId = blockId, key = key)
     }
 
-    override fun onObjectTypePicked(id: Id) {
+    private fun onObjectTypePicked(id: Id?) {
         vm.onObjectTypeChanged(id)
     }
 
@@ -966,11 +971,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
                 is Command.OpenChangeObjectTypeScreen -> {
                     hideKeyboard()
-                    val fr = ObjectTypeChangeFragment.new(
-                        ctx = command.ctx,
-                        smartBlockType = command.smartBlockType
-                    )
-                    fr.show(childFragmentManager, null)
+                    findNavController()
+                        .navigate(
+                            R.id.objectTypeChangeFragment,
+                            bundleOf(
+                                ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType
+                            )
+                        )
                 }
                 is Command.OpenMoveToScreen -> {
                     lifecycleScope.launch {
@@ -2312,5 +2319,4 @@ interface OnFragmentInteractionListener {
     fun onAddBookmarkUrlClicked(target: String, url: String)
     fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)
-    fun onObjectTypePicked(id: Id)
 }

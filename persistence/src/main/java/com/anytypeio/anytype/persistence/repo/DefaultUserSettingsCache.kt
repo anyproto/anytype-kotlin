@@ -5,15 +5,21 @@ import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 
 class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
 
-    override suspend fun setDefaultPageType(type: String) {
-        prefs.edit().putString(DEFAULT_PAGE_KEY, type).apply()
+    override suspend fun setDefaultObjectType(type: String, name: String) {
+        prefs.edit()
+            .putString(DEFAULT_OBJECT_TYPE_ID_KEY, type)
+            .putString(DEFAULT_OBJECT_TYPE_NAME_KEY, name)
+            .apply()
     }
 
-    override suspend fun getDefaultPageType(): String? {
-        return prefs.getString(DEFAULT_PAGE_KEY, null)
+    override suspend fun getDefaultObjectType(): Pair<String?, String?> {
+        val type = prefs.getString(DEFAULT_OBJECT_TYPE_ID_KEY, null)
+        val name = prefs.getString(DEFAULT_OBJECT_TYPE_NAME_KEY, null)
+        return Pair(type, name)
     }
 
     companion object {
-        const val DEFAULT_PAGE_KEY = "prefs.user_settings.default_page"
+        const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
+        const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
     }
 }

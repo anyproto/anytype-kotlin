@@ -310,15 +310,9 @@ class SplashViewModelTest {
         }
     }
 
-    private fun stubGetDefaultObjectType(type: String?) {
+    private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type))
-        }
-    }
-
-    private fun stubSetDefaultObjectType(type: String) {
-        setDefaultEditorType.stub {
-            onBlocking { invoke(SetDefaultEditorType.Params(type)) } doReturn Either.Right(Unit)
+            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type, name))
         }
     }
 }

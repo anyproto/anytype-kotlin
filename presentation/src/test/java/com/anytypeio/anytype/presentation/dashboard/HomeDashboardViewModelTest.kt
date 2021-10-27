@@ -310,7 +310,7 @@ class HomeDashboardViewModelTest {
     fun `should start creating page when requested from UI`() {
 
         stubObserveEvents()
-        stubGetDefaultObjectType(null)
+        stubGetDefaultObjectType()
 
         vm = buildViewModel()
 
@@ -328,7 +328,7 @@ class HomeDashboardViewModelTest {
         stubGetEditorSettings()
         stubCloseDashboard()
         stubCreatePage(id)
-        stubGetDefaultObjectType(null)
+        stubGetDefaultObjectType()
 
         vm = buildViewModel()
 
@@ -392,9 +392,9 @@ class HomeDashboardViewModelTest {
         }
     }
 
-    private fun stubGetDefaultObjectType(type: String?) {
+    private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type))
+            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type, name))
         }
     }
 }

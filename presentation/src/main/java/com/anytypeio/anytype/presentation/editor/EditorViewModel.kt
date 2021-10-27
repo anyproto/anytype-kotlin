@@ -3709,8 +3709,12 @@ class EditorViewModel(
         }
     }
 
-    fun onObjectTypeChanged(id: Id) {
+    fun onObjectTypeChanged(id: Id?) {
         Timber.d("onObjectTypeChanged, typeId:[$id]")
+        if (id == null) {
+            _toasts.offer(CANNOT_CHANGE_NULL_OBJECT_TYPE)
+            return
+        }
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.SetObjectType(
@@ -3733,6 +3737,7 @@ class EditorViewModel(
         const val FORMAT_WEBP = "webp"
         const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
+        const val CANNOT_CHANGE_NULL_OBJECT_TYPE = "Cannot change object type, when new one is unknown"
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
         const val CANNOT_MOVE_PARENT_INTO_CHILD = "Cannot move parent into child."
 
@@ -5238,11 +5243,11 @@ class EditorViewModel(
         }
     }
 
-    private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView>) {
+    private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView.Item>) {
         getDefaultEditorType.invoke(Unit).proceed(
             failure = { Timber.e(it, "Error while getting default object type") },
             success = { response ->
-                val sorted = listOf(ObjectTypeView.Search()) + views.toMutableList()
+                val sorted = listOf(ObjectTypeView.Search) + views.toMutableList()
                     .sortByType(response.type)
                 controlPanelInteractor.onEvent(
                     ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(sorted)

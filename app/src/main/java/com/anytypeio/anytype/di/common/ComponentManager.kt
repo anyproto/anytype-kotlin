@@ -172,9 +172,9 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val userSettingsComponent = Component {
-        main.userSettingsComponentBuilder()
-            .module(UserSettingsModule)
+    val otherSettingsComponent = Component {
+        main.otherSettingsComponentBuilder()
+            .module(OtherSettingsModule)
             .build()
     }
 
@@ -546,9 +546,8 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val objectTypeChangeComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
+    val objectTypeChangeComponent = Component {
+        main
             .objectTypeChangeComponent()
             .module(ObjectTypeChangeModule)
             .build()

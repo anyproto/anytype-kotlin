@@ -8,8 +8,9 @@ class GetDefaultEditorType(
 ) : BaseUseCase<GetDefaultEditorType.Response, Unit>() {
 
     override suspend fun run(params: Unit) = safe {
-        Response(userSettingsRepository.getDefaultPageType())
+        val pair = userSettingsRepository.getDefaultObjectType()
+        Response(pair.first, pair.second)
     }
 
-    class Response(val type: String?)
+    class Response(val type: String?, val name: String?)
 }

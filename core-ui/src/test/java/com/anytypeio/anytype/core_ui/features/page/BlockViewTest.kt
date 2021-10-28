@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.core_ui.features.page
 
 import com.anytypeio.anytype.core_ui.MockDataFactory
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -14,7 +17,7 @@ class BlockViewTest {
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
-        assertEquals(BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER, block.getViewType())
+        assertEquals(HOLDER_VIDEO_PLACEHOLDER, block.getViewType())
     }
 
     @Test
@@ -23,7 +26,7 @@ class BlockViewTest {
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt()
         )
-        assertEquals(BlockViewHolder.HOLDER_VIDEO_ERROR, block.getViewType())
+        assertEquals(HOLDER_VIDEO_ERROR, block.getViewType())
     }
 
     @Test
@@ -37,7 +40,7 @@ class BlockViewTest {
             name = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt()
         )
-        assertEquals(BlockViewHolder.HOLDER_VIDEO, block.getViewType())
+        assertEquals(HOLDER_VIDEO, block.getViewType())
     }
 
     @Test
@@ -46,6 +49,6 @@ class BlockViewTest {
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt()
         )
-        assertEquals(BlockViewHolder.HOLDER_VIDEO_UPLOAD, block.getViewType())
+        assertEquals(HOLDER_VIDEO_UPLOAD, block.getViewType())
     }
 }

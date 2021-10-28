@@ -8,7 +8,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import org.junit.Assert.*
 import org.junit.Test
 
-class PageLinkViewKtTest {
+class LinkToObjectViewKtTest {
 
     @Test
     fun `should contain text`() {

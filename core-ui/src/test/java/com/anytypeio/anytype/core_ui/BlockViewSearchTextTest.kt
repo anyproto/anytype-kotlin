@@ -137,7 +137,7 @@ class BlockViewSearchTextTest {
             target = IntRange.EMPTY
         )
 
-        val page = BlockView.Page(
+        val page = BlockView.LinkToObject.Default(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(field1),
@@ -170,7 +170,7 @@ class BlockViewSearchTextTest {
             target = IntRange.EMPTY
         )
 
-        val page = BlockView.PageArchive(
+        val page = BlockView.LinkToObject.Archived(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(field1),

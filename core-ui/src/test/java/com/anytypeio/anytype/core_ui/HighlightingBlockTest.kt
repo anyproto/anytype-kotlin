@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Highlight
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -54,7 +55,7 @@ class HighlightingBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HIGHLIGHT)
 
         adapter.onBindViewHolder(holder, 0)
 

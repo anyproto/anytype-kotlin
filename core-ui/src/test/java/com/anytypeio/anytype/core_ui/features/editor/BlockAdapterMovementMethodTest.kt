@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -46,7 +47,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -88,7 +89,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -138,7 +139,8 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, 
+            HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -188,7 +190,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -230,7 +232,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -304,7 +306,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -378,7 +380,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -453,7 +455,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -536,7 +538,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -611,7 +613,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -686,7 +688,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -768,7 +770,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -850,7 +852,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -930,7 +932,7 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 

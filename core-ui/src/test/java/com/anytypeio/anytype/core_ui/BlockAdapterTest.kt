@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
@@ -27,7 +26,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
-import com.anytypeio.anytype.core_ui.features.editor.holders.other.Page
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObject
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title.Document
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
@@ -42,9 +41,12 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.hexColorCode
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
-import kotlinx.android.synthetic.main.item_block_page.view.*
+import kotlinx.android.synthetic.main.item_block_object_link.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,7 +55,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -94,7 +99,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         assertEquals(
             expected = Paragraph::class,
@@ -120,7 +125,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -155,7 +160,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -193,7 +198,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -248,7 +253,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -304,7 +309,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -360,7 +365,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -433,7 +438,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -491,7 +496,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -534,7 +539,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -579,7 +584,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         assertEquals(
             expected = Document::class,
@@ -606,7 +611,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         // Testing
 
@@ -645,7 +650,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -699,7 +704,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -748,7 +753,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         // Testing
 
@@ -757,7 +762,7 @@ class BlockAdapterTest {
         check(holder is Document)
 
         Robolectric.getForegroundThreadScheduler().apply {
-            advanceBy(BlockViewHolder.FOCUS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+            advanceBy(16L, TimeUnit.MILLISECONDS)
         }
 
         assertEquals(
@@ -783,7 +788,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -816,7 +821,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -849,7 +854,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -882,7 +887,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -915,7 +920,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_CHECKBOX)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -950,7 +955,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_TOGGLE)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -980,7 +985,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE_PLACEHOLDER)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE_PLACEHOLDER)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1010,7 +1015,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE_ERROR)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE_ERROR)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1040,7 +1045,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE_UPLOAD)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE_UPLOAD)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1075,7 +1080,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1105,7 +1110,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO_PLACEHOLDER)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO_PLACEHOLDER)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1135,7 +1140,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO_UPLOAD)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO_UPLOAD)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1165,7 +1170,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_VIDEO_ERROR)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO_ERROR)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1182,7 +1187,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to page view`() {
 
-        val view = BlockView.Page(
+        val view = BlockView.LinkToObject.Default(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt(),
             emoji = null,
@@ -1198,11 +1203,11 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PAGE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_OBJECT_LINK_DEFAULT)
 
         adapter.bindViewHolder(holder, 0)
 
-        check(holder is Page)
+        check(holder is LinkToObject)
 
         val actual =
             (holder.itemView.pageGuideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
@@ -1234,11 +1239,11 @@ class BlockAdapterTest {
 //
 //        val adapter = buildAdapter(views)
 //
-//        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK)
+//        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BOOKMARK)
 //
 //        adapter.bindViewHolder(holder, 0)
 //
-//        check(holder is BlockViewHolder.Bookmark)
+//        check(holder is Types.Bookmark)
 //
 //        val actual = (holder.itemView.bookmarkRoot).marginLeft
 //
@@ -1264,7 +1269,7 @@ class BlockAdapterTest {
         val adapter = buildAdapter(views)
 
         val holder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BOOKMARK_PLACEHOLDER)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_BOOKMARK_PLACEHOLDER)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1298,7 +1303,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1329,7 +1334,7 @@ class BlockAdapterTest {
         val adapter = buildAdapter(views)
 
         val holder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE_PLACEHOLDER)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_PLACEHOLDER)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1359,7 +1364,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE_ERROR)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_ERROR)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1389,7 +1394,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PICTURE_UPLOAD)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_UPLOAD)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1426,7 +1431,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -1477,7 +1482,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -1529,7 +1534,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -1578,7 +1583,7 @@ class BlockAdapterTest {
 //            this.adapter = adapter
 //        }
 //
-//        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+//        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 //
 //        adapter.onBindViewHolder(holder, 0)
 //
@@ -1612,7 +1617,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -1658,8 +1663,8 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val firstHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
-        val secondHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val firstHolder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
+        val secondHolder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -1692,7 +1697,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         // Testing
 
@@ -1736,7 +1741,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -1801,7 +1806,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         // Testing
 
@@ -1842,7 +1847,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         // Testing
 
@@ -1885,7 +1890,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TITLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TITLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -1957,9 +1962,9 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val h1Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
-        val h2Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
-        val h3Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val h1Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
+        val h2Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
+        val h3Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
 
         // Testing
 
@@ -2071,17 +2076,17 @@ class BlockAdapterTest {
         }
 
         val h1SelectedHolder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
         val h1NotSelectedHolder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
         val h2SelectedHolder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
         val h2NotSelectedHolder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
         val h3SelectedHolder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
         val h3NotSelectedHolder =
-            adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+            adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
 
         // Testing
 
@@ -2141,9 +2146,9 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val h1Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
-        val h2Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
-        val h3Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val h1Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
+        val h2Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
+        val h3Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
 
         // Testing
 
@@ -2232,9 +2237,9 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val h1Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
-        val h2Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
-        val h3Holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val h1Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_ONE)
+        val h2Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_TWO)
+        val h3Holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HEADER_THREE)
 
         adapter.onBindViewHolder(h1Holder, 0)
         adapter.onBindViewHolder(h2Holder, 1)
@@ -2377,7 +2382,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HIGHLIGHT)
 
         // Testing
 
@@ -2421,7 +2426,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HIGHLIGHT)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -2475,7 +2480,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HIGHLIGHT)
 
         // Testing
 
@@ -2519,7 +2524,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_HIGHLIGHT)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -2582,7 +2587,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BULLET)
 
         // Testing
 
@@ -2621,7 +2626,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BULLET)
 
         // Testing
 
@@ -2664,7 +2669,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_BULLET)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -2727,7 +2732,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_CHECKBOX)
 
         // Testing
 
@@ -2766,7 +2771,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_CHECKBOX)
 
         // Testing
 
@@ -2809,7 +2814,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -2873,7 +2878,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_NUMBERED)
 
         // Testing
 
@@ -2913,7 +2918,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_NUMBERED)
 
         // Testing
 
@@ -2957,7 +2962,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_NUMBERED)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -3022,7 +3027,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_TOGGLE)
 
         // Testing
 
@@ -3065,7 +3070,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_TOGGLE)
 
         // Testing
 
@@ -3110,7 +3115,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_TOGGLE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -3187,8 +3192,8 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val firstHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
-        val secondHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
+        val firstHolder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE)
+        val secondHolder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE)
         adapter.onBindViewHolder(firstHolder, 0)
         adapter.onBindViewHolder(secondHolder, 1)
 
@@ -3227,7 +3232,7 @@ class BlockAdapterTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_FILE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_FILE)
         adapter.onBindViewHolder(holder, 0)
 
         check(holder is File)
@@ -3253,7 +3258,7 @@ class BlockAdapterTest {
 
         // Setup
 
-        val file = BlockView.Page(
+        val file = BlockView.LinkToObject.Default(
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             isSelected = false,
@@ -3272,11 +3277,11 @@ class BlockAdapterTest {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PAGE)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_OBJECT_LINK_DEFAULT)
 
         adapter.onBindViewHolder(holder, 0)
 
-        check(holder is Page)
+        check(holder is LinkToObject)
 
         // Testing
 

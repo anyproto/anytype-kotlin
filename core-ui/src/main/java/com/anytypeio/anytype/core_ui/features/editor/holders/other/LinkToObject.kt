@@ -17,10 +17,10 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_block_page.view.*
+import kotlinx.android.synthetic.main.item_block_object_link.view.*
 import timber.log.Timber
 
-class Page(view: View) :
+class LinkToObject(view: View) :
     BlockViewHolder(view),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
@@ -46,7 +46,7 @@ class Page(view: View) :
     }
 
     fun bind(
-        item: BlockView.Page,
+        item: BlockView.LinkToObject.Default,
         clicked: (ListenerType) -> Unit
     ) {
         indentize(item)
@@ -64,13 +64,13 @@ class Page(view: View) :
         bindLoading(item.isLoading)
     }
 
-    private fun applyText(item: BlockView.Page) {
+    private fun applyText(item: BlockView.LinkToObject.Default) {
         //title.enableReadMode()
         val text = if (item.text.isNullOrEmpty()) untitled else item.text
         title.setText(text, TextView.BufferType.EDITABLE)
     }
 
-    private fun applyImageOrEmoji(item: BlockView.Page) {
+    private fun applyImageOrEmoji(item: BlockView.LinkToObject.Default) {
         when {
             item.emoji != null -> {
                 icon.setImageDrawable(null)
@@ -159,7 +159,7 @@ class Page(view: View) :
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
-        check(item is BlockView.Page) { "Expected a page block, but was: $item" }
+        check(item is BlockView.LinkToObject.Default) { "Expected a link to object block, but was: $item" }
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
                 itemView.isSelected = item.isSelected

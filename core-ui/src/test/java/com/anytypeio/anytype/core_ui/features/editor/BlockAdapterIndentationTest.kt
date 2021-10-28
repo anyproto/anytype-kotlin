@@ -9,6 +9,12 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -43,7 +49,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -96,7 +102,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_ONE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -149,7 +155,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_TWO)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -202,7 +208,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_THREE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -254,7 +260,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -307,7 +313,7 @@ class BlockAdapterIndentationTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_NUMBERED)
 
         adapter.onBindViewHolder(holder, 0)
 

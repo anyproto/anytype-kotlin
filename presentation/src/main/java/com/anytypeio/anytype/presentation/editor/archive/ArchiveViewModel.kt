@@ -148,7 +148,7 @@ class ArchiveViewModel(
                     selection = emptySet()
                 )
             }
-            .map { views -> views.filterNot { it is BlockView.Page } }
+            .map { views -> views.filterNot { it is BlockView.LinkToObject } }
             .onEach { views ->
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)

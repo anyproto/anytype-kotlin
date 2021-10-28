@@ -10,6 +10,15 @@ import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -49,7 +58,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -84,7 +93,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_ONE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -119,7 +128,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_TWO)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -154,7 +163,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_THREE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -192,7 +201,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HIGHLIGHT)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -228,7 +237,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -264,7 +273,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_BULLET)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -301,7 +310,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_NUMBERED)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -337,7 +346,7 @@ class BlockAdapterCursorBindingTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TOGGLE)
 
         adapter.onBindViewHolder(holder, 0)
 

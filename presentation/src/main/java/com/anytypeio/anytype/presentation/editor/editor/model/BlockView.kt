@@ -5,53 +5,53 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_ARCHIVE_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_BOOKMARK
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_BOOKMARK_ERROR
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_BOOKMARK_PLACEHOLDER
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_BULLET
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_CHECKBOX
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_CODE_SNIPPET
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_DESCRIPTION
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_DIVIDER_DOTS
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_DIVIDER_LINE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FEATURED_RELATION
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FILE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FILE_ERROR
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FILE_PLACEHOLDER
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FILE_UPLOAD
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADER_ONE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADER_THREE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADER_TWO
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HIGHLIGHT
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NOTE_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_LATEX
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NUMBERED
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PAGE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PAGE_ARCHIVE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PARAGRAPH
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PICTURE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PICTURE_ERROR
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PICTURE_PLACEHOLDER
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PICTURE_UPLOAD
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PROFILE_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_CHECKBOX
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_DEFAULT
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_FILE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_OBJECT
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_STATUS
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_TAGS
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TODO_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TOGGLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_UNSUPPORTED
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO_ERROR
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO_PLACEHOLDER
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_VIDEO_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_ARCHIVE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_DOTS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_LINE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FEATURED_RELATION
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NOTE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PROFILE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -853,47 +853,65 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
-    /**
-     * UI-model for blocks containing page links.
-     * @property id block's id
-     * @property text a page's name
-     * @property emoji a page's emoji (if present)
-     * @property isEmpty this property determines whether this page is empty or not
-     */
-    @Parcelize
-    data class Page(
-        override val id: String,
-        override val indent: Int = 0,
-        override val isSelected: Boolean = false,
-        override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-        override val isLoading: Boolean = false,
-        var text: String? = null,
-        val emoji: String? = null,
-        val image: String? = null,
-        val isEmpty: Boolean = false,
-    ) : BlockView(), Indentable, Selectable, Searchable, Loadable {
-        override fun getViewType() = HOLDER_PAGE
-    }
+    sealed class LinkToObject : BlockView(), Indentable, Selectable, Loadable {
+        /**
+         * UI-model for blocks containing links to objects.
+         * @property id block's id
+         * @property text a page's name
+         * @property emoji a page's emoji (if present)
+         * @property isEmpty this property determines whether this page is empty or not
+         * @property isArchived this property determines whether this linked object is archived or not
+         * @property isDeleted this property determines whether this linked object is deleted or not.
+         * Whenever isDeleted is true, we don't care about isArchived flags
+         */
+        @Parcelize
+        data class Default(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val isLoading: Boolean = false,
+            var text: String? = null,
+            val emoji: String? = null,
+            val image: String? = null,
+            val isEmpty: Boolean = false,
+            val isArchived: Boolean? = false,
+            val isDeleted: Boolean? = false
+        ) : LinkToObject(), Searchable {
+            override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
+        }
 
-    /**
-     * UI-model for blocks containing archived page links.
-     * @property id block's id
-     * @property text a page's name
-     * @property emoji a page's emoji (if present)
-     * @property isEmpty this property determines whether this page is empty or not
-     */
-    @Parcelize
-    data class PageArchive(
-        override val id: String,
-        override val indent: Int,
-        override val isSelected: Boolean = false,
-        override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-        var text: String? = null,
-        val emoji: String?,
-        val image: String?,
-        val isEmpty: Boolean = false
-    ) : BlockView(), Indentable, Selectable, Searchable {
-        override fun getViewType() = HOLDER_PAGE_ARCHIVE
+        /**
+         * UI-model for blocks containing links to archived objects.
+         * @property id block's id
+         * @property text a page's name
+         * @property emoji a page's emoji (if present)
+         * @property isEmpty this property determines whether this page is empty or not
+         */
+        @Parcelize
+        data class Archived(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false,
+            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val isLoading: Boolean = false,
+            var text: String? = null,
+            val emoji: String? = null,
+            val image: String? = null,
+            val isEmpty: Boolean = false
+        ) : LinkToObject(), Searchable {
+            override fun getViewType() = HOLDER_OBJECT_LINK_ARCHIVE
+        }
+
+        @Parcelize
+        data class Deleted(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false,
+            override val isLoading: Boolean = false
+        ) : LinkToObject() {
+            override fun getViewType() = HOLDER_OBJECT_LINK_DELETED
+        }
     }
 
     /**

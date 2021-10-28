@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -48,8 +49,8 @@ class BlockAdapterNumberedListTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val aHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
-        val bHolder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val aHolder = adapter.onCreateViewHolder(recycler, HOLDER_NUMBERED)
+        val bHolder = adapter.onCreateViewHolder(recycler, HOLDER_NUMBERED)
 
         adapter.onBindViewHolder(aHolder, 0)
         adapter.onBindViewHolder(bHolder, 1)

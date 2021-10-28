@@ -5,7 +5,10 @@ import android.text.Spannable
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -164,7 +167,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     private fun showKeyboard() {
-        content.postDelayed(KEYBOARD_SHOW_DELAY) {
+        content.postDelayed(16L) {
             imm().showSoftInput(content, InputMethodManager.SHOW_IMPLICIT)
         }
     }

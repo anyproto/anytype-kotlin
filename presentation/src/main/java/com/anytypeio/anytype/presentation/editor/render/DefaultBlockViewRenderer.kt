@@ -415,7 +415,7 @@ class DefaultBlockViewRenderer(
                 is Content.Link -> {
                     counter.reset()
                     result.add(
-                        toPages(
+                        toLinks(
                             block = block,
                             content = content,
                             indent = indent,
@@ -1127,7 +1127,7 @@ class DefaultBlockViewRenderer(
         }
     }
 
-    private fun toPages(
+    private fun toLinks(
         block: Block,
         content: Content.Link,
         indent: Int,
@@ -1137,7 +1137,7 @@ class DefaultBlockViewRenderer(
     ): BlockView {
         val isArchived = details.details[content.target]?.isArchived
         return if (isArchived == true) {
-            pageArchive(
+            linkArchive(
                 block = block,
                 content = content,
                 indent = indent,
@@ -1146,7 +1146,7 @@ class DefaultBlockViewRenderer(
                 selection = selection
             )
         } else {
-            page(
+            link(
                 block = block,
                 content = content,
                 indent = indent,
@@ -1157,14 +1157,14 @@ class DefaultBlockViewRenderer(
         }
     }
 
-    private fun page(
+    private fun link(
         mode: Editor.Mode,
         block: Block,
         content: Content.Link,
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Page = BlockView.Page(
+    ): BlockView.LinkToObject = BlockView.LinkToObject.Default(
         id = block.id,
         isEmpty = true,
         emoji = details.details[content.target]?.iconEmoji?.let { name ->
@@ -1189,14 +1189,14 @@ class DefaultBlockViewRenderer(
         )
     )
 
-    private fun pageArchive(
+    private fun linkArchive(
         block: Block,
         content: Content.Link,
         indent: Int,
         details: Block.Details,
         mode: EditorMode,
         selection: Set<Id>
-    ): BlockView.PageArchive = BlockView.PageArchive(
+    ): BlockView.LinkToObject.Archived = BlockView.LinkToObject.Archived(
         id = block.id,
         isEmpty = true,
         emoji = details.details[content.target]?.iconEmoji?.let { name ->

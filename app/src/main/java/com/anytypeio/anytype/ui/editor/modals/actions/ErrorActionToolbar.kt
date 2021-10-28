@@ -7,8 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 
 class ErrorActionToolbar : BlockActionToolbar() {
 
@@ -20,7 +23,7 @@ class ErrorActionToolbar : BlockActionToolbar() {
     }
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
-        if (block.getViewType() == BlockViewHolder.HOLDER_BOOKMARK_ERROR) {
+        if (block.getViewType() == HOLDER_BOOKMARK_ERROR) {
             initBookmarkError(view)
         }
         setConstraints()
@@ -43,10 +46,10 @@ class ErrorActionToolbar : BlockActionToolbar() {
 
     override fun blockLayout(): Int =
         when (block.getViewType()) {
-            BlockViewHolder.HOLDER_FILE_ERROR -> R.layout.item_block_file_error_preview
-            BlockViewHolder.HOLDER_BOOKMARK_ERROR -> R.layout.item_block_bookmark_error
-            BlockViewHolder.HOLDER_VIDEO_ERROR -> R.layout.item_block_video_error_preview
-            BlockViewHolder.HOLDER_PICTURE_ERROR -> R.layout.item_block_picture_error_preview
+            HOLDER_FILE_ERROR -> R.layout.item_block_file_error_preview
+            HOLDER_BOOKMARK_ERROR -> R.layout.item_block_bookmark_error
+            HOLDER_VIDEO_ERROR -> R.layout.item_block_video_error_preview
+            HOLDER_PICTURE_ERROR -> R.layout.item_block_picture_error_preview
             else -> R.layout.item_block_file_error_preview
         }
 }

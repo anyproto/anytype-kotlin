@@ -10,7 +10,6 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderOne
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderThree
@@ -18,6 +17,9 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderTwo
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -53,7 +55,7 @@ class HeaderBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_ONE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -103,7 +105,7 @@ class HeaderBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_TWO)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -153,7 +155,7 @@ class HeaderBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_THREE)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -214,7 +216,7 @@ class HeaderBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_ONE)
 
         // Testing
 
@@ -272,7 +274,7 @@ class HeaderBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_TWO)
 
         // Testing
 
@@ -330,7 +332,7 @@ class HeaderBlockTest {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_THREE)
 
         // Testing
 

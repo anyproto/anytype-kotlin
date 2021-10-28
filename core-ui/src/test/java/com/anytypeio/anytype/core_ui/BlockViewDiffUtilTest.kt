@@ -641,7 +641,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.Page(
+        val oldBlock = BlockView.LinkToObject.Default(
             id = id,
             indent = MockDataFactory.randomInt(),
             emoji = null,
@@ -861,7 +861,7 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.Page(
+        val oldBlock = BlockView.LinkToObject.Default(
             id = id,
             isLoading = true,
         )

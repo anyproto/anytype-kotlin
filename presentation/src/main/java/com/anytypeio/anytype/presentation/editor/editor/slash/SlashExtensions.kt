@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
-import com.anytypeio.anytype.presentation.editor.editor.model.Types
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 
 fun List<ObjectType>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType ->

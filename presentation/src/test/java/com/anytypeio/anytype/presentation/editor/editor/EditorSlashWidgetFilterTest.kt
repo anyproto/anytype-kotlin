@@ -6,9 +6,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_HEADER_TWO
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NUMBERED
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView

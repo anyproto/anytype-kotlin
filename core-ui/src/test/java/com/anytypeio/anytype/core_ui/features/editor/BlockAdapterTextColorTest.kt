@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -44,7 +45,7 @@ class BlockAdapterTextColorTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_BULLET)
 
         adapter.onBindViewHolder(holder, 0)
 

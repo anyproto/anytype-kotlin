@@ -147,7 +147,7 @@ class BlockViewDiffUtil(
                 changes.add(LOADING_STATE_CHANGED)
         }
 
-        if (newBlock is BlockView.Page && oldBlock is BlockView.Page) {
+        if (newBlock is BlockView.LinkToObject.Default && oldBlock is BlockView.LinkToObject.Default) {
             if (newBlock.text != oldBlock.text)
                 changes.add(OBJECT_TITLE_CHANGED)
             if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)

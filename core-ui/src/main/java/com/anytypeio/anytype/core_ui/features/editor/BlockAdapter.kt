@@ -5,8 +5,8 @@ import android.os.Build.VERSION_CODES.N
 import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DiffUtil
@@ -14,37 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_BOOKMARK
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_BOOKMARK_ERROR
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_BOOKMARK_PLACEHOLDER
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_BULLET
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_CHECKBOX
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_CODE_SNIPPET
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_DIVIDER_DOTS
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_DIVIDER_LINE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_FILE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_FILE_ERROR
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_FILE_PLACEHOLDER
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_FILE_UPLOAD
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_HEADER_ONE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_HEADER_THREE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_HEADER_TWO
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_HIGHLIGHT
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_NUMBERED
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PAGE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PAGE_ARCHIVE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PARAGRAPH
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PICTURE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PICTURE_ERROR
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PICTURE_PLACEHOLDER
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PICTURE_UPLOAD
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_PROFILE_TITLE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_TITLE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_TOGGLE
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_VIDEO
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_VIDEO_ERROR
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_VIDEO_PLACEHOLDER
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder.Companion.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -75,19 +44,50 @@ import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_DESCRIPTION
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_FEATURED_RELATION
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_NOTE_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_LATEX
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_CHECKBOX
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_DEFAULT
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_FILE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_OBJECT
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_PLACEHOLDER
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_STATUS
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_RELATION_TAGS
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_TODO_TITLE
-import com.anytypeio.anytype.presentation.editor.editor.model.Types.HOLDER_UNSUPPORTED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_DOTS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_LINE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FEATURED_RELATION
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NOTE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PROFILE_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.synthetic.main.item_block_description.view.*
@@ -477,19 +477,19 @@ class BlockAdapter(
                     )
                 )
             }
-            HOLDER_PAGE -> {
-                Page(
+            HOLDER_OBJECT_LINK_DEFAULT -> {
+                LinkToObject(
                     view = inflater.inflate(
-                        R.layout.item_block_page,
+                        R.layout.item_block_object_link,
                         parent,
                         false
                     )
                 )
             }
-            HOLDER_PAGE_ARCHIVE -> {
-                PageArchive(
+            HOLDER_OBJECT_LINK_ARCHIVE -> {
+                LinkToObjectArchive(
                     view = inflater.inflate(
-                        R.layout.item_block_page_archived,
+                        R.layout.item_block_object_link_archive,
                         parent,
                         false
                     )
@@ -981,13 +981,13 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
-                    is Page -> {
+                    is LinkToObject -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
                         )
                     }
-                    is PageArchive -> {
+                    is LinkToObjectArchive -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position]
@@ -1311,15 +1311,15 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is Page -> {
+            is LinkToObject -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.Page,
+                    item = blocks[position] as BlockView.LinkToObject.Default,
                     clicked = onClickListener
                 )
             }
-            is PageArchive -> {
+            is LinkToObjectArchive -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.PageArchive,
+                    item = blocks[position] as BlockView.LinkToObject.Archived,
                     clicked = onClickListener
                 )
             }

@@ -6,8 +6,8 @@ import android.view.View
 import android.widget.ImageView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
@@ -29,7 +29,7 @@ class VideoBlockActionToolbar : BlockActionToolbar() {
 
     override fun blockLayout() =
         when (block.getViewType()) {
-            BlockViewHolder.HOLDER_VIDEO -> R.layout.item_block_video_playback_off
+            HOLDER_VIDEO -> R.layout.item_block_video_playback_off
             else -> R.layout.item_block_video_uploading_preview
         }
 
@@ -37,7 +37,7 @@ class VideoBlockActionToolbar : BlockActionToolbar() {
 
     override fun initUi(view: View, colorView: ImageView?, backgroundView: ImageView?) {
         when (block.getViewType()) {
-            BlockViewHolder.HOLDER_VIDEO -> initVideo(view)
+            HOLDER_VIDEO -> initVideo(view)
             else -> Unit
         }
     }

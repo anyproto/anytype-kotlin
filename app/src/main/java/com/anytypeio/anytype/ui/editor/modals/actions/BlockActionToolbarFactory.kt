@@ -3,7 +3,7 @@ package com.anytypeio.anytype.ui.editor.modals.actions
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.model.Types
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 
 @Deprecated("Legacy")
 object BlockActionToolbarFactory {
@@ -27,8 +27,7 @@ object BlockActionToolbarFactory {
         is BlockView.Upload.Video -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Video -> newInstance(block, dimensions)
         is BlockView.Error.Video -> newInstance(block, dimensions)
-        is BlockView.Page -> newInstance(block, dimensions)
-        is BlockView.PageArchive -> newInstance(block, dimensions)
+        is BlockView.LinkToObject.Default -> newInstance(block, dimensions)
         is BlockView.DividerLine -> newInstance(block, dimensions)
         is BlockView.DividerDots -> newInstance(block, dimensions)
         is BlockView.MediaPlaceholder.Bookmark -> newInstance(block, dimensions)
@@ -49,6 +48,8 @@ object BlockActionToolbarFactory {
         is BlockView.Unsupported -> TODO()
         is BlockView.TitleNote -> TODO()
         is BlockView.Latex -> TODO()
+        is BlockView.LinkToObject.Archived -> TODO()
+        is BlockView.LinkToObject.Deleted -> TODO()
     }
 
     fun newInstance(
@@ -99,19 +100,8 @@ object BlockActionToolbarFactory {
             )
         }
 
-    fun newInstance(block: BlockView.Page, dimensions: BlockDimensions): PageBlockActionToolbar =
+    fun newInstance(block: BlockView.LinkToObject.Default, dimensions: BlockDimensions): PageBlockActionToolbar =
         PageBlockActionToolbar().apply {
-            arguments = bundleOf(
-                BlockActionToolbar.ARG_BLOCK to block,
-                BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions
-            )
-        }
-
-    fun newInstance(
-        block: BlockView.PageArchive,
-        dimensions: BlockDimensions
-    ): PageArchiveBlockActionToolbar =
-        PageArchiveBlockActionToolbar().apply {
             arguments = bundleOf(
                 BlockActionToolbar.ARG_BLOCK to block,
                 BlockActionToolbar.ARG_BLOCK_DIMENSIONS to dimensions

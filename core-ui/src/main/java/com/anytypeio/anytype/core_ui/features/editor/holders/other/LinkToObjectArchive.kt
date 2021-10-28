@@ -21,9 +21,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_block_page_archived.view.*
+import kotlinx.android.synthetic.main.item_block_object_link_archive.view.*
 
-class PageArchive(view: View) : BlockViewHolder(view),
+class LinkToObjectArchive(view: View) : BlockViewHolder(view),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     SupportCustomTouchProcessor,
@@ -46,7 +46,7 @@ class PageArchive(view: View) : BlockViewHolder(view),
     }
 
     fun bind(
-        item: BlockView.PageArchive,
+        item: BlockView.LinkToObject.Archived,
         clicked: (ListenerType) -> Unit
     ) {
         indentize(item)
@@ -158,7 +158,7 @@ class PageArchive(view: View) : BlockViewHolder(view),
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
-        check(item is BlockView.PageArchive) { "Expected a page archive block, but was: $item" }
+        check(item is BlockView.LinkToObject.Archived) { "Expected a object link archive block, but was: $item" }
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
                 itemView.isSelected = item.isSelected

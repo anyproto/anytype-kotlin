@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.editor.editor.model
+package com.anytypeio.anytype.presentation.editor.editor.model.types
 
 object Types {
     const val HOLDER_PARAGRAPH = 0
@@ -15,8 +15,10 @@ object Types {
     const val HOLDER_BULLET = 8
     const val HOLDER_NUMBERED = 9
     const val HOLDER_TOGGLE = 10
-    const val HOLDER_PAGE = 13
-    const val HOLDER_PAGE_ARCHIVE = 37
+
+    const val HOLDER_OBJECT_LINK_DEFAULT = 13
+    const val HOLDER_OBJECT_LINK_ARCHIVE = 14
+    const val HOLDER_OBJECT_LINK_DELETED = 15
 
     const val HOLDER_HIGHLIGHT = 17
 
@@ -56,7 +58,4 @@ object Types {
 
     const val HOLDER_UNSUPPORTED = 49
     const val HOLDER_LATEX = 51
-
-    const val FOCUS_TIMEOUT_MILLIS = 16L
-    const val KEYBOARD_SHOW_DELAY = 16L
 }

@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_UPLOAD
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 
 class UploadActionToolbar : BlockActionToolbar() {
 
@@ -18,9 +20,9 @@ class UploadActionToolbar : BlockActionToolbar() {
 
     override fun blockLayout() =
         when (block.getViewType()) {
-            BlockViewHolder.HOLDER_PICTURE_UPLOAD -> R.layout.item_block_picture_uploading_preview
-            BlockViewHolder.HOLDER_VIDEO_UPLOAD -> R.layout.item_block_video_uploading_preview
-            BlockViewHolder.HOLDER_FILE_UPLOAD -> R.layout.item_block_file_uploading_preview
+            HOLDER_PICTURE_UPLOAD -> R.layout.item_block_picture_uploading_preview
+            HOLDER_VIDEO_UPLOAD -> R.layout.item_block_video_uploading_preview
+            HOLDER_FILE_UPLOAD -> R.layout.item_block_file_uploading_preview
             else -> R.layout.item_block_picture_uploading_preview
         }
 

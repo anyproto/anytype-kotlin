@@ -6,6 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -38,7 +47,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         check(holder is Paragraph)
 
@@ -91,7 +100,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_ONE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_ONE)
 
         check(holder is HeaderOne)
 
@@ -144,7 +153,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_TWO)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_TWO)
 
         check(holder is HeaderTwo)
 
@@ -197,7 +206,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HEADER_THREE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HEADER_THREE)
 
         check(holder is HeaderThree)
 
@@ -250,7 +259,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_HIGHLIGHT)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_HIGHLIGHT)
 
         check(holder is Highlight)
 
@@ -303,7 +312,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         check(holder is Checkbox)
 
@@ -356,7 +365,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_BULLET)
 
         check(holder is Bulleted)
 
@@ -410,7 +419,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_NUMBERED)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_NUMBERED)
 
         check(holder is Numbered)
 
@@ -463,7 +472,7 @@ class BlockAdapterTextBindingTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_TOGGLE)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_TOGGLE)
 
         check(holder is Toggle)
 

@@ -9,6 +9,8 @@ import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -52,7 +54,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         check(holder is Paragraph)
 
@@ -116,7 +118,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         check(holder is Paragraph)
 
@@ -185,7 +187,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         check(holder is Paragraph)
 
@@ -256,7 +258,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_PARAGRAPH)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
 
         check(holder is Paragraph)
 
@@ -325,7 +327,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
             this.adapter = adapter
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         check(holder is Checkbox)
 

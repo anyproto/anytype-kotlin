@@ -14,7 +14,7 @@ import timber.log.Timber
 
 class PageBlockActionToolbar : BlockActionToolbar() {
 
-    lateinit var block: BlockView.Page
+    lateinit var block: BlockView.LinkToObject.Default
     lateinit var emoji: ImageView
     lateinit var image: ImageView
     lateinit var title: TextView

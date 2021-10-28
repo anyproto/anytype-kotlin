@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -40,7 +42,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -73,7 +75,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -113,7 +115,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -148,7 +150,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -194,7 +196,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -244,7 +246,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -303,7 +305,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -362,7 +364,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_CHECKBOX)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_CHECKBOX)
 
         adapter.onBindViewHolder(holder, 0)
 
@@ -411,7 +413,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        val holder = adapter.onCreateViewHolder(recycler, BlockViewHolder.HOLDER_BULLET)
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_BULLET)
 
         adapter.onBindViewHolder(holder, 0)
 

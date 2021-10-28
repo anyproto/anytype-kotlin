@@ -7,7 +7,7 @@ import "models.proto";
 
 message ObjectInfo {
     string id = 1;
-    repeated string objectTypeUrls = 2;
+    repeated string objectTypeUrls = 2; // deprecated
     google.protobuf.Struct details = 3;
     repeated Relation relations = 4;
 

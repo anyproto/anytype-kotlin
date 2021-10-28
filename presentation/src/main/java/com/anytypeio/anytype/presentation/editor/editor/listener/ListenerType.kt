@@ -44,7 +44,9 @@ sealed class ListenerType {
 
     object TitleBlock : ListenerType()
 
-    data class Page(val target: String) : ListenerType()
+    data class LinkToObject(val target: String) : ListenerType()
+    data class LinkToObjectArchived(val target: String) : ListenerType()
+    data class LinkToObjectDeleted(val target: String) : ListenerType()
 
     data class Mention(val target: String) : ListenerType()
 

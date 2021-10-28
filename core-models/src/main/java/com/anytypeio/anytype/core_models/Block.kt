@@ -33,6 +33,7 @@ data class Block(
         val coverType: Double? by default
         val iconImage: String? by default
         val isArchived: Boolean? by default
+        val isDeleted: Boolean? by default
         val isFavorite: Boolean? by default
         val done: Boolean? by default
         val lang: String? by default

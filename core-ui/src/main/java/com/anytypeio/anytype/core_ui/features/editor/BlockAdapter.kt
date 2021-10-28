@@ -67,6 +67,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -490,6 +491,15 @@ class BlockAdapter(
                 LinkToObjectArchive(
                     view = inflater.inflate(
                         R.layout.item_block_object_link_archive,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_OBJECT_LINK_DELETED -> {
+                LinkToObjectDelete(
+                    view = inflater.inflate(
+                        R.layout.item_block_object_link_delete,
                         parent,
                         false
                     )
@@ -993,6 +1003,12 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
+                    is LinkToObjectDelete -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
                     is Bookmark -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1320,6 +1336,12 @@ class BlockAdapter(
             is LinkToObjectArchive -> {
                 holder.bind(
                     item = blocks[position] as BlockView.LinkToObject.Archived,
+                    clicked = onClickListener
+                )
+            }
+            is LinkToObjectDelete -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.LinkToObject.Deleted,
                     clicked = onClickListener
                 )
             }

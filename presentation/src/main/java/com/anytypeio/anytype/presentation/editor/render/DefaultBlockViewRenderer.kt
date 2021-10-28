@@ -1135,25 +1135,35 @@ class DefaultBlockViewRenderer(
         mode: EditorMode,
         selection: Set<Id>
     ): BlockView {
+        val isDeleted = details.details[content.target]?.isDeleted
         val isArchived = details.details[content.target]?.isArchived
-        return if (isArchived == true) {
-            linkArchive(
+        return if (isDeleted == true) {
+            linkDeleted(
                 block = block,
-                content = content,
                 indent = indent,
-                details = details,
                 mode = mode,
                 selection = selection
             )
         } else {
-            link(
-                block = block,
-                content = content,
-                indent = indent,
-                details = details,
-                mode = mode,
-                selection = selection
-            )
+            if (isArchived == true) {
+                linkArchive(
+                    block = block,
+                    content = content,
+                    indent = indent,
+                    details = details,
+                    mode = mode,
+                    selection = selection
+                )
+            } else {
+                link(
+                    block = block,
+                    content = content,
+                    indent = indent,
+                    details = details,
+                    mode = mode,
+                    selection = selection
+                )
+            }
         }
     }
 
@@ -1212,6 +1222,21 @@ class DefaultBlockViewRenderer(
                 null
         },
         text = details.details[content.target]?.name,
+        indent = indent,
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        )
+    )
+
+    private fun linkDeleted(
+        block: Block,
+        indent: Int,
+        mode: EditorMode,
+        selection: Set<Id>
+    ): BlockView.LinkToObject.Deleted = BlockView.LinkToObject.Deleted(
+        id = block.id,
         indent = indent,
         isSelected = checkIfSelected(
             mode = mode,

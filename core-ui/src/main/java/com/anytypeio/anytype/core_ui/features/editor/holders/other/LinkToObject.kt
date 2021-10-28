@@ -59,7 +59,7 @@ class LinkToObject(view: View) :
 
         applyImageOrEmoji(item)
 
-        itemView.setOnClickListener { clicked(ListenerType.Page(item.id)) }
+        itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
 
         bindLoading(item.isLoading)
     }

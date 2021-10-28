@@ -225,7 +225,7 @@ class ArchiveViewModel(
     }
 
     fun onPageClicked(click: ListenerType) {
-        if (click is ListenerType.Page) {
+        if (click is ListenerType.LinkToObjectArchived) {
             (stateData.value as? ArchiveViewState.Success)?.let { state ->
                 selectionStateHolder.toggleSelection(click.target)
                 val update = state.blocks.map { block ->

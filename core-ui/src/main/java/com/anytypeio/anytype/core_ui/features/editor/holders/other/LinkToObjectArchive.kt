@@ -110,7 +110,7 @@ class LinkToObjectArchive(view: View) : BlockViewHolder(view),
             }
         }
 
-        title.setOnClickListener { clicked(ListenerType.Page(item.id)) }
+        title.setOnClickListener { clicked(ListenerType.LinkToObjectArchived(item.id)) }
         title.setOnLongClickListener(
             EditorLongClickListener(
                 t = item.id,

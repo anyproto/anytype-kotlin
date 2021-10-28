@@ -94,6 +94,12 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
+    <style name="BlockObjectLinkDeleteContentStyle" parent="BlockPageContentStyle">
+        <item name="android:textColor">#CBC9BD</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+
     <style name="BlockPageArchivedContentStyle">
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:fontFamily">@font/inter_regular</item>

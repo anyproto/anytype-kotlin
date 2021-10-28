@@ -53,7 +53,6 @@ class LinkToObjectArchive(view: View) : BlockViewHolder(view),
 
         itemView.isSelected = item.isSelected
 
-        title.enableReadMode()
         val text = if (item.text.isNullOrEmpty()) {
             SpannableStringBuilder("$untitled $archived").apply {
                 setSpan(
@@ -74,7 +73,7 @@ class LinkToObjectArchive(view: View) : BlockViewHolder(view),
             }
         }
 
-        title.setText(text, TextView.BufferType.SPANNABLE)
+        title.setText(text, TextView.BufferType.EDITABLE)
 
         applySearchHighlight(item)
 
@@ -110,13 +109,7 @@ class LinkToObjectArchive(view: View) : BlockViewHolder(view),
             }
         }
 
-        title.setOnClickListener { clicked(ListenerType.LinkToObjectArchived(item.id)) }
-        title.setOnLongClickListener(
-            EditorLongClickListener(
-                t = item.id,
-                click = { onBlockLongClick(itemView, it, clicked) }
-            )
-        )
+        itemView.setOnClickListener { clicked(ListenerType.LinkToObjectArchived(item.id)) }
     }
 
     override fun indentize(item: BlockView.Indentable) {

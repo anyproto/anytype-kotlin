@@ -58,7 +58,7 @@
         app:layout_constraintStart_toEndOf="@id/pageGuideline"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.anytypeio.anytype.core_ui.widgets.text.TextHighlightWidget
         android:visibility="invisible"
         android:id="@+id/syncing"
         style="@style/BlockPageContentStyle"

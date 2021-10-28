@@ -40,13 +40,7 @@ class LinkToObjectDelete(view: View) : BlockViewHolder(view),
         indentize(item)
         itemView.isSelected = item.isSelected
         bindLoading(isLoading = item.isLoading)
-        title.setOnClickListener { clicked(ListenerType.LinkToObjectDeleted(item.id)) }
-        title.setOnLongClickListener(
-            EditorLongClickListener(
-                t = item.id,
-                click = { onBlockLongClick(itemView, it, clicked) }
-            )
-        )
+        itemView.setOnClickListener { clicked(ListenerType.LinkToObjectDeleted(item.id)) }
     }
 
     override fun indentize(item: BlockView.Indentable) {

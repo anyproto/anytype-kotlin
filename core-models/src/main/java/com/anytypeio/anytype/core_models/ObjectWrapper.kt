@@ -30,6 +30,7 @@ sealed class ObjectWrapper {
             }
 
         val isArchived: Boolean? by default
+        val isDeleted: Boolean? by default
 
         val type: List<String>
             get() = when (val value = map[Relations.TYPE]) {

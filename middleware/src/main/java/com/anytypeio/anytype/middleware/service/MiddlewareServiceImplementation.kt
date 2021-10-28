@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.service
 import anytype.Rpc.*
 import anytype.Rpc.Config
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
+import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import service.Service
 
@@ -101,10 +102,12 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Block.Open.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Block.Open.Response.Error.Code.NULL) {
-            if (error.code == Block.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE)
-                throw BackwardCompatilityNotSupportedException()
-            else
-                throw Exception(error.description)
+            when (error.code) {
+                Block.Open.Response.Error.Code.NOT_FOUND -> throw NotFoundObjectException()
+                Block.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE ->
+                    throw BackwardCompatilityNotSupportedException()
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

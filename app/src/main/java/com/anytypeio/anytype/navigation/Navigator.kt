@@ -232,4 +232,8 @@ class Navigator : AppNavigation {
     fun unbind() {
         navController = null
     }
+
+    override fun openUpdateAppScreen() {
+        navController?.navigate(R.id.alertUpdateAppFragment)
+    }
 }

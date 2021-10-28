@@ -242,5 +242,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="delete_irrevocably">These objects will be deleted irrevocably. You can\'t undo this action.</string>
     <string name="delete_irrevocably_one_object">This object will be deleted irrevocably. You can\'t undo this action.</string>
     <string name="shared">Shared</string>
+    <string name="object_not_exist">This object doesn\'t exist</string>
+    <string name="back_to_dashboard">Back to dashboard</string>
 
 </resources>

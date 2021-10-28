@@ -5,7 +5,8 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context="com.anytypeio.anytype.ui.editor.EditorFragment">
 
     <View
         android:id="@+id/placeholder"
@@ -257,5 +258,12 @@
         android:background="@color/orange"
         android:layout_width="match_parent"
         android:layout_height="2dp"/>
+
+    <include
+        android:id="@+id/objectNotExist"
+        layout="@layout/view_object_not_exist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

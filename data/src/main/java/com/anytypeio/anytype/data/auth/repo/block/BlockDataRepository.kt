@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
+import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -25,13 +26,19 @@ class BlockDataRepository(
         Result.Success(factory.remote.openPage(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
+    } catch (e : NotFoundObjectException) {
+        Result.Failure(Error.NotFoundObject)
     }
 
     override suspend fun openProfile(id: String): Payload =
         factory.remote.openProfile(id)
 
-    override suspend fun openObjectSet(id: Id): Payload {
-        return factory.remote.openObjectSet(id)
+    override suspend fun openObjectSet(id: String): Result<Payload> = try {
+        Result.Success(factory.remote.openObjectSet(id))
+    } catch (e: BackwardCompatilityNotSupportedException) {
+        Result.Failure(Error.BackwardCompatibility)
+    } catch (e : NotFoundObjectException) {
+        Result.Failure(Error.NotFoundObject)
     }
 
     override suspend fun closeDashboard(id: String) {

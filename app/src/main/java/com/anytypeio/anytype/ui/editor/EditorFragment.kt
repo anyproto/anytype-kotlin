@@ -21,6 +21,7 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -639,6 +640,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }
 
+        objectNotExist.findViewById<TextView>(R.id.btnToDashboard).setOnClickListener {
+            vm.onHomeButtonClicked()
+        }
+
         BottomSheetBehavior.from(styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
@@ -1081,6 +1086,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         rangeStart = state.range.first
                     ).show(childFragmentManager, TAG_LINK)
                 }
+            }
+            ViewState.Loading -> {}
+            ViewState.NotExist -> {
+                recycler.gone()
+                objectNotExist.visible()
             }
         }
     }

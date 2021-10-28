@@ -466,5 +466,9 @@
         android:name="com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment"
         android:label="ObjectTypeChangeFragment"
         tools:layout="@layout/fragment_object_type_change"/>
+    <dialog
+        android:id="@+id/alertUpdateAppFragment"
+        android:name="com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment"
+        android:label="AlertUpdateAppFragment" />
 
 </navigation>

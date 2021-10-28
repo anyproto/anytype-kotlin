@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.*
@@ -122,19 +123,21 @@ open class ObjectSetViewModelTestSetup {
             onBlocking {
                 invoke(any())
             } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = listOf(
-                        Event.Command.ShowObject(
-                            context = root,
-                            root = root,
-                            blocks = doc,
-                            details = details,
-                            relations = relations,
-                            objectTypes = objectTypes,
-                            dataViewRestrictions = dataViewRestrictions
-                        )
-                    ) + additionalEvents
+                Result.Success(
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.ShowObject(
+                                context = root,
+                                root = root,
+                                blocks = doc,
+                                details = details,
+                                relations = relations,
+                                objectTypes = objectTypes,
+                                dataViewRestrictions = dataViewRestrictions
+                            )
+                        ) + additionalEvents
+                    )
                 )
             )
         }

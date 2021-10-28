@@ -17,8 +17,10 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.interactor.*
+import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -207,9 +209,23 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             isLoading.value = true
             openObjectSet(ctx).process(
-                success = { payload ->
-                    defaultPayloadConsumer(payload).also { isLoading.value = false }
-                    proceedWithStartupPaging()
+                success = { result ->
+                    when (result) {
+                        is Result.Failure -> {
+                            when (result.error) {
+                                Error.BackwardCompatibility -> {
+                                    navigation.postValue(
+                                        EventWrapper(AppNavigation.Command.OpenUpdateAppScreen)
+                                    )
+                                }
+                                Error.NotFoundObject -> toast(TOAST_SET_NOT_EXIST)
+                            }
+                        }
+                        is Result.Success -> {
+                            defaultPayloadConsumer(result.data).also { isLoading.value = false }
+                            proceedWithStartupPaging()
+                        }
+                    }
                 },
                 failure = {
                     isLoading.value = false
@@ -962,5 +978,6 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val OBJECT_TYPE_UNKNOWN = "Can't open object, object type unknown"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
+        const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
     }
 }

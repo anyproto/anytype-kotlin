@@ -615,8 +615,12 @@ class EditorViewModel(
                         }
                         is Result.Failure -> {
                             session.value = Session.ERROR
-                            if (result.error is Error.BackwardCompatibility)
-                                dispatch(Command.AlertDialog)
+                            when (result.error) {
+                                Error.BackwardCompatibility -> dispatch(Command.AlertDialog)
+                                Error.NotFoundObject -> {
+                                    stateData.postValue(ViewState.NotExist)
+                                }
+                            }
                         }
                     }
                 },
@@ -712,6 +716,10 @@ class EditorViewModel(
 
     fun onHomeButtonClicked() {
         Timber.d("onHomeButtonClicked, ")
+        if (stateData.value == ViewState.NotExist) {
+            navigateToDesktop()
+            return
+        }
         proceedWithExitingToDashboard()
     }
 
@@ -2648,6 +2656,10 @@ class EditorViewModel(
         proceedWithClearingFocus()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
+        if (wrapper.isDeleted == true) {
+            proceedWithOpeningDeletedPage(target)
+            return
+        }
         when (wrapper.layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
@@ -2665,6 +2677,10 @@ class EditorViewModel(
                 }
             }
         }
+    }
+
+    private fun proceedWithOpeningDeletedPage(target: Id) {
+        navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
     }
 
     fun onAddNewObjectClicked(type: String, layout: ObjectType.Layout) {

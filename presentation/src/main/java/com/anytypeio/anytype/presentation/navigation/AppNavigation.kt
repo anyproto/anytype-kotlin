@@ -47,6 +47,7 @@ interface AppNavigation {
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
     fun openCreateSetScreen(ctx: Id)
+    fun openUpdateAppScreen()
 
     sealed class Command {
 
@@ -95,6 +96,8 @@ interface AppNavigation {
         data class LaunchObjectSet(val target: Id) : Command()
 
         data class OpenCreateSetScreen(val ctx: Id) : Command()
+
+        object OpenUpdateAppScreen : Command()
     }
 
     interface Provider {

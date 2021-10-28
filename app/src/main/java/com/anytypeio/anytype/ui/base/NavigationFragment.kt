@@ -58,6 +58,7 @@ abstract class NavigationFragment(
             is Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(command.pageId)
             is Command.OpenPageSearch -> navigation.openPageSearch()
             is Command.OpenCreateSetScreen -> navigation.openCreateSetScreen(command.ctx)
+            is Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
             else -> Timber.d("Nav command ignored: $command")
         }
     }

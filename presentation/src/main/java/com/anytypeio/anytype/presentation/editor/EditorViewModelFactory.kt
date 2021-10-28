@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -29,6 +31,7 @@ open class EditorViewModelFactory(
     private val closeObject: CloseBlock,
     private val createPage: CreatePage,
     private val createDocument: CreateDocument,
+    private val createObjectSet: CreateObjectSet,
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
     private val setObjectIsArchived: SetObjectIsArchived,
@@ -47,7 +50,8 @@ open class EditorViewModelFactory(
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
     private val objectTypesProvider: ObjectTypesProvider,
     private val searchObjects: SearchObjects,
-    private val getDefaultEditorType: GetDefaultEditorType
+    private val getDefaultEditorType: GetDefaultEditorType,
+    private val findObjectSetForType: FindObjectSetForType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -75,7 +79,9 @@ open class EditorViewModelFactory(
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultEditorType = getDefaultEditorType,
+            findObjectSetForType = findObjectSetForType,
+            createObjectSet = createObjectSet
         ) as T
     }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/change_type"
+        android:title="@string/change_type" />
+    <item
+        android:id="@+id/open_set"
+        android:title="@string/open_set" />
+</menu>

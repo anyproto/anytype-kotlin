@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -188,6 +190,12 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
+    @Mock
+    lateinit var findObjectSetForType: FindObjectSetForType
+
+    @Mock
+    lateinit var createObjectSet: CreateObjectSet
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -271,7 +279,9 @@ open class EditorPresentationTestSetup {
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultEditorType = getDefaultEditorType,
+            findObjectSetForType = findObjectSetForType,
+            createObjectSet = createObjectSet
         )
     }
 

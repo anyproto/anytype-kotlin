@@ -257,7 +257,7 @@ class BlockDataRepository(
     override suspend fun createSet(
         context: Id,
         target: Id?,
-        position: Position,
+        position: Position?,
         objectType: String?
     ): CreateObjectSet.Response {
         val result = factory.remote.createSet(

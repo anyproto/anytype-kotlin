@@ -178,7 +178,7 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun createSet(
         contextId: String,
         targetId: String?,
-        position: Position,
+        position: Position?,
         objectType: String?
     ): Response.Set.Create = remote.createSet(
         contextId = contextId,

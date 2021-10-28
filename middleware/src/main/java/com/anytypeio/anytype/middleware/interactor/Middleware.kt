@@ -970,7 +970,7 @@ class Middleware(
     fun createSet(
         contextId: String,
         targetId: String?,
-        position: Position,
+        position: Position?,
         objectType: String?
     ): Response.Set.Create {
 
@@ -984,7 +984,7 @@ class Middleware(
             contextId = contextId,
             targetId = targetId.orEmpty(),
             source = source,
-            position = position.toMiddlewareModel()
+            position = position?.toMiddlewareModel() ?: Block.Position.Bottom
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -994,7 +994,7 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
 
         return Response.Set.Create(
-            blockId = response.blockId,
+            blockId = response.blockId.ifEmpty { null },
             targetId = response.targetId,
             payload = response.event.toPayload()
         )

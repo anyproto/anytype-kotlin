@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.page.navigation.GetListPages
+import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -128,6 +130,9 @@ open class EditorTestSetup {
     lateinit var setObjectType: SetObjectType
 
     lateinit var getDefaultEditorType: GetDefaultEditorType
+
+    private lateinit var findObjectSetForType: FindObjectSetForType
+    private lateinit var createObjectSet: CreateObjectSet
 
     @Mock
     lateinit var updateDivider: UpdateDivider
@@ -227,6 +232,8 @@ open class EditorTestSetup {
         updateDetail = UpdateDetail(repo)
         getCompatibleObjectTypes = GetCompatibleObjectTypes(repo)
         getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
+        createObjectSet = CreateObjectSet(repo)
+        findObjectSetForType = FindObjectSetForType(repo)
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
@@ -296,7 +303,9 @@ open class EditorTestSetup {
             getCompatibleObjectTypes = getCompatibleObjectTypes,
             objectTypesProvider = objectTypesProvider,
             searchObjects = getSearchObjects,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultEditorType = getDefaultEditorType,
+            createObjectSet = createObjectSet,
+            findObjectSetForType = findObjectSetForType
         )
     }
 

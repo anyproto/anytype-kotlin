@@ -10,6 +10,8 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.menu.DataViewEditViewPopupMenu
+import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -30,7 +32,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
     private val defaultTextSize: Float = context.dimen(R.dimen.sp_13)
     private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
 
-    fun set(item: BlockView.FeaturedRelation, click: (ListenerType.Relation) -> Unit) {
+    fun set(
+        item: BlockView.FeaturedRelation,
+        click: (ListenerType.Relation) -> Unit
+    ) {
         clear()
 
         val flow = Flow(context).apply {
@@ -188,7 +193,17 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                     }
                     view.setOnClickListener {
-                        click.invoke(ListenerType.Relation.ObjectType(type = relation.relationId))
+                        val popup = ObjectTypePopupMenu(
+                            context = context,
+                            view = it,
+                            onChangeTypeClicked = {
+                                click(ListenerType.Relation.ObjectType(type = relation.relationId))
+                            },
+                            onOpenSetClicked = {
+                                click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
+                            }
+                        )
+                        popup.show()
                     }
                     addView(view)
                     ids.add(view.id)

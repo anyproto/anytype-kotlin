@@ -53,6 +53,7 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_ui.features.editor.*
@@ -74,6 +75,7 @@ import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
+import com.anytypeio.anytype.presentation.editor.Snack
 import com.anytypeio.anytype.presentation.editor.editor.*
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -102,6 +104,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment.Companion.RELATION_ADD_RESULT_KEY
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment.Companion.RELATION_NEW_RESULT_KEY
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import jp.wasabeef.blurry.Blurry
@@ -260,7 +263,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             onSlashEvent = vm::onSlashTextWatcherEvent,
             onBackPressedCallback = { vm.onBackPressedCallback() },
             onKeyPressedEvent = vm::onKeyPressedEvent,
-            onDragAndDropTrigger = { vh : RecyclerView.ViewHolder -> handleDragAndDropTrigger(vh) },
+            onDragAndDropTrigger = { vh: RecyclerView.ViewHolder -> handleDragAndDropTrigger(vh) },
             onDragListener = dndListener
         )
     }
@@ -317,8 +320,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
                 topToolbar.setBackgroundColor(0)
-                topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
-                topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
+                topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                    .start()
+                topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                    .start()
                 if (blockAdapter.views.isNotEmpty()) {
                     val firstView = blockAdapter.views.first()
                     if (firstView is BlockView.Title && firstView.hasCover) {
@@ -329,8 +334,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
             } else {
                 topToolbar.setBackgroundColor(Color.WHITE)
-                topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
-                topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION).start()
+                topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                    .start()
+                topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                    .start()
                 topToolbar.setStyle(overCover = false)
             }
         }
@@ -687,7 +694,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.navigation.observe(viewLifecycleOwner, navObserver)
         vm.controlPanelViewState.observe(viewLifecycleOwner) { render(it) }
         vm.commands.observe(viewLifecycleOwner) { execute(it) }
-        vm.toasts.onEach { toast(it) }.launchIn(lifecycleScope)
         vm.searchResultScrollPosition
             .filter { it != EditorViewModel.NO_SEARCH_RESULT_POSITION }
             .onEach { recycler.smoothScrollToPosition(it) }
@@ -708,7 +714,23 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }.launchIn(lifecycleScope)
 
         with(lifecycleScope) {
-            subscribe(vm.actions) { blockActionToolbar.bind(it) }
+            jobs += subscribe(vm.actions) { blockActionToolbar.bind(it) }
+            jobs += subscribe(vm.toasts) { toast(it) }
+            jobs += subscribe(vm.snacks) { snack ->
+                when (snack) {
+                    is Snack.ObjectSetNotFound -> {
+                        Snackbar
+                            .make(
+                                root,
+                                resources.getString(R.string.snack_object_set_not_found),
+                                Snackbar.LENGTH_LONG
+                            )
+                            .setActionTextColor(requireContext().color(R.color.orange))
+                            .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
+                            .show()
+                    }
+                }
+            }
         }
     }
 
@@ -1026,7 +1048,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu): Unit {
-        val lastSelected = (vm.state.value as ViewState.Success).blocks.indexOfLast { it.id == command.target }
+        val lastSelected =
+            (vm.state.value as ViewState.Success).blocks.indexOfLast { it.id == command.target }
         if (lastSelected != -1) {
             val lm = recycler.layoutManager as LinearLayoutManager
             val targetView = lm.findViewByPosition(lastSelected)
@@ -1132,7 +1155,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         topToolbar.setStyle(overCover = false)
                     }
                 }
-                else -> {}
+                else -> {
+                }
             }
         }
     }
@@ -1204,7 +1228,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 multiSelectTopToolbar.visible()
                 when {
                     count > 1 -> {
-                        multiSelectTopToolbar.selectText.text = getString(R.string.number_selected_blocks, count)
+                        multiSelectTopToolbar.selectText.text =
+                            getString(R.string.number_selected_blocks, count)
                     }
                     count == 1 -> {
                         multiSelectTopToolbar.selectText.setText(R.string.one_selected_block)
@@ -1968,9 +1993,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     //region Drag-and-drop UI logic.
 
     private var dndTargetPos = -1
-    private var dndTargetPrevious : Pair<Float, Int>? = null
+    private var dndTargetPrevious: Pair<Float, Int>? = null
 
-    var dndTargetLineAnimator : ViewPropertyAnimator? = null
+    var dndTargetLineAnimator: ViewPropertyAnimator? = null
 
     private var scrollDownJob: Job? = null
     private var scrollUpJob: Job? = null

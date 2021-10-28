@@ -116,7 +116,7 @@ interface BlockRepository {
     suspend fun createSet(
         context: Id,
         target: Id? = null,
-        position: Position = Position.BOTTOM,
+        position: Position? = null,
         objectType: String? = null
     ): CreateObjectSet.Response
 

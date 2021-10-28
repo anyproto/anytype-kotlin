@@ -16,6 +16,7 @@ sealed class CreateSetViewState {
     data class AddObjectType(val data: ArrayList<CreateObjectTypeView>) : CreateSetViewState()
 }
 
+@Deprecated("LEGACY SUSPECT")
 class CreateObjectSetViewModel(
     private val createObjectSet: CreateObjectSet,
     private val getObjectTypes: GetObjectTypes,
@@ -98,8 +99,8 @@ class CreateObjectSetViewModel(
         viewModelScope.launch {
             createObjectSet(
                 CreateObjectSet.Params(
-                    context = context,
-                    objectType = type
+                    ctx = context,
+                    type = type
                 )
             ).process(
                 failure = { Timber.e(it, "Error while creating new set for type: $type") },

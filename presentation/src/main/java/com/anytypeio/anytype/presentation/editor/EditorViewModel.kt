@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.editor.Editor
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -137,7 +139,9 @@ class EditorViewModel(
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
     private val objectTypesProvider: ObjectTypesProvider,
     private val searchObjects: SearchObjects,
-    private val getDefaultEditorType: GetDefaultEditorType
+    private val getDefaultEditorType: GetDefaultEditorType,
+    private val findObjectSetForType: FindObjectSetForType,
+    private val createObjectSet: CreateObjectSet
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -197,6 +201,8 @@ class EditorViewModel(
 
     private val _toasts: Channel<String> = Channel()
     val toasts: Flow<String> get() = _toasts.consumeAsFlow()
+
+    val snacks = MutableSharedFlow<Snack>(replay = 0)
 
     /**
      * Open gallery and search media files for block with that id
@@ -2656,10 +2662,6 @@ class EditorViewModel(
         proceedWithClearingFocus()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
-        if (wrapper.isDeleted == true) {
-            proceedWithOpeningDeletedPage(target)
-            return
-        }
         when (wrapper.layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
@@ -2677,10 +2679,6 @@ class EditorViewModel(
                 }
             }
         }
-    }
-
-    private fun proceedWithOpeningDeletedPage(target: Id) {
-        navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
     }
 
     fun onAddNewObjectClicked(type: String, layout: ObjectType.Layout) {
@@ -3530,6 +3528,23 @@ class EditorViewModel(
                     eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
                 )
             }
+            is ListenerType.Relation.ObjectTypeOpenSet -> {
+                viewModelScope.launch {
+                    findObjectSetForType(FindObjectSetForType.Params(clicked.type)).process(
+                        failure = { Timber.e(it, "Error while search for a set for this type") },
+                        success = { response ->
+                            when(response) {
+                                is FindObjectSetForType.Response.NotFound -> {
+                                    snacks.emit(Snack.ObjectSetNotFound(clicked.type))
+                                }
+                                is FindObjectSetForType.Response.Success -> {
+                                    proceedWithOpeningSet(response.obj.id)
+                                }
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -3680,7 +3695,17 @@ class EditorViewModel(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_DOCUMENT
         )
-        navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+        viewModelScope.launch {
+            closePage(CloseBlock.Params(context)).process(
+                failure = {
+                    Timber.e(it, "Error while closing object")
+                    navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+                },
+                success = {
+                    navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+                }
+            )
+        }
     }
 
     private fun proceedWithOpeningSet(target: Id) {
@@ -3688,7 +3713,17 @@ class EditorViewModel(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_SET
         )
-        navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+        viewModelScope.launch {
+            closePage(CloseBlock.Params(context)).process(
+                failure = {
+                    Timber.e(it, "Error while closing object")
+                    navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                },
+                success = {
+                    navigate(EventWrapper(AppNavigation.Command.OpenObjectSet(target)))
+                }
+            )
+        }
     }
 
     /**
@@ -3790,7 +3825,6 @@ class EditorViewModel(
         const val CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION = "Description block is text primitive and therefore no styling can be applied."
         const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =
             "Opening style panel for code block currently not supported"
-        const val FLAVOUR_EXPERIMENTAL = "experimental"
 
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
@@ -5324,4 +5358,18 @@ class EditorViewModel(
         }
     }
     //endregion
+
+    fun onCreateNewSetForType(type: Id) {
+        viewModelScope.launch {
+            createObjectSet(
+                CreateObjectSet.Params(
+                    ctx = context,
+                    type = type
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while creating a set of type: $type") },
+                success = { response -> proceedWithOpeningSet(response.target) }
+            )
+        }
+    }
 }

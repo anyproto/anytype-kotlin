@@ -204,10 +204,13 @@ class BlockMiddleware(
     override suspend fun createSet(
         contextId: String,
         targetId: String?,
-        position: Position,
+        position: Position?,
         objectType: String?
     ): Response.Set.Create = middleware.createSet(
-        contextId, targetId, position, objectType
+        contextId = contextId,
+        targetId = targetId,
+        position = position,
+        objectType = objectType
     )
 
     override suspend fun setActiveDataViewViewer(

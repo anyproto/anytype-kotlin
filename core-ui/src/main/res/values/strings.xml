@@ -436,5 +436,6 @@
     <string name="name_type_page_icon">📄</string>
     <string name="name_type_page_subtitle">Proto type to start with</string>
     <string name="non_existent_object">Non-existent object</string>
+    <string name="open_set">Open set</string>
 
 </resources>

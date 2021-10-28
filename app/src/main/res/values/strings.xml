@@ -245,4 +245,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="object_not_exist">This object doesn\'t exist</string>
     <string name="back_to_dashboard">Back to dashboard</string>
 
+    <string name="snack_object_set_not_found">Set not found for this type.</string>
+    <string name="create_new_set">Create</string>
+
 </resources>

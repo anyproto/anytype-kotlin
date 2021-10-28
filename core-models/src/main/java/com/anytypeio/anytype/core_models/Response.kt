@@ -37,8 +37,8 @@ sealed class Response {
 
     sealed class Set : Response() {
         data class Create(
-            val blockId: String,
-            val targetId: String,
+            val blockId: Id?,
+            val targetId: Id,
             val payload: Payload
         )
     }

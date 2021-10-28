@@ -7,6 +7,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -157,15 +158,17 @@ abstract class TestObjectSetSetup {
         relations: List<Relation> = emptyList()
     ) {
         repo.stub {
-            onBlocking { openObjectSet(ctx) } doReturn Payload(
-                context = ctx,
-                events = listOf(
-                    Event.Command.ShowObject(
-                        context = ctx,
-                        root = ctx,
-                        details = details,
-                        blocks = set,
-                        relations = relations
+            onBlocking { openObjectSet(ctx) } doReturn Result.Success(
+                Payload(
+                    context = ctx,
+                    events = listOf(
+                        Event.Command.ShowObject(
+                            context = ctx,
+                            root = ctx,
+                            details = details,
+                            blocks = set,
+                            relations = relations
+                        )
                     )
                 )
             )
@@ -183,23 +186,25 @@ abstract class TestObjectSetSetup {
         objectTypes: List<ObjectType>
     ) {
         repo.stub {
-            onBlocking { openObjectSet(ctx) } doReturn Payload(
-                context = ctx,
-                events = listOf(
-                    Event.Command.ShowObject(
-                        context = ctx,
-                        root = ctx,
-                        details = details,
-                        blocks = set,
-                        relations = relations,
-                        objectTypes = objectTypes
-                    ),
-                    Event.Command.DataView.SetRecords(
-                        context = ctx,
-                        id = dataview,
-                        view = viewer,
-                        total = total,
-                        records = records
+            onBlocking { openObjectSet(ctx) } doReturn Result.Success(
+                Payload(
+                    context = ctx,
+                    events = listOf(
+                        Event.Command.ShowObject(
+                            context = ctx,
+                            root = ctx,
+                            details = details,
+                            blocks = set,
+                            relations = relations,
+                            objectTypes = objectTypes
+                        ),
+                        Event.Command.DataView.SetRecords(
+                            context = ctx,
+                            id = dataview,
+                            view = viewer,
+                            total = total,
+                            records = records
+                        )
                     )
                 )
             )
@@ -207,7 +212,7 @@ abstract class TestObjectSetSetup {
     }
 
     fun launchFragment(args: Bundle): FragmentScenario<TestObjectSetFragment> {
-        return launchFragmentInContainer<TestObjectSetFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

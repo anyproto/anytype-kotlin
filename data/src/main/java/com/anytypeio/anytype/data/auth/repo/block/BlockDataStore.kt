@@ -63,7 +63,7 @@ interface BlockDataStore {
     suspend fun createSet(
         contextId: String,
         targetId: String?,
-        position: Position,
+        position: Position?,
         objectType: String?
     ): Response.Set.Create
 

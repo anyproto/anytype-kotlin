@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddFileToObject
+import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -131,6 +133,7 @@ object EditorSessionModule {
         removeLinkMark: RemoveLinkMark,
         createPage: CreatePage,
         createDocument: CreateDocument,
+        createObjectSet: CreateObjectSet,
         createObject: CreateObject,
         createNewDocument: CreateNewDocument,
         documentExternalEventReducer: DocumentExternalEventReducer,
@@ -145,7 +148,8 @@ object EditorSessionModule {
         getCompatibleObjectTypes: GetCompatibleObjectTypes,
         objectTypesProvider: ObjectTypesProvider,
         searchObjects: SearchObjects,
-        getDefaultEditorType: GetDefaultEditorType
+        getDefaultEditorType: GetDefaultEditorType,
+        findObjectSetForType: FindObjectSetForType
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -169,7 +173,9 @@ object EditorSessionModule {
         getCompatibleObjectTypes = getCompatibleObjectTypes,
         objectTypesProvider = objectTypesProvider,
         searchObjects = searchObjects,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        findObjectSetForType = findObjectSetForType,
+        createObjectSet = createObjectSet
     )
 
     @JvmStatic
@@ -734,4 +740,18 @@ object EditorUseCaseModule {
     fun provideGetCompatibleObjectTypesUseCase(
         repository: BlockRepository
     ): GetCompatibleObjectTypes = GetCompatibleObjectTypes(repository)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun findObjectSetForType(
+        repo: BlockRepository
+    ): FindObjectSetForType = FindObjectSetForType(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateObjectSetUseCase(
+        repo: BlockRepository
+    ): CreateObjectSet = CreateObjectSet(repo = repo)
 }

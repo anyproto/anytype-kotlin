@@ -358,11 +358,11 @@
     <string name="slash_widget_media_file">File</string>
     <string name="slash_widget_media_file_subtitle">Store file in original state</string>
     <string name="slash_widget_media_picture">Picture</string>
-    <string name="slash_widget_media_picture_subtitle">Upload and enrich the page with image</string>
+    <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Upload playable video</string>
     <string name="slash_widget_media_bookmark">Bookmark</string>
-    <string name="slash_widget_media_bookmark_subtitle">Save your favorite link with summery</string>
+    <string name="slash_widget_media_bookmark_subtitle">Save your favorite link with summary</string>
     <string name="slash_widget_media_code">Code snippet</string>
     <string name="slash_widget_media_code_subtitle">Capture code snippet</string>
 

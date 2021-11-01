@@ -431,6 +431,7 @@ class BlockDataRepository(
     )
 
     override suspend fun debugSync(): String = factory.remote.debugSync()
+    override suspend fun debugLocalStore(path: String): String = factory.remote.debugLocalStore(path)
 
     override suspend fun updateDetail(
         ctx: Id,

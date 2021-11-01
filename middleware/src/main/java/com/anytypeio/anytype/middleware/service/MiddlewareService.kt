@@ -206,4 +206,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectSetLayout(request: Object.SetLayout.Request): Object.SetLayout.Response
+
+    @Throws(Exception::class)
+    fun exportLocalStore(request: ExportLocalstore.Request): ExportLocalstore.Response
 }

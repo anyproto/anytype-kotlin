@@ -202,6 +202,7 @@ interface BlockRepository {
     suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat): Pair<Id, Payload>
 
     suspend fun debugSync(): String
+    suspend fun debugLocalStore(path: String): String
 
     suspend fun turnInto(
         context: Id,

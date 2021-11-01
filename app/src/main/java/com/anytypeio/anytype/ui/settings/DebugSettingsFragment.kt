@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
+import com.anytypeio.anytype.domain.dataview.interactor.DebugLocalStore
 import com.anytypeio.anytype.domain.dataview.interactor.DebugSync
 import kotlinx.android.synthetic.main.fragment_debug_settings.*
 import kotlinx.coroutines.launch
@@ -36,6 +37,9 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
     @Inject
     lateinit var debugSync: DebugSync
 
+    @Inject
+    lateinit var debugLocalStore: DebugLocalStore
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -51,6 +55,17 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
                 debugSync.invoke(Unit).proceed(
                     failure = {},
                     success = { status -> saveToFile(status) }
+                )
+            }
+        }
+
+        btnLocalStore.setOnClickListener {
+            val directory = File(requireContext().getExternalFilesDir(null), "debugLocalStore")
+            directory.mkdir()
+            viewLifecycleOwner.lifecycleScope.launch {
+                debugLocalStore.invoke(DebugLocalStore.Params(directory.path)).proceed(
+                    failure = {},
+                    success = { path -> showStatus("Exported local store is saved to $path") }
                 )
             }
         }

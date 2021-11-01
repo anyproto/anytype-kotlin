@@ -824,4 +824,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun exportLocalStore(request: ExportLocalstore.Request): ExportLocalstore.Response {
+        val encoded = Service.exportLocalstore(
+            ExportLocalstore.Request.ADAPTER.encode(request)
+        )
+        val response = ExportLocalstore.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ExportLocalstore.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

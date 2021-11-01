@@ -1476,4 +1476,12 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
+
+    fun exportLocalStore(path: String): String {
+        val request = Rpc.ExportLocalstore.Request(path = path)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.exportLocalStore(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.path
+    }
 }

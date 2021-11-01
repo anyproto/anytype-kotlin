@@ -377,6 +377,7 @@ class BlockMiddleware(
     )
 
     override suspend fun debugSync(): String = middleware.debugSync()
+    override suspend fun debugLocalStore(path: String): String = middleware.exportLocalStore(path)
 
     override suspend fun turnInto(
         context: String,

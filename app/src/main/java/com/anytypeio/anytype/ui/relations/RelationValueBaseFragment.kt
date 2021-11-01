@@ -92,11 +92,18 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             onRemoveStatusClicked = { status -> onRemoveStatusClicked(status) },
             onRemoveTagClicked = { tag -> onRemoveTagClicked(tag) },
             onObjectClicked = { o ->
-                vm.onObjectClicked(
-                    ctx = ctx,
-                    id = o.id,
-                    layout = o.layout
-                )
+                if (o is RelationValueBaseViewModel.RelationValueView.Object.Default) {
+                    vm.onObjectClicked(
+                        ctx = ctx,
+                        id = o.id,
+                        layout = o.layout
+                    )
+                } else {
+                    vm.onNonExistentObjectClicked(
+                        ctx = ctx,
+                        target = o.id
+                    )
+                }
             },
             onRemoveObjectClicked = { obj -> onRemoveObjectClicked(obj) },
             onFileClicked = { o -> vm.onFileClicked(o.id) },

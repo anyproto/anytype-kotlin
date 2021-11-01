@@ -130,6 +130,10 @@ class ObjectIconWidget @JvmOverloads constructor(
         //todo Add checkbox logic
     }
 
+    fun setNonExistentIcon() {
+        ivImage.setImageResource(R.drawable.ic_non_existent_object)
+    }
+
     fun setProfileInitials(
         name: String
     ) {

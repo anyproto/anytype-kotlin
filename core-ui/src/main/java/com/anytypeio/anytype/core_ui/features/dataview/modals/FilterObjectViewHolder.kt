@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.FilterView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_object.view.*
 
 class FilterObjectViewHolder(view: View) : FilterViewHolder(view) {
@@ -26,14 +27,16 @@ class FilterObjectViewHolder(view: View) : FilterViewHolder(view) {
         )
         for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
         item.filterValue.value.forEachIndexed { index, objectView ->
-            when (index) {
-                in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
-                    getViewByIndex(index)?.let { view ->
-                        view.visible()
-                        view.setup(
-                            name = objectView.name,
-                            icon = objectView.icon
-                        )
+            if (objectView is ObjectView.Default) {
+                when (index) {
+                    in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
+                        getViewByIndex(index)?.let { view ->
+                            view.visible()
+                            view.setup(
+                                name = objectView.name,
+                                icon = objectView.icon
+                            )
+                        }
                     }
                 }
             }

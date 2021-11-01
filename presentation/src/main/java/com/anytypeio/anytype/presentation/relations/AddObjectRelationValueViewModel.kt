@@ -149,7 +149,7 @@ abstract class AddObjectRelationValueViewModel(
                         val type = wrapper.type.firstOrNull()
                         val objectType = types.get().find { it.url == type }
                         items.add(
-                            RelationValueView.Object(
+                            RelationValueView.Object.Default(
                                 id = id,
                                 name = wrapper.name.orEmpty(),
                                 typeName = objectType?.name,
@@ -170,7 +170,7 @@ abstract class AddObjectRelationValueViewModel(
                     val type = wrapper.type.firstOrNull()
                     val objectType = types.get().find { it.url == type }
                     items.add(
-                        RelationValueView.Object(
+                        RelationValueView.Object.Default(
                             id = value,
                             name = wrapper.name.orEmpty(),
                             typeName = objectType?.name,

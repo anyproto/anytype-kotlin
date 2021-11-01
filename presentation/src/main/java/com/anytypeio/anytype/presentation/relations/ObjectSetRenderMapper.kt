@@ -426,20 +426,24 @@ fun Relation.toObjects(
 ) = if (value is List<*>?) {
     val ids = value?.filterIsInstance<String>() ?: emptyList()
     val list = arrayListOf<ObjectView>()
-    ids.forEach {
-        val wrapper = ObjectWrapper.Basic(details[it]?.map ?: emptyMap())
-        list.add(
-            ObjectView(
-                id = it,
-                name = details[it]?.name.orEmpty(),
-                icon = ObjectIcon.from(
-                    obj = wrapper,
-                    layout = wrapper.layout,
-                    builder = urlBuilder
-                ),
-                types = wrapper.type
+    ids.forEach { id ->
+        val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
+        if (wrapper.isDeleted == true) {
+            list.add(ObjectView.Deleted(id = id))
+        } else {
+            list.add(
+                ObjectView.Default(
+                    id = id,
+                    name = details[id]?.name.orEmpty(),
+                    icon = ObjectIcon.from(
+                        obj = wrapper,
+                        layout = wrapper.layout,
+                        builder = urlBuilder
+                    ),
+                    types = wrapper.type
+                )
             )
-        )
+        }
     }
     list
 } else {

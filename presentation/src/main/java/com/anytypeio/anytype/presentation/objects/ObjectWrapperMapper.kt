@@ -59,23 +59,31 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
         val typeUrl = obj.getProperType()
         val layout = obj.getProperLayout()
         if (obj.id !in ids) {
-            RelationValueBaseViewModel.RelationValueView.Object(
-                id = obj.id,
-                name = obj.getProperName(),
-                typeName = getProperTypeName(
-                    url = typeUrl,
-                    types = objectTypes
-                ),
-                type = typeUrl,
-                layout = layout,
-                icon = ObjectIcon.from(
-                    obj = obj,
+            if (obj.isDeleted == false) {
+                RelationValueBaseViewModel.RelationValueView.Object.Default(
+                    id = obj.id,
+                    name = obj.getProperName(),
+                    typeName = getProperTypeName(
+                        url = typeUrl,
+                        types = objectTypes
+                    ),
+                    type = typeUrl,
                     layout = layout,
-                    builder = urlBuilder
-                ),
-                isSelected = false,
-                removeable = false
-            )
+                    icon = ObjectIcon.from(
+                        obj = obj,
+                        layout = layout,
+                        builder = urlBuilder
+                    ),
+                    isSelected = false,
+                    removeable = false
+                )
+            } else {
+                RelationValueBaseViewModel.RelationValueView.Object.NonExistent(
+                    id = obj.id,
+                    isSelected = false,
+                    removeable = false
+                )
+            }
         } else {
             null
         }

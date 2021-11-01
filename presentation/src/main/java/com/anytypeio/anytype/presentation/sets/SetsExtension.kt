@@ -211,25 +211,13 @@ fun Map<String, Any?>.buildObjectViews(
     val value = this.getOrDefault(columnKey, null)
     if (value is Id) {
         val wrapper = ObjectWrapper.Basic(details[value]?.map ?: emptyMap())
-        objects.add(
-            ObjectView(
-                id = value,
-                name = details[value]?.name.orEmpty(),
-                icon = ObjectIcon.from(
-                    obj = wrapper,
-                    layout = wrapper.layout,
-                    builder = builder
-                ),
-                types = wrapper.type
-            )
-        )
-    } else if (value is List<*>) {
-        value.typeOf<Id>().forEach { id ->
-            val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
+        if (wrapper.isDeleted == true) {
+            objects.add(ObjectView.Deleted(id = value))
+        } else {
             objects.add(
-                ObjectView(
-                    id = id,
-                    name = details[id]?.name.orEmpty(),
+                ObjectView.Default(
+                    id = value,
+                    name = details[value]?.name.orEmpty(),
                     icon = ObjectIcon.from(
                         obj = wrapper,
                         layout = wrapper.layout,
@@ -238,6 +226,26 @@ fun Map<String, Any?>.buildObjectViews(
                     types = wrapper.type
                 )
             )
+        }
+    } else if (value is List<*>) {
+        value.typeOf<Id>().forEach { id ->
+            val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
+            if (wrapper.isDeleted == true) {
+                objects.add(ObjectView.Deleted(id = id))
+            } else {
+                objects.add(
+                    ObjectView.Default(
+                        id = id,
+                        name = details[id]?.name.orEmpty(),
+                        icon = ObjectIcon.from(
+                            obj = wrapper,
+                            layout = wrapper.layout,
+                            builder = builder
+                        ),
+                        types = wrapper.type
+                    )
+                )
+            }
         }
     }
     return objects

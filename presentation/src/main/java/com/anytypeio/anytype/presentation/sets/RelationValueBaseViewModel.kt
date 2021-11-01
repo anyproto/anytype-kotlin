@@ -122,9 +122,47 @@ abstract class RelationValueBaseViewModel(
                         val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
                         val type = wrapper.type.firstOrNull()
                         val objectType = types.get().find { it.url == type }
+                        if (wrapper.isDeleted == true) {
+                            items.add(
+                                RelationValueView.Object.NonExistent(
+                                    id = id,
+                                    removeable = isRemoveable
+                                )
+                            )
+                        } else {
+                            items.add(
+                                RelationValueView.Object.Default(
+                                    id = id,
+                                    name = detail?.name.orEmpty(),
+                                    typeName = objectType?.name,
+                                    type = objectType?.url,
+                                    icon = ObjectIcon.from(
+                                        obj = wrapper,
+                                        layout = wrapper.layout,
+                                        builder = urlBuilder
+                                    ),
+                                    removeable = isRemoveable,
+                                    layout = wrapper.layout
+                                )
+                            )
+                        }
+                    }
+                } else if (value is Id) {
+                    val detail = details.provide()[value]
+                    val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
+                    val type = wrapper.type.firstOrNull()
+                    val objectType = types.get().find { it.url == type }
+                    if (wrapper.isDeleted == true) {
                         items.add(
-                            RelationValueView.Object(
-                                id = id,
+                            RelationValueView.Object.NonExistent(
+                                id = value,
+                                removeable = isRemoveable
+                            )
+                        )
+                    } else {
+                        items.add(
+                            RelationValueView.Object.Default(
+                                id = value,
                                 name = detail?.name.orEmpty(),
                                 typeName = objectType?.name,
                                 type = objectType?.url,
@@ -138,26 +176,6 @@ abstract class RelationValueBaseViewModel(
                             )
                         )
                     }
-                } else if (value is Id) {
-                    val detail = details.provide()[value]
-                    val wrapper = ObjectWrapper.Basic(detail?.map ?: emptyMap())
-                    val type = wrapper.type.firstOrNull()
-                    val objectType = types.get().find { it.url == type }
-                    items.add(
-                        RelationValueView.Object(
-                            id = value,
-                            name = detail?.name.orEmpty(),
-                            typeName = objectType?.name,
-                            type = objectType?.url,
-                            icon = ObjectIcon.from(
-                                obj = wrapper,
-                                layout = wrapper.layout,
-                                builder = urlBuilder
-                            ),
-                            removeable = isRemoveable,
-                            layout = wrapper.layout
-                        )
-                    )
                 }
             }
             Relation.Format.FILE -> {
@@ -198,7 +216,8 @@ abstract class RelationValueBaseViewModel(
         isEditing.value = !isEditing.value
         views.value = views.value.map { v ->
             when (v) {
-                is RelationValueView.Object -> v.copy(removeable = isEditing.value)
+                is RelationValueView.Object.Default -> v.copy(removeable = isEditing.value)
+                is RelationValueView.Object.NonExistent -> v.copy(removeable = isEditing.value)
                 is RelationValueView.Tag -> v.copy(removeable = isEditing.value)
                 is RelationValueView.Status -> v.copy(removeable = isEditing.value)
                 is RelationValueView.File -> v.copy(removeable = isEditing.value)
@@ -248,7 +267,8 @@ abstract class RelationValueBaseViewModel(
                 ObjectType.Layout.PROFILE,
                 ObjectType.Layout.TODO,
                 ObjectType.Layout.FILE,
-                ObjectType.Layout.IMAGE -> {
+                ObjectType.Layout.IMAGE,
+                ObjectType.Layout.NOTE -> {
                     viewModelScope.launch {
                         navigation.emit(AppNavigation.Command.OpenObject(id))
                     }
@@ -262,6 +282,13 @@ abstract class RelationValueBaseViewModel(
             }
         } else {
             sendToast(ALREADY_HERE_MSG)
+        }
+    }
+
+    fun onNonExistentObjectClicked(ctx: Id, target: Id) {
+        // TODO consider closing object before navigation
+        viewModelScope.launch {
+            navigation.emit(AppNavigation.Command.OpenObject(target))
         }
     }
 
@@ -303,17 +330,28 @@ abstract class RelationValueBaseViewModel(
             val color: String? = null
         ) : RelationValueView()
 
-        data class Object(
-            val id: Id,
-            val name: String,
-            val typeName: String?,
-            val type: String?,
-            val removeable: Boolean,
-            val icon: ObjectIcon,
-            val layout: ObjectType.Layout?,
-            override val isSelected: Boolean? = null,
-            val selectedNumber: String? = null
-        ) : RelationValueView(), Selectable
+        sealed class Object : RelationValueView(), Selectable {
+
+            abstract val id: Id
+
+            data class Default(
+                override val id: Id,
+                val name: String,
+                val typeName: String?,
+                val type: String?,
+                val removeable: Boolean,
+                val icon: ObjectIcon,
+                val layout: ObjectType.Layout?,
+                override val isSelected: Boolean? = null,
+                val selectedNumber: String? = null
+            ) : Object(), Selectable
+
+            data class NonExistent(
+                override val id: Id,
+                override val isSelected: Boolean? = null,
+                val removeable: Boolean
+            ) : Object(), Selectable
+        }
 
         data class File(
             val id: Id,

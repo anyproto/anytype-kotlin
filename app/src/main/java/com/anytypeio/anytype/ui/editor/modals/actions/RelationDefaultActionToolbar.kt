@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
 class RelationDefaultActionToolbar : BlockActionToolbar() {
 
@@ -182,22 +183,24 @@ class RelationObjectActionToolbar : BlockActionToolbar() {
         val item = block.view as DocumentRelationView.Object
         view.findViewById<TextView>(R.id.tvRelationTitle).text = item.name
         item.objects.forEachIndexed { index, objectView ->
-            when (index) {
-                0 -> view.findViewById<RelationObjectItem>(R.id.obj0).apply {
-                    visible()
-                    setup(objectView.name, objectView.icon)
-                }
-                1 -> view.findViewById<RelationObjectItem>(R.id.obj1).apply {
-                    visible()
-                    setup(objectView.name, objectView.icon)
-                }
-                2 -> view.findViewById<RelationObjectItem>(R.id.obj2).apply {
-                    visible()
-                    setup(objectView.name, objectView.icon)
-                }
-                3 -> view.findViewById<RelationObjectItem>(R.id.obj3).apply {
-                    visible()
-                    setup(objectView.name, objectView.icon)
+            if (objectView is ObjectView.Default) {
+                when (index) {
+                    0 -> view.findViewById<RelationObjectItem>(R.id.obj0).apply {
+                        visible()
+                        setup(objectView.name, objectView.icon)
+                    }
+                    1 -> view.findViewById<RelationObjectItem>(R.id.obj1).apply {
+                        visible()
+                        setup(objectView.name, objectView.icon)
+                    }
+                    2 -> view.findViewById<RelationObjectItem>(R.id.obj2).apply {
+                        visible()
+                        setup(objectView.name, objectView.icon)
+                    }
+                    3 -> view.findViewById<RelationObjectItem>(R.id.obj3).apply {
+                        visible()
+                        setup(objectView.name, objectView.icon)
+                    }
                 }
             }
         }

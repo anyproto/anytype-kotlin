@@ -63,19 +63,29 @@ class RelationObjectValueAddViewModel(
                     .map { obj ->
                         val index = selections.indexOf(obj.id)
                         if (index != -1) {
-                            obj.copy(
-                                isSelected = true,
-                                selectedNumber = (index + 1).toString()
-                            )
+                            when(obj) {
+                                is RelationValueView.Object.Default -> obj.copy(
+                                    isSelected = true,
+                                    selectedNumber = (index + 1).toString()
+                                )
+                                is RelationValueView.Object.NonExistent -> obj.copy(
+                                    isSelected = true
+                                )
+                            }
                         } else {
-                            obj.copy(
-                                isSelected = false,
-                                selectedNumber = null
-                            )
+                            when(obj) {
+                                is RelationValueView.Object.Default -> obj.copy(
+                                    isSelected = false,
+                                    selectedNumber = null
+                                )
+                                is RelationValueView.Object.NonExistent -> obj.copy(
+                                    isSelected = false
+                                )
+                            }
                         }
                     }
                     .filter { obj ->
-                        obj.name.contains(query, true)
+                        obj is RelationValueView.Object.Default && obj.name.contains(query, true)
                     }
             }.collect { objects ->
                 val size = objects.filter { it.isSelected == true }.size

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import kotlinx.android.synthetic.main.item_document_relation_file.view.*
 import kotlinx.android.synthetic.main.item_document_relation_object.view.*
 import kotlinx.android.synthetic.main.item_document_relation_tag.view.*
@@ -201,8 +202,13 @@ sealed class RelationViewHolder(
                 when (index) {
                     in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
                         getViewByIndex(index)?.let { view ->
-                            view.visible()
-                            view.setup(name = objectView.name, icon = objectView.icon)
+                            if (objectView is ObjectView.Default) {
+                                view.visible()
+                                view.setup(name = objectView.name, icon = objectView.icon)
+                            } else {
+                                view.visible()
+                                view.setupAsNonExistent()
+                            }
                         }
                     }
                 }

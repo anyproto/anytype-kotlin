@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
@@ -23,6 +24,7 @@ class GridCellObjectItem @JvmOverloads constructor(
     fun setup(name: String, icon: ObjectIcon) {
         tvName.visible()
         tvName.text = name
+        tvName.setTextColor(context.getColor(R.color.black))
         objectIcon.setIcon(icon)
         // Do not show basic avatar in data view cell.
         if (icon is ObjectIcon.Basic.Avatar) {
@@ -38,5 +40,12 @@ class GridCellObjectItem @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    fun setupAsNonExistent() {
+        tvName.visible()
+        tvName.setText(R.string.non_existent_object)
+        tvName.setTextColor(Color.parseColor("#CBC9BD"))
+        objectIcon.setNonExistentIcon()
     }
 }

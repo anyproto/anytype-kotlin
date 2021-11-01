@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.CellView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import kotlinx.android.synthetic.main.item_viewer_grid_cell_object.view.*
 
 class DVGridCellObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -16,8 +18,13 @@ class DVGridCellObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
             when (index) {
                 in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
                     getViewByIndex(index)?.let { view ->
-                        view.visible()
-                        view.setup(name = objectView.name, icon = objectView.icon)
+                        if (objectView is ObjectView.Default) {
+                            view.visible()
+                            view.setup(name = objectView.name, icon = objectView.icon)
+                        } else {
+                            view.visible()
+                            view.setupAsNonExistent()
+                        }
                     }
                 }
             }

@@ -30,7 +30,6 @@ class RelationValueAdapter(
     private val onRemoveObjectClicked: (Id) -> Unit,
     private val onFileClicked: (RelationValueView.File) -> Unit,
     private val onRemoveFileClicked: (Id) -> Unit,
-
     ) : RecyclerView.Adapter<RelationValueAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
     private var views = emptyList<RelationValueView>()
@@ -80,7 +79,23 @@ class RelationValueAdapter(
                 ViewHolder.Object(inflater.inflate(viewType, parent, false)).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
-                        if (!item.removeable) onObjectClicked(item)
+                        if (item is RelationValueView.Object.Default && !item.removeable) {
+                            onObjectClicked(item)
+                        }
+                    }
+                    itemView.btnRemoveObject.setOnClickListener {
+                        val item = views[bindingAdapterPosition] as RelationValueView.Object
+                        onRemoveObjectClicked(item.id)
+                    }
+                }
+            }
+            R.layout.item_edit_cell_object_non_existent -> {
+                ViewHolder.NonExistentObject(inflater.inflate(viewType, parent, false)).apply {
+                    itemView.setOnClickListener {
+                        val item = views[bindingAdapterPosition] as RelationValueView.Object
+                        if (item is RelationValueView.Object.NonExistent && !item.removeable) {
+                            onObjectClicked(item)
+                        }
                     }
                     itemView.btnRemoveObject.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
@@ -114,7 +129,10 @@ class RelationValueAdapter(
                 holder.bind(views[position] as RelationValueView.Status)
             }
             is ViewHolder.Object -> {
-                holder.bind(views[position] as RelationValueView.Object)
+                holder.bind(views[position] as RelationValueView.Object.Default)
+            }
+            is ViewHolder.NonExistentObject -> {
+                holder.bind(views[position] as RelationValueView.Object.NonExistent)
             }
             is ViewHolder.Create -> {
                 holder.bind(views[position] as RelationValueView.Create)
@@ -130,7 +148,8 @@ class RelationValueAdapter(
         is RelationValueView.Create -> R.layout.item_edit_cell_option_create
         is RelationValueView.Tag -> R.layout.item_edit_cell_tag
         is RelationValueView.Status -> R.layout.item_edit_cell_status
-        is RelationValueView.Object -> R.layout.item_edit_cell_object
+        is RelationValueView.Object.Default -> R.layout.item_edit_cell_object
+        is RelationValueView.Object.NonExistent -> R.layout.item_edit_cell_object_non_existent
         is RelationValueView.File -> R.layout.item_edit_cell_file
     }
 
@@ -212,7 +231,7 @@ class RelationValueAdapter(
         }
 
         class Object(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: RelationValueView.Object) = with(itemView) {
+            fun bind(item: RelationValueView.Object.Default) = with(itemView) {
                 tvTitle.text = item.name
                 if (item.typeName != null) {
                     tvSubtitle.text = item.typeName
@@ -227,6 +246,18 @@ class RelationValueAdapter(
                     btnDragAndDropObject.visible()
                 }
                 iconWidget.setIcon(item.icon)
+            }
+        }
+
+        class NonExistentObject(view: View) : ViewHolder(view), DragAndDropViewHolder {
+            fun bind(item: RelationValueView.Object.NonExistent) = with(itemView) {
+                if (!item.removeable) {
+                    btnRemoveObject.gone()
+                    btnDragAndDropObject.gone()
+                } else {
+                    btnRemoveObject.visible()
+                    btnDragAndDropObject.visible()
+                }
             }
         }
 

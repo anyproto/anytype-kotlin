@@ -30,7 +30,10 @@ class RelationObjectValueAdapter(
     }
 
     override fun onBindViewHolder(holder: ObjectRelationObjectHolder, position: Int) {
-        holder.bind(views[position])
+        val view = views[position]
+        if (view is RelationValueView.Object.Default) {
+            holder.bind(view)
+        }
     }
 
     override fun getItemCount(): Int = views.size

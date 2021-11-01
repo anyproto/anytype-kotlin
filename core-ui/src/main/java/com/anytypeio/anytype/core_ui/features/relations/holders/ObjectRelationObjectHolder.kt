@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.item_edit_cell_object.view.*
 
 class ObjectRelationObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(item: RelationValueView.Object) = with(itemView) {
+    fun bind(item: RelationValueView.Object.Default) = with(itemView) {
         tvTitle.text = item.name
         if (item.typeName != null) {
             tvSubtitle.text = item.typeName

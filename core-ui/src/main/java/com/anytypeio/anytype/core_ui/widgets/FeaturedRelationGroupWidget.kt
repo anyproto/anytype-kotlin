@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
 class FeaturedRelationGroupWidget : ConstraintLayout {
 
@@ -107,17 +108,31 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 }
                 is DocumentRelationView.Object -> {
                     relation.objects.forEach { obj ->
-                        val view = TextView(context).apply {
-                            id = generateViewId()
-                            text = obj.name
-                            isSingleLine = true
-                            maxLines = 1
-                            ellipsize = TextUtils.TruncateAt.END
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                        if (obj is ObjectView.Default) {
+                            val view = TextView(context).apply {
+                                id = generateViewId()
+                                text = obj.name
+                                isSingleLine = true
+                                maxLines = 1
+                                ellipsize = TextUtils.TruncateAt.END
+                                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                            }
+                            addView(view)
+                            ids.add(view.id)
+                        } else {
+                            val view = TextView(context).apply {
+                                id = generateViewId()
+                                setText(R.string.deleted)
+                                isSingleLine = true
+                                maxLines = 1
+                                ellipsize = TextUtils.TruncateAt.END
+                                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
+                            }
+                            addView(view)
+                            ids.add(view.id)
                         }
-                        addView(view)
-                        ids.add(view.id)
                     }
                     if (relation.objects.isEmpty()) {
                         val placeholder =

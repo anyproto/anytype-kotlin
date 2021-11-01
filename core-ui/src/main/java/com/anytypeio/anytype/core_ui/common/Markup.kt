@@ -188,18 +188,74 @@ fun Editable.setMentionSpan(
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0
-) : Editable = this.apply {
-    if (!mark.param.isNullOrBlank()) {
+): Editable = this.apply {
+    when {
+        mark.isDeleted == Markup.Mark.IS_DELETED_VALUE -> {
+            proceedWithSettingMentionSpanForDeletedObject(
+                mark,
+                context,
+                mentionImageSize,
+                mentionImagePadding
+            )
+        }
+        !mark.param.isNullOrBlank() -> {
+            proceedWithSettingMentionSpan(
+                onImageReady,
+                mark,
+                context,
+                click,
+                mentionImageSize,
+                mentionImagePadding
+            )
+        }
+        else -> {
+            Timber.e("Get MentionSpan without param!")
+        }
+    }
+}
 
-        val isLoading = mark.isLoading == Markup.Mark.IS_LOADING_VALUE
+fun Editable.proceedWithSettingMentionSpanForDeletedObject(
+    mark: Markup.Mark,
+    context: Context,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0
+) {
+    val placeholder = context.drawable(R.drawable.ic_non_existent_object)
+    setSpan(
+        MentionSpan(
+            context = context,
+            placeholder = placeholder,
+            imageSize = mentionImageSize,
+            imagePadding = mentionImagePadding,
+            param = null,
+            emoji = null,
+            image = null,
+            isDeleted = true
+        ),
+        mark.from,
+        mark.to,
+        Markup.MENTION_SPANNABLE_FLAG
+    )
+}
 
-        val placeholder = if (isLoading)
-            context.drawable(R.drawable.ic_mention_loading_state)
-        else
-            context.drawable(R.drawable.ic_block_page_without_emoji)
+fun Editable.proceedWithSettingMentionSpan(
+    onImageReady: (String) -> Unit = {},
+    mark: Markup.Mark,
+    context: Context,
+    click: ((String) -> Unit)? = null,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0
+) {
 
-        setSpan(
-            MentionSpan(
+    val isLoading = mark.isLoading == Markup.Mark.IS_LOADING_VALUE
+
+    val placeholder = if (isLoading)
+        context.drawable(R.drawable.ic_mention_loading_state)
+    else
+        context.drawable(R.drawable.ic_block_page_without_emoji)
+
+    setSpan(
+        MentionSpan(
                 onImageResourceReady = onImageReady,
                 context = context,
                 placeholder = placeholder,
@@ -229,10 +285,7 @@ fun Editable.setMentionSpan(
                 Markup.MENTION_SPANNABLE_FLAG
             )
         }
-    } else {
-        Timber.e("Get MentionSpan without param!")
     }
-}
 
 fun List<Markup.Mark>.isLinksOrMentionsPresent(): Boolean =
     this.any { it.type == Markup.Type.LINK || it.type == Markup.Type.MENTION }

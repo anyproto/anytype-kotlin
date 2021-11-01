@@ -20,8 +20,8 @@ interface Markup {
     var marks: List<Mark>
 
     /**
-     * @property from caracter index where this markup starts (inclusive)
-     * @property to caracter index where this markup ends (inclusive)
+     * @property from character index where this markup starts (inclusive)
+     * @property to character index where this markup ends (inclusive)
      * @property type markup's type
      */
     @Parcelize
@@ -38,6 +38,7 @@ interface Markup {
         val image: String? by default
         val emoji: String? by default
         val isLoading: String? by default
+        val isDeleted: String? by default
 
         fun color(): Int? = ThemeColor.values().find { color -> color.title == param }?.text
         fun background(): Int? =
@@ -46,6 +47,11 @@ interface Markup {
         companion object {
             const val IS_LOADING_VALUE = "true"
             const val IS_NOT_LOADING_VALUE = "false"
+            const val IS_DELETED_VALUE = "true"
+            const val IS_NOT_DELETED_VALUE = "false"
+
+            const val KEY_IS_LOADING = "isLoading"
+            const val KEY_IS_DELETED = "isDeleted"
         }
     }
 
@@ -67,5 +73,6 @@ interface Markup {
         const val DEFAULT_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
         const val MENTION_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         const val SPAN_MONOSPACE = "monospace"
+        const val NON_EXISTENT_OBJECT_MENTION_NAME = "Non-existent object"
     }
 }

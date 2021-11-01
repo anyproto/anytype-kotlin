@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.widgets.text
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
@@ -22,7 +23,8 @@ class MentionSpan constructor(
     private val placeholder: Drawable,
     private var imageSize: Int,
     private var imagePadding: Int,
-    val param: String
+    val param: String? = null,
+    val isDeleted : Boolean = false
 ) : DynamicDrawableSpan(), Span {
 
     val target: CustomTarget<Drawable> = object : CustomTarget<Drawable>() {
@@ -33,7 +35,7 @@ class MentionSpan constructor(
             icon = resource
             icon?.setBounds(imageSize)
             iconRef = WeakReference(icon)
-            onImageResourceReady(param)
+            if (param != null) onImageResourceReady(param)
         }
 
         override fun onLoadCleared(placeholder: Drawable?) = Unit
@@ -42,6 +44,7 @@ class MentionSpan constructor(
     private val endPaddingPx = 4
     private var icon: Drawable? = null
     private var iconRef: WeakReference<Drawable>? = null
+    private val textColorDeleted = Color.parseColor("#CBC9BD")
 
     init {
         placeholder.setBounds(imageSize)
@@ -96,7 +99,11 @@ class MentionSpan constructor(
         canvas.translate(x, transitionY)
         drawable.draw(canvas)
 
-        paint.flags = Paint.UNDERLINE_TEXT_FLAG
+        if (isDeleted) {
+            paint.color = textColorDeleted
+        } else {
+            paint.flags = Paint.UNDERLINE_TEXT_FLAG
+        }
         canvas.drawText(
             text.substring(start, end),
             imageSize + imagePadding.toFloat(),

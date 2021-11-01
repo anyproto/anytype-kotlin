@@ -224,7 +224,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     extras = mapOf(
                                         "image" to null,
                                         "emoji" to null,
-                                        "isLoading" to Markup.Mark.IS_LOADING_VALUE
+                                        Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_LOADING_VALUE,
+                                        Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
                                     )
                                 )
                             ),
@@ -393,7 +394,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     extras = mapOf(
                                         "image" to null,
                                         "emoji" to null,
-                                        "isLoading" to Markup.Mark.IS_LOADING_VALUE
+                                        Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_LOADING_VALUE,
+                                        Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
                                     )
                                 )
                             ),
@@ -562,7 +564,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     extras = mapOf(
                                         "image" to null,
                                         "emoji" to null,
-                                        "isLoading" to Markup.Mark.IS_LOADING_VALUE
+                                        Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_LOADING_VALUE,
+                                        Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
                                     )
                                 )
                             ),
@@ -926,7 +929,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             extras = mapOf(
                                 "image" to null,
                                 "emoji" to null,
-                                "isLoading" to Markup.Mark.IS_NOT_LOADING_VALUE
+                                Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
+                                Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
                             )
                         ),
                         Markup.Mark(
@@ -1073,7 +1077,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             extras = mapOf(
                                 "image" to null,
                                 "emoji" to null,
-                                "isLoading" to Markup.Mark.IS_NOT_LOADING_VALUE
+                                Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
+                                Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
                             )
                         ),
                         Markup.Mark(

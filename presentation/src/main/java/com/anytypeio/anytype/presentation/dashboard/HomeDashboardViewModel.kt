@@ -190,11 +190,13 @@ class HomeDashboardViewModel(
     }
 
     fun onViewCreated() {
+        Timber.d("onViewCreated, ")
         proceedWithGettingAccount()
         proceedWithOpeningHomeDashboard()
     }
 
     fun onAddNewDocumentClicked() {
+        Timber.d("onAddNewDocumentClicked, ")
         proceedWithGettingDefaultPageType()
     }
 
@@ -208,6 +210,7 @@ class HomeDashboardViewModel(
         from: Int,
         to: Int
     ) {
+        Timber.d("onItemMoved, views:[$views], from:[$from], to:[$to]")
         viewModelScope.launch {
             val direction = if (from < to) Position.BOTTOM else Position.TOP
             val subject = views[to].id
@@ -223,6 +226,7 @@ class HomeDashboardViewModel(
     }
 
     fun onItemDropped(view: DashboardView) {
+        Timber.d("onItemDropped, view:[$view]")
         viewModelScope.launch { dropChannel.send(view.id) }
     }
 
@@ -245,6 +249,7 @@ class HomeDashboardViewModel(
     }
 
     fun onNavigationDeepLink(pageId: String) {
+        Timber.d("onNavigationDeepLink, pageId:[$pageId]")
         closeDashboard(viewModelScope, CloseDashboard.Param.home()) { result ->
             result.either(
                 fnL = { e ->
@@ -308,6 +313,7 @@ class HomeDashboardViewModel(
         }
 
     fun onTabObjectClicked(target: Id, isLoading: Boolean, tab: TAB = TAB.FAVOURITE) {
+        Timber.d("onTabObjectClicked, target:[$target], isLoading:[$isLoading], tab:[$tab]")
         if (!isLoading) {
             if (tab == TAB.ARCHIVE) {
                 proceedWithClickInArchiveTab(target)
@@ -337,6 +343,7 @@ class HomeDashboardViewModel(
     }
 
     fun onAvatarClicked() {
+        Timber.d("onAvatarClicked, ")
         if (isProfileNavigationEnabled.value) {
             viewModelScope.sendEvent(
                 analytics = analytics,
@@ -349,15 +356,17 @@ class HomeDashboardViewModel(
     }
 
     fun onArchivedClicked(target: Id) {
+        Timber.d("onArchivedClicked, target:[$target]")
         navigateToArchive(target)
     }
 
     fun onObjectSetClicked(target: Id) {
-        Timber.d("onObjectSetClicked: $target")
+        Timber.d("onObjectSetClicked: target:[$target]")
         proceedWithOpeningObjectSet(target)
     }
 
     fun onSettingsClicked() {
+        Timber.d("onSettingsClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.POPUP_SETTINGS
@@ -365,21 +374,8 @@ class HomeDashboardViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenProfile))
     }
 
-    fun onPageNavigationClicked() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_NAVIGATION
-        )
-        navigation.postValue(
-            EventWrapper(
-                AppNavigation.Command.OpenPageNavigationScreen(
-                    target = ctx
-                )
-            )
-        )
-    }
-
     fun onPageSearchClicked() {
+        Timber.d("onPageSearchClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.SCREEN_SEARCH
@@ -582,6 +578,7 @@ class HomeDashboardViewModel(
     }
 
     fun sendTabEvent(tab: CharSequence?) {
+        Timber.d("sendTabEvent, tab:[$tab]")
         if (tab != null) {
             val eventName = listOf(TAB_FAVORITES, TAB_RECENT, TAB_INBOX, TAB_SETS, TAB_ARCHIVE)
                 .firstOrNull { it.startsWith(tab, true) }

@@ -41,12 +41,6 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
         )
     }
 
-    private val adapterFooter by lazy {
-        FooterAdapter()
-    }
-
-    private val adapterConcat = ConcatAdapter(adapterLayouts, adapterFooter)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,7 +51,7 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(rvLayouts) {
             layoutManager = LinearLayoutManager(context)
-            adapter = adapterConcat
+            adapter = adapterLayouts
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(drawable(R.drawable.divider_layouts))

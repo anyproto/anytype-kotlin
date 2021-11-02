@@ -714,7 +714,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }.launchIn(lifecycleScope)
 
         with(lifecycleScope) {
-            jobs += subscribe(vm.actions) { blockActionToolbar.bind(it) }
+            subscribe(vm.actions) { blockActionToolbar.bind(it) }
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.snacks) { snack ->
                 when (snack) {

@@ -38,7 +38,7 @@ class ObjectActionAdapter(
                     tvActionTitle.setText(R.string.favourite)
                 }
                 ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                    ivActionIcon.setImageResource(R.drawable.ic_object_action_add_to_favorites)
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_unfavorite)
                     tvActionTitle.setText(R.string.unfavorite)
                 }
                 ObjectAction.SEARCH_ON_PAGE -> {

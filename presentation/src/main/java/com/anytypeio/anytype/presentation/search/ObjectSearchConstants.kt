@@ -259,7 +259,7 @@ object ObjectSearchConstants {
         DVFilter(
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectType.WORKSPACE_ID
+            value = ObjectType.WORKSPACE_URL
         ),
         DVFilter(
             relationKey = Relations.WORKSPACE_ID,

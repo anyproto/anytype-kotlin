@@ -23,6 +23,9 @@
         android:layout_marginTop="6dp"
         android:layout_marginEnd="20dp"
         android:gravity="center"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="end"
         tools:text="Phone number"
         tools:visibility="visible" />
 

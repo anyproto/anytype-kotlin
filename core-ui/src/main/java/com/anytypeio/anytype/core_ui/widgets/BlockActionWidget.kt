@@ -22,7 +22,7 @@ class BlockActionWidget @JvmOverloads constructor(
 
     var actionListener : (ActionItemType) -> Unit = {}
 
-    val blockActionAdapter = Adapter { action -> actionListener(action) }
+    private val blockActionAdapter = Adapter { action -> actionListener(action) }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_block_action, this)

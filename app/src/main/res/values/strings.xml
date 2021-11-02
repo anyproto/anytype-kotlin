@@ -248,4 +248,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Create</string>
 
+    <string name="shortcut_create_new">Create a new %1$s</string>
+
 </resources>

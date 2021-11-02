@@ -57,7 +57,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
 
     private fun observe(command: OtherSettingsViewModel.Command) {
         when (command) {
-            OtherSettingsViewModel.Command.Exit -> dismiss()
+            is OtherSettingsViewModel.Command.Exit -> dismiss()
             is OtherSettingsViewModel.Command.NavigateToObjectTypesScreen -> {
                 findNavController().navigate(
                     R.id.objectTypeChangeFragment,

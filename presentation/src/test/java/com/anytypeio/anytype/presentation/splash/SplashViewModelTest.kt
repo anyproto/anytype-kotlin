@@ -16,6 +16,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -64,6 +66,12 @@ class SplashViewModelTest {
     private lateinit var setDefaultEditorType: SetDefaultEditorType
 
     @Mock
+    lateinit var createPage: CreatePage
+
+    @Mock
+    lateinit var appActionManager: AppActionManager
+
+    @Mock
     private lateinit var getDefaultEditorType: GetDefaultEditorType
 
     lateinit var vm: SplashViewModel
@@ -90,7 +98,9 @@ class SplashViewModelTest {
             storeObjectTypes = storeObjectTypes,
             getLastOpenedObject = getLastOpenedObject,
             setDefaultEditorType = setDefaultEditorType,
-            getDefaultEditorType = getDefaultEditorType
+            getDefaultEditorType = getDefaultEditorType,
+            createPage = createPage,
+            appActionManager = appActionManager
         )
     }
 

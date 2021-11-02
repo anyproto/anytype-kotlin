@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.splash
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -49,7 +51,7 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
         when (command) {
             SplashViewModel.Command.CheckFirstInstall -> {
                 val isFirstInstall = isFirstInstall()
-                vm.setDefaultUserSettings(isFirstInstall = isFirstInstall)
+                vm.onFirstInstallStatusChecked(isFirstInstall = isFirstInstall)
             }
             is SplashViewModel.Command.Error -> {
                 toast(command.msg)
@@ -76,6 +78,25 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
                 findNavController().navigate(
                     R.id.action_splashFragment_to_login_nav
                 )
+            }
+            SplashViewModel.Command.CheckAppStartIntent -> {
+                val intent = requireActivity().intent
+                if (intent != null && intent.action == Intent.ACTION_VIEW) {
+                    val bundle = intent.extras
+                    if (bundle != null) {
+                        val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
+                        if (type != null) {
+                            vm.onIntentCreateNewObject(type = type)
+                        } else {
+                            vm.onIntentActionNotFound()
+                        }
+                    } else {
+                        vm.onIntentActionNotFound()
+                    }
+                }
+                else {
+                    vm.onIntentActionNotFound()
+                }
             }
         }
     }

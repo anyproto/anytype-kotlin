@@ -15,6 +15,8 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Module
@@ -54,7 +56,9 @@ object SplashModule {
         storeObjectTypes: StoreObjectTypes,
         getLastOpenedObject: GetLastOpenedObject,
         getDefaultEditorType: GetDefaultEditorType,
-        setDefaultEditorType: SetDefaultEditorType
+        setDefaultEditorType: SetDefaultEditorType,
+        createPage: CreatePage,
+        appActionManager: AppActionManager
     ): SplashViewModelFactory = SplashViewModelFactory(
         checkAuthorizationStatus = checkAuthorizationStatus,
         launchAccount = launchAccount,
@@ -63,7 +67,9 @@ object SplashModule {
         storeObjectTypes = storeObjectTypes,
         getLastOpenedObject = getLastOpenedObject,
         setDefaultEditorType = setDefaultEditorType,
-        getDefaultEditorType = getDefaultEditorType
+        getDefaultEditorType = getDefaultEditorType,
+        createPage = createPage,
+        appActionManager = appActionManager
     )
 
     @JvmStatic
@@ -130,4 +136,9 @@ object SplashModule {
     @Provides
     fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultEditorType =
         SetDefaultEditorType(repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideCreatePage(repo: BlockRepository): CreatePage = CreatePage(repo = repo)
 }

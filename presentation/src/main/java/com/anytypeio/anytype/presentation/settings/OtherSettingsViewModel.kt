@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -19,6 +20,7 @@ import timber.log.Timber
 class OtherSettingsViewModel(
     private val getDefaultEditorType: GetDefaultEditorType,
     private val setDefaultEditorType: SetDefaultEditorType,
+    private val appActionManager: AppActionManager,
     private val analytics: Analytics
 ) : ViewModel() {
 
@@ -47,6 +49,12 @@ class OtherSettingsViewModel(
             return
         }
         viewModelScope.launch {
+            appActionManager.setup(
+                AppActionManager.Action.CreateNew(
+                    type = type,
+                    name = name
+                )
+            )
             setDefaultEditorType.invoke(SetDefaultEditorType.Params(type, name)).process(
                 failure = {
                     Timber.e(it, "Error while setting default object type")
@@ -80,6 +88,7 @@ class OtherSettingsViewModel(
     class Factory(
         private val getDefaultEditorType: GetDefaultEditorType,
         private val setDefaultEditorType: SetDefaultEditorType,
+        private val appActionManager: AppActionManager,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -88,6 +97,7 @@ class OtherSettingsViewModel(
         ): T = OtherSettingsViewModel(
             getDefaultEditorType = getDefaultEditorType,
             setDefaultEditorType = setDefaultEditorType,
+            appActionManager = appActionManager,
             analytics = analytics
         ) as T
     }

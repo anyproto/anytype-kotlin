@@ -10,6 +10,8 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.page.CreatePage
 
 /**
  * Created by Konstantin Ivanov
@@ -24,7 +26,9 @@ class SplashViewModelFactory(
     private val storeObjectTypes: StoreObjectTypes,
     private val getLastOpenedObject: GetLastOpenedObject,
     private val getDefaultEditorType: GetDefaultEditorType,
-    private val setDefaultEditorType: SetDefaultEditorType
+    private val setDefaultEditorType: SetDefaultEditorType,
+    private val appActionManager: AppActionManager,
+    private val createPage: CreatePage
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -37,6 +41,8 @@ class SplashViewModelFactory(
             storeObjectTypes = storeObjectTypes,
             getLastOpenedObject = getLastOpenedObject,
             getDefaultEditorType = getDefaultEditorType,
-            setDefaultEditorType = setDefaultEditorType
+            setDefaultEditorType = setDefaultEditorType,
+            appActionManager = appActionManager,
+            createPage = createPage
         ) as T
 }

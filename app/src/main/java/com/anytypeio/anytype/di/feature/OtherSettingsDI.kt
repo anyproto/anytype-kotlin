@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
 import com.anytypeio.anytype.ui.settings.OtherSettingsFragment
 import dagger.Module
@@ -45,7 +46,12 @@ object OtherSettingsModule {
     fun provideOtherSettingsFactory(
         getDefaultEditorType: GetDefaultEditorType,
         setDefaultEditorType: SetDefaultEditorType,
+        appActionManager: AppActionManager,
         analytics: Analytics
-    ): OtherSettingsViewModel.Factory =
-        OtherSettingsViewModel.Factory(getDefaultEditorType, setDefaultEditorType, analytics)
+    ): OtherSettingsViewModel.Factory = OtherSettingsViewModel.Factory(
+        getDefaultEditorType = getDefaultEditorType,
+        setDefaultEditorType = setDefaultEditorType,
+        appActionManager = appActionManager,
+        analytics = analytics
+    )
 }

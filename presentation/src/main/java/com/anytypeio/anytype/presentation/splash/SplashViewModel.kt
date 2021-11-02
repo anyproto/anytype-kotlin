@@ -23,6 +23,8 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -41,7 +43,9 @@ class SplashViewModel(
     private val storeObjectTypes: StoreObjectTypes,
     private val getLastOpenedObject: GetLastOpenedObject,
     private val getDefaultEditorType: GetDefaultEditorType,
-    private val setDefaultEditorType: SetDefaultEditorType
+    private val setDefaultEditorType: SetDefaultEditorType,
+    private val createPage: CreatePage,
+    private val appActionManager: AppActionManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -69,15 +73,21 @@ class SplashViewModel(
         }
     }
 
-    fun setDefaultUserSettings(isFirstInstall: Boolean) {
+    fun onFirstInstallStatusChecked(isFirstInstall: Boolean) {
         Timber.d("setDefaultUserSettings, isFirstInstall:[$isFirstInstall]")
-        val defaultType = if (isFirstInstall) {
+        val (typeId, typeName) = if (isFirstInstall) {
             DEFAULT_TYPE_FIRST_INSTALL
         } else {
             DEFAULT_TYPE_UPDATE
         }
+        appActionManager.setup(
+            AppActionManager.Action.CreateNew(
+                type = typeId,
+                name = typeName
+            )
+        )
         viewModelScope.launch {
-            val params = SetDefaultEditorType.Params(defaultType.first, defaultType.second)
+            val params = SetDefaultEditorType.Params(typeId, typeName)
             Timber.d("Start to update Default Page Type:${params.type}")
             setDefaultEditorType.invoke(params).process(
                 failure = {
@@ -155,14 +165,36 @@ class SplashViewModel(
             storeObjectTypes.invoke(Unit).process(
                 failure = {
                     Timber.e(it, "Error while store account object types")
-                    handleNavigation()
+                    commands.emit(Command.CheckAppStartIntent)
                 },
-                success = { handleNavigation() }
+                success = { commands.emit(Command.CheckAppStartIntent) }
             )
         }
     }
 
-    private fun handleNavigation() {
+    fun onIntentCreateNewObject(type: Id) {
+        viewModelScope.launch {
+            createPage(
+                CreatePage.Params(
+                    ctx = null,
+                    emoji = null,
+                    isDraft = true,
+                    type = type
+                )
+            ).process(
+                failure = { proceedWithNavigation() },
+                success = { target ->
+                    commands.emit(Command.NavigateToObject(target))
+                }
+            )
+        }
+    }
+
+    fun onIntentActionNotFound() {
+        proceedWithNavigation()
+    }
+
+    private fun proceedWithNavigation() {
         viewModelScope.launch {
             getLastOpenedObject(BaseUseCase.None).process(
                 failure = {
@@ -214,6 +246,7 @@ class SplashViewModel(
         object CheckFirstInstall : Command()
         object NavigateToDashboard : Command()
         object NavigateToLogin : Command()
+        object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id) : Command()
         data class NavigateToObjectSet(val id: Id) : Command()
         data class Error(val msg: String) : Command()

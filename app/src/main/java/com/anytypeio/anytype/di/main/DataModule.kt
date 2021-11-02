@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.data.auth.config.DefaultFlavourConfigProvider
 import com.anytypeio.anytype.data.auth.config.ExperimentalFlavourConfigProvider
 import com.anytypeio.anytype.data.auth.repo.*
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.database.repo.DatabaseRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
 import com.anytypeio.anytype.middleware.block.BlockMiddleware
@@ -268,4 +270,11 @@ object DataModule {
     fun provideUserSettingsRepo(
         cache: UserSettingsCache
     ): UserSettingsRepository = UserSettingsDataRepository(cache)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAppActionManager(context: Context) : AppActionManager = DefaultAppActionManager(
+        context = context
+    )
 }

@@ -80,7 +80,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="20dp"
-        android:hint="@string/hint_title"
+        android:hint="@string/untitled"
         android:paddingTop="0dp"
         android:layout_marginBottom="6dp"
         app:ignoreDragAndDrop="true"

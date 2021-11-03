@@ -133,5 +133,6 @@
     <color name="default_grey">#929082</color>
 
     <color name="orange_button_background_color">#FFB522</color>
+    <color name="editor_default_hint_text_color">#CBC9BD</color>
 
 </resources>

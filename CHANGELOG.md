@@ -9,7 +9,7 @@
 
 ### Design & UX 🔳
 
-*
+* Editor | Redesign | Increased default font size (#1892)
 
 ### Fixes & tech 🚒
 

@@ -59,10 +59,10 @@
         android:layout_marginBottom="13dp"
         android:background="@null"
         android:textAlignment="center"
-        android:fontFamily="@font/graphik_semibold"
-        android:hint="@string/hint_profile_title"
+        android:fontFamily="@font/inter_bold"
+        android:hint="@string/untitled"
+        android:textColorHint="@color/editor_default_hint_text_color"
         android:textColor="@color/black"
-        android:textColorHint="#ACA996"
         android:textSize="28sp"
         app:ignoreDragAndDrop="true"
         tools:text="Title" />

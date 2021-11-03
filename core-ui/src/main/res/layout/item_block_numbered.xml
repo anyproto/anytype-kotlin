@@ -23,7 +23,8 @@
             android:gravity="center"
             android:minWidth="@dimen/default_block_type_width"
             android:textColor="@color/black"
-            android:textSize="15sp"
+            android:textSize="17sp"
+            android:fontFamily="@font/inter_regular"
             android:visibility="visible"
             tools:text="19." />
 

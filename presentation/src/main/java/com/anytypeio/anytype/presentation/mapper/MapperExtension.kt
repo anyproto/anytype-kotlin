@@ -679,7 +679,9 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelations(
                         title = relation.name,
                         format = relation.format.toView(),
                         isVisible = viewerRelation.isVisible,
-                        isHidden = relation.isHidden
+                        isHidden = relation.isHidden,
+                        isReadonly = relation.isReadOnly,
+                        isDefault = Relations.defaultRelations.contains(relation.key)
                     )
                 )
             }

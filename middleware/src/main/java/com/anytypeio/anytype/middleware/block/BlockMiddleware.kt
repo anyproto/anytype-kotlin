@@ -249,6 +249,16 @@ class BlockMiddleware(
         relation = relation
     )
 
+    override suspend fun deleteRelationFromDataView(
+        ctx: Id,
+        dv: Id,
+        relation: Id
+    ): Payload = middleware.deleteRelationFromDataView(
+        ctx = ctx,
+        dv = dv,
+        relation = relation
+    )
+
     override suspend fun updateDataViewViewer(
         context: String,
         target: String,

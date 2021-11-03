@@ -5,6 +5,15 @@
 ### New features & enhancements 🚀
 
 * Editor | Latex block in experimental mode. Based on WebView. (#1814)
+* Sets | Delete a relation from your set (#1890)
+
+### Design & UX 🔳
+
+*
+
+### Fixes & tech 🚒
+
+*
 
 ## Version 0.3.3
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -82,6 +83,11 @@ class ViewerModifyOrderAdapter(
             }
             itemView.title.text = item.title
             itemView.iconRelation.bind(item.format)
+            if (item.isReadonly || item.isDefault) {
+                itemView.iconDelete.gone()
+            } else {
+                itemView.iconDelete.visible()
+            }
         }
 
         override fun onItemSelected() {

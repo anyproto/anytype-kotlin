@@ -516,6 +516,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun blockDataViewRelationDelete(request: Block.Dataview.RelationDelete.Request): Block.Dataview.RelationDelete.Response {
+        val encoded = Service.blockDataviewRelationDelete(
+                Block.Dataview.RelationDelete.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Dataview.RelationDelete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Dataview.RelationDelete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockDataViewRecordCreate(request: Block.Dataview.RecordCreate.Request): Block.Dataview.RecordCreate.Response {
         val encoded = Service.blockDataviewRecordCreate(
             Block.Dataview.RecordCreate.Request.ADAPTER.encode(request)

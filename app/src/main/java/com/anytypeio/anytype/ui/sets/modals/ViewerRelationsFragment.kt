@@ -49,8 +49,11 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
             onItemClick = {
                 toast("Not implemented yet")
             },
-            onDeleteClick = {
-                toast("Not implemented yet")
+            onDeleteClick = { view ->
+                vm.onDeleteClicked(
+                    ctx = ctx,
+                    item = view
+                )
             }
         )
     }

@@ -84,6 +84,7 @@ interface BlockRemote {
     ): Pair<Id, Payload>
 
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
+    suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload
 
     suspend fun updateDataViewViewer(
         context: String,

@@ -136,6 +136,9 @@ interface MiddlewareService {
     fun blockDataViewRelationAdd(request: Block.Dataview.RelationAdd.Request): Block.Dataview.RelationAdd.Response
 
     @Throws(Exception::class)
+    fun blockDataViewRelationDelete(request: Block.Dataview.RelationDelete.Request): Block.Dataview.RelationDelete.Response
+
+    @Throws(Exception::class)
     fun blockDataViewViewUpdate(request: Block.Dataview.ViewUpdate.Request): Block.Dataview.ViewUpdate.Response
 
     @Throws(Exception::class)

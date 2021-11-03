@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
@@ -281,4 +282,11 @@ object ObjectSetModule {
     fun provideSearchObjectsUseCase(
         repo: BlockRepository
     ): SearchObjects = SearchObjects(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDeleteRelationFromDataViewUseCase(
+        repo: BlockRepository
+    ): DeleteRelationFromDataView = DeleteRelationFromDataView(repo = repo)
 }

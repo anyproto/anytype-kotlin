@@ -13,5 +13,7 @@ data class SimpleRelationView(
     val title: String,
     val format: ColumnView.Format,
     val isVisible: Boolean = false,
-    val isHidden: Boolean = false
+    val isHidden: Boolean = false,
+    val isReadonly: Boolean = false,
+    val isDefault: Boolean = false
 ) : Parcelable

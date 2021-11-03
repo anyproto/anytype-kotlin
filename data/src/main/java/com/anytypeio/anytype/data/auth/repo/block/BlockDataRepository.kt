@@ -309,6 +309,16 @@ class BlockDataRepository(
         relation = relation
     )
 
+    override suspend fun deleteRelationFromDataView(
+        ctx: Id,
+        dv: Id,
+        relation: Id
+    ): Payload = factory.remote.deleteRelationFromDataView(
+        ctx = ctx,
+        dv = dv,
+        relation = relation
+    )
+
     override suspend fun updateDataViewViewer(
         context: Id,
         target: Id,

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.relations.ViewerRelationsViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -38,13 +39,15 @@ object ViewerRelationsModule {
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
-        updateDataViewViewer: UpdateDataViewViewer
+        updateDataViewViewer: UpdateDataViewViewer,
+        deleteRelationFromDataView: DeleteRelationFromDataView
     ): ViewerRelationsViewModel.Factory = ViewerRelationsViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
         modifyViewerRelationOrder = modifyViewerRelationOrder,
-        updateDataViewViewer = updateDataViewViewer
+        updateDataViewViewer = updateDataViewViewer,
+        deleteRelationFromDataView = deleteRelationFromDataView
     )
 
     @JvmStatic

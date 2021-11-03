@@ -223,6 +223,16 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         relation = relation
     )
 
+    override suspend fun deleteRelationFromDataView(
+        ctx: Id,
+        dv: Id,
+        relation: Id
+    ): Payload = remote.deleteRelationFromDataView(
+        ctx = ctx,
+        dv = dv,
+        relation = relation
+    )
+
     override suspend fun updateDataViewViewer(
         context: Id,
         target: Id,

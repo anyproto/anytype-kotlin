@@ -265,6 +265,11 @@ object ObjectSearchConstants {
             relationKey = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.NOT_EMPTY,
             value = null
+        ),
+        DVFilter(
+            relationKey = Relations.IS_HIGHLIGHTED,
+            condition = DVFilterCondition.EQUAL,
+            value = true
         )
     )
 

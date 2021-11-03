@@ -185,7 +185,12 @@ class ObjectSetViewModel(
                         marks = emptyList()
                     )
                 }
-                .mapLatest { params -> updateText(params) }
+                .mapLatest { params ->
+                    updateText(params).process(
+                        failure = { e -> Timber.e(e, "Error while updating title") },
+                        success = { Timber.d("Sets' title updated successfully") }
+                    )
+                }
                 .collect()
         }
     }

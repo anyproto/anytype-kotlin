@@ -28,6 +28,7 @@ object Relations {
     const val IS_DRAFT = "isDraft"
     const val WORKSPACE_ID = "workspaceId"
     const val SET_OF = "setOf"
+    const val IS_HIGHLIGHTED = "isHighlighted"
 
     val defaultRelations = listOf(
         ID,

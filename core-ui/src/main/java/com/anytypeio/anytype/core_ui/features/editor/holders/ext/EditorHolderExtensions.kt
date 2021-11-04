@@ -12,6 +12,10 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 fun RelationViewHolder.setup(adapter: BlockAdapter): RelationViewHolder {
     with(itemView) {
+        findViewById<ViewGroup?>(R.id.itemContainer)?.updatePadding(
+            top = dimen(R.dimen.relation_view_padding_top),
+            bottom = dimen(R.dimen.relation_view_padding_bottom)
+        )
         val paddingStart = context.dimen(R.dimen.default_document_content_padding_start)
         val paddingEnd = context.dimen(R.dimen.default_document_content_padding_end)
         findViewById<ViewGroup>(R.id.content).apply {

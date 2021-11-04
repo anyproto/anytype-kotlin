@@ -3,12 +3,15 @@ package com.anytypeio.anytype.core_ui.features.relations
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import kotlinx.android.synthetic.main.item_document_relation_default.view.*
 import kotlinx.android.synthetic.main.item_relation_list_section.view.*
 import timber.log.Timber
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder as ViewHolder

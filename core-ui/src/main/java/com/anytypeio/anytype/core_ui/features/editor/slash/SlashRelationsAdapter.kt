@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.slash
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
@@ -10,6 +11,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationV
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem

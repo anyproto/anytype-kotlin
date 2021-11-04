@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
@@ -19,6 +20,27 @@ fun List<ObjectWrapper.Basic>.toView(
             name = obj.getProperName(),
             type = typeUrl,
             typeName = getProperTypeName(url = typeUrl, types = objectTypes),
+            layout = layout,
+            icon = ObjectIcon.from(
+                obj = obj,
+                layout = layout,
+                builder = urlBuilder
+            )
+        )
+    }
+
+fun List<ObjectWrapper.Basic>.toLinkToView(
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectType>
+): List<LinkToItemView.Object> =
+    this.map { obj ->
+        val typeUrl = obj.getProperType()
+        val layout = obj.getProperLayout()
+        LinkToItemView.Object(
+            id = obj.id,
+            title = obj.getProperName(),
+            subtitle = getProperTypeName(url = typeUrl, types = objectTypes),
+            type = typeUrl,
             layout = layout,
             icon = ObjectIcon.from(
                 obj = obj,

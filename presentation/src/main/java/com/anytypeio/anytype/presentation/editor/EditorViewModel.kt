@@ -4500,21 +4500,27 @@ class EditorViewModel(
 
         viewModelScope.launch { orchestrator.stores.views.update(update) }
         viewModelScope.launch { renderCommand.send(Unit) }
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.MarkupToolbar.OnMarkupToolbarUrlClicked
+        dispatch(
+            Command.OpenLinkToObjectOrWebScreen(
+                target = target
+            )
         )
     }
 
-    fun onSetLink(url: String) {
-        Timber.d("onSetLink, url:[$url]")
+    fun onUriSelectedForTextSelection(uri: String?) {
+        Timber.d("onSetLink, url:[$uri]")
+        if (uri == null) {
+            Timber.e("Can't set nullable url link")
+            return
+        }
         val range = orchestrator.stores.textSelection.current().selection
         if (range != null) {
             val target = orchestrator.stores.focus.current().id
             restore.add(pending.poll())
-            if (url.isNotEmpty())
+            if (uri.isNotEmpty())
                 applyLinkMarkup(
                     blockId = target,
-                    link = url,
+                    link = uri,
                     range = range.first..range.last.dec()
                 )
             else

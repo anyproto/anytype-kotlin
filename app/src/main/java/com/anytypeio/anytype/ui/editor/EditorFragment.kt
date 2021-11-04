@@ -95,10 +95,14 @@ import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
+import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_REQUEST_KEY
+import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_URL_KEY
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
+import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_REQUEST_KEY
+import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_URL_KEY
 import com.anytypeio.anytype.ui.relations.*
 import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment.Companion.RELATION_ADD_RESULT_KEY
@@ -418,9 +422,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFragmentResultListener(ObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
-            val id = bundle.getString(ObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
+        setFragmentResultListener(OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
+            val id = bundle.getString(OBJECT_TYPE_URL_KEY)
             onObjectTypePicked(id = id)
+        }
+        setFragmentResultListener(LINK_TO_OBJ_OR_WEB_REQUEST_KEY) {_, bundle ->
+            val url = bundle.getString(LINK_TO_OBJ_OR_WEB_URL_KEY)
+            vm.onUriSelectedForTextSelection(url)
         }
         pickiT = PickiT(requireContext(), this, requireActivity())
         setupOnBackPressedDispatcher()
@@ -570,7 +578,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         setMarkupUrlToolbar
             .onApply()
-            .onEach { vm.onSetLink(it) }
+            .onEach { vm.onUriSelectedForTextSelection(it) }
             .launchIn(lifecycleScope)
 
         blockActionToolbar.actionListener = { action -> vm.onMultiSelectAction(action) }
@@ -1041,6 +1049,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                             CTX_KEY to command.ctx,
                             RelationAddToObjectBlockFragment.TARGET_KEY to command.target
                         )
+                    )
+                }
+                is Command.OpenLinkToObjectOrWebScreen -> {
+                    hideSoftInput()
+                    findNavController().navigate(
+                        R.id.action_pageScreen_to_linkToObjectOrWebPagesFragment
                     )
                 }
             }

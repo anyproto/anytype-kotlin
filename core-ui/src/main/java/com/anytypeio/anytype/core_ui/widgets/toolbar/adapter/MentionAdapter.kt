@@ -57,7 +57,7 @@ class MentionAdapter(
                         }
                     }
                 }
-            else -> throw RuntimeException("Wrong viewType")
+            else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
 

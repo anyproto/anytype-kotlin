@@ -184,6 +184,12 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val linkToObjectOrWebComponent = Component {
+        main.linkToObjectOrWebBuilder()
+            .module(LinkToObjectOrWebModule)
+            .build()
+    }
+
     val moveToComponent = Component {
         main
             .moveToBuilder()

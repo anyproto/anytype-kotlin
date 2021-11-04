@@ -47,4 +47,15 @@
         android:singleLine="true"
         tools:text="Task" />
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="@dimen/list_item_object_subtitle_margin_start"
+        android:layout_marginTop="68dp"
+        android:layout_marginEnd="@dimen/list_item_object_subtitle_margin_end"
+        android:background="@drawable/divider_relations"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
 </FrameLayout>

@@ -405,6 +405,8 @@
     <string name="select_tags">Select tags</string>
     <string name="select_status">Select status</string>
     <string name="select_objects">Select objects</string>
+    <string name="objects">Objects</string>
+    <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>
     <string name="u">U</string>
     <string name="enter_text">Enter text</string>
@@ -438,5 +440,7 @@
     <string name="non_existent_object">Non-existent object</string>
     <string name="open_set">Open set</string>
     <string name="deleted">Deleted</string>
+    <string name="paste_link_or_search">Paste link or search objects</string>
+    <string name="create_object_with_name">Create object \"%1$s\"</string>
 
 </resources>

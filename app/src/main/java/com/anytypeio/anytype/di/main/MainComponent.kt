@@ -34,6 +34,7 @@ interface MainComponent {
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
+    fun linkToObjectOrWebBuilder() : LinkToObjectOrWebSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder

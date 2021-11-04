@@ -36,6 +36,7 @@ fun Block.markup(
             Markup.Type.BACKGROUND_COLOR -> Mark.Type.BACKGROUND_COLOR
             Markup.Type.KEYBOARD -> Mark.Type.KEYBOARD
             Markup.Type.MENTION -> Mark.Type.MENTION
+            Markup.Type.OBJECT -> Mark.Type.OBJECT
         },
         param = param
     )

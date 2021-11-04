@@ -93,6 +93,16 @@ fun Markup.toSpannable(
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
+            Markup.Type.OBJECT -> setSpan(
+                Span.ObjectLink(
+                    link = mark.param,
+                    color = textColor,
+                    click = click
+                ),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
         }
     }
 }
@@ -177,6 +187,16 @@ fun Editable.setMarkup(
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
+            Markup.Type.OBJECT -> setSpan(
+                Span.ObjectLink(
+                    link = mark.param,
+                    color = textColor,
+                    click = click
+                ),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
         }
     }
 }
@@ -288,4 +308,4 @@ fun Editable.proceedWithSettingMentionSpan(
     }
 
 fun List<Markup.Mark>.isLinksOrMentionsPresent(): Boolean =
-    this.any { it.type == Markup.Type.LINK || it.type == Markup.Type.MENTION }
+    this.any { it.type == Markup.Type.LINK || it.type == Markup.Type.MENTION || it.type == Markup.Type.OBJECT }

@@ -11,10 +11,12 @@ import android.text.Annotation
 import android.text.TextPaint
 import android.text.style.*
 import android.view.View
+import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.timber
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.shekhargulati.urlcleaner.UrlCleaner
 import com.shekhargulati.urlcleaner.UrlCleanerException
+import timber.log.Timber
 
 interface Span {
     class Bold : StyleSpan(Typeface.BOLD), Span
@@ -83,6 +85,23 @@ interface Span {
     class Highlight(color: String) : Annotation(HIGHLIGHT_KEY, color), Span {
         companion object {
             const val HIGHLIGHT_KEY = "highlight"
+        }
+    }
+
+    class ObjectLink(val link: String?, val color: Int, val click: ((String) -> Unit)?) :
+        ClickableSpan(), Span {
+        override fun updateDrawState(ds: TextPaint) {
+            super.updateDrawState(ds)
+            ds.color = color
+        }
+
+        override fun onClick(widget: View) {
+            if (!link.isNullOrBlank()) {
+                (widget as? TextInputWidget)?.enableReadMode()
+                click?.invoke(link)
+            } else {
+                Timber.e("Can't proceed with ObjectLinkSpan click, link is null or blank")
+            }
         }
     }
 }

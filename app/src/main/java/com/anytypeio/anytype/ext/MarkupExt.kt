@@ -53,6 +53,11 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
             type = Mark.Type.MENTION,
             param = span.param
         )
+        is Span.ObjectLink -> Mark(
+            range = getSpanStart(span)..getSpanEnd(span),
+            type = Mark.Type.OBJECT,
+            param = span.link
+        )
         else -> null
     }
 }

@@ -258,6 +258,19 @@ fun Block.Content.Text.marks(
                     )
                 )
             }
+            Block.Content.Text.Mark.Type.OBJECT -> {
+                try {
+                    Markup.Mark(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        type = Markup.Type.OBJECT,
+                        param = checkNotNull(mark.param)
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Could not parse param from ${mark.type}")
+                    null
+                }
+            }
             else -> null
         }
     }
@@ -493,6 +506,11 @@ fun Markup.Mark.mark(): Block.Content.Text.Mark = when (type) {
     Markup.Type.MENTION -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.MENTION,
+        param = param
+    )
+    Markup.Type.OBJECT -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.OBJECT,
         param = param
     )
 }

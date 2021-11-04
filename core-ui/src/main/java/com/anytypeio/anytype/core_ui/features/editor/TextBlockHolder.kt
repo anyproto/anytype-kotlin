@@ -56,7 +56,7 @@ interface TextBlockHolder : TextHolder {
         clicked: (ListenerType) -> Unit,
         textColor: Int
     ) {
-        when (markup.marks.any { it.type == Markup.Type.MENTION }) {
+        when (markup.marks.any { it.type == Markup.Type.MENTION || it.type == Markup.Type.OBJECT }) {
             true -> setSpannableWithMention(markup, clicked, textColor)
             false -> setSpannable(markup, textColor)
         }

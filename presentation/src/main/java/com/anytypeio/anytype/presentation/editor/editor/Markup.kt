@@ -66,7 +66,8 @@ interface Markup {
         BACKGROUND_COLOR,
         LINK,
         KEYBOARD,
-        MENTION
+        MENTION,
+        OBJECT
     }
 
     companion object {

@@ -57,6 +57,12 @@ fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).
             type = Markup.Type.MENTION,
             param = span.param
         )
+        is Span.ObjectLink -> Markup.Mark(
+            from = getSpanStart(span),
+            to = getSpanEnd(span),
+            type = Markup.Type.OBJECT,
+            param = span.link
+        )
         else -> null
     }
 }

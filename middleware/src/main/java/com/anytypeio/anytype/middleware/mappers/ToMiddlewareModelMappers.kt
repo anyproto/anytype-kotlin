@@ -153,6 +153,13 @@ fun Block.Content.Text.Mark.toMiddlewareModel(): MBMark = when (type) {
             param_ = param.orEmpty()
         )
     }
+    Block.Content.Text.Mark.Type.OBJECT -> {
+        MBMark(
+            range = range.range(),
+            type = MBMarkType.Object,
+            param_ = param.orEmpty()
+        )
+    }
     else -> throw IllegalStateException("Unsupported mark type: ${type.name}")
 }
 

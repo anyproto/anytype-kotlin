@@ -16,8 +16,7 @@ sealed class ObjectLayoutView {
     data class Profile(
         override val id: Int,
         override val isSelected: Boolean
-    ) :
-        ObjectLayoutView() {
+    ) : ObjectLayoutView() {
         override fun copy(isSelected: Boolean) = copy(id = id, isSelected = isSelected)
     }
 

@@ -8,12 +8,12 @@ import com.anytypeio.anytype.domain.base.Either
 class GetSupportedObjectLayouts :
     BaseUseCase<List<ObjectType.Layout>, GetSupportedObjectLayouts.Params>() {
 
-    override suspend fun run(params: Params): Either<Throwable, List<ObjectType.Layout>> = safe {
+    override suspend fun run(params: Params) = safe {
         listOf(
+            ObjectType.Layout.NOTE,
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.TODO,
-            ObjectType.Layout.NOTE
         )
     }
 

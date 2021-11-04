@@ -442,5 +442,13 @@
     <string name="deleted">Deleted</string>
     <string name="paste_link_or_search">Paste link or search objects</string>
     <string name="create_object_with_name">Create object \"%1$s\"</string>
+    <string name="layout_basic_name">Basic</string>
+    <string name="layout_basic_description">Standard layout for canvas blocks</string>
+    <string name="layout_note_name">Note</string>
+    <string name="layout_note_description">Designed to capture thoughts quickly</string>
+    <string name="layout_profile_name">Profile</string>
+    <string name="layout_profile_description">Companies, contacts, friends, and family</string>
+    <string name="layout_todo_name">Task</string>
+    <string name="layout_todo_description">Action-focused layout with a checkbox</string>
 
 </resources>

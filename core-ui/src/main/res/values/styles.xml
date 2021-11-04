@@ -829,10 +829,22 @@
         <item name="android:textSize">11sp</item>
     </style>
 
-    <style name="ObjectLayoutChooseButtonStyle">
+    <style name="ObjectLayoutTitleStyle">
         <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ObjectLayoutSubtitleStyle">
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="maxLines">1</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
 </resources>

@@ -1,41 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:background="@drawable/default_ripple"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/ivIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="14dp"
         android:layout_marginBottom="14dp"
         android:contentDescription="@string/content_desc_layout_icon"
         tools:src="@drawable/ic_layout_basic" />
 
-    <TextView
-        android:id="@+id/tvTitle"
-        style="@style/ObjectLayoutChooseButtonStyle"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:layout_marginBottom="14dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:singleLine="true"
-        tools:text="Task" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/ObjectLayoutTitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            tools:text="Note" />
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            style="@style/ObjectLayoutSubtitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            tools:text="Designed to capture thoughts quickly" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/ivChecked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
+        android:layout_marginStart="@dimen/dp_16"
         android:layout_marginEnd="@dimen/dp_16"
+        android:src="@drawable/ic_option_checked_black"
         android:visibility="invisible"
-        tools:visibility="visible"
-        android:src="@drawable/ic_option_checked_black" />
+        tools:visibility="visible" />
 
-</FrameLayout>
+</LinearLayout>

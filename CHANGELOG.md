@@ -5,6 +5,7 @@
 ### New features & enhancements 🚀
 
 * Editor | Latex block in experimental mode. Based on WebView. (#1814)
+* Objects | Menu | Select a layout, which best suits your object: Note, Basic, Profile, or Task (#1894)  
 * Sets | Delete a relation from your set (#1890)
 
 ### Design & UX 🔳

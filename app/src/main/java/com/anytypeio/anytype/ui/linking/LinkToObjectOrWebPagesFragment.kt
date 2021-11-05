@@ -26,6 +26,7 @@ import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_link_to_object_or_web.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
@@ -99,6 +100,7 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     }
 
     private fun execute(command: LinkToObjectOrWebViewModel.Command) {
+        Timber.d("execute, command:[$command]")
         when (command) {
             LinkToObjectOrWebViewModel.Command.Exit -> {
                 hideSoftInput()
@@ -106,6 +108,18 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
             }
             is LinkToObjectOrWebViewModel.Command.SetWebLink -> {
                 val bundle = bundleOf(LINK_TO_OBJ_OR_WEB_URL_KEY to command.url)
+                setFragmentResult(LINK_TO_OBJ_OR_WEB_REQUEST_KEY, bundle)
+                hideSoftInput()
+                dismiss()
+            }
+            is LinkToObjectOrWebViewModel.Command.SetObjectLink -> {
+                val bundle = bundleOf(LINK_TO_OBJ_OR_WEB_ID_KEY to command.target)
+                setFragmentResult(LINK_TO_OBJ_OR_WEB_REQUEST_KEY, bundle)
+                hideSoftInput()
+                dismiss()
+            }
+            is LinkToObjectOrWebViewModel.Command.CreateObject -> {
+                val bundle = bundleOf(LINK_TO_OBJ_OR_WEB_NAME_KEY to command.name)
                 setFragmentResult(LINK_TO_OBJ_OR_WEB_REQUEST_KEY, bundle)
                 hideSoftInput()
                 dismiss()
@@ -150,5 +164,7 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     companion object {
         const val LINK_TO_OBJ_OR_WEB_REQUEST_KEY = "link-to-object-or-web.request"
         const val LINK_TO_OBJ_OR_WEB_URL_KEY = "link-to-object-or-web.url.key"
+        const val LINK_TO_OBJ_OR_WEB_ID_KEY = "link-to-object-or-web.id.key"
+        const val LINK_TO_OBJ_OR_WEB_NAME_KEY = "link-to-object-or-web.name.key"
     }
 }

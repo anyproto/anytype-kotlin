@@ -146,8 +146,6 @@ sealed class ControlPanelMachine {
             object OnMarkupColorToggleClicked : MarkupToolbar()
             object OnMarkupHighlightToggleClicked : MarkupToolbar()
             object OnMarkupToolbarUrlClicked : MarkupToolbar()
-            object OnMarkupUrlSet : MarkupToolbar()
-            object OnBlockerClicked : MarkupToolbar()
         }
 
         /**
@@ -378,24 +376,7 @@ sealed class ControlPanelMachine {
                     markupColorToolbar = state.markupColorToolbar.copy(
                         isVisible = false
                     ),
-                    markupMainToolbar = state.markupMainToolbar.copy(),
-                    markupUrlToolbar = state.markupUrlToolbar.copy(
-                        isVisible = true
-                    )
-                )
-            }
-            is Event.MarkupToolbar.OnMarkupUrlSet -> {
-                state.copy(
-                    markupUrlToolbar = state.markupUrlToolbar.copy(
-                        isVisible = false
-                    )
-                )
-            }
-            is Event.MarkupToolbar.OnBlockerClicked -> {
-                state.copy(
-                    markupUrlToolbar = state.markupUrlToolbar.copy(
-                        isVisible = false
-                    )
+                    markupMainToolbar = state.markupMainToolbar.copy()
                 )
             }
             is Event.OnMarkupTextColorSelected -> state.copy()

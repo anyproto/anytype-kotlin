@@ -7,8 +7,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
-import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
-import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import dagger.Module
 import dagger.Provides

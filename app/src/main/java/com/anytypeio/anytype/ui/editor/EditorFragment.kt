@@ -95,7 +95,9 @@ import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
+import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_NAME_KEY
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_REQUEST_KEY
+import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_ID_KEY
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_URL_KEY
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
@@ -428,7 +430,12 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
         setFragmentResultListener(LINK_TO_OBJ_OR_WEB_REQUEST_KEY) {_, bundle ->
             val url = bundle.getString(LINK_TO_OBJ_OR_WEB_URL_KEY)
-            vm.onUriSelectedForTextSelection(url)
+            if (url != null) vm.proceedToAddUriToTextAsLink(url)
+            val name = bundle.getString(LINK_TO_OBJ_OR_WEB_NAME_KEY)
+            if (name != null) vm.proceedToCreateObjectAndAddToTextAsLink(name)
+            val id = bundle.getString(LINK_TO_OBJ_OR_WEB_ID_KEY)
+            if (id != null) vm.proceedToAddObjectToTextAsLink(id)
+            Timber.d("FragmentResultListener, request:[$LINK_TO_OBJ_OR_WEB_REQUEST_KEY], url:[$url], name:[$name], id:[$id]")
         }
         pickiT = PickiT(requireContext(), this, requireActivity())
         setupOnBackPressedDispatcher()
@@ -576,11 +583,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             .onEach { type -> vm.onStyleToolbarMarkupAction(type, null) }
             .launchIn(lifecycleScope)
 
-        setMarkupUrlToolbar
-            .onApply()
-            .onEach { vm.onUriSelectedForTextSelection(it) }
-            .launchIn(lifecycleScope)
-
         blockActionToolbar.actionListener = { action -> vm.onMultiSelectAction(action) }
 
         markupColorToolbar.onColorClickedListener = { color ->
@@ -596,10 +598,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 )
             }
         }
-
-        blocker.clicks()
-            .onEach { vm.onBlockerClicked() }
-            .launchIn(lifecycleScope)
 
 //        topToolbar.back.clicks().onEach {
 //            hideSoftInput()
@@ -1057,6 +1055,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         R.id.action_pageScreen_to_linkToObjectOrWebPagesFragment
                     )
                 }
+                Command.ShowKeyboard -> {
+                    recycler.findFocus()?.focusAndShowKeyboard()
+                }
             }
         }
     }
@@ -1223,18 +1224,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             toolbar.invisible()
 
         setMainMarkupToolbarState(state)
-
-        state.markupUrlToolbar.apply {
-            if (isVisible) {
-                setMarkupUrlToolbar.visible()
-                setMarkupUrlToolbar.takeFocus()
-                setMarkupUrlToolbar.bind(state.markupMainToolbar.style?.markupUrl)
-                blocker.visible()
-            } else {
-                setMarkupUrlToolbar.invisible()
-                blocker.invisible()
-            }
-        }
 
         state.multiSelect.apply {
             val behavior = BottomSheetBehavior.from(blockActionToolbar)

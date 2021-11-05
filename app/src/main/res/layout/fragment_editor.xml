@@ -89,15 +89,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.anytypeio.anytype.core_ui.widgets.SetMarkupUrlWidget
-            android:id="@+id/setMarkupUrlToolbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectBottomToolbarWidget
             android:id="@+id/bottomMenu"
             android:layout_width="0dp"
@@ -154,17 +145,6 @@
             android:layout_height="@dimen/default_toolbar_height"
             android:background="@color/white"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/blocker"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/setMarkupUrlToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

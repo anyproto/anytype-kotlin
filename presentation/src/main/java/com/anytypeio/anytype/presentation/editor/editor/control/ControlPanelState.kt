@@ -23,7 +23,6 @@ data class ControlPanelState(
     val styleExtraToolbar: Toolbar.Styling.Other = Toolbar.Styling.Other(),
     val styleColorToolbar: Toolbar.Styling.Color = Toolbar.Styling.Color(),
     val markupMainToolbar: Toolbar.MarkupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
-    val markupUrlToolbar: Toolbar.MarkupUrlToolbar = Toolbar.MarkupUrlToolbar(),
     val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar(),
     val multiSelect: Toolbar.MultiSelect,
     val mentionToolbar: Toolbar.MentionToolbar,
@@ -85,19 +84,6 @@ data class ControlPanelState(
         data class MarkupColorToolbar(
             override val isVisible: Boolean = false
         ) : Toolbar()
-
-        /**
-         * TODO Markup toolbar allowing user-interface for markup operations.
-         * @property isVisible defines whether the toolbar is visible or not
-         */
-        data class MarkupUrlToolbar(
-            override val isVisible: Boolean = false,
-            val url: String? = null
-        ) : Toolbar() {
-            companion object {
-                fun reset() = MarkupUrlToolbar()
-            }
-        }
 
         /**
          * Basic color toolbar state.
@@ -283,7 +269,6 @@ data class ControlPanelState(
             markupMainToolbar = Toolbar.MarkupMainToolbar(
                 isVisible = false
             ),
-            markupUrlToolbar = Toolbar.MarkupUrlToolbar(),
             markupColorToolbar = Toolbar.MarkupColorToolbar(),
             multiSelect = Toolbar.MultiSelect(
                 isVisible = false,

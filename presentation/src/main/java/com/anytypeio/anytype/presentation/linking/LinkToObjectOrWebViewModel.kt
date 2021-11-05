@@ -53,15 +53,19 @@ class LinkToObjectOrWebViewModel(
     }
 
     fun onClicked(item: LinkToItemView) {
+        Timber.d("onClicked, item:[$item] ")
         viewModelScope.launch {
             when (item) {
-                is LinkToItemView.CreateObject -> TODO()
-                is LinkToItemView.Object -> TODO()
-                LinkToItemView.Subheading.Objects -> TODO()
-                LinkToItemView.Subheading.Web -> TODO()
+                is LinkToItemView.CreateObject -> {
+                    commands.emit(Command.CreateObject(item.title))
+                }
+                is LinkToItemView.Object -> {
+                    commands.emit(Command.SetObjectLink(item.id))
+                }
                 is LinkToItemView.WebItem -> {
                     commands.emit(Command.SetWebLink(item.url))
                 }
+                else -> Unit
             }
         }
     }
@@ -95,7 +99,7 @@ class LinkToObjectOrWebViewModel(
         }
     }
 
-    fun setObjects(data: List<ObjectWrapper.Basic>) {
+    private fun setObjects(data: List<ObjectWrapper.Basic>) {
         objects.value = data.filter {
             SupportedLayouts.layouts.contains(it.layout)
         }
@@ -103,10 +107,6 @@ class LinkToObjectOrWebViewModel(
 
     fun onSearchTextChanged(searchText: String) {
         userInput.value = searchText
-    }
-
-    fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
-        //todo will be fixed in next PR
     }
 
     private fun proceedWithNewFilter(filter: String) {
@@ -172,6 +172,8 @@ class LinkToObjectOrWebViewModel(
     sealed class Command {
         object Exit : Command()
         data class SetWebLink(val url: String) : Command()
+        data class SetObjectLink(val target: Id) : Command()
+        data class CreateObject(val name: String) : Command()
     }
 
     sealed class ViewState {

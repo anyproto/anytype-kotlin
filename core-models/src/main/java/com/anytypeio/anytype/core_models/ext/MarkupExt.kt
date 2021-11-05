@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models.ext
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.misc.Overlap
 
@@ -16,6 +17,22 @@ fun Marks.addMark(mark: Mark): Marks {
         listOf(mark)
     else
         toggle(mark)
+}
+
+const val NO_RANGE_INTERSECTION = 0
+fun Marks.addClickableMark(newMark: Mark): Marks {
+    val result = mutableListOf<Mark>()
+    this.forEach { mark ->
+        if (!mark.isClickableMark()) {
+            result.add(mark)
+        } else {
+            if (mark.rangeIntersection(newMark.range) == NO_RANGE_INTERSECTION) {
+                result.add(mark)
+            }
+        }
+    }
+    result.add(newMark)
+    return result.toList()
 }
 
 fun Marks.sortByType(): Marks {

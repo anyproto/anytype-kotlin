@@ -144,6 +144,9 @@ data class Block(
                     EMOJI,
                     OBJECT
                 }
+
+                fun isClickableMark(): Boolean =
+                    type == Type.LINK || type == Type.MENTION || type == Type.OBJECT
             }
 
             enum class Style {

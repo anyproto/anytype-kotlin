@@ -2,8 +2,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
+import com.anytypeio.anytype.core_models.ext.addClickableMark
 import com.anytypeio.anytype.core_models.ext.addMark
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 
 fun Block.updateText(update: TextUpdate): Block {
@@ -41,7 +43,13 @@ fun Block.markup(
         param = param
     )
 
-    val marks = content.marks.addMark(new)
+    return copy(content = content.addMarkToContent(new))
+}
 
-    return copy(content = content.copy(marks = marks))
+fun Block.Content.Text.addMarkToContent(mark: Mark): Block.Content.Text {
+    return if (mark.isClickableMark()) {
+        this.copy(marks = marks.addClickableMark(mark).sortByType())
+    } else {
+        this.copy(marks = marks.addMark(mark))
+    }
 }

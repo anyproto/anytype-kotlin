@@ -345,22 +345,10 @@ class EditorViewModel(
             .onEach { (action, textSelection) ->
                 val range = textSelection.selection
                 if (textSelection.isNotEmpty && range != null && range.first != range.last) {
-                    if (action.type == Markup.Type.LINK) {
-                        val block = blocks.first { it.id == textSelection.id }
-                        stateData.value = ViewState.OpenLinkScreen(
-                            pageId = context,
-                            block = block,
-                            range = IntRange(
-                                start = range.first,
-                                endInclusive = range.last.dec()
-                            )
-                        )
-                    } else {
-                        applyMarkup(
-                            selection = Pair(textSelection.id, range),
-                            action = action
-                        )
-                    }
+                    applyMarkup(
+                        selection = Pair(textSelection.id, range),
+                        action = action
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -4477,82 +4465,12 @@ class EditorViewModel(
     //region MARKUP TOOLBAR
 
     fun onMarkupUrlClicked() {
-
         Timber.d("onMarkupUrlClicked, ")
-
         val target = orchestrator.stores.focus.current().id
-        val selection = orchestrator.stores.textSelection.current().selection!!
-
-        pending.add(
-            Restore.Selection(
-                target = target,
-                range = selection
-            )
-        )
-
-        val update = views.map { view ->
-            if (view.id == target) {
-                view.setGhostEditorSelection(selection)
-            } else {
-                view
-            }
-        }
-
-        viewModelScope.launch { orchestrator.stores.views.update(update) }
-        viewModelScope.launch { renderCommand.send(Unit) }
         dispatch(
             Command.OpenLinkToObjectOrWebScreen(
                 target = target
             )
-        )
-    }
-
-    fun onUriSelectedForTextSelection(uri: String?) {
-        Timber.d("onSetLink, url:[$uri]")
-        if (uri == null) {
-            Timber.e("Can't set nullable url link")
-            return
-        }
-        val range = orchestrator.stores.textSelection.current().selection
-        if (range != null) {
-            val target = orchestrator.stores.focus.current().id
-            restore.add(pending.poll())
-            if (uri.isNotEmpty())
-                applyLinkMarkup(
-                    blockId = target,
-                    link = uri,
-                    range = range.first..range.last.dec()
-                )
-            else
-                onUnlinkPressed(
-                    blockId = target,
-                    range = range.first..range.last.dec()
-                )
-            controlPanelInteractor.onEvent(
-                event = ControlPanelMachine.Event.MarkupToolbar.OnMarkupUrlSet
-            )
-        }
-    }
-
-    fun onBlockerClicked() {
-        Timber.d("onBlockerClicked, ")
-        val target = orchestrator.stores.focus.current().id
-        val update = views.map { view ->
-            if (view.id == target) {
-                view.setGhostEditorSelection(null).apply {
-                    if (this is Focusable) {
-                        isFocused = true
-                    }
-                }
-            } else {
-                view
-            }
-        }
-        restore.add(pending.poll())
-        viewModelScope.launch { orchestrator.stores.views.update(update) }
-        viewModelScope.launch { renderCommand.send(Unit) }
-        controlPanelInteractor.onEvent(
-            event = ControlPanelMachine.Event.MarkupToolbar.OnBlockerClicked
         )
     }
 
@@ -5378,4 +5296,66 @@ class EditorViewModel(
             )
         }
     }
+
+    //region ADD URI OR OBJECT ID TO SELECTED TEXT
+    fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
+        Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
+        viewModelScope.launch {
+            getDefaultEditorType.invoke(Unit).proceed(
+                failure = { Timber.e(it, "Error while getting default object type") },
+                success = { response ->
+                    createObjectAddProceedToAddToTextAsLink(
+                        name = name,
+                        type = response.type
+                    )
+                }
+            )
+        }
+    }
+
+    private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {
+        val params = CreateNewDocument.Params(name, type)
+        createNewDocument.invoke(params).process(
+            failure = { Timber.e(it, "Error while creating new page with params: $params") },
+            success = { result -> proceedToAddObjectToTextAsLink(id = result.id) }
+        )
+    }
+
+    fun proceedToAddObjectToTextAsLink(id: Id) {
+        Timber.d("proceedToAddObjectToTextAsLink, target:[$id]")
+        val range = orchestrator.stores.textSelection.current().selection
+        if (range != null) {
+            dispatch(Command.ShowKeyboard)
+            viewModelScope.launch {
+                markupActionPipeline.send(
+                    MarkupAction(
+                        type = Markup.Type.OBJECT,
+                        param = id
+                    )
+                )
+            }
+        }
+    }
+
+    fun proceedToAddUriToTextAsLink(uri: String) {
+        Timber.d("proceedToAddUriToTextAsLink, uri:[$uri]")
+        val range = orchestrator.stores.textSelection.current().selection
+        if (range != null) {
+            val target = orchestrator.stores.focus.current().id
+            if (uri.isNotEmpty())
+                applyLinkMarkup(
+                    blockId = target,
+                    link = uri,
+                    range = range.first..range.last.dec()
+                )
+            else
+                onUnlinkPressed(
+                    blockId = target,
+                    range = range.first..range.last.dec()
+                )
+        } else {
+            Timber.e("Can't add uri to text, range is null")
+        }
+    }
+    //endregion
 }

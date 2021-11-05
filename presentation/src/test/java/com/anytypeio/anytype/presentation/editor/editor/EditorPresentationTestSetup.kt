@@ -535,4 +535,12 @@ open class EditorPresentationTestSetup {
             onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type, name))
         }
     }
+
+    fun stubCreateNewDocument(name: String, type: String, id: String) {
+        val params = CreateNewDocument.Params(name, type)
+        val result = CreateNewDocument.Result(id, name, null)
+        createNewDocument.stub {
+            onBlocking { invoke(params) } doReturn Either.Right(result)
+        }
+    }
 }

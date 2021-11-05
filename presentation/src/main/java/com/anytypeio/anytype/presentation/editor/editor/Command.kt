@@ -50,6 +50,7 @@ sealed class Command {
 
     object PopBackStack : Command()
 
+    object ShowKeyboard : Command()
     object CloseKeyboard : Command()
 
     object ClearSearchInput : Command()

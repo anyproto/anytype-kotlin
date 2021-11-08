@@ -3617,7 +3617,17 @@ class EditorViewModel(
     }
 
     private fun onFileClicked(id: String) {
-        dispatch(Command.RequestDownloadPermission(id))
+        val file = blocks.find { it.id == id }
+        if (file != null && file.content is Content.File) {
+            val cnt = (file.content as Content.File)
+            dispatch(
+                Command.OpenFileByDefaultApp(
+                    id = id,
+                    mime = cnt.mime.orEmpty(),
+                    uri = urlBuilder.file(cnt.hash)
+                )
+            )
+        }
     }
 
     fun startDownloadingFile(id: String) {

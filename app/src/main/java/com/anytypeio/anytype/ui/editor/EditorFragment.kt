@@ -29,6 +29,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -1055,8 +1056,22 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         R.id.action_pageScreen_to_linkToObjectOrWebPagesFragment
                     )
                 }
-                Command.ShowKeyboard -> {
+                is Command.ShowKeyboard -> {
                     recycler.findFocus()?.focusAndShowKeyboard()
+                }
+                is Command.OpenFileByDefaultApp -> {
+                    try {
+                        val uri = Uri.parse(command.uri)
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_VIEW
+                            setDataAndType(uri, command.mime)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        toast("Could not open file: ${e.message}")
+                        Timber.e(e, "Error while opening file")
+                    }
                 }
             }
         }

@@ -48,6 +48,12 @@ sealed class Command {
         val id: String
     ) : Command()
 
+    data class OpenFileByDefaultApp(
+        val id: String,
+        val mime: String,
+        val uri: String
+    ) : Command()
+
     object PopBackStack : Command()
 
     object ShowKeyboard : Command()

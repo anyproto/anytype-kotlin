@@ -300,6 +300,7 @@ open class ObjectSetFragment :
         dataViewHeader.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer.title
         when (viewer) {
             is Viewer.GridView -> {
+                unsupportedViewError.gone()
                 unsupportedViewError.text = null
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)

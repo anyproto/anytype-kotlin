@@ -2023,7 +2023,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun handleDragAndDropTrigger(vh: RecyclerView.ViewHolder): Boolean {
         if (vm.mode is Editor.Mode.Edit) {
-            if (vh is BlockViewHolder.DragAndDropHolder && recycler.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+            if (vh is BlockViewHolder.DragAndDropHolder && recycler?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 dndTargetPos = vh.bindingAdapterPosition
 
                 val item = ClipData.Item(EMPTY_TEXT)

@@ -32,9 +32,16 @@ sealed class ObjectWrapper {
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
 
-        val type: List<String>
+        val type: List<Id>
             get() = when (val value = map[Relations.TYPE]) {
-                is String -> listOf(value)
+                is Id -> listOf(value)
+                is List<*> -> value.typeOf()
+                else -> emptyList()
+            }
+
+        val setOf: List<Id>
+            get() = when (val value = map[Relations.SET_OF]) {
+                is Id -> listOf(value)
                 is List<*> -> value.typeOf()
                 else -> emptyList()
             }

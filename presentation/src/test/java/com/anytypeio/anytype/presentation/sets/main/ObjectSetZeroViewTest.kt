@@ -4,6 +4,7 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.Before
@@ -40,6 +41,16 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
         children = listOf(title.id)
     )
 
+    private val objectSetDetails = Block.Details(
+        mapOf(
+            root to Block.Fields(
+                mapOf(
+                    Relations.SET_OF to listOf(MockDataFactory.randomUuid())
+                )
+            )
+        )
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -67,7 +78,8 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
                 header,
                 title,
                 dv
-            )
+            ),
+            details = objectSetDetails
         )
 
         val vm = buildViewModel()
@@ -109,7 +121,8 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
                 header,
                 title,
                 dv
-            )
+            ),
+            details = objectSetDetails
         )
 
         val vm = buildViewModel()

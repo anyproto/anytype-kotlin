@@ -215,6 +215,7 @@ class ObjectSetViewModel(
             isLoading.value = true
             openObjectSet(ctx).process(
                 success = { result ->
+                    isLoading.value = false
                     when (result) {
                         is Result.Failure -> {
                             when (result.error) {
@@ -227,7 +228,7 @@ class ObjectSetViewModel(
                             }
                         }
                         is Result.Success -> {
-                            defaultPayloadConsumer(result.data).also { isLoading.value = false }
+                            defaultPayloadConsumer(result.data)
                             proceedWithStartupPaging()
                         }
                     }
@@ -664,6 +665,10 @@ class ObjectSetViewModel(
 
     fun onViewerCustomizeButtonClicked() {
         Timber.d("onViewerCustomizeButtonClicked, ")
+        if (!reducer.state.value.isInitialized) {
+            toast("Set is not initialized.")
+            return
+        }
         isCustomizeViewPanelVisible.value = !isCustomizeViewPanelVisible.value
     }
 
@@ -690,6 +695,10 @@ class ObjectSetViewModel(
 
     fun onExpandViewerMenuClicked() {
         Timber.d("onExpandViewerMenuClicked, ")
+        if (!reducer.state.value.isInitialized) {
+            toast("Set is not initialized.")
+            return
+        }
         if (isRestrictionPresent(DataViewRestriction.VIEWS)
         ) {
             toast(NOT_ALLOWED)
@@ -841,13 +850,24 @@ class ObjectSetViewModel(
     //region { PAGINATION LOGIC }
 
     private suspend fun proceedWithStartupPaging() {
-        val set = reducer.state.value.dataview
-        val dv = set.content<Block.Content.DataView>()
-        if (dv.viewers.isNotEmpty()) {
-            val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-            proceedWithViewerPaging(set = set, viewer = viewer.id)
+        val state = reducer.state.value
+        val obj = ObjectWrapper.Basic(state.details[context]?.map ?: emptyMap())
+        if (obj.setOf.isNotEmpty()) {
+            if (state.isInitialized) {
+                val set = state.dataview
+                val dv = set.content<Block.Content.DataView>()
+                if (dv.viewers.isNotEmpty()) {
+                    val viewer =
+                        dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                    proceedWithViewerPaging(set = set, viewer = viewer.id)
+                } else {
+                    Timber.e("Stopped initial paging: data view contained no view")
+                }
+            } else {
+                error.value = DATA_VIEW_NOT_FOUND_ERROR
+            }
         } else {
-            Timber.e("Stopped initial paging: data view contained no view")
+            error.value = OBJECT_SET_HAS_EMPTY_SOURCE_ERROR
         }
     }
 
@@ -983,6 +1003,8 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val OBJECT_TYPE_UNKNOWN = "Can't open object, object type unknown"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
+        const val DATA_VIEW_NOT_FOUND_ERROR = "Content missing for this set. Please, try again later."
+        const val OBJECT_SET_HAS_EMPTY_SOURCE_ERROR = "Object type is not defined for this set. Please, setup object type on Desktop."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
     }
 }

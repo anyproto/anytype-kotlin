@@ -101,7 +101,9 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE -> {
+            ObjectType.Layout.NOTE,
+            ObjectType.Layout.FILE,
+            ObjectType.Layout.IMAGE -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
             }
             ObjectType.Layout.SET -> {

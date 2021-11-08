@@ -138,7 +138,7 @@
     </style>
 
     <style name="KeychainDialogTitleStyle">
-        <item name="fontFamily">@font/graphik_regular</item>
+        <item name="fontFamily">@font/inter_bold</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>

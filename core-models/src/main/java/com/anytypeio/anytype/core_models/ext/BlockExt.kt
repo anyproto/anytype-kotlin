@@ -115,9 +115,12 @@ fun Content.Text.Mark.rangeIntersection(range: IntRange): Int {
     return set.size
 }
 
-fun Block.getFirstLinkMarkupParam(range: IntRange): String? {
+fun Block.getFirstLinkOrObjectMarkupParam(range: IntRange?): String? {
+    if (range == null) return null
     val marks = this.content.asText().marks
-    return marks.filter { mark -> mark.type == Content.Text.Mark.Type.LINK }
+    return marks.filter { mark ->
+        mark.type == Content.Text.Mark.Type.LINK || mark.type == Content.Text.Mark.Type.OBJECT
+    }
         .firstOrNull { mark: Content.Text.Mark ->
             mark.rangeIntersection(range) > 0
         }.let { mark: Content.Text.Mark? -> mark?.param }

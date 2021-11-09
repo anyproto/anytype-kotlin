@@ -16,7 +16,7 @@ open class RemoveLinkMark : BaseUseCase<List<Block.Content.Text.Mark>, RemoveLin
         try {
             val result = mutableListOf<Block.Content.Text.Mark>()
             params.marks.forEach {
-                if (it.type != Block.Content.Text.Mark.Type.LINK) {
+                if (it.type != Block.Content.Text.Mark.Type.LINK && it.type != Block.Content.Text.Mark.Type.OBJECT) {
                     result.add(it)
                 } else {
                     if (it.rangeIntersection(params.range) == 0) {

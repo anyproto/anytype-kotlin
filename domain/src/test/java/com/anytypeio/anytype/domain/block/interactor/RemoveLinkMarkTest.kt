@@ -125,4 +125,57 @@ class RemoveLinkMarkTest {
             )
         }
     }
+
+    @Test
+    fun `should remove object mark with range`() {
+        runBlocking {
+            val marks = listOf(
+                Block.Content.Text.Mark(
+                    range = IntRange(0, 5),
+                    param = "wwww.yahoo.com",
+                    type = Block.Content.Text.Mark.Type.LINK
+                ),
+                Block.Content.Text.Mark(
+                    range = IntRange(6, 16),
+                    param = "wwww.google.com",
+                    type = Block.Content.Text.Mark.Type.OBJECT
+                ),
+                Block.Content.Text.Mark(
+                    range = IntRange(18, 24),
+                    param = "wwww.yandex.ru",
+                    type = Block.Content.Text.Mark.Type.LINK
+                ),
+                Block.Content.Text.Mark(
+                    range = IntRange(21, 56),
+                    type = Block.Content.Text.Mark.Type.BOLD
+                )
+            )
+
+            val range = IntRange(6, 16)
+
+            val expected = listOf(
+                Block.Content.Text.Mark(
+                    range = IntRange(0, 5),
+                    param = "wwww.yahoo.com",
+                    type = Block.Content.Text.Mark.Type.LINK
+                ),
+                Block.Content.Text.Mark(
+                    range = IntRange(18, 24),
+                    param = "wwww.yandex.ru",
+                    type = Block.Content.Text.Mark.Type.LINK
+                ),
+                Block.Content.Text.Mark(
+                    range = IntRange(21, 56),
+                    type = Block.Content.Text.Mark.Type.BOLD
+                )
+            )
+
+            val result = removeLinkMark.run(params = RemoveLinkMark.Params(marks, range))
+
+            result.either(
+                { fail() },
+                { kotlin.test.assertEquals(expected, it) }
+            )
+        }
+    }
 }

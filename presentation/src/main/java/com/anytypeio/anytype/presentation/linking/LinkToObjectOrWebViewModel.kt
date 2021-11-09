@@ -47,7 +47,10 @@ class LinkToObjectOrWebViewModel(
         }
     }
 
-    fun onStart() {
+    fun onStart(uri: String?) {
+        if (uri != null) {
+            viewState.value = ViewState.SetFilter(uri)
+        }
         getObjectTypes()
         startProcessingSearchQuery()
     }
@@ -182,6 +185,7 @@ class LinkToObjectOrWebViewModel(
         ) : ViewState()
 
         object Init : ViewState()
+        data class SetFilter(val filter: String) : ViewState()
     }
 }
 

@@ -51,7 +51,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.SyncStatus
-import com.anytypeio.anytype.core_models.ext.getFirstLinkMarkupParam
+import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
@@ -65,6 +65,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
+import com.anytypeio.anytype.core_ui.menu.TextLinkPopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -96,10 +97,7 @@ import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
-import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_NAME_KEY
-import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_REQUEST_KEY
-import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_ID_KEY
-import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment.Companion.LINK_TO_OBJ_OR_WEB_URL_KEY
+import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
@@ -428,15 +426,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         setFragmentResultListener(OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val id = bundle.getString(OBJECT_TYPE_URL_KEY)
             onObjectTypePicked(id = id)
-        }
-        setFragmentResultListener(LINK_TO_OBJ_OR_WEB_REQUEST_KEY) {_, bundle ->
-            val url = bundle.getString(LINK_TO_OBJ_OR_WEB_URL_KEY)
-            if (url != null) vm.proceedToAddUriToTextAsLink(url)
-            val name = bundle.getString(LINK_TO_OBJ_OR_WEB_NAME_KEY)
-            if (name != null) vm.proceedToCreateObjectAndAddToTextAsLink(name)
-            val id = bundle.getString(LINK_TO_OBJ_OR_WEB_ID_KEY)
-            if (id != null) vm.proceedToAddObjectToTextAsLink(id)
-            Timber.d("FragmentResultListener, request:[$LINK_TO_OBJ_OR_WEB_REQUEST_KEY], url:[$url], name:[$name], id:[$id]")
         }
         pickiT = PickiT(requireContext(), this, requireActivity())
         setupOnBackPressedDispatcher()
@@ -1052,9 +1041,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
                 is Command.OpenLinkToObjectOrWebScreen -> {
                     hideSoftInput()
-                    findNavController().navigate(
-                        R.id.action_pageScreen_to_linkToObjectOrWebPagesFragment
-                    )
+                    val fr = LinkToObjectOrWebPagesFragment.newInstance(command.uri)
+                    fr.show(childFragmentManager, null)
                 }
                 is Command.ShowKeyboard -> {
                     recycler.findFocus()?.focusAndShowKeyboard()
@@ -1072,6 +1060,21 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         toast("Could not open file: ${e.message}")
                         Timber.e(e, "Error while opening file")
                     }
+                }
+                Command.ShowTextLinkMenu -> {
+                    val urlButton = markupToolbar.findViewById<View>(R.id.url)
+                    val popup = TextLinkPopupMenu(
+                        context = requireContext(),
+                        view = urlButton,
+                        onCopyLinkClicked = { vm.onCopyLinkClicked() },
+                        onEditLinkClicked = { vm.onEditLinkClicked() },
+                        onUnlinkClicked = { vm.onUnlinkClicked() }
+                    )
+                    popup.show()
+                }
+                is Command.SaveTextToSystemClipboard -> {
+                    val clipData = ClipData.newPlainText("Uri", command.text)
+                    clipboard().setPrimaryClip(clipData)
                 }
             }
         }
@@ -1133,7 +1136,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 if (childFragmentManager.findFragmentByTag(TAG_LINK) == null) {
                     SetLinkFragment.newInstance(
                         blockId = state.block.id,
-                        initUrl = state.block.getFirstLinkMarkupParam(state.range),
+                        initUrl = state.block.getFirstLinkOrObjectMarkupParam(state.range),
                         text = state.block.getSubstring(state.range),
                         rangeEnd = state.range.last,
                         rangeStart = state.range.first
@@ -1967,6 +1970,18 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         )
     }
 
+    override fun onSetObjectLink(id: Id) {
+        vm.proceedToAddObjectToTextAsLink(id)
+    }
+
+    override fun onSetWebLink(uri: String) {
+        vm.proceedToAddUriToTextAsLink(uri)
+    }
+
+    override fun onCreateObject(name: String) {
+        vm.proceedToCreateObjectAndAddToTextAsLink(name)
+    }
+
     private fun observeNavBackStack() {
         findNavController().run {
             val navBackStackEntry = getBackStackEntry(R.id.pageScreen)
@@ -2372,4 +2387,7 @@ interface OnFragmentInteractionListener {
     fun onAddBookmarkUrlClicked(target: String, url: String)
     fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)
+    fun onSetObjectLink(id: Id)
+    fun onSetWebLink(uri: String)
+    fun onCreateObject(name: String)
 }

@@ -4476,12 +4476,7 @@ class EditorViewModel(
 
     fun onMarkupUrlClicked() {
         Timber.d("onMarkupUrlClicked, ")
-        val target = orchestrator.stores.focus.current().id
-        dispatch(
-            Command.OpenLinkToObjectOrWebScreen(
-                target = target
-            )
-        )
+        dispatch(Command.ShowTextLinkMenu)
     }
 
     fun onUnlinkPressed(blockId: String, range: IntRange) {
@@ -5323,6 +5318,38 @@ class EditorViewModel(
         }
     }
 
+    fun onEditLinkClicked() {
+        Timber.d("onEditLinkClicked, ")
+        val target = orchestrator.stores.focus.current().id
+        val range = orchestrator.stores.textSelection.current().selection
+        val block = blocks.firstOrNull { it.id == target }
+        val uri = block?.getFirstLinkOrObjectMarkupParam(range)
+        dispatch(
+            Command.OpenLinkToObjectOrWebScreen(uri = uri)
+        )
+    }
+
+    fun onUnlinkClicked() {
+        val range = orchestrator.stores.textSelection.current().selection
+        val target = orchestrator.stores.focus.current().id
+        if (range != null) {
+            onUnlinkPressed(
+                blockId = target,
+                range = range.first..range.last.dec()
+            )
+        } else {
+            Timber.e("Can't add uri to text, range is null")
+        }
+    }
+
+    fun onCopyLinkClicked() {
+        val target = orchestrator.stores.focus.current().id
+        val range = orchestrator.stores.textSelection.current().selection
+        val block = blocks.firstOrNull { it.id == target }
+        val uri = block?.getFirstLinkOrObjectMarkupParam(range).orEmpty()
+        dispatch(Command.SaveTextToSystemClipboard(uri))
+    }
+
     private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {
         val params = CreateNewDocument.Params(name, type)
         createNewDocument.invoke(params).process(
@@ -5352,17 +5379,11 @@ class EditorViewModel(
         val range = orchestrator.stores.textSelection.current().selection
         if (range != null) {
             val target = orchestrator.stores.focus.current().id
-            if (uri.isNotEmpty())
-                applyLinkMarkup(
-                    blockId = target,
-                    link = uri,
-                    range = range.first..range.last.dec()
-                )
-            else
-                onUnlinkPressed(
-                    blockId = target,
-                    range = range.first..range.last.dec()
-                )
+            applyLinkMarkup(
+                blockId = target,
+                link = uri,
+                range = range.first..range.last.dec()
+            )
         } else {
             Timber.e("Can't add uri to text, range is null")
         }

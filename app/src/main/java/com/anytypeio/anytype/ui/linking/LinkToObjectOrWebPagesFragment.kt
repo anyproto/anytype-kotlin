@@ -10,7 +10,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
+import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.fragment_link_to_object_or_web.*
@@ -38,6 +38,7 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
 
     private val clearSearchText: View get() = searchView.findViewById(R.id.clearSearchText)
     private val filterInputField: EditText get() = searchView.findViewById(R.id.filterInputField)
+    private val uri get() = argOrNull<String>(LINK_TO_OBJ_OR_WEB_FILTER_ARG)
 
     private val objectLinksAdapter by lazy {
         ObjectLinksAdapter(onClicked = { vm.onClicked(it) })
@@ -95,7 +96,7 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
             }
         }
         super.onStart()
-        vm.onStart()
+        vm.onStart(uri)
         expand()
     }
 
@@ -107,20 +108,17 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
                 dismiss()
             }
             is LinkToObjectOrWebViewModel.Command.SetWebLink -> {
-                val bundle = bundleOf(LINK_TO_OBJ_OR_WEB_URL_KEY to command.url)
-                setFragmentResult(LINK_TO_OBJ_OR_WEB_REQUEST_KEY, bundle)
+                withParent<OnFragmentInteractionListener> { onSetWebLink(command.url) }
                 hideSoftInput()
                 dismiss()
             }
             is LinkToObjectOrWebViewModel.Command.SetObjectLink -> {
-                val bundle = bundleOf(LINK_TO_OBJ_OR_WEB_ID_KEY to command.target)
-                setFragmentResult(LINK_TO_OBJ_OR_WEB_REQUEST_KEY, bundle)
+                withParent<OnFragmentInteractionListener> { onSetObjectLink(command.target) }
                 hideSoftInput()
                 dismiss()
             }
             is LinkToObjectOrWebViewModel.Command.CreateObject -> {
-                val bundle = bundleOf(LINK_TO_OBJ_OR_WEB_NAME_KEY to command.name)
-                setFragmentResult(LINK_TO_OBJ_OR_WEB_REQUEST_KEY, bundle)
+                withParent<OnFragmentInteractionListener> { onCreateObject(command.name) }
                 hideSoftInput()
                 dismiss()
             }
@@ -135,6 +133,9 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
             is LinkToObjectOrWebViewModel.ViewState.Success -> {
                 recyclerView.visible()
                 objectLinksAdapter.submitList(state.items)
+            }
+            is LinkToObjectOrWebViewModel.ViewState.SetFilter -> {
+                filterInputField.setText(state.filter)
             }
         }
     }
@@ -162,9 +163,10 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     }
 
     companion object {
-        const val LINK_TO_OBJ_OR_WEB_REQUEST_KEY = "link-to-object-or-web.request"
-        const val LINK_TO_OBJ_OR_WEB_URL_KEY = "link-to-object-or-web.url.key"
-        const val LINK_TO_OBJ_OR_WEB_ID_KEY = "link-to-object-or-web.id.key"
-        const val LINK_TO_OBJ_OR_WEB_NAME_KEY = "link-to-object-or-web.name.key"
+        const val LINK_TO_OBJ_OR_WEB_FILTER_ARG = "link-to-object-or-web.filter.arg"
+
+        fun newInstance(filter: String?) = LinkToObjectOrWebPagesFragment().apply {
+            arguments = bundleOf(LINK_TO_OBJ_OR_WEB_FILTER_ARG to filter)
+        }
     }
 }

@@ -588,7 +588,7 @@ class BlockExtensionTest {
         )
         val range = IntRange(10, 13)
 
-        val result = block.getFirstLinkMarkupParam(range)
+        val result = block.getFirstLinkOrObjectMarkupParam(range)
 
         assertEquals(link.param, result)
     }
@@ -622,7 +622,7 @@ class BlockExtensionTest {
         )
         val range = IntRange(10, 13)
 
-        val result = block.getFirstLinkMarkupParam(range)
+        val result = block.getFirstLinkOrObjectMarkupParam(range)
 
         assertNull(result)
     }
@@ -658,7 +658,7 @@ class BlockExtensionTest {
         )
         val range = IntRange(0, 8)
 
-        val result = block.getFirstLinkMarkupParam(range)
+        val result = block.getFirstLinkOrObjectMarkupParam(range)
 
         assertEquals("https://kotlinlang.ru", result)
     }
@@ -677,7 +677,7 @@ class BlockExtensionTest {
         )
         val range = IntRange(10, 13)
 
-        val result = block.getFirstLinkMarkupParam(range)
+        val result = block.getFirstLinkOrObjectMarkupParam(range)
 
         assertNull(result)
     }
@@ -693,7 +693,7 @@ class BlockExtensionTest {
         )
         val range = IntRange(10, 13)
 
-        val result = block.getFirstLinkMarkupParam(range)
+        val result = block.getFirstLinkOrObjectMarkupParam(range)
 
         assertNull(result)
     }

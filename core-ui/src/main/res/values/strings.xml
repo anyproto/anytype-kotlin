@@ -423,6 +423,9 @@
     <string name="unsupported_block">Unsupported block</string>
     <string name="new_relation">New relation</string>
     <string name="change_type">Change type</string>
+    <string name="copy_link">Copy link</string>
+    <string name="edit_link">Edit link</string>
+    <string name="unlink">Unlink</string>
     <string name="choose_layout_type">Choose layout type</string>
     <string name="user_settings_title">User settings</string>
     <string name="default_object_type_title">Default object type</string>

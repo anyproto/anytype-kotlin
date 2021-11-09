@@ -450,8 +450,10 @@ class ObjectSetViewModel(
                 val records = reducer.state.value.viewerDb[viewer] ?: return
                 val record = records.records.find { it[ObjectSetConfig.ID_KEY] == cell.id }
                 if (record != null) {
-                    val updated = record.toMutableMap()
-                    updated[cell.key] = !cell.isChecked
+                    val updated = mapOf<String, Any?>(
+                        Relations.ID to cell.id,
+                        cell.key to !cell.isChecked
+                    )
                     viewModelScope.launch {
                         updateDataViewRecord(
                             UpdateDataViewRecord.Params(

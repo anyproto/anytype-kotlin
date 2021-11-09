@@ -16,6 +16,7 @@
 ### Fixes & tech 🚒
 
 * Sets | Fix | Status value missing due to incorrect value parsing (#1911)
+* Sets | Fix | App crashes when opening url from relation in a browser and returning back to the app (#1911)
 
 ## Version 0.3.3
 

@@ -81,6 +81,11 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
         vm.onStart(relationId = relationId, recordId = objectId)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     private fun handleActions(action: EditGridCellAction) {
         when (action) {
             is EditGridCellAction.Url -> {

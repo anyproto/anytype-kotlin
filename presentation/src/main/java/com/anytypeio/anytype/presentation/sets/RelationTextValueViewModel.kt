@@ -2,12 +2,19 @@ package com.anytypeio.anytype.presentation.sets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RelationTextValueViewModel(
     private val relations: ObjectRelationProvider,
@@ -17,36 +24,48 @@ class RelationTextValueViewModel(
     val views = MutableStateFlow<List<RelationTextValueView>>(emptyList())
     val title = MutableStateFlow("")
 
+    private val jobs = mutableListOf<Job>()
+
     fun onStart(relationId: Id, recordId: String) {
-        val relation = relations.get(relationId)
-        val values = values.get(recordId)
-        title.value = relation.name
-        views.value = listOf(
-            when (relation.format) {
-                Relation.Format.SHORT_TEXT -> {
-                    RelationTextValueView.TextShort(value = values[relationId] as? String)
-                }
-                Relation.Format.LONG_TEXT -> {
-                    RelationTextValueView.Text(value = values[relationId] as? String)
-                }
-                Relation.Format.NUMBER -> {
-                    val value = values[relationId]
-                    RelationTextValueView.Number(
-                        value = NumberParser.parse(value)
-                    )
-                }
-                Relation.Format.URL -> {
-                    RelationTextValueView.Url(value = values[relationId] as? String)
-                }
-                Relation.Format.EMAIL -> {
-                    RelationTextValueView.Email(value = values[relationId] as? String)
-                }
-                Relation.Format.PHONE -> {
-                    RelationTextValueView.Phone(value = values[relationId] as? String)
-                }
-                else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
+        jobs += viewModelScope.launch {
+            val pipeline = combine(
+                relations.subscribe(relationId),
+                values.subscribe(recordId)
+            ) { relation, values ->
+                title.value = relation.name
+                views.value = listOf(
+                    when (relation.format) {
+                        Relation.Format.SHORT_TEXT -> {
+                            RelationTextValueView.TextShort(value = values[relationId] as? String)
+                        }
+                        Relation.Format.LONG_TEXT -> {
+                            RelationTextValueView.Text(value = values[relationId] as? String)
+                        }
+                        Relation.Format.NUMBER -> {
+                            val value = values[relationId]
+                            RelationTextValueView.Number(
+                                value = NumberParser.parse(value)
+                            )
+                        }
+                        Relation.Format.URL -> {
+                            RelationTextValueView.Url(value = values[relationId] as? String)
+                        }
+                        Relation.Format.EMAIL -> {
+                            RelationTextValueView.Email(value = values[relationId] as? String)
+                        }
+                        Relation.Format.PHONE -> {
+                            RelationTextValueView.Phone(value = values[relationId] as? String)
+                        }
+                        else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
+                    }
+                )
             }
-        )
+            pipeline.collect()
+        }
+    }
+
+    fun onStop() {
+        jobs.cancel()
     }
 
     class Factory(

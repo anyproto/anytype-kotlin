@@ -15,7 +15,7 @@
 
 ### Fixes & tech 🚒
 
-*
+* Sets | Fix | Status value missing due to incorrect value parsing (#1911)
 
 ## Version 0.3.3
 

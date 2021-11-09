@@ -74,12 +74,15 @@ abstract class RelationValueBaseViewModel(
 
         val items = mutableListOf<RelationValueView>()
 
-        val optionKeys = record[relationId] as? List<*> ?: emptyList<String>()
-
         when (relation.format) {
             Relation.Format.TAG -> {
                 relationFormat = Relation.Format.TAG
                 val isRemoveable = isEditing.value
+                val optionKeys : List<Id> = when(val value = record[relationId]) {
+                    is Id -> listOf(value)
+                    is List<*> -> value.typeOf()
+                    else -> emptyList()
+                }
                 optionKeys.forEach { key ->
                     val option = options.find { it.id == key }
                     if (option != null) {
@@ -98,6 +101,11 @@ abstract class RelationValueBaseViewModel(
             }
             Relation.Format.STATUS -> {
                 relationFormat = Relation.Format.STATUS
+                val optionKeys : List<Id> = when(val value = record[relationId]) {
+                    is Id -> listOf(value)
+                    is List<*> -> value.typeOf()
+                    else -> emptyList()
+                }
                 optionKeys.forEach { key ->
                     val option = options.find { it.id == key }
                     if (option != null) {

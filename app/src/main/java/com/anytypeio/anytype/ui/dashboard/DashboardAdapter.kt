@@ -210,7 +210,7 @@ class DashboardAdapter(
             }
             is ViewHolder.DocumentNoteViewHolder -> {
                 val item = data[position] as DashboardView.Document
-                holder.bindTitle(item.snippet)
+                holder.bindTitle(item.title)
                 holder.bindSubtitle(item.typeName)
                 holder.bindLoading(item.isLoading)
             }

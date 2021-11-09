@@ -13,6 +13,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
@@ -1189,7 +1190,7 @@ class DefaultBlockViewRenderer(
             else
                 null
         },
-        text = getProperPageName(id = content.target, details = details),
+        text = details.details.getProperObjectName(id = content.target),
         indent = indent,
         isLoading = !details.details.containsKey(content.target),
         isSelected = checkIfSelected(
@@ -1221,7 +1222,7 @@ class DefaultBlockViewRenderer(
             else
                 null
         },
-        text = details.details[content.target]?.name,
+        text = details.details.getProperObjectName(id = content.target),
         indent = indent,
         isSelected = checkIfSelected(
             mode = mode,
@@ -1402,14 +1403,5 @@ class DefaultBlockViewRenderer(
     private fun isLayoutNote(root: Block, details: Block.Details): Boolean {
         val layoutCode = details.details[root.id]?.layout?.toInt()
         return layoutCode == ObjectType.Layout.NOTE.code
-    }
-
-    private fun getProperPageName(id: Id, details: Block.Details): String? {
-        val layoutCode = details.details[id]?.layout?.toInt()
-        return if (layoutCode == ObjectType.Layout.NOTE.code) {
-            details.details[id]?.snippet?.replace("\n", "")
-        } else {
-            details.details[id]?.name
-        }
     }
 }

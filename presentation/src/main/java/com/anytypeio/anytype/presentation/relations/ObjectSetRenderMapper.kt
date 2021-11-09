@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewState
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
@@ -434,7 +435,7 @@ fun Relation.toObjects(
             list.add(
                 ObjectView.Default(
                     id = id,
-                    name = details[id]?.name.orEmpty(),
+                    name = wrapper.getProperName(),
                     icon = ObjectIcon.from(
                         obj = wrapper,
                         layout = wrapper.layout,

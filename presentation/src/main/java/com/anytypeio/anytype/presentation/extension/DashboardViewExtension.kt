@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 
 fun List<DashboardView>.addAndSortByIds(
     ids: List<String>,
@@ -50,7 +51,7 @@ fun List<DashboardView>.updateDetails(
                 if (view.target == target) {
                     val obj = ObjectWrapper.Basic(details.map)
                     view.copy(
-                        title = details.name,
+                        title = obj.getProperName(),
                         emoji = details.iconEmoji?.let { name ->
                             if (name.isNotEmpty())
                                 name

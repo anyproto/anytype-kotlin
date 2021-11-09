@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.channels.Channel
@@ -408,7 +409,7 @@ class HomeDashboardViewModel(
                             DashboardView.Document(
                                 id = obj.id,
                                 target = obj.id,
-                                title = obj.name,
+                                title = obj.getProperName(),
                                 isArchived = true,
                                 isLoading = false,
                                 emoji = obj.iconEmoji,
@@ -447,7 +448,7 @@ class HomeDashboardViewModel(
                                 DashboardView.ObjectSet(
                                     id = obj.id,
                                     target = obj.id,
-                                    title = obj.name,
+                                    title = obj.getProperName(),
                                     isArchived = obj.isArchived ?: false,
                                     isLoading = false,
                                     icon = ObjectIcon.from(
@@ -460,7 +461,7 @@ class HomeDashboardViewModel(
                                 DashboardView.Document(
                                     id = obj.id,
                                     target = obj.id,
-                                    title = obj.name,
+                                    title = obj.getProperName(),
                                     isArchived = obj.isArchived ?: false,
                                     isLoading = false,
                                     emoji = obj.iconEmoji,
@@ -500,7 +501,7 @@ class HomeDashboardViewModel(
                                 DashboardView.ObjectSet(
                                     id = obj.id,
                                     target = obj.id,
-                                    title = obj.name,
+                                    title = obj.getProperName(),
                                     isArchived = obj.isArchived ?: false,
                                     isLoading = false,
                                     icon = ObjectIcon.from(
@@ -513,7 +514,7 @@ class HomeDashboardViewModel(
                                 DashboardView.Document(
                                     id = obj.id,
                                     target = obj.id,
-                                    title = obj.name,
+                                    title = obj.getProperName(),
                                     isArchived = obj.isArchived ?: false,
                                     isLoading = false,
                                     emoji = obj.iconEmoji,
@@ -550,7 +551,7 @@ class HomeDashboardViewModel(
                             DashboardView.ObjectSet(
                                 id = obj.id,
                                 target = obj.id,
-                                title = obj.name,
+                                title = obj.getProperName(),
                                 isArchived = obj.isArchived ?: false,
                                 isLoading = false,
                                 icon = ObjectIcon.from(

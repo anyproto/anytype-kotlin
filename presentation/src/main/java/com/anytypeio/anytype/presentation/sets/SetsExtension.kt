@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -20,7 +21,7 @@ fun List<ColumnView>.buildGridRow(
 
     val obj = ObjectWrapper.Basic(record)
     val type = obj.type.firstOrNull()
-    val name = obj.name
+    val name = obj.getProperName()
     val emoji = obj.iconEmoji
     val image = obj.iconImage
     val done = obj.done
@@ -217,7 +218,7 @@ fun Map<String, Any?>.buildObjectViews(
             objects.add(
                 ObjectView.Default(
                     id = value,
-                    name = details[value]?.name.orEmpty(),
+                    name = wrapper.getProperName(),
                     icon = ObjectIcon.from(
                         obj = wrapper,
                         layout = wrapper.layout,
@@ -236,7 +237,7 @@ fun Map<String, Any?>.buildObjectViews(
                 objects.add(
                     ObjectView.Default(
                         id = id,
-                        name = details[id]?.name.orEmpty(),
+                        name = wrapper.getProperName(),
                         icon = ObjectIcon.from(
                             obj = wrapper,
                             layout = wrapper.layout,

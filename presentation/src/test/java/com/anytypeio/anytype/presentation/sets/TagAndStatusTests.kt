@@ -139,6 +139,7 @@ class TagAndStatusTests {
 
         val expected = Viewer.GridView.Row(
             id = recordId,
+            name = "",
             type = "Type111",
             cells = listOf(
                 CellView.Description(
@@ -286,6 +287,7 @@ class TagAndStatusTests {
 
         val expected = Viewer.GridView.Row(
             id = recordId,
+            name = "",
             type = "Type111",
             cells = listOf(
                 CellView.Description(

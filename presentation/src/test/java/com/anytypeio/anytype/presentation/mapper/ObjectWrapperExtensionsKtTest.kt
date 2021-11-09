@@ -180,7 +180,7 @@ class ObjectWrapperExtensionsKtTest {
     }
 
     @Test
-    fun `should map to view with snippet as name when layout is not note`() {
+    fun `should map to view with name as name when layout is not note`() {
 
         val imageHash = "ycd79"
 
@@ -198,6 +198,30 @@ class ObjectWrapperExtensionsKtTest {
 
         assertEquals(
             expected = "LmL7R",
+            actual = result.first().name
+        )
+    }
+
+    @Test
+    fun `should map to view proper snippet max 30 characters`() {
+
+        val obj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to "Ef6",
+                "name" to "LmL7R",
+                "snippet" to "Anytype\nis\nnext-generation software that\n" +
+                        "works like\nyour brain does. It solves everyday\n" +
+                        "problems\nwhile respecting your privacy and\n" +
+                        "data rights.",
+                "layout" to ObjectType.Layout.NOTE.code.toDouble()
+            )
+
+        )
+
+        val result = listOf(obj).toView(urlBuilder, objectTypes = listOf())
+
+        assertEquals(
+            expected = "Anytype is next-generation sof",
             actual = result.first().name
         )
     }

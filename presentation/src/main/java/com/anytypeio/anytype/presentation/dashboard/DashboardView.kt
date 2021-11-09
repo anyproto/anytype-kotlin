@@ -24,7 +24,7 @@ sealed class DashboardView {
     data class Document(
         override val id: Id,
         val target: Id,
-        val title: String? = null,
+        val title: String = "",
         val emoji: String? = null,
         val image: String? = null,
         val layout: ObjectType.Layout? = null,

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -391,7 +392,7 @@ fun Block.Content.Link.toPageView(
     return DashboardView.Document(
         id = id,
         target = target,
-        title = obj.name,
+        title = obj.getProperName(),
         emoji = details.details[target]?.iconEmoji?.let { unicode ->
             if (unicode.isNotEmpty()) unicode else null
         },

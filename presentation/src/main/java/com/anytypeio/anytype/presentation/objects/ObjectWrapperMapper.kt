@@ -142,8 +142,10 @@ private fun getProperTypeName(url: String?, types: List<ObjectType>) =
 private fun ObjectWrapper.Basic.getProperFileImage(urlBuilder: UrlBuilder): String? =
     iconImage?.let { if (it.isBlank()) null else urlBuilder.thumbnail(it) }
 
-private fun ObjectWrapper.Basic.getProperName() = if (layout == ObjectType.Layout.NOTE) {
-    snippet.orEmpty()
-} else {
-    name.orEmpty()
+fun ObjectWrapper.Basic.getProperName(): String {
+    return if (layout == ObjectType.Layout.NOTE) {
+        snippet?.replace("\n", " ")?.take(30).orEmpty()
+    } else {
+        name.orEmpty()
+    }
 }

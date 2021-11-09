@@ -75,7 +75,7 @@ class DashboardViewExtensionKtTest {
                 isArchived = false,
                 id = id2,
                 target = target2,
-                title = null,
+                title = "",
                 emoji = "emoji777"
             ),
 

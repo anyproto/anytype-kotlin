@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -133,7 +134,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.Default(
                                     id = id,
-                                    name = detail?.name.orEmpty(),
+                                    name = wrapper.getProperName(),
                                     typeName = objectType?.name,
                                     type = objectType?.url,
                                     icon = ObjectIcon.from(
@@ -163,7 +164,7 @@ abstract class RelationValueBaseViewModel(
                         items.add(
                             RelationValueView.Object.Default(
                                 id = value,
-                                name = detail?.name.orEmpty(),
+                                name = wrapper.getProperName(),
                                 typeName = objectType?.name,
                                 type = objectType?.url,
                                 icon = ObjectIcon.from(

@@ -1,13 +1,13 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Mark.Companion.IS_DELETED_VALUE
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Mark.Companion.KEY_IS_DELETED
+import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.shift
 import timber.log.Timber
 
@@ -26,15 +26,10 @@ fun Block.Content.Text.getTextAndMarks(
     try {
         updatedMarks.forEach { mark ->
             if (mark.type != Markup.Type.MENTION || mark.param == null) return@forEach
-            val layoutCode = details.details[mark.param]?.layout?.toInt()
             var newName = if (mark.extras[KEY_IS_DELETED] == IS_DELETED_VALUE) {
                 NON_EXISTENT_OBJECT_MENTION_NAME
             } else {
-                if (layoutCode == ObjectType.Layout.NOTE.code) {
-                    details.details[mark.param]?.snippet?.replace("\n", "")
-                } else {
-                    details.details[mark.param]?.name
-                } ?: return@forEach
+                details.details.getProperObjectName(id = mark.param) ?: return@forEach
             }
             val oldName = updatedText.substring(mark.from, mark.to)
             if (newName != oldName) {

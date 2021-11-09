@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -151,7 +152,7 @@ abstract class AddObjectRelationValueViewModel(
                         items.add(
                             RelationValueView.Object.Default(
                                 id = id,
-                                name = wrapper.name.orEmpty(),
+                                name = wrapper.getProperName(),
                                 typeName = objectType?.name,
                                 type = type,
                                 icon = ObjectIcon.from(
@@ -172,7 +173,7 @@ abstract class AddObjectRelationValueViewModel(
                     items.add(
                         RelationValueView.Object.Default(
                             id = value,
-                            name = wrapper.name.orEmpty(),
+                            name = wrapper.getProperName(),
                             typeName = objectType?.name,
                             type = type,
                             icon = ObjectIcon.from(

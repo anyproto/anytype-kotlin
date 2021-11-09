@@ -17,14 +17,12 @@ class ViewerGridCellsAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun update(update: List<CellView>) {
-        Timber.d("Updating cells: update size - ${update.size}, current - ${cells.size}")
         val diff = DiffUtil.calculateDiff(CellViewDiffUtil(old = cells, new = update), false)
         cells = update
         diff.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        Timber.d("onCreateViewHolder")
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             HOLDER_DESCRIPTION -> {
@@ -206,7 +204,6 @@ class ViewerGridCellsAdapter(
     override fun getItemCount(): Int = cells.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Timber.d("onBindViewHolder")
         when (holder) {
             is DVGridCellDescriptionHolder -> holder.bind(cells[position] as CellView.Description)
             is DVGridCellDateHolder -> holder.bind(cells[position] as CellView.Date)

@@ -37,7 +37,6 @@ class ViewerGridHeaderAdapter() :
     sealed class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class DefaultHolder(view: View) : HeaderViewHolder(view) {
             fun bind(item: ColumnView) {
-                Timber.d("Binding default holder")
                 itemView.cellText.text = item.text
             }
 

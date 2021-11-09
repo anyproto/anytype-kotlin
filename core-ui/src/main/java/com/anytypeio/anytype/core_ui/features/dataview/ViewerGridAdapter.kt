@@ -28,7 +28,6 @@ class ViewerGridAdapter(
         parent: ViewGroup,
         viewType: Int
     ): RecordHolder {
-        Timber.d("OnCreateViewHolder")
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_viewer_grid_row, parent, false)
         view.rowCellRecycler.apply {
@@ -48,7 +47,6 @@ class ViewerGridAdapter(
     }
 
     override fun onBindViewHolder(holder: RecordHolder, position: Int) {
-        Timber.d("Binding record holder")
         holder.bindObjectHeader(getItem(position))
         holder.bindObjectCells(getItem(position))
     }
@@ -81,7 +79,6 @@ class ViewerGridAdapter(
         val adapter get() = itemView.rowCellRecycler.adapter as ViewerGridCellsAdapter
 
         fun bindObjectHeader(row: Viewer.GridView.Row) {
-            Timber.d("Binding object header")
             when (row.layout) {
                 ObjectType.Layout.TODO -> {
                     itemView.objectIcon.visible()
@@ -115,7 +112,6 @@ class ViewerGridAdapter(
         }
 
         fun bindObjectCells(row: Viewer.GridView.Row) {
-            Timber.d("Binding object cells")
             adapter.update(row.cells)
         }
     }

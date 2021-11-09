@@ -5265,10 +5265,10 @@ class EditorViewModel(
         getDefaultEditorType.invoke(Unit).proceed(
             failure = { Timber.e(it, "Error while getting default object type") },
             success = { response ->
-                val sorted = listOf(ObjectTypeView.Search) + views.toMutableList()
-                    .sortByType(response.type)
+                val filtered = views.filter { it.id != response.type }
+                val result = listOf(ObjectTypeView.Search) + filtered
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(sorted)
+                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(result)
                 )
             }
         )

@@ -59,9 +59,36 @@ data class ObjectType(
         const val VIDEO_URL = "_otvideo"
         const val AUDIO_URL = "_otaudio"
         const val SET_URL = "_otset"
+        const val TASK_URL = "_ottask"
         const val DATE_URL = "_otdate"
         const val PROFILE_URL = "_otprofile" //contains User Profile page and Anytype Person page
         const val NOTE_URL = "_otnote"
         const val WORKSPACE_URL = "_otspace"
+    }
+}
+
+class ObjectTypeComparator : Comparator<ObjectType> {
+
+    override fun compare(o1: ObjectType, o2: ObjectType): Int {
+        val o1Url = o1.url
+        val o2Url = o2.url
+        if (o1Url == o2Url) return 0
+
+        if (o1Url == ObjectType.PAGE_URL && o2Url != ObjectType.PAGE_URL) return -1
+        if (o1Url != ObjectType.PAGE_URL && o2Url == ObjectType.PAGE_URL) return 1
+
+        if (o1Url == ObjectType.NOTE_URL && o2Url != ObjectType.NOTE_URL) return -1
+        if (o1Url != ObjectType.NOTE_URL && o2Url == ObjectType.NOTE_URL) return 1
+
+        if (o1Url == ObjectType.SET_URL && o2Url != ObjectType.SET_URL) return -1
+        if (o1Url != ObjectType.SET_URL && o2Url == ObjectType.SET_URL) return 1
+
+        if (o1Url == ObjectType.TASK_URL && o2Url != ObjectType.TASK_URL) return -1
+        if (o1Url != ObjectType.TASK_URL && o2Url == ObjectType.TASK_URL) return 1
+
+        val o1Name = o1.name
+        val o2Name = o2.name
+
+        return o1Name.compareTo(o2Name)
     }
 }

@@ -26,15 +26,14 @@ class ObjectSetRecordViewModel(
         if (record != null && id != null) {
             val block = objectSetState.value.blocks.first { it.content is DV }
             val name = text.ifEmpty { DEFAULT_NAME }
+            val update = mapOf(ObjectSetConfig.NAME_KEY to name)
             viewModelScope.launch {
                 updateDataViewRecord(
                     UpdateDataViewRecord.Params(
                         context = ctx,
                         record = id,
                         target = block.id,
-                        values = record.toMutableMap().apply {
-                            put(ObjectSetConfig.NAME_KEY, name)
-                        }
+                        values = update
                     )
                 ).process(
                     failure = { Timber.e(it, "Error while updating data view record") },

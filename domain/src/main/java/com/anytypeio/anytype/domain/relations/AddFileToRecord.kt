@@ -18,8 +18,8 @@ class AddFileToRecord(
                 type = null
             )
         )
-        val updated = params.value.toMutableMap()
-        updated[params.relation] = updated[params.relation].addIds(listOf(hash))
+        val files = params.value[params.relation].addIds(listOf(hash))
+        val updated = mapOf(params.relation to files)
         repo.updateDataViewRecord(
             context = params.context,
             target = params.target,

@@ -10,16 +10,15 @@ class RemoveStatusFromDataViewRecord(
 ) : BaseUseCase<Unit, RemoveStatusFromDataViewRecord.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        val updated = params.record.toMutableMap()
         val status = mutableListOf<String>()
-        updated[params.relation]?.let { currentStatus ->
+        params.record[params.relation]?.let { currentStatus ->
             if (currentStatus is List<*>) {
                 currentStatus.forEach { statusItem ->
                     if (statusItem is String && statusItem != params.status) status.add(statusItem)
                 }
             }
         }
-        updated[params.relation] = status.toSet().toList()
+        val updated = mapOf(params.relation to status.toSet().toList())
 
         repo.updateDataViewRecord(
             context = params.ctx,

@@ -524,8 +524,7 @@ class ObjectSetViewModel(
         val records = reducer.state.value.viewerDb[dv.viewers.first().id] ?: return
         val record = records.records.find { it[ObjectSetConfig.ID_KEY] == objectId }
         if (record != null) {
-            val updated = record.toMutableMap()
-            updated[relationKey] = value
+            val updated = mapOf(relationKey to value)
             viewModelScope.launch {
                 val start = System.currentTimeMillis()
                 updateDataViewRecord(

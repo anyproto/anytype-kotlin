@@ -492,8 +492,9 @@ class RelationValueDVViewModel(
         ids: List<Id>
     ) {
         viewModelScope.launch {
-            val updated = values.get(record).toMutableMap()
-            updated[relation] = updated[relation].addIds(ids)
+            val rec = values.get(record)
+            val value = rec[relation].addIds(ids)
+            val updated = mapOf(relation to value)
             updateDataViewRecord(
                 UpdateDataViewRecord.Params(
                     context = ctx,
@@ -516,8 +517,9 @@ class RelationValueDVViewModel(
         objectId: Id
     ) {
         viewModelScope.launch {
-            val updated = values.get(target).toMutableMap()
-            updated[relation] = updated[relation].filterIdsById(objectId)
+            val rec = values.get(target)
+            val value = rec[relation].filterIdsById(objectId)
+            val updated = mapOf(relation to value)
             updateDataViewRecord(
                 UpdateDataViewRecord.Params(
                     context = ctx,
@@ -540,8 +542,9 @@ class RelationValueDVViewModel(
         fileId: Id
     ) {
         viewModelScope.launch {
-            val updated = values.get(target).toMutableMap()
-            updated[relation] = updated[relation].filterIdsById(fileId)
+            val rec = values.get(target)
+            val value = rec[relation].filterIdsById(fileId)
+            val updated = mapOf(relation to value)
             updateDataViewRecord(
                 UpdateDataViewRecord.Params(
                     context = ctx,
@@ -564,15 +567,13 @@ class RelationValueDVViewModel(
         order: List<Id>
     ) {
         viewModelScope.launch {
-            val rec = values.get(obj).toMutableMap().apply {
-                set(relation, order)
-            }
+            val updated = mapOf(relation to order)
             updateDataViewRecord(
                 UpdateDataViewRecord.Params(
                     context = ctx,
                     target = dv,
                     record = obj,
-                    values = rec
+                    values = updated
                 )
             ).process(
                 failure = { Timber.e(it, "Error while updating DV record order") },

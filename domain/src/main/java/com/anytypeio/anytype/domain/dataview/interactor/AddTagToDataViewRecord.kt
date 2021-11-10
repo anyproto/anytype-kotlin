@@ -13,9 +13,8 @@ class AddTagToDataViewRecord(
 ) : BaseUseCase<Unit, AddTagToDataViewRecord.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        val updated = params.record.toMutableMap()
         val tags = mutableListOf<String>()
-        updated[params.relation]?.let { currentTags ->
+        params.record[params.relation]?.let { currentTags ->
             if (currentTags is List<*>) {
                 currentTags.forEach { tagItem ->
                     if (tagItem is String) tags.add(tagItem)
@@ -23,7 +22,7 @@ class AddTagToDataViewRecord(
             }
         }
         tags.addAll(params.tags)
-        updated[params.relation] = tags.toSet().toList()
+        val updated = mapOf(params.relation to tags.toSet().toList())
 
         repo.updateDataViewRecord(
             context = params.ctx,

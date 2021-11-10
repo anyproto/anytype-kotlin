@@ -13,9 +13,7 @@ class AddStatusToDataViewRecord(
 ) : BaseUseCase<Unit, AddStatusToDataViewRecord.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        val updated = params.record.toMutableMap().apply {
-            set(params.relation, listOf(params.status))
-        }
+        val updated = mapOf(params.relation to listOf(params.status))
         repo.updateDataViewRecord(
             context = params.ctx,
             target = params.dataview,

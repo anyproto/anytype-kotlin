@@ -513,6 +513,8 @@ fun MSmartBlockType.toCoreModel(): SmartBlockType = when (this) {
     MSmartBlockType.BundledTemplate -> SmartBlockType.BUNDLED_TEMPLATE
     MSmartBlockType.Date -> SmartBlockType.DATE
     MSmartBlockType.Workspace -> SmartBlockType.WORKSPACE
+    MSmartBlockType.WorkspaceOld -> SmartBlockType.WORKSPACE_OLD
+    MSmartBlockType.AccountOld -> SmartBlockType.ACCOUNT_OLD
 }
 
 // ---------------------- RESTRICTIONS ------------------------

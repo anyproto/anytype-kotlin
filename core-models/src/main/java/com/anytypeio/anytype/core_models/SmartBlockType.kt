@@ -20,5 +20,7 @@ enum class SmartBlockType {
     DATABASE,
     BUNDLED_TEMPLATE,
     DATE,
-    WORKSPACE
+    WORKSPACE,
+    WORKSPACE_OLD,
+    ACCOUNT_OLD
 }

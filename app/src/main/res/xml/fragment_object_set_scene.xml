@@ -44,6 +44,13 @@
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/unsupportedViewError"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="@+id/gridContainer"
+            motion:visibilityMode="ignore" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
@@ -78,6 +85,13 @@
             motion:layout_constraintBottom_toBottomOf="@+id/gridContainer"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
+            motion:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/unsupportedViewError"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="@+id/gridContainer"
             motion:visibilityMode="ignore" />
     </ConstraintSet>
 

@@ -1,38 +1,33 @@
 # Change log for Android @Anytype app.
 
-## Version 0.4.0 (WIP)
+## Version 0.4.0
 
 ### New features & enhancements 🚀
 
+* Dashboard | Most wanted: select, delete objects or restore them from Bin (#1858)
+* App | Smarter recycling: drafts without any history will be deleted after close (#1833)
+* App | Resume whatever you were up to restoring the last opened object or the last opened set on application start (#1851)
+* App | Displaying shortcut actions when clicking on your App's icon (#1888)
+* App | On-the-go: introducing "Note" as a new type with a specific layout (#1852)
+* Settings | Setup a default type for your Anytype. When creating a new object, your default type will be used (#1873)
+* Editor | New markup: add links to objects, not only URLs! (#1893)
 * Editor | Opening a file by default app on device instead of downloading it when clicked (#1904)
-* Editor | Latex block in experimental mode. Based on WebView. (#1814)
-* Objects | Menu | Select a layout, which best suits your object: Note, Basic, Profile, or Task (#1894)  
-* Sets | Delete a relation from your set (#1890)
-
-### Design & UX 🔳
-
-* Editor | Increased default font size (#1892)
-* Editor | Undo-redo making a comeback (#1913)
-
-### Fixes & tech 🚒
-
-* Sets | Fix | Status value missing due to incorrect value parsing (#1911)
-* Sets | Fix | App crashes when opening url from relation in a browser and returning back to the app (#1911)
-
-## Version 0.3.3
-
-### New features & enhancements 🚀
-
-* App: Restoring the last opened object or the last opened set on application start (#1851)
-* App: Drafts without any history will be deleted after close (#1833)
 * Editor | Drag & drop (position above, below or inside) (#1848)
-* Sets | Grid as fallback view: views not supported on Android can be seen as grid (#1850)
+* Editor | Latex block in experimental mode. Let's hear your feedback! (#1814)
+* Objects | Menu | Select a layout, which best suits your object: Note, Basic, Profile, or Task (#1894)
+* Sets | When your object is open, you can navigate to set of your object's type or create a new set (#1880)
+* Sets | You can now delete a relation from your set (#1890)
+* Sets | Grid as fallback view: views not yet supported on Android can be seen as a grid (#1850)
 
 ### Design & UX 🔳
 
+* Editor | More comfortable reading: increased the default font size (#1892)
+* Editor | Undo-redo making a comeback! (#1913)
+
 ### Fixes & tech 🚒
 
-
+* Sets | Status value missing due to incorrect value parsing (#1911)
+* Sets | App crashes when opening URL from the relation in a browser and returning back to the App (#1911)
 
 ## Version 0.3.2
 

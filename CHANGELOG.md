@@ -11,7 +11,8 @@
 
 ### Design & UX 🔳
 
-* Editor | Redesign | Increased default font size (#1892)
+* Editor | Increased default font size (#1892)
+* Editor | Undo-redo making a comeback (#1913)
 
 ### Fixes & tech 🚒
 

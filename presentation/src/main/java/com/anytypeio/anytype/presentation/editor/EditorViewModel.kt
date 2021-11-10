@@ -157,6 +157,7 @@ class EditorViewModel(
 
     val isUndoEnabled = MutableStateFlow(false)
     val isRedoEnabled = MutableStateFlow(false)
+    val isUndoRedoToolbarIsVisible = MutableStateFlow(false)
 
     val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
 
@@ -877,6 +878,7 @@ class EditorViewModel(
     fun onBlockFocusChanged(id: String, hasFocus: Boolean) {
         Timber.d("onBlockFocusChanged, id:[$id] hasFocus:[$hasFocus]")
         if (hasFocus) {
+            isUndoRedoToolbarIsVisible.value = false
             viewModelScope.launch {
                 orchestrator.stores.focus.update(
                     Editor.Focus.id(id = id, isPending = false)
@@ -3175,6 +3177,7 @@ class EditorViewModel(
             onExitBlockStyleToolbarClicked()
             return
         }
+        isUndoRedoToolbarIsVisible.value = false
         when (clicked) {
             is ListenerType.Bookmark.View -> {
                 when (mode) {
@@ -5388,5 +5391,14 @@ class EditorViewModel(
             Timber.e("Can't add uri to text, range is null")
         }
     }
+
+    fun onUndoRedoActionClicked() {
+        isUndoRedoToolbarIsVisible.value = true
+    }
+
+    fun onUndoRedoToolbarIsHidden() {
+        isUndoRedoToolbarIsVisible.value = false
+    }
+
     //endregion
 }

@@ -31,7 +31,11 @@ class ObjectActionAdapter(
             when (item) {
                 ObjectAction.DELETE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
-                    tvActionTitle.setText(R.string.archive)
+                    tvActionTitle.setText(R.string.move_to_bin)
+                }
+                ObjectAction.UNDO_REDO -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_undoredo)
+                    tvActionTitle.setText(R.string.undoredo)
                 }
                 ObjectAction.ADD_TO_FAVOURITE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_add_to_favorites)

@@ -172,6 +172,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     blockActionToolbar.id -> {
                         vm.onBlockActionPanelHidden()
                     }
+                    undoRedoToolbar.id -> {
+                        vm.onUndoRedoToolbarIsHidden()
+                    }
                 }
             }
         }
@@ -589,18 +592,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             }
         }
 
-//        topToolbar.back.clicks().onEach {
-//            hideSoftInput()
-//            vm.onBackButtonPressed()
-//        }.launchIn(lifecycleScope)
-//
-//        topToolbar.undo.clicks().onEach {
-//            vm.onActionUndoClicked()
-//        }.launchIn(lifecycleScope)
-//
-//        topToolbar.redo.clicks().onEach {
-//            vm.onActionRedoClicked()
-//        }.launchIn(lifecycleScope)
+        undoRedoToolbar.undo.clicks().onEach {
+            vm.onActionUndoClicked()
+        }.launchIn(lifecycleScope)
+
+        undoRedoToolbar.redo.clicks().onEach {
+            vm.onActionRedoClicked()
+        }.launchIn(lifecycleScope)
 
         lifecycleScope.subscribe(styleToolbarMain.styles) {
             vm.onUpdateTextBlockStyle(it)
@@ -651,6 +649,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
     }
@@ -702,6 +701,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             else
                 topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
         }.launchIn(lifecycleScope)
+
         vm.isUndoEnabled.onEach {
             // TODO
         }.launchIn(lifecycleScope)
@@ -711,6 +711,17 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         with(lifecycleScope) {
             subscribe(vm.actions) { blockActionToolbar.bind(it) }
+            subscribe(vm.isUndoRedoToolbarIsVisible) { isVisible ->
+                val behavior = BottomSheetBehavior.from(undoRedoToolbar)
+                if (isVisible) {
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                }
+                else {
+                    behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
+                    behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.snacks) { snack ->
                 when (snack) {
@@ -1879,6 +1890,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onSearchOnPageClicked() {
         vm.onEnterSearchModeClicked()
+    }
+
+    override fun onUndoRedoClicked() {
+        vm.onUndoRedoActionClicked()
     }
 
     override fun onDocRelationsClicked() {

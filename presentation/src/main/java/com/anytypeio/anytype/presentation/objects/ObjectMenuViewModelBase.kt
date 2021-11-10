@@ -59,6 +59,7 @@ abstract class ObjectMenuViewModelBase(
                 add(ObjectAction.DELETE)
             }
         }
+        add(ObjectAction.UNDO_REDO)
         if (isFavorite) {
             add(ObjectAction.REMOVE_FROM_FAVOURITE)
         } else {

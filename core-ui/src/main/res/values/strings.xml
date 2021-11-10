@@ -453,5 +453,7 @@
     <string name="layout_profile_description">Companies, contacts, friends, and family</string>
     <string name="layout_todo_name">Task</string>
     <string name="layout_todo_description">Action-focused layout with a checkbox</string>
+    <string name="move_to_bin">To Bin</string>
+    <string name="undoredo">Undo/Redo</string>
 
 </resources>

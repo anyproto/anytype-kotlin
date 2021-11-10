@@ -44,14 +44,24 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
-            if (action == ObjectAction.SEARCH_ON_PAGE) {
-                // Temp. workaround. Action should be dispatched via vm dispatcher.
-                withParent<DocumentMenuActionReceiver> {
-                    onSearchOnPageClicked()
-                    dismiss()
+            when (action) {
+                ObjectAction.SEARCH_ON_PAGE -> {
+                    // TODO Temp. workaround. Action should be dispatched via vm dispatcher.
+                    withParent<DocumentMenuActionReceiver> {
+                        onSearchOnPageClicked()
+                        dismiss()
+                    }
                 }
-            } else {
-                vm.onActionClicked(ctx, action)
+                ObjectAction.UNDO_REDO -> {
+                    // TODO Temp. workaround. Action should be dispatched via vm dispatcher.
+                    withParent<DocumentMenuActionReceiver> {
+                        onUndoRedoClicked()
+                        dismiss()
+                    }
+                }
+                else -> {
+                    vm.onActionClicked(ctx, action)
+                }
             }
         }
     }
@@ -189,6 +199,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         fun onSetIconClicked()
         fun onLayoutClicked()
         fun onDownloadClicked()
+        fun onUndoRedoClicked()
     }
 }
 

@@ -13,8 +13,8 @@
 
         <ImageView
             android:id="@+id/ivActionIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             tools:src="@drawable/ic_object_action_add_to_favorites"/>
     </FrameLayout>

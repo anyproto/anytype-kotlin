@@ -237,6 +237,9 @@ class DashboardAdapter(
                     is ViewHolder.DocumentNoteViewHolder -> {
                         bindByPayloads(holder, position, payload)
                     }
+                    is ViewHolder.DocumentTaskViewHolder -> {
+                        bindByPayloads(holder, position, payload)
+                    }
                     else -> Timber.d("Skipping payload update.")
                 }
             }
@@ -315,6 +318,28 @@ class DashboardAdapter(
             }
             if (payload.isSelectionChanged) {
                 bindSelection(item.isSelected)
+            }
+        }
+    }
+
+    private fun bindByPayloads(
+        holder: ViewHolder.DocumentTaskViewHolder,
+        position: Int,
+        payload: DesktopDiffUtil.Payload
+    ) {
+        with(holder) {
+            val item = data[position] as DashboardView.Document
+            if (payload.titleChanged()) {
+                bindTitle(item.title)
+            }
+            if (payload.isLoadingChanged) {
+                bindLoading(item.isLoading)
+            }
+            if (payload.isSelectionChanged) {
+                bindSelection(item.isSelected)
+            }
+            if (payload.isDoneChanged) {
+                bindDone(item.done)
             }
         }
     }

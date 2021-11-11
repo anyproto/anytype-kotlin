@@ -44,6 +44,9 @@ class DesktopDiffUtil(
             if (oldDoc.isLoading != newDoc.isLoading) {
                 changes.add(LOADING_STATE_CHANGED)
             }
+            if (oldDoc.done != newDoc.done) {
+                changes.add(DONE_CHANGED)
+            }
         }
 
         if (oldDoc is DashboardView.Archive && newDoc is DashboardView.Archive) {
@@ -81,6 +84,7 @@ class DesktopDiffUtil(
 
         val isLoadingChanged: Boolean = changes.contains(LOADING_STATE_CHANGED)
         val isSelectionChanged: Boolean = changes.contains(SELECTION_CHANGED)
+        val isDoneChanged: Boolean = changes.contains(DONE_CHANGED)
 
         fun targetChanged() = changes.contains(TARGET_CHANGED)
         fun titleChanged() = changes.contains(TITLE_CHANGED)
@@ -95,5 +99,6 @@ class DesktopDiffUtil(
         const val IMAGE_CHANGED = 5
         const val LOADING_STATE_CHANGED = 6
         const val SELECTION_CHANGED = 7
+        const val DONE_CHANGED = 8
     }
 }

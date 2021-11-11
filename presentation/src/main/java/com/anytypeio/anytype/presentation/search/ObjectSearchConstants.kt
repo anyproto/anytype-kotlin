@@ -189,6 +189,11 @@ object ObjectSearchConstants {
             value = false
         ),
         DVFilter(
+            relationKey = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
@@ -220,6 +225,11 @@ object ObjectSearchConstants {
             relationKey = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
             value = false
+        ),
+        DVFilter(
+            relationKey = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         ),
         DVFilter(
             relationKey = Relations.TYPE,

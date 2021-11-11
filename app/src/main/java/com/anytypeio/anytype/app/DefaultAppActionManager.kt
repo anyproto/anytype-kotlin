@@ -24,7 +24,7 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
                     val shortcut = ShortcutInfoCompat.Builder(context, ACTION_CREATE_NEW_ID)
                         .setShortLabel(label)
                         .setLongLabel(label)
-                        .setIcon(IconCompat.createWithResource(context, R.mipmap.ic_app))
+                        .setIcon(IconCompat.createWithResource(context, R.mipmap.ic_new_app_launcher))
                         .setIntent(
                             Intent(Intent.ACTION_VIEW, null).apply {
                                 setClass(context, MainActivity::class.java)

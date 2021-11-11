@@ -51,6 +51,8 @@ message Change {
             RelationUpdate relationUpdate = 104;
             ObjectTypeAdd objectTypeAdd = 105;
             ObjectTypeRemove objectTypeRemove = 106;
+            StoreKeySet storeKeySet = 107;
+            StoreKeyUnset storeKeyUnset = 108;
 
         }
     }
@@ -124,5 +126,14 @@ message Change {
 
     message ObjectTypeRemove {
         string url = 1;
+    }
+
+    message StoreKeySet {
+        repeated string path = 1;
+        google.protobuf.Value value = 2;
+    }
+
+    message StoreKeyUnset {
+        repeated string path = 1;
     }
 }

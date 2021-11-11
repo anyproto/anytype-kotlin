@@ -1970,8 +1970,8 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string blockId = 2;
-                string targetId = 3;
+                string blockId = 2; // (optional) id of the link block pointing to this set
+                string targetId = 3; // id of the new set
                 ResponseEvent event = 4;
 
                 message Error {

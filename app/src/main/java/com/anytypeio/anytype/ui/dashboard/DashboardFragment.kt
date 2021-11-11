@@ -2,8 +2,6 @@ package com.anytypeio.anytype.ui.dashboard
 
 import android.os.Bundle
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.LinearInterpolator
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -104,7 +102,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     private val dashboardArchiveAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.ARCHIVE) },
+            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.BIN) },
             onArchiveClicked = {},
             onObjectSetClicked = {}
         )
@@ -210,7 +208,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                         TAB.RECENT -> TabItem(getString(R.string.history), DashboardPager.TYPE_RECENT)
                         TAB.SETS -> TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS)
                         TAB.SHARED -> TabItem(getString(R.string.shared), DashboardPager.TYPE_SHARED)
-                        TAB.ARCHIVE -> TabItem(getString(R.string.archive), DashboardPager.TYPE_BIN)
+                        TAB.BIN -> TabItem(getString(R.string.bin), DashboardPager.TYPE_BIN)
                     }
                 }
             )

@@ -118,7 +118,7 @@ class DashboardBinTest : DashboardTestSetup() {
 
         vm.onTabObjectClicked(
             target = objectIds[0],
-            tab = HomeDashboardViewModel.TAB.ARCHIVE,
+            tab = HomeDashboardViewModel.TAB.BIN,
             isLoading = false
         )
 
@@ -221,7 +221,7 @@ class DashboardBinTest : DashboardTestSetup() {
 
         vm.onTabObjectClicked(
             target = objectIds[0],
-            tab = HomeDashboardViewModel.TAB.ARCHIVE,
+            tab = HomeDashboardViewModel.TAB.BIN,
             isLoading = false
         )
 
@@ -229,7 +229,7 @@ class DashboardBinTest : DashboardTestSetup() {
 
         vm.onTabObjectClicked(
             target = objectIds[1],
-            tab = HomeDashboardViewModel.TAB.ARCHIVE,
+            tab = HomeDashboardViewModel.TAB.BIN,
             isLoading = false
         )
 
@@ -251,7 +251,7 @@ class DashboardBinTest : DashboardTestSetup() {
 
         vm.onTabObjectClicked(
             target = objectIds[1],
-            tab = HomeDashboardViewModel.TAB.ARCHIVE,
+            tab = HomeDashboardViewModel.TAB.BIN,
             isLoading = false
         )
 
@@ -351,7 +351,7 @@ class DashboardBinTest : DashboardTestSetup() {
 
         vm.onTabObjectClicked(
             target = objectIds[0],
-            tab = HomeDashboardViewModel.TAB.ARCHIVE,
+            tab = HomeDashboardViewModel.TAB.BIN,
             isLoading = false
         )
 
@@ -380,7 +380,7 @@ class DashboardBinTest : DashboardTestSetup() {
 
         vm.onTabObjectClicked(
             target = objectIds[0],
-            tab = HomeDashboardViewModel.TAB.ARCHIVE,
+            tab = HomeDashboardViewModel.TAB.BIN,
             isLoading = false
         )
 

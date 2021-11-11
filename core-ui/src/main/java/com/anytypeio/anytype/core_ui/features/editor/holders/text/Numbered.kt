@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
+import timber.log.Timber
 
 class Numbered(
     view: View,
@@ -96,7 +97,12 @@ class Numbered(
 
     override fun setTextColor(color: String) {
         super.setTextColor(color)
-        number.setTextColor(ThemeColor.values().first { value -> value.title == color }.text)
+        val value = ThemeColor.values().find { value -> value.title == color }
+        if (value != null) {
+            number.setTextColor(value.text)
+        } else {
+            number.setTextColor(ThemeColor.DEFAULT.text)
+        }
     }
 
     override fun indentize(item: BlockView.Indentable) {

@@ -28,6 +28,7 @@
 
 * Sets | Status value missing due to incorrect value parsing (#1911)
 * Sets | App crashes when opening URL from the relation in a browser and returning back to the App (#1911)
+* Editor | Fix | App should not crash when undoing text color changes for numbered block (#1920)
 
 ## Version 0.3.2
 

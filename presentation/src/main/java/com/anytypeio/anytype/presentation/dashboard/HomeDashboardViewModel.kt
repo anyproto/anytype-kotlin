@@ -29,7 +29,6 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -92,7 +91,7 @@ class HomeDashboardViewModel(
     private var ctx: Id = ""
     private var profile: Id = ""
 
-    val tabs = MutableStateFlow(listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.ARCHIVE))
+    val tabs = MutableStateFlow(listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.BIN))
 
     val archived = MutableStateFlow(emptyList<DashboardView.Document>())
     val recent = MutableStateFlow(emptyList<DashboardView>())
@@ -316,7 +315,7 @@ class HomeDashboardViewModel(
     fun onTabObjectClicked(target: Id, isLoading: Boolean, tab: TAB = TAB.FAVOURITE) {
         Timber.d("onTabObjectClicked, target:[$target], isLoading:[$isLoading], tab:[$tab]")
         if (!isLoading) {
-            if (tab == TAB.ARCHIVE) {
+            if (tab == TAB.BIN) {
                 proceedWithClickInArchiveTab(target)
             } else {
                 val view = when (tab) {
@@ -389,7 +388,7 @@ class HomeDashboardViewModel(
         proceedWithRecentObjectSearch()
         proceedWithSetsObjectSearch()
         if (flavourConfigProvider.get().enableSpaces == true) {
-            tabs.value = listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.SHARED, TAB.ARCHIVE)
+            tabs.value = listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.SHARED, TAB.BIN)
             proceedWithSharedObjectsSearch()
         }
     }
@@ -694,7 +693,7 @@ class HomeDashboardViewModel(
         val direction: Position
     )
 
-        enum class TAB { FAVOURITE, RECENT, SETS, SHARED, ARCHIVE }
+        enum class TAB { FAVOURITE, RECENT, SETS, SHARED, BIN }
 
     //region CREATE PAGE
     private fun proceedWithGettingDefaultPageType() {

@@ -34,13 +34,6 @@
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-            <action
-                android:id="@+id/action_pageScreen_to_linkToObjectOrWebPagesFragment"
-                app:destination="@id/linkToObjectOrWebPagesFragment"
-                app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         </fragment>
         <dialog
             android:id="@+id/objectRelationListScreen"
@@ -79,10 +72,6 @@
             android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
             android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
             android:label="RelationCreateFromScratchForObjectBlockFragment" />
-        <dialog
-            android:id="@+id/linkToObjectOrWebPagesFragment"
-            android:name="com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment"
-            android:label="LinkToObjectOrWebPagesFragment" />
     </navigation>
 
     <navigation

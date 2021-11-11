@@ -5326,7 +5326,7 @@ class EditorViewModel(
         val target = orchestrator.stores.focus.current().id
         val range = orchestrator.stores.textSelection.current().selection
         val block = blocks.firstOrNull { it.id == target }
-        val uri = block?.getFirstLinkOrObjectMarkupParam(range)
+        val uri = block?.getFirstLinkOrObjectMarkupParam(range).orEmpty()
         dispatch(
             Command.OpenLinkToObjectOrWebScreen(uri = uri)
         )

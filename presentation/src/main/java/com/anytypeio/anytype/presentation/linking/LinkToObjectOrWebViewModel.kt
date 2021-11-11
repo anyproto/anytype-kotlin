@@ -47,8 +47,8 @@ class LinkToObjectOrWebViewModel(
         }
     }
 
-    fun onStart(uri: String?) {
-        if (uri != null) {
+    fun onStart(uri: String) {
+        if (uri.isNotEmpty()) {
             viewState.value = ViewState.SetFilter(uri)
         }
         getObjectTypes()

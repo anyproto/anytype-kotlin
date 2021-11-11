@@ -38,7 +38,7 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
 
     private val clearSearchText: View get() = searchView.findViewById(R.id.clearSearchText)
     private val filterInputField: EditText get() = searchView.findViewById(R.id.filterInputField)
-    private val uri get() = argOrNull<String>(LINK_TO_OBJ_OR_WEB_FILTER_ARG)
+    private val uri get() = arg<String>(LINK_TO_OBJ_OR_WEB_FILTER_ARG)
 
     private val objectLinksAdapter by lazy {
         ObjectLinksAdapter(onClicked = { vm.onClicked(it) })
@@ -165,7 +165,7 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     companion object {
         const val LINK_TO_OBJ_OR_WEB_FILTER_ARG = "link-to-object-or-web.filter.arg"
 
-        fun newInstance(filter: String?) = LinkToObjectOrWebPagesFragment().apply {
+        fun newInstance(filter: String) = LinkToObjectOrWebPagesFragment().apply {
             arguments = bundleOf(LINK_TO_OBJ_OR_WEB_FILTER_ARG to filter)
         }
     }

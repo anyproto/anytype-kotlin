@@ -104,6 +104,8 @@ class HomeDashboardViewModel(
 
     val alerts = MutableSharedFlow<Alert>(replay = 0)
 
+    val isDeletionInProgress = MutableStateFlow(false)
+
     private val views: List<DashboardView>
         get() = stateData.value?.blocks ?: emptyList()
 
@@ -662,16 +664,19 @@ class HomeDashboardViewModel(
     private fun proceedWithObjectDeletion() {
         viewModelScope.launch {
             mode.value = Mode.DEFAULT
+            isDeletionInProgress.value = true
             deleteObjects(
                 DeleteObjects.Params(
                     targets = archived.value.filter { it.isSelected }.map { it.id }
                 )
             ).process(
                 failure = { e ->
+                    isDeletionInProgress.value = false
                     Timber.e(e, "Error while deleting objects")
                     proceedWithArchivedObjectSearch()
                 },
                 success = {
+                    isDeletionInProgress.value = false
                     proceedWithArchivedObjectSearch()
                 }
             )

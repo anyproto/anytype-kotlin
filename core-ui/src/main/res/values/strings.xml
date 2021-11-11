@@ -455,5 +455,7 @@
     <string name="layout_todo_description">Action-focused layout with a checkbox</string>
     <string name="move_to_bin">To Bin</string>
     <string name="undoredo">Undo/Redo</string>
+    <string name="object_removal_process">Object removal process</string>
+    <string name="please_wait_your_object_deletion">Please wait a bit. Your objects will be deleted shortly.</string>
 
 </resources>

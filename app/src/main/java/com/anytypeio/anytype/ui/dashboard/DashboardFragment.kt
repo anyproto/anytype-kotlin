@@ -18,8 +18,10 @@ import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.St
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
+import com.anytypeio.anytype.presentation.editor.Snack
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -212,6 +214,13 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                     }
                 }
             )
+        }
+        jobs += lifecycleScope.subscribe(vm.isDeletionInProgress) { isDeletionInProgress ->
+            if (isDeletionInProgress) {
+                objectRemovalProgressBar.visible()
+            } else {
+                objectRemovalProgressBar.gone()
+            }
         }
     }
 

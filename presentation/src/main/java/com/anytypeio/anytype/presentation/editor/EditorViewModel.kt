@@ -5176,7 +5176,7 @@ class EditorViewModel(
 
         val targetBlock = blocks.find { it.id == target }
 
-        val targetContext = if (targetBlock?.content is Content.Link) {
+        val targetContext = if (targetBlock?.content is Content.Link && position == Position.INNER) {
             targetBlock.content<Content.Link>().target
         } else {
             context

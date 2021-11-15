@@ -8,6 +8,7 @@
 * Editor | Should not crash when failed to parse an object's layout due to incorrect format (#1929)
 * Editor | Should not crash when the target block is not found for the style panel (#1929)
 * Editor | Should not crash when long-pressing empty space in the header when object layout has no title (#1930)
+* Editor | Drag-and-dropping below or above a link to object always results in dropping inside this link (#1931)
 
 ## Version 0.4.0
 

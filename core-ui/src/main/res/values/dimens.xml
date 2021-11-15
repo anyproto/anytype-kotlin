@@ -57,6 +57,8 @@
     <dimen name="default_toolbar_color_item_divider_width">1dp</dimen>
     <dimen name="default_toolbar_color_placeholder_text_size">22sp</dimen>
 
+    <dimen name="default_note_title_offset">124dp</dimen>
+
     <dimen name="modal_rect_margin_top">6dp</dimen>
     <dimen name="modal_main_margin_start">20dp</dimen>
     <dimen name="modal_main_margin_end">20dp</dimen>

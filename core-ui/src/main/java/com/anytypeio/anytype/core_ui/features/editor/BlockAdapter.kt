@@ -63,7 +63,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NOTE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
@@ -254,15 +253,6 @@ class BlockAdapter(
                         }
                     }
                 }
-            }
-            HOLDER_NOTE_TITLE -> {
-                TitleNoteHolder(
-                    view = inflater.inflate(
-                        R.layout.item_block_note_title,
-                        parent,
-                        false
-                    )
-                )
             }
             HOLDER_HEADER_ONE -> {
                 HeaderOne(

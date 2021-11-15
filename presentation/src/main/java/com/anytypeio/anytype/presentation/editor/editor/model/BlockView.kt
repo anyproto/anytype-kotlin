@@ -25,7 +25,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NOTE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
@@ -542,24 +541,6 @@ sealed class BlockView : ViewType, Parcelable {
             override var cursor: Int? = null
         ) : Title() {
             override fun getViewType() = HOLDER_ARCHIVE_TITLE
-        }
-    }
-
-
-
-    /**
-     * UI-model for a note-layout title block.
-     * In fact it's just an empty space, because NOTE LAYOUT doesn't have title
-     * @property id block's id
-     */
-    @Parcelize
-    data class TitleNote(
-        override val id: String
-    ) : BlockView() {
-        override fun getViewType() = HOLDER_NOTE_TITLE
-
-        companion object {
-            const val INTERNAL_ID = "HOLDER_NOTE_TITLE"
         }
     }
 

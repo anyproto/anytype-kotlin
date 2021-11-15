@@ -87,6 +87,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
+import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment
@@ -207,6 +208,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private val footerMentionDecorator by lazy { MentionFooterItemDecorator(screen) }
+    private val noteHeaderDecorator by lazy {
+        NoteHeaderItemDecorator(offset = dimen(R.dimen.default_note_title_offset))
+    }
     private val markupColorToolbarFooter by lazy { MarkupColorToolbarFooter(screen) }
     private val slashWidgetFooter by lazy { SlashWidgetFooterItemDecorator(screen) }
     private val styleToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
@@ -735,6 +739,20 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                             .setActionTextColor(requireContext().color(R.color.orange))
                             .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
                             .show()
+                    }
+                }
+            }
+            jobs += subscribe(vm.footers) { footer ->
+                when (footer) {
+                    EditorFooter.None -> {
+                        if (recycler.containsItemDecoration(noteHeaderDecorator)) {
+                            recycler.removeItemDecoration(noteHeaderDecorator)
+                        }
+                    }
+                    EditorFooter.Note -> {
+                        if (!recycler.containsItemDecoration(noteHeaderDecorator)) {
+                            recycler.addItemDecoration(noteHeaderDecorator)
+                        }
                     }
                 }
             }

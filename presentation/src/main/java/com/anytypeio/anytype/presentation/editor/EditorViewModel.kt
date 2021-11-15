@@ -85,6 +85,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.ge
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetStyleItems
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
+import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -99,7 +100,6 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
-import com.anytypeio.anytype.presentation.objects.sortByType
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.views
@@ -171,6 +171,8 @@ class EditorViewModel(
     private val jobs = mutableListOf<Job>()
 
     var mode: EditorMode = EditorMode.Edit
+
+    val footers = MutableStateFlow<EditorFooter>(EditorFooter.None)
 
     private val controlPanelInteractor = Interactor(viewModelScope)
     val controlPanelViewState = MutableLiveData<ControlPanelState>()
@@ -459,12 +461,14 @@ class EditorViewModel(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
             ) { models, focus, details ->
+                val root = models.first { it.id == context }
+                footers.value = getFooterState(root, details)
                 models.asMap().render(
                     mode = mode,
                     indent = INITIAL_INDENT,
                     anchor = context,
                     focus = focus,
-                    root = models.first { it.id == context },
+                    root = root,
                     details = details,
                     relations = orchestrator.stores.relations.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
@@ -5400,5 +5404,14 @@ class EditorViewModel(
         isUndoRedoToolbarIsVisible.value = false
     }
 
+    //endregion
+
+    //region FOOTER
+    private fun getFooterState(root: Block, details: Block.Details): EditorFooter {
+        return when (details.details[root.id]?.layout?.toInt()) {
+            ObjectType.Layout.NOTE.code -> EditorFooter.Note
+            else -> EditorFooter.None
+        }
+    }
     //endregion
 }

@@ -158,6 +158,7 @@ data class Block(
             enum class Type { ROW, COLUMN, DIV, HEADER }
         }
 
+        @Deprecated("Legacy class")
         data class Page(val style: Style) : Content() {
             enum class Style { EMPTY, TASK, SET }
         }

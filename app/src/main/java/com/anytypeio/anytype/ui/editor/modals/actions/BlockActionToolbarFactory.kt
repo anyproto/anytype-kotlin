@@ -46,7 +46,6 @@ object BlockActionToolbarFactory {
         is BlockView.Description -> TODO()
         is BlockView.FeaturedRelation -> TODO()
         is BlockView.Unsupported -> TODO()
-        is BlockView.TitleNote -> TODO()
         is BlockView.Latex -> TODO()
         is BlockView.LinkToObject.Archived -> TODO()
         is BlockView.LinkToObject.Deleted -> TODO()

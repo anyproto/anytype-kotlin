@@ -82,6 +82,7 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
                     }
 
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        if (btnAddContainer == null) return
                         if (slideOffset < 0)
                             btnAddContainer.gone()
                         else

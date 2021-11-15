@@ -1,5 +1,14 @@
 # Change log for Android @Anytype app.
 
+## Version 0.4.1 (WIP)
+
+### Fixes & tech 🚒
+
+* Sets | Should not crash when state is not initialized when displaying a view's filters (#1929) 
+* Editor | Should not crash when failed to parse an object's layout due to incorrect format (#1929)
+* Editor | Should not crash when the target block is not found for the style panel (#1929)
+* Editor | Should not crash when long-pressing empty space in the header when object layout has no title (#1930)
+
 ## Version 0.4.0
 
 ### New features & enhancements 🚀

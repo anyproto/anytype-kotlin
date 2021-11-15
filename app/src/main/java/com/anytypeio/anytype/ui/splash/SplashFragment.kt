@@ -58,9 +58,14 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
                 error.visible()
             }
             SplashViewModel.Command.NavigateToDashboard -> {
-                findNavController().navigate(
-                    R.id.action_splashScreen_to_desktopScreen
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_splashScreen_to_desktopScreen
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while opening dashboard from splash screen")
+                    toast("Error while navigating to desktop: ${e.message}")
+                }
             }
             is SplashViewModel.Command.NavigateToObject -> {
                 findNavController().navigate(

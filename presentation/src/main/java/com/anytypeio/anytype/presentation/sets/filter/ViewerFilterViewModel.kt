@@ -16,15 +16,12 @@ import com.anytypeio.anytype.presentation.sets.model.FilterScreenData
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ViewerFilterViewModel(
-    private val setState: StateFlow<ObjectSet>,
+    private val objectSetState: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -38,7 +35,7 @@ class ViewerFilterViewModel(
 
     init {
         viewModelScope.launch {
-            setState.collect { objectSet ->
+            objectSetState.filter { it.isInitialized }.collect { objectSet ->
                 val block = objectSet.dataview
                 val dv = block.content as DV
                 val filterExpression = objectSet.filterExpression(session.currentViewerId)
@@ -164,8 +161,8 @@ class ViewerFilterViewModel(
     }
 
     private fun onRemoveFilterClicked(ctx: Id, filterIndex: Int) {
-        val viewer = setState.value.viewerById(session.currentViewerId)
-        val block = setState.value.blocks.first { it.content is DV }
+        val viewer = objectSetState.value.viewerById(session.currentViewerId)
+        val block = objectSetState.value.blocks.first { it.content is DV }
         val filters = viewer.filters.mapIndexedNotNull { index, filter ->
             if (index != filterIndex) {
                 filter
@@ -230,7 +227,7 @@ class ViewerFilterViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return ViewerFilterViewModel(
-                setState = state,
+                objectSetState = state,
                 session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,

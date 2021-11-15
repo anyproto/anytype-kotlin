@@ -2128,32 +2128,39 @@ class EditorViewModel(
 
     private fun proceedWithStyleToolbarEvent() {
         val target = orchestrator.stores.focus.current().id
-        mode = EditorMode.Styling.Single(
-            target = target,
-            cursor = orchestrator.stores.textSelection.current().selection?.first
-        )
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(Editor.Focus.empty())
-            orchestrator.stores.views.update(views.singleStylingMode(target))
-            renderCommand.send(Unit)
-        }
-
-        val textSelection = orchestrator.stores.textSelection.current()
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                target = blocks.first { it.id == target },
-                focused = textSelection.isNotEmpty,
-                selection = textSelection.selection
+        val targetBlock = blocks.find { it.id == target }
+        if (targetBlock != null) {
+            mode = EditorMode.Styling.Single(
+                target = target,
+                cursor = orchestrator.stores.textSelection.current().selection?.first
             )
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_STYLE_MENU
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_STYLE
-        )
+            viewModelScope.launch {
+                orchestrator.stores.focus.update(Editor.Focus.empty())
+                orchestrator.stores.views.update(views.singleStylingMode(target))
+                renderCommand.send(Unit)
+            }
+
+            val textSelection = orchestrator.stores.textSelection.current()
+
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
+                    target = targetBlock,
+                    focused = textSelection.isNotEmpty,
+                    selection = textSelection.selection
+                )
+            )
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = EventsDictionary.BTN_STYLE_MENU
+            )
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = POPUP_STYLE
+            )
+        } else {
+            _toasts.trySend("Target block for style menu not found.")
+            Timber.e("Target block for style menu not found. Target id: $target")
+        }
     }
 
     private fun proceedWithMultiStyleToolbarEvent() {

@@ -45,17 +45,22 @@ data class Block(
                 is List<*> -> value.typeOf()
                 else -> emptyList()
             }
-        val layout: Double? by default
+
         val id: Id? by default
         val isDraft: Boolean? by default
         val snippet: String? by default
+
+        val layout: Double?
+            get() = when (val value = map[Relations.LAYOUT]) {
+                is Double -> value
+                is Int -> value.toDouble()
+                else -> null
+            }
 
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
-            const val DESCRIPTION_KEY = "description"
-            const val IS_ARCHIVED_KEY = "isArchived"
         }
     }
 
@@ -76,7 +81,7 @@ data class Block(
         /**
          * Smart block.
          */
-        data class Smart(val type: SmartBlockType = SmartBlockType.PAGE): Content()
+        data class Smart(val type: SmartBlockType = SmartBlockType.PAGE) : Content()
 
         /**
          * Textual block.
@@ -291,12 +296,13 @@ data class Block(
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,
                     LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE
                 }
+
                 enum class ConditionType { TEXT, NUMBER, SELECT, CHECKBOX }
             }
         }
 
         data class Latex(val latex: String, val background: String?) : Content()
-        object Unsupported: Content()
+        object Unsupported : Content()
     }
 
     /**

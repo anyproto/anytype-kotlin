@@ -935,10 +935,15 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     fr.show(childFragmentManager, null)
                 }
                 is Command.OpenCoverGallery -> {
-                    findNavController().navigate(
-                        R.id.action_pageScreen_to_objectCoverScreen,
-                        bundleOf(CoverSliderObjectFragment.CTX_KEY to command.ctx)
-                    )
+                    try {
+                        findNavController().navigate(
+                            R.id.action_pageScreen_to_objectCoverScreen,
+                            bundleOf(CoverSliderObjectFragment.CTX_KEY to command.ctx)
+                        )
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while opening object cover screen")
+                        toast("Error while opening object cover screen: ${e.message}")
+                    }
                 }
                 is Command.OpenObjectLayout -> {
                     val fr = ObjectLayoutFragment.new(command.ctx).apply {
@@ -2075,7 +2080,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 proceedWithDropping(target, ratio)
             },
             onDragExited = {
-                dndTargetLine.invisible()
+                if (dndTargetLine != null) {
+                    dndTargetLine.invisible()
+                }
             },
             onDragEnded = {
                 stopScrollDownJob()

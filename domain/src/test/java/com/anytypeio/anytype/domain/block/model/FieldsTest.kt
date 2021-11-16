@@ -1,5 +1,7 @@
-package com.anytypeio.anytype.core_models
+package com.anytypeio.anytype.domain.block.model
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Relations
 import org.junit.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -16,7 +18,7 @@ class FieldsTest {
     fun `should return value for isArchived property`() {
         Block.Fields(
             map = mapOf(
-                Block.Fields.IS_ARCHIVED_KEY to false
+                Relations.IS_ARCHIVED to false
             )
         ).apply {
             assertTrue { isArchived == false }
@@ -24,7 +26,7 @@ class FieldsTest {
 
         Block.Fields(
             map = mapOf(
-                Block.Fields.IS_ARCHIVED_KEY to true
+                Relations.IS_ARCHIVED to true
             )
         ).apply {
             assertTrue { isArchived == true }

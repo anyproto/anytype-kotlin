@@ -76,20 +76,17 @@ sealed class RelationViewHolder(
         fun bind(item: DocumentRelationView) : Unit = with(itemView) {
             findViewById<TextView>(R.id.tvRelationTitle).text = item.name
             findViewById<TextView>(R.id.tvRelationValue).apply {
-                if (item.value != null) {
-                    text = item.value
-                } else {
-                    if (item is DocumentRelationView.Default) {
-                        when (item.format) {
-                            Relation.Format.SHORT_TEXT -> setHint(R.string.enter_text)
-                            Relation.Format.LONG_TEXT -> setHint(R.string.enter_text)
-                            Relation.Format.NUMBER -> setHint(R.string.enter_number)
-                            Relation.Format.DATE -> setHint(R.string.enter_date)
-                            Relation.Format.URL -> setHint(R.string.enter_url)
-                            Relation.Format.EMAIL -> setHint(R.string.enter_email)
-                            Relation.Format.PHONE -> setHint(R.string.enter_phone)
-                            else -> setHint(R.string.enter_value)
-                        }
+                text = item.value
+                if (item is DocumentRelationView.Default) {
+                    when (item.format) {
+                        Relation.Format.SHORT_TEXT -> setHint(R.string.enter_text)
+                        Relation.Format.LONG_TEXT -> setHint(R.string.enter_text)
+                        Relation.Format.NUMBER -> setHint(R.string.enter_number)
+                        Relation.Format.DATE -> setHint(R.string.enter_date)
+                        Relation.Format.URL -> setHint(R.string.enter_url)
+                        Relation.Format.EMAIL -> setHint(R.string.enter_email)
+                        Relation.Format.PHONE -> setHint(R.string.enter_phone)
+                        else -> setHint(R.string.enter_value)
                     }
                 }
             }

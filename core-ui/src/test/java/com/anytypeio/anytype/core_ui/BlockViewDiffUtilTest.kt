@@ -1,11 +1,18 @@
 package com.anytypeio.anytype.core_ui
 
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.MARKUP_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.presentation.sets.model.FileView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
+import com.anytypeio.anytype.presentation.sets.model.StatusView
+import com.anytypeio.anytype.presentation.sets.model.TagView
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -991,6 +998,348 @@ class BlockViewDiffUtilTest {
 
         val expected = Payload(
             changes = listOf(BlockViewDiffUtil.LATEX_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in the name of the relation`() {
+
+        val index = 0
+
+        val view = DocumentRelationView.Default(
+            relationId = MockDataFactory.randomUuid(),
+            value = null,
+            format = RelationFormat.values().random(),
+            name = MockDataFactory.randomString()
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = view
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = view.copy(
+                name = MockDataFactory.randomString()
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_NAME_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in default relation value`() {
+
+        val index = 0
+
+        val view = DocumentRelationView.Default(
+            relationId = MockDataFactory.randomUuid(),
+            value = null,
+            format = RelationFormat.values().random(),
+            name = MockDataFactory.randomString()
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = view
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = view.copy(
+                value = MockDataFactory.randomString()
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_VALUE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in checkbox relation value`() {
+
+        val index = 0
+
+        val view = DocumentRelationView.Checkbox(
+            relationId = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            isChecked = MockDataFactory.randomBoolean()
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = view
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = view.copy(
+                isChecked = !view.isChecked
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_VALUE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in status relation value`() {
+
+        val index = 0
+
+        val oldStatus = StatusView(
+            id = MockDataFactory.randomUuid(),
+            status = MockDataFactory.randomUuid(),
+            color = ""
+        )
+
+        val newStatus = StatusView(
+            id = MockDataFactory.randomUuid(),
+            status = MockDataFactory.randomUuid(),
+            color = ""
+        )
+
+        val oldView = DocumentRelationView.Status(
+            relationId = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            status = listOf(oldStatus)
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = oldView
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = oldView.copy(
+                status = listOf(newStatus)
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_VALUE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in tag relation value`() {
+
+        val index = 0
+
+        val oldTag = TagView(
+            id = MockDataFactory.randomUuid(),
+            tag = MockDataFactory.randomString(),
+            color = ""
+        )
+
+        val newTag = TagView(
+            id = MockDataFactory.randomUuid(),
+            tag = MockDataFactory.randomString(),
+            color = ""
+        )
+
+        val oldView = DocumentRelationView.Tags(
+            relationId = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            tags = listOf(oldTag)
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = oldView
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = oldView.copy(
+                tags = listOf(newTag)
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_VALUE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in object relation value`() {
+
+        val index = 0
+
+        val oldObject = ObjectView.Default(
+            id = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            types = emptyList(),
+            icon = ObjectIcon.None
+        )
+
+        val newObject = oldObject.copy(
+            name = MockDataFactory.randomString()
+        )
+
+        val oldView = DocumentRelationView.Object(
+            relationId = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            objects = listOf(oldObject)
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = oldView
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = oldView.copy(
+                objects = listOf(newObject)
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_VALUE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
+    fun `should detect changes in file-relation value`() {
+
+        val index = 0
+
+        val oldFile = FileView(
+            id = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            mime = MockDataFactory.randomString(),
+            ext = MockDataFactory.randomString()
+        )
+
+        val newFile = oldFile.copy(
+            name = MockDataFactory.randomString()
+        )
+
+        val oldView = DocumentRelationView.File(
+            relationId = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            files = listOf(oldFile)
+        )
+
+        val oldBlock = BlockView.Relation.Related(
+            id = MockDataFactory.randomUuid(),
+            isSelected = MockDataFactory.randomBoolean(),
+            indent = MockDataFactory.randomInt(),
+            view = oldView
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            view = oldView.copy(
+                files = listOf(newFile)
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.RELATION_VALUE_CHANGED)
         )
 
         assertEquals(

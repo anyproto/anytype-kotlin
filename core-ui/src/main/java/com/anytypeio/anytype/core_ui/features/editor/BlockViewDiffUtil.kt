@@ -5,6 +5,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Indentable
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
+import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import timber.log.Timber
 
 class BlockViewDiffUtil(
@@ -161,6 +162,53 @@ class BlockViewDiffUtil(
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
+        if (newBlock is BlockView.Relation.Related && oldBlock is BlockView.Relation.Related) {
+            if (newBlock.background != oldBlock.background) {
+                changes.add(BACKGROUND_COLOR_CHANGED)
+            }
+
+            val newRelationView = newBlock.view
+            val oldRelationView = oldBlock.view
+
+            if (newBlock.view.name != oldBlock.view.name) {
+                changes.add(RELATION_NAME_CHANGED)
+            }
+
+            when {
+                newRelationView is DocumentRelationView.Default && oldRelationView is DocumentRelationView.Default -> {
+                    if (newBlock.view.value != oldBlock.view.value) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
+                newRelationView is DocumentRelationView.Checkbox && oldRelationView is DocumentRelationView.Checkbox -> {
+                    if (newRelationView.isChecked != oldRelationView.isChecked) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
+                newRelationView is DocumentRelationView.Status && oldRelationView is DocumentRelationView.Status -> {
+                    if (newRelationView.status != oldRelationView.status) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
+                newRelationView is DocumentRelationView.Tags && oldRelationView is DocumentRelationView.Tags -> {
+                    if (newRelationView.tags != oldRelationView.tags) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
+                newRelationView is DocumentRelationView.Object && oldRelationView is DocumentRelationView.Object -> {
+                    if (newRelationView.objects != oldRelationView.objects) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
+
+                newRelationView is DocumentRelationView.File && oldRelationView is DocumentRelationView.File -> {
+                    if (newRelationView.files != oldRelationView.files) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
+            }
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -187,9 +235,10 @@ class BlockViewDiffUtil(
         val isSelectionChanged: Boolean get() = changes.contains(SELECTION_CHANGED)
         val isTitleIconChanged: Boolean get() = changes.contains(TITLE_ICON_CHANGED)
         val isSearchHighlightChanged: Boolean get() = changes.contains(SEARCH_HIGHLIGHT_CHANGED)
-        val isGhostEditorSelectionChanged: Boolean get() = changes.contains(
-            GHOST_EDITOR_SELECTION_CHANGED
-        )
+        val isGhostEditorSelectionChanged: Boolean
+            get() = changes.contains(
+                GHOST_EDITOR_SELECTION_CHANGED
+            )
         val isAlignmentChanged: Boolean get() = changes.contains(ALIGNMENT_CHANGED)
         val isTitleCheckboxChanged: Boolean get() = changes.contains(TITLE_CHECKBOX_CHANGED)
         val isObjectTitleChanged: Boolean get() = changes.contains(OBJECT_TITLE_CHANGED)
@@ -229,5 +278,7 @@ class BlockViewDiffUtil(
         const val OBJECT_TITLE_CHANGED = 19
         const val OBJECT_ICON_CHANGED = 20
         const val LATEX_CHANGED = 21
+        const val RELATION_NAME_CHANGED = 22
+        const val RELATION_VALUE_CHANGED = 23
     }
 }

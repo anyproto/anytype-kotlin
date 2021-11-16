@@ -4,6 +4,7 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
@@ -187,8 +188,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
-                Block.Fields.NAME_KEY to objectTypeName,
-                Block.Fields.DESCRIPTION_KEY to objectTypeDescription
+                Relations.NAME to objectTypeName,
+                Relations.DESCRIPTION to objectTypeDescription
             )
         )
         val customDetails = Block.Details(
@@ -291,8 +292,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
-                Block.Fields.NAME_KEY to objectTypeName,
-                Block.Fields.DESCRIPTION_KEY to objectTypeDescription
+                Relations.NAME to objectTypeName,
+                Relations.DESCRIPTION to objectTypeDescription
             )
         )
         val customDetails = Block.Details(
@@ -402,8 +403,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
-                Block.Fields.NAME_KEY to objectTypeName,
-                Block.Fields.DESCRIPTION_KEY to objectTypeDescription
+                Relations.NAME to objectTypeName,
+                Relations.DESCRIPTION to objectTypeDescription
             )
         )
         val customDetails = Block.Details(

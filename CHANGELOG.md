@@ -9,6 +9,7 @@
 * Editor | Should not crash when the target block is not found for the style panel (#1929)
 * Editor | Should not crash when long-pressing empty space in the header when object layout has no title (#1930)
 * Editor | Drag-and-dropping below or above a link to object always results in dropping inside this link (#1931)
+* Editor | Undo/redo does not work correctly for relation values (#1932)
 
 ## Version 0.4.0
 

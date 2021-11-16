@@ -108,8 +108,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
-                Block.Fields.NAME_KEY to objectTypeName,
-                Block.Fields.DESCRIPTION_KEY to objectTypeDescription
+                Relations.NAME to objectTypeName,
+                Relations.DESCRIPTION to objectTypeDescription
             )
         )
         val customDetails = Block.Details(
@@ -217,8 +217,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
-                Block.Fields.NAME_KEY to objectTypeName,
-                Block.Fields.DESCRIPTION_KEY to objectTypeDescription
+                Relations.NAME to objectTypeName,
+                Relations.DESCRIPTION to objectTypeDescription
             )
         )
         val customDetails = Block.Details(

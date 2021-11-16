@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterConditionType
 import com.anytypeio.anytype.core_models.Relation
@@ -141,6 +140,11 @@ private fun DVFilterCondition.toView(
         throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
     }
     DVFilterCondition.NONE -> {
-        throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (conditionType) {
+            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.None()
+            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.None()
+            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.None()
+            DVFilterConditionType.CHECKBOX -> Viewer.Filter.Condition.Checkbox.None()
+        }
     }
 }

@@ -4,6 +4,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_date.view.*
 
@@ -24,6 +27,12 @@ class FilterDateViewHolder(view: View) : FilterViewHolder(view) {
             condition = item.condition.title,
             format = item.format
         )
-        tvValue.text = item.filterValue.value?.formatTimestamp(isMillis = true)
+        if (item.condition.hasValue()) {
+            tvValue.visible()
+            tvValue.text = item.filterValue.value?.formatTimestamp(isMillis = true)
+        } else {
+            tvValue.text = null
+            tvValue.invisible()
+        }
     }
 }

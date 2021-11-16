@@ -7,8 +7,8 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
+import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.relations.filterExpression
-import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand.Modal
@@ -48,9 +48,8 @@ class ViewerFilterViewModel(
                         ScreenState.EMPTY -> ScreenState.LIST
                     }
                 }
-                _views.value = getFilterViews(
+                _views.value = filterExpression.toView(
                     relations = dv.relations,
-                    filters = filterExpression,
                     details = objectSet.details,
                     screenState = screenState.value,
                     urlBuilder = urlBuilder
@@ -185,30 +184,6 @@ class ViewerFilterViewModel(
                 failure = { Timber.e("Error while reset all filters") }
             )
         }
-    }
-
-    private fun getFilterViews(
-        relations: List<Relation>,
-        filters: List<DVFilter>,
-        details: Map<Id, Block.Fields>,
-        screenState: ScreenState,
-        urlBuilder: UrlBuilder
-    ): List<FilterView> {
-        val list = mutableListOf<FilterView>()
-        filters.forEach { filter ->
-            //todo Fast fix. In feature we should proper handle DVFilterCondition.NONE
-            if (filter.condition != DVFilterCondition.NONE) {
-                list.add(
-                    filter.toView(
-                        relation = relations.first { it.key == filter.relationKey },
-                        details = details,
-                        isInEditMode = screenState == ScreenState.EDIT,
-                        urlBuilder = urlBuilder
-                    )
-                )
-            }
-        }
-        return list
     }
 
     private fun emitCommand(command: ViewerFilterCommand) {

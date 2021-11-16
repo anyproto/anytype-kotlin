@@ -6,6 +6,8 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.extension.hasValue
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_object.view.*
@@ -25,20 +27,27 @@ class FilterObjectViewHolder(view: View) : FilterViewHolder(view) {
             condition = item.condition.title,
             format = item.format
         )
+
         for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
-        item.filterValue.value.forEachIndexed { index, objectView ->
-            if (objectView is ObjectView.Default) {
-                when (index) {
-                    in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
-                        getViewByIndex(index)?.let { view ->
-                            view.visible()
-                            view.setup(
-                                name = objectView.name,
-                                icon = objectView.icon
-                            )
+        if (item.condition.hasValue()) {
+            item.filterValue.value.forEachIndexed { index, objectView ->
+                if (objectView is ObjectView.Default) {
+                    when (index) {
+                        in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
+                            getViewByIndex(index)?.let { view ->
+                                view.visible()
+                                view.setup(
+                                    name = objectView.name,
+                                    icon = objectView.icon
+                                )
+                            }
                         }
                     }
                 }
+            }
+        } else {
+            for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.apply {
+                this.setup(name = null, icon = ObjectIcon.None)
             }
         }
     }

@@ -38,7 +38,7 @@ class ObjectIconTextWidget @JvmOverloads constructor(
         attrs.recycle()
     }
 
-    fun setup(name: String, icon: ObjectIcon) {
+    fun setup(name: String?, icon: ObjectIcon) {
         objectName.text = name
         objectIcon.setIcon(icon)
     }

@@ -120,9 +120,14 @@ sealed class Viewer {
                         get() = name
                 }
 
+                data class None(val name: String = "All") : Text() {
+                    override val title: String
+                        get() = name
+                }
+
                 companion object {
                     fun textConditions() =
-                        listOf(Equal(), NotEqual(), Like(), NotLike(), Empty(), NotEmpty())
+                        listOf(Equal(), NotEqual(), Like(), NotLike(), Empty(), NotEmpty(), None())
                 }
             }
 
@@ -158,6 +163,11 @@ sealed class Viewer {
                         get() = name
                 }
 
+                data class None(val name: String = "All") : Number() {
+                    override val title: String
+                        get() = name
+                }
+
                 companion object {
                     fun numberConditions() =
                         listOf(
@@ -166,7 +176,8 @@ sealed class Viewer {
                             Greater(),
                             Less(),
                             GreaterOrEqual(),
-                            LessOrEqual()
+                            LessOrEqual(),
+                            None()
                         )
                 }
 
@@ -203,9 +214,14 @@ sealed class Viewer {
                         get() = name
                 }
 
+                data class None(val name: String = "All") : Selected() {
+                    override val title: String
+                        get() = name
+                }
+
                 companion object {
                     fun selectConditions() =
-                        listOf(In(), AllIn(), Equal(), NotIn(), Empty(), NotEmpty())
+                        listOf(In(), AllIn(), Equal(), NotIn(), Empty(), NotEmpty(), None())
                 }
             }
 
@@ -220,8 +236,13 @@ sealed class Viewer {
                         get() = name
                 }
 
+                data class None(val name: String = "All") : Checkbox() {
+                    override val title: String
+                        get() = name
+                }
+
                 companion object {
-                    fun checkboxConditions() = listOf(Equal(), NotEqual())
+                    fun checkboxConditions() = listOf(Equal(), NotEqual(), None())
                 }
             }
         }

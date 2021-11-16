@@ -5,7 +5,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import kotlinx.android.synthetic.main.item_dv_viewer_filter_status.view.*
 import timber.log.Timber
@@ -27,10 +30,16 @@ class FilterStatusViewHolder(view: View) : FilterViewHolder(view) {
             condition = item.condition.title,
             format = item.format
         )
-        val status = item.filterValue.value
-        if (status != null) {
-            itemView.tvValue.text = status.status
-            setTextColor(itemView.tvValue, status.color)
+        if (item.condition.hasValue()) {
+            itemView.tvValue.visible()
+            val status = item.filterValue.value
+            if (status != null) {
+                itemView.tvValue.text = status.status
+                setTextColor(itemView.tvValue, status.color)
+            }
+        } else {
+            itemView.tvValue.text = null
+            itemView.tvValue.invisible()
         }
     }
 

@@ -7,8 +7,10 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.google.android.material.chip.Chip
@@ -39,18 +41,24 @@ class FilterTagViewHolder(view: View) : FilterViewHolder(view) {
             format = item.format
         )
         chips.forEach { it.gone() }
-        item.filterValue.value.forEachIndexed { index, s ->
-            when (index) {
-                0 -> bindChip(chip1, s)
-                1 -> bindChip(chip2, s)
-                2 -> chipDots.visible()
+        if (item.condition.hasValue()) {
+            item.filterValue.value.forEachIndexed { index, s ->
+                when (index) {
+                    0 -> bindChip(chip1, s)
+                    1 -> bindChip(chip2, s)
+                    2 -> chipDots.visible()
+                }
             }
+        } else {
+            bindChip(chip1, null)
+            bindChip(chip2, null)
+            chipDots.invisible()
         }
     }
 
-    private fun bindChip(chip: Chip, value: TagView) {
+    private fun bindChip(chip: Chip, value: TagView?) {
         with(chip) {
-            val color = ThemeColor.values().find { v -> v.title == value.color }
+            val color = ThemeColor.values().find { v -> v.title == value?.color }
             if (color != null) {
                 chipBackgroundColor = ColorStateList.valueOf(color.background)
                 setTextColor(color.text)
@@ -58,8 +66,12 @@ class FilterTagViewHolder(view: View) : FilterViewHolder(view) {
                 setChipBackgroundColorResource(R.color.default_filter_tag_background_color)
                 setTextColor(context.color(R.color.default_filter_tag_text_color))
             }
-            text = value.tag
-            visible()
+            text = value?.tag
+            if (value != null) {
+                visible()
+            } else {
+                invisible()
+            }
         }
     }
 }

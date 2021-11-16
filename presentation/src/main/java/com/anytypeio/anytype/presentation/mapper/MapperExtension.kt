@@ -533,6 +533,7 @@ fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
     DVFilterCondition.NOT_LIKE -> Viewer.Filter.Condition.Text.NotLike()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Text.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Text.NotEmpty()
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Text.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Text relations")
 }
 
@@ -543,6 +544,7 @@ fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (thi
     DVFilterCondition.LESS -> Viewer.Filter.Condition.Number.Less()
     DVFilterCondition.GREATER_OR_EQUAL -> Viewer.Filter.Condition.Number.GreaterOrEqual()
     DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Number.LessOrEqual()
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Number.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
 }
 
@@ -553,6 +555,7 @@ fun DVFilterCondition.toSelectedView(): Viewer.Filter.Condition.Selected = when 
     DVFilterCondition.NOT_IN -> Viewer.Filter.Condition.Selected.NotIn()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Selected.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Selected.NotEmpty()
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Selected.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Selected relations")
 }
 
@@ -616,6 +619,10 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
     is Viewer.Filter.Condition.Text.NotEmpty -> DVFilterCondition.NOT_EMPTY
     is Viewer.Filter.Condition.Text.NotEqual -> DVFilterCondition.NOT_EQUAL
     is Viewer.Filter.Condition.Text.NotLike -> DVFilterCondition.NOT_LIKE
+    is Viewer.Filter.Condition.Checkbox.None -> DVFilterCondition.NONE
+    is Viewer.Filter.Condition.Number.None -> DVFilterCondition.NONE
+    is Viewer.Filter.Condition.Selected.None -> DVFilterCondition.NONE
+    is Viewer.Filter.Condition.Text.None -> DVFilterCondition.NONE
 }
 
 fun List<Map<String, Any?>>.filterRecordsBy(filterBy: String): List<Map<String, Any?>> =

@@ -10,10 +10,7 @@ import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.extension.hasValue
-import com.anytypeio.anytype.presentation.extension.index
-import com.anytypeio.anytype.presentation.extension.toConditionView
-import com.anytypeio.anytype.presentation.extension.type
+import com.anytypeio.anytype.presentation.extension.*
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.objects.toCreateFilterObjectView
 import com.anytypeio.anytype.presentation.relations.*

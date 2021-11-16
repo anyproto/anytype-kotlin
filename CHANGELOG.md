@@ -13,6 +13,7 @@
 * Editor | Should not crash when long-pressing empty space in the header when object layout has no title (#1930)
 * Editor | Drag-and-dropping below or above a link to object always results in dropping inside this link (#1931)
 * Editor | Undo/redo does not work correctly for relation values (#1932)
+* Editor | Do not show a redundant toast with error message when opening user profile (#1935)
 * Sets | Should not crash when state is not initialized when displaying a view's filters (#1929)
 * Sets | Fix | Do not display the change-object-type menu for sets (#1934)
 

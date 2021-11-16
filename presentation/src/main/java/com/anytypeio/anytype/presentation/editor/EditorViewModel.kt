@@ -5232,8 +5232,6 @@ class EditorViewModel(
     private fun proceedWithShowingObjectTypesWidget(objectType: String?, blocks: List<Block>) {
         val restrictions = orchestrator.stores.objectRestrictions.current()
         if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
-            _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
-            Timber.d("No interaction allowed with this object type")
             return
         }
         when (objectType) {

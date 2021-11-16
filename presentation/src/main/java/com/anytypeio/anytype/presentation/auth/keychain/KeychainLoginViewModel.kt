@@ -32,7 +32,7 @@ class KeychainLoginViewModel(
     val state = MutableLiveData<ViewState<Boolean>>()
 
     fun onLoginClicked(chain: String) {
-        proceedWithRecoveringWallet(chain)
+        proceedWithRecoveringWallet(chain.trim())
     }
 
     fun onActionDone(chain: String) {

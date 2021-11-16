@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle">
+    android:background="@color/auth_background_color">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/container"
@@ -20,35 +20,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/title"
-                style="@style/AuthHeaderStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/auth_default_margin_start"
+            <ImageView
+                android:id="@+id/profileIcon"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="18dp"
-                android:text="@string/create_a_new_profile"
-                app:layout_constraintBottom_toTopOf="@+id/profileIcon"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/profileIcon"
-                android:layout_width="@dimen/auth_default_icon_circle_diameter"
-                android:layout_height="@dimen/auth_default_icon_circle_diameter"
-                android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginBottom="24dp"
-                android:gravity="center"
-                app:layout_constraintBottom_toTopOf="@+id/backButton"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageView
                 android:id="@+id/profileIconPlaceholder"
-                android:layout_width="@dimen/auth_default_icon_circle_diameter"
-                android:layout_height="@dimen/auth_default_icon_circle_diameter"
-                android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginBottom="24dp"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/circle_empty_profile"
                 android:gravity="center"
                 android:scaleType="center"
@@ -56,35 +42,60 @@
                 android:textColor="@color/white"
                 android:textSize="36sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/backButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvNewProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textSize="13sp"
+                android:layout_marginTop="11dp"
+                android:text="New profile"
+                android:textColor="#929082"
+                android:fontFamily="@font/inter_regular"
+                app:layout_constraintTop_toBottomOf="@id/profileIcon"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/nameInputField"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="6dp"
                 android:background="@null"
+                android:fontFamily="@font/inter_bold"
                 android:hint="@string/type_your_name"
-                android:textColorHint="#ACA996"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/inter_regular"
-                app:layout_constraintBottom_toBottomOf="@+id/profileIcon"
+                android:textColorHint="#CBC9BD"
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNewProfile" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="11dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/auth_divider"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileIconPlaceholder"
-                app:layout_constraintTop_toTopOf="@+id/profileIcon" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/nameInputField" />
 
             <TextView
                 android:id="@+id/createProfileButton"
                 style="@style/DefaultSolidButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginTop="20dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="10dp"
                 android:text="@string/create_profile"
+                app:layout_constraintTop_toBottomOf="@id/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -95,26 +106,16 @@
                 style="@style/DefaultStrokeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginTop="20dp"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
                 android:layout_marginEnd="5dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="10dp"
                 android:text="@string/back"
+                app:layout_constraintTop_toBottomOf="@id/divider"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/createProfileButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent" />
-
-            <View
-                android:id="@+id/divider"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="11dp"
-                android:layout_marginEnd="20dp"
-                android:background="@color/auth_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileIcon"
-                app:layout_constraintTop_toBottomOf="@+id/nameInputField" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

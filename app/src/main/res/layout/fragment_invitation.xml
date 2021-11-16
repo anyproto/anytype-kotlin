@@ -3,18 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/gradient_rectangle">
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_white_logo" />
+    android:background="@color/auth_background_color">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -41,9 +30,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="18dp"
                 android:layout_marginEnd="20dp"
-                android:fontFamily="@font/graphik_semibold"
-                android:text="@string/enter_your_code"
+                android:fontFamily="@font/inter_bold"
                 android:letterSpacing="-0.0218"
+                android:text="@string/enter_your_code"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -71,15 +60,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="20dp"
-                android:ems="10"
                 android:background="@null"
-                android:inputType="text|textNoSuggestions"
                 android:fontFamily="@font/inter_regular"
                 android:hint="@string/enter_invitation_hint"
+                android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
                 android:textColorHint="#ACA996"
+                android:textSize="17sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/description" />
@@ -87,7 +76,7 @@
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
                 android:layout_marginTop="11dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
@@ -97,18 +86,34 @@
                 app:layout_constraintTop_toBottomOf="@+id/edtCode" />
 
             <TextView
+                android:id="@+id/btnBack"
+                style="@style/DefaultStrokeButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/back"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnConfirm"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+            <TextView
                 android:id="@+id/btnConfirm"
                 style="@style/DefaultSolidButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/auth_default_button_height"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/confirm"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnBack"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

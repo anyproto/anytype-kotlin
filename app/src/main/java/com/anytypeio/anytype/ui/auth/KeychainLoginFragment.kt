@@ -78,12 +78,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
             )
         }
         backButton.setOnClickListener { vm.onBackButtonPressed() }
-        tvqrcode.setOnClickListener {
-            showAlert()
-        }
-        ivqrcode.setOnClickListener {
-            showAlert()
-        }
+        tvqrcode.setOnClickListener { showAlert() }
     }
 
     private fun showAlert() {

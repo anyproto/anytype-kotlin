@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -38,8 +39,11 @@ open class SetupSelectedAccountFragment :
     }
 
     private val errorObserver = Observer<String> {
-        error.text = it
+        tvError.visible()
+        tvError.text = it
         rotationAnimation.cancel()
+        blinkingAnimation.cancel()
+        tvMigrationInProgress.gone()
     }
 
     private val vm : SetupSelectedAccountViewModel by viewModels { factory }
@@ -51,7 +55,7 @@ open class SetupSelectedAccountFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadingIcon.startAnimation(rotationAnimation)
+        icon.startAnimation(rotationAnimation)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

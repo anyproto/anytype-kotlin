@@ -52,7 +52,7 @@
     </style>
 
     <style name="AuthHeaderStyle">
-        <item name="android:fontFamily">@font/graphik_semibold</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">22sp</item>
     </style>
@@ -268,6 +268,14 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/anytype_text_grey</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DefaultTextViewErrorStyle">
+        <item name="lineHeight">18dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/anytype_text_red</item>
+        <item name="maxLines">4</item>
     </style>
 
 </resources>

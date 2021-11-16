@@ -59,7 +59,8 @@ class SetupSelectedAccountViewModel(
                 failure = {
                     migrationMessageJob.cancel()
                     isMigrationInProgress.value = false
-                    error.postValue(ERROR_MESSAGE)
+                    val msg = it.message ?: "Unknown error"
+                    error.postValue("$ERROR_MESSAGE: $msg")
                     Timber.e(it, "Error while selecting account with id: $id")
                 },
                 success = { accountId ->

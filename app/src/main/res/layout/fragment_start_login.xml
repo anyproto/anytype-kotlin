@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle">
+    android:background="@color/auth_background_color">
 
     <ImageView
         android:id="@+id/logo"
@@ -33,9 +33,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
-                android:fontFamily="@font/graphik_semibold"
+                android:layout_marginTop="23dp"
+                android:layout_marginBottom="11dp"
+                android:fontFamily="@font/inter_bold"
                 android:letterSpacing="-0.0218"
                 android:text="@string/organize_everything"
                 android:textColor="@color/black"
@@ -54,7 +54,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:lineSpacingMultiplier="1.21"
                 android:text="@string/start_login_text"
-                android:textColor="#2C2B27"
+                android:textColor="@color/black"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toTopOf="@+id/loginButton"
                 app:layout_constraintEnd_toEndOf="parent"

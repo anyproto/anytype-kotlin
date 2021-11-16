@@ -53,7 +53,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign up</string>
-    <string name="type_your_keychain">Type your keychain phrase</string>
+    <string name="type_your_keychain">or Type your keychain phrase</string>
     <string name="login_with_keychain">Login with keychain</string>
     <string name="or_scan_qr_code">Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>

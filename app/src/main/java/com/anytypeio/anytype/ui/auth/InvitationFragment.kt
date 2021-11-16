@@ -32,6 +32,9 @@ class InvitationFragment : NavigationFragment(R.layout.fragment_invitation) {
                 )
             }
         }
+        btnBack.setOnClickListener {
+            navObserver.onChanged(EventWrapper(AppNavigation.Command.Exit))
+        }
     }
 
     override fun injectDependencies() {}

@@ -2,6 +2,10 @@
 
 ## Version 0.4.1 (WIP)
 
+### Design & UX 🔳
+
+* Redesigned authentification flow (#1928)
+
 ### Fixes & tech 🚒
 
 * Sets | Should not crash when state is not initialized when displaying a view's filters (#1929) 

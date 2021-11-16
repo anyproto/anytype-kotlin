@@ -2,10 +2,9 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle">
+    android:background="@color/auth_background_color">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/container"
@@ -28,43 +27,51 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="22dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
                 android:text="@string/login_with_keychain"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/ivqrcode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/tvqrcode"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="24dp"
-                android:contentDescription="@string/content_description_qr_image"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="20dp"
+                android:drawableEnd="@drawable/ic_arrow_forward_legacy"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/or_scan_qr_code"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/inter_regular"
                 android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@id/title"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title"
-                app:srcCompat="@drawable/ic_qr_code" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
                 android:background="@color/auth_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivqrcode" />
+                app:layout_constraintTop_toBottomOf="@+id/tvqrcode" />
 
             <EditText
                 android:id="@+id/keychainInputField"
                 android:layout_width="0dp"
                 android:layout_height="96dp"
                 android:layout_marginStart="@dimen/auth_default_margin_start"
-                android:layout_marginTop="11dp"
+                android:layout_marginTop="17dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
                 android:gravity="top"
                 android:background="@null"
@@ -73,7 +80,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine|text"
                 android:textColorHint="@color/keychain_hint_color"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider"/>
@@ -85,7 +92,7 @@
                 android:layout_height="@dimen/auth_default_button_height"
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
-                android:text="@string/login"
+                android:text="@string/confirm"
                 app:layout_constraintBottom_toBottomOf="@+id/backButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -117,23 +124,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/loginButton"
                 app:layout_constraintEnd_toEndOf="@+id/loginButton"
                 app:layout_constraintTop_toTopOf="@+id/loginButton" />
-
-            <TextView
-                android:id="@+id/tvqrcode"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="20dp"
-                android:drawableEnd="@drawable/ic_arrow_forward_legacy"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:text="@string/or_scan_qr_code"
-                android:textSize="17sp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/ivqrcode"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ivqrcode"
-                app:layout_constraintTop_toTopOf="@+id/ivqrcode" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

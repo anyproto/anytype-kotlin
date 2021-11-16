@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/gradient_rectangle">
+    android:background="@color/auth_background_color">
 
     <TextView
         android:layout_marginStart="24dp"
@@ -17,6 +17,7 @@
         android:text="@string/fetching_your_account" />
 
     <androidx.cardview.widget.CardView
+        tools:visibility="visible"
         android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

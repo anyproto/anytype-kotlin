@@ -68,7 +68,11 @@ class SetupNewAccountViewModel(
                             navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))
                         }
                     } else {
-                        _state.postValue(SetupNewAccountViewState.Error("Error while creating account"))
+                        _state.postValue(
+                            SetupNewAccountViewState.Error(
+                                "Error while creating an account: ${error.message ?:"Unknown error"}"
+                            )
+                        )
                     }
                     Timber.e(error, "Error while creating account")
                 },

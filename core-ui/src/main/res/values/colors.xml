@@ -138,4 +138,6 @@
 
     <color name="text_secondary">#929082</color>
 
+    <color name="auth_background_color">#0066C3</color>
+
 </resources>

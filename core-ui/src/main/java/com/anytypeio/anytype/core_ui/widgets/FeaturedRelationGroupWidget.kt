@@ -10,7 +10,6 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.menu.DataViewEditViewPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -35,7 +34,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
 
     fun set(
         item: BlockView.FeaturedRelation,
-        click: (ListenerType.Relation) -> Unit
+        click: (ListenerType.Relation) -> Unit,
+        isObjectSet: Boolean = false
     ) {
         clear()
 
@@ -208,17 +208,19 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                     }
                     view.setOnClickListener {
-                        val popup = ObjectTypePopupMenu(
-                            context = context,
-                            view = it,
-                            onChangeTypeClicked = {
-                                click(ListenerType.Relation.ObjectType(type = relation.relationId))
-                            },
-                            onOpenSetClicked = {
-                                click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
-                            }
-                        )
-                        popup.show()
+                        if (!isObjectSet) {
+                            val popup = ObjectTypePopupMenu(
+                                context = context,
+                                view = it,
+                                onChangeTypeClicked = {
+                                    click(ListenerType.Relation.ObjectType(type = relation.relationId))
+                                },
+                                onOpenSetClicked = {
+                                    click(ListenerType.Relation.ObjectTypeOpenSet(type = relation.type))
+                                }
+                            )
+                            popup.show()
+                        }
                     }
                     addView(view)
                     ids.add(view.id)

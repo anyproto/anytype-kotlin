@@ -272,7 +272,8 @@ open class ObjectSetFragment :
                 featuredRelations.visible()
                 featuredRelations.set(
                     item = featured,
-                    click = {}
+                    click = {},
+                    isObjectSet = true
                 )
             } else {
                 featuredRelations.clear()

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_dashboard_card_height"
     app:cardCornerRadius="16dp"
-    android:background="@drawable/ripple_dashboard_card"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
     app:cardElevation="0dp">
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectCardIconWidget

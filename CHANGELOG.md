@@ -6,7 +6,8 @@
 
 * Redesigned authentication flow (#1928)
 * Dashboard | Fix cards width (#1939)
-* New splash screen (#1939)
+* Dashboard | Add ripple animation for cards (#1942)
+* New splash screen (#1940)
 
 ### Fixes & tech 🚒
 
@@ -22,7 +23,6 @@
 * Sets | Fix | Should not crash when relation state is not initialized (#1937)
 * Sets | Fix | Support filters without any condition (#1933)
 * Sets | Fix | Screen with filter conditions should dismissible by swipe (#1941)
-
 
 ## Version 0.4.0
 

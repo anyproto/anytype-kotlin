@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_dashboard_card_height"
-    android:background="@drawable/ripple_dashboard_card"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp">
 

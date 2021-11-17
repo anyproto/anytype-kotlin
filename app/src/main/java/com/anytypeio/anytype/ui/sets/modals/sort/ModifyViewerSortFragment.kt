@@ -75,6 +75,11 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment() {
         vm.onStart(relation)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     override fun injectDependencies() {
         componentManager().modifyViewerSortComponent.get(ctx).inject(this)
     }

@@ -110,7 +110,16 @@ open class CreateFilterFromSelectedValueFragment :
             subscribe(views) { createFilterAdapter.update(it) }
             subscribe(vm.commands) { observeCommands(it) }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
         vm.onStart(relationId = relation, filterIndex = FILTER_INDEX_EMPTY)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     private fun observeCommands(commands: FilterViewModel.Commands) {

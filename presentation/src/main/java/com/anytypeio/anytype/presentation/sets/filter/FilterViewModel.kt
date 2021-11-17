@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.EMPTY_TIMESTAMP
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -22,10 +23,8 @@ import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -45,6 +44,7 @@ open class FilterViewModel(
     private var filterIndex: Int? = null
     private var relationId: Id? = null
     private var relation: Relation? = null
+    private val jobs = mutableListOf<Job>()
 
     val conditionState = MutableStateFlow<FilterConditionView?>(null)
     val relationState = MutableStateFlow<SimpleRelationView?>(null)
@@ -74,20 +74,28 @@ open class FilterViewModel(
         initStates()
     }
 
-    private fun initStates() {
-        val block = objectSetState.value.dataview
-        val dv = block.content as DV
-        val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
-        val relation = dv.relations.first { it.key == relationId }
-        this.relation = relation
+    fun onStop() {
+        jobs.cancel()
+    }
 
-        setRelationState(viewer, relation)
-        setConditionState(viewer, relation, filterIndex)
-        setValueStates(
-            objectSet = objectSetState.value,
-            condition = conditionState.value?.condition,
-            index = filterIndex
-        )
+    private fun initStates() {
+        jobs += viewModelScope.launch {
+            objectSetState.filter { it.isInitialized }.collect { state ->
+                val dv = state.dataview.content as DV
+                val viewer =
+                    dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
+                val relation = dv.relations.first { it.key == relationId }
+                this@FilterViewModel.relation = relation
+
+                setRelationState(viewer, relation)
+                setConditionState(viewer, relation, filterIndex)
+                setValueStates(
+                    objectSet = objectSetState.value,
+                    condition = conditionState.value?.condition,
+                    index = filterIndex
+                )
+            }
+        }
     }
 
     private fun setRelationState(viewer: DVViewer, relation: Relation) {

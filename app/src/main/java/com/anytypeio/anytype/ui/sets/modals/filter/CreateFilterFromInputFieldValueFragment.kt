@@ -77,6 +77,11 @@ class CreateFilterFromInputFieldValueFragment :
         vm.onStart(relation, FILTER_INDEX_EMPTY)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     private fun setupJobs() {
         jobs += lifecycleScope.subscribe(vm.relationState.filterNotNull()) {
             enterTextValueInputField.setInputTypeBaseOnFormat(it.format)

@@ -101,6 +101,11 @@ open class ModifyFilterFromInputFieldValueFragment : BaseBottomSheetFragment(), 
         vm.onStart(relation, index)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     override fun update(condition: Viewer.Filter.Condition) {
         vm.onConditionUpdate(condition)
     }

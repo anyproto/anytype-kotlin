@@ -11,10 +11,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -31,7 +28,7 @@ class ViewerSortViewModel(
 
     init {
         viewModelScope.launch {
-            objectSetState.collect { state ->
+            objectSetState.filter { it.isInitialized }.collect { state ->
                 val dv = state.dataview.content as DV
                 val viewer = dv.viewers.find { it.id == session.currentViewerId }
                     ?: dv.viewers.first()

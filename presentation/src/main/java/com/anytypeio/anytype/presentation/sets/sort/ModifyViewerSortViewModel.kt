@@ -4,15 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -26,18 +26,26 @@ class ModifyViewerSortViewModel(
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
     val viewState = MutableStateFlow<ViewState?>(null)
+    private val jobs = mutableListOf<Job>()
 
     fun onStart(relationId: Id) {
-        val state = objectSetState.value
-        val dv = state.dataview.content as DV
-        val viewer = state.viewerById(session.currentViewerId)
-        val sort = viewer.sorts.first { it.relationKey == relationId }
-        val relation = dv.relations.first { it.key == relationId }
-        viewState.value = ViewState(
-            format = relation.format,
-            type = sort.type,
-            name = relation.name
-        )
+        jobs += viewModelScope.launch {
+            objectSetState.filter { it.isInitialized }.collect { state ->
+                val dv = state.dataview.content as DV
+                val viewer = state.viewerById(session.currentViewerId)
+                val sort = viewer.sorts.first { it.relationKey == relationId }
+                val relation = dv.relations.first { it.key == relationId }
+                viewState.value = ViewState(
+                    format = relation.format,
+                    type = sort.type,
+                    name = relation.name
+                )
+            }
+        }
+    }
+
+    fun onStop() {
+        jobs.cancel()
     }
 
     fun onSortDescSelected(ctx: Id, relation: Id) {

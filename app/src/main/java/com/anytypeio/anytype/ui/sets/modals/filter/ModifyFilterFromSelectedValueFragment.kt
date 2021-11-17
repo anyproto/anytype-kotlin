@@ -115,7 +115,6 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             subscribe(views) { createFilterAdapter.update(it) }
             subscribe(vm.commands) { observeCommands(it) }
         }
-        vm.onStart(relation, index)
     }
 
     private fun observeCommands(commands: FilterViewModel.Commands) {
@@ -166,6 +165,12 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
     override fun onStart() {
         super.onStart()
         expand()
+        vm.onStart(relation, index)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     override fun injectDependencies() {

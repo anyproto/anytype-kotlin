@@ -10,10 +10,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -30,7 +27,7 @@ class ManageViewerViewModel(
 
     init {
         viewModelScope.launch {
-            state.collect { s ->
+            state.filter { it.isInitialized }.collect { s ->
                 _views.value = s.viewers.mapIndexed { index, viewer ->
                     ViewerView(
                         id = viewer.id,

@@ -6,6 +6,7 @@
 
 * Redesigned authentication flow (#1928)
 * Dashboard | Fix cards width (#1939)
+* New splash screen (#1939)
 
 ### Fixes & tech 🚒
 

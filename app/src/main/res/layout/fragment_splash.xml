@@ -18,6 +18,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
         android:fontFamily="monospace"
+        android:textColor="#75BDEC"
         android:textSize="15sp"
         tools:text="0.0.10-alpha" />
 

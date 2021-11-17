@@ -626,6 +626,7 @@ class ObjectSetViewModel(
                     ).process(
                         failure = { Timber.e(it, "Error while creating new record") },
                         success = { record ->
+                            val wrapper = ObjectWrapper.Basic(record)
                             val middle = System.currentTimeMillis()
                             sendEvent(
                                 eventName = SETS_RECORD_CREATE,
@@ -635,8 +636,10 @@ class ObjectSetViewModel(
                             )
                             total.value = total.value.inc()
                             proceedWithRefreshingViewerAfterObjectCreation()
-                            objectSetRecordCache.map[context] = record
-                            dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
+                            if (wrapper.layout != ObjectType.Layout.NOTE) {
+                                objectSetRecordCache.map[context] = record
+                                dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
+                            }
                         }
                     )
                 }

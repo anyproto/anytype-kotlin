@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.4.1
+## Version 0.4.2
 
 ### Design & UX 🔳
 
@@ -17,6 +17,7 @@
 * Editor | Should not show a redundant toast with error message when opening user profile (#1935)
 * Editor | Drag-and-dropping below or above a link to object always results in dropping inside this link (#1931)
 * Editor | Undo/redo does not work correctly for relation values (#1932)
+* Editor | Toggle block has incorrect font size (#1946)
 * Sets | Should not crash when state is not initialized when displaying a view's filters (#1929)
 * Sets | Should not display the change-object-type menu for sets (#1934)
 * Sets | Should not prompt for object's name when creating an object with layout without title (#1938)

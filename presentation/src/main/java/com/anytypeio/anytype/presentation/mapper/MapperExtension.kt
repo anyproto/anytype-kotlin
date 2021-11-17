@@ -562,6 +562,7 @@ fun DVFilterCondition.toSelectedView(): Viewer.Filter.Condition.Selected = when 
 fun DVFilterCondition.toCheckboxView(): Viewer.Filter.Condition.Checkbox = when (this) {
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Checkbox.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Checkbox.NotEqual()
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Checkbox.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Checkbox relations")
 }
 

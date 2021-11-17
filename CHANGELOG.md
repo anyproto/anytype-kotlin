@@ -23,6 +23,7 @@
 * Sets | Fix | Should not crash when relation state is not initialized (#1937)
 * Sets | Fix | Support filters without any condition (#1933)
 * Sets | Fix | Screen with filter conditions should dismissible by swipe (#1941)
+* Sets | Fix | Should not crash when filter done is present (#1944)
 
 ## Version 0.4.0
 

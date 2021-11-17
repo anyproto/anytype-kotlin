@@ -4,7 +4,8 @@
 
 ### Design & UX 🔳
 
-* Redesigned authentification flow (#1928)
+* Redesigned authentication flow (#1928)
+* Dashboard | Fix cards width (#1939)
 
 ### Fixes & tech 🚒
 

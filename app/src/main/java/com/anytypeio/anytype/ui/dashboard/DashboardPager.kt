@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_utils.ui.EqualSpacingItemDecoration
+import com.anytypeio.anytype.core_utils.ui.DashboardSpacingItemDecoration
 import kotlinx.android.synthetic.main.item_dashboard_page.view.*
 import kotlinx.android.synthetic.main.item_dashboard_page_archived.view.*
 import kotlinx.android.synthetic.main.item_dashboard_recent.view.*
@@ -41,17 +41,9 @@ class DashboardPager(
             ViewHolder.Default(parent).apply {
                 itemView.rvDashboard.apply {
                     val spacing = itemView.context.dimen(R.dimen.default_dashboard_item_spacing).toInt()
-                    val decoration = EqualSpacingItemDecoration(
-                        topSpacing = spacing,
-                        leftSpacing = spacing,
-                        rightSpacing = spacing,
-                        bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID,
-                        ignoreGridEdgesTop = true
-                    )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
-                    addItemDecoration(decoration)
+                    addItemDecoration(DashboardSpacingItemDecoration(spacing))
                     setHasFixedSize(true)
                     adapter = defaultAdapter
                     ItemTouchHelper(dndBehavior).attachToRecyclerView(this)
@@ -62,17 +54,9 @@ class DashboardPager(
             ViewHolder.Recent(parent).apply {
                 itemView.rvDashboardRecent.apply {
                     val spacing = itemView.context.dimen(R.dimen.default_dashboard_item_spacing).toInt()
-                    val decoration = EqualSpacingItemDecoration(
-                        topSpacing = spacing,
-                        leftSpacing = spacing,
-                        rightSpacing = spacing,
-                        bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID,
-                        ignoreGridEdgesTop = true
-                    )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
-                    addItemDecoration(decoration)
+                    addItemDecoration(DashboardSpacingItemDecoration(spacing))
                     setHasFixedSize(true)
                     adapter = recentAdapter
                 }
@@ -82,17 +66,9 @@ class DashboardPager(
             ViewHolder.Sets(parent).apply {
                 itemView.rvDashboardSets.apply {
                     val spacing = itemView.context.dimen(R.dimen.default_dashboard_item_spacing).toInt()
-                    val decoration = EqualSpacingItemDecoration(
-                        topSpacing = spacing,
-                        leftSpacing = spacing,
-                        rightSpacing = spacing,
-                        bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID,
-                        ignoreGridEdgesTop = true
-                    )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
-                    addItemDecoration(decoration)
+                    addItemDecoration(DashboardSpacingItemDecoration(spacing))
                     setHasFixedSize(true)
                     adapter = setsAdapter
                 }
@@ -102,17 +78,9 @@ class DashboardPager(
             ViewHolder.Archived(parent).apply {
                 itemView.rvDashboardArchived.apply {
                     val spacing = itemView.context.dimen(R.dimen.default_dashboard_item_spacing).toInt()
-                    val decoration = EqualSpacingItemDecoration(
-                        topSpacing = spacing,
-                        leftSpacing = spacing,
-                        rightSpacing = spacing,
-                        bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID,
-                        ignoreGridEdgesTop = true
-                    )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
-                    addItemDecoration(decoration)
+                    addItemDecoration(DashboardSpacingItemDecoration(spacing))
                     setHasFixedSize(true)
                     adapter = archiveAdapter
                 }
@@ -122,17 +90,9 @@ class DashboardPager(
             ViewHolder.Shared(parent).apply {
                 itemView.rvDashboardShared.apply {
                     val spacing = itemView.context.dimen(R.dimen.default_dashboard_item_spacing).toInt()
-                    val decoration = EqualSpacingItemDecoration(
-                        topSpacing = spacing,
-                        leftSpacing = spacing,
-                        rightSpacing = spacing,
-                        bottomSpacing = 0,
-                        displayMode = EqualSpacingItemDecoration.GRID,
-                        ignoreGridEdgesTop = true
-                    )
                     layoutManager = GridLayoutManager(context, COLUMN_COUNT)
                     overScrollMode = OVER_SCROLL_NEVER
-                    addItemDecoration(decoration)
+                    addItemDecoration(DashboardSpacingItemDecoration(spacing))
                     setHasFixedSize(true)
                     adapter = sharedAdapter
                 }

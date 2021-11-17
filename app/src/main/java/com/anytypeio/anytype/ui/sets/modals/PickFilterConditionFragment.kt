@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.ui.sets.modals
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.*
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
@@ -16,6 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.PickFilterConditionViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -25,7 +24,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PickFilterConditionFragment : DialogFragment() {
+class PickFilterConditionFragment : BaseBottomSheetFragment() {
 
     private val ctx: String get() = arg(CTX_KEY)
     private val mode: Int get() = argInt(ARG_MODE)
@@ -38,17 +37,6 @@ class PickFilterConditionFragment : DialogFragment() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        injectDependencies()
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        return dialog
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,11 +45,11 @@ class PickFilterConditionFragment : DialogFragment() {
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         with(lifecycleScope) {
-            subscribe(isDismissed) { isDismissed -> if (isDismissed) dismiss() }
-            subscribe(vm.views) { screenState ->
+            jobs += subscribe(isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+            jobs += subscribe(vm.views) { screenState ->
                 recycler.adapter = PickFilterConditionAdapter(
                     picked = screenState.picked,
                     conditions = screenState.conditions,
@@ -75,11 +63,6 @@ class PickFilterConditionFragment : DialogFragment() {
                 )
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setDialogWidthAndGravity()
         vm.onStart(type, index)
     }
 
@@ -88,20 +71,7 @@ class PickFilterConditionFragment : DialogFragment() {
         lifecycleScope.launch { isDismissed.emit(true) }
     }
 
-    private fun setDialogWidthAndGravity() {
-        dialog?.window?.apply {
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            setGravity(Gravity.BOTTOM)
-            setBackgroundDrawableResource(android.R.color.transparent)
-        }
-    }
-
-    override fun onDestroyView() {
-        releaseDependencies()
-        super.onDestroyView()
-    }
-
-    fun injectDependencies() {
+    override fun injectDependencies() {
         when (mode) {
             MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.get(ctx)
                 .inject(this)
@@ -111,7 +81,7 @@ class PickFilterConditionFragment : DialogFragment() {
         }
     }
 
-    fun releaseDependencies() {
+    override fun releaseDependencies() {
         when (mode) {
             MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.release(ctx)
             MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.release(ctx)

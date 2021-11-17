@@ -21,6 +21,8 @@
 * Sets | Fix | Should not prompt for object's name when creating an object with layout without title (#1938)
 * Sets | Fix | Should not crash when relation state is not initialized (#1937)
 * Sets | Fix | Support filters without any condition (#1933)
+* Sets | Fix | Screen with filter conditions should dismissible by swipe (#1941)
+
 
 ## Version 0.4.0
 

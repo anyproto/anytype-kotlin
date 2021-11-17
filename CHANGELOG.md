@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.4.1 (WIP)
+## Version 0.4.1
 
 ### Design & UX 🔳
 
@@ -18,12 +18,11 @@
 * Editor | Drag-and-dropping below or above a link to object always results in dropping inside this link (#1931)
 * Editor | Undo/redo does not work correctly for relation values (#1932)
 * Sets | Should not crash when state is not initialized when displaying a view's filters (#1929)
-* Sets | Fix | Should not display the change-object-type menu for sets (#1934)
-* Sets | Fix | Should not prompt for object's name when creating an object with layout without title (#1938)
-* Sets | Fix | Should not crash when relation state is not initialized (#1937)
-* Sets | Fix | Support filters without any condition (#1933)
-* Sets | Fix | Screen with filter conditions should dismissible by swipe (#1941)
-* Sets | Fix | Should not crash when filter done is present (#1944)
+* Sets | Should not display the change-object-type menu for sets (#1934)
+* Sets | Should not prompt for object's name when creating an object with layout without title (#1938)
+* Sets | Should not crash when relation state is not initialized (#1937)
+* Sets | Support filters without any condition (#1933)
+* Sets | Screen with filter conditions should dismissible by swipe (#1941)
 
 ## Version 0.4.0
 

@@ -29,7 +29,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -1086,7 +1085,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         val uri = Uri.parse(command.uri)
                         val intent = Intent().apply {
                             action = Intent.ACTION_VIEW
-                            setDataAndType(uri, command.mime)
+                            if (command.mime.isNotEmpty()) {
+                                setDataAndTypeAndNormalize(uri, command.mime)
+                            } else {
+                                data = uri
+                            }
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }
                         startActivity(intent)

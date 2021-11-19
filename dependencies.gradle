@@ -88,7 +88,7 @@ ext {
 
     // Anytype
 
-    middleware_version = 'v0.17.13'
+    middleware_version = 'v0.17.14'
 
     mainApplication = [
             kotlin:                     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",

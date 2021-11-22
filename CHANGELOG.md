@@ -1,12 +1,15 @@
 # Change log for Android @Anytype app.
 
-## Version 0.4.3 (WIP)
+## Version 0.4.3
 
 ### Design & UX 🔳
 
 * Editor | Fix bullet icon and checkbox icon positioning relative to the text content (#1952) 
+* Objects + sets | Redesigned set-cover screen (#1950)
 
 ### Fixes & tech 🚒
+
+* Fix possible application crash during login and logout (#1954)
 
 ## Version 0.4.2
 

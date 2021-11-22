@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.cover.*
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -20,7 +21,7 @@ abstract class SelectCoverViewModel(
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
     private val getCoverGradientCollection: GetCoverGradientCollection
-) : ViewModel() {
+) : BaseViewModel() {
 
     val views = MutableStateFlow<List<DocCoverGalleryView>>(emptyList())
     val isDismissed = MutableStateFlow(false)
@@ -58,8 +59,14 @@ abstract class SelectCoverViewModel(
                     path = path
                 )
             ).proceed(
-                failure = { Timber.e(it, "Error while setting doc cover image") },
-                success = { dispatcher.send(it).also { isDismissed.value = true } }
+                failure = {
+                    sendToast("Error while setting doc cover image, ${it.message}")
+                    Timber.e(it, "Error while setting doc cover image")
+                },
+                success = {
+                    dispatcher.send(it)
+                    isDismissed.emit(true)
+                }
             )
         }
     }
@@ -72,8 +79,14 @@ abstract class SelectCoverViewModel(
                     hash = hash
                 )
             ).proceed(
-                failure = { Timber.e(it, "Error while setting doc cover image") },
-                success = { dispatcher.send(it).also { isDismissed.value = true } }
+                failure = {
+                    sendToast("Error while setting doc cover image, ${it.message}")
+                    Timber.e(it, "Error while setting doc cover image")
+                },
+                success = {
+                    dispatcher.send(it)
+                    isDismissed.emit(true)
+                }
             )
         }
     }
@@ -83,8 +96,14 @@ abstract class SelectCoverViewModel(
             removeCover(
                 RemoveDocCover.Params(ctx)
             ).process(
-                success = { dispatcher.send(it).also { isDismissed.value = true } },
-                failure = {}
+                success = {
+                    dispatcher.send(it)
+                    isDismissed.emit(true)
+                },
+                failure = {
+                    sendToast("Error while removing cover image, ${it.message}")
+                    Timber.e(it, "Error while removing doc cover image")
+                }
             )
         }
     }
@@ -100,7 +119,10 @@ abstract class SelectCoverViewModel(
                     color = color.code
                 )
             ).proceed(
-                failure = { Timber.e(it, "Error while updating document's cover color") },
+                failure = {
+                    sendToast("Error while updating document's cover color, ${it.message}")
+                    Timber.e(it, "Error while updating document's cover color")
+                },
                 success = {
                     dispatcher.send(it)
                     onDetailsColor(ctx, color)
@@ -118,7 +140,10 @@ abstract class SelectCoverViewModel(
                     gradient = gradient
                 )
             ).proceed(
-                failure = { Timber.e(it, "Error while updating document's cover gradient") },
+                failure = {
+                    sendToast("Error while updating document's cover gradient, ${it.message}")
+                    Timber.e(it, "Error while updating document's cover gradient")
+                },
                 success = {
                     dispatcher.send(it)
                     onDetailsGradient(ctx, gradient)

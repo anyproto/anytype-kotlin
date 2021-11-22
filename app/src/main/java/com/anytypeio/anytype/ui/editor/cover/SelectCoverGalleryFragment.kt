@@ -118,6 +118,7 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment() {
         with(lifecycleScope) {
             jobs += subscribe(vm.views) { docCoverGalleryAdapter.views = it }
             jobs += subscribe(vm.isDismissed) { if (it) findNavController().popBackStack() }
+            jobs += subscribe(vm.toasts) { toast(it) }
         }
         super.onStart()
     }

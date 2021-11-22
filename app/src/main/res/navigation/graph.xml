@@ -53,7 +53,7 @@
             android:label="Doc-Menu-Bottom-Sheet-Screen"/>
         <dialog
             android:id="@+id/objectCoverScreen"
-            android:name="com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment"
+            android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
             android:label="Object-Cover-Screen"/>
         <dialog
             android:id="@+id/relationAddToObjectBlockFragment"
@@ -110,7 +110,7 @@
             android:label="Object-Set-Icon-Picker-Screen" />
         <dialog
             android:id="@+id/objectSetCoverScreen"
-            android:name="com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment"
+            android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment"
             android:label="Object-Cover-Screen"/>
     </navigation>
 

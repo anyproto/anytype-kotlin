@@ -86,8 +86,7 @@ interface EditorSubComponent {
     fun editDocRelationComponent() : ObjectObjectRelationValueSubComponent.Builder
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
 
-    fun docCoverGalleryComponentBuilder(): SelectCoverSubComponent.Builder
-    fun objectCoverSliderComponent() : ObjectCoverSliderComponent.Builder
+    fun objectCoverComponent() : SelectCoverObjectSubComponent.Builder
     fun objectMenuComponent() : ObjectMenuComponent.Builder
 
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder

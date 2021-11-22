@@ -470,27 +470,19 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val coverGalleryComponent = DependentComponentMap { ctx ->
+    val objectCoverComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
-            .docCoverGalleryComponentBuilder()
-            .module(SelectCoverModule)
+            .objectCoverComponent()
+            .module(SelectCoverObjectModule)
             .build()
     }
 
-    val objectCoverSliderComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
-            .objectCoverSliderComponent()
-            .module(ObjectCoverSliderModule)
-            .build()
-    }
-
-    val objectSetCoverSliderComponent = DependentComponentMap { ctx ->
+    val objectSetCoverComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
-            .objectSetCoverSliderComponent()
-            .module(ObjectSetCoverSliderModule)
+            .objectSetCoverComponent()
+            .module(SelectCoverObjectSetModule)
             .build()
     }
 

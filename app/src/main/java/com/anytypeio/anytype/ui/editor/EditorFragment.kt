@@ -89,7 +89,7 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectFragment
+import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.*
@@ -937,7 +937,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     try {
                         findNavController().navigate(
                             R.id.action_pageScreen_to_objectCoverScreen,
-                            bundleOf(CoverSliderObjectFragment.CTX_KEY to command.ctx)
+                            bundleOf(SelectCoverObjectFragment.CTX_KEY to command.ctx)
                         )
                     } catch (e: Exception) {
                         Timber.e(e, "Error while opening object cover screen")

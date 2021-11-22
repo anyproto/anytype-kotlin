@@ -2,15 +2,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="48dp">
 
     <TextView
         android:id="@+id/tvHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/graphik_medium"
-        android:textAllCaps="true"
-        android:textColor="@color/anytype_text_grey"
+        android:fontFamily="@font/inter_medium"
+        android:layout_marginTop="18dp"
+        android:textColor="#929082"
+        android:gravity="center_horizontal"
         android:textSize="13sp"
         tools:text="Color solid" />
 

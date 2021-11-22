@@ -309,7 +309,7 @@
 
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
-    <string name="cover_color_solid">Color solid</string>
+    <string name="cover_color_solid">Solid colors</string>
     <string name="cover_gradients">Gradients</string>
     <string name="clear">Clear</string>
 

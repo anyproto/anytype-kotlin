@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="4dp"
-    android:layout_height="72dp">
+    android:layout_height="112dp">
 
     <ImageView
         android:layout_height="match_parent"

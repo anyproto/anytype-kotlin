@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewSubComponent
@@ -72,7 +71,7 @@ interface ObjectSetSubComponent {
 
     fun objectSetMenuComponent() : ObjectSetMenuComponent.Builder
     fun objectSetIconPickerComponent() : ObjectSetIconPickerComponent.Builder
-    fun objectSetCoverSliderComponent() : ObjectSetCoverSliderComponent.Builder
+    fun objectSetCoverComponent() : SelectCoverObjectSetSubComponent.Builder
 }
 
 @Module

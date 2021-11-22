@@ -52,7 +52,7 @@ import com.anytypeio.anytype.presentation.sets.model.FilterExpression
 import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.anytypeio.anytype.ui.editor.cover.CoverSliderObjectSetFragment
+import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -569,7 +569,7 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
                 findNavController().navigate(
                     R.id.action_objectSetScreen_to_objectSetCoverScreen,
-                    bundleOf(CoverSliderObjectSetFragment.CTX_KEY to command.ctx)
+                    bundleOf(SelectCoverObjectSetFragment.CTX_KEY to command.ctx)
                 )
             }
         }

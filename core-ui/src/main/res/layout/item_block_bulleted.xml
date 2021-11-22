@@ -28,7 +28,7 @@
             android:id="@+id/bullet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="3dp"
             android:src="@drawable/ic_bulleted" />
 

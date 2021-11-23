@@ -1,8 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.model
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
-
 sealed class CellView {
 
     abstract val key: String
@@ -16,79 +13,58 @@ sealed class CellView {
         val number: String?
     }
 
-    interface Icon {
-        val icon: String
-    }
-
     interface DateFormat {
         val dateFormat: String
     }
 
-    //todo maybe this cell type is legacy, need to be checked
-    @Parcelize
-    data class Title(
-        override val id: String,
-        override val key: String,
-        override val text: String,
-        override val icon: String
-    ) : CellView(), Text, Icon, Parcelable
-
-    @Parcelize
     data class Description(
         override val id: String,
         override val key: String,
         override val text: String
-    ) : CellView(), Text, Parcelable
+    ) : CellView(), Text
 
-    @Parcelize
     data class Date(
         override val id: String,
         override val key: String,
         val timeInMillis: Long? = null,
         override val dateFormat: String,
-    ) : CellView(), DateFormat, Parcelable
+    ) : CellView(), DateFormat
 
-    @Parcelize
     data class Number(
         override val id: String,
         override val key: String,
         override val number: String?
-    ) : CellView(), Numbered, Parcelable
+    ) : CellView(), Numbered
 
-    @Parcelize
     data class Url(
         override val id: String,
         override val key: String,
         val url: String?
-    ) : CellView(), Parcelable
+    ) : CellView()
 
-    @Parcelize
     data class Email(
         override val id: String,
         override val key: String,
         val email: String?
-    ) : CellView(), Parcelable
+    ) : CellView()
 
-    @Parcelize
     data class Phone(
         override val id: String,
         override val key: String,
         val phone: String?
-    ) : CellView(), Parcelable
+    ) : CellView()
 
-    @Parcelize
     data class Tag(
         override val id: String,
         override val key: String,
         val tags: List<TagView>
-    ) : CellView(), Parcelable
+    ) : CellView()
 
-    @Parcelize
     data class Status(
         override val id: String,
         override val key: String,
         val status: List<StatusView>
-    ) : CellView(), Parcelable
+    ) : CellView()
 
     data class Object(
         override val id: String,
@@ -96,17 +72,15 @@ sealed class CellView {
         val objects: List<ObjectView>
     ) : CellView()
 
-    @Parcelize
     data class Checkbox(
         override val id: String,
         override val key: String,
         val isChecked: Boolean
-    ): CellView(), Parcelable
+    ): CellView()
 
-    @Parcelize
     data class File(
         override val id: String,
         override val key: String,
         val files: List<FileView>
-    ) : CellView(), Parcelable
+    ) : CellView()
 }

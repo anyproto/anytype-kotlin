@@ -1,5 +1,15 @@
 # Change log for Android @Anytype app.
 
+## Version 0.4.4
+
+### Design & UX 🔳
+
+* Editor | Updated background for selected block (#1976)
+
+### Fixes & tech 🚒
+
+* Relations | Cannot add an object to a relation due to incorrect search result parsing (#1980)
+
 ## Version 0.4.3
 
 ### Design & UX 🔳

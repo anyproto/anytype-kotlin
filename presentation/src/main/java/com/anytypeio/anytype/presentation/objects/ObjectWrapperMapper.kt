@@ -81,7 +81,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
         val typeUrl = obj.getProperType()
         val layout = obj.getProperLayout()
         if (obj.id !in ids) {
-            if (obj.isDeleted == false) {
+            if (obj.isDeleted == null || obj.isDeleted == false) {
                 RelationValueBaseViewModel.RelationValueView.Object.Default(
                     id = obj.id,
                     name = obj.getProperName(),

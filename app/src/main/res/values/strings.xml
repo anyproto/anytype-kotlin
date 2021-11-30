@@ -251,5 +251,10 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="create_new_set">Create</string>
 
     <string name="shortcut_create_new">Create a new %1$s</string>
+    <string name="close">Close</string>
+    <string name="go_to_settings">Go to settings</string>
+    <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your keychain phrase</string>
+    <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
+    <string name="if_you_lose_passphrase_warning">If you lose the passphrase and get logged out you will not be able to ever access your data again. Save this passphrase outside of Anytype for data recovery.</string>
 
 </resources>

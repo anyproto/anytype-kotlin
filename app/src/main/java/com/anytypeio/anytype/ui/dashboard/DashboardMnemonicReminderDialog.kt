@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.profile
+package com.anytypeio.anytype.ui.dashboard
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -20,7 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_keychain_phrase.*
 import javax.inject.Inject
 
-class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<String>> {
+class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<ViewState<String>> {
 
     private val vm : KeychainPhraseViewModel by viewModels { factory }
 
@@ -41,7 +41,7 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_keychain_phrase, container, false)
+    ): View? = inflater.inflate(R.layout.dialog_dashboard_keychain_phrase, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,6 +57,8 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
         root.setOnClickListener {
             setBlur()
         }
+
+        vm.state.observe(viewLifecycleOwner, this)
     }
 
     private fun copyMnemonicToClipboard() {
@@ -68,11 +70,6 @@ class KeychainPhraseDialog : BottomSheetDialogFragment(), Observer<ViewState<Str
         } catch (e: Exception) {
             toast("Could not copy your mnemonic. Please try again later, or copy it manually.")
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        vm.state.observe(viewLifecycleOwner, this)
     }
 
     override fun onChanged(state: ViewState<String>) {

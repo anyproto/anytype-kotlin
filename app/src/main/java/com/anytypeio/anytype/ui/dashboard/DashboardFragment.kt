@@ -5,6 +5,7 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
@@ -18,10 +19,8 @@ import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.St
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModel.TAB
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
-import com.anytypeio.anytype.presentation.editor.Snack
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -31,6 +30,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) {
+
+    private val isMnemonicReminderDialogNeeded : Boolean? get() = argOrNull(SHOW_MNEMONIC_REMINDER_KEY)
 
     private val vm by viewModels<HomeDashboardViewModel> { factory }
 
@@ -241,6 +242,14 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         tabsLayout.apply {
             addOnTabSelectedListener(onTabSelectedListener)
         }
+        if (isMnemonicReminderDialogNeeded == true) {
+            showMnemonicReminderAlert()
+        }
+    }
+
+    private fun showMnemonicReminderAlert() {
+        arguments?.remove(SHOW_MNEMONIC_REMINDER_KEY)
+        findNavController().navigate(R.id.dashboardKeychainDialog)
     }
 
     private fun parseIntent() {
@@ -349,6 +358,10 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun releaseDependencies() {
         componentManager().dashboardComponent.release()
+    }
+
+    companion object {
+        const val SHOW_MNEMONIC_REMINDER_KEY = "arg.dashboard.is-mnemonic-reminder-dialog-needed"
     }
 }
 

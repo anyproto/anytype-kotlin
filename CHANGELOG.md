@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.4.5 (WIP)
+
+### New features & enhancements 🚀
+
+* App | Reminding our users about saving the mnemonic phrase (#1982)
+
 ## Version 0.4.4
 
 ### Design & UX 🔳

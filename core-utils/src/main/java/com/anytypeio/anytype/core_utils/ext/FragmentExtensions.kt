@@ -13,7 +13,7 @@ inline fun <reified T> Fragment.arg(key: String): T {
 }
 
 inline fun <reified T> Fragment.argOrNull(key: String): T? {
-    return requireArguments().get(key) as T?
+    return arguments?.get(key) as T?
 }
 
 fun Fragment.argString(key: String): String {

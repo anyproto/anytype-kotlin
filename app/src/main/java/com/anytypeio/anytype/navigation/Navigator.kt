@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
+import com.anytypeio.anytype.ui.dashboard.DashboardFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.sets.CreateObjectSetFragment
@@ -30,6 +31,11 @@ class Navigator : AppNavigation {
 
     override fun startDesktopFromLogin() {
         navController?.navigate(R.id.action_global_desktopScreen)
+    }
+
+    override fun startDesktopFromSignUp() {
+        val bundle = bundleOf(DashboardFragment.SHOW_MNEMONIC_REMINDER_KEY to true)
+        navController?.navigate(R.id.action_global_desktopScreen, bundle)
     }
 
     override fun startLogin() {
@@ -55,10 +61,6 @@ class Navigator : AppNavigation {
 
     override fun enterKeychain() {
         navController?.navigate(R.id.action_open_sign_in)
-    }
-
-    override fun congratulation() {
-        navController?.navigate(R.id.action_open_congratulation_screen)
     }
 
     override fun chooseAccount() {
@@ -141,10 +143,6 @@ class Navigator : AppNavigation {
             Bundle().apply { putString(Keys.PIN_CODE_KEY, pin) }
         )
         */
-    }
-
-    override fun openGoals() {
-        navController?.navigate(R.id.action_desktopScreen_to_goalsFragment)
     }
 
     override fun openCustomizeDisplayView() {

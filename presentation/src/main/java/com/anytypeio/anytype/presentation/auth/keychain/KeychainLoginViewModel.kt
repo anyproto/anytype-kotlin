@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.presentation.auth.congratulation.ViewState
+import com.anytypeio.anytype.presentation.common.ViewState
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.auth.congratulation
+package com.anytypeio.anytype.presentation.common
 
 sealed class ViewState<out T : Any> {
     data class Success<out T : Any>(val data: T) : ViewState<T>()

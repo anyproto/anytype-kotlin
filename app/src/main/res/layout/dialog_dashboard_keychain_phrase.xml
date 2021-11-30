@@ -6,27 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/drag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="6dp"
-        android:src="@drawable/ic_drag"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/title"
         style="@style/KeychainDialogTitleStyle"
         android:layout_width="match_parent"
-        android:textAlignment="center"
         android:layout_height="wrap_content"
-        android:layout_marginTop="54dp"
-        android:text="@string/back_up_your_keychain_phrase"
+        android:layout_marginTop="23dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/do_not_forget_mnemonic_phrase"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/drag" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/subtitle"
@@ -34,9 +24,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
-        android:text="@string/keychain_phrase_text"
+        android:text="@string/if_you_lose_passphrase_warning"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
@@ -47,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="34dp"
+        android:layout_marginTop="18dp"
         android:layout_marginEnd="20dp"
         android:focusable="false"
         android:focusableInTouchMode="false"

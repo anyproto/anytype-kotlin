@@ -10,9 +10,9 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.DoneActionListener
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.auth.congratulation.ViewState
 import com.anytypeio.anytype.presentation.auth.keychain.KeychainLoginViewModel
 import com.anytypeio.anytype.presentation.auth.keychain.KeychainLoginViewModelFactory
+import com.anytypeio.anytype.presentation.common.ViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.fragment_keychain_login.*

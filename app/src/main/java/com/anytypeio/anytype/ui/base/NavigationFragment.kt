@@ -23,11 +23,11 @@ abstract class NavigationFragment(
         when (command) {
             is Command.StartSplashFromDesktop -> navigation.startSplashFromDesktop()
             is Command.StartDesktopFromLogin -> navigation.startDesktopFromLogin()
+            is Command.StartDesktopFromSignUp -> navigation.startDesktopFromSignUp()
             is Command.StartDesktopFromSplash -> navigation.startDesktopFromSplash()
             is Command.OpenStartLoginScreen -> navigation.startLogin()
             is Command.OpenCreateAccount -> navigation.createProfile(command.invitationCode)
             is Command.ChoosePinCodeScreen -> navigation.choosePinCode()
-            is Command.CongratulationScreen -> navigation.congratulation()
             is Command.EnterKeyChainScreen -> navigation.enterKeychain()
             is Command.SelectAccountScreen -> navigation.chooseAccount()
             is Command.WorkspaceScreen -> navigation.workspace()

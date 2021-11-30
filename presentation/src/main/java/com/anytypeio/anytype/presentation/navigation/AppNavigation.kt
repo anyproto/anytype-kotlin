@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 
 interface AppNavigation {
@@ -14,7 +13,6 @@ interface AppNavigation {
     fun enterInvitationCode()
     fun setupNewAccount()
     fun setupSelectedAccount(id: String)
-    fun congratulation()
     fun chooseAccount()
     fun workspace()
     fun openProfile()
@@ -30,6 +28,7 @@ interface AppNavigation {
 
     fun startDesktopFromSplash()
     fun startDesktopFromLogin()
+    fun startDesktopFromSignUp()
     fun startSplashFromDesktop()
     fun openKeychainScreen()
     fun openUserSettingsScreen()
@@ -38,7 +37,6 @@ interface AppNavigation {
     fun openEditDatabase()
     fun openSwitchDisplayView()
     fun openCustomizeDisplayView()
-    fun openGoals()
     fun exit()
     fun exitToDesktop()
     fun openDebugSettings()
@@ -62,7 +60,6 @@ interface AppNavigation {
         object SetupNewAccountScreen : Command()
         data class SetupSelectedAccountScreen(val id: String) : Command()
         data class ConfirmPinCodeScreen(val code: String) : Command()
-        object CongratulationScreen : Command()
         object SelectAccountScreen : Command()
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
@@ -78,6 +75,7 @@ interface AppNavigation {
         object OpenUserSettingsScreen : Command()
         object StartDesktopFromSplash : Command()
         object StartDesktopFromLogin : Command()
+        object StartDesktopFromSignUp : Command()
         object StartSplashFromDesktop : Command()
         object OpenContactsScreen : Command()
         object OpenDatabaseViewAddView : Command()

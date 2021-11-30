@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.auth.pin
 
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
-import com.anytypeio.anytype.presentation.auth.congratulation.ViewState
+import com.anytypeio.anytype.presentation.common.ViewState
 
 class ChoosePinCodeViewModel : ViewStateViewModel<ViewState<Boolean>>() {
 

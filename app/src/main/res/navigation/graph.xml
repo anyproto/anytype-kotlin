@@ -127,9 +127,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_desktopScreen_to_goalsFragment"
-            app:destination="@id/goalsFragment" />
-        <action
             android:id="@+id/action_desktopScreen_to_pageNavigationFragment"
             app:destination="@id/pageNavigationFragment" />
         <action
@@ -190,15 +187,7 @@
         android:id="@+id/setupNewAccountScreen"
         android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
         android:label="SetupAccount"
-        tools:layout="@layout/fragment_setup_new_account">
-        <action
-            android:id="@+id/action_open_congratulation_screen"
-            app:destination="@id/congratulationScreen"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popUpTo="@+id/startLoginScreen"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_setup_new_account"/>
     <fragment
         android:id="@+id/splashScreen"
         android:name="com.anytypeio.anytype.ui.splash.SplashFragment"
@@ -241,26 +230,21 @@
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
     </fragment>
-    <fragment
-        android:id="@+id/congratulationScreen"
-        android:name="com.anytypeio.anytype.ui.auth.CongratulationFragment"
-        android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_congratulation">
-        <action
-            android:id="@+id/action_global_desktopScreen"
-            app:destination="@+id/desktopScreen"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/login_nav"
-            app:popUpToInclusive="true" />
-    </fragment>
 
     <dialog
         android:id="@+id/keychainDialog"
         android:name="com.anytypeio.anytype.ui.profile.KeychainPhraseDialog"
         tools:layout="@layout/dialog_keychain_phrase" />
+
+    <dialog
+        android:id="@+id/dashboardKeychainDialog"
+        android:name="com.anytypeio.anytype.ui.dashboard.DashboardMnemonicReminderDialog"
+        tools:layout="@layout/dialog_dashboard_keychain_phrase" />
+
+    <dialog
+        android:id="@+id/mnemonicReminderDialog"
+        android:name="com.anytypeio.anytype.ui.dashboard.MnemonicReminderDialog"
+        tools:layout="@layout/alert_mnemonic_reminder" />
 
     <navigation
         android:id="@+id/login_nav"
@@ -285,13 +269,6 @@
             android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
             android:label="SetupAccount"
             tools:layout="@layout/fragment_setup_new_account">
-            <action
-                android:id="@+id/action_open_congratulation_screen"
-                app:destination="@id/congratulationScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popUpTo="@+id/startLoginScreen"
-                app:popUpToInclusive="true" />
             <action
                 android:id="@+id/action_setupNewAccountScreen_to_invitationFragment"
                 app:destination="@id/invitationFragment"
@@ -329,24 +306,10 @@
                 app:popExitAnim="@anim/slide_out_right" />
         </fragment>
         <fragment
-            android:id="@+id/congratulationScreen"
-            android:name="com.anytypeio.anytype.ui.auth.CongratulationFragment"
-            android:label="StartLoginFragment"
-            tools:layout="@layout/fragment_congratulation" />
-        <fragment
             android:id="@+id/setupSelectedAccountScreen"
             android:name="com.anytypeio.anytype.ui.auth.account.SetupSelectedAccountFragment"
             android:label="SetupAccount"
             tools:layout="@layout/fragment_setup_selected_account">
-            <action
-                android:id="@+id/action_open_congratulation_screen"
-                app:destination="@id/congratulationScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"
-                app:popUpTo="@+id/startLoginScreen"
-                app:popUpToInclusive="true" />
             <argument
                 android:name="selected_account_id"
                 android:defaultValue="0"
@@ -418,10 +381,6 @@
         </fragment>
     </navigation>
 
-    <fragment
-        android:id="@+id/goalsFragment"
-        android:name="com.anytypeio.anytype.ui.goals.GoalsFragment"
-        android:label="GoalsFragment" />
     <fragment
         android:id="@+id/debugSettingsFragment"
         android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"

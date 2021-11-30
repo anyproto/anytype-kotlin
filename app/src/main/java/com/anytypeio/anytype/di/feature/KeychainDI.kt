@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.presentation.keychain.KeychainPhraseViewModelFactory
+import com.anytypeio.anytype.ui.dashboard.DashboardMnemonicReminderDialog
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,7 @@ interface KeychainPhraseSubComponent {
     }
 
     fun inject(fragment: KeychainPhraseDialog)
+    fun inject(fragment: DashboardMnemonicReminderDialog)
 }
 
 @Module

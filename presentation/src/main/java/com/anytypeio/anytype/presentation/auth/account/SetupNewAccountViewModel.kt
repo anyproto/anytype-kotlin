@@ -91,17 +91,17 @@ class SetupNewAccountViewModel(
             storeObjectTypes.invoke(Unit).process(
                 failure = {
                     Timber.e(it, "Error while store account object types")
-                    navigateToCongratsScreen()
+                    navigateToDashboard()
                 },
                 success = {
-                    navigateToCongratsScreen()
+                    navigateToDashboard()
                 }
             )
         }
     }
 
-    private fun navigateToCongratsScreen() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.CongratulationScreen))
+    private fun navigateToDashboard() {
+        navigation.postValue(EventWrapper(AppNavigation.Command.StartDesktopFromSignUp))
     }
 
     private fun updateUserProps(id: String) {

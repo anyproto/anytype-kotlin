@@ -32,7 +32,7 @@ class DefaultPatternMatcher : Matcher<Pattern> {
     }
 
     companion object {
-        const val REGEX_NUMBERED_LIST_PATTERN = "^1. "
+        const val REGEX_NUMBERED_LIST_PATTERN = "^1\\. "
         const val REGEX_DIVIDER_PATTERN = "^---"
         const val REGEX_CHECKBOX_PATTERN = "^\\[]"
         const val REGEX_HEADER_ONE_PATERN = "^# "

@@ -6,6 +6,10 @@
 
 * App | Reminding our users about saving the mnemonic phrase (#1982)
 
+### Fixes & tech 🚒
+
+Editor | Fix | Numbered block pattern triggered when not needed due to an incorrect regex pattern (#1987)
+
 ## Version 0.4.4
 
 ### Design & UX 🔳

@@ -22,4 +22,33 @@ class DefaultPatternMatcherTest {
             )
         }
     }
+
+    @Test
+    fun `should detect numbered pattern`() {
+
+        val strings = listOf("1. ")
+
+        strings.forEach { text ->
+            val result = matcher.match(text)
+            assertEquals(
+                expected = listOf(Pattern.NUMBERED),
+                actual = result
+            )
+        }
+    }
+
+    @Test
+    fun `should not detect numbered pattern`() {
+
+        val strings = listOf("1", "1.", "1 .", "1,", "1, ","1* ","1# ")
+
+        strings.forEach { text ->
+            val result = matcher.match(text)
+            print("matching: $text")
+            assertEquals(
+                expected = emptyList(),
+                actual = result
+            )
+        }
+    }
 }

@@ -5,6 +5,7 @@
 ### New features & enhancements 🚀
 
 * App | Reminding our users about saving the mnemonic phrase (#1982)
+* App | Offload your files from device (#1990)
 
 ### Fixes & tech 🚒
 

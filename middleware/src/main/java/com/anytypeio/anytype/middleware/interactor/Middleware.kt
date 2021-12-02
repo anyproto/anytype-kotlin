@@ -1498,4 +1498,11 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
         return response.path
     }
+
+    fun fileListOffload() {
+        val request = Rpc.FileList.Offload.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.fileListOffload(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
 }

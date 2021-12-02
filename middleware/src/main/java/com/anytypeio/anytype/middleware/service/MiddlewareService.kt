@@ -212,4 +212,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun exportLocalStore(request: ExportLocalstore.Request): ExportLocalstore.Response
+
+    @Throws(Exception::class)
+    fun fileListOffload(request: FileList.Offload.Request): FileList.Offload.Response
 }

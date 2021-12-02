@@ -428,21 +428,21 @@ class BlockMiddleware(
         relations: List<Id>
     ): Payload = middleware.removeFromFeaturedRelations(ctx, relations)
 
-    override fun setObjectIsFavorite(
+    override suspend fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
     ): Payload = middleware.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
 
-    override fun setObjectIsArchived(
+    override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
     ): Payload = middleware.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
-    override fun deleteObjects(targets: List<Id>) = middleware.deleteObjects(
+    override suspend fun deleteObjects(targets: List<Id>) = middleware.deleteObjects(
         targets = targets
     )
 
-    override fun setObjectListIsArchived(
+    override suspend fun setObjectListIsArchived(
         targets: List<Id>,
         isArchived: Boolean
     ) = middleware.setObjectListIsArchived(
@@ -450,6 +450,8 @@ class BlockMiddleware(
         isArchived = isArchived
     )
 
-    override fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload =
+    override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload =
         middleware.setObjectLayout(ctx, layout)
+
+    override suspend fun clearFileCache() = middleware.fileListOffload()
 }

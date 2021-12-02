@@ -10,8 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
@@ -44,7 +46,8 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
-        objectType.setOnClickListener { vm.onObjectTypeClicked() }
+        btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
+        btnClearFileCache.setOnClickListener { vm.onClearFileCacheClicked() }
         ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
     }
 
@@ -52,6 +55,12 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
         super.onStart()
         with(lifecycleScope) {
             jobs += subscribe(vm.commands) { observe(it) }
+            jobs += subscribe(vm.isClearFileCacheInProgress) { isInProgress ->
+                if (isInProgress)
+                    clearFileCacheProgressBar.visible()
+                else
+                    clearFileCacheProgressBar.gone()
+            }
         }
     }
 

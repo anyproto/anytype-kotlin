@@ -399,17 +399,17 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         relations: List<Id>
     ): Payload = remote.removeFromFeaturedRelations(ctx, relations)
 
-    override fun setObjectIsFavorite(
+    override suspend fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
     ): Payload = remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
 
-    override fun setObjectIsArchived(
+    override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
     ): Payload = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
-    override fun setObjectListIsArchived(
+    override suspend fun setObjectListIsArchived(
         targets: List<Id>,
         isArchived: Boolean
     ) = remote.setObjectListIsArchived(
@@ -417,8 +417,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         isArchived = isArchived
     )
 
-    override fun deleteObjects(targets: List<Id>) = remote.deleteObjects(targets = targets)
+    override suspend fun deleteObjects(targets: List<Id>) = remote.deleteObjects(targets = targets)
 
-    override fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
+    override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
         remote.setObjectLayout(ctx, layout)
+
+    override suspend fun clearFileCache() = remote.clearFileCache()
 }

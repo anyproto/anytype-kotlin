@@ -850,4 +850,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun fileListOffload(request: FileList.Offload.Request): FileList.Offload.Response {
+        val encoded = Service.fileListOffload(
+            FileList.Offload.Request.ADAPTER.encode(request)
+        )
+        val response = FileList.Offload.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != FileList.Offload.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

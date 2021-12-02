@@ -472,17 +472,17 @@ class BlockDataRepository(
         relations: List<Id>
     ): Payload = factory.remote.removeFromFeaturedRelations(ctx, relations)
 
-    override fun setObjectIsFavorite(
+    override suspend fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
     ): Payload = factory.remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
 
-    override fun setObjectIsArchived(
+    override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
     ): Payload = factory.remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
-    override fun setObjectListIsArchived(
+    override suspend fun setObjectListIsArchived(
         targets: List<Id>,
         isArchived: Boolean
     ) = factory.remote.setObjectListIsArchived(
@@ -490,8 +490,10 @@ class BlockDataRepository(
         isArchived = isArchived
     )
 
-    override fun deleteObjects(targets: List<Id>) = factory.remote.deleteObjects(targets = targets)
+    override suspend fun deleteObjects(targets: List<Id>) = factory.remote.deleteObjects(targets = targets)
 
-    override fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
+    override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
         factory.remote.setObjectLayout(ctx, layout)
+
+    override suspend fun clearFileCache() = factory.remote.clearFileCache()
 }

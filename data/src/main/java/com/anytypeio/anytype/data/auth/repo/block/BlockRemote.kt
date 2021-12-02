@@ -172,11 +172,13 @@ interface BlockRemote {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
-    fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
+    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
 
-    fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
-    fun deleteObjects(targets: List<Id>)
+    suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
+    suspend fun deleteObjects(targets: List<Id>)
 
-    fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
+    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
+
+    suspend fun clearFileCache()
 }

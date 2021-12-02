@@ -50,7 +50,7 @@ ext {
     junit_version = '4.12'
     kluent_version = '1.14'
     timber_junit = '1.0.1'
-    turbine_version = '0.6.1'
+    turbine_version = '0.7.0'
     coroutine_testing_version = '1.4.3'
     live_data_testing_version = '1.2.0'
     mockito_kotlin_version = '3.2.0'

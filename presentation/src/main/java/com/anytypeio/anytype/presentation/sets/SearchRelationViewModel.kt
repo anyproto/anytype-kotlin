@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.relations.simpleRelations
@@ -31,8 +32,7 @@ abstract class SearchRelationViewModel(
         // Initializing views before any query.
         viewModelScope.launch {
             _views.value = objectSetState.value.simpleRelations(session.currentViewerId)
-                .filterNot { notAllowedRelationFormats.contains(it.format) }
-                .filter { !it.isHidden }
+                .filterNot { notAllowedRelations(it) }
         }
         // Searching and mapping views based on query changes.
         viewModelScope.launch {
@@ -49,13 +49,15 @@ abstract class SearchRelationViewModel(
                     }
                 }
                 .mapLatest { relations ->
-                    relations
-                        .filterNot { notAllowedRelationFormats.contains(it.format) }
-                        .filter { !it.isHidden }
+                    relations.filterNot { notAllowedRelations(it) }
                 }
                 .collect { _views.value = it }
         }
     }
+
+    private fun notAllowedRelations(relation: SimpleRelationView): Boolean =
+        notAllowedRelationFormats.contains(relation.format)
+                || (relation.key != Relations.NAME && relation.key != Relations.DONE && relation.isHidden)
 
     fun onSearchQueryChanged(txt: String) {
         viewModelScope.launch { query.send(txt) }

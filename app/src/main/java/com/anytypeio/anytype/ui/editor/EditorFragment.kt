@@ -439,6 +439,38 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.toasts) { toast(it) }
+            jobs += subscribe(vm.snacks) { snack ->
+                when (snack) {
+                    is Snack.ObjectSetNotFound -> {
+                        Snackbar
+                            .make(
+                                root,
+                                resources.getString(R.string.snack_object_set_not_found),
+                                Snackbar.LENGTH_LONG
+                            )
+                            .setActionTextColor(requireContext().color(R.color.orange))
+                            .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
+                            .show()
+                    }
+                }
+            }
+            jobs += subscribe(vm.footers) { footer ->
+                when (footer) {
+                    EditorFooter.None -> {
+                        if (recycler.containsItemDecoration(noteHeaderDecorator)) {
+                            recycler.removeItemDecoration(noteHeaderDecorator)
+                        }
+                    }
+                    EditorFooter.Note -> {
+                        if (!recycler.containsItemDecoration(noteHeaderDecorator)) {
+                            recycler.addItemDecoration(noteHeaderDecorator)
+                        }
+                    }
+                }
+            }
+        }
         vm.onStart(id = extractDocumentId())
         super.onStart()
     }
@@ -723,36 +755,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 else {
                     behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     behavior.state = BottomSheetBehavior.STATE_HIDDEN
-                }
-            }
-            jobs += subscribe(vm.toasts) { toast(it) }
-            jobs += subscribe(vm.snacks) { snack ->
-                when (snack) {
-                    is Snack.ObjectSetNotFound -> {
-                        Snackbar
-                            .make(
-                                root,
-                                resources.getString(R.string.snack_object_set_not_found),
-                                Snackbar.LENGTH_LONG
-                            )
-                            .setActionTextColor(requireContext().color(R.color.orange))
-                            .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
-                            .show()
-                    }
-                }
-            }
-            jobs += subscribe(vm.footers) { footer ->
-                when (footer) {
-                    EditorFooter.None -> {
-                        if (recycler.containsItemDecoration(noteHeaderDecorator)) {
-                            recycler.removeItemDecoration(noteHeaderDecorator)
-                        }
-                    }
-                    EditorFooter.Note -> {
-                        if (!recycler.containsItemDecoration(noteHeaderDecorator)) {
-                            recycler.addItemDecoration(noteHeaderDecorator)
-                        }
-                    }
                 }
             }
         }

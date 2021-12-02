@@ -202,8 +202,8 @@ class EditorViewModel(
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
 
-    private val _toasts: Channel<String> = Channel()
-    val toasts: Flow<String> get() = _toasts.consumeAsFlow()
+    private val _toasts = MutableSharedFlow<String>()
+    val toasts: SharedFlow<String> = _toasts
 
     val snacks = MutableSharedFlow<Snack>(replay = 0)
 
@@ -285,12 +285,12 @@ class EditorViewModel(
         viewModelScope.launch {
             orchestrator.proxies.errors
                 .stream()
-                .collect { _toasts.offer(it.message ?: "Unknown error") }
+                .collect { sendToast(it.message ?: "Unknown error") }
         }
         viewModelScope.launch {
             orchestrator.proxies.toasts
                 .stream()
-                .collect { _toasts.send(it) }
+                .collect { sendToast(it) }
         }
     }
 
@@ -1139,7 +1139,7 @@ class EditorViewModel(
                     target = id
                 )
             } else {
-                if (previous is BlockView.Title) _toasts.offer("Merging with title currently not supported")
+                if (previous is BlockView.Title) sendToast("Merging with title currently not supported")
                 Timber.d("Skipping merge because previous block is not a text block")
             }
         } else {
@@ -1194,19 +1194,19 @@ class EditorViewModel(
                 is BlockView.Media, is BlockView.MediaPlaceholder,
                 is BlockView.Upload -> {
                     if (restrictions.contains(ObjectRestriction.BLOCKS)) {
-                        _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                        sendToast(NOT_ALLOWED_FOR_OBJECT)
                         return
                     }
                 }
                 is BlockView.Relation, is BlockView.FeaturedRelation -> {
                     if (restrictions.contains(ObjectRestriction.RELATIONS)) {
-                        _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                        sendToast(NOT_ALLOWED_FOR_OBJECT)
                         return
                     }
                 }
                 is BlockView.Title -> {
                     if (restrictions.contains(ObjectRestriction.DETAILS)) {
-                        _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                        sendToast(NOT_ALLOWED_FOR_OBJECT)
                         return
                     }
                 }
@@ -1340,7 +1340,7 @@ class EditorViewModel(
             is StylingEvent.Markup.Bold -> {
                 val currentMode = mode
                 if (currentMode is EditorMode.Styling.Multi) {
-                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.BOLD, null)
                 }
@@ -1348,7 +1348,7 @@ class EditorViewModel(
             is StylingEvent.Markup.Italic -> {
                 val currentMode = mode
                 if (currentMode is EditorMode.Styling.Multi) {
-                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.ITALIC, null)
                 }
@@ -1356,7 +1356,7 @@ class EditorViewModel(
             is StylingEvent.Markup.StrikeThrough -> {
                 val currentMode = mode
                 if (currentMode is EditorMode.Styling.Multi) {
-                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.STRIKETHROUGH, null)
                 }
@@ -1364,7 +1364,7 @@ class EditorViewModel(
             is StylingEvent.Markup.Code -> {
                 val currentMode = mode
                 if (currentMode is EditorMode.Styling.Multi) {
-                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.KEYBOARD, null)
                 }
@@ -1372,7 +1372,7 @@ class EditorViewModel(
             is StylingEvent.Markup.Link -> {
                 val currentMode = mode
                 if (currentMode is EditorMode.Styling.Multi) {
-                    _toasts.trySend(ERROR_UNSUPPORTED_BEHAVIOR)
+                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.LINK, null)
                 }
@@ -1628,7 +1628,7 @@ class EditorViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Rename -> {
-                _toasts.trySend("Rename not implemented")
+                sendToast("Rename not implemented")
             }
             ActionItemType.MoveTo -> {
                 onExitActionMode()
@@ -1659,13 +1659,13 @@ class EditorViewModel(
                 dispatch(Command.PopBackStack)
             }
             ActionItemType.Replace -> {
-                _toasts.offer("Replace not implemented")
+                sendToast("Replace not implemented")
             }
             ActionItemType.AddCaption -> {
-                _toasts.offer("Add caption not implemented")
+                sendToast("Add caption not implemented")
             }
             ActionItemType.Divider -> {
-                _toasts.offer("not implemented")
+                sendToast("not implemented")
             }
             ActionItemType.TurnIntoPage -> {
                 proceedWithTurningIntoDocument(targets = listOf(id))
@@ -1777,7 +1777,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Undo(
                     context = context,
-                    onUndoExhausted = { _toasts.offer("Nothing to undo.") }
+                    onUndoExhausted = { sendToast("Nothing to undo.") }
                 )
             )
         }
@@ -1789,7 +1789,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
                     context = context,
-                    onRedoExhausted = { _toasts.offer("Nothing to redo.") }
+                    onRedoExhausted = { sendToast("Nothing to redo.") }
                 )
             )
         }
@@ -2107,12 +2107,12 @@ class EditorViewModel(
         val target = focus.id
         if (target.isNotEmpty()) {
             when (views.find { it.id == target }) {
-                is BlockView.Title -> _toasts.trySend(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
-                is BlockView.Description -> _toasts.trySend(CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION)
+                is BlockView.Title -> sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
+                is BlockView.Description -> sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION)
                 is BlockView.Code -> {
                     val selection = orchestrator.stores.textSelection.current().selection
                     if (selection != null && selection.first != selection.last) {
-                        _toasts.trySend(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
+                        sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
                     } else {
                         proceedWithStyleToolbarEvent()
                     }
@@ -2158,8 +2158,8 @@ class EditorViewModel(
                 eventName = POPUP_STYLE
             )
         } else {
-            _toasts.trySend("Target block for style menu not found.")
             Timber.e("Target block for style menu not found. Target id: $target")
+            sendToast("Target block for style menu not found.")
         }
     }
 
@@ -2268,10 +2268,10 @@ class EditorViewModel(
         val view = views.find { it.id == target } ?: return
         when (view) {
             is BlockView.Title -> {
-                _toasts.trySend(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
+                sendToast(CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR)
             }
             is BlockView.Description -> {
-                _toasts.trySend(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
+                sendToast(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
             }
             else -> {
                 viewModelScope.sendEvent(
@@ -2376,7 +2376,7 @@ class EditorViewModel(
         proceedUpdateBlockStyle(
             targets = listOf(target),
             uiBlock = uiBlock,
-            errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
+            errorAction = { sendToast("Cannot convert block to $uiBlock") }
         )
         dispatch(Command.PopBackStack)
     }
@@ -2387,14 +2387,14 @@ class EditorViewModel(
             proceedUpdateBlockStyle(
                 targets = listOf(eMode.target),
                 uiBlock = uiBlock,
-                errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
+                errorAction = { sendToast("Cannot convert block to $uiBlock") }
             )
         }
         (mode as? EditorMode.Styling.Multi)?.let {
             proceedUpdateBlockStyle(
                 targets = currentSelection().toList(),
                 uiBlock = uiBlock,
-                errorAction = { _toasts.offer("Cannot convert block to $uiBlock") }
+                errorAction = { sendToast("Cannot convert block to $uiBlock") }
             )
         }
     }
@@ -2651,11 +2651,11 @@ class EditorViewModel(
             if (target != null) {
                 proceedWithOpeningObjectByLayout(target = target)
             } else {
-                _toasts.offer("Couldn't find the target of the link")
+                sendToast("Couldn't find the target of the link")
                 Timber.e("Error while getting target of Block Page")
             }
         } else {
-            _toasts.offer("Still syncing...")
+            sendToast("Still syncing...")
         }
     }
 
@@ -2675,9 +2675,7 @@ class EditorViewModel(
                 proceedWithOpeningSet(target = target)
             }
             else -> {
-                viewModelScope.launch {
-                    _toasts.send("Cannot open object with layout: ${wrapper.layout}")
-                }
+                sendToast("Cannot open object with layout: ${wrapper.layout}")
             }
         }
     }
@@ -3088,22 +3086,22 @@ class EditorViewModel(
 
         if (selected.contains(target)) {
             if (position == Position.INNER) {
-                _toasts.offer(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
+                sendToast(CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR)
             } else if (selected.size == 1) {
-                _toasts.offer(CANNOT_MOVE_BLOCK_ON_SAME_POSITION)
+                sendToast(CANNOT_MOVE_BLOCK_ON_SAME_POSITION)
             }
             return
         }
 
         if (selected.contains(parent)) {
-            _toasts.offer(CANNOT_MOVE_PARENT_INTO_CHILD)
+            sendToast(CANNOT_MOVE_PARENT_INTO_CHILD)
             return
         }
 
         if (position == Position.INNER) {
 
             if (!targetBlock.supportNesting()) {
-                _toasts.offer(CANNOT_BE_PARENT_ERROR)
+                sendToast(CANNOT_BE_PARENT_ERROR)
                 return
             }
 
@@ -3387,7 +3385,7 @@ class EditorViewModel(
             is ListenerType.Relation.Related -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
                 if (restrictions.contains(ObjectRestriction.RELATIONS)) {
-                    _toasts.offer(NOT_ALLOWED_FOR_RELATION)
+                    sendToast(NOT_ALLOWED_FOR_RELATION)
                     Timber.d("No interaction allowed with this relation")
                     return
                 }
@@ -3396,7 +3394,7 @@ class EditorViewModel(
                         val relationId = (clicked.value as BlockView.Relation.Related).view.relationId
                         val relation = orchestrator.stores.relations.current().first { it.key == relationId }
                         if (relation.isReadOnly) {
-                            _toasts.offer(NOT_ALLOWED_FOR_RELATION)
+                            sendToast(NOT_ALLOWED_FOR_RELATION)
                             Timber.d("No interaction allowed with this relation")
                             return
                         }
@@ -3444,7 +3442,7 @@ class EditorViewModel(
             is ListenerType.Relation.Featured -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
                 if (restrictions.contains(ObjectRestriction.RELATIONS)) {
-                    _toasts.trySend(NOT_ALLOWED_FOR_RELATION)
+                    sendToast(NOT_ALLOWED_FOR_RELATION)
                     return
                 }
                 when (mode) {
@@ -3452,7 +3450,7 @@ class EditorViewModel(
                         val relationId = clicked.relation.relationId
                         val relation = orchestrator.stores.relations.current().first { it.key == relationId }
                         if (relation.isReadOnly) {
-                            _toasts.trySend(NOT_ALLOWED_FOR_RELATION)
+                            sendToast(NOT_ALLOWED_FOR_RELATION)
                             return
                         }
                         when (relation.format) {
@@ -3515,7 +3513,7 @@ class EditorViewModel(
             is ListenerType.Relation.ObjectType -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
                 if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
-                    _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+                    sendToast(NOT_ALLOWED_FOR_OBJECT)
                     Timber.d("No interaction allowed with this object type")
                     return
                 }
@@ -3576,8 +3574,8 @@ class EditorViewModel(
             return
         }
         if (filePath.endsWith(FORMAT_WEBP, true)) {
-            _toasts.trySend(ERROR_UNSUPPORTED_WEBP)
             Timber.d("onProceedWithFilePath, not allowed to add WEBP format")
+            sendToast(ERROR_UNSUPPORTED_WEBP)
             return
         }
         viewModelScope.launch {
@@ -3600,7 +3598,7 @@ class EditorViewModel(
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
             dispatch(Command.OpenDocumentEmojiIconPicker(target = context))
         } else {
-            _toasts.offer(NOT_ALLOWED_FOR_OBJECT)
+            sendToast(NOT_ALLOWED_FOR_OBJECT)
         }
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -3648,7 +3646,7 @@ class EditorViewModel(
 
         Timber.d("startDownloadingFile, id:[$id]")
 
-        _toasts.offer("Downloading file in background...")
+        sendToast("Downloading file in background...")
 
         val block = blocks.firstOrNull { it.id == id }
         val content = block?.content
@@ -3738,6 +3736,12 @@ class EditorViewModel(
         }
     }
 
+    private fun sendToast(msg: String) {
+        viewModelScope.launch {
+            _toasts.emit(msg)
+        }
+    }
+
     /**
      * Return true, when mention menu is closed, and we need absorb back button click
      */
@@ -3800,7 +3804,7 @@ class EditorViewModel(
     fun onObjectTypeChanged(id: Id?) {
         Timber.d("onObjectTypeChanged, typeId:[$id]")
         if (id == null) {
-            _toasts.offer(CANNOT_CHANGE_NULL_OBJECT_TYPE)
+            sendToast(CANNOT_CHANGE_NULL_OBJECT_TYPE)
             return
         }
         viewModelScope.launch {
@@ -4334,7 +4338,7 @@ class EditorViewModel(
     private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type, targetId: Id) {
         when (item) {
             is SlashItem.Style.Type.Callout -> {
-                _toasts.offer("Callout not implemented")
+                sendToast("Callout not implemented")
             }
             else -> {
                 val uiBlock = item.convertToUiBlock()
@@ -4350,7 +4354,7 @@ class EditorViewModel(
         when (item) {
             SlashItem.Actions.CleanStyle -> {
                 viewModelScope.launch {
-                    _toasts.offer("CleanStyle not implemented")
+                    sendToast("CleanStyle not implemented")
                 }
             }
             SlashItem.Actions.Copy -> {
@@ -4663,7 +4667,7 @@ class EditorViewModel(
             }
         } else {
             Timber.e("Can't find target block for link")
-            _toasts.offer("Error while creating link")
+            sendToast("Error while creating link")
         }
     }
 
@@ -4773,7 +4777,7 @@ class EditorViewModel(
                 proceedWithExitingMultiSelectMode()
             }
             else -> {
-                _toasts.trySend("TODO")
+                sendToast("TODO")
             }
         }
     }
@@ -4879,11 +4883,11 @@ class EditorViewModel(
                         clearSelections()
                         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
                     },
-                    errorAction = { _toasts.offer("Cannot convert selected blocks to PAGE") }
+                    errorAction = { sendToast("Cannot convert selected blocks to PAGE") }
                 )
             }
             else -> {
-                _toasts.offer("Cannot turn selected blocks into page")
+                sendToast("Cannot turn selected blocks into page")
             }
         }
 
@@ -4941,7 +4945,7 @@ class EditorViewModel(
                 clearSelections()
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
             },
-            errorAction = { _toasts.offer("Cannot convert selected blocks to $uiBlock") }
+            errorAction = { sendToast("Cannot convert selected blocks to $uiBlock") }
         )
     }
 
@@ -5170,7 +5174,7 @@ class EditorViewModel(
         val descendants = blocks.asMap().descendants(parent = dragged)
 
         if (descendants.contains(target)) {
-            _toasts.trySend(CANNOT_MOVE_PARENT_INTO_CHILD)
+            sendToast(CANNOT_MOVE_PARENT_INTO_CHILD)
             return
         }
 

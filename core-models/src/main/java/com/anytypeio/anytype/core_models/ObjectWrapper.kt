@@ -63,5 +63,15 @@ sealed class ObjectWrapper {
         val fileExt: String? by default
 
         val fileMimeType: String? by default
+
+        inline fun <reified T> getValue(relation: Id) : T? {
+            val value = map.getOrDefault(relation, null)
+            return if (value is T)
+                value
+            else
+                null
+        }
+
+        val description: String? by default
     }
 }

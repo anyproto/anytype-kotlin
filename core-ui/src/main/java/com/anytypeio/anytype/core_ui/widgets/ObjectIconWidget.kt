@@ -237,7 +237,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         ivImage.invisible()
     }
 
-    fun removeIcon() {
+    private fun removeIcon() {
         ivEmoji.setImageDrawable(null)
         ivImage.setImageDrawable(null)
         ivCheckbox.invisible()

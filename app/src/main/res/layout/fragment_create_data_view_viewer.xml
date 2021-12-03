@@ -13,42 +13,62 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="6dp"/>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="6dp">
+    <TextView
+        style="@style/DefaultDataViewModalHeaderStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:text="@string/new_view" />
 
-        <TextView
-            style="@style/DefaultDataViewModalHeaderStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/new_view" />
-
-    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:textSize="@dimen/sp_13"
+        android:textColor="#929082"
+        android:layout_marginTop="23dp"
+        android:text="@string/name" />
 
     <EditText
         android:id="@+id/viewerNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="6dp"
         android:background="@null"
-        android:hint="@string/name"
-        android:maxLines="1"
+        android:hint="@string/new_view"
         android:singleLine="true"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:fontFamily="@font/inter_bold"
         android:textColorHint="@color/gray"
         android:textCursorDrawable="@drawable/cursor"
-        android:textSize="17sp" />
+        android:textSize="22sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/viewer_divider" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:textSize="@dimen/sp_13"
+        android:textColor="#929082"
+        android:layout_marginTop="27dp"
+        android:text="@string/viewer_as" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="8dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
+        android:id="@+id/gridContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -86,10 +106,10 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="44dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
+        android:id="@+id/galleryContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -121,24 +141,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:src="@drawable/ic_viewer_chosen"
-            android:visibility="invisible" />
-
-        <TextView
-            style="@style/DataViewComingSoonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:text="@string/coming_soon" />
+            android:visibility="visible" />
 
     </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="44dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
+        android:id="@+id/listContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -170,21 +183,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:src="@drawable/ic_viewer_chosen"
-            android:visibility="invisible" />
-
-        <TextView
-            style="@style/DataViewComingSoonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:text="@string/coming_soon" />
+            android:visibility="visible" />
 
     </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="44dp"
         android:background="@color/viewer_divider" />
 
     <FrameLayout
@@ -226,17 +231,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:text="@string/coming_soon" />
+            android:textAllCaps="true"
+            android:text="@string/soon" />
 
     </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/viewer_divider" />
 
     <TextView
         android:id="@+id/btnCreateViewer"
         style="@style/DefaultSolidButtonStyle"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="40dp"
         android:text="@string/create"
         android:textSize="17sp" />
 

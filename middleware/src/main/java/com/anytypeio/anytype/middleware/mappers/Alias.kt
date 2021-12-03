@@ -24,6 +24,7 @@ typealias MBSplitMode = anytype.Rpc.Block.Split.Request.Mode
 typealias MDV = anytype.model.Block.Content.Dataview
 typealias MDVView = anytype.model.Block.Content.Dataview.View
 typealias MDVViewType = anytype.model.Block.Content.Dataview.View.Type
+typealias MDVViewCardSize = anytype.model.Block.Content.Dataview.View.Size
 typealias MDVSort = anytype.model.Block.Content.Dataview.Sort
 typealias MDVSortType = anytype.model.Block.Content.Dataview.Sort.Type
 typealias MDVFilter = anytype.model.Block.Content.Dataview.Filter

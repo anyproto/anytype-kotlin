@@ -52,7 +52,30 @@
         layout="@layout/item_viewer_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/galleryView"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+
+    <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewWidget
+        android:id="@+id/galleryView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingTop="10dp"
+        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+
+    <com.anytypeio.anytype.core_ui.widgets.dv.ListViewWidget
+        android:id="@+id/listView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingTop="10dp"
+        android:paddingEnd="@dimen/dp_20"
+        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
@@ -74,7 +97,7 @@
         android:id="@+id/paginatorToolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/default_toolbar_height"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -104,5 +127,14 @@
     <include
         android:id="@+id/topToolbar"
         layout="@layout/layout_object_set_top_toolbar" />
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_toolbar_height"
+        app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

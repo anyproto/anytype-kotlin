@@ -247,15 +247,16 @@ data class Block(
                 val type: Type,
                 val sorts: List<Sort>,
                 val filters: List<Filter>,
-                val viewerRelations: List<ViewerRelation>
+                val viewerRelations: List<ViewerRelation>,
+                val cardSize: Size = Size.SMALL,
+                val hideIcon: Boolean = false,
+                val coverFit: Boolean = false,
+                val coverRelationKey: String? = null
             ) {
+
                 enum class Type { GRID, LIST, GALLERY, BOARD }
 
-                data class Component(
-                    val root: Id,
-                    val block: Block,
-                    val isReadOnly: Boolean
-                )
+                enum class Size { SMALL, MEDIUM, LARGE }
 
                 //relations fields/columns options, also used to provide the order
                 data class ViewerRelation(

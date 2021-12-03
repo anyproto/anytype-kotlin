@@ -40,17 +40,6 @@
             android:text="@string/done"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/sheet_top"
-            android:layout_gravity="center"
-            android:fontFamily="@font/inter_semibold"
-            android:text="@string/edit_relations_title"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
-
         <ImageView
             android:id="@+id/iconAdd"
             android:layout_width="wrap_content"
@@ -67,7 +56,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="18dp"
         android:layout_marginEnd="8dp"
         tools:listitem="@layout/item_modify_viewer_relation_order" />
 

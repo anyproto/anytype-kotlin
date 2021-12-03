@@ -67,7 +67,6 @@
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         </dialog>
-
         <dialog
             android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
             android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
@@ -112,6 +111,14 @@
             android:id="@+id/objectSetCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment"
             android:label="Object-Cover-Screen"/>
+        <dialog
+            android:id="@+id/viewerCardSizeSelectFragment"
+            android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment"
+            android:label="ViewCardSizeSelectFragment" />
+        <dialog
+            android:id="@+id/viewerImagePreviewSelectFragment"
+            android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment"
+            android:label="ViewerCoverSelectFragment" />
     </navigation>
 
     <fragment

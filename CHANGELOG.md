@@ -11,6 +11,10 @@
 
 Editor | Fix | Numbered block pattern triggered when not needed due to an incorrect regex pattern (#1987)
 
+### Design & UX 🔳
+
+* Sets | Bottom navigation panel is there, at last! (#1988)
+
 ## Version 0.4.4
 
 ### Design & UX 🔳

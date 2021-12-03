@@ -44,6 +44,13 @@
         <attr name="icon" format="reference" />
     </declare-styleable>
     <declare-styleable name="TextInputWidget">
-        <attr name="ignoreDragAndDrop" format="boolean"/>
+        <attr name="ignoreDragAndDrop" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="GalleryViewContentWidget">
+        <attr name="firstItemMargin" format="dimension" />
+        <attr name="itemIntervalMargin" format="dimension" />
+        <attr name="marginAfterIcon" format="dimension"/>
+        <attr name="marginAfterText" format="dimension"/>
+        <attr name="defaultTextSize" format="dimension"/>
     </declare-styleable>
 </resources>

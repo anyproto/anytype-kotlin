@@ -7,6 +7,8 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
+import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
+import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
 import com.anytypeio.anytype.di.main.MainComponent
 
 class ComponentManager(private val main: MainComponent) {
@@ -394,6 +396,22 @@ class ComponentManager(private val main: MainComponent) {
             .get(ctx)
             .viewerRelationsComponent()
             .module(ViewerRelationsModule)
+            .build()
+    }
+
+    val viewerCardSizeSelectComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerCardSizeSelectComponent()
+            .module(ViewerCardSizeSelectModule)
+            .build()
+    }
+
+    val viewerImagePreviewSelectComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .viewerImagePreviewSelectComponent()
+            .module(ViewerImagePreviewSelectModule)
             .build()
     }
 

@@ -853,4 +853,27 @@
         <item name="android:textSize">17sp</item>
     </style>
 
+    <!-- List View -->
+    <style name="ListViewItemPrimaryStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="ListViewItemSecondaryStyle">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="maxLines">1</item>
+        <item name="maxCharacterCount">40</item>
+        <item name="singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ViewerSettingOptionTextStyle">
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

@@ -316,7 +316,15 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     type = type.toCoreModels(),
     sorts = sorts.map { it.toCoreModels() },
     filters = filters.map { it.toCoreModels() },
-    viewerRelations = relations.map { it.toCoreModels() }
+    viewerRelations = relations.map { it.toCoreModels() },
+    cardSize = when(cardSize) {
+        MDVViewCardSize.Small -> DVViewerCardSize.SMALL
+        MDVViewCardSize.Medium -> DVViewerCardSize.MEDIUM
+        MDVViewCardSize.Large -> DVViewerCardSize.LARGE
+    },
+    hideIcon = hideIcon,
+    coverFit = coverFit,
+    coverRelationKey = coverRelationKey.ifEmpty { null }
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(

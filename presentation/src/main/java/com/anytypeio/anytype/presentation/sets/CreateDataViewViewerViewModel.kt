@@ -11,10 +11,9 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -22,34 +21,29 @@ class CreateDataViewViewerViewModel(
     private val addDataViewViewer: AddDataViewViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics
-) : ViewModel() {
+) : BaseViewModel() {
 
-    val state = MutableStateFlow(STATE_IDLE)
-
-    private val _toasts = MutableSharedFlow<String>()
-    val toasts: SharedFlow<String> = _toasts
+    val state = MutableStateFlow<ViewState>(ViewState.Init)
+    private var dvType = DVViewerType.GRID
 
     fun onAddViewer(
         name: String,
         ctx: String,
-        target: String
+        target: String,
     ) {
-        state.value = STATE_LOADING
         viewModelScope.launch {
             val start = System.currentTimeMillis()
-            val type = DVViewerType.GRID
             addDataViewViewer(
                 AddDataViewViewer.Params(
                     ctx = ctx,
                     target = target,
                     name = name.ifEmpty { "Untitled" },
-                    type = type
+                    type = dvType
                 )
             ).process(
-                failure = {
-                    Timber.e(it, ERROR_ADD_NEW_VIEW).also {
-                        _toasts.emit(ERROR_ADD_NEW_VIEW)
-                        state.value = STATE_ERROR
+                failure = { error ->
+                    Timber.e(error, ERROR_ADD_NEW_VIEW).also {
+                        state.value = ViewState.Error(ERROR_ADD_NEW_VIEW)
                     }
                 },
                 success = {
@@ -58,12 +52,27 @@ class CreateDataViewViewerViewModel(
                         eventName = SETS_VIEWER_CREATE,
                         startTime = start,
                         middleTime = System.currentTimeMillis(),
-                        props = Props(mapOf(PROP_VIEWER_TYPE to type.name))
+                        props = Props(mapOf(PROP_VIEWER_TYPE to dvType.name))
                     )
-                    dispatcher.send(it).also { state.value = STATE_COMPLETED }
+                    dispatcher.send(it).also { state.value = ViewState.Completed }
                 }
             )
         }
+    }
+
+    fun onGridClicked() {
+        dvType = DVViewerType.GRID
+        state.value = ViewState.Grid
+    }
+
+    fun onListClicked() {
+        dvType = DVViewerType.LIST
+        state.value = ViewState.List
+    }
+
+    fun onGalleryClicked() {
+        dvType = DVViewerType.GALLERY
+        state.value = ViewState.Gallery
     }
 
 
@@ -84,10 +93,14 @@ class CreateDataViewViewerViewModel(
 
     companion object {
         const val ERROR_ADD_NEW_VIEW = "Error while creating a new data view view"
+    }
 
-        const val STATE_IDLE = 0
-        const val STATE_LOADING = 1
-        const val STATE_COMPLETED = 2
-        const val STATE_ERROR = 3
+    sealed class ViewState {
+        object Init : ViewState()
+        object Completed : ViewState()
+        object Grid : ViewState()
+        object Gallery : ViewState()
+        object List : ViewState()
+        data class Error(val msg: String) : ViewState()
     }
 }

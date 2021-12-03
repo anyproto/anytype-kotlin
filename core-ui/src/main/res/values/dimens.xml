@@ -79,12 +79,14 @@
     <dimen name="modal_property_text_from_icon_margin">4dp</dimen>
     <dimen name="modal_property_hide_forward_margin">20dp</dimen>
 
+    <dimen name="sp_12">12sp</dimen>
     <dimen name="sp_13">13sp</dimen>
-
+    <dimen name="dp_2">2dp</dimen>
     <dimen name="dp_4">4dp</dimen>
     <dimen name="dp_6">6dp</dimen>
     <dimen name="dp_8">8dp</dimen>
     <dimen name="dp_10">10dp</dimen>
+    <dimen name="dp_1">1dp</dimen>
     <dimen name="dp_16">16dp</dimen>
     <dimen name="dp_12">12dp</dimen>
     <dimen name="dp_48">48dp</dimen>
@@ -197,5 +199,7 @@
     <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
     <dimen name="default_cover_height">200dp</dimen>
     <dimen name="dp_14">14dp</dimen>
+    <dimen name="defaultGalleryViewTextSize">12sp</dimen>
+    <dimen name="defaultGalleryViewAvatarTextSize">11sp</dimen>
 
 </resources>

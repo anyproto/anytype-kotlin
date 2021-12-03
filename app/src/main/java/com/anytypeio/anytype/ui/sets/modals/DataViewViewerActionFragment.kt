@@ -50,8 +50,7 @@ class DataViewViewerActionFragment : BaseDialogFragment() {
             subscribe(editViewContainer.clicks()) {
                 val fr = EditDataViewViewerFragment.new(
                     ctx = ctx,
-                    viewer = viewer,
-                    name = title
+                    viewer = viewer
                 )
                 fr.show(parentFragmentManager, null)
             }

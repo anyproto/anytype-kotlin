@@ -9,12 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.CreateDataViewViewerViewModel
-import com.anytypeio.anytype.presentation.sets.CreateDataViewViewerViewModel.Companion.STATE_COMPLETED
 import kotlinx.android.synthetic.main.fragment_create_data_view_viewer.*
 import javax.inject.Inject
 
@@ -43,13 +41,48 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment() {
                     target = target
                 )
             }
+            subscribe(gridContainer.clicks()) { vm.onGridClicked() }
+            subscribe(galleryContainer.clicks()) { vm.onGalleryClicked() }
+            subscribe(listContainer.clicks()) { vm.onListClicked() }
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        lifecycleScope.subscribe(vm.state) { state ->
-            if (state == STATE_COMPLETED) dismiss()
+    override fun onStart() {
+        with(lifecycleScope) {
+            jobs += subscribe(vm.state) { render(it) }
+        }
+        super.onStart()
+    }
+
+    private fun render(state: CreateDataViewViewerViewModel.ViewState) {
+        when (state) {
+            CreateDataViewViewerViewModel.ViewState.Init -> {
+                isListChosen.invisible()
+                isTableChosen.visible()
+                isGalleryChosen.invisible()
+            }
+            CreateDataViewViewerViewModel.ViewState.Completed -> {
+                dismiss()
+            }
+            is CreateDataViewViewerViewModel.ViewState.Error -> {
+                toast(state.msg)
+            }
+            CreateDataViewViewerViewModel.ViewState.Gallery -> {
+                isListChosen.invisible()
+                isTableChosen.invisible()
+                isGalleryChosen.visible()
+            }
+            CreateDataViewViewerViewModel.ViewState.Grid -> {
+                isListChosen.invisible()
+                isTableChosen.visible()
+                isGalleryChosen.invisible()
+            }
+
+            CreateDataViewViewerViewModel.ViewState.List -> {
+                isListChosen.visible()
+                isTableChosen.invisible()
+                isGalleryChosen.invisible()
+            }
         }
     }
 

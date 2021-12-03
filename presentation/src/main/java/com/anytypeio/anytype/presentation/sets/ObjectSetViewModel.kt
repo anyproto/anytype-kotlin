@@ -1001,6 +1001,28 @@ class ObjectSetViewModel(
         reducer.clear()
     }
 
+    fun onHomeButtonClicked() {
+        viewModelScope.launch {
+            closeBlock(CloseBlock.Params(context)).process(
+                success = { dispatch(AppNavigation.Command.ExitToDesktop) },
+                failure = { Timber.e(it, "Error while closing object set: $context") }
+            )
+        }
+    }
+
+    fun onBackButtonClicked() {
+        proceedWithExiting()
+    }
+
+    fun onSearchButtonClicked() {
+        viewModelScope.launch {
+            closeBlock(CloseBlock.Params(context)).process(
+                success = { dispatch(AppNavigation.Command.OpenPageSearch) },
+                failure = { Timber.e(it, "Error while closing object set: $context") }
+            )
+        }
+    }
+
     companion object {
         const val TITLE_CHANNEL_DISPATCH_DELAY = 300L
         const val NOT_ALLOWED = "Not allowed for this set"

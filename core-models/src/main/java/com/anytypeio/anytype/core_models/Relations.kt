@@ -30,6 +30,8 @@ object Relations {
     const val SET_OF = "setOf"
     const val IS_HIGHLIGHTED = "isHighlighted"
 
+    const val PAGE_COVER = "pageCover"
+
     val defaultRelations = listOf(
         ID,
         NAME,

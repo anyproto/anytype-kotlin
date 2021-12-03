@@ -116,8 +116,7 @@ class ManageViewerFragment : BaseBottomSheetFragment(), OnStartDragListener {
             is ManageViewerViewModel.Command.OpenEditScreen -> {
                 val dialog = EditDataViewViewerFragment.new(
                     ctx = ctx,
-                    viewer = command.id,
-                    name = command.name
+                    viewer = command.id
                 )
                 dialog.show(parentFragmentManager, null)
             }

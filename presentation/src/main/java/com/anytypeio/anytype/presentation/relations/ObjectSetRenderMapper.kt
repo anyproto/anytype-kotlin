@@ -13,6 +13,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewState
+import com.anytypeio.anytype.presentation.sets.buildGalleryViews
+import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.model.*
 import timber.log.Timber
@@ -49,6 +51,25 @@ fun ObjectSet.render(
 
     val viewer = if (index >= 0) dv.viewers[index] else dv.viewers.first()
 
+    if (viewer.type == DVViewerType.GALLERY) {
+        val records = viewerDb[viewer.id]?.records ?: emptyList()
+        val view = Viewer.GalleryView(
+            id = viewer.id,
+            items = viewer.buildGalleryViews(
+                objects = records.map { ObjectWrapper.Basic(it) },
+                details = details,
+                relations = dv.relations,
+                urlBuilder = builder
+            ),
+            title = viewer.name,
+            largeCards = viewer.cardSize != DVViewerCardSize.SMALL
+        )
+        return ObjectSetViewState(
+            title = title(ctx = ctx, urlBuilder = builder),
+            viewer = view
+        )
+    }
+
     val vmap = viewer.viewerRelations.associateBy { it.key }
 
     val relations = dv.relations.filter { relation ->
@@ -83,6 +104,25 @@ fun ObjectSet.render(
                 name = viewer.name,
                 columns = columns,
                 rows = rows
+            )
+        }
+        Block.Content.DataView.Viewer.Type.GALLERY -> {
+            Viewer.GalleryView(
+                id = viewer.id,
+                items = emptyList(),
+                title = viewer.name
+            )
+        }
+        Block.Content.DataView.Viewer.Type.LIST -> {
+            Viewer.ListView(
+                id = viewer.id,
+                items = viewer.buildListViews(
+                    objects = (viewerDb[viewer.id]?.records ?: emptyList()).map { ObjectWrapper.Basic(it) },
+                    details = details,
+                    relations = relations,
+                    urlBuilder = builder
+                ),
+                title = viewer.name
             )
         }
         else -> {

@@ -230,7 +230,15 @@ fun Block.Content.DataView.Viewer.toMiddlewareModel(): MDVView =
         type = type.toMiddlewareModel(),
         sorts = sorts.map { it.toMiddlewareModel() },
         filters = filters.map { it.toMiddlewareModel() },
-        relations = viewerRelations.map { it.toMiddlewareModel() }
+        relations = viewerRelations.map { it.toMiddlewareModel() },
+        coverRelationKey = coverRelationKey.orEmpty(),
+        coverFit = coverFit,
+        hideIcon = hideIcon,
+        cardSize = when(cardSize) {
+            Block.Content.DataView.Viewer.Size.SMALL -> MDVViewCardSize.Small
+            Block.Content.DataView.Viewer.Size.MEDIUM -> MDVViewCardSize.Medium
+            Block.Content.DataView.Viewer.Size.LARGE -> MDVViewCardSize.Large
+        }
     )
 
 fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (this) {

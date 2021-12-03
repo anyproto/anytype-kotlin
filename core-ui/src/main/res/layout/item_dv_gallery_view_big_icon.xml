@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/rect_data_view_gallery_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:checkboxSize="@dimen/list_item_object_checkbox_size"
+        app:hasEmojiRounded8Background="true"
+        app:hasInitialRounded8Background="true"
+        app:emojiSize="@dimen/list_item_object_emoji_size"
+        app:imageSize="@dimen/list_item_object_icon_height"
+        app:initialTextSize="@dimen/list_item_object_initials_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/inter_medium"
+        android:hint="@string/untitled"
+        android:maxLines="3"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/objectIcon" />
+
+    <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
+        android:id="@+id/contentContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="13dp"
+        app:firstItemMargin="16dp"
+        app:itemIntervalMargin="6dp"
+        app:marginAfterIcon="4dp"
+        app:marginAfterText="6dp"
+        app:defaultTextSize="@dimen/defaultGalleryViewTextSize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

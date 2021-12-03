@@ -3,17 +3,14 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DVViewer
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.dataview.interactor.*
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -21,56 +18,38 @@ class EditDataViewViewerViewModel(
     private val renameDataViewViewer: RenameDataViewViewer,
     private val deleteDataViewViewer: DeleteDataViewViewer,
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
+    private val updateDataViewViewer: UpdateDataViewViewer,
     private val setActiveViewer: SetActiveViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetState: StateFlow<ObjectSet>,
     private val objectSetSession: ObjectSetSession
-) : ViewModel() {
+) : BaseViewModel() {
 
-    private val viewerNameUpdatePipeline = Channel<ViewerNameUpdate>()
-
+    val viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
+    val isLoading = MutableStateFlow(false)
     val popupCommands = MutableSharedFlow<PopupMenuCommand>(replay = 0)
 
-    private val _toasts = MutableSharedFlow<String>()
-    val toasts: SharedFlow<String> = _toasts
+    var initialName: String = ""
+    var initialType: DVViewerType = DVViewerType.GRID
 
-    init {
-        runViewerNameUpdatePipeline()
-    }
+    private var viewerType: DVViewerType = DVViewerType.GRID
+    private var viewerName: String = ""
 
-    private fun runViewerNameUpdatePipeline() {
-        viewModelScope.launch {
-            viewerNameUpdatePipeline
-                .consumeAsFlow()
-                .distinctUntilChanged()
-                .mapLatest { update ->
-                    renameDataViewViewer(
-                        RenameDataViewViewer.Params(
-                            context = update.ctx,
-                            target = update.dataview,
-                            viewer = update.viewer.copy(name = update.name)
-                        )
-                    ).process(
-                        failure = { Timber.e(it, "Error while renaming viewer") },
-                        success = { dispatcher.send(it) }
-                    )
-                }
-                .collect()
+    fun onStart(viewerId: Id) {
+        val viewer = objectSetState.value.viewers.firstOrNull { it.id == viewerId }
+        if (viewer != null) {
+            initialName = viewer.name
+            initialType = viewer.type
+            viewState.value = ViewState.Name(viewer.name)
+            updateViewState(viewer.type)
+        } else {
+            Timber.e("Can't find viewer by id : $viewerId")
         }
     }
 
-    fun onViewerNameChanged(ctx: Id, viewer: Id, name: String) {
-        viewModelScope.launch {
-            viewerNameUpdatePipeline.send(
-                ViewerNameUpdate(
-                    ctx = ctx,
-                    viewer = objectSetState.value.viewers.first { it.id == viewer },
-                    name = name,
-                    dataview = objectSetState.value.dataview.id
-                )
-            )
-        }
+    fun onViewerNameChanged(name: String) {
+        viewerName = name
     }
 
     fun onDuplicateClicked(ctx: Id, viewer: Id) {
@@ -187,14 +166,67 @@ class EditDataViewViewerViewModel(
         }
     }
 
-    fun onDoneClicked() {
-        viewModelScope.launch { isDismissed.emit(true) }
+    fun onDoneClicked(ctx: Id, viewerId: Id) {
+        if (initialName != viewerName || initialType != viewerType) {
+            updateDVViewerType(ctx, viewerId, viewerType, viewerName)
+        } else {
+            viewModelScope.launch { isDismissed.emit(true) }
+        }
+    }
+
+    fun onGridClicked() {
+        updateViewState(DVViewerType.GRID)
+    }
+
+    fun onListClicked() {
+        updateViewState(DVViewerType.LIST)
+    }
+
+    fun onGalleryClicked() {
+        updateViewState(DVViewerType.GALLERY)
+    }
+
+    private fun updateDVViewerType(ctx: Id, viewerId: Id, type: DVViewerType, name: String) {
+        val state = objectSetState.value
+        val viewer = state.viewers.first { it.id == viewerId }
+        viewModelScope.launch {
+            isLoading.value = true
+            updateDataViewViewer(
+                UpdateDataViewViewer.Params(
+                    context = ctx,
+                    target = state.dataview.id,
+                    viewer = viewer.copy(type = type, name = name)
+                )
+            ).process(
+                success = { payload ->
+                    dispatcher.send(payload)
+                    isLoading.value = false
+                    isDismissed.emit(true)
+                },
+                failure = {
+                    isLoading.value = false
+                    Timber.e(it, "Error while updating Viewer type")
+                    isDismissed.emit(true)
+                }
+            )
+        }
+    }
+
+    private fun updateViewState(type: DVViewerType) {
+        viewerType = type
+        viewState.value = when (type) {
+            Block.Content.DataView.Viewer.Type.GRID -> ViewState.Grid
+            Block.Content.DataView.Viewer.Type.LIST -> ViewState.List
+            Block.Content.DataView.Viewer.Type.GALLERY -> ViewState.Gallery
+            Block.Content.DataView.Viewer.Type.BOARD -> ViewState.Kanban
+        }
     }
 
     class Factory(
         private val renameDataViewViewer: RenameDataViewViewer,
         private val deleteDataViewViewer: DeleteDataViewViewer,
         private val duplicateDataViewViewer: DuplicateDataViewViewer,
+        private val updateDataViewViewer: UpdateDataViewViewer,
         private val setActiveViewer: SetActiveViewer,
         private val dispatcher: Dispatcher<Payload>,
         private val objectSetState: StateFlow<ObjectSet>,
@@ -206,6 +238,7 @@ class EditDataViewViewerViewModel(
                 renameDataViewViewer = renameDataViewViewer,
                 deleteDataViewViewer = deleteDataViewViewer,
                 duplicateDataViewViewer = duplicateDataViewViewer,
+                updateDataViewViewer = updateDataViewViewer,
                 setActiveViewer = setActiveViewer,
                 dispatcher = dispatcher,
                 objectSetState = objectSetState,
@@ -222,4 +255,15 @@ class EditDataViewViewerViewModel(
     )
 
     data class PopupMenuCommand(val isDeletionAllowed: Boolean = false)
+
+    sealed class ViewState {
+        object Init : ViewState()
+        data class Name(val name: String) : ViewState()
+        object Completed : ViewState()
+        object Grid : ViewState()
+        object Gallery : ViewState()
+        object List : ViewState()
+        object Kanban : ViewState()
+        data class Error(val msg: String) : ViewState()
+    }
 }

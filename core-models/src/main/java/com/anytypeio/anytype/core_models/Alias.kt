@@ -13,6 +13,7 @@ typealias CBTextStyle = Block.Content.Text.Style
 typealias DV = Block.Content.DataView
 typealias DVViewer = Block.Content.DataView.Viewer
 typealias DVViewerType = Block.Content.DataView.Viewer.Type
+typealias DVViewerCardSize= Block.Content.DataView.Viewer.Size
 typealias DVFilter = Block.Content.DataView.Filter
 typealias DVFilterCondition = Block.Content.DataView.Filter.Condition
 typealias DVFilterConditionType = Block.Content.DataView.Filter.ConditionType

@@ -3,10 +3,7 @@ package com.anytypeio.anytype.presentation.sets.main
 import MockDataFactory
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -59,6 +56,9 @@ class ObjectSetViewerDeleteTest {
 
     @Mock
     lateinit var duplicateDataViewViewer: DuplicateDataViewViewer
+
+    @Mock
+    lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     @Mock
     lateinit var setActiveViewer: SetActiveViewer
@@ -120,7 +120,8 @@ class ObjectSetViewerDeleteTest {
 
         val vm = buildViewModel(
             objectSetState = objectSetState,
-            objectSetSession = objectSetSession
+            objectSetSession = objectSetSession,
+            updateDataViewViewer = updateDataViewViewer
         )
 
         // TESTING
@@ -193,7 +194,8 @@ class ObjectSetViewerDeleteTest {
 
         val vm = buildViewModel(
             objectSetState = objectSetState,
-            objectSetSession = objectSetSession
+            objectSetSession = objectSetSession,
+            updateDataViewViewer = updateDataViewViewer
         )
 
         // TESTING
@@ -276,7 +278,8 @@ class ObjectSetViewerDeleteTest {
 
         val vm = buildViewModel(
             objectSetState = objectSetState,
-            objectSetSession = objectSetSession
+            objectSetSession = objectSetSession,
+            updateDataViewViewer = updateDataViewViewer
         )
 
         // TESTING
@@ -309,6 +312,7 @@ class ObjectSetViewerDeleteTest {
     }
 
     fun buildViewModel(
+        updateDataViewViewer: UpdateDataViewViewer,
         objectSetState: StateFlow<ObjectSet>,
         objectSetSession: ObjectSetSession
     ): EditDataViewViewerViewModel {
@@ -320,6 +324,7 @@ class ObjectSetViewerDeleteTest {
             objectSetSession = objectSetSession,
             objectSetState = objectSetState,
             dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer
         )
     }
 

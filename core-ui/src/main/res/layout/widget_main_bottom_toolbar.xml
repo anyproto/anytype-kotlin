@@ -7,7 +7,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless">
+        android:background="@drawable/default_ripple">
 
         <ImageView
             android:id="@+id/icBack"
@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless">
+        android:background="@drawable/default_ripple">
 
         <ImageView
             android:id="@+id/icHome"
@@ -41,7 +41,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless">
+        android:background="@drawable/default_ripple">
 
         <ImageView
             android:id="@+id/icSearch"

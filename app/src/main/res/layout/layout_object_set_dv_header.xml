@@ -33,6 +33,7 @@
     </FrameLayout>
 
     <ImageView
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/customizeViewButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,6 +44,7 @@
         android:src="@drawable/ic_dv_customize_view" />
 
     <ImageView
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/addNewButton"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"

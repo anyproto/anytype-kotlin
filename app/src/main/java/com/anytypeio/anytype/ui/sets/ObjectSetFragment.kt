@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.sets
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
@@ -182,6 +181,10 @@ open class ObjectSetFragment :
             }
 
             subscribe(bottomPanel.touches()) { swipeDetector.onTouchEvent(it) }
+
+            subscribe(bottomToolbar.homeClicks()) { vm.onHomeButtonClicked() }
+            subscribe(bottomToolbar.backClicks()) { vm.onBackButtonClicked() }
+            subscribe(bottomToolbar.searchClicks()) { vm.onSearchButtonClicked() }
         }
 
         with(paginatorToolbar) {
@@ -190,6 +193,14 @@ open class ObjectSetFragment :
             }
             onNext = { vm.onPaginatorNextElsePrevious(true) }
             onPrevious = { vm.onPaginatorNextElsePrevious(false) }
+        }
+
+        galleryView.onGalleryItemClicked = { id ->
+            vm.onObjectHeaderClicked(id)
+        }
+
+        listView.onListItemClicked = { id ->
+            vm.onObjectHeaderClicked(id)
         }
     }
 
@@ -218,21 +229,6 @@ open class ObjectSetFragment :
                     DividerItemDecoration.VERTICAL
                 ).apply {
                     setDrawable(verticalDivider)
-                }
-            )
-            addItemDecoration(
-                object : RecyclerView.ItemDecoration() {
-                    override fun getItemOffsets(
-                        outRect: Rect,
-                        view: View,
-                        parent: RecyclerView,
-                        state: RecyclerView.State
-                    ) {
-                        val position = parent.getChildAdapterPosition(view)
-                        val size = parent.adapter?.itemCount ?: 0
-                        if (size > 0 && position == size.dec())
-                            outRect.bottom = paginatorToolbar.height
-                    }
                 }
             )
         }
@@ -303,15 +299,43 @@ open class ObjectSetFragment :
             is Viewer.GridView -> {
                 unsupportedViewError.gone()
                 unsupportedViewError.text = null
+                galleryView.clear()
+                galleryView.gone()
+                listView.gone()
+                listView.setViews(emptyList())
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
             }
+            is Viewer.GalleryView -> {
+                unsupportedViewError.gone()
+                unsupportedViewError.text = null
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                listView.gone()
+                listView.setViews(emptyList())
+                galleryView.visible()
+                galleryView.setViews(
+                    views = viewer.items,
+                    largeCards = viewer.largeCards
+                )
+            }
             is Viewer.ListView -> {
-                // TODO
+                unsupportedViewError.gone()
+                unsupportedViewError.text = null
+                galleryView.gone()
+                galleryView.clear()
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                listView.visible()
+                listView.setViews(viewer.items)
             }
             is Viewer.Unsupported -> {
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
+                galleryView.gone()
+                galleryView.clear()
+                listView.gone()
+                listView.setViews(emptyList())
                 unsupportedViewError.visible()
                 unsupportedViewError.text = viewer.error
             }
@@ -493,8 +517,7 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.EditDataViewViewer -> {
                 val fr = EditDataViewViewerFragment.new(
                     ctx = command.ctx,
-                    viewer = command.viewer,
-                    name = command.name
+                    viewer = command.viewer
                 )
                 fr.show(childFragmentManager, EMPTY_TAG)
             }

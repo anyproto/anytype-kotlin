@@ -1,8 +1,12 @@
 package com.anytypeio.anytype.presentation.sets.model
 
 import android.os.Parcelable
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.presentation.editor.cover.CoverView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
@@ -50,30 +54,71 @@ sealed class Viewer {
         }
     }
 
+    data class GalleryView(
+        override val id: String,
+        override val title: String,
+        val items: List<Item> = listOf(),
+        val largeCards: Boolean = false
+    ) : Viewer() {
+        sealed class Item {
+            abstract val objectId: Id
+            abstract val name: String
+            abstract val icon: ObjectIcon
+            abstract val relations: List<DefaultObjectRelationValueView>
+            abstract val hideIcon: Boolean
+            data class Default(
+                override val objectId: Id,
+                override val name: String,
+                override val icon: ObjectIcon,
+                override val relations: List<DefaultObjectRelationValueView>,
+                override val hideIcon: Boolean,
+                val bigIcon: Boolean
+            ) : Item()
+            data class Cover(
+                override val objectId: Id,
+                override val name: String,
+                override val icon: ObjectIcon,
+                override val relations: List<DefaultObjectRelationValueView>,
+                override val hideIcon: Boolean,
+                val fitImage: Boolean,
+                val cover: CoverView,
+                val isCoverLarge: Boolean = false
+            ) : Item()
+        }
+    }
+
     data class ListView(
         override val id: String,
-        override val title: String = "",
-        val source: String,
-        val name: String,
-        val columns: List<ColumnView>,
-        val rows: List<Row> = listOf()
+        override val title: String,
+        val items: List<Item> = listOf()
     ) : Viewer() {
-
-        data class Row(
-            val name: String,
-            val cells: List<CellView>
-        )
-
-        companion object {
-
-            fun empty(): Viewer = ListView(
-                id = "",
-                source = "",
-                title = "",
-                name = "UNTITLED",
-                columns = emptyList(),
-                rows = emptyList()
-            )
+        sealed class Item {
+            abstract val objectId: Id
+            abstract val name: String
+            abstract val description: String?
+            abstract val icon: ObjectIcon
+            abstract val relations: List<DefaultObjectRelationValueView>
+            data class Default(
+                override val objectId: Id,
+                override val name: String,
+                override val description: String?,
+                override val icon: ObjectIcon,
+                override val relations: List<DefaultObjectRelationValueView>,
+            ) : Item()
+            data class Profile(
+                override val objectId: Id,
+                override val name: String,
+                override val description: String?,
+                override val icon: ObjectIcon,
+                override val relations: List<DefaultObjectRelationValueView>,
+            ) : Item()
+            data class Task(
+                override val objectId: Id,
+                override val name: String,
+                override val description: String?,
+                override val icon: ObjectIcon,
+                override val relations: List<DefaultObjectRelationValueView>,
+            ) : Item()
         }
     }
 

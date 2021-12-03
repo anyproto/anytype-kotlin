@@ -11,6 +11,8 @@ import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDa
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
+import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcomponent
+import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
@@ -57,6 +59,8 @@ interface ObjectSetSubComponent {
     fun objectRelationValueComponent(): ObjectSetObjectRelationValueSubComponent.Builder
     fun manageViewerComponent(): ManageViewerSubComponent.Builder
     fun viewerRelationsComponent(): ViewerRelationsSubComponent.Builder
+    fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
+    fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
     fun relationAddToDataViewComponent() : RelationAddToDataViewSubComponent.Builder
     fun relationCreateFromScratchForDataViewComponent() : RelationCreateFromScratchForDataViewSubComponent.Builder
     fun dataviewViewerActionComponent(): DataViewViewerActionSubComponent.Builder

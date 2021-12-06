@@ -221,7 +221,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                         // Do nothing
                                     }
                                     is ObjectIcon.Basic.Avatar -> {
-
+                                        // Do nothing
                                     }
                                     is ObjectIcon.Basic.Emoji -> {
                                         try {
@@ -334,6 +334,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                     }
                                 }
 
+                                val noIcon = obj.icon == ObjectIcon.None || obj.icon is ObjectIcon.Basic.Avatar
+
                                 val view = TextView(context).apply {
                                     id = generateViewId()
                                     isSingleLine = true
@@ -346,6 +348,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                 }
                                 group.addView(view)
                                 view.updateLayoutParams<LayoutParams> {
+                                    marginStart = if (idx == 0 && noIcon) firstItemMargin else 0
                                     marginEnd = marginAfterText
                                 }
                             }
@@ -353,6 +356,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         addView(group)
                         group.updateLayoutParams<LayoutParams> {
                             bottomMargin = defaultBottomMargin
+                            marginEnd = firstItemMargin
                         }
                     }
                 }
@@ -400,13 +404,16 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                             orientation = HORIZONTAL
                         }
                         relation.files.forEachIndexed { idx, file ->
+                            val filename = file.name + "." + file.ext
                             val view = TextView(context).apply {
                                 id = generateViewId()
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
-                                text = file.name
+                                text = filename
                                 setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
+                                setTextColor(defaultTextColor)
+                                setHint(R.string.untitled)
                             }
                             group.addView(view)
                             view.updateLayoutParams<LayoutParams> {
@@ -420,6 +427,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         addView(group)
                         group.updateLayoutParams<LayoutParams> {
                             bottomMargin = defaultBottomMargin
+                            marginEnd = firstItemMargin
                         }
                     }
                 }

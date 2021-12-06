@@ -28,14 +28,13 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val relations get() = itemView.findViewById<ListViewItemRelationGroupWidget>(R.id.relationsContainer)
 
         fun bind(item: Viewer.ListView.Item) {
-            when (item.icon) {
-                is ObjectIcon.Basic.Image, is ObjectIcon.Basic.Emoji -> {
+            when {
+                item.hideIcon -> icon.gone()
+                item.icon is ObjectIcon.Basic -> {
                     icon.visible()
                     icon.setIcon(item.icon)
                 }
-                else -> {
-                    icon.gone()
-                }
+                else -> icon.gone()
             }
             tvPrimary.text = item.name
             if (item.description.isNullOrBlank()) {
@@ -56,7 +55,7 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     class Profile(parent: ViewGroup) : ListViewHolder(
         LayoutInflater.from(parent.context).inflate(
-            R.layout.item_dv_list_view_profile,
+            R.layout.item_dv_list_view_profile_small,
             parent,
             false
         )
@@ -68,7 +67,14 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val relations get() = itemView.findViewById<ListViewItemRelationGroupWidget>(R.id.relationsContainer)
 
         fun bind(item: Viewer.ListView.Item) {
-            icon.setIcon(item.icon)
+            when {
+                item.hideIcon -> icon.gone()
+                item.icon is ObjectIcon.Profile -> {
+                    icon.visible()
+                    icon.setIcon(item.icon)
+                }
+                else -> icon.gone()
+            }
             tvPrimary.text = item.name
             if (item.description.isNullOrBlank()) {
                 tvSecondary.gone()
@@ -100,7 +106,10 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val relations get() = itemView.findViewById<ListViewItemRelationGroupWidget>(R.id.relationsContainer)
 
         fun bind(item: Viewer.ListView.Item) {
-            icon.setIcon(item.icon)
+            when {
+                item.hideIcon -> icon.setIcon(ObjectIcon.None)
+                else -> icon.setIcon(item.icon)
+            }
             tvPrimary.text = item.name
             if (item.description.isNullOrBlank()) {
                 tvSecondary.gone()

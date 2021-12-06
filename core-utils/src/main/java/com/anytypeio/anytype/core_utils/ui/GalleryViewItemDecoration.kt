@@ -18,8 +18,8 @@ class GalleryViewItemDecoration(
         val column = position % SPAN_COUNT
 
         if (column == 0) {
-            outRect.left = spacing - column * spacing / SPAN_COUNT
-            outRect.right = ((column + 1) * spacing / SPAN_COUNT)
+            outRect.left = spacing
+            outRect.right = spacing / SPAN_COUNT
         }
 
         if (column > 0) {

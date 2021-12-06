@@ -81,7 +81,8 @@ class ViewerRelationsViewModel(
                         // TODO in the next PR
                     }
                     Block.Content.DataView.Viewer.Type.LIST -> {
-                        // TODO in the next PR
+                        result.add(ViewerRelationListView.Section.Settings)
+                        result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
                     }
                 }
                 val relations = objectSet

@@ -35,7 +35,8 @@ fun DVViewer.buildListViews(
                     layout = obj.layout,
                     builder = urlBuilder
                 ),
-                description = obj.description
+                description = obj.description,
+                hideIcon = hideIcon
             )
         }
         ObjectType.Layout.PROFILE -> {
@@ -53,7 +54,8 @@ fun DVViewer.buildListViews(
                     layout = obj.layout,
                     builder = urlBuilder
                 ),
-                description = obj.description
+                description = obj.description,
+                hideIcon = hideIcon
             )
         }
         ObjectType.Layout.TODO -> {
@@ -71,7 +73,8 @@ fun DVViewer.buildListViews(
                     layout = obj.layout,
                     builder = urlBuilder
                 ),
-                description = obj.description
+                description = obj.description,
+                hideIcon = hideIcon
             )
         }
         else -> null

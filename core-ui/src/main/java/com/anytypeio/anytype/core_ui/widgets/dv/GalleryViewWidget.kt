@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
+import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
 import com.anytypeio.anytype.core_utils.ui.GalleryViewItemDecoration
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -34,12 +36,18 @@ class GalleryViewWidget @JvmOverloads constructor(
     var onGalleryItemClicked: (Id) -> Unit = {}
 
     private val lm = GridLayoutManager(context, SMALL_CARDS_COLUMN_COUNT)
+    private val smallCardsItemDecoration = GalleryViewItemDecoration(
+        spacing = resources.getDimension(R.dimen.dp_10).toInt()
+    )
+    private val largeCardsItemDecoration = SpacingItemDecoration(
+        spacingStart = resources.getDimension(R.dimen.dp_10).toInt(),
+        spacingEnd = resources.getDimension(R.dimen.dp_10).toInt(),
+        spacingBottom = resources.getDimension(R.dimen.dp_10).toInt()
+    )
 
     init {
         adapter = galleryViewAdapter
-        addItemDecoration(
-            GalleryViewItemDecoration(resources.getDimension(R.dimen.dp_10).toInt())
-        )
+        addItemDecoration(smallCardsItemDecoration)
         layoutManager = lm
     }
 
@@ -57,11 +65,21 @@ class GalleryViewWidget @JvmOverloads constructor(
 
     private fun setupCardSize(largeCards: Boolean) {
         if (largeCards) {
-            if (lm.spanCount != LARGE_CARDS_COLUMN_COUNT)
+            if (lm.spanCount != LARGE_CARDS_COLUMN_COUNT) {
                 lm.spanCount = LARGE_CARDS_COLUMN_COUNT
+                if (containsItemDecoration(smallCardsItemDecoration)) {
+                    removeItemDecoration(smallCardsItemDecoration)
+                }
+                addItemDecoration(largeCardsItemDecoration)
+            }
         } else {
-            if (lm.spanCount != SMALL_CARDS_COLUMN_COUNT)
+            if (lm.spanCount != SMALL_CARDS_COLUMN_COUNT) {
                 lm.spanCount = SMALL_CARDS_COLUMN_COUNT
+                if (containsItemDecoration(largeCardsItemDecoration)) {
+                    removeItemDecoration(largeCardsItemDecoration)
+                }
+                addItemDecoration(smallCardsItemDecoration)
+            }
         }
     }
 

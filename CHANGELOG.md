@@ -10,7 +10,8 @@
 
 ### Fixes & tech 🚒
 
-Editor | Fix | Numbered block pattern triggered when not needed due to an incorrect regex pattern (#1987)
+* Editor | Numbered block pattern triggered when not needed due to an incorrect regex pattern (#1987)
+* Object | Should create a link in your object to the newly created set (#1996)
 
 ### Design & UX 🔳
 

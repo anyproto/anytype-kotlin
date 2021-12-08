@@ -107,7 +107,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -5308,7 +5307,7 @@ class EditorViewModel(
         viewModelScope.launch {
             createObjectSet(
                 CreateObjectSet.Params(
-                    ctx = context,
+                    ctx = "",
                     type = type
                 )
             ).process(

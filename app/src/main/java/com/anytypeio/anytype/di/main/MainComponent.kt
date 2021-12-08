@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import dagger.Component
 import javax.inject.Singleton
 
@@ -43,4 +44,5 @@ interface MainComponent {
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
+    fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
 }

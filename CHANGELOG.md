@@ -1,11 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.4.5 (WIP)
+## Version 0.5.0 (WIP)
 
 ### New features & enhancements 🚀
 
 * App | Reminding our users about saving the mnemonic phrase (#1982)
 * App | Offload your files from device (#1990)
+* App | Wallpapers (#1995)
 
 ### Fixes & tech 🚒
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@drawable/rect_cover_gallery_color"
+    android:layout_height="@dimen/default_wallpaper_select_item_height">
+
+</FrameLayout>

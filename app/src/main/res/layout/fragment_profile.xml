@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment"
-    android:background="@color/default_dashboard_background_color"
     android:scrollbars="none">
 
     <FrameLayout

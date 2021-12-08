@@ -3,15 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/graphik_medium"
+        android:fontFamily="@font/inter_bold"
         android:text="Debug settings"
         android:textColor="@color/white"
         android:textSize="20sp"
@@ -25,7 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:background="@color/white"
+        android:fontFamily="@font/inter_regular"
         android:text="Debug Sync"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -36,7 +37,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:background="@color/white"
+        android:fontFamily="@font/inter_regular"
         android:text="Debug Local Store"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnSync" />

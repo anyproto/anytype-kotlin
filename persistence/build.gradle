@@ -23,7 +23,9 @@ android {
 }
 
 dependencies {
+
     implementation project(':data')
+    implementation project(':core-models')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting

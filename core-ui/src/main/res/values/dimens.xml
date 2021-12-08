@@ -201,5 +201,6 @@
     <dimen name="dp_14">14dp</dimen>
     <dimen name="defaultGalleryViewTextSize">12sp</dimen>
     <dimen name="defaultGalleryViewAvatarTextSize">11sp</dimen>
+    <dimen name="default_wallpaper_select_item_height">208dp</dimen>
 
 </resources>

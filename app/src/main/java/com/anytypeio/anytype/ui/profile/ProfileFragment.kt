@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.avatarColor
@@ -50,8 +51,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
         when (state) {
             is ViewState.Init -> {
                 wallpaperText.setOnClickListener {
-                    vm.onWallpaperClicked()
-                    toast("Coming soon...")
+                    findNavController().navigate(R.id.wallpaperSetFragment)
                 }
                 logoutButton.setOnClickListener { vm.onLogoutClicked() }
                 pinCodeText.setOnClickListener {

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
+import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.main.MainComponent
 
 class ComponentManager(private val main: MainComponent) {
@@ -103,6 +104,13 @@ class ComponentManager(private val main: MainComponent) {
         main
             .homeDashboardComponentBuilder()
             .homeDashboardModule(HomeDashboardModule)
+            .build()
+    }
+
+    val wallpaperSelectComponent = Component {
+        main
+            .wallpaperSelectComponent()
+            .module(WallpaperSelectModule)
             .build()
     }
 

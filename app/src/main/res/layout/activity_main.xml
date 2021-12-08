@@ -6,6 +6,7 @@
     android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_dashboard_background_color"
     app:defaultNavHost="true"
     app:navGraph="@navigation/graph"
     tools:context=".ui.main.MainActivity" />

@@ -425,8 +425,12 @@
         android:id="@+id/userSettingsFragment"
         android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
         android:label="fragment_user_settings"
-        tools:layout="@layout/fragment_user_settings" >
-    </dialog>
+        tools:layout="@layout/fragment_user_settings"/>
+    <dialog
+        android:id="@+id/wallpaperSetFragment"
+        android:name="com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment"
+        android:label="fragment_wallpaper_set"
+        tools:layout="@layout/fragment_wallpaper_select"/>
     <dialog
         android:id="@+id/objectTypeChangeFragment"
         android:name="com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment"

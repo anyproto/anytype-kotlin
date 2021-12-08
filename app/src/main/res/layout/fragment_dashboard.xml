@@ -4,7 +4,6 @@
     android:id="@+id/dashboardRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_dashboard_background_color"
     app:layoutDescription="@xml/fragment_dashboard_scene">
 
     <TextView

@@ -21,8 +21,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
             <CustomAttribute
-                app:attributeName="textColor"
-                app:customColorValue="@color/white" />
+                app:attributeName="alpha"
+                app:customFloatValue="1.0" />
         </Constraint>
         <Constraint
             android:id="@+id/avatarContainer"
@@ -102,8 +102,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
             <CustomAttribute
-                app:attributeName="textColor"
-                app:customColorValue="#0066C3" />
+                app:attributeName="alpha"
+                app:customFloatValue="0.0" />
         </Constraint>
         <Constraint
             android:id="@+id/avatarContainer"

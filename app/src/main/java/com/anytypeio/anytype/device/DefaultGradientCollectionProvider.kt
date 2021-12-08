@@ -6,6 +6,13 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 
 class DefaultGradientCollectionProvider : GradientCollectionProvider {
     override fun provide(): List<Id> = listOf(
-        CoverGradient.YELLOW, CoverGradient.RED, CoverGradient.BLUE, CoverGradient.TEAL
+        CoverGradient.YELLOW,
+        CoverGradient.RED,
+        CoverGradient.BLUE,
+        CoverGradient.TEAL,
+        CoverGradient.PINK_ORANGE,
+        CoverGradient.BLUE_PINK,
+        CoverGradient.GREEN_ORANGE,
+        CoverGradient.SKY
     )
 }

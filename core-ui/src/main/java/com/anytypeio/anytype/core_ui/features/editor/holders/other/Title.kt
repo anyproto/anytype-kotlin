@@ -116,6 +116,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
                         CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
                         CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal)
+                        CoverGradient.PINK_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_1)
+                        CoverGradient.BLUE_PINK -> setBackgroundResource(R.drawable.wallpaper_gradient_2)
+                        CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
+                        CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
                     }
                     visible()
                 }

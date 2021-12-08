@@ -5,7 +5,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
+import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
 import dagger.Module
@@ -34,8 +37,15 @@ object MainEntryModule {
     @Provides
     fun provideMainViewModelFactory(
         launchAccount: LaunchAccount,
-        analytics: Analytics
-    ): MainViewModelFactory = MainViewModelFactory(launchAccount, analytics)
+        analytics: Analytics,
+        observeWallpaper: ObserveWallpaper,
+        restoreWallpaper: RestoreWallpaper
+    ): MainViewModelFactory = MainViewModelFactory(
+        launchAccount = launchAccount,
+        analytics = analytics,
+        observeWallpaper = observeWallpaper,
+        restoreWallpaper = restoreWallpaper
+    )
 
     @JvmStatic
     @PerScreen
@@ -50,4 +60,16 @@ object MainEntryModule {
         context = Dispatchers.Main,
         flavourConfigProvider = flavourConfigProvider
     )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideObserveWallpaperUseCase() : ObserveWallpaper = ObserveWallpaper()
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideRestoreWallpaperUseCase(
+        repo: UserSettingsRepository
+    ) : RestoreWallpaper = RestoreWallpaper(repo)
 }

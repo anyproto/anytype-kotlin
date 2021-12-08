@@ -8,15 +8,33 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
+import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainViewModel(
     private val launchAccount: LaunchAccount,
+    private val observeWallpaper: ObserveWallpaper,
+    private val restoreWallpaper: RestoreWallpaper,
     private val analytics: Analytics
 ) : ViewModel() {
+
+    val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
+
+    init {
+        viewModelScope.launch { restoreWallpaper(BaseUseCase.None) }
+        viewModelScope.launch {
+            observeWallpaper.build(BaseUseCase.None).collect {
+                wallpaper.value = it
+            }
+        }
+    }
 
     fun onRestore() {
         val startTime = System.currentTimeMillis()

@@ -208,7 +208,7 @@ data class Block(
             val type: Type? = null,
             val state: State? = null
         ) : Content() {
-            enum class Type { NONE, FILE, IMAGE, VIDEO, AUDIO }
+            enum class Type { NONE, FILE, IMAGE, VIDEO, AUDIO, PDF }
             enum class State { EMPTY, UPLOADING, DONE, ERROR }
         }
 

@@ -221,6 +221,7 @@ message Block {
             int64 addedAt = 6;
 
             State state = 7;
+            Style style = 8;
 
             enum Type {
                 None = 0;
@@ -228,6 +229,13 @@ message Block {
                 Image = 2;
                 Video = 3;
                 Audio = 4;
+                PDF = 5;
+            }
+
+            enum Style {
+                Auto = 0; // all types expect File and None has Embed style by default
+                Link = 1;
+                Embed = 2;
             }
 
             enum State {

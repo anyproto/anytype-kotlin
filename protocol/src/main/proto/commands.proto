@@ -16,6 +16,29 @@ import "google/protobuf/struct.proto";
 */
 message Rpc {
 
+    message Metrics {
+        message SetParameters {
+            message Request {
+                string platform = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+    }
+
     message ExternalDrop {
         message Files {
             message Request {
@@ -357,7 +380,32 @@ message Rpc {
                     }
                 }
             }
+            message File {
+                message Style {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        model.Block.Content.File.Style style = 3;
+                    }
 
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         message TurnInto {
@@ -962,6 +1010,7 @@ message Rpc {
                         }
                     }
                 }
+
             }
 
             message Image {
@@ -2570,6 +2619,7 @@ message Rpc {
                 string marketplaceTypeId = 5; // marketplace type id
                 string marketplaceRelationId = 6; // marketplace relation id
                 string marketplaceTemplateId = 7; // marketplace template id
+                string deviceId = 8;
                 string gatewayUrl = 101; // gateway url for fetching static files
                 message Error {
                     Code code = 1;
@@ -2659,7 +2709,9 @@ message Rpc {
             string url = 1;
             string localPath = 2;
             anytype.model.Block.Content.File.Type type = 3;
-            bool disableEncryption = 4;
+            bool disableEncryption = 4; // deprecated, has no affect
+            anytype.model.Block.Content.File.Style style = 5;
+
         }
 
         message Response {
@@ -3316,6 +3368,7 @@ message Rpc {
                 string iconEmoji = 7;
                 bool done = 8;
                 int32 relationFormat = 9;
+                string snippet = 10;
             }
 
             message Edge {
@@ -3330,6 +3383,7 @@ message Rpc {
                 string description = 5;
                 string iconImage = 6;
                 string iconEmoji = 7;
+                bool hidden = 8;
             }
 
             message Response {
@@ -3579,11 +3633,16 @@ message Rpc {
             Format format = 3;
             // save as zip file
             bool zip = 4;
+            // include all nested
+            bool includeNested = 5;
+            // include all files
+            bool includeFiles = 6;
         }
 
         message Response {
             Error error = 1;
             string path = 2;
+            int32 succeed = 4;
             ResponseEvent event = 3;
 
             message Error {
@@ -3606,6 +3665,32 @@ message Rpc {
             DOT = 3;
             SVG = 4;
             GRAPH_JSON = 5;
+        }
+    }
+
+    message ExportWorkspace {
+        message Request {
+            // the path where export files will place
+            string path = 1;
+            string workspaceId = 2;
+        }
+
+        message Response {
+            Error error = 1;
+            string path = 2;
+            ResponseEvent event = 3;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    // ...
+                }
+            }
         }
     }
 

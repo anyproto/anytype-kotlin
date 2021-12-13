@@ -238,6 +238,7 @@ fun MBFileType.toCoreModels(): Block.Content.File.Type = when (this) {
     MBFileType.Image -> Block.Content.File.Type.IMAGE
     MBFileType.Video -> Block.Content.File.Type.VIDEO
     MBFileType.Audio -> Block.Content.File.Type.AUDIO
+    MBFileType.PDF -> Block.Content.File.Type.PDF
 }
 
 fun MBDivStyle.toCoreModels(): Block.Content.Divider.Style = when (this) {

@@ -307,6 +307,7 @@ message Event {
                 Hash hash = 5;
                 Name name = 6;
                 Size size = 7;
+                Style style = 8;
 
                 message Name {
                     string value = 1;
@@ -324,6 +325,10 @@ message Event {
                     anytype.model.Block.Content.File.Type value = 1;
                 }
 
+                message Style {
+                    anytype.model.Block.Content.File.Style value = 1;
+                }
+
                 message Hash {
                     string value = 1;
                 }
@@ -335,6 +340,7 @@ message Event {
                 message Size {
                     int64 value = 1;
                 }
+
             }
 
 
@@ -480,6 +486,7 @@ message Event {
                 Hash hash = 5;
                 Name name = 6;
                 Size size = 7;
+                Style style = 8;
 
                 message Name {
                     string value = 1;
@@ -497,6 +504,10 @@ message Event {
                     anytype.model.Block.Content.File.Type value = 1;
                 }
 
+                message Style {
+                    anytype.model.Block.Content.File.Style value = 1;
+                }
+
                 message Hash {
                     string value = 1;
                 }
@@ -508,6 +519,7 @@ message Event {
                 message Size {
                     int64 value = 1;
                 }
+
             }
 
 

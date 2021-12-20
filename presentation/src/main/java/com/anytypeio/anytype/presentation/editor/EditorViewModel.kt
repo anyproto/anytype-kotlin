@@ -492,7 +492,9 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(
                         event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(
                             target = document.find { it.id == targetId },
-                            selection = orchestrator.stores.textSelection.current().selection
+                            selection = orchestrator.stores.textSelection.current().selection,
+                            urlBuilder = urlBuilder,
+                            details = orchestrator.stores.details.current()
                         )
                     )
                 }
@@ -1299,6 +1301,7 @@ class EditorViewModel(
         actions.value = targetActions.toList()
     }
 
+    @Deprecated("Legacy")
     fun onEditorContextMenuStyleClicked(selection: IntRange) {
 
         Timber.d("onEditorContextMenuStyleClicked, selection:[$selection]")
@@ -1307,7 +1310,9 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.OnEditorContextMenuStyleClicked(
                 target = target,
-                selection = selection
+                selection = selection,
+                urlBuilder = urlBuilder,
+                details = orchestrator.stores.details.current()
             )
         )
         viewModelScope.sendEvent(
@@ -1431,6 +1436,7 @@ class EditorViewModel(
                     Markup.Type.LINK -> onBlockStyleLinkClicked(id)
                     Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
                     Markup.Type.MENTION -> Unit
+                    Markup.Type.OBJECT -> Unit
                 }
             } ?: run { Timber.e("Target id was missing for markup styling event: $type") }
         }
@@ -1701,7 +1707,9 @@ class EditorViewModel(
             ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                 target = blocks.first { it.id == target },
                 focused = isFocused,
-                selection = lastKnownCursor
+                selection = lastKnownCursor,
+                urlBuilder = urlBuilder,
+                details = orchestrator.stores.details.current()
             )
         )
 
@@ -2145,7 +2153,9 @@ class EditorViewModel(
                 ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = targetBlock,
                     focused = textSelection.isNotEmpty,
-                    selection = textSelection.selection
+                    selection = textSelection.selection,
+                    urlBuilder = urlBuilder,
+                    details = orchestrator.stores.details.current()
                 )
             )
             viewModelScope.sendEvent(

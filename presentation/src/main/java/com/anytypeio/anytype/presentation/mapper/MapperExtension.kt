@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
@@ -17,7 +18,6 @@ import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.settings.EditorSettings
-import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
     id: String,
@@ -144,133 +144,84 @@ fun Block.Align.toView(): Alignment = when (this) {
 }
 
 fun Block.Content.Text.marks(
-    urlBuilder: UrlBuilder? = null,
-    details: Block.Details? = null
+    urlBuilder: UrlBuilder,
+    details: Block.Details
 ): List<Markup.Mark> = marks
     .filterByRange(text.length)
     .mapNotNull { mark ->
         when (mark.type) {
             Block.Content.Text.Mark.Type.ITALIC -> {
-                Markup.Mark(
+                Markup.Mark.Italic(
                     from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.ITALIC
+                    to = mark.range.last
                 )
             }
             Block.Content.Text.Mark.Type.BOLD -> {
-                Markup.Mark(
+                Markup.Mark.Bold(
                     from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.BOLD
+                    to = mark.range.last
                 )
             }
             Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
-                Markup.Mark(
+                Markup.Mark.Strikethrough(
                     from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.STRIKETHROUGH
+                    to = mark.range.last
                 )
             }
             Block.Content.Text.Mark.Type.TEXT_COLOR -> {
-                try {
-                    Markup.Mark(
-                        from = mark.range.first,
-                        to = mark.range.last,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = checkNotNull(mark.param)
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Could not parse param from ${mark.type}")
-                    null
-                }
-            }
-            Block.Content.Text.Mark.Type.LINK -> {
-                try {
-                    Markup.Mark(
-                        from = mark.range.first,
-                        to = mark.range.last,
-                        type = Markup.Type.LINK,
-                        param = checkNotNull(mark.param)
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Could not parse param from ${mark.type}")
-                    null
-                }
-            }
-            Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-                try {
-                    Markup.Mark(
-                        from = mark.range.first,
-                        to = mark.range.last,
-                        type = Markup.Type.BACKGROUND_COLOR,
-                        param = checkNotNull(mark.param)
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Could not parse param from ${mark.type}")
-                    null
-                }
-            }
-            Block.Content.Text.Mark.Type.KEYBOARD -> {
-                Markup.Mark(
+                val color = mark.param
+                if (color.isNullOrBlank()) null
+                else Markup.Mark.TextColor(
                     from = mark.range.first,
                     to = mark.range.last,
-                    type = Markup.Type.KEYBOARD
+                    color = color
+                )
+            }
+            Block.Content.Text.Mark.Type.LINK -> {
+                val param = mark.param
+                if (param.isNullOrBlank()) null
+                else Markup.Mark.Link(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    param = param
+                )
+            }
+            Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
+                val background = mark.param
+                if (background.isNullOrBlank()) null
+                else Markup.Mark.BackgroundColor(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    background = background
+                )
+            }
+            Block.Content.Text.Mark.Type.KEYBOARD -> {
+                Markup.Mark.Keyboard(
+                    from = mark.range.first,
+                    to = mark.range.last
                 )
             }
             Block.Content.Text.Mark.Type.MENTION -> {
 
-                val emoji: String?
-                val image: String?
-
-                var isLoading = Markup.Mark.IS_NOT_LOADING_VALUE
-                var isDeleted = Markup.Mark.IS_NOT_DELETED_VALUE
-
-                if (details != null) {
-                    emoji = details.details[mark.param]?.iconEmoji?.let { icon ->
-                        if (icon.isEmpty()) null else icon
-                    }
-                    image = details.details[mark.param]?.iconImage?.let { icon ->
-                        if (icon.isEmpty()) null else icon
-                    }
-
-                    if (!details.details.containsKey(mark.param))
-                        isLoading = Markup.Mark.IS_LOADING_VALUE
-
-                    if (details.details[mark.param]?.isDeleted == true) {
-                        isDeleted = Markup.Mark.IS_DELETED_VALUE
-                    }
-
+                val wrapper = if (!details.details.containsKey(mark.param)) {
+                    null
                 } else {
-                    emoji = null
-                    image = null
-                    isLoading = Markup.Mark.IS_LOADING_VALUE
+                    ObjectWrapper.Basic(map = details.details[mark.param]?.map ?: emptyMap())
                 }
-                //TODO image emoji isLoading should be replaced with Constants
-                Markup.Mark(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    type = Markup.Type.MENTION,
-                    param = mark.param,
-                    extras = mapOf(
-                        "image" to image?.let { urlBuilder?.thumbnail(it) },
-                        "emoji" to emoji,
-                        Markup.Mark.KEY_IS_LOADING to isLoading,
-                        Markup.Mark.KEY_IS_DELETED to isDeleted
-                    )
+
+                mark.createMentionMarkup(
+                    obj = wrapper,
+                    urlBuilder = urlBuilder
                 )
             }
             Block.Content.Text.Mark.Type.OBJECT -> {
-                try {
-                    Markup.Mark(
-                        from = mark.range.first,
-                        to = mark.range.last,
-                        type = Markup.Type.OBJECT,
-                        param = checkNotNull(mark.param)
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Could not parse param from ${mark.type}")
-                    null
-                }
+                val param = mark.param
+                if (param.isNullOrBlank()) null
+                else Markup.Mark.Object(
+                    from = mark.range.first,
+                    to = mark.range.last,
+                    param = param
+                )
             }
             else -> null
         }
@@ -472,44 +423,44 @@ fun Block.Fields.getName(): String =
         if (name.isNullOrBlank()) Relations.RELATION_NAME_EMPTY else name
     }
 
-fun Markup.Mark.mark(): Block.Content.Text.Mark = when (type) {
-    Markup.Type.BOLD -> Block.Content.Text.Mark(
+fun Markup.Mark.mark(): Block.Content.Text.Mark = when (this) {
+    is Markup.Mark.Bold -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.BOLD
     )
-    Markup.Type.ITALIC -> Block.Content.Text.Mark(
+    is Markup.Mark.Italic -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.ITALIC
     )
-    Markup.Type.STRIKETHROUGH -> Block.Content.Text.Mark(
+    is Markup.Mark.Strikethrough -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.STRIKETHROUGH
     )
-    Markup.Type.TEXT_COLOR -> Block.Content.Text.Mark(
+    is Markup.Mark.TextColor -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.TEXT_COLOR,
-        param = param
+        param = color
     )
-    Markup.Type.BACKGROUND_COLOR -> Block.Content.Text.Mark(
+    is Markup.Mark.BackgroundColor -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR,
-        param = param
+        param = background
     )
-    Markup.Type.LINK -> Block.Content.Text.Mark(
+    is Markup.Mark.Link -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.LINK,
         param = param
     )
-    Markup.Type.KEYBOARD -> Block.Content.Text.Mark(
+    is Markup.Mark.Keyboard -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.KEYBOARD
     )
-    Markup.Type.MENTION -> Block.Content.Text.Mark(
+    is Markup.Mark.Mention -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.MENTION,
         param = param
     )
-    Markup.Type.OBJECT -> Block.Content.Text.Mark(
+    is Markup.Mark.Object -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.OBJECT,
         param = param

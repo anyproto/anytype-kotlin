@@ -9,10 +9,9 @@ class MarkupExtensionTest {
     @Test
     fun `should not update marks ranges when length is zero`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 10,
-                to = 15,
-                type = Markup.Type.BOLD
+                to = 15
             )
         )
 
@@ -25,14 +24,13 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 10,
-                to = 15,
-                type = Markup.Type.BOLD
+                to = 15
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -41,10 +39,9 @@ class MarkupExtensionTest {
     @Test
     fun `should not update marks ranges when no marks after from`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 5,
-                type = Markup.Type.BOLD
+                to = 5
             )
         )
 
@@ -57,14 +54,13 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 5,
-                type = Markup.Type.BOLD
+                to = 5
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -73,25 +69,21 @@ class MarkupExtensionTest {
     @Test
     fun `should update marks ranges with length`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 5,
-                type = Markup.Type.BOLD
+                to = 5
             ),
-            Markup.Mark(
+            Markup.Mark.Strikethrough(
                 from = 23,
-                to = 31,
-                type = Markup.Type.STRIKETHROUGH
+                to = 31
             ),
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 23,
-                to = 31,
-                type = Markup.Type.ITALIC
+                to = 31
             ),
-            Markup.Mark(
+            Markup.Mark.Link(
                 from = 32,
                 to = 43,
-                type = Markup.Type.LINK,
                 param = "https://anytype.io/"
             )
         )
@@ -105,30 +97,26 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 5,
-                type = Markup.Type.BOLD
+                to = 5
             ),
-            Markup.Mark(
+            Markup.Mark.Strikethrough(
                 from = 36,
-                to = 44,
-                type = Markup.Type.STRIKETHROUGH
+                to = 44
             ),
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 36,
-                to = 44,
-                type = Markup.Type.ITALIC
+                to = 44
             ),
-            Markup.Mark(
+            Markup.Mark.Link(
                 from = 45,
                 to = 56,
-                type = Markup.Type.LINK,
                 param = "https://anytype.io/"
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -137,25 +125,21 @@ class MarkupExtensionTest {
     @Test
     fun `should update marks ranges with length add overlay`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 10,
-                type = Markup.Type.BOLD
+                to = 10
             ),
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 3,
-                to = 8,
-                type = Markup.Type.ITALIC
+                to = 8
             ),
-            Markup.Mark(
+            Markup.Mark.Strikethrough(
                 from = 23,
-                to = 31,
-                type = Markup.Type.STRIKETHROUGH
+                to = 31
             ),
-            Markup.Mark(
+            Markup.Mark.Link(
                 from = 32,
                 to = 43,
-                type = Markup.Type.LINK,
                 param = "https://anytype.io/"
             )
         )
@@ -169,30 +153,26 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 15,
-                type = Markup.Type.BOLD
+                to = 15
             ),
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 3,
-                to = 13,
-                type = Markup.Type.ITALIC
+                to = 13
             ),
-            Markup.Mark(
+            Markup.Mark.Strikethrough(
                 from = 28,
-                to = 36,
-                type = Markup.Type.STRIKETHROUGH
+                to = 36
             ),
-            Markup.Mark(
+            Markup.Mark.Link(
                 from = 37,
                 to = 48,
-                type = Markup.Type.LINK,
                 param = "https://anytype.io/"
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -201,10 +181,9 @@ class MarkupExtensionTest {
     @Test
     fun `should update marks ranges with negative length 1`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 10,
-                to = 15,
-                type = Markup.Type.BOLD
+                to = 15
             )
         )
 
@@ -217,14 +196,13 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 7,
-                to = 12,
-                type = Markup.Type.BOLD
+                to = 12
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -233,15 +211,13 @@ class MarkupExtensionTest {
     @Test
     fun `should update marks ranges with negative length 2`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 0,
-                to = 8,
-                type = Markup.Type.ITALIC
+                to = 8
             ),
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 10,
-                to = 15,
-                type = Markup.Type.BOLD
+                to = 15
             )
         )
 
@@ -254,19 +230,17 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 0,
-                to = 5,
-                type = Markup.Type.ITALIC
+                to = 5
             ),
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 7,
-                to = 12,
-                type = Markup.Type.BOLD
+                to = 12
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -275,25 +249,21 @@ class MarkupExtensionTest {
     @Test
     fun `should update marks ranges with negative length 3`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 10,
-                type = Markup.Type.BOLD
+                to = 10
             ),
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 3,
-                to = 8,
-                type = Markup.Type.ITALIC
+                to = 8
             ),
-            Markup.Mark(
+            Markup.Mark.Strikethrough(
                 from = 23,
-                to = 31,
-                type = Markup.Type.STRIKETHROUGH
+                to = 31
             ),
-            Markup.Mark(
+            Markup.Mark.Link(
                 from = 32,
                 to = 43,
-                type = Markup.Type.LINK,
                 param = "https://anytype.io/"
             )
         )
@@ -307,30 +277,26 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 7,
-                type = Markup.Type.BOLD
+                to = 7
             ),
-            Markup.Mark(
+            Markup.Mark.Italic(
                 from = 3,
-                to = 5,
-                type = Markup.Type.ITALIC
+                to = 5
             ),
-            Markup.Mark(
+            Markup.Mark.Strikethrough(
                 from = 20,
-                to = 28,
-                type = Markup.Type.STRIKETHROUGH
+                to = 28
             ),
-            Markup.Mark(
+            Markup.Mark.Link(
                 from = 29,
                 to = 40,
-                type = Markup.Type.LINK,
                 param = "https://anytype.io/"
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -339,15 +305,13 @@ class MarkupExtensionTest {
     @Test
     fun `should update marks ranges with negative length 4`() {
         val given = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 18,
-                type = Markup.Type.BOLD
+                to = 18
             ),
-            Markup.Mark(
+            Markup.Mark.Mention.Base(
                 from = 6,
                 to = 12,
-                type = Markup.Type.MENTION,
                 param = "3M6"
             )
         )
@@ -361,20 +325,18 @@ class MarkupExtensionTest {
         )
 
         val expected = listOf(
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 0,
-                to = 17,
-                type = Markup.Type.BOLD
+                to = 17
             ),
-            Markup.Mark(
+            Markup.Mark.Mention.Base(
                 from = 6,
                 to = 11,
-                type = Markup.Type.MENTION,
                 param = "3M6"
             )
         )
 
-        kotlin.test.assertEquals(
+        assertEquals(
             expected = expected,
             actual = result
         )
@@ -386,38 +348,30 @@ class MarkupExtensionTest {
         val mentionTarget = MockDataFactory.randomUuid()
 
         val marks = mutableListOf(
-            Markup.Mark(
+            Markup.Mark.Mention.WithEmoji(
                 from = 6,
                 to = 9,
                 param = mentionTarget,
-                extras = mapOf(
-                    "image" to null, "emoji" to "😁", "isLoading" to "false"
-                ),
-                type = Markup.Type.MENTION
+                emoji = "\uD83D\uDE01"
             ),
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 10,
-                to = 13,
-                type = Markup.Type.BOLD
+                to = 13
             )
         )
 
         marks.shift(start = 6, length = 1)
 
         val expected = mutableListOf(
-            Markup.Mark(
+            Markup.Mark.Mention.WithEmoji(
                 from = 6,
                 to = 10,
                 param = mentionTarget,
-                extras = mapOf(
-                    "image" to null, "emoji" to "😁", "isLoading" to "false"
-                ),
-                type = Markup.Type.MENTION
+                emoji = "\uD83D\uDE01"
             ),
-            Markup.Mark(
+            Markup.Mark.Bold(
                 from = 11,
-                to = 14,
-                type = Markup.Type.BOLD
+                to = 14
             )
         )
 

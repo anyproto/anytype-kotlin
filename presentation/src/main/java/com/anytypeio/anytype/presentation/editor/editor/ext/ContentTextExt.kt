@@ -5,8 +5,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
-import com.anytypeio.anytype.presentation.editor.editor.Markup.Mark.Companion.IS_DELETED_VALUE
-import com.anytypeio.anytype.presentation.editor.editor.Markup.Mark.Companion.KEY_IS_DELETED
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.shift
 import timber.log.Timber
@@ -16,7 +14,7 @@ fun Block.Content.Text.getTextAndMarks(
     marks: List<Markup.Mark>
 ): Pair<String, List<Markup.Mark>> {
     if (details.details.isEmpty() ||
-        marks.none { it.type == Markup.Type.MENTION }
+        marks.none { it is Markup.Mark.Mention }
     ) {
         return Pair(text, marks)
     }
@@ -25,8 +23,8 @@ fun Block.Content.Text.getTextAndMarks(
     updatedMarks.sortBy { it.from }
     try {
         updatedMarks.forEach { mark ->
-            if (mark.type != Markup.Type.MENTION || mark.param == null) return@forEach
-            var newName = if (mark.extras[KEY_IS_DELETED] == IS_DELETED_VALUE) {
+            if (mark !is Markup.Mark.Mention || mark.param.isBlank()) return@forEach
+            var newName = if (mark is Markup.Mark.Mention.Deleted) {
                 NON_EXISTENT_OBJECT_MENTION_NAME
             } else {
                 details.details.getProperObjectName(id = mark.param) ?: return@forEach

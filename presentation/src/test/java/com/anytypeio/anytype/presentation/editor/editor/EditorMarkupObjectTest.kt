@@ -114,10 +114,9 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                             isSelected = false,
                             isFocused = true,
                             marks = listOf(
-                                Markup.Mark(
+                                Markup.Mark.Object(
                                     from = 6,
                                     to = 12,
-                                    type = Markup.Type.OBJECT,
                                     param = linkObject
                                 )
                             ),
@@ -256,31 +255,26 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     isSelected = false,
                     isFocused = true,
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Italic(
                             from = 26,
-                            to = 29,
-                            type = Markup.Type.ITALIC
+                            to = 29
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 5,
-                            type = Markup.Type.BOLD
+                            to = 5
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 6,
-                            to = 10,
-                            type = Markup.Type.BOLD
+                            to = 10
                         ),
-                        Markup.Mark(
+                        Markup.Mark.TextColor(
                             from = 18,
                             to = 25,
-                            type = Markup.Type.TEXT_COLOR,
-                            param = "#000"
+                            color = "#000"
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Object(
                             from = 6,
                             to = 25,
-                            type = Markup.Type.OBJECT,
                             param = linkNew
                         ),
 
@@ -429,31 +423,26 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     isSelected = false,
                     isFocused = true,
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Italic(
                             from = 26,
-                            to = 29,
-                            type = Markup.Type.ITALIC
+                            to = 29
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 5,
-                            type = Markup.Type.BOLD
+                            to = 5
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 6,
-                            to = 10,
-                            type = Markup.Type.BOLD
+                            to = 10
                         ),
-                        Markup.Mark(
+                        Markup.Mark.TextColor(
                             from = 18,
                             to = 25,
-                            type = Markup.Type.TEXT_COLOR,
-                            param = "#000"
+                            color = "#000"
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Object(
                             from = 6,
                             to = 25,
-                            type = Markup.Type.OBJECT,
                             param = newObjectId
                         ),
                     ),

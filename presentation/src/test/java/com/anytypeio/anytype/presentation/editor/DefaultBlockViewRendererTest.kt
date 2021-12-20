@@ -1570,61 +1570,43 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = sourceUpdated,
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = textColor
+                        color = textColor
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 6,
                         to = 19,
-                        type = Markup.Type.MENTION,
                         param = mentionTarget1,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji1,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 20,
-                        to = 26,
-                        type = Markup.Type.BOLD
+                        to = 26
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 27,
                         to = 30,
-                        type = Markup.Type.LINK,
                         param = link1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Italic(
                         from = 31,
-                        to = 36,
-                        type = Markup.Type.ITALIC
+                        to = 36
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Strikethrough(
                         from = 37,
-                        to = 41,
-                        type = Markup.Type.STRIKETHROUGH
+                        to = 41
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 51,
                         to = 55,
-                        type = Markup.Type.MENTION,
                         param = mentionTarget2,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji2,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji2
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 56,
                         to = 62,
-                        type = Markup.Type.LINK,
                         param = link2
                     )
                 ),
@@ -1766,61 +1748,43 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = sourceUpdated,
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = textColor
+                        color = textColor
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 6,
                         to = 19,
-                        type = Markup.Type.MENTION,
-                        param = mentionTarget1,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji1,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji1,
+                        param = mentionTarget1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 20,
-                        to = 26,
-                        type = Markup.Type.BOLD
+                        to = 26
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 27,
                         to = 30,
-                        type = Markup.Type.LINK,
                         param = link1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Italic(
                         from = 31,
-                        to = 36,
-                        type = Markup.Type.ITALIC
+                        to = 36
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Strikethrough(
                         from = 37,
-                        to = 41,
-                        type = Markup.Type.STRIKETHROUGH
+                        to = 41
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 51,
                         to = 55,
-                        type = Markup.Type.MENTION,
-                        param = mentionTarget2,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji2,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji2,
+                        param = mentionTarget2
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 56,
                         to = 62,
-                        type = Markup.Type.LINK,
                         param = link2
                     )
                 ),
@@ -1964,61 +1928,42 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = sourceUpdated,
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = textColor
+                        color = textColor
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.Base(
                         from = 6,
                         to = 19,
-                        type = Markup.Type.MENTION,
-                        param = mentionTarget1,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to null,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        param = mentionTarget1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 20,
-                        to = 26,
-                        type = Markup.Type.BOLD
+                        to = 26
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 27,
                         to = 30,
-                        type = Markup.Type.LINK,
                         param = link1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Italic(
                         from = 31,
-                        to = 36,
-                        type = Markup.Type.ITALIC
+                        to = 36
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Strikethrough(
                         from = 37,
-                        to = 41,
-                        type = Markup.Type.STRIKETHROUGH
+                        to = 41
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 51,
                         to = 55,
-                        type = Markup.Type.MENTION,
                         param = mentionTarget2,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji2,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji2
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 56,
                         to = 62,
-                        type = Markup.Type.LINK,
                         param = link2
                     )
                 ),
@@ -2154,61 +2099,43 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = source,
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = textColor
+                        color = textColor
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 6,
                         to = 12,
-                        type = Markup.Type.MENTION,
                         param = mentionTarget1,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji1,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 13,
-                        to = 19,
-                        type = Markup.Type.BOLD
+                        to = 19
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 20,
                         to = 23,
-                        type = Markup.Type.LINK,
                         param = link1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Italic(
                         from = 24,
-                        to = 29,
-                        type = Markup.Type.ITALIC
+                        to = 29
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Strikethrough(
                         from = 30,
-                        to = 34,
-                        type = Markup.Type.STRIKETHROUGH
+                        to = 34
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 44,
                         to = 51,
-                        type = Markup.Type.MENTION,
                         param = mentionTarget2,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji2,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji2
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 52,
                         to = 58,
-                        type = Markup.Type.LINK,
                         param = link2
                     )
                 ),
@@ -2334,37 +2261,31 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = source,
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = textColor
+                        color= textColor
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 13,
-                        to = 19,
-                        type = Markup.Type.BOLD
+                        to = 19
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 20,
                         to = 23,
-                        type = Markup.Type.LINK,
                         param = link1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Italic(
                         from = 24,
-                        to = 29,
-                        type = Markup.Type.ITALIC
+                        to = 29
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Strikethrough(
                         from = 30,
-                        to = 34,
-                        type = Markup.Type.STRIKETHROUGH
+                        to = 34
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 52,
                         to = 58,
-                        type = Markup.Type.LINK,
                         param = link2
                     )
                 ),
@@ -2453,22 +2374,14 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = "Start $mentionText2 end",
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 0,
-                        to = 15,
-                        type = Markup.Type.BOLD
+                        to = 15
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.Base(
                         from = 6,
                         to = 11,
-                        type = Markup.Type.MENTION,
-                        param = mentionTarget1,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to null,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        param = mentionTarget1
                     )
                 ),
                 isFocused = true,
@@ -2561,7 +2474,7 @@ class DefaultBlockViewRendererTest {
         val fieldsUpdated1 = Block.Fields(
             mapOf(
                 Block.Fields.NAME_KEY to mentionTextUpdated1,
-                "isDeleted" to true,
+                Relations.IS_DELETED to true,
                 DetailsKeys.ICON_EMOJI to randomEmoji1
             )
         )
@@ -2610,61 +2523,42 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 text = sourceUpdated,
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = textColor
+                        color = textColor
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.Deleted(
                         from = 6,
                         to = 25,
-                        type = Markup.Type.MENTION,
-                        param = mentionTarget1,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji1,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_DELETED_VALUE
-                        )
+                        param = mentionTarget1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Bold(
                         from = 26,
-                        to = 32,
-                        type = Markup.Type.BOLD
+                        to = 32
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 33,
                         to = 36,
-                        type = Markup.Type.LINK,
                         param = link1
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Italic(
                         from = 37,
-                        to = 42,
-                        type = Markup.Type.ITALIC
+                        to = 42
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Strikethrough(
                         from = 43,
-                        to = 47,
-                        type = Markup.Type.STRIKETHROUGH
+                        to = 47
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Mention.WithEmoji(
                         from = 57,
                         to = 61,
-                        type = Markup.Type.MENTION,
                         param = mentionTarget2,
-                        extras = mapOf(
-                            "image" to null,
-                            "emoji" to randomEmoji2,
-                            Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                            Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                        )
+                        emoji = randomEmoji2
                     ),
-                    Markup.Mark(
+                    Markup.Mark.Link(
                         from = 62,
                         to = 68,
-                        type = Markup.Type.LINK,
                         param = link2
                     )
                 ),

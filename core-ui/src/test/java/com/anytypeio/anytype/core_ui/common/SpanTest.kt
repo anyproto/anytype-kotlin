@@ -28,11 +28,10 @@ class SpanTest {
         val link = "www.anytype.io"
         val textColor = 2131
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.Link(
             from = 0,
             to = 5,
-            param = link,
-            type = Markup.Type.LINK
+            param = link
         )
 
         stubMarkup(source, mark)

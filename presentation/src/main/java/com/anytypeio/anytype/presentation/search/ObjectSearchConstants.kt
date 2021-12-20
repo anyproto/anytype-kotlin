@@ -67,7 +67,6 @@ object ObjectSearchConstants {
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(
-                PROFILE_URL,
                 OBJECT_TYPE_URL,
                 RELATION_URL,
                 TEMPLATE_URL,

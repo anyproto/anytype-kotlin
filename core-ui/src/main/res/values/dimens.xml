@@ -125,13 +125,18 @@
 
     <dimen name="default_page_links_bottom_offset">64dp</dimen>
     
-    <dimen name="mention_span_image_size_default">16dp</dimen>
-    <dimen name="mention_span_image_size_header_three">18dp</dimen>
-    <dimen name="mention_span_image_size_header_two">22dp</dimen>
+    <dimen name="mention_span_image_size_default">20dp</dimen>
+    <dimen name="mention_span_image_size_header_three">20dp</dimen>
+    <dimen name="mention_span_image_size_header_two">24dp</dimen>
     <dimen name="mention_span_image_size_header_one">28dp</dimen>
-    <dimen name="mention_span_image_padding_default">4dp</dimen>
-    <dimen name="mention_span_image_padding_header_two">5dp</dimen>
-    <dimen name="mention_span_image_padding_header_one">6dp</dimen>
+    <dimen name="mention_span_image_padding_default">6dp</dimen>
+    <dimen name="mention_span_image_padding_header_three">5dp</dimen>
+    <dimen name="mention_span_image_padding_header_two">7dp</dimen>
+    <dimen name="mention_span_image_padding_header_one">8dp</dimen>
+    <dimen name="mention_span_initials_size_default">13sp</dimen>
+    <dimen name="mention_span_initials_size_header_three">13sp</dimen>
+    <dimen name="mention_span_initials_size_header_two">16sp</dimen>
+    <dimen name="mention_span_initials_size_header_one">19sp</dimen>
 
     <dimen name="mention_suggester_item_height">56dp</dimen>
     <dimen name="mention_list_padding_top">4dp</dimen>

@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectType.Companion.MAX_SNIPPET_SIZE
+import com.anytypeio.anytype.core_models.ObjectWrapper
 
 fun Map<Id, Block.Fields>.updateFields(update: Map<Id, Block.Fields>): Map<Id, Block.Fields> {
     val result = this.toMutableMap()
@@ -12,11 +14,20 @@ fun Map<Id, Block.Fields>.updateFields(update: Map<Id, Block.Fields>): Map<Id, B
     return result
 }
 
-fun Map<Id, Block.Fields>.getProperObjectName(id: Id): String? {
+fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
+    if (id == null) return null
     val layoutCode = this[id]?.layout?.toInt()
     return if (layoutCode == ObjectType.Layout.NOTE.code) {
-        this[id]?.snippet?.replace("\n", " ")?.take(30)
+        this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
     } else {
         this[id]?.name
+    }
+}
+
+fun ObjectWrapper.Basic.getProperObjectName(): String? {
+    return if (layout == ObjectType.Layout.NOTE) {
+        snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+    } else {
+        name
     }
 }

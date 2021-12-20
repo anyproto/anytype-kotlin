@@ -2,16 +2,23 @@ package com.anytypeio.anytype.presentation.editor
 
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_utils.tools.Counter
+import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
+import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
 
 
@@ -19,6 +26,10 @@ class ControlPanelStateReducerTest {
 
     @get:Rule
     val rule = CoroutinesTestRule()
+
+    @Mock
+    lateinit var gateway: Gateway
+    lateinit var urlBuilder: UrlBuilder
 
     private val reducer = ControlPanelMachine.Reducer()
 
@@ -32,6 +43,12 @@ class ControlPanelStateReducerTest {
         ),
         fields = Block.Fields.empty()
     )
+
+    @Before
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
+        urlBuilder = UrlBuilder(gateway)
+    }
 
     @Test
     fun `state should have visible block toolbar and focus from the event`() {
@@ -557,8 +574,8 @@ class ControlPanelStateReducerTest {
                     background = "red",
                     alignment = Alignment.START,
                     marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD),
-                        Markup.Mark(4, 7, Markup.Type.ITALIC)
+                        Markup.Mark.Bold(0, 3),
+                        Markup.Mark.Italic(4, 7)
                     )
                 ),
                 config = StyleConfig(
@@ -628,8 +645,8 @@ class ControlPanelStateReducerTest {
                     background = "red",
                     alignment = Alignment.START,
                     marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD),
-                        Markup.Mark(4, 7, Markup.Type.ITALIC)
+                        Markup.Mark.Bold(0, 3),
+                        Markup.Mark.Italic(4, 7)
                     )
                 ),
                 config = StyleConfig(
@@ -700,9 +717,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red",
                     alignment = Alignment.START,
-                    marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD)
-                    )
+                    marks = listOf(Markup.Mark.Bold(0, 3))
                 ),
                 config = StyleConfig(
                     visibleTypes = listOf(
@@ -770,9 +785,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red",
                     alignment = Alignment.START,
-                    marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD)
-                    )
+                    marks = listOf(Markup.Mark.Bold(0, 3))
                 ),
                 config = StyleConfig(
                     visibleTypes = listOf(
@@ -887,7 +900,9 @@ class ControlPanelStateReducerTest {
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = block,
                     selection = IntRange(0, 3),
-                    focused = true
+                    focused = true,
+                    urlBuilder = urlBuilder,
+                    details = Block.Details(mapOf())
                 )
             )
         }
@@ -907,9 +922,7 @@ class ControlPanelStateReducerTest {
                     color = "yellow",
                     background = "red",
                     alignment = Alignment.START,
-                    marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD)
-                    )
+                    marks = listOf(Markup.Mark.Bold(0, 3))
                 ),
                 config = StyleConfig(
                     visibleTypes = listOf(
@@ -1015,7 +1028,9 @@ class ControlPanelStateReducerTest {
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = block,
                     selection = IntRange(1,1),
-                    focused = true
+                    focused = true,
+                    urlBuilder = urlBuilder,
+                    details = Block.Details(mapOf())
                 )
             )
         }
@@ -1036,7 +1051,7 @@ class ControlPanelStateReducerTest {
                     background = "red",
                     alignment = Alignment.CENTER,
                     marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD)
+                        Markup.Mark.Bold(0, 3)
                     )
                 ),
                 config = StyleConfig(
@@ -1159,7 +1174,9 @@ class ControlPanelStateReducerTest {
                 state = given,
                 event = ControlPanelMachine.Event.OnEditorContextMenuStyleClicked(
                     selection = IntRange(0, 3),
-                    target = block
+                    target = block,
+                    urlBuilder = urlBuilder,
+                    details = Block.Details(mapOf())
                 )
             )
         }
@@ -1182,7 +1199,7 @@ class ControlPanelStateReducerTest {
                             background = "red",
                             alignment = Alignment.CENTER,
                             marks = listOf(
-                                Markup.Mark(0, 3, Markup.Type.BOLD)
+                                Markup.Mark.Bold(0, 3)
                             )
                         ),
                         config = StyleConfig(
@@ -1245,7 +1262,7 @@ class ControlPanelStateReducerTest {
                     background = "red",
                     alignment = Alignment.CENTER,
                     marks = listOf(
-                        Markup.Mark(0, 3, Markup.Type.BOLD)
+                        Markup.Mark.Bold(0, 3)
                     )
                 ),
                 config = StyleConfig(
@@ -1379,7 +1396,9 @@ class ControlPanelStateReducerTest {
                 event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
                     target = block,
                     selection = IntRange(6,6),
-                    focused = true
+                    focused = true,
+                    urlBuilder = urlBuilder,
+                    details = Block.Details(mapOf())
                 )
             )
         }

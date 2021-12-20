@@ -115,10 +115,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "ya.ru"
                 )
             ),
@@ -166,10 +165,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.MENTION,
                     param = "4673675627647237"
                 )
             ),
@@ -249,10 +247,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
 
         val updated = paragraph.copy(
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "ya.ru"
                 )
             )
@@ -323,10 +320,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
 
         val updated = paragraph.copy(
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.MENTION,
                     param = "asudhguyagdhjashj"
                 )
             )
@@ -398,10 +394,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val updated = paragraph.copy(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "ya.ru"
                 )
             )
@@ -473,10 +468,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val updated = paragraph.copy(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.MENTION,
                     param = "ya.ru"
                 )
             )
@@ -514,10 +508,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "ya.ru"
                 )
             ),
@@ -589,10 +582,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.MENTION,
                     param = "4234213rfw"
                 )
             ),
@@ -664,10 +656,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "ya.ru"
                 )
             ),
@@ -706,10 +697,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val updated = paragraph.copy(
             text = "This is new bold text",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Bold(
                     from = 10,
-                    to = 15,
-                    type = Markup.Type.BOLD
+                    to = 15
                 )
             )
         )
@@ -746,10 +736,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.MENTION,
                     param = "foifhunsjkdnfjkasnjku"
                 )
             ),
@@ -788,10 +777,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val updated = paragraph.copy(
             text = "This is new bold text",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Bold(
                     from = 10,
-                    to = 15,
-                    type = Markup.Type.BOLD
+                    to = 15
                 )
             )
         )
@@ -828,10 +816,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.MENTION,
                     param = "foifhunsjkdnfjkasnjku"
                 )
             ),
@@ -870,10 +857,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val updated = paragraph.copy(
             text = "This is new bold text",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "anytype.io"
                 )
             )
@@ -908,10 +894,9 @@ class BlockAdapterMovementMethodTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with links",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 15,
-                    type = Markup.Type.LINK,
                     param = "www.anytype.io"
                 )
             ),

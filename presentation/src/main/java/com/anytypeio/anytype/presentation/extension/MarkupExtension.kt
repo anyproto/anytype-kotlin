@@ -13,38 +13,35 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
  * @param marks list of marks
  * @param selection range to check if mark type is included
  */
-fun Markup.Type.isInRange(marks: List<Markup.Mark>, selection: IntRange): Boolean {
+fun List<Markup.Mark>.isBoldInRange(selection: IntRange): Boolean {
     if (selection.first >= selection.last) return false
-    val filtered = marks.filter { it.type == this }
-    if (filtered.isEmpty()) return false
-    filtered.forEach { mark ->
-        val range = mark.from..mark.to
-        val overlap = selection.overlap(range)
-        if (overlap in listOf(
-                Overlap.INNER,
-                Overlap.INNER_LEFT,
-                Overlap.INNER_RIGHT,
-                Overlap.EQUAL
-            )
-        ) {
-            return true
-        }
-    }
-    return false
+    return filterIsInstance(Markup.Mark.Bold::class.java).isInRange(selection)
 }
 
-/**
- * Check if list of marks contains [Markup.Type] in selection range
- *
- * @param marks list of marks
- * @param selection range to check if mark type is included
- */
-fun Block.Content.Text.Mark.Type.isInRange(marks: List<Block.Content.Text.Mark>, selection: IntRange): Boolean {
+fun List<Markup.Mark>.isItalicInRange(selection: IntRange): Boolean {
     if (selection.first >= selection.last) return false
-    val filtered = marks.filter { it.type == this }
-    if (filtered.isEmpty()) return false
-    filtered.forEach { mark ->
-        val range = mark.range
+    return filterIsInstance(Markup.Mark.Italic::class.java).isInRange(selection)
+}
+
+fun List<Markup.Mark>.isStrikethroughInRange(selection: IntRange): Boolean {
+    if (selection.first >= selection.last) return false
+    return filterIsInstance(Markup.Mark.Strikethrough::class.java).isInRange(selection)
+}
+
+fun List<Markup.Mark>.isKeyboardInRange(selection: IntRange): Boolean {
+    if (selection.first >= selection.last) return false
+    return filterIsInstance(Markup.Mark.Keyboard::class.java).isInRange(selection)
+}
+
+fun List<Markup.Mark>.isLinkInRange(selection: IntRange): Boolean {
+    if (selection.first >= selection.last) return false
+    return filterIsInstance(Markup.Mark.Link::class.java).isInRange(selection)
+}
+
+private fun List<Markup.Mark>.isInRange(selection: IntRange): Boolean {
+    if (isEmpty()) return false
+    forEach { mark ->
+        val range = mark.from..mark.to
         val overlap = selection.overlap(range)
         if (overlap in listOf(
                 Overlap.INNER,
@@ -181,8 +178,23 @@ private fun Markup.Mark.updateRanges(start: Int, length: Int): Markup.Mark {
             newTo += length
         }
     }
-    return this.copy(
-        from = newFrom,
-        to = newTo
-    )
+    return when (this) {
+        is Markup.Mark.BackgroundColor -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Bold -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Italic -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Keyboard -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Link -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Base -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Deleted -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Loading -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.WithEmoji -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.WithImage -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Object -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Strikethrough -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.TextColor -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Task.Checked -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Task.Unchecked -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Profile.WithImage -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.Profile.WithInitials -> copy(from = newFrom, to = newTo)
+    }
 }

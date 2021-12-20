@@ -151,7 +151,8 @@ class BlockViewDiffUtil(
         if (newBlock is BlockView.LinkToObject.Default && oldBlock is BlockView.LinkToObject.Default) {
             if (newBlock.text != oldBlock.text)
                 changes.add(OBJECT_TITLE_CHANGED)
-            if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)
+
+            if (newBlock.icon != oldBlock.icon)
                 changes.add(OBJECT_ICON_CHANGED)
         }
 

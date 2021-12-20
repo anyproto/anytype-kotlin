@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
@@ -87,7 +88,7 @@ class DefaultBlockViewRenderer(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                     selection = selection
+                                    selection = selection
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -412,12 +413,14 @@ class DefaultBlockViewRenderer(
                 }
                 is Content.Link -> {
                     counter.reset()
+                    val obj = ObjectWrapper.Basic(
+                        map = details.details[content.target]?.map ?: emptyMap()
+                    )
                     result.add(
                         toLinks(
                             block = block,
-                            content = content,
                             indent = indent,
-                            details = details,
+                            obj = obj,
                             mode = mode,
                             selection = selection
                         )
@@ -747,7 +750,7 @@ class DefaultBlockViewRenderer(
             text = normalizedText,
             marks = normalizedMarks,
             indent = indent,
-            alignment = content.align?.toView(),color = content.color,
+            alignment = content.align?.toView(), color = content.color,
             backgroundColor = content.backgroundColor,
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
@@ -1127,14 +1130,13 @@ class DefaultBlockViewRenderer(
 
     private fun toLinks(
         block: Block,
-        content: Content.Link,
         indent: Int,
-        details: Block.Details,
+        obj: ObjectWrapper.Basic,
         mode: EditorMode,
         selection: Set<Id>
     ): BlockView {
-        val isDeleted = details.details[content.target]?.isDeleted
-        val isArchived = details.details[content.target]?.isArchived
+        val isDeleted = obj.isDeleted
+        val isArchived = obj.isArchived
         return if (isDeleted == true) {
             linkDeleted(
                 block = block,
@@ -1146,18 +1148,16 @@ class DefaultBlockViewRenderer(
             if (isArchived == true) {
                 linkArchive(
                     block = block,
-                    content = content,
                     indent = indent,
-                    details = details,
+                    obj = obj,
                     mode = mode,
                     selection = selection
                 )
             } else {
                 link(
                     block = block,
-                    content = content,
                     indent = indent,
-                    details = details,
+                    obj = obj,
                     mode = mode,
                     selection = selection
                 )
@@ -1168,28 +1168,20 @@ class DefaultBlockViewRenderer(
     private fun link(
         mode: Editor.Mode,
         block: Block,
-        content: Content.Link,
         indent: Int,
-        details: Block.Details,
+        obj: ObjectWrapper.Basic,
         selection: Set<Id>
     ): BlockView.LinkToObject = BlockView.LinkToObject.Default(
         id = block.id,
         isEmpty = true,
-        emoji = details.details[content.target]?.iconEmoji?.let { name ->
-            if (name.isNotEmpty())
-                name
-            else
-                null
-        },
-        image = details.details[content.target]?.iconImage?.let { name ->
-            if (name.isNotEmpty())
-                urlBuilder.image(name)
-            else
-                null
-        },
-        text = details.details.getProperObjectName(id = content.target),
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = obj.layout,
+            builder = urlBuilder
+        ),
+        text = obj.getProperObjectName(),
         indent = indent,
-        isLoading = !details.details.containsKey(content.target),
+        isLoading = obj.isEmpty(),
         isSelected = checkIfSelected(
             mode = mode,
             block = block,
@@ -1199,27 +1191,23 @@ class DefaultBlockViewRenderer(
 
     private fun linkArchive(
         block: Block,
-        content: Content.Link,
         indent: Int,
-        details: Block.Details,
+        obj: ObjectWrapper.Basic,
         mode: EditorMode,
         selection: Set<Id>
     ): BlockView.LinkToObject.Archived = BlockView.LinkToObject.Archived(
         id = block.id,
         isEmpty = true,
-        emoji = details.details[content.target]?.iconEmoji?.let { name ->
-            if (name.isNotEmpty())
-                name
-            else
-                null
+        emoji = obj.iconEmoji?.let { name ->
+            name.ifEmpty { null }
         },
-        image = details.details[content.target]?.iconImage?.let { name ->
+        image = obj.iconImage?.let { name ->
             if (name.isNotEmpty())
                 urlBuilder.image(name)
             else
                 null
         },
-        text = details.details.getProperObjectName(id = content.target),
+        text = obj.getProperObjectName(),
         indent = indent,
         isSelected = checkIfSelected(
             mode = mode,

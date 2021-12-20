@@ -41,7 +41,7 @@ class HighlightingBlockTest {
             text = "Test highlighting string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            marks = listOf(Markup.Mark(type = Markup.Type.BOLD, from = 3, to = 10)),
+            marks = listOf(Markup.Mark.Bold(from = 3, to = 10)),
             indent = 0,
             color = null,
             backgroundColor = null

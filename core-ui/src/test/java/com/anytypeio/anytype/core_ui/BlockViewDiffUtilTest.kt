@@ -117,8 +117,7 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             marks = listOf(
-                Markup.Mark(
-                    type = Markup.Type.BOLD,
+                Markup.Mark.Bold(
                     from = MockDataFactory.randomInt(),
                     to = MockDataFactory.randomInt()
                 )
@@ -147,8 +146,7 @@ class BlockViewDiffUtilTest {
         val id = MockDataFactory.randomUuid()
 
         val marks = listOf(
-            Markup.Mark(
-                type = Markup.Type.BOLD,
+            Markup.Mark.Bold(
                 from = MockDataFactory.randomInt(),
                 to = MockDataFactory.randomInt()
             )
@@ -197,8 +195,7 @@ class BlockViewDiffUtilTest {
             id = id,
             text = MockDataFactory.randomString(),
             marks = listOf(
-                Markup.Mark(
-                    type = Markup.Type.BOLD,
+                Markup.Mark.Bold(
                     from = MockDataFactory.randomInt(),
                     to = MockDataFactory.randomInt()
                 )
@@ -651,9 +648,8 @@ class BlockViewDiffUtilTest {
         val oldBlock = BlockView.LinkToObject.Default(
             id = id,
             indent = MockDataFactory.randomInt(),
-            emoji = null,
-            image = null,
-            isSelected = false
+            isSelected = false,
+            icon = ObjectIcon.None
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -871,6 +867,7 @@ class BlockViewDiffUtilTest {
         val oldBlock = BlockView.LinkToObject.Default(
             id = id,
             isLoading = true,
+            icon = ObjectIcon.None
         )
 
         val newBlock: BlockView = oldBlock.copy(

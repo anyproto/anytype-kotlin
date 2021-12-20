@@ -262,7 +262,7 @@ fun MBMark.toCoreModels(): Block.Content.Text.Mark {
             endInclusive = range?.to ?: 0
         ),
         type = type.toCoreModels(),
-        param = param_
+        param = param_.ifEmpty { null }
     )
 }
 

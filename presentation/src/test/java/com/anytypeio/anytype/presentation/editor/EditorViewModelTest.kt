@@ -810,9 +810,7 @@ open class EditorViewModelTest {
                     color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
-                        Markup.Mark(
-                            type = Markup.Type.BOLD,
-                            param = null,
+                        Markup.Mark.Bold(
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
@@ -850,15 +848,11 @@ open class EditorViewModelTest {
                     color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
-                        Markup.Mark(
-                            type = Markup.Type.BOLD,
-                            param = null,
+                        Markup.Mark.Bold(
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         ),
-                        Markup.Mark(
-                            type = Markup.Type.ITALIC,
-                            param = null,
+                        Markup.Mark.Italic(
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
@@ -960,9 +954,7 @@ open class EditorViewModelTest {
                     color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
-                        Markup.Mark(
-                            type = Markup.Type.BOLD,
-                            param = null,
+                        Markup.Mark.Bold(
                             from = firstTimeRange.first(),
                             to = firstTimeRange.last()
                         )
@@ -1014,9 +1006,7 @@ open class EditorViewModelTest {
                     color = paragraph.content<Block.Content.Text>().color,
                     backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
                     marks = listOf(
-                        Markup.Mark(
-                            type = Markup.Type.BOLD,
-                            param = null,
+                        Markup.Mark.Bold(
                             from = secondTimeRange.first(),
                             to = secondTimeRange.last()
                         )
@@ -1108,7 +1098,6 @@ open class EditorViewModelTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 type = Block.Content.Text.Mark.Type.BOLD,
-                param = null,
                 range = range
             )
         )
@@ -1208,7 +1197,6 @@ open class EditorViewModelTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 type = Block.Content.Text.Mark.Type.BOLD,
-                param = null,
                 range = range
             )
         )
@@ -4459,7 +4447,7 @@ open class EditorViewModelTest {
                         background = null,
                         alignment = Alignment.CENTER,
                         marks = listOf(
-                            Markup.Mark(0, 7, Markup.Type.BOLD)
+                            Markup.Mark.Bold(0, 7)
                         )
                     ),
                     config = StyleConfig(
@@ -4520,8 +4508,8 @@ open class EditorViewModelTest {
                         background = null,
                         alignment = Alignment.CENTER,
                         marks = listOf(
-                            Markup.Mark(0, 7, Markup.Type.BOLD),
-                            Markup.Mark(0, 7, Markup.Type.ITALIC)
+                            Markup.Mark.Bold(0, 7),
+                            Markup.Mark.Italic(0, 7)
                         )
                     ),
                     config = StyleConfig(

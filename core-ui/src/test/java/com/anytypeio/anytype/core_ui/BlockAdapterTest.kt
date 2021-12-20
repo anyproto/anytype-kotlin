@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
 import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 import kotlinx.android.synthetic.main.item_block_object_link.view.*
@@ -1190,9 +1191,8 @@ class BlockAdapterTest {
         val view = BlockView.LinkToObject.Default(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt(),
-            emoji = null,
             isEmpty = MockDataFactory.randomBoolean(),
-            image = null
+            icon = ObjectIcon.None
         )
 
         val views = listOf(view)
@@ -3262,8 +3262,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            emoji = null,
-            image = null
+            icon = ObjectIcon.None
         )
 
         val updated = file.copy(isSelected = true)

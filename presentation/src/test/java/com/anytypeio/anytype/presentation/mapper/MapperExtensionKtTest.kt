@@ -4,6 +4,7 @@ import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import org.junit.Before
 import org.junit.Test
@@ -438,7 +439,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -453,7 +453,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             )
         )
@@ -470,7 +469,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -485,7 +483,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             )
         )
@@ -502,7 +499,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -517,7 +513,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             )
         )
@@ -534,7 +529,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -549,7 +543,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -571,7 +564,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -586,7 +578,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -608,7 +599,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -623,7 +613,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -645,7 +634,6 @@ class MapperExtensionKtTest {
         val marks = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -655,7 +643,6 @@ class MapperExtensionKtTest {
             ),
             Block.Content.Text.Mark(
                 range = 30..50,
-                param = null,
                 type = Block.Content.Text.Mark.Type.BOLD
             )
         )
@@ -665,7 +652,6 @@ class MapperExtensionKtTest {
         val expected = listOf(
             Block.Content.Text.Mark(
                 range = 0..5,
-                param = null,
                 type = Block.Content.Text.Mark.Type.STRIKETHROUGH
             ),
             Block.Content.Text.Mark(
@@ -675,7 +661,6 @@ class MapperExtensionKtTest {
             ),
             Block.Content.Text.Mark(
                 range = 30..50,
-                param = null,
                 type = Block.Content.Text.Mark.Type.BOLD
             )
         )
@@ -684,7 +669,7 @@ class MapperExtensionKtTest {
     }
 
     @Test
-    fun `should not map mark if required param is null`() {
+    fun `should not map mark if required param is blank`() {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
@@ -709,11 +694,59 @@ class MapperExtensionKtTest {
             style = Block.Content.Text.Style.P
         )
 
-        val result = content.marks()
+        val result = content.marks(
+            urlBuilder = urlBuilder,
+            details = Block.Details(mapOf())
+        )
 
         assertEquals(
             actual = result,
             expected = emptyList()
+        )
+    }
+
+    @Test
+    fun `should not map mention or object marks if required param is blank`() {
+
+        val source = "Everything was in confusion in the Oblonskys’ house"
+
+        val marks: List<Block.Content.Text.Mark> = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                type = Block.Content.Text.Mark.Type.MENTION
+            ),
+            Block.Content.Text.Mark(
+                range = 10..20,
+                type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR,
+                param = "blue"
+            ),
+            Block.Content.Text.Mark(
+                range = 30..50,
+                type = Block.Content.Text.Mark.Type.OBJECT,
+                param = "      "
+            )
+        )
+
+        val content = Block.Content.Text(
+            text = source,
+            marks = marks,
+            style = Block.Content.Text.Style.P
+        )
+
+        val result = content.marks(
+            urlBuilder = urlBuilder,
+            details = Block.Details(mapOf())
+        )
+
+        assertEquals(
+            actual = result,
+            expected = listOf(
+                Markup.Mark.BackgroundColor(
+                    from = 10,
+                    to = 20,
+                    background = "blue"
+                )
+            )
         )
     }
 }

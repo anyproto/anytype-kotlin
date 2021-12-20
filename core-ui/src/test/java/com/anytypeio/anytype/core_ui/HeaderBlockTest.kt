@@ -43,7 +43,7 @@ class HeaderBlockTest {
             text = "Test header one string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            marks = listOf(Markup.Mark(type = Markup.Type.ITALIC, from = 3, to = 10)),
+            marks = listOf(Markup.Mark.Italic(from = 3, to = 10)),
             indent = 0
         )
 
@@ -93,7 +93,7 @@ class HeaderBlockTest {
             text = "Test header two string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            marks = listOf(Markup.Mark(type = Markup.Type.ITALIC, from = 5, to = 13)),
+            marks = listOf(Markup.Mark.Italic( from = 5, to = 13)),
             indent = 0
         )
 
@@ -143,7 +143,7 @@ class HeaderBlockTest {
             text = "Test header three string with spans",
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            marks = listOf(Markup.Mark(type = Markup.Type.ITALIC, from = 7, to = 27)),
+            marks = listOf(Markup.Mark.Italic(from = 7, to = 27)),
             indent = 0
         )
 

@@ -201,32 +201,22 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             isSelected = false,
                             isFocused = true,
                             marks = listOf(
-                                Markup.Mark(
+                                Markup.Mark.Bold(
                                     from = 0,
-                                    to = 3,
-                                    type = Markup.Type.BOLD
+                                    to = 3
                                 ),
-                                Markup.Mark(
+                                Markup.Mark.Italic(
                                     from = 5,
-                                    to = 9,
-                                    type = Markup.Type.ITALIC
+                                    to = 9
                                 ),
-                                Markup.Mark(
+                                Markup.Mark.Strikethrough(
                                     from = 29,
-                                    to = 33,
-                                    type = Markup.Type.STRIKETHROUGH
+                                    to = 33
                                 ),
-                                Markup.Mark(
+                                Markup.Mark.Mention.Loading(
                                     from = from,
                                     to = from + mentionText.length,
-                                    type = Markup.Type.MENTION,
-                                    param = mentionHash,
-                                    extras = mapOf(
-                                        "image" to null,
-                                        "emoji" to null,
-                                        Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_LOADING_VALUE,
-                                        Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                                    )
+                                    param = mentionHash
                                 )
                             ),
                             backgroundColor = null,
@@ -381,22 +371,14 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             isSelected = false,
                             isFocused = true,
                             marks = listOf(
-                                Markup.Mark(
+                                Markup.Mark.Bold(
                                     from = 0,
-                                    to = 3,
-                                    type = Markup.Type.BOLD
+                                    to = 3
                                 ),
-                                Markup.Mark(
+                                Markup.Mark.Mention.Loading(
                                     from = from,
                                     to = from + newPageName.length,
-                                    type = Markup.Type.MENTION,
-                                    param = newPageId,
-                                    extras = mapOf(
-                                        "image" to null,
-                                        "emoji" to null,
-                                        Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_LOADING_VALUE,
-                                        Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                                    )
+                                    param = newPageId
                                 )
                             ),
                             backgroundColor = null,
@@ -551,22 +533,14 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             isSelected = false,
                             isFocused = true,
                             marks = listOf(
-                                Markup.Mark(
+                                Markup.Mark.Bold(
                                     from = 0,
-                                    to = 3,
-                                    type = Markup.Type.BOLD
+                                    to = 3
                                 ),
-                                Markup.Mark(
+                                Markup.Mark.Mention.Loading(
                                     from = from,
                                     to = from + MENTION_TITLE_EMPTY.length,
-                                    type = Markup.Type.MENTION,
-                                    param = newPageId,
-                                    extras = mapOf(
-                                        "image" to null,
-                                        "emoji" to null,
-                                        Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_LOADING_VALUE,
-                                        Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                                    )
+                                    param = newPageId
                                 )
                             ),
                             backgroundColor = null,
@@ -916,27 +890,18 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     isSelected = false,
                     isFocused = false,
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 5,
-                            type = Markup.Type.BOLD
+                            to = 5
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Mention.Base(
                             from = 6,
                             to = 10,
-                            type = Markup.Type.MENTION,
-                            param = mentionTarget,
-                            extras = mapOf(
-                                "image" to null,
-                                "emoji" to null,
-                                Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                                Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                            )
+                            param = mentionTarget
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Strikethrough(
                             from = 11,
-                            to = 14,
-                            type = Markup.Type.STRIKETHROUGH
+                            to = 14
                         )
                     ),
                     backgroundColor = null,
@@ -1064,27 +1029,18 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     isSelected = false,
                     isFocused = false,
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 5,
-                            type = Markup.Type.BOLD
+                            to = 5
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Mention.Base(
                             from = 6,
                             to = 14,
-                            type = Markup.Type.MENTION,
-                            param = mentionTarget,
-                            extras = mapOf(
-                                "image" to null,
-                                "emoji" to null,
-                                Markup.Mark.KEY_IS_LOADING to Markup.Mark.IS_NOT_LOADING_VALUE,
-                                Markup.Mark.KEY_IS_DELETED to Markup.Mark.IS_NOT_DELETED_VALUE
-                            )
+                            param = mentionTarget
                         ),
-                        Markup.Mark(
+                        Markup.Mark.Strikethrough(
                             from = 15,
-                            to = 18,
-                            type = Markup.Type.STRIKETHROUGH
+                            to = 18
                         )
                     ),
                     backgroundColor = null,

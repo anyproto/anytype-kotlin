@@ -82,10 +82,9 @@ class TextBlockSetTextTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Bold(
                     from = 0,
-                    to = 4,
-                    type = Markup.Type.BOLD
+                    to = 4
                 )
             ),
             id = MockDataFactory.randomUuid(),
@@ -116,10 +115,9 @@ class TextBlockSetTextTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with link",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Link(
                     from = 10,
                     to = 14,
-                    type = Markup.Type.LINK,
                     param = "link"
                 )
             ),
@@ -151,10 +149,9 @@ class TextBlockSetTextTest : BlockAdapterTestSetup() {
         val paragraph = BlockView.Text.Paragraph(
             text = "text with mention",
             marks = listOf(
-                Markup.Mark(
+                Markup.Mark.Mention.Base(
                     from = 10,
                     to = 14,
-                    type = Markup.Type.MENTION,
                     param = "mention"
                 )
             ),

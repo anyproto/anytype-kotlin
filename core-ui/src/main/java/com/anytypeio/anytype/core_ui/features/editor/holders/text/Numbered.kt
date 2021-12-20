@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -30,8 +32,23 @@ class Numbered(
     override val content: TextInputWidget = itemView.numberedListContent
     override val root: View = itemView
 
+    private val mentionIconSize: Int
+    private val mentionIconPadding: Int
+    private val mentionCheckedIcon: Drawable?
+    private val mentionUncheckedIcon: Drawable?
+    private val mentionInitialsSize: Float
+
     init {
         setup(onContextMenuStyleClick)
+        with(itemView.context) {
+            mentionIconSize =
+                resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)
+            mentionIconPadding =
+                resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+            mentionUncheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_0_text_16)
+            mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
+            mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_default)
+        }
     }
 
     fun bind(
@@ -72,12 +89,11 @@ class Numbered(
         number.text = item.number.addDot()
     }
 
-    override fun getMentionImageSizeAndPadding(): Pair<Int, Int> = with(itemView) {
-        Pair(
-            first = resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default),
-            second = resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
-        )
-    }
+    override fun getMentionIconSize(): Int = mentionIconSize
+    override fun getMentionIconPadding(): Int = mentionIconPadding
+    override fun getMentionCheckedIcon(): Drawable? = mentionCheckedIcon
+    override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
+    override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
     override fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,

@@ -16,8 +16,8 @@ class BlockViewCutTextTest {
             id = MockDataFactory.randomUuid(),
             text = "Anytype is a next generation software",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 14, to = 17, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 14, to = 17)
             ),
             isFocused = true,
             cursor = 2,
@@ -40,8 +40,8 @@ class BlockViewCutTextTest {
             id = blockView.id,
             text = "Anytype  a next generation software",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 12, to = 15, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 12, to = 15)
             ),
             isFocused = true,
             cursor = 8,
@@ -104,8 +104,8 @@ class BlockViewCutTextTest {
             id = MockDataFactory.randomUuid(),
             text = "Anytype is a next generation software",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 14, to = 17, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 14, to = 17)
             ),
             isFocused = true,
             cursor = 2,
@@ -128,8 +128,8 @@ class BlockViewCutTextTest {
             id = blockView.id,
             text = "Anytype is a next generation software",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 14, to = 17, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 14, to = 17)
             ),
             isFocused = true,
             cursor = 8,
@@ -151,8 +151,8 @@ class BlockViewCutTextTest {
             id = MockDataFactory.randomUuid(),
             text = "Anytype is a next generation software",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 14, to = 17, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 14, to = 17)
             ),
             isFocused = true,
             cursor = 2,
@@ -179,8 +179,8 @@ class BlockViewCutTextTest {
             id = MockDataFactory.randomUuid(),
             text = "Anytype",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 3, to = 5, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 3, to = 5)
             ),
             isFocused = true,
             cursor = null,
@@ -209,8 +209,8 @@ class BlockViewCutTextTest {
             id = MockDataFactory.randomUuid(),
             text = "Anytype",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 3, to = 5, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 3, to = 5)
             ),
             isFocused = true,
             cursor = null,
@@ -239,8 +239,8 @@ class BlockViewCutTextTest {
             id = MockDataFactory.randomUuid(),
             text = "Anytype",
             marks = listOf(
-                Markup.Mark(from = 0, to = 3, type = Markup.Type.BOLD),
-                Markup.Mark(from = 3, to = 5, type = Markup.Type.ITALIC)
+                Markup.Mark.Bold(from = 0, to = 3),
+                Markup.Mark.Italic(from = 3, to = 5)
             ),
             isFocused = true,
             cursor = null,

@@ -237,10 +237,9 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
                     id = block.id,
                     text = "Foo/Bar",
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 7,
-                            type = Markup.Type.BOLD
+                            to = 7
                         )
                     ),
                     isFocused = true,
@@ -264,10 +263,9 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
                     id = block.id,
                     text = "Foo/sBar",
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 8,
-                            type = Markup.Type.BOLD
+                            to = 8
                         )
                     ),
                     isFocused = true,
@@ -291,10 +289,9 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
                     id = block.id,
                     text = "Foo/suBar",
                     marks = listOf(
-                        Markup.Mark(
+                        Markup.Mark.Bold(
                             from = 0,
-                            to = 9,
-                            type = Markup.Type.BOLD
+                            to = 9
                         )
                     ),
                     isFocused = true,

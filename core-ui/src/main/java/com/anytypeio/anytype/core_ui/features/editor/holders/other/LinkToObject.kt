@@ -7,18 +7,14 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.features.editor.*
-import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.removeSpans
-import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.android.synthetic.main.item_block_object_link.view.*
-import timber.log.Timber
+import kotlinx.android.synthetic.main.item_block_object_link.view.pageGuideline
+import kotlinx.android.synthetic.main.item_block_object_link.view.pageTitle
 
 class LinkToObject(view: View) :
     BlockViewHolder(view),
@@ -28,10 +24,8 @@ class LinkToObject(view: View) :
     SupportNesting {
 
     private val untitled = itemView.resources.getString(R.string.untitled)
-    private val iconContainer = itemView.pageIconContainer
-    private val icon = itemView.pageIcon
-    private val emoji = itemView.linkEmoji
-    private val image = itemView.linkImage
+    private val objectIcon = itemView.objectIconWidget
+    private val objectIconContainer = itemView.iconObjectContainer
     private val title = itemView.pageTitle
     private val guideline = itemView.pageGuideline
     private val progress = itemView.progress
@@ -71,53 +65,27 @@ class LinkToObject(view: View) :
     }
 
     private fun applyImageOrEmoji(item: BlockView.LinkToObject.Default) {
-        when {
-            item.emoji != null -> {
-                icon.setImageDrawable(null)
-                image.setImageDrawable(null)
-                try {
-                    Glide
-                        .with(emoji)
-                        .load(Emojifier.uri(item.emoji!!))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(emoji)
-                } catch (e: Throwable) {
-                    Timber.e(e, "Error while setting emoji icon for: ${item.emoji}")
-                }
-            }
-            item.image != null -> {
-                icon.setImageDrawable(null)
-                emoji.setImageDrawable(null)
-                image.visible()
-                Glide
-                    .with(image)
-                    .load(item.image)
-                    .centerInside()
-                    .circleCrop()
-                    .into(image)
-            }
-            item.isEmpty -> {
-                emoji.setImageDrawable(null)
-                image.setImageDrawable(null)
-                icon.setImageResource(R.drawable.ic_block_empty_page)
+        when (item.icon) {
+            ObjectIcon.None -> {
+                objectIconContainer.gone()
             }
             else -> {
-                icon.setImageResource(R.drawable.ic_block_page_without_emoji)
-                image.setImageDrawable(null)
+                objectIconContainer.visible()
+                objectIcon.setIcon(item.icon)
             }
         }
     }
 
     private fun bindLoading(isLoading: Boolean) {
         if (isLoading) {
-            iconContainer.invisible()
+            objectIcon.invisible()
             title.invisible()
             progress.visible()
             syncing.visible()
         } else {
             progress.invisible()
             syncing.invisible()
-            iconContainer.visible()
+            objectIcon.visible()
             title.visible()
         }
     }

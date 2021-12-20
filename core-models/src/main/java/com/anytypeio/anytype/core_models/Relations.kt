@@ -29,6 +29,7 @@ object Relations {
     const val WORKSPACE_ID = "workspaceId"
     const val SET_OF = "setOf"
     const val IS_HIGHLIGHTED = "isHighlighted"
+    const val IS_DELETED = "isDeleted"
 
     const val PAGE_COVER = "pageCover"
 

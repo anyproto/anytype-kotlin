@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.core_ui.common
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
@@ -21,29 +23,32 @@ fun Markup.toSpannable(
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0,
+    mentionCheckedIcon: Drawable? = null,
+    mentionUncheckedIcon: Drawable? = null,
+    mentionInitialsSize: Float = 0F,
     onImageReady: (String) -> Unit = {}
 ) = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
-        when (mark.type) {
-            Markup.Type.ITALIC -> setSpan(
+        when (mark) {
+            is Markup.Mark.Italic -> setSpan(
                 Span.Italic(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.BOLD -> setSpan(
+            is Markup.Mark.Bold -> setSpan(
                 Span.Bold(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.STRIKETHROUGH -> setSpan(
+            is Markup.Mark.Strikethrough -> setSpan(
                 Span.Strikethrough(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.TEXT_COLOR -> {
+            is Markup.Mark.TextColor -> {
                 val color = mark.color() ?: ThemeColor.DEFAULT.text
                 setSpan(
                     Span.TextColor(color),
@@ -52,7 +57,7 @@ fun Markup.toSpannable(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.BACKGROUND_COLOR -> {
+            is Markup.Mark.BackgroundColor -> {
                 val background = mark.background() ?: ThemeColor.DEFAULT.background
                 setSpan(
                     Span.Highlight(background.toString()),
@@ -61,13 +66,13 @@ fun Markup.toSpannable(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.LINK -> setSpan(
-                Span.Url(mark.param as String, textColor),
+            is Markup.Mark.Link -> setSpan(
+                Span.Url(mark.param, textColor),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.KEYBOARD -> {
+            is Markup.Mark.Keyboard -> {
                 setSpan(
                     Span.Font(Markup.SPAN_MONOSPACE),
                     mark.from,
@@ -81,7 +86,7 @@ fun Markup.toSpannable(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.MENTION -> {
+            is Markup.Mark.Mention -> {
                 context?.let {
                     setMentionSpan(
                         mark = mark,
@@ -89,11 +94,15 @@ fun Markup.toSpannable(
                         click = click,
                         mentionImageSize = mentionImageSize,
                         mentionImagePadding = mentionImagePadding,
-                        onImageReady = onImageReady
+                        mentionCheckedIcon = mentionCheckedIcon,
+                        mentionUncheckedIcon = mentionUncheckedIcon,
+                        onImageReady = onImageReady,
+                        mentionInitialsSize = mentionInitialsSize,
+                        textColor = textColor
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
-            Markup.Type.OBJECT -> setSpan(
+            is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     link = mark.param,
                     color = textColor,
@@ -113,31 +122,34 @@ fun Editable.setMarkup(
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0,
+    mentionCheckedIcon: Drawable?,
+    mentionUncheckedIcon: Drawable?,
+    mentionInitialsSize: Float,
     onImageReady: (String) -> Unit = {},
     textColor: Int
 ) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
-        when (mark.type) {
-            Markup.Type.ITALIC -> setSpan(
+        when (mark) {
+            is Markup.Mark.Italic -> setSpan(
                 Span.Italic(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.BOLD -> setSpan(
+            is Markup.Mark.Bold -> setSpan(
                 Span.Bold(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.STRIKETHROUGH -> setSpan(
+            is Markup.Mark.Strikethrough -> setSpan(
                 Span.Strikethrough(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.TEXT_COLOR -> {
+            is Markup.Mark.TextColor -> {
                 val color = mark.color() ?: ThemeColor.DEFAULT.text
                 setSpan(
                     Span.TextColor(color),
@@ -146,7 +158,7 @@ fun Editable.setMarkup(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.BACKGROUND_COLOR -> {
+            is Markup.Mark.BackgroundColor -> {
                 val background = mark.background() ?: ThemeColor.DEFAULT.background
                 setSpan(
                     Span.Highlight(background.toString()),
@@ -155,13 +167,13 @@ fun Editable.setMarkup(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.LINK -> setSpan(
-                Span.Url(mark.param as String, textColor),
+            is Markup.Mark.Link -> setSpan(
+                Span.Url(mark.param, textColor),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            Markup.Type.KEYBOARD -> {
+            is Markup.Mark.Keyboard -> {
                 setSpan(
                     Span.Font(Markup.SPAN_MONOSPACE),
                     mark.from,
@@ -175,7 +187,7 @@ fun Editable.setMarkup(
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
-            Markup.Type.MENTION -> {
+            is Markup.Mark.Mention -> {
                 context?.let {
                     setMentionSpan(
                         onImageReady = onImageReady,
@@ -183,11 +195,15 @@ fun Editable.setMarkup(
                         context = it,
                         click = click,
                         mentionImageSize = mentionImageSize,
-                        mentionImagePadding = mentionImagePadding
+                        mentionImagePadding = mentionImagePadding,
+                        mentionCheckedIcon = mentionCheckedIcon,
+                        mentionUncheckedIcon = mentionUncheckedIcon,
+                        mentionInitialsSize = mentionInitialsSize,
+                        textColor = textColor
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
-            Markup.Type.OBJECT -> setSpan(
+            is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     link = mark.param,
                     color = textColor,
@@ -203,109 +219,209 @@ fun Editable.setMarkup(
 
 fun Editable.setMentionSpan(
     onImageReady: (String) -> Unit = {},
-    mark: Markup.Mark,
+    mark: Markup.Mark.Mention,
     context: Context,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
-    mentionImagePadding: Int = 0
+    mentionImagePadding: Int = 0,
+    mentionCheckedIcon: Drawable?,
+    mentionUncheckedIcon: Drawable?,
+    mentionInitialsSize: Float,
+    textColor: Int
 ): Editable = this.apply {
-    when {
-        mark.isDeleted == Markup.Mark.IS_DELETED_VALUE -> {
-            proceedWithSettingMentionSpanForDeletedObject(
-                mark,
-                context,
-                mentionImageSize,
-                mentionImagePadding
+    proceedWithSettingMentionSpan(
+        onImageReady = onImageReady,
+        mark = mark,
+        context = context,
+        click = click,
+        mentionImageSize = mentionImageSize,
+        mentionImagePadding = mentionImagePadding,
+        mentionCheckedIcon = mentionCheckedIcon,
+        mentionUncheckedIcon = mentionUncheckedIcon,
+        mentionInitialsSize = mentionInitialsSize,
+        textColor = textColor
+    )
+}
+
+fun Editable.proceedWithSettingMentionSpan(
+    onImageReady: (String) -> Unit = {},
+    mark: Markup.Mark.Mention,
+    context: Context,
+    click: ((String) -> Unit)? = null,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0,
+    mentionCheckedIcon: Drawable?,
+    mentionUncheckedIcon: Drawable?,
+    mentionInitialsSize: Float,
+    textColor: Int
+) {
+
+    when (mark) {
+        is Markup.Mark.Mention.Deleted -> {
+            val placeholder = context.drawable(R.drawable.ic_non_existent_object)
+            setSpan(
+                MentionSpan(
+                    context = context,
+                    placeholder = placeholder,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
+                    isDeleted = true
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
             )
         }
-        !mark.param.isNullOrBlank() -> {
-            proceedWithSettingMentionSpan(
-                onImageReady,
-                mark,
-                context,
-                click,
-                mentionImageSize,
-                mentionImagePadding
+        is Markup.Mark.Mention.Loading -> {
+            val placeholder = context.drawable(R.drawable.ic_mention_loading_state)
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    placeholder = placeholder,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
             )
         }
-        else -> {
-            Timber.e("Get MentionSpan without param!")
+        is Markup.Mark.Mention.Base -> {
+            setSpan(
+                Span.ObjectLink(
+                    link = mark.param,
+                    color = textColor,
+                    click = click
+                ),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
+        }
+        is Markup.Mark.Mention.WithEmoji -> {
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
+                    emoji = mark.emoji
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
+        is Markup.Mark.Mention.WithImage -> {
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
+                    image = mark.image
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
+        is Markup.Mark.Mention.Task.Checked -> {
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    placeholder = mentionCheckedIcon,
+                    param = mark.param
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
+        is Markup.Mark.Mention.Task.Unchecked -> {
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    placeholder = mentionUncheckedIcon,
+                    param = mark.param
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
+        is Markup.Mark.Mention.Profile.WithImage -> {
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
+                    profile = mark.imageUrl
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
+        is Markup.Mark.Mention.Profile.WithInitials -> {
+            val placeholder =
+                ContextCompat.getDrawable(
+                    context,
+                    R.drawable.object_in_list_background_profile_initial
+                )
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    placeholder = placeholder,
+                    param = mark.param,
+                    initials = mark.initials.toString(),
+                    initialsTextSize = mentionInitialsSize
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
         }
     }
 }
 
-fun Editable.proceedWithSettingMentionSpanForDeletedObject(
-    mark: Markup.Mark,
-    context: Context,
-    mentionImageSize: Int = 0,
-    mentionImagePadding: Int = 0
-) {
-    val placeholder = context.drawable(R.drawable.ic_non_existent_object)
+fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Mention) {
+    val clickableSpan = object : ClickableSpan() {
+        override fun onClick(widget: View) {
+            // TODO consider pausing text watchers. Otherwise, redundant text watcher events will be triggered.
+            (widget as? TextInputWidget)?.enableReadMode()
+            click?.invoke(mark.param)
+        }
+    }
     setSpan(
-        MentionSpan(
-            context = context,
-            placeholder = placeholder,
-            imageSize = mentionImageSize,
-            imagePadding = mentionImagePadding,
-            param = null,
-            emoji = null,
-            image = null,
-            isDeleted = true
-        ),
+        clickableSpan,
         mark.from,
         mark.to,
         Markup.MENTION_SPANNABLE_FLAG
     )
 }
 
-fun Editable.proceedWithSettingMentionSpan(
-    onImageReady: (String) -> Unit = {},
-    mark: Markup.Mark,
-    context: Context,
-    click: ((String) -> Unit)? = null,
-    mentionImageSize: Int = 0,
-    mentionImagePadding: Int = 0
-) {
-
-    val isLoading = mark.isLoading == Markup.Mark.IS_LOADING_VALUE
-
-    val placeholder = if (isLoading)
-        context.drawable(R.drawable.ic_mention_loading_state)
-    else
-        context.drawable(R.drawable.ic_block_page_without_emoji)
-
-    setSpan(
-        MentionSpan(
-                onImageResourceReady = onImageReady,
-                context = context,
-                placeholder = placeholder,
-                imageSize = mentionImageSize,
-                imagePadding = mentionImagePadding,
-                param = mark.param!!,
-                emoji = if (mark.extras.isNotEmpty()) mark.emoji else null,
-                image = if (mark.extras.isNotEmpty()) mark.image else null
-            ),
-            mark.from,
-            mark.to,
-            Markup.MENTION_SPANNABLE_FLAG
-        )
-
-        if (!isLoading) {
-            val clickableSpan = object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    // TODO consider pausing text watchers. Otherwise, redundant text watcher events will be triggered.
-                    (widget as? TextInputWidget)?.enableReadMode()
-                    click?.invoke(mark.param!!)
-                }
-            }
-            setSpan(
-                clickableSpan,
-                mark.from,
-                mark.to,
-                Markup.MENTION_SPANNABLE_FLAG
-            )
-        }
-    }
-
 fun List<Markup.Mark>.isLinksOrMentionsPresent(): Boolean =
-    this.any { it.type == Markup.Type.LINK || it.type == Markup.Type.MENTION || it.type == Markup.Type.OBJECT }
+    this.any { it is Markup.Mark.Link || it is Markup.Mark.Mention || it is Markup.Mark.Object }

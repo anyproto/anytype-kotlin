@@ -579,13 +579,11 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                 marks = listOf(
                     Block.Content.Text.Mark(
                         range = IntRange(0, 5),
-                        type = Block.Content.Text.Mark.Type.BOLD,
-                        param = null
+                        type = Block.Content.Text.Mark.Type.BOLD
                     ),
                     Block.Content.Text.Mark(
                         range = IntRange(3, 10),
-                        type = Block.Content.Text.Mark.Type.ITALIC,
-                        param = null
+                        type = Block.Content.Text.Mark.Type.ITALIC
                     )
                 ),
                 style = Block.Content.Text.Style.NUMBERED

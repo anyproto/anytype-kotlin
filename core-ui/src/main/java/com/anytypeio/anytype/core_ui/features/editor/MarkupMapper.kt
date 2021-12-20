@@ -8,60 +8,50 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
 fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).mapNotNull { span ->
     when (span) {
-        is Span.Strikethrough -> Markup.Mark(
+        is Span.Strikethrough -> Markup.Mark.Strikethrough(
             from = getSpanStart(span),
-            to = getSpanEnd(span),
-            type = Markup.Type.STRIKETHROUGH,
-            param = null
+            to = getSpanEnd(span)
         )
-        is Span.TextColor -> Markup.Mark(
+        is Span.TextColor -> Markup.Mark.TextColor(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            type = Markup.Type.TEXT_COLOR,
-            param = span.foregroundColor.let { color ->
+            color = span.foregroundColor.let { color ->
                 ThemeColor.text[color]
-            }
+            }.orEmpty()
         )
-        is Span.Highlight -> Markup.Mark(
+        is Span.Highlight -> Markup.Mark.BackgroundColor(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            type = Markup.Type.BACKGROUND_COLOR,
-            param = span.value.let { background ->
+            background = span.value.let { background ->
                 ThemeColor.background[background.toInt()]
-            }
+            }.orEmpty()
         )
-        is Span.Italic -> Markup.Mark(
+        is Span.Italic -> Markup.Mark.Italic(
+            from = getSpanStart(span),
+            to = getSpanEnd(span)
+        )
+        is Span.Bold -> Markup.Mark.Bold(
+            from = getSpanStart(span),
+            to = getSpanEnd(span)
+        )
+        is Span.Keyboard -> Markup.Mark.Keyboard(
+            from = getSpanStart(span),
+            to = getSpanEnd(span)
+        )
+        is Span.Url -> Markup.Mark.Link(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            type = Markup.Type.ITALIC
-        )
-        is Span.Bold -> Markup.Mark(
-            from = getSpanStart(span),
-            to = getSpanEnd(span),
-            type = Markup.Type.BOLD
-        )
-        is Span.Keyboard -> Markup.Mark(
-            from = getSpanStart(span),
-            to = getSpanEnd(span),
-            type = Markup.Type.KEYBOARD
-        )
-        is Span.Url -> Markup.Mark(
-            from = getSpanStart(span),
-            to = getSpanEnd(span),
-            type = Markup.Type.LINK,
             param = span.url
         )
-        is MentionSpan -> Markup.Mark(
+        is MentionSpan -> Markup.Mark.Mention.Base(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            type = Markup.Type.MENTION,
-            param = span.param
+            param = span.param.orEmpty()
         )
-        is Span.ObjectLink -> Markup.Mark(
+        is Span.ObjectLink -> Markup.Mark.Object(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            type = Markup.Type.OBJECT,
-            param = span.link
+            param = span.link.orEmpty()
         )
         else -> null
     }

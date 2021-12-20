@@ -138,23 +138,23 @@ data class ControlPanelState(
             ) {
 
                 val isBold: Boolean = marks.any { mark ->
-                    mark.type == Markup.Type.BOLD && mark.from == 0 && mark.to == text.length
+                    mark is Markup.Mark.Bold && mark.from == 0 && mark.to == text.length
                 }
 
                 val isItalic: Boolean = marks.any { mark ->
-                    mark.type == Markup.Type.ITALIC && mark.from == 0 && mark.to == text.length
+                    mark is Markup.Mark.Italic && mark.from == 0 && mark.to == text.length
                 }
 
                 val isStrikethrough: Boolean = marks.any { mark ->
-                    mark.type == Markup.Type.STRIKETHROUGH && mark.from == 0 && mark.to == text.length
+                    mark is Markup.Mark.Strikethrough && mark.from == 0 && mark.to == text.length
                 }
 
                 val isCode: Boolean = marks.any { mark ->
-                    mark.type == Markup.Type.KEYBOARD && mark.from == 0 && mark.to == text.length
+                    mark is Markup.Mark.Keyboard && mark.from == 0 && mark.to == text.length
                 }
 
                 val isLinked: Boolean = marks.any { mark ->
-                    mark.type == Markup.Type.LINK && mark.from == 0 && mark.to == text.length
+                    mark is Markup.Mark.Link && mark.from == 0 && mark.to == text.length
                 }
             }
         }

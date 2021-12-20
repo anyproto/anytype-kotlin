@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.action_toolbar.*
 import timber.log.Timber
 import kotlin.math.abs
 
+@Deprecated("Legacy")
 abstract class BlockActionToolbar : Fragment() {
 
     companion object {
@@ -260,7 +261,7 @@ abstract class BlockActionToolbar : Fragment() {
         }
 
     private fun setBlockSpannableText(content: TextInputWidget, markup: Markup, textColor: Int) =
-        when (markup.marks.any { it.type == Markup.Type.MENTION }) {
+        when (markup.marks.any { it is Markup.Mark.Mention }) {
             true -> setSpannableWithMention(content, markup, textColor)
             false -> setSpannable(content, markup, textColor)
         }

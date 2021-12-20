@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor.editor.model
 
-import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
@@ -51,6 +50,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -58,7 +58,7 @@ import kotlinx.android.parcel.RawValue
 /**
  * UI-models for different types of blocks.
  */
-sealed class BlockView : ViewType, Parcelable {
+sealed class BlockView : ViewType {
 
     /**
      * Each block view has a corresponding block id.
@@ -191,7 +191,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property isFocused whether this block is currently focused or not
          * @property color text color
          */
-        @Parcelize
         data class Paragraph(
             override val id: String,
             override var text: String,
@@ -204,8 +203,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override val alignment: Alignment? = null,
             override var cursor: Int? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-            override val ghostEditorSelection: @RawValue IntRange? = null
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
             override val body: String get() = text
@@ -220,7 +219,6 @@ sealed class BlockView : ViewType, Parcelable {
              * @property color text color
              * @property marks markup
              */
-            @Parcelize
             data class One(
                 override val id: String,
                 override var text: String,
@@ -233,8 +231,8 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override var cursor: Int? = null,
-                override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-                override val ghostEditorSelection: @RawValue IntRange? = null
+                override val searchFields: List<Searchable.Field> = emptyList(),
+                override val ghostEditorSelection: IntRange? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
                 override val body: String get() = text
@@ -247,7 +245,6 @@ sealed class BlockView : ViewType, Parcelable {
              * @property color text color
              * @property marks markup
              */
-            @Parcelize
             data class Two(
                 override val id: String,
                 override val color: String? = null,
@@ -260,8 +257,8 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override var cursor: Int? = null,
-                override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-                override val ghostEditorSelection: @RawValue IntRange? = null
+                override val searchFields: List<Searchable.Field> = emptyList(),
+                override val ghostEditorSelection: IntRange? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
                 override val body: String get() = text
@@ -274,7 +271,6 @@ sealed class BlockView : ViewType, Parcelable {
              * @property color text color
              * @property marks markup
              */
-            @Parcelize
             data class Three(
                 override val id: String,
                 override val color: String? = null,
@@ -287,8 +283,8 @@ sealed class BlockView : ViewType, Parcelable {
                 override val isSelected: Boolean = false,
                 override val alignment: Alignment? = null,
                 override var cursor: Int? = null,
-                override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-                override val ghostEditorSelection: @RawValue IntRange? = null
+                override val searchFields: List<Searchable.Field> = emptyList(),
+                override val ghostEditorSelection: IntRange? = null
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
                 override val body: String get() = text
@@ -301,7 +297,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property text block's content
          * @property marks markup
          */
-        @Parcelize
         data class Highlight(
             override val id: String,
             override var isFocused: Boolean = false,
@@ -314,8 +309,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override var cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-            override val ghostEditorSelection: @RawValue IntRange? = null
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
             override val body: String get() = text
@@ -327,7 +322,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property text checkbox's content text
          * @property isChecked immutable checkbox state (whether this checkbox is checked or not)
          */
-        @Parcelize
         data class Checkbox(
             override val id: String,
             override var marks: List<Markup.Mark> = emptyList(),
@@ -341,8 +335,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override var cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-            override val ghostEditorSelection: @RawValue IntRange? = null
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
             override val body: String get() = text
@@ -355,7 +349,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property indent indentation value
          * @property color text color
          */
-        @Parcelize
         data class Bulleted(
             override val id: String,
             override var marks: List<Markup.Mark> = emptyList(),
@@ -368,8 +361,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override var cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-            override val ghostEditorSelection: @RawValue IntRange? = null
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
             override val body: String get() = text
@@ -382,7 +375,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property number number value
          * @property indent indentation value
          */
-        @Parcelize
         data class Numbered(
             override val id: String,
             override var text: String,
@@ -395,8 +387,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override var cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-            override val ghostEditorSelection: @RawValue IntRange? = null,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null,
             val number: Int
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
@@ -410,7 +402,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property indent indentation value
          * @property toggled toggle state (whether this toggle is expanded or not)
          */
-        @Parcelize
         data class Toggle(
             override val id: String,
             override var text: String,
@@ -423,8 +414,8 @@ sealed class BlockView : ViewType, Parcelable {
             override val isSelected: Boolean = false,
             override var cursor: Int? = null,
             override val alignment: Alignment? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
-            override val ghostEditorSelection: @RawValue IntRange? = null,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null,
             val toggled: Boolean = false,
             val isEmpty: Boolean = false
         ) : Text() {
@@ -433,7 +424,6 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
-    @Parcelize
     data class Description(
         override val id: String,
         override val mode: Mode = Mode.EDIT,
@@ -461,7 +451,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property id block's id
          * @property text text content (i.e. title text)
          */
-        @Parcelize
         data class Basic(
             override val id: String,
             override var isFocused: Boolean = false,
@@ -473,7 +462,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+            override val searchFields: List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
         }
@@ -484,7 +473,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property text text content (i.e. title text)
          * @property image image as a page's logo (if present)
          */
-        @Parcelize
         data class Profile(
             override val id: String,
             override var isFocused: Boolean = false,
@@ -495,7 +483,7 @@ sealed class BlockView : ViewType, Parcelable {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList()
+            override val searchFields: List<Searchable.Field> = emptyList()
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }
@@ -505,7 +493,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property id block's id
          * @property text text content (i.e. title text)
          */
-        @Parcelize
         data class Todo(
             override val id: String,
             override var isFocused: Boolean = false,
@@ -516,7 +503,7 @@ sealed class BlockView : ViewType, Parcelable {
             override var coverGradient: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val searchFields: List<Searchable.Field> = emptyList(),
             var isChecked: Boolean = false,
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TODO_TITLE
@@ -528,7 +515,6 @@ sealed class BlockView : ViewType, Parcelable {
          * @property text text content (i.e. title text)
          * @property image image as a page's logo (if present)
          */
-        @Parcelize
         data class Archive(
             override val id: String,
             override var isFocused: Boolean = false,
@@ -549,7 +535,6 @@ sealed class BlockView : ViewType, Parcelable {
      * @property id block's id
      * @property text blocks's content (i.e. code snippet)
      */
-    @Parcelize
     data class Code(
         override val id: String,
         override var text: String,
@@ -564,7 +549,7 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 
-    sealed class Error : BlockView(), Indentable, Parcelable, Selectable, Permission {
+    sealed class Error : BlockView(), Indentable, Selectable, Permission {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -575,7 +560,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing video, with state ERROR.
          * @property id block's id
          */
-        @Parcelize
         data class File(
             override val id: String,
             override val indent: Int,
@@ -589,7 +573,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing video, with state ERROR.
          * @property id block's id
          */
-        @Parcelize
         data class Video(
             override val id: String,
             override val indent: Int,
@@ -602,7 +585,6 @@ sealed class BlockView : ViewType, Parcelable {
         /**
          * UI-model for block containing image, with state ERROR.
          */
-        @Parcelize
         data class Picture(
             override val id: String,
             override val indent: Int,
@@ -616,7 +598,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for a bookmark view in error state
          * @property url url originally entered by user to create a bookmark
          */
-        @Parcelize
         data class Bookmark(
             override val id: String,
             override val indent: Int,
@@ -628,7 +609,7 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
-    sealed class Upload : BlockView(), Indentable, Parcelable, Selectable, Permission {
+    sealed class Upload : BlockView(), Indentable, Selectable, Permission {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -639,7 +620,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing file, with state UPLOADING.
          * @property id block's id
          */
-        @Parcelize
         data class File(
             override val id: String,
             override val indent: Int,
@@ -653,7 +633,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing video, with state UPLOADING.
          * @property id block's id
          */
-        @Parcelize
         data class Video(
             override val id: String,
             override val indent: Int,
@@ -666,7 +645,6 @@ sealed class BlockView : ViewType, Parcelable {
         /**
          * UI-model for block containing image, with state UPLOADING.
          */
-        @Parcelize
         data class Picture(
             override val id: String,
             override val indent: Int,
@@ -677,7 +655,7 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
-    sealed class MediaPlaceholder : BlockView(), Indentable, Parcelable, Selectable, Permission {
+    sealed class MediaPlaceholder : BlockView(), Indentable, Selectable, Permission {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -688,7 +666,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing file, with state EMPTY.
          * @property id block's id
          */
-        @Parcelize
         data class File(
             override val id: String,
             override val indent: Int,
@@ -702,7 +679,6 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing video, with state EMPTY.
          * @property id block's id
          */
-        @Parcelize
         data class Video(
             override val id: String,
             override val indent: Int,
@@ -715,7 +691,6 @@ sealed class BlockView : ViewType, Parcelable {
         /**
          * UI-model for a bookmark placeholder (used when bookmark url is not set)
          */
-        @Parcelize
         data class Bookmark(
             override val id: String,
             override val indent: Int,
@@ -728,7 +703,6 @@ sealed class BlockView : ViewType, Parcelable {
         /**
          * UI-model for block containing image, with state EMPTY.
          */
-        @Parcelize
         data class Picture(
             override val id: String,
             override val indent: Int,
@@ -740,7 +714,7 @@ sealed class BlockView : ViewType, Parcelable {
 
     }
 
-    sealed class Media : BlockView(), Indentable, Parcelable, Selectable, Permission {
+    sealed class Media : BlockView(), Indentable, Selectable, Permission {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -751,13 +725,12 @@ sealed class BlockView : ViewType, Parcelable {
          * UI-model for block containing file, with state DONE.
          * @property id block's id
          */
-        @Parcelize
         data class File(
             override val id: String,
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val searchFields: List<Searchable.Field> = emptyList(),
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -770,7 +743,6 @@ sealed class BlockView : ViewType, Parcelable {
         /**
          * UI-model for block containing video, with state DONE.
          */
-        @Parcelize
         data class Video(
             override val id: String,
             override val indent: Int,
@@ -793,13 +765,12 @@ sealed class BlockView : ViewType, Parcelable {
          * @property faviconUrl website's favicon url
          * @property imageUrl content's main image url
          */
-        @Parcelize
         data class Bookmark(
             override val id: String,
             override val indent: Int = 0,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val searchFields: List<Searchable.Field> = emptyList(),
             val url: String,
             val title: String?,
             val description: String?,
@@ -818,7 +789,6 @@ sealed class BlockView : ViewType, Parcelable {
         /**
          * UI-model for block containing image, with state DONE.
          */
-        @Parcelize
         data class Picture(
             override val id: String,
             override val indent: Int,
@@ -845,16 +815,14 @@ sealed class BlockView : ViewType, Parcelable {
          * @property isDeleted this property determines whether this linked object is deleted or not.
          * Whenever isDeleted is true, we don't care about isArchived flags
          */
-        @Parcelize
         data class Default(
             override val id: String,
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val searchFields: List<Searchable.Field> = emptyList(),
             override val isLoading: Boolean = false,
             var text: String? = null,
-            val emoji: String? = null,
-            val image: String? = null,
+            val icon: ObjectIcon,
             val isEmpty: Boolean = false,
             val isArchived: Boolean? = false,
             val isDeleted: Boolean? = false
@@ -869,12 +837,11 @@ sealed class BlockView : ViewType, Parcelable {
          * @property emoji a page's emoji (if present)
          * @property isEmpty this property determines whether this page is empty or not
          */
-        @Parcelize
         data class Archived(
             override val id: String,
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
-            override val searchFields: @RawValue List<Searchable.Field> = emptyList(),
+            override val searchFields: List<Searchable.Field> = emptyList(),
             override val isLoading: Boolean = false,
             var text: String? = null,
             val emoji: String? = null,
@@ -884,7 +851,6 @@ sealed class BlockView : ViewType, Parcelable {
             override fun getViewType() = HOLDER_OBJECT_LINK_ARCHIVE
         }
 
-        @Parcelize
         data class Deleted(
             override val id: String,
             override val indent: Int = 0,
@@ -899,7 +865,6 @@ sealed class BlockView : ViewType, Parcelable {
      * UI-model for a line divider block.
      * @property id block's id
      */
-    @Parcelize
     data class DividerLine(
         override val id: String,
         override val isSelected: Boolean = false,
@@ -912,7 +877,6 @@ sealed class BlockView : ViewType, Parcelable {
      * UI-model for a dots divider block.
      * @property id block's id
      */
-    @Parcelize
     data class DividerDots(
         override val id: String,
         override val isSelected: Boolean = false,
@@ -921,16 +885,14 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType() = HOLDER_DIVIDER_DOTS
     }
 
-    @Parcelize
     data class FeaturedRelation(
         override val id: String,
-        val relations: @RawValue List<DocumentRelationView>
+        val relations: List<DocumentRelationView>
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }
 
     sealed class Relation : BlockView(), Selectable, Indentable {
-        @Parcelize
         data class Placeholder(
             override val id: String,
             override val indent: Int = 0,
@@ -939,13 +901,12 @@ sealed class BlockView : ViewType, Parcelable {
             override fun getViewType(): Int = HOLDER_RELATION_PLACEHOLDER
         }
 
-        @Parcelize
         data class Related(
             override val id: String,
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
             val background: String? = null,
-            val view: @RawValue DocumentRelationView
+            val view: DocumentRelationView
         ) : Relation() {
             override fun getViewType(): Int = when (view) {
                 is DocumentRelationView.Default -> HOLDER_RELATION_DEFAULT
@@ -959,7 +920,6 @@ sealed class BlockView : ViewType, Parcelable {
         }
     }
 
-    @Parcelize
     data class Unsupported(
         override val id: String,
         override val indent: Int,
@@ -968,7 +928,6 @@ sealed class BlockView : ViewType, Parcelable {
         override fun getViewType(): Int = HOLDER_UNSUPPORTED
     }
 
-    @Parcelize
     data class Latex(
         override val id: String,
         override val indent: Int,

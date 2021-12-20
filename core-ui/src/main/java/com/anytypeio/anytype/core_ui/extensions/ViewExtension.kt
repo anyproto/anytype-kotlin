@@ -63,7 +63,7 @@ fun EditText.cursorYBottomCoordinate(): Int {
     }
 }
 
-fun TextView.range() : IntRange = selectionStart..selectionEnd
+fun TextView.range(): IntRange = selectionStart..selectionEnd
 
 fun View.dimensions(): BlockDimensions {
     val rect = calculateRectInWindow(this)

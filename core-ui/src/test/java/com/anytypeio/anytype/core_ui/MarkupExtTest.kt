@@ -11,9 +11,9 @@ class MarkupExtTest {
     @Test
     fun `should find link markup`() {
         val given = listOf(
-            Markup.Mark(from = 0, to = 5, type = Markup.Type.BOLD),
-            Markup.Mark(from = 23, to = 31, type = Markup.Type.STRIKETHROUGH),
-            Markup.Mark(from = 32, to = 43, type = Markup.Type.LINK, param = "www.google.com")
+            Markup.Mark.Bold(from = 0, to = 5),
+            Markup.Mark.Strikethrough(from = 23, to = 31),
+            Markup.Mark.Link(from = 32, to = 43, param = "www.google.com")
         )
 
         val actual = given.isLinksOrMentionsPresent()
@@ -24,9 +24,9 @@ class MarkupExtTest {
     @Test
     fun `should find mention markup`() {
         val given = listOf(
-            Markup.Mark(from = 0, to = 5, type = Markup.Type.BOLD),
-            Markup.Mark(from = 23, to = 31, type = Markup.Type.STRIKETHROUGH),
-            Markup.Mark(from = 32, to = 43, type = Markup.Type.MENTION, param = "fjdhghdjhj")
+            Markup.Mark.Bold(from = 0, to = 5),
+            Markup.Mark.Strikethrough(from = 23, to = 31),
+            Markup.Mark.Mention.Base(from = 32, to = 43, param = "fjdhghdjhj")
         )
 
         val actual = given.isLinksOrMentionsPresent()
@@ -37,8 +37,8 @@ class MarkupExtTest {
     @Test
     fun `should not find link markup`() {
         val given = listOf(
-            Markup.Mark(from = 0, to = 5, type = Markup.Type.BOLD),
-            Markup.Mark(from = 23, to = 31, type = Markup.Type.STRIKETHROUGH)
+            Markup.Mark.Bold(from = 0, to = 5),
+            Markup.Mark.Strikethrough(from = 23, to = 31)
         )
 
         val actual = given.isLinksOrMentionsPresent()

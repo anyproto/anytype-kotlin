@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor
 
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.Spannable
 import android.widget.TextView
@@ -56,7 +57,7 @@ interface TextBlockHolder : TextHolder {
         clicked: (ListenerType) -> Unit,
         textColor: Int
     ) {
-        when (markup.marks.any { it.type == Markup.Type.MENTION || it.type == Markup.Type.OBJECT }) {
+        when (markup.marks.any { it is Markup.Mark.Mention || it is Markup.Mark.Object }) {
             true -> setSpannableWithMention(markup, clicked, textColor)
             false -> setSpannable(markup, textColor)
         }
@@ -66,7 +67,11 @@ interface TextBlockHolder : TextHolder {
         content.setText(markup.toSpannable(textColor = textColor), TextView.BufferType.SPANNABLE)
     }
 
-    fun getMentionImageSizeAndPadding(): Pair<Int, Int>
+    fun getMentionIconSize(): Int
+    fun getMentionIconPadding(): Int
+    fun getMentionCheckedIcon(): Drawable?
+    fun getMentionUncheckedIcon(): Drawable?
+    fun getMentionInitialsSize(): Float
 
     private fun setSpannableWithMention(markup: Markup,
                                         clicked: (ListenerType) -> Unit,
@@ -74,15 +79,17 @@ interface TextBlockHolder : TextHolder {
     ) {
         content.dismissMentionWatchers()
         with(content) {
-            val sizes = getMentionImageSizeAndPadding()
             setText(
                 markup.toSpannable(
                     textColor = textColor,
                     context = context,
-                    mentionImageSize = sizes.first,
-                    mentionImagePadding = sizes.second,
+                    mentionImageSize = getMentionIconSize(),
+                    mentionImagePadding = getMentionIconPadding(),
+                    mentionCheckedIcon = getMentionCheckedIcon(),
+                    mentionUncheckedIcon = getMentionUncheckedIcon(),
                     click = { clicked(ListenerType.Mention(it)) },
-                    onImageReady = { param -> refreshMentionSpan(param) }
+                    onImageReady = { param -> refreshMentionSpan(param) },
+                    mentionInitialsSize = getMentionInitialsSize()
                 ),
                 TextView.BufferType.SPANNABLE
             )
@@ -108,15 +115,17 @@ interface TextBlockHolder : TextHolder {
     fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit, textColor: Int) {
         content.applyMovementMethod(markup)
         with(content) {
-            val sizes = getMentionImageSizeAndPadding()
             text?.setMarkup(
                 markup = markup,
                 context = context,
-                mentionImageSize = sizes.first,
-                mentionImagePadding = sizes.second,
+                mentionImageSize = getMentionIconSize(),
+                mentionImagePadding = getMentionIconPadding(),
                 click = { clicked(ListenerType.Mention(it)) },
                 onImageReady = { param -> refreshMentionSpan(param) },
-                textColor = textColor
+                textColor = textColor,
+                mentionCheckedIcon = getMentionCheckedIcon(),
+                mentionUncheckedIcon = getMentionUncheckedIcon(),
+                mentionInitialsSize = getMentionInitialsSize()
             )
         }
     }

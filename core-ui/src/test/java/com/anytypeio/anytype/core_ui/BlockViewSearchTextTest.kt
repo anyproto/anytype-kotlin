@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -142,8 +143,7 @@ class BlockViewSearchTextTest {
             text = MockDataFactory.randomString(),
             searchFields = listOf(field1),
             indent = 0,
-            emoji = null,
-            image = null
+            icon = ObjectIcon.None
         )
 
         val views = listOf(page)

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.*
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -17,8 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.getSupportedMarkupTypes
-import com.anytypeio.anytype.presentation.extension.isInRange
-import com.anytypeio.anytype.presentation.extension.style
+import com.anytypeio.anytype.presentation.extension.*
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -95,9 +95,12 @@ sealed class ControlPanelMachine {
         object OnBlockTextColorSelected : Event()
 
 
+        @Deprecated("Legacy")
         data class OnEditorContextMenuStyleClicked(
             val selection: IntRange,
-            val target: Block
+            val target: Block,
+            val details: Block.Details,
+            val urlBuilder: UrlBuilder
         ) : Event()
 
 
@@ -132,7 +135,9 @@ sealed class ControlPanelMachine {
         data class OnBlockActionToolbarStyleClicked(
             val target: Block,
             val focused: Boolean,
-            val selection: IntRange?
+            val selection: IntRange?,
+            val urlBuilder: UrlBuilder,
+            val details: Block.Details
         ) : Event()
 
         object OnMultiSelectStyleClicked : Event()
@@ -197,7 +202,9 @@ sealed class ControlPanelMachine {
         sealed class Mentions : Event() {
             data class OnStart(val cursorCoordinate: Int, val mentionFrom: Int) : Mentions()
             data class OnQuery(val text: String) : Mentions()
-            data class OnResult(val mentions: List<DefaultObjectView>, val text: String) : Mentions()
+            data class OnResult(val mentions: List<DefaultObjectView>, val text: String) :
+                Mentions()
+
             object OnMentionClicked : Mentions()
             object OnStop : Mentions()
         }
@@ -217,7 +224,12 @@ sealed class ControlPanelMachine {
         }
 
         sealed class OnRefresh : Event() {
-            data class StyleToolbar(val target: Block?, val selection: IntRange?) : OnRefresh()
+            data class StyleToolbar(
+                val target: Block?,
+                val selection: IntRange?,
+                val urlBuilder: UrlBuilder,
+                val details: Block.Details
+            ) : OnRefresh()
             data class Markup(val target: Block?, val selection: IntRange?) : OnRefresh()
         }
 
@@ -390,7 +402,11 @@ sealed class ControlPanelMachine {
                     focus = true,
                     selection = event.selection
                 )
-                val target = target(event.target)
+                val target = target(
+                    block = event.target,
+                    urlBuilder = event.urlBuilder,
+                    details = event.details
+                )
                 val props = getMarkupLevelStylingProps(target, event.selection)
                 state.copy(
                     mainToolbar = state.mainToolbar.copy(
@@ -427,7 +443,11 @@ sealed class ControlPanelMachine {
                 }
             }
             is Event.OnBlockActionToolbarStyleClicked -> {
-                val target = target(event.target)
+                val target = target(
+                    block = event.target,
+                    details = event.details,
+                    urlBuilder = event.urlBuilder
+                )
                 val style = event.target.let {
                     val content = it.content
                     check(content is Block.Content.Text)
@@ -579,7 +599,14 @@ sealed class ControlPanelMachine {
             state: ControlPanelState,
             event: Event.OnRefresh.StyleToolbar
         ): ControlPanelState {
-            val target = event.target?.let { target(it) }
+            val target =
+                event.target?.let {
+                    target(
+                        block = it,
+                        urlBuilder = event.urlBuilder,
+                        details = event.details
+                    )
+                }
             val style = event.target?.let {
                 val content = it.content
                 check(content is Block.Content.Text)
@@ -640,18 +667,18 @@ sealed class ControlPanelMachine {
             val backgroundOverlaps = mutableListOf<Overlap>()
 
             target.marks.forEach { mark ->
-                if (mark.type == Markup.Type.TEXT_COLOR) {
+                if (mark is Markup.Mark.TextColor) {
                     val range = mark.from..mark.to
                     val overlap = selection.overlap(range)
                     if (incl.contains(overlap))
-                        color = mark.param
+                        color = mark.color
                     else
                         colorOverlaps.add(overlap)
-                } else if (mark.type == Markup.Type.BACKGROUND_COLOR) {
+                } else if (mark is Markup.Mark.BackgroundColor) {
                     val range = mark.from..mark.to
                     val overlap = selection.overlap(range)
                     if (incl.contains(overlap))
-                        background = mark.param
+                        background = mark.background
                     else
                         backgroundOverlaps.add(overlap)
                 }
@@ -672,11 +699,11 @@ sealed class ControlPanelMachine {
             }
 
             return Toolbar.Styling.Props(
-                isBold = Markup.Type.BOLD.isInRange(target.marks, selection),
-                isItalic = Markup.Type.ITALIC.isInRange(target.marks, selection),
-                isStrikethrough = Markup.Type.STRIKETHROUGH.isInRange(target.marks, selection),
-                isCode = Markup.Type.KEYBOARD.isInRange(target.marks, selection),
-                isLinked = Markup.Type.LINK.isInRange(target.marks, selection),
+                isBold = target.marks.isBoldInRange(selection),
+                isItalic = target.marks.isItalicInRange(selection),
+                isStrikethrough = target.marks.isStrikethroughInRange(selection),
+                isCode = target.marks.isKeyboardInRange(selection),
+                isLinked = target.marks.isLinkInRange(selection),
                 color = color,
                 background = background,
                 alignment = target.alignment
@@ -1027,7 +1054,11 @@ sealed class ControlPanelMachine {
         }
 
         //todo Need refactoring
-        private fun target(block: Block): Toolbar.Styling.Target =
+        private fun target(
+            block: Block,
+            details: Block.Details,
+            urlBuilder: UrlBuilder
+        ): Toolbar.Styling.Target =
             when (val content = block.content) {
                 is Block.Content.RelationBlock -> {
                     Toolbar.Styling.Target(
@@ -1052,7 +1083,7 @@ sealed class ControlPanelMachine {
                                 Block.Align.AlignRight -> Alignment.END
                             }
                         },
-                        marks = content.marks()
+                        marks = content.marks(urlBuilder = urlBuilder, details = details)
                     )
                 }
                 else -> {

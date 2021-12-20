@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
-import android.os.Parcelable
 import android.text.Spannable
-import kotlinx.android.parcel.Parcelize
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -19,39 +17,116 @@ interface Markup {
      */
     var marks: List<Mark>
 
-    /**
-     * @property from character index where this markup starts (inclusive)
-     * @property to character index where this markup ends (inclusive)
-     * @property type markup's type
-     */
-    @Parcelize
-    data class Mark(
-        val from: Int,
-        val to: Int,
-        val type: Type,
-        val param: String? = null,
-        val extras: Map<String, String?> = emptyMap()
-    ) : Parcelable {
+    sealed class Mark {
 
-        private val default = extras.withDefault { null }
+        /**
+         * @property from character index where this markup starts (inclusive)
+         * @property to character index where this markup ends (inclusive)
+         **/
 
-        val image: String? by default
-        val emoji: String? by default
-        val isLoading: String? by default
-        val isDeleted: String? by default
+        abstract val from: Int
+        abstract val to: Int
 
-        fun color(): Int? = ThemeColor.values().find { color -> color.title == param }?.text
-        fun background(): Int? =
-            ThemeColor.values().find { color -> color.title == param }?.background
+        data class Bold(override val from: Int, override val to: Int) : Mark()
+        data class Italic(override val from: Int, override val to: Int) : Mark()
+        data class Strikethrough(override val from: Int, override val to: Int) : Mark()
+        data class Keyboard(override val from: Int, override val to: Int) : Mark()
+        data class TextColor(
+            override val from: Int,
+            override val to: Int,
+            val color: String
+        ) : Mark() {
 
-        companion object {
-            const val IS_LOADING_VALUE = "true"
-            const val IS_NOT_LOADING_VALUE = "false"
-            const val IS_DELETED_VALUE = "true"
-            const val IS_NOT_DELETED_VALUE = "false"
+            fun color(): Int? =
+                ThemeColor.values().find { it.title == color }?.text
+        }
 
-            const val KEY_IS_LOADING = "isLoading"
-            const val KEY_IS_DELETED = "isDeleted"
+        data class BackgroundColor(
+            override val from: Int,
+            override val to: Int,
+            val background: String
+        ) : Mark() {
+
+            fun background(): Int? =
+                ThemeColor.values().find { it.title == background }?.background
+        }
+
+        data class Link(
+            override val from: Int,
+            override val to: Int,
+            val param: String
+        ) : Mark()
+
+        data class Object(
+            override val from: Int,
+            override val to: Int,
+            val param: String
+        ) : Mark()
+
+        sealed class Mention : Mark() {
+            abstract val param: String
+
+            data class Base(
+                override val from: Int,
+                override val to: Int,
+                override val param: String
+            ) : Mention()
+
+            data class WithEmoji(
+                override val from: Int,
+                override val to: Int,
+                override val param: String,
+                val emoji: String
+            ) : Mention()
+
+            data class WithImage(
+                override val from: Int,
+                override val to: Int,
+                override val param: String,
+                val image: String
+            ) : Mention()
+
+            data class Loading(
+                override val from: Int,
+                override val to: Int,
+                override val param: String
+            ) : Mention()
+
+            data class Deleted(
+                override val from: Int,
+                override val to: Int,
+                override val param: String
+            ) : Mention()
+
+            sealed class Profile : Mention() {
+                data class WithImage(
+                    override val from: Int,
+                    override val to: Int,
+                    override val param: String,
+                    val imageUrl: String
+                ) : Profile()
+
+                data class WithInitials(
+                    override val from: Int,
+                    override val to: Int,
+                    override val param: String,
+                    val initials: Char
+                ) : Profile()
+            }
+
+            sealed class Task : Mention(){
+                data class Checked(
+                    override val from: Int,
+                    override val to: Int,
+                    override val param: String
+                ) : Task()
+
+                data class Unchecked(
+                    override val from: Int,
+                    override val to: Int,
+                    override val param: String
+                ) : Task()
+            }
         }
     }
 

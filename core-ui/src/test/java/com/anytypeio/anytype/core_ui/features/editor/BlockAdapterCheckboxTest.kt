@@ -263,11 +263,10 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(BlockViewDiffUtil.MARKUP_CHANGED))),
             item = checkbox.copy(
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = "lime"
+                        color = "lime"
                     )
                 )
             ),
@@ -322,11 +321,10 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
             payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(BlockViewDiffUtil.MARKUP_CHANGED))),
             item = checkbox.copy(
                 marks = listOf(
-                    Markup.Mark(
+                    Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        type = Markup.Type.TEXT_COLOR,
-                        param = "lime"
+                        color = "lime"
                     )
                 )
             ),

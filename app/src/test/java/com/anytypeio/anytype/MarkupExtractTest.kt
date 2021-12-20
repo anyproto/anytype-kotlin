@@ -42,11 +42,9 @@ class MarkupExtractTest {
 
         val source = "Happy families are all alike; every unhappy family is unhappy in its own way"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.Italic(
             from = 0,
-            to = 5,
-            param = null,
-            type = Markup.Type.ITALIC
+            to = 5
         )
 
         val textColor = 11
@@ -77,11 +75,9 @@ class MarkupExtractTest {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.Bold(
             from = 0,
-            to = 5,
-            param = null,
-            type = Markup.Type.BOLD
+            to = 5
         )
 
         stubMarkup(source, mark)
@@ -110,11 +106,9 @@ class MarkupExtractTest {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.Strikethrough(
             from = 0,
-            to = 5,
-            param = null,
-            type = Markup.Type.STRIKETHROUGH
+            to = 5
         )
 
         stubMarkup(source, mark)
@@ -143,11 +137,9 @@ class MarkupExtractTest {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.Keyboard(
             from = 0,
-            to = 5,
-            param = null,
-            type = Markup.Type.KEYBOARD
+            to = 5
         )
 
         stubMarkup(source, mark)
@@ -176,11 +168,10 @@ class MarkupExtractTest {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.TextColor(
             from = 0,
             to = 5,
-            param = ThemeColor.BLUE.title,
-            type = Markup.Type.TEXT_COLOR
+            color = ThemeColor.BLUE.title
         )
 
         stubMarkup(source, mark)
@@ -209,11 +200,10 @@ class MarkupExtractTest {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.BackgroundColor(
             from = 0,
             to = 5,
-            param = ThemeColor.BLUE.title,
-            type = Markup.Type.BACKGROUND_COLOR
+            background = ThemeColor.BLUE.title
         )
 
         stubMarkup(source, mark)
@@ -242,11 +232,10 @@ class MarkupExtractTest {
 
         val source = "Everything was in confusion in the Oblonskys’ house"
 
-        val mark = Markup.Mark(
+        val mark = Markup.Mark.Link(
             from = 0,
             to = 5,
-            param = DataFactory.randomString(),
-            type = Markup.Type.LINK
+            param = DataFactory.randomString()
         )
 
         stubMarkup(source, mark)

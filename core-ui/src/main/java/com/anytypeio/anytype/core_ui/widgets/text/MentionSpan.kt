@@ -18,13 +18,16 @@ import java.lang.ref.WeakReference
 class MentionSpan constructor(
     emoji: String? = null,
     image: String? = null,
+    profile: String? = null,
     private val onImageResourceReady: (String) -> Unit = {},
     context: Context,
-    private val placeholder: Drawable,
+    private val placeholder: Drawable? = null,
     private var imageSize: Int,
     private var imagePadding: Int,
     val param: String? = null,
-    val isDeleted : Boolean = false
+    val isDeleted: Boolean = false,
+    private val initials: String? = null,
+    private val initialsTextSize: Float = 0F
 ) : DynamicDrawableSpan(), Span {
 
     val target: CustomTarget<Drawable> = object : CustomTarget<Drawable>() {
@@ -47,7 +50,7 @@ class MentionSpan constructor(
     private val textColorDeleted = Color.parseColor("#CBC9BD")
 
     init {
-        placeholder.setBounds(imageSize)
+        placeholder?.setBounds(imageSize)
 
         if (!emoji.isNullOrBlank()) try {
             Glide.with(context).load(Emojifier.uri(emoji)).into(target)
@@ -55,10 +58,12 @@ class MentionSpan constructor(
             Timber.e(e, "Error while loading emoji: $emoji for mention span")
         }
 
-        if (!image.isNullOrBlank()) Glide.with(context).load(image).circleCrop().into(target)
+        if (!image.isNullOrBlank()) Glide.with(context).load(image).centerCrop().into(target)
+
+        if (!profile.isNullOrBlank()) Glide.with(context).load(profile).circleCrop().into(target)
     }
 
-    override fun getDrawable(): Drawable = icon ?: placeholder
+    override fun getDrawable(): Drawable? = icon ?: placeholder
 
     override fun getSize(
         paint: Paint,
@@ -97,7 +102,26 @@ class MentionSpan constructor(
 
         canvas.save()
         canvas.translate(x, transitionY)
-        drawable.draw(canvas)
+        drawable?.draw(canvas)
+
+        if (initials != null) {
+            val textColor = paint.color
+            val textAlign = paint.textAlign
+            val textSize = paint.textSize
+            paint.textAlign = Paint.Align.CENTER
+            paint.color = Color.WHITE
+            paint.textSize = initialsTextSize
+
+            val paintInitialsFontMetrics = paint.fontMetrics
+            val fontInitialsHeight =
+                paintInitialsFontMetrics.descent - paintInitialsFontMetrics.ascent
+            val centerInitialsY = y + paintInitialsFontMetrics.descent - fontInitialsHeight / 2
+            val transitionInitialsY = centerInitialsY - imageSize / 2
+            canvas.drawText(initials, imageSize / 2F, y - transitionInitialsY, paint)
+            paint.color = textColor
+            paint.textAlign = textAlign
+            paint.textSize = textSize
+        }
 
         if (isDeleted) {
             paint.color = textColorDeleted
@@ -113,7 +137,7 @@ class MentionSpan constructor(
         canvas.restore()
     }
 
-    private fun getCachedDrawable(): Drawable {
+    private fun getCachedDrawable(): Drawable? {
         val wr = iconRef
         val d = wr?.get()
         if (d != null)
@@ -126,6 +150,5 @@ class MentionSpan constructor(
 
 fun Drawable.setBounds(imageSize: Int): Drawable =
     this.apply {
-        val mWidth = imageSize * intrinsicWidth / intrinsicHeight
-        setBounds(0, 0, mWidth, imageSize)
+        setBounds(0, 0, imageSize, imageSize)
     }

@@ -135,14 +135,6 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val documentIconActionMenuComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
-            .documentActionMenuComponentBuilder()
-            .documentIconActionMenuModule(DocumentIconActionMenuModule())
-            .build()
-    }
-
     val objectIconPickerComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)

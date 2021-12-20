@@ -93,7 +93,6 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.*
-import com.anytypeio.anytype.ui.editor.modals.actions.BlockActionToolbarFactory
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
@@ -112,7 +111,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
-import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_editor.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -787,11 +785,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         super.onDestroy()
     }
 
-    override fun onBlockActionClicked(id: String, action: ActionItemType) {
-        Blurry.delete(root)
-        vm.onActionMenuItemClicked(id, action)
-    }
-
     override fun onSetRelationKeyClicked(blockId: Id, key: Id) {
         vm.onSetRelationKeyClicked(blockId = blockId, key = key)
     }
@@ -866,19 +859,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
                 is Command.PopBackStack -> {
                     childFragmentManager.popBackStack()
-                }
-                is Command.OpenActionBar -> {
-                    lifecycleScope.launch {
-                        if (root.isKeyboardVisible()) {
-                            hideKeyboard()
-                            delay(300)
-                            blurContainer()
-                            navigateToBlockActionPreview(command)
-                        } else {
-                            blurContainer()
-                            navigateToBlockActionPreview(command)
-                        }
-                    }
                 }
                 is Command.CloseKeyboard -> {
                     hideSoftInput()
@@ -1137,31 +1117,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 if (delta < 0) recycler.smoothScrollBy(0, abs(delta.toInt()))
             }
         }
-    }
-
-    private fun blurContainer() {
-        try {
-            Blurry.with(context)
-                .radius(12)
-                .sampling(6)
-                .onto(root)
-        } catch (e: Exception) {
-            Timber.e(e, "Blurry exception")
-        }
-    }
-
-    private fun navigateToBlockActionPreview(command: Command.OpenActionBar) {
-        childFragmentManager.beginTransaction()
-            .add(
-                R.id.root,
-                BlockActionToolbarFactory.newInstance(
-                    block = command.block,
-                    dimensions = command.dimensions
-                ),
-                null
-            )
-            .addToBackStack(null)
-            .commit()
     }
 
     private fun render(state: ViewState) {
@@ -1950,11 +1905,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.onDownloadClicked()
     }
 
-    override fun onDismissBlockActionToolbar() {
-        Blurry.delete(root)
-        vm.onDismissBlockActionMenu(childFragmentManager.backStackEntryCount > 0)
-    }
-
     override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
         vm.onRelationTextValueChanged(
             ctx = ctx,
@@ -2427,8 +2377,6 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 interface OnFragmentInteractionListener {
     fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange)
     fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
-    fun onBlockActionClicked(id: String, action: ActionItemType)
-    fun onDismissBlockActionToolbar()
     fun onAddBookmarkUrlClicked(target: String, url: String)
     fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)

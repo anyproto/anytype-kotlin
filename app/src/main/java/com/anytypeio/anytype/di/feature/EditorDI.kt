@@ -74,7 +74,6 @@ interface EditorSubComponent {
     fun inject(fragment: EditorFragment)
 
     fun objectIconPickerComponent(): ObjectIconPickerComponent.Builder
-    fun documentActionMenuComponentBuilder(): DocumentActionMenuSubComponent.Builder
 
     // Relations
 

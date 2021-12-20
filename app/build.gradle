@@ -165,7 +165,6 @@ dependencies {
     implementation analyticsDependencies.amplitude
     implementation analyticsDependencies.okhttp
 
-    implementation applicationDependencies.blurry
     implementation applicationDependencies.shimmerLayout
     implementation applicationDependencies.photoView
     implementation applicationDependencies.zxing

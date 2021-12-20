@@ -61,11 +61,6 @@ sealed class Command {
 
     object ClearSearchInput : Command()
 
-    data class OpenActionBar(
-        val block: BlockView,
-        val dimensions: BlockDimensions
-    ) : Command()
-
     data class Browse(
         val url: Url
     ) : Command()

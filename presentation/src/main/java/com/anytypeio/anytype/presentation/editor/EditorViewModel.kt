@@ -1573,6 +1573,7 @@ class EditorViewModel(
         }
     }
 
+    @Deprecated("To be deleted")
     fun onActionMenuItemClicked(id: String, action: ActionItemType) {
         Timber.d("onActionMenuItemClicked, id:[$id] action:[$action]")
         when (action) {
@@ -1917,36 +1918,6 @@ class EditorViewModel(
     private fun onAddLocalPictureClicked(blockId: String) {
         mediaBlockId = blockId
         dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
-    }
-
-    fun onAddRelationBlockClicked() {
-
-        Timber.d("onAddRelationBlockClicked, ")
-
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        val content = focused.content
-        val replace = content is Content.Text && content.text.isEmpty()
-
-        viewModelScope.launch {
-            if (replace) {
-                orchestrator.proxies.intents.send(
-                    Intent.CRUD.Replace(
-                        context = context,
-                        target = focused.id,
-                        prototype = Prototype.Relation(key = "")
-                    )
-                )
-            } else {
-                orchestrator.proxies.intents.send(
-                    Intent.CRUD.Create(
-                        context = context,
-                        target = focused.id,
-                        position = Position.BOTTOM,
-                        prototype = Prototype.Relation(key = "")
-                    )
-                )
-            }
-        }
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
@@ -2349,33 +2320,10 @@ class EditorViewModel(
         )
     }
 
-    private fun onEnterActionMode() {
-        mode = EditorMode.Action
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnEnter)
-        viewModelScope.launch {
-            refresh()
-        }
-    }
-
     private fun onExitActionMode() {
         mode = EditorMode.Edit
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ReadMode.OnExit)
         viewModelScope.launch { refresh() }
-    }
-
-    fun onOpenPageNavigationButtonClicked() {
-        Timber.d("onOpenPageNavigationButtonClicked, ")
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_NAVIGATION
-        )
-        navigation.postValue(
-            EventWrapper(
-                AppNavigation.Command.OpenPageNavigationScreen(
-                    target = context
-                )
-            )
-        )
     }
 
     // ----------------- Turn Into -----------------------------------------

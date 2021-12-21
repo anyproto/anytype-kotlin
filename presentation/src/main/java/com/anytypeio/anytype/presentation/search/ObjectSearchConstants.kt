@@ -193,6 +193,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relationKey = Relations.LAST_OPENED_DATE,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = null
+        ),
+        DVFilter(
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(

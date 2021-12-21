@@ -24,10 +24,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -461,7 +458,7 @@ class RelationValueDVViewModel(
     ) {
         viewModelScope.launch {
             isLoading.emit(true)
-            val value = values.get(record)
+            val value = values.subscribe(record).first()
             addFileToRecord(
                 params = AddFileToRecord.Params(
                     context = ctx,

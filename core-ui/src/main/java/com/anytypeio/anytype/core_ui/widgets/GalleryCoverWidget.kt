@@ -37,6 +37,10 @@ class GalleryCoverWidget @JvmOverloads constructor(
                     CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red_rounded)
                     CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue_rounded)
                     CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal_rounded)
+                    CoverGradient.PINK_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_1)
+                    CoverGradient.BLUE_PINK -> setBackgroundResource(R.drawable.wallpaper_gradient_2)
+                    CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
+                    CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
                 }
             }
             is CoverView.Image -> {

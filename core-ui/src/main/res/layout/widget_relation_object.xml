@@ -8,9 +8,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_gravity="center_vertical"
-        app:imageSize="18dp"
-        app:emojiSize="18dp"
-        app:initialTextSize="12sp"
+        style="@style/ObjectIcon15Style"
         tools:background="@drawable/circle_solid_default" />
 
     <TextView

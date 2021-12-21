@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
@@ -60,8 +62,9 @@ class LinkToObject(view: View) :
 
     private fun applyText(item: BlockView.LinkToObject.Default) {
         //title.enableReadMode()
-        val text = if (item.text.isNullOrEmpty()) untitled else item.text
-        title.setText(text, TextView.BufferType.EDITABLE)
+        val sb = SpannableString(if (item.text.isNullOrEmpty()) untitled else item.text)
+        sb.setSpan(UnderlineSpan(), 0, sb.length, 0)
+        title.setText(sb, TextView.BufferType.EDITABLE)
     }
 
     private fun applyImageOrEmoji(item: BlockView.LinkToObject.Default) {

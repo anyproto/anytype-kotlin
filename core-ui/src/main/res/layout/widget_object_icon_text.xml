@@ -9,9 +9,7 @@
         android:id="@+id/objectIcon"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        app:emojiSize="18dp"
-        app:imageSize="18dp"
-        app:initialTextSize="15sp"
+        style="@style/ObjectIcon15Style"
         android:layout_gravity="center_vertical" />
 
     <TextView

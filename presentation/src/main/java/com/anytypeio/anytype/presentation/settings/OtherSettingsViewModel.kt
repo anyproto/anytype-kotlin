@@ -48,7 +48,13 @@ class OtherSettingsViewModel(
         }
     }
 
-    fun onClearFileCacheClicked() {
+    fun onClearCacheClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.ShowClearCacheAlert)
+        }
+    }
+
+    fun proceedWithClearCache() {
         viewModelScope.launch {
             clearFileCache(BaseUseCase.None).collect { status ->
                 when (status) {
@@ -106,6 +112,7 @@ class OtherSettingsViewModel(
         data class SetObjectType(val name: String?) : Command()
         data class Toast(val msg: String) : Command()
         data class NavigateToObjectTypesScreen(val smartBlockType: SmartBlockType) : Command()
+        object ShowClearCacheAlert : Command()
         object Exit : Command()
     }
 

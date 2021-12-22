@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
+import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import kotlinx.android.synthetic.main.fragment_user_settings.*
 import javax.inject.Inject
@@ -47,7 +48,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
         super.onViewCreated(view, savedInstanceState)
         tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
         btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
-        btnClearFileCache.setOnClickListener { vm.onClearFileCacheClicked() }
+        btnClearFileCache.setOnClickListener { vm.onClearCacheClicked() }
         ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
     }
 
@@ -79,6 +80,11 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
                 objectType.text = command.name
             }
             is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
+            OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
+                val dialog = ClearCacheAlertFragment.new()
+                dialog.onClearAccepted = { vm.proceedWithClearCache() }
+                dialog.show(childFragmentManager, null)
+            }
         }
     }
 

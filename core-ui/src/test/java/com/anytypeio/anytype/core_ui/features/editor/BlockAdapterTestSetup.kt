@@ -45,7 +45,7 @@ open class BlockAdapterTestSetup {
             onTogglePlaceholderClicked = {},
             onToggleClicked = onToggleClicked,
             onTextBlockTextChanged = onTextBlockTextChanged,
-            onTitleBlockTextChanged = {},
+            onTitleBlockTextChanged = {_, _ -> },
             onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},

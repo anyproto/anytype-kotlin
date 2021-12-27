@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
-import android.text.Editable
 import android.text.Spannable
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
-import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -48,7 +46,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     fun bind(
         item: BlockView.Title,
-        onTitleTextChanged: (Editable) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit,
         onCoverClicked: () -> Unit
     ) {
@@ -66,11 +63,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             content.setText(item.text, TextView.BufferType.EDITABLE)
             if (item.isFocused) setCursor(item)
             focus(item.isFocused)
-            content.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTitleTextChanged(text)
-                }
-            )
             content.setOnFocusChangeListener { _, hasFocus ->
                 onFocusChanged(item.id, hasFocus)
                 if (hasFocus) showKeyboard()
@@ -260,17 +252,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Basic,
-            onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit,
             onCoverClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
-                onTitleTextChanged = {
-                    item.text = it.toString()
-                    onTitleTextChanged(item)
-                },
                 onFocusChanged = onFocusChanged,
                 onCoverClicked = onCoverClicked
             )
@@ -368,11 +355,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         fun bind(
-            item: BlockView.Title.Basic
+            item: BlockView.Title.Archive
         ) {
             super.bind(
                 item = item,
-                onTitleTextChanged = {},
                 onFocusChanged = { _, _ -> },
                 onCoverClicked = {}
             )
@@ -401,7 +387,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Profile,
-            onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onProfileIconClicked: () -> Unit,
             onCoverClicked: () -> Unit
@@ -409,10 +394,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             super.bind(
                 item = item,
                 onFocusChanged = onFocusChanged,
-                onTitleTextChanged = {
-                    item.text = it.toString()
-                    onTitleTextChanged(item)
-                },
                 onCoverClicked = onCoverClicked
             )
             applySearchHighlights(item)
@@ -480,17 +461,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Todo,
-            onTitleTextChanged: (BlockView.Title) -> Unit,
             onFocusChanged: (String, Boolean) -> Unit,
             onPageIconClicked: () -> Unit,
             onCoverClicked: () -> Unit
         ) {
             super.bind(
                 item = item,
-                onTitleTextChanged = {
-                    item.text = it.toString()
-                    onTitleTextChanged(item)
-                },
                 onFocusChanged = onFocusChanged,
                 onCoverClicked = onCoverClicked
             )

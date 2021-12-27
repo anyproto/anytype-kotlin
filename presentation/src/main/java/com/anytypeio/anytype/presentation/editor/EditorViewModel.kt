@@ -815,12 +815,19 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
-    fun onTitleBlockTextChanged(view: BlockView.Title) {
-        Timber.d("onTitleBlockTextChanged, view:[$view]")
-        val new = views.map { if (it.id == view.id) view else it }
+    fun onTitleBlockTextChanged(id: Id, text: String) {
+        Timber.d("onTitleBlockTextChanged, id:[$id], text:[$text]")
+        val new = views.map {
+            if (it.id == id && it is BlockView.Title) {
+                it.text = text
+                it
+            } else {
+                it
+            }
+        }
         val update = TextUpdate.Default(
-            target = view.id,
-            text = view.text ?: EMPTY_TEXT,
+            target = id,
+            text = text,
             markup = emptyList()
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }

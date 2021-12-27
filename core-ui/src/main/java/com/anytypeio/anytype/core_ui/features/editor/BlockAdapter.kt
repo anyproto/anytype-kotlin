@@ -107,7 +107,7 @@ class BlockAdapter(
     private val onDescriptionChanged: (BlockView.Description) -> Unit = {},
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
-    private val onTitleBlockTextChanged: (BlockView.Title) -> Unit,
+    private val onTitleBlockTextChanged: (Id, String) -> Unit,
     private val onTitleTextInputClicked: () -> Unit,
     private val onSelectionChanged: (String, IntRange) -> Unit,
     private val onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
@@ -180,6 +180,17 @@ class BlockAdapter(
                                 onSelectionChanged(view.id, selection)
                             }
                         }
+                        addTextChangedListener(
+                            DefaultTextWatcher { editable ->
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    val view = views[pos]
+                                    check(view is BlockView.Title.Basic)
+                                    view.text = editable.toString()
+                                    onTitleBlockTextChanged(view.id, editable.toString())
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -212,6 +223,17 @@ class BlockAdapter(
                                 onSelectionChanged(view.id, selection)
                             }
                         }
+                        addTextChangedListener(
+                            DefaultTextWatcher { editable ->
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    val view = views[pos]
+                                    check(view is BlockView.Title.Profile)
+                                    view.text = editable.toString()
+                                    onTitleBlockTextChanged(view.id, editable.toString())
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -251,6 +273,17 @@ class BlockAdapter(
                                 onSelectionChanged(view.id, selection)
                             }
                         }
+                        addTextChangedListener(
+                            DefaultTextWatcher { editable ->
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    val view = views[pos]
+                                    check(view is BlockView.Title.Todo)
+                                    view.text = editable.toString()
+                                    onTitleBlockTextChanged(view.id, editable.toString())
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -1203,7 +1236,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Basic,
-                        onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked
@@ -1222,7 +1254,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Todo,
-                        onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked
@@ -1241,7 +1272,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Profile,
-                        onTitleTextChanged = onTitleBlockTextChanged,
                         onFocusChanged = onFocusChanged,
                         onProfileIconClicked = onProfileIconClicked,
                         onCoverClicked = onCoverClicked

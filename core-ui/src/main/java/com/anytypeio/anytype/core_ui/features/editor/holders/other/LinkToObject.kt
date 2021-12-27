@@ -15,8 +15,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.android.synthetic.main.item_block_object_link.view.*
-import kotlinx.android.synthetic.main.item_block_object_link.view.pageGuideline
-import kotlinx.android.synthetic.main.item_block_object_link.view.pageTitle
 
 class LinkToObject(view: View) :
     BlockViewHolder(view),
@@ -134,6 +132,7 @@ class LinkToObject(view: View) :
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
                 itemView.isSelected = item.isSelected
+                applyImageOrEmoji(item)
             }
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)

@@ -571,23 +571,30 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Header.Three = BlockView.Text.Header.Three(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        color = content.color,
-        isFocused = block.id == focus.id,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        backgroundColor = content.backgroundColor,
-        indent = indent,
-        alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Header.Three {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Header.Three(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            color = content.color,
+            isFocused = block.id == focus.id,
+            marks = normalizedMarks,
+            backgroundColor = content.backgroundColor,
+            indent = indent,
+            alignment = content.align?.toView(),
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun headerTwo(
         mode: EditorMode,
@@ -597,23 +604,30 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Header.Two = BlockView.Text.Header.Two(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        color = content.color,
-        isFocused = block.id == focus.id,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        backgroundColor = content.backgroundColor,
-        indent = indent,
-        alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Header.Two {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Header.Two(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            color = content.color,
+            isFocused = block.id == focus.id,
+            marks = normalizedMarks,
+            backgroundColor = content.backgroundColor,
+            indent = indent,
+            alignment = content.align?.toView(),
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun headerOne(
         mode: EditorMode,
@@ -623,23 +637,30 @@ class DefaultBlockViewRenderer(
         indent: Int,
         details: Block.Details,
         selection: Set<Id>
-    ): BlockView.Text.Header.One = BlockView.Text.Header.One(
-        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-        id = block.id,
-        text = content.text,
-        color = content.color,
-        isFocused = block.id == focus.id,
-        marks = content.marks(details = details, urlBuilder = urlBuilder),
-        backgroundColor = content.backgroundColor,
-        indent = indent,
-        alignment = content.align?.toView(),
-        cursor = if (block.id == focus.id) setCursor(focus, content) else null,
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
+    ): BlockView.Text.Header.One {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
         )
-    )
+        return BlockView.Text.Header.One(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            text = normalizedText,
+            color = content.color,
+            isFocused = block.id == focus.id,
+            marks = normalizedMarks,
+            backgroundColor = content.backgroundColor,
+            indent = indent,
+            alignment = content.align?.toView(),
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+    }
 
     private fun checkbox(
         mode: EditorMode,

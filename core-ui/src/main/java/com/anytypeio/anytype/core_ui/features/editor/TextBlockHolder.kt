@@ -341,6 +341,9 @@ interface TextBlockHolder : TextHolder {
                     content.pauseTextWatchers {
                         enableEditMode()
                     }
+                    content.pauseTextWatchers {
+                        content.applyMovementMethod(item)
+                    }
                 } else {
                     enableReadMode()
                 }

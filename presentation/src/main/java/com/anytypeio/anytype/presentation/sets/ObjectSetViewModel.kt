@@ -520,7 +520,8 @@ class ObjectSetViewModel(
     ) {
         Timber.d("onRelationTextValueChanged, ctx:[$ctx], value:[$value], objectId:[$objectId], relationKey:[$relationKey]")
         val block = reducer.state.value.dataview
-        val records = reducer.state.value.viewerDb[session.currentViewerId]
+        val viewer = reducer.state.value.viewerById(session.currentViewerId)
+        val records = reducer.state.value.viewerDb[viewer.id]
         if (records == null) {
             Timber.e("Error onRelationTextValueChanged, records is null")
             return

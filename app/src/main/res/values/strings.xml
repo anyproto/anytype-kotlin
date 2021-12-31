@@ -232,7 +232,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="history_description">All version of object</string>
     <string name="history">History</string>
     <string name="provide_name">Provide name for new object</string>
-    <string name="migration_in_progress_message">Migration in progress. It can take up to 5 minutes…</string>
+    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
 
     <string name="one_selected_block">1 selected block</string>

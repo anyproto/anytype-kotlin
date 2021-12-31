@@ -13,6 +13,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -175,6 +177,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     val status = relation.status.firstOrNull()
                     if (status != null) {
                         val color = ThemeColor.values().find { v -> v.title == status.color }
+                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val view = TextView(context).apply {
                             id = generateViewId()
                             text = status.status
@@ -183,7 +186,9 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             ellipsize = TextUtils.TruncateAt.END
                             if (color != null) {
-                                setTextColor(color.text)
+                                setTextColor(resources.dark(color, defaultTextColor))
+                            } else {
+                                setTextColor(defaultTextColor)
                             }
                         }
                         addView(view)
@@ -368,6 +373,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         }
                         relation.tags.forEachIndexed { idx, tag ->
                             val color = ThemeColor.values().find { v -> v.title == tag.color }
+                            val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                            val defaultBackground = resources.getColor(R.color.shape_primary, null)
                             val view = TextView(context).apply {
                                 id = generateViewId()
                                 isSingleLine = true
@@ -376,9 +383,13 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                 text = tag.tag
                                 setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                                 if (color != null) {
-                                    setTextColor(color.text)
+                                    setTextColor(resources.dark(color, defaultTextColor))
                                     setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                    background.setDrawableColor(color.background)
+                                    background.setDrawableColor(resources.light(color, defaultBackground))
+                                } else {
+                                    setTextColor(defaultTextColor)
+                                    setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
+                                    background.setDrawableColor(defaultBackground)
                                 }
                             }
                             group.addView(view)

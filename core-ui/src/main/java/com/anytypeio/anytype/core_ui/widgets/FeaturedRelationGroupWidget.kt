@@ -10,6 +10,8 @@ import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -146,6 +148,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.Status -> {
                     relation.status.forEach { status ->
                         val color = ThemeColor.values().find { v -> v.title == status.color }
+                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val view = TextView(context).apply {
                             id = generateViewId()
                             text = status.status
@@ -154,7 +157,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             if (color != null) {
-                                setTextColor(color.text)
+                                setTextColor(resources.dark(color, defaultTextColor))
+                            } else {
+                                setTextColor(defaultTextColor)
                             }
                             setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
@@ -173,6 +178,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.Tags -> {
                     relation.tags.forEach { tag ->
                         val color = ThemeColor.values().find { v -> v.title == tag.color }
+                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                        val defaultBackground = resources.getColor(R.color.shape_primary, null)
                         val view = TextView(context).apply {
                             id = generateViewId()
                             text = tag.tag
@@ -180,9 +187,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
                             if (color != null) {
-                                setTextColor(color.text)
+                                setTextColor(resources.dark(color, defaultTextColor))
                                 setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                background.setDrawableColor(color.background)
+                                background.setDrawableColor(resources.light(color, defaultBackground))
+                            } else {
+                                setTextColor(defaultTextColor)
+                                setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
+                                background.setDrawableColor(defaultBackground)
                             }
                             setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }

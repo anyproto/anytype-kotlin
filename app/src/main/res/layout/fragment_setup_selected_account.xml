@@ -19,9 +19,9 @@
             android:gravity="center_horizontal"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
-            android:textColor="@color/white"
+            android:textColor="@color/text_white"
             android:textSize="12sp"
-            android:text="@string/migration_in_progress_message"
+            android:text="@string/wait_a_bit_message"
             android:visibility="gone"
             tools:visibility="visible" />
 

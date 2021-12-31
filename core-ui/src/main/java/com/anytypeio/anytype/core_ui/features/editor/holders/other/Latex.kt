@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -26,6 +27,12 @@ class Latex(
     val content : View = itemView.latexContainer
     val latexView: KatexView = itemView.latexView
 
+    init {
+        latexView.setTextColor(
+            itemView.resources.getColor(R.color.text_primary, null)
+        )
+    }
+
     fun bind(item: BlockView.Latex) {
         indentize(item)
         setIsSelected(item)
@@ -44,8 +51,8 @@ class Latex(
 
     private fun setBackground(backgroundColor: String?) {
         val value = ThemeColor.values().find { it.title == backgroundColor }
-        if (value != null) {
-            itemView.setBackgroundColor(value.background)
+        if (value != null && value != ThemeColor.DEFAULT) {
+            itemView.setBackgroundColor(itemView.resources.lighter(value, 0))
         } else {
             itemView.background = null
         }

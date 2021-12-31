@@ -30,6 +30,11 @@ message Event {
             Object.Remove objectRemove = 54;
             Object.Show objectShow = 30;
 
+            Object.Subscription.Add subscriptionAdd = 60;
+            Object.Subscription.Remove subscriptionRemove = 61;
+            Object.Subscription.Position subscriptionPosition = 62;
+            Object.Subscription.Counters subscriptionCounters = 63;
+
             Block.Add blockAdd = 2;
             Block.Delete blockDelete = 3;
             Block.FilesUpload filesUpload = 4;
@@ -108,19 +113,52 @@ message Event {
                 }
                 string id = 1; // context objectId
                 repeated KeyValue details = 2; // slice of changed key-values
+                repeated string subIds = 3;
             }
 
             // Overwrite current state
             message Set {
                 string id = 1; // context objectId
                 google.protobuf.Struct details = 2; // can not be a partial state. Should replace client details state
+                repeated string subIds = 3;
             }
 
             // Unset existing detail keys
             message Unset {
                 string id = 1; // context objectId
                 repeated string keys = 2;
+                repeated string subIds = 3;
             }
+        }
+
+        message Subscription {
+
+            // Adds new document to subscriptions
+            message Add {
+                string id = 1; // object id
+                string afterId = 2; // id of previous doc in order, empty means first
+            }
+
+            // Removes document from subscription
+            message Remove {
+                string id = 1; // object id
+            }
+
+            // Indicates new position of document
+            message Position {
+                string id = 1; // object id
+                string afterId = 2;  // id of previous doc in order, empty means first
+            }
+
+            message Counters {
+                // total available records
+                int64 total = 1;
+                // how many records available after
+                int64 nextCount = 2;
+                // how many records available before
+                int64 prevCount = 3;
+            }
+
         }
 
         message Relations {

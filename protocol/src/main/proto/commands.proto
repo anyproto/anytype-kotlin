@@ -3330,7 +3330,6 @@ message Rpc {
                 repeated string objectTypeFilter = 6; // deprecated, to be removed
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
-                bool ignoreWorkspace = 8;
             }
 
             message Response {
@@ -3400,6 +3399,117 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message SearchSubscribe {
+            message Request {
+                // (optional) subscription identifier
+                // client can provide some string or middleware will generate it automatically
+                // if subId is already registered on middleware, the new query will replace previous subscription
+                string subId = 1;
+                // filters
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 2;
+                // sorts
+                repeated anytype.model.Block.Content.Dataview.Sort sorts = 3;
+                // fulltext query (optional)
+                string fullText = 4;
+                // results limit
+                int32 limit = 5;
+                // initial offset; middleware will find afterId
+                int32 offset = 6;
+                // (required)  needed keys in details for return, for object fields mw will return (and subscribe) objects as dependent
+                repeated string keys = 7;
+
+                // (optional) pagination: middleware will return results after given id
+                string afterId = 8;
+                // (optional) pagination: middleware will return results before given id
+                string beforeId = 9;
+
+                repeated string source = 10;
+
+                string ignoreWorkspace = 12;
+            }
+
+            message Response {
+                Error error = 1;
+
+                repeated google.protobuf.Struct records = 2;
+                repeated google.protobuf.Struct dependencies = 3;
+
+                string subId = 4;
+
+                Event.Object.Subscription.Counters counters = 5;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message IdsSubscribe {
+            message Request {
+                // (optional) subscription identifier
+                // client can provide some string or middleware will generate it automatically
+                // if subId is already registered on middleware, the new query will replace previous subscription
+                string subId = 1;
+                // ids for subscribe
+                repeated string ids = 2;
+                // sorts
+                // (required)  needed keys in details for return, for object fields mw will return (and subscribe) objects as dependent
+                repeated string keys = 3;
+
+                string ignoreWorkspace = 11;
+            }
+
+            message Response {
+                Error error = 1;
+
+                repeated google.protobuf.Struct records = 2;
+                repeated google.protobuf.Struct dependencies = 3;
+
+                string subId = 4;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SearchUnsubscribe {
+            message Request {
+                repeated string subIds = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                      NULL = 0;
+                      UNKNOWN_ERROR = 1;
+                      BAD_INPUT = 2;
                     }
                 }
             }
@@ -3798,6 +3908,31 @@ message Rpc {
     }
 
     message CloneTemplate {
+        message Request {
+            // id of template block for cloning
+            string contextId = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            // created template id
+            string id = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                    // ...
+                }
+            }
+        }
+    }
+
+    message ObjectDuplicate {
         message Request {
             // id of template block for cloning
             string contextId = 1;

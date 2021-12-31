@@ -19,8 +19,10 @@ class EventHandler(
     init {
         scope.launch {
             setEventHandlerMobile { bytes ->
-                scope.launch {
-                    handle(bytes)
+                if (bytes != null) {
+                    scope.launch {
+                        handle(bytes)
+                    }
                 }
             }
         }

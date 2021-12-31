@@ -1,21 +1,29 @@
 # Change log for Android @Anytype app.
 
-## Version 0.5.0 (WIP)
+## Version 0.5.0
 
 ### New features & enhancements 🚀
 
-* App | Reminding our users about saving the mnemonic phrase (#1982)
-* App | Offload your files from device (#1990)
+* App | Introducing dark mode (#2018)
 * App | Wallpapers (#1995)
+* App | Offload your files from device (#1990)
+* App | Reminding our users about saving the mnemonic phrase (#1982)
+* Sets | Gallery view (#2009)
+* Sets | List view (#1955)
 
 ### Fixes & tech 🚒
 
 * Editor | Numbered block pattern triggered when not needed due to an incorrect regex pattern (#1987)
-* Object | Should create a link in your object to the newly created set (#1996)
+* Object | Should not create a link in your object to the newly created set (#1996)
+* Sets | Should not crash when adding a file to relation (#2007)
+* Sets | Relation "Name" should be available in sorts and filters (#1991)
+* Relations | When trying to search for an object to add it to a relation, search does not work correctly (#1980)
 
 ### Design & UX 🔳
 
 * Sets | Bottom navigation panel is there, at last! (#1988)
+* Editor | Render object icon based on its layout type in mentions and links (#2003)
+* Editor | New design for selected state (#1976)
 
 ## Version 0.4.4
 

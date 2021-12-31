@@ -20,7 +20,7 @@
         android:fontFamily="@font/inter_regular"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/anytype_text_grey"
+        android:textColor="@color/text_secondary"
         android:textSize="15sp"
         tools:text="Create option 'Bar'" />
 

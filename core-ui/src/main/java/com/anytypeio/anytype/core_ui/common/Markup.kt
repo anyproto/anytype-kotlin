@@ -8,6 +8,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -19,7 +20,7 @@ import timber.log.Timber
 
 fun Markup.toSpannable(
     textColor: Int,
-    context: Context? = null,
+    context: Context,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0,
@@ -49,18 +50,28 @@ fun Markup.toSpannable(
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             is Markup.Mark.TextColor -> {
-                val color = mark.color() ?: ThemeColor.DEFAULT.text
+                val value = mark.color()
+                val span = if (value != null && value != ThemeColor.DEFAULT) {
+                    Span.TextColor(
+                        color = context.resources.dark(color = value, default = textColor),
+                        value = mark.color
+                    )
+                } else {
+                    Span.TextColor(
+                        color = textColor,
+                        value = mark.color
+                    )
+                }
                 setSpan(
-                    Span.TextColor(color),
+                    span,
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
             is Markup.Mark.BackgroundColor -> {
-                val background = mark.background() ?: ThemeColor.DEFAULT.background
                 setSpan(
-                    Span.Highlight(background.toString()),
+                    Span.Highlight(mark.background),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
@@ -87,20 +98,18 @@ fun Markup.toSpannable(
                 )
             }
             is Markup.Mark.Mention -> {
-                context?.let {
-                    setMentionSpan(
-                        mark = mark,
-                        context = it,
-                        click = click,
-                        mentionImageSize = mentionImageSize,
-                        mentionImagePadding = mentionImagePadding,
-                        mentionCheckedIcon = mentionCheckedIcon,
-                        mentionUncheckedIcon = mentionUncheckedIcon,
-                        onImageReady = onImageReady,
-                        mentionInitialsSize = mentionInitialsSize,
-                        textColor = textColor
-                    )
-                } ?: run { Timber.d("Mention Span context is null") }
+                setMentionSpan(
+                    mark = mark,
+                    context = context,
+                    click = click,
+                    mentionImageSize = mentionImageSize,
+                    mentionImagePadding = mentionImagePadding,
+                    mentionCheckedIcon = mentionCheckedIcon,
+                    mentionUncheckedIcon = mentionUncheckedIcon,
+                    onImageReady = onImageReady,
+                    mentionInitialsSize = mentionInitialsSize,
+                    textColor = textColor
+                )
             }
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
@@ -118,7 +127,7 @@ fun Markup.toSpannable(
 
 fun Editable.setMarkup(
     markup: Markup,
-    context: Context? = null,
+    context: Context,
     click: ((String) -> Unit)? = null,
     mentionImageSize: Int = 0,
     mentionImagePadding: Int = 0,
@@ -150,18 +159,28 @@ fun Editable.setMarkup(
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             is Markup.Mark.TextColor -> {
-                val color = mark.color() ?: ThemeColor.DEFAULT.text
+                val value = mark.color()
+                val span = if (value != null && value != ThemeColor.DEFAULT) {
+                    Span.TextColor(
+                        color = context.resources.dark(color = value, default = textColor),
+                        value = mark.color
+                    )
+                } else {
+                    Span.TextColor(
+                        color = textColor,
+                        value = mark.color
+                    )
+                }
                 setSpan(
-                    Span.TextColor(color),
+                    span,
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
             is Markup.Mark.BackgroundColor -> {
-                val background = mark.background() ?: ThemeColor.DEFAULT.background
                 setSpan(
-                    Span.Highlight(background.toString()),
+                    Span.Highlight(mark.background),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG

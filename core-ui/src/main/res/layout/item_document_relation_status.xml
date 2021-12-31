@@ -22,10 +22,10 @@
         android:layout_weight="0.6"
         android:ellipsize="end"
         android:hint="@string/select_status"
-        android:textColorHint="@color/RelationPlaceholderTextColor"
+        android:textColorHint="@color/text_tertiary"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

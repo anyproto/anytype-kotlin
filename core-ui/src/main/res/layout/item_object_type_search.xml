@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="96dp"
     android:layout_height="wrap_content">
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+    <ImageView
         android:id="@+id/icon"
         android:layout_width="@dimen/dp_48"
         android:layout_height="@dimen/dp_48"
-        app:emojiSize="28dp"
-        app:hasEmojiRounded8Background="true"
-        app:hasInitialRounded8Background="true"
-        app:initialTextSize="22sp"
-        android:background="@drawable/ic_search"
+        android:src="@drawable/ic_object_action_search"
+        android:scaleType="center"
+        android:background="@drawable/rectangle_object_in_list_emoji_icon"
         android:layout_gravity="center_horizontal" />
 
     <TextView

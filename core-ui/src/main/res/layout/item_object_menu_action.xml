@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <FrameLayout
@@ -16,17 +16,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            tools:src="@drawable/ic_object_action_add_to_favorites"/>
+            tools:src="@drawable/ic_object_action_add_to_favorites" />
     </FrameLayout>
 
     <TextView
-        android:layout_gravity="center_horizontal"
         android:id="@+id/tvActionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/inter_regular"
-        android:textColor="#929082"
+        android:textColor="@color/text_secondary"
         android:textSize="11sp"
-        tools:text="Favourite"/>
+        tools:text="Favourite" />
 </LinearLayout>

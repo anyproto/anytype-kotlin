@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="12dp"
+        android:textColor="@color/text_tertiary"
         android:text="@string/empty" />
 
 </FrameLayout>

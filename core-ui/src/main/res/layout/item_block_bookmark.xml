@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         app:cardElevation="0dp"
         app:cardCornerRadius="8dp"
-        app:strokeColor="#DFDDD0"
+        app:strokeColor="@color/shape_primary"
         app:rippleColor="@android:color/transparent"
         app:strokeWidth="1dp">
 

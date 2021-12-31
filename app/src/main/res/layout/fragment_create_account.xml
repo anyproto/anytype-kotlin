@@ -52,8 +52,8 @@
                 android:layout_marginStart="20dp"
                 android:textSize="13sp"
                 android:layout_marginTop="11dp"
-                android:text="New profile"
-                android:textColor="#929082"
+                android:text="@string/new_profile"
+                android:textColor="@color/text_secondary"
                 android:fontFamily="@font/inter_regular"
                 app:layout_constraintTop_toBottomOf="@id/profileIcon"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -67,7 +67,8 @@
                 android:background="@null"
                 android:fontFamily="@font/inter_bold"
                 android:hint="@string/type_your_name"
-                android:textColorHint="#CBC9BD"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_tertiary"
                 android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvNewProfile" />

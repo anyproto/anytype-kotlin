@@ -19,7 +19,7 @@
 
     <TextView
         android:gravity="center_horizontal"
-        android:textColor="@color/default_grey"
+        android:textColor="@color/text_secondary"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/inter_regular"
         android:textSize="11sp"

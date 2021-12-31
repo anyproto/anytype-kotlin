@@ -5,13 +5,13 @@
     android:viewportHeight="24">
   <path
       android:pathData="M12.75,0H11.25V19H12.75V0Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M2.4697,9.4697C2.7626,9.1768 3.2374,9.1768 3.5303,9.4697L12,17.9393L20.4697,9.4697C20.7626,9.1768 21.2374,9.1768 21.5303,9.4697C21.8232,9.7626 21.8232,10.2374 21.5303,10.5303L12,20.0607L2.4697,10.5303C2.1768,10.2374 2.1768,9.7626 2.4697,9.4697Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M2,23.0039C2,22.5897 2.3358,22.2539 2.75,22.2539H21.25C21.6642,22.2539 22,22.5897 22,23.0039C22,23.4181 21.6642,23.7539 21.25,23.7539H2.75C2.3358,23.7539 2,23.4181 2,23.0039Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
 </vector>

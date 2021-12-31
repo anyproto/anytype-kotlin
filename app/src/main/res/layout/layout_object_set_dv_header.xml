@@ -23,7 +23,7 @@
             android:fontFamily="@font/inter_semibold"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:singleLine="true"
             android:maxLines="1"

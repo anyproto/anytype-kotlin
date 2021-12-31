@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     app:layoutDescription="@xml/fragment_object_set_scene">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -42,7 +42,7 @@
         android:id="@+id/controlDivider2"
         android:layout_width="0dp"
         android:layout_height="@dimen/data_view_divider_height"
-        android:background="@color/data_view_divider_color"
+        android:background="@color/shape_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dataViewHeader" />

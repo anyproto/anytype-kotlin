@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_dashboard_card_height"
-    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
+    app:cardBackgroundColor="@color/dashboard_card_background"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp">
 
     <TextView
         android:id="@+id/tvDocTitle"
         style="@style/DashboardDocAlternativeTitleStyle"
-        android:maxLines="4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/untitled"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:hint="@string/untitled"
+        android:maxLines="4"
         tools:text="@string/default_text_placeholder" />
 
     <TextView
@@ -33,12 +33,12 @@
         tools:text="Movies" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        tools:visibility="invisible"
         android:id="@+id/shimmer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:shimmer_auto_start="false"
-        app:shimmer_duration="2000">
+        app:shimmer_duration="2000"
+        tools:visibility="invisible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,13 +67,13 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <ImageView
-        android:visibility="invisible"
+        android:id="@+id/ivSelection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
         android:paddingEnd="10dp"
         android:paddingBottom="10dp"
-        android:layout_gravity="end|bottom"
-        android:id="@+id/ivSelection"
         android:src="@drawable/ic_bin_selection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:visibility="invisible" />
 
 </androidx.cardview.widget.CardView>

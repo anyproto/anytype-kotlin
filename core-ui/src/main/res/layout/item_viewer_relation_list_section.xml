@@ -9,7 +9,7 @@
         android:gravity="center"
         android:fontFamily="@font/inter_semibold"
         android:textSize="17sp"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:text="Relations"/>

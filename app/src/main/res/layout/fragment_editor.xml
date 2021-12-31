@@ -5,7 +5,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/defaultCanvasColor"
     tools:context="com.anytypeio.anytype.ui.editor.EditorFragment">
 
     <View
@@ -46,17 +46,17 @@
             android:id="@+id/multiSelectTopToolbar"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             android:translationY="-48dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -65,16 +65,16 @@
             android:id="@+id/objectTypesToolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/background_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.anytypeio.anytype.core_ui.widgets.toolbar.MarkupColorToolbarWidget
             android:id="@+id/markupColorToolbar"
             android:layout_width="0dp"
             android:layout_height="56dp"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             android:translationY="104dp"
             app:layout_constraintBottom_toTopOf="@id/markupToolbar"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +84,7 @@
             android:id="@+id/markupToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -93,7 +93,7 @@
             android:id="@+id/bottomMenu"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             android:translationY="@dimen/default_toolbar_height"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -104,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible"
+            android:background="@color/background_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +114,7 @@
             android:id="@+id/scrollAndMoveHint"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             android:translationY="-48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -123,11 +124,11 @@
             android:id="@+id/scrollAndMoveBottomAction"
             android:layout_width="match_parent"
             android:layout_height="64dp"
+            android:background="@color/background_primary"
             android:visibility="gone"
-            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.anytypeio.anytype.core_ui.features.editor.slash.SlashWidget
             android:id="@+id/slashWidget"
@@ -143,7 +144,7 @@
             android:id="@+id/searchToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            android:background="@color/white"
+            android:background="@color/defaultCanvasColor"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -156,7 +157,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_toolbar_height"
         android:layout_gravity="bottom"
-        android:background="#FFFFFF"
+        android:background="@color/defaultCanvasColor"
         android:clickable="true"
         android:focusable="true"
         android:visibility="invisible"
@@ -192,6 +193,7 @@
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
         app:behavior_skipCollapsed="false"
+        app:cardBackgroundColor="@color/background_secondary"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
@@ -203,6 +205,7 @@
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
         app:behavior_skipCollapsed="true"
+        app:cardBackgroundColor="@color/background_secondary"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
@@ -214,6 +217,7 @@
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
         app:behavior_skipCollapsed="true"
+        app:cardBackgroundColor="@color/background_secondary"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
@@ -225,6 +229,7 @@
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
         app:behavior_skipCollapsed="true"
+        app:cardBackgroundColor="@color/background_secondary"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
@@ -242,13 +247,13 @@
         app:layout_behavior="@string/bottom_sheet_behavior" />
 
     <View
-        android:visibility="invisible"
+        android:id="@+id/dndTargetLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:id="@+id/dndTargetLine"
         android:background="@color/orange"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"/>
+        android:visibility="invisible" />
 
     <include
         android:id="@+id/objectNotExist"

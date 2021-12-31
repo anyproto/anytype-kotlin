@@ -52,8 +52,8 @@
             android:hint="@string/search"
             android:maxLines="1"
             android:singleLine="true"
-            android:textColor="@color/black"
-            android:textColorHint="@color/gray"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
             android:textCursorDrawable="@drawable/cursor"
             android:textSize="15sp"
             tools:text="Search" />

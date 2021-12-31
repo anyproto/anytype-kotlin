@@ -17,7 +17,7 @@
     android:paddingBottom="3dp"
     android:singleLine="true"
     android:maxLines="1"
-    android:textColor="@color/black"
+    android:textColor="@color/text_primary"
     android:textSize="15sp"
     tools:text="Text" />
 </FrameLayout>

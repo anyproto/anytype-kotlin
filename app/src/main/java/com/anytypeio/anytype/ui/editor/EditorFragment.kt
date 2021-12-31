@@ -7,7 +7,6 @@ import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
@@ -55,7 +54,6 @@ import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
-import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_ui.features.editor.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
@@ -78,7 +76,6 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.Snack
 import com.anytypeio.anytype.presentation.editor.editor.*
-import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -126,7 +123,7 @@ import kotlin.math.abs
 const val REQUEST_FILE_CODE = 745
 
 @RuntimePermissions
-open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
+open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
     OnFragmentInteractionListener,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
@@ -342,7 +339,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     }
                 }
             } else {
-                topToolbar.setBackgroundColor(Color.WHITE)
+                topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
                 topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
                 topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)

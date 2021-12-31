@@ -5,11 +5,11 @@
     android:viewportHeight="24">
   <path
       android:pathData="M3,17.25H17V18.7483H3V17.25Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
   <path
       android:pathData="M3,5.25H21V6.7483H3V5.25Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
   <path
       android:pathData="M3,11.25H21V12.7483H3V11.25Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
 </vector>

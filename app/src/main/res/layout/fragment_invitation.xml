@@ -48,7 +48,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:lineSpacingMultiplier="1.21"
                 android:text="@string/enter_invitation_text"
-                android:textColor="#2C2B27"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

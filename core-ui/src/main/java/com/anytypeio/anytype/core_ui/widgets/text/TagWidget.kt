@@ -5,7 +5,8 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -33,13 +34,15 @@ class TagWidget @JvmOverloads constructor(
     }
 
     private fun setColor(color: String?) {
+        val defaultTextColor = resources.getColor(R.color.text_primary, null)
+        val defaultBackground = resources.getColor(R.color.shape_primary, null)
         val themeColor = ThemeColor.values().find { it.title == color }
-        if (themeColor != null) {
-            background.setDrawableColor(themeColor.background)
-            setTextColor(themeColor.text)
+        if (themeColor != null && themeColor != ThemeColor.DEFAULT) {
+            background.setDrawableColor(resources.light(themeColor, defaultBackground))
+            setTextColor(resources.dark(themeColor, defaultTextColor))
         } else {
-            background.setDrawableColor(context.color(R.color.default_filter_tag_background_color))
-            setTextColor(context.color(R.color.default_filter_tag_text_color))
+            background.setDrawableColor(defaultBackground)
+            setTextColor(defaultTextColor)
         }
     }
 }

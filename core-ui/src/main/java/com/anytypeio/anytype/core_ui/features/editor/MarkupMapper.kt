@@ -15,16 +15,12 @@ fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).
         is Span.TextColor -> Markup.Mark.TextColor(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            color = span.foregroundColor.let { color ->
-                ThemeColor.text[color]
-            }.orEmpty()
+            color = span.value
         )
         is Span.Highlight -> Markup.Mark.BackgroundColor(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            background = span.value.let { background ->
-                ThemeColor.background[background.toInt()]
-            }.orEmpty()
+            background = span.value
         )
         is Span.Italic -> Markup.Mark.Italic(
             from = getSpanStart(span),

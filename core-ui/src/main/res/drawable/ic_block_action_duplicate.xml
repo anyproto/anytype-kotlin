@@ -5,16 +5,16 @@
     android:viewportHeight="24">
   <path
       android:pathData="M19.5,7.5H10.5C8.8432,7.5 7.5,8.8432 7.5,10.5V19.5C7.5,21.1569 8.8432,22.5 10.5,22.5H19.5C21.1569,22.5 22.5,21.1569 22.5,19.5V10.5C22.5,8.8432 21.1569,7.5 19.5,7.5ZM10.5,6C8.0147,6 6,8.0147 6,10.5V19.5C6,21.9853 8.0147,24 10.5,24H19.5C21.9853,24 24,21.9853 24,19.5V10.5C24,8.0147 21.9853,6 19.5,6H10.5Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M4.5,1.5H13.5C15.1569,1.5 16.5,2.8431 16.5,4.5V6H18V4.5C18,2.0147 15.9853,0 13.5,0H4.5C2.0147,0 0,2.0147 0,4.5V13.5C0,15.9853 2.0147,18 4.5,18H6V16.5H4.5C2.8431,16.5 1.5,15.1569 1.5,13.5V4.5C1.5,2.8431 2.8431,1.5 4.5,1.5Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M15,10.5L15,10.5A0.75,0.75 0,0 1,15.75 11.25L15.75,18.75A0.75,0.75 0,0 1,15 19.5L15,19.5A0.75,0.75 0,0 1,14.25 18.75L14.25,11.25A0.75,0.75 0,0 1,15 10.5z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
   <path
       android:pathData="M10.5,15L10.5,15A0.75,0.75 0,0 1,11.25 14.25L18.75,14.25A0.75,0.75 0,0 1,19.5 15L19.5,15A0.75,0.75 0,0 1,18.75 15.75L11.25,15.75A0.75,0.75 0,0 1,10.5 15z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
 </vector>

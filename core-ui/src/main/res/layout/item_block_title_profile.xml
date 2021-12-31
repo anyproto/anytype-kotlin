@@ -39,10 +39,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semibold"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:textSize="44sp"
+                android:textSize="64sp"
                 tools:text="S" />
 
         </FrameLayout>

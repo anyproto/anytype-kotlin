@@ -3,20 +3,21 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.text.Editable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.getBlockTextColor
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.TextBlockHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Checkable
 
 abstract class Text(
     view: View
-) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder, BlockViewHolder.DragAndDropHolder {
+) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder,
+    BlockViewHolder.DragAndDropHolder {
+
+    private val defTextColor: Int = itemView.context.resources.getColor(R.color.text_primary, null)
 
     fun bind(
         item: BlockView.TextBlockProps,
@@ -96,7 +97,7 @@ abstract class Text(
                 text = item.text,
                 markup = item,
                 clicked = clicked,
-                textColor = item.getBlockTextColor()
+                textColor = getBlockTextColor(item.color)
             )
         }
         if (item is BlockView.Searchable) {
@@ -115,7 +116,7 @@ abstract class Text(
         if (color != null) {
             setTextColor(color)
         } else {
-            setTextColor(content.context.color(R.color.black))
+            setTextColor(content.context.color(R.color.anytype_text_default))
         }
         setBackgroundColor(color = item.backgroundColor)
     }
@@ -139,4 +140,6 @@ abstract class Text(
     fun selection(item: BlockView.Selectable) {
         select(item)
     }
+
+    override fun getDefaultTextColor(): Int = defTextColor
 }

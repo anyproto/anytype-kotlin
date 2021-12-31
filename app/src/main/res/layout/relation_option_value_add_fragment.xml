@@ -43,7 +43,6 @@
     </LinearLayout>
 
     <FrameLayout
-        android:background="@color/white"
         android:layout_gravity="bottom"
         android:id="@+id/btnAddContainer"
         android:paddingStart="20dp"

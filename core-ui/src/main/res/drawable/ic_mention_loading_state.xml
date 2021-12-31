@@ -16,7 +16,7 @@
             android:height="24dip" />
 
         <gradient
-            android:centerColor="@color/light_grayish"
+            android:centerColor="@color/shape_primary"
             android:centerY="0.50"
             android:endColor="#00ACA996"
             android:startColor="#ACA996"

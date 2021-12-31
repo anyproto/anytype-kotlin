@@ -60,7 +60,6 @@ class ColorCircleWidget : View {
         attrs.recycle()
     }
 
-
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -71,7 +70,7 @@ class ColorCircleWidget : View {
         // background
 
         paint.apply {
-            color = Color.WHITE
+            color = 0
             style = Paint.Style.FILL
         }
         canvas.apply { drawCircle(cx, cy, radius, paint) }

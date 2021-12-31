@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.`interface`
 
 import android.view.Gravity
 import android.view.View
+import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -47,11 +49,11 @@ interface TextHolder {
 
     fun setTextColor(color: String) {
         val value = ThemeColor.values().find { value -> value.title == color }
-        if (value != null) {
-            content.setTextColor(value.text)
+        val default = content.context.getColor(R.color.text_primary)
+        if (value != null && value != ThemeColor.DEFAULT) {
+            content.setTextColor(content.resources.dark(value, default))
         } else {
-            Timber.e("Could not find value for text color: $color, setting default text color")
-            content.setTextColor(ThemeColor.DEFAULT.text)
+            content.setTextColor(default)
         }
     }
 

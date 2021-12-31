@@ -3,14 +3,14 @@
     android:color="@color/gray">
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
-            <solid android:color="@color/gray" />
+            <solid android:color="@color/shape_transparent" />
             <corners android:radius="10.5dp" />
         </shape>
     </item>
 
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <solid android:color="#F3F2EC" />
+            <solid android:color="@color/shape_transparent" />
             <corners android:radius="10.5dp" />
         </shape>
     </item>

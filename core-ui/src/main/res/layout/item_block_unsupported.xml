@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_regular"
         android:text="@string/unsupported_block"
-        android:textColor="#CBC9BD"
+        android:textColor="@color/text_tertiary"
         android:textSize="15sp" />
 
 </LinearLayout>

@@ -25,8 +25,8 @@
         android:maxLines="1"
         android:hint="@string/enter_value"
         android:singleLine="true"
-        android:textColorHint="@color/RelationPlaceholderTextColor"
-        android:textColor="@color/black"
+        android:textColorHint="@color/text_tertiary"
+        android:textColor="@color/text_primary"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

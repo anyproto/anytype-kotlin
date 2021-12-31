@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.ThemeColorCode
+import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
@@ -202,14 +204,13 @@ class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolde
 
     private fun setBackgroundColor(color: String? = null) {
         Timber.d("Setting background color: $color")
-        if (color != null) {
-            val value = ThemeColorCode.values().find { value -> value.title == color }
-            if (value != null)
-                (container.background as? GradientDrawable)?.setColor(value.background)
-            else
-                Timber.e("Could not find value for background color: $color")
+        val value = ThemeColor.values().find { value -> value.title == color }
+        if (value != null && value != ThemeColor.DEFAULT) {
+            (container.background as? GradientDrawable)?.setColor(root.resources.lighter(value, 0))
         } else {
-            (container.background as? GradientDrawable)?.setColor(ThemeColorCode.DEFAULT.background)
+            val defaultBackgroundColor =
+                content.context.resources.getColor(R.color.shape_tertiary, null)
+            (container.background as? GradientDrawable)?.setColor(defaultBackgroundColor)
         }
     }
 

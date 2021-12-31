@@ -11,7 +11,7 @@
         android:layout_height="22dp"
         android:layout_marginStart="9dp"
         android:layout_gravity="start|center_vertical"
-        app:outerStrokeColor="#DFDDD0"
+        app:outerStrokeColor="@color/shape_primary"
         app:innerRadius="11dp" />
 
     <TextView

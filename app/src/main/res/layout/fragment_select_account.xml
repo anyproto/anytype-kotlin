@@ -70,7 +70,7 @@
                 android:drawableStart="@drawable/ic_plus"
                 android:drawablePadding="26dp"
                 android:text="@string/add_profile"
-                android:textColor="#ACA996"
+                android:textColor="@color/text_secondary"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

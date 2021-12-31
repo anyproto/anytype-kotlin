@@ -4,7 +4,7 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="#2C2B27"
+        android:fillColor="@color/glyph_selected"
         android:fillType="evenOdd"
         android:pathData="M18.6328,6.9025L11.1308,18.6913L5.4697,13.0302L6.5304,11.9695L10.8693,16.3084L17.3673,6.0972L18.6328,6.9025Z" />
 </vector>

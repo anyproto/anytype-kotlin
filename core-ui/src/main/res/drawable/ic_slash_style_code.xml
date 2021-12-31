@@ -7,10 +7,10 @@
       android:pathData="M9,6L3,12L9,18"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
-      android:strokeColor="#ACA996"/>
+      android:strokeColor="@color/glyph_active"/>
   <path
       android:pathData="M15,6L21,12L15,18"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
-      android:strokeColor="#ACA996"/>
+      android:strokeColor="@color/glyph_active"/>
 </vector>

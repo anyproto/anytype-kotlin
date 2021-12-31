@@ -26,7 +26,7 @@
         android:fontFamily="@font/inter_regular"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="#2C2B27"
+        android:textColor="@color/text_primary"
         android:textSize="17sp"
         tools:text="We need to render the " />
 

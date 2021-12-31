@@ -5,11 +5,11 @@
     android:viewportHeight="24">
   <path
       android:pathData="M2,18.0011C2,17.5874 2.3354,17.252 2.7491,17.252H21.2509C21.6646,17.252 22,17.5874 22,18.0011C22,18.4148 21.6646,18.7502 21.2509,18.7502H2.7491C2.3354,18.7502 2,18.4148 2,18.0011Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
   <path
       android:pathData="M2,5.9991C2,5.5854 2.3354,5.25 2.7491,5.25H21.2509C21.6646,5.25 22,5.5854 22,5.9991C22,6.4129 21.6646,6.7483 21.2509,6.7483H2.7491C2.3354,6.7483 2,6.4129 2,5.9991Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
   <path
       android:pathData="M2,12.0001C2,11.5864 2.3354,11.251 2.7491,11.251H15.2509C15.6646,11.251 16,11.5864 16,12.0001C16,12.4139 15.6646,12.7493 15.2509,12.7493H2.7491C2.3354,12.7493 2,12.4139 2,12.0001Z"
-      android:fillColor="#ACA996"/>
+      android:fillColor="@color/glyph_active"/>
 </vector>

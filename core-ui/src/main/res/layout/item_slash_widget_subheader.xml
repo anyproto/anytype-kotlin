@@ -36,7 +36,7 @@
             android:fontFamily="@font/inter_regular"
             android:textSize="13sp"
             android:layout_gravity="center_vertical"
-            android:textColor="#929082"
+            android:textColor="@color/text_secondary"
             android:text="@string/slash_widget_back"/>
 
     </FrameLayout>

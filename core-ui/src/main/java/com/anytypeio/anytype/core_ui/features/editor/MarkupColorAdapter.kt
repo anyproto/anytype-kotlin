@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
@@ -75,15 +77,17 @@ class MarkupColorAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val circle = itemView.findViewById<ColorCircleWidget>(R.id.circle)
         fun bind(view: MarkupColorView.Text) {
-            val color = ThemeColor.values().first { it.title == view.code }
             circle.isSelected = view.isSelected
-            circle.innerColor = color.text
+            val color = ThemeColor.values().first { it.title == view.code }
+            val default = itemView.resources.getColor(R.color.text_primary, null)
+            circle.innerColor = itemView.resources.dark(color, default)
         }
 
         fun bind(view: MarkupColorView.Background) {
             val color = ThemeColor.values().first { it.title == view.code }
+            val default = itemView.resources.getColor(R.color.background_primary, null)
             circle.isSelected = view.isSelected
-            circle.innerColor = color.background
+            circle.innerColor = itemView.resources.light(color, default)
         }
     }
 }

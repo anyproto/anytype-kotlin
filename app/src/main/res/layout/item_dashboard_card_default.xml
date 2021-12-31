@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_dashboard_card_height"
     app:cardCornerRadius="16dp"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:clickable="true"
+    app:cardBackgroundColor="@color/dashboard_card_background"
     app:cardElevation="0dp">
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectCardIconWidget
@@ -57,7 +56,7 @@
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/circle_default" />
+                android:background="@drawable/shimmer_circle" />
 
             <View
                 android:id="@+id/txtSkeleton"

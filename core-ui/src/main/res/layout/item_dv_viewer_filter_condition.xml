@@ -14,7 +14,7 @@
         android:textSize="17sp"
         android:layout_weight="1"
         android:fontFamily="@font/inter_regular"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:layout_gravity="center_vertical"/>
 
     <ImageView

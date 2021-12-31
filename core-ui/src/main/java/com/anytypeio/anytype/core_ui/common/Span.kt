@@ -22,7 +22,7 @@ interface Span {
     class Bold : StyleSpan(Typeface.BOLD), Span
     class Italic : StyleSpan(Typeface.ITALIC), Span
     class Strikethrough : StrikethroughSpan(), Span
-    class TextColor(color: Int) : ForegroundColorSpan(color), Span
+    class TextColor(color: Int, val value: String) : ForegroundColorSpan(color), Span
     class Url(url: String, val color: Int) : URLSpan(url), Span {
 
         override fun updateDrawState(ds: TextPaint) {

@@ -6,6 +6,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -58,10 +60,12 @@ class FilterTagViewHolder(view: View) : FilterViewHolder(view) {
 
     private fun bindChip(chip: Chip, value: TagView?) {
         with(chip) {
+            val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
+            val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
             val color = ThemeColor.values().find { v -> v.title == value?.color }
-            if (color != null) {
-                chipBackgroundColor = ColorStateList.valueOf(color.background)
-                setTextColor(color.text)
+            if (color != null && color != ThemeColor.DEFAULT) {
+                chipBackgroundColor = ColorStateList.valueOf(resources.light(color, defaultBackground))
+                setTextColor(resources.dark(color, defaultTextColor))
             } else {
                 setChipBackgroundColorResource(R.color.default_filter_tag_background_color)
                 setTextColor(context.color(R.color.default_filter_tag_text_color))

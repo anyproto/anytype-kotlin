@@ -13,7 +13,7 @@
         android:layout_marginTop="70dp"
         android:fontFamily="@font/graphik_semibold"
         android:text="Hi, User"
-        android:textColor="@color/white"
+        android:textColor="@color/text_white"
         android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,9 +124,9 @@
                 app:tabPaddingStart="10dp"
                 app:tabPaddingTop="@dimen/dp_12"
                 app:tabRippleColor="@null"
-                app:tabSelectedTextColor="@color/black"
+                app:tabSelectedTextColor="@color/text_primary"
                 app:tabTextAppearance="@style/DashboardTabTextStyle"
-                app:tabTextColor="#CC0066C3" />
+                app:tabTextColor="@color/dashboard_card_background" />
 
 
             <LinearLayout
@@ -191,7 +191,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/default_toolbar_height"
         android:orientation="horizontal"
-        android:background="#99F5F5F5"
+        android:background="@color/dashboard_background"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -206,7 +206,7 @@
             android:background="@drawable/default_ripple"
             android:paddingEnd="20dp"
             android:text="@string/delete"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="17sp" />
 
         <TextView
@@ -220,7 +220,7 @@
             android:paddingEnd="20dp"
             android:text="@string/put_back"
             android:background="@drawable/default_ripple"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="17sp" />
 
     </LinearLayout>

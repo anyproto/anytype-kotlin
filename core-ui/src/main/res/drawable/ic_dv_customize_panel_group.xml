@@ -5,18 +5,18 @@
     android:viewportHeight="24">
   <path
       android:pathData="M12,18C13.1046,18 14,18.8954 14,20C14,21.1046 13.1046,22 12,22C10.8954,22 10,21.1046 10,20C10,18.8954 10.8954,18 12,18ZM12,16.5C13.933,16.5 15.5,18.067 15.5,20C15.5,21.933 13.933,23.5 12,23.5C10.067,23.5 8.5,21.933 8.5,20C8.5,18.067 10.067,16.5 12,16.5Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M12,2C13.1046,2 14,2.8954 14,4C14,5.1046 13.1046,6 12,6C10.8954,6 10,5.1046 10,4C10,2.8954 10.8954,2 12,2ZM12,0.5C13.933,0.5 15.5,2.067 15.5,4C15.5,5.933 13.933,7.5 12,7.5C10.067,7.5 8.5,5.933 8.5,4C8.5,2.067 10.067,0.5 12,0.5Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M20,10C21.1046,10 22,10.8954 22,12C22,13.1046 21.1046,14 20,14C18.8954,14 18,13.1046 18,12C18,10.8954 18.8954,10 20,10ZM20,8.5C21.933,8.5 23.5,10.067 23.5,12C23.5,13.933 21.933,15.5 20,15.5C18.067,15.5 16.5,13.933 16.5,12C16.5,10.067 18.067,8.5 20,8.5Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M4,10C5.1046,10 6,10.8954 6,12C6,13.1046 5.1046,14 4,14C2.8954,14 2,13.1046 2,12C2,10.8954 2.8954,10 4,10ZM4,8.5C5.933,8.5 7.5,10.067 7.5,12C7.5,13.933 5.933,15.5 4,15.5C2.067,15.5 0.5,13.933 0.5,12C0.5,10.067 2.067,8.5 4,8.5Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
 </vector>

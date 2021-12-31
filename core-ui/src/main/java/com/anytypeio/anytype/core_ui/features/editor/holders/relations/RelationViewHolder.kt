@@ -8,7 +8,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
 import com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
@@ -121,10 +121,11 @@ sealed class RelationViewHolder(
                     val status = item.status.first()
                     text = status.status
                     val color = ThemeColor.values().find { v -> v.title == status.color }
-                    if (color != null) {
-                        setTextColor(color.text)
+                    val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                    if (color != null && color != ThemeColor.DEFAULT) {
+                        setTextColor(resources.dark(color, defaultTextColor))
                     } else {
-                        setTextColor(context.color(R.color.default_filter_status_text_color))
+                        setTextColor(defaultTextColor)
                     }
                 } else {
                     text = null

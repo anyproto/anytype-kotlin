@@ -4,11 +4,11 @@
     android:viewportWidth="24"
     android:viewportHeight="25">
     <path
-        android:fillColor="#ACA996"
+        android:fillColor="@color/glyph_active"
         android:fillType="evenOdd"
         android:pathData="M11.4697,4.5009C11.7626,4.208 12.2374,4.208 12.5303,4.5009L20.0607,12.0313L12.5303,19.5616C12.2374,19.8545 11.7626,19.8545 11.4697,19.5616C11.1768,19.2687 11.1768,18.7938 11.4697,18.5009L17.9393,12.0313L11.4697,5.5616C11.1768,5.2687 11.1768,4.7938 11.4697,4.5009Z" />
     <path
-        android:fillColor="#ACA996"
+        android:fillColor="@color/glyph_active"
         android:fillType="evenOdd"
         android:pathData="M19,12.7812H4V11.2812H19V12.7812Z" />
 </vector>

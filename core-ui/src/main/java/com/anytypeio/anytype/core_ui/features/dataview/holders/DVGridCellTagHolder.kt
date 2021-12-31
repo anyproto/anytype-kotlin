@@ -4,7 +4,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -23,12 +24,14 @@ class DVGridCellTagHolder(view: View) : RecyclerView.ViewHolder(view) {
                         view.visible()
                         view.text = tagView.tag
                         val color = ThemeColor.values().find { v -> v.title == tagView.color }
-                        if (color != null) {
-                            view.background.setDrawableColor(color.background)
-                            view.setTextColor(color.text)
+                        val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
+                        val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
+                        if (color != null && color != ThemeColor.DEFAULT) {
+                            view.background.setDrawableColor(itemView.resources.light(color, defaultBackground))
+                            view.setTextColor(itemView.resources.dark(color, defaultTextColor))
                         } else {
-                            view.background.setDrawableColor(itemView.context.color(R.color.default_filter_tag_background_color))
-                            view.setTextColor(itemView.context.color(R.color.default_filter_tag_text_color))
+                            view.background.setDrawableColor(defaultBackground)
+                            view.setTextColor(defaultTextColor)
                         }
                     }
                 }

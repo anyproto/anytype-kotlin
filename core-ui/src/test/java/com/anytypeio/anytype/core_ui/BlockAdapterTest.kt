@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
@@ -55,6 +56,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -283,8 +285,9 @@ class BlockAdapterTest {
             onSlashEvent = {}
         )
 
+        val expected = context.resources.getColor(R.color.palette_very_light_purple)
         assertEquals(
-            expected = ThemeColor.PURPLE.background,
+            expected = expected,
             actual = (holder.root.background as ColorDrawable).color
         )
     }
@@ -339,8 +342,10 @@ class BlockAdapterTest {
             onSlashEvent = {}
         )
 
+        val expected = context.resources.getColor(R.color.palette_dark_green)
+
         assertEquals(
-            expected = ThemeColor.GREEN.text,
+            expected = expected,
             actual = holder.content.currentTextColor
         )
     }

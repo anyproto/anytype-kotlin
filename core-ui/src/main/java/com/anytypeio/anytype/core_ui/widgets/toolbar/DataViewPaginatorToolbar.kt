@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets.toolbar
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -28,7 +27,7 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_data_view_pagination_toolbar, this)
-        setBackgroundColor(Color.WHITE)
+        setBackgroundColor(resources.getColor(R.color.background_primary, null))
         rvPaginator.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             val spacing = resources.getDimension(R.dimen.dp_12).toInt()

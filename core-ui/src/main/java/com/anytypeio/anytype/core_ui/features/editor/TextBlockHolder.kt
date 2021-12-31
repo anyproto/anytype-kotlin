@@ -5,10 +5,7 @@ import android.text.Editable
 import android.text.Spannable
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.common.*
-import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
-import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
-import com.anytypeio.anytype.core_ui.extensions.preserveSelection
-import com.anytypeio.anytype.core_ui.extensions.range
+import com.anytypeio.anytype.core_ui.extensions.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.menu.EditorContextMenu
 import com.anytypeio.anytype.core_ui.tools.*
@@ -29,6 +26,8 @@ import timber.log.Timber
  * @see [BlockView.Text]
  */
 interface TextBlockHolder : TextHolder {
+
+    fun getDefaultTextColor(): Int
 
     fun setup(
         onContextMenuStyleClick: (IntRange) -> Unit
@@ -64,7 +63,10 @@ interface TextBlockHolder : TextHolder {
     }
 
     private fun setSpannable(markup: Markup, textColor: Int) {
-        content.setText(markup.toSpannable(textColor = textColor), TextView.BufferType.SPANNABLE)
+        content.setText(
+            markup.toSpannable(textColor = textColor, context = content.context),
+            TextView.BufferType.SPANNABLE
+        )
     }
 
     fun getMentionIconSize(): Int
@@ -100,8 +102,8 @@ interface TextBlockHolder : TextHolder {
         Timber.d("Setting background color: $color")
         if (!color.isNullOrEmpty()) {
             val value = ThemeColor.values().find { value -> value.title == color }
-            if (value != null) {
-                root.setBackgroundColor(value.background)
+            if (value != null && value != ThemeColor.DEFAULT) {
+                root.setBackgroundColor(root.resources.lighter(value, 0))
             } else {
                 Timber.e("Could not find value for background color: $color, setting background to null")
                 root.background = null
@@ -284,7 +286,7 @@ interface TextBlockHolder : TextHolder {
                         text = item.text,
                         markup = item,
                         clicked = clicked,
-                        textColor = item.getBlockTextColor()
+                        textColor = getBlockTextColor(item.color)
                     )
                 }
             }
@@ -293,7 +295,7 @@ interface TextBlockHolder : TextHolder {
             }
         } else if (payload.markupChanged()) {
             content.pauseTextWatchers {
-                setMarkup(item, clicked, item.getBlockTextColor())
+                setMarkup(item, clicked, getBlockTextColor(item.color))
                 if (item is Checkable) {
                     applyCheckedCheckboxColorSpan(item.isChecked)
                 }
@@ -310,7 +312,8 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.textColorChanged()) {
             val color = item.color ?: ThemeColor.DEFAULT.title
-            setTextColor(color)
+            content.setTextColor(getBlockTextColor(color))
+            setMarkup(item, clicked, getBlockTextColor(item.color))
         }
 
         if (payload.backgroundColorChanged()) {
@@ -387,5 +390,15 @@ interface TextBlockHolder : TextHolder {
 
     fun clearTextWatchers() {
         content.clearTextWatchers()
+    }
+
+    fun getBlockTextColor(color: String?): Int {
+        val value = ThemeColor.values().find { value -> value.title == color }
+        val default = getDefaultTextColor()
+        return if (value != null && value != ThemeColor.DEFAULT) {
+            content.resources.dark(value, default)
+        } else {
+            default
+        }
     }
 }

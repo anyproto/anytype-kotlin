@@ -3,7 +3,6 @@
     android:id="@+id/sheet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/default_bottom_sheet_background"
     android:orientation="vertical">
 
     <FrameLayout
@@ -36,7 +35,7 @@
             android:fontFamily="@font/inter_semibold"
             android:gravity="center"
             android:text="Change icon"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="17sp" />
 
         <TextView
@@ -87,6 +86,8 @@
             android:fontFamily="@font/inter_regular"
             android:hint="@string/page_icon_picker_emoji_filter"
             android:inputType="textNoSuggestions"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_tertiary"
             android:maxLines="1"
             android:singleLine="true"
             android:textSize="17sp"

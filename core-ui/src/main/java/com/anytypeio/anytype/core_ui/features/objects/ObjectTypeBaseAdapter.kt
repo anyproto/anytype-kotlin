@@ -64,9 +64,6 @@ abstract class ObjectTypeBaseAdapter(
             is ObjectTypeHorizontalHolder -> {
                 holder.bind(data[position] as ObjectTypeView.Item)
             }
-            is ObjectTypeSearchHolder -> {
-                holder.bind()
-            }
         }
     }
 

@@ -38,4 +38,5 @@
     <dimen name="multiple_option_value_bottom_list_margin">68dp</dimen>
     <dimen name="default_dashboard_card_height">126dp</dimen>
     <dimen name="dashboard_object_icon_default_size">48dp</dimen>
+    <dimen name="default_divider_height">0.5dp</dimen>
 </resources>

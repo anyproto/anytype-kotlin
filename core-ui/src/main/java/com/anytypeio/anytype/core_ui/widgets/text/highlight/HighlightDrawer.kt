@@ -1,12 +1,17 @@
 package com.anytypeio.anytype.core_ui.widgets.text.highlight
 
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.text.Annotation
 import android.text.Layout
 import android.text.Spanned
 import androidx.core.graphics.drawable.DrawableCompat
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.lighter
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import timber.log.Timber
 
 /**
@@ -83,7 +88,7 @@ class HighlightDrawer(
      * @param text
      * @param layout Layout that contains the text
      */
-    fun draw(canvas: Canvas, text: Spanned, layout: Layout) {
+    fun draw(canvas: Canvas, text: Spanned, layout: Layout, resources: Resources) {
         text.getSpans(0, text.length, Annotation::class.java).forEach { span ->
             when (span.key) {
                 Span.Keyboard.KEYBOARD_KEY -> drawCodeHighlight(
@@ -96,7 +101,8 @@ class HighlightDrawer(
                     span = span,
                     text = text,
                     layout = layout,
-                    canvas = canvas
+                    canvas = canvas,
+                    resources = resources
                 )
                 else -> Timber.e("Unexpected span: $span")
             }
@@ -107,9 +113,17 @@ class HighlightDrawer(
         span: Annotation,
         text: Spanned,
         layout: Layout,
-        canvas: Canvas
+        canvas: Canvas,
+        resources: Resources
     ) {
-        DrawableCompat.wrap(drawableMid).setTint(span.value.toInt())
+        val value = ThemeColor.values().find { value -> value.title == span.value }
+        val default = resources.getColor(R.color.background_primary, null)
+        val color = if (value != null && value != ThemeColor.DEFAULT) {
+            resources.lighter(value, default)
+        } else {
+            default
+        }
+        DrawableCompat.wrap(drawableMid).setTint(color)
 
         val spanStart = text.getSpanStart(span)
         val spanEnd = text.getSpanEnd(span)

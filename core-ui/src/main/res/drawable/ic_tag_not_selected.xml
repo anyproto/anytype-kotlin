@@ -7,5 +7,5 @@
         android:fillColor="#00000000"
         android:pathData="M12,12m-11.25,0a11.25,11.25 0,1 1,22.5 0a11.25,11.25 0,1 1,-22.5 0"
         android:strokeWidth="1.5"
-        android:strokeColor="#DFDDD0" />
+        android:strokeColor="@color/shape_primary" />
 </vector>

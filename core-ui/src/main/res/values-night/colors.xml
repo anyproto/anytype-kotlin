@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="anytype_text_default">#F3F2EC</color>
+
+    <color name="markup_keyboard_bg">#1F1E1D</color>
+
+    <color name="text_primary">#F3F2EC</color>
+    <color name="text_secondary">#908F86</color>
+    <color name="text_tertiary">#64635B</color>
+    <color name="text_white">#FFFFFF</color>
+
+    <color name="background_primary">#000000</color>
+    <color name="background_secondary">#1F1E1D</color>
+    <color name="background_highlighted">#24DAD7CA</color>
+
+    <color name="shape_primary">#3A3935</color>
+    <color name="shape_secondary">#302F2B</color>
+    <color name="shape_tertiary">#1F1E1D</color>
+    <color name="shape_transparent">#24DAD7CA</color>
+
+    <color name="glyph_active">#7B7A72</color>
+    <color name="glyph_selected">#F3F2EC</color>
+    <color name="glyph_inactive">#494843</color>
+    <color name="glyph_accent">#FFB522</color>
+    <color name="glyph_white">#FFFFFF</color>
+
+    <color name="dashboard_card_background">#99000000</color>
+    <color name="dashboard_background">#99252525</color>
+
+    <color name="palette_dark_default">#000000</color>
+    <color name="palette_dark_yellow">#ECD91B</color>
+    <color name="palette_dark_orange">#F1A91A</color>
+    <color name="palette_dark_red">#F55522</color>
+    <color name="palette_dark_pink">#DD2EA1</color>
+    <color name="palette_dark_purple">#B354D7</color>
+    <color name="palette_dark_blue">#5871FF</color>
+    <color name="palette_dark_ice">#18A3F1</color>
+    <color name="palette_dark_teal">#0CC3B5</color>
+    <color name="palette_dark_green">#70CD28</color>
+    <color name="palette_dark_grey">#908F86</color>
+
+    <color name="palette_light_default">#000000</color>
+    <color name="palette_light_yellow">#474108</color>
+    <color name="palette_light_orange">#483308</color>
+    <color name="palette_light_red">#581F0C</color>
+    <color name="palette_light_pink">#50113A</color>
+    <color name="palette_light_purple">#411E4D</color>
+    <color name="palette_light_blue">#20295C</color>
+    <color name="palette_light_ice">#093B57</color>
+    <color name="palette_light_teal">#044641</color>
+    <color name="palette_light_green">#294B0E</color>
+    <color name="palette_light_grey">#343330</color>
+
+    <color name="palette_very_light_default">#000000</color>
+    <color name="palette_very_light_yellow">#2A2705</color>
+    <color name="palette_very_light_orange">#2B1E05</color>
+    <color name="palette_very_light_red">#311107</color>
+    <color name="palette_very_light_pink">#310A23</color>
+    <color name="palette_very_light_purple">#27122F</color>
+    <color name="palette_very_light_blue">#131938</color>
+    <color name="palette_very_light_ice">#052130</color>
+    <color name="palette_very_light_teal">#022724</color>
+    <color name="palette_very_light_green">#172A08</color>
+    <color name="palette_very_light_grey">#1D1D1B</color>
+
+</resources>

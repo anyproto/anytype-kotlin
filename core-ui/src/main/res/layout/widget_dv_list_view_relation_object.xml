@@ -27,7 +27,7 @@
         android:ellipsize="end"
         android:fontFamily="@font/inter_regular"
         android:textSize="12sp"
-        android:textColor="#929082"
+        android:textColor="@color/text_secondary"
         android:visibility="gone"
         tools:text="Favorites"
         tools:visibility="visible" />
@@ -43,7 +43,7 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         android:singleLine="true"
-        android:textColor="#929082"
+        android:textColor="@color/text_secondary"
         android:textSize="12sp"
         android:visibility="gone"
         tools:text="+2"

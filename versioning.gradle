@@ -61,7 +61,7 @@ ext.getBuildVersionName = {
     def versionMinor = getProperty('version.versionMinor').toInteger()
     def versionPatch = getProperty('version.versionPatch').toInteger()
 
-    def name = "${versionMajor}.${versionMinor}.${versionPatch}"
+    def name = "0.5.0-dark-mode-4"
 
     return name
 }

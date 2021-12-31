@@ -5,7 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -128,12 +129,14 @@ class CreateFilterAdapter(
                 ivSelectTagIcon.isSelected = item.isSelected
                 tvTagName.text = item.name
                 val color = ThemeColor.values().find { v -> v.title == item.color }
-                if (color != null) {
-                    tvTagName.background.setDrawableColor(color.background)
-                    tvTagName.setTextColor(color.text)
+                val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                val defaultBackground = resources.getColor(R.color.shape_primary, null)
+                if (color != null && color != ThemeColor.DEFAULT) {
+                    tvTagName.background.setDrawableColor(resources.light(color, defaultTextColor))
+                    tvTagName.setTextColor(resources.dark(color, defaultBackground))
                 } else {
-                    tvTagName.background.setDrawableColor(context.color(R.color.default_filter_tag_background_color))
-                    tvTagName.setTextColor(context.color(R.color.default_filter_tag_text_color))
+                    tvTagName.background.setDrawableColor(defaultBackground)
+                    tvTagName.setTextColor(defaultTextColor)
                 }
             }
         }
@@ -143,10 +146,11 @@ class CreateFilterAdapter(
                 ivSelectStatusIcon.isSelected = item.isSelected
                 tvStatusName.text = item.name
                 val color = ThemeColor.values().find { v -> v.title == item.color }
-                if (color != null) {
-                    tvStatusName.setTextColor(color.text)
+                val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                if (color != null && color != ThemeColor.DEFAULT) {
+                    tvStatusName.setTextColor(resources.dark(color, defaultTextColor))
                 } else {
-                    tvStatusName.setTextColor(context.color(R.color.default_filter_status_text_color))
+                    tvStatusName.setTextColor(defaultTextColor)
                 }
             }
         }

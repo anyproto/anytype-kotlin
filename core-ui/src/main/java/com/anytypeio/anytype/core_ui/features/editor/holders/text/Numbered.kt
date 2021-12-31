@@ -20,7 +20,6 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import kotlinx.android.synthetic.main.item_block_numbered.view.*
-import timber.log.Timber
 
 class Numbered(
     view: View,
@@ -114,10 +113,10 @@ class Numbered(
     override fun setTextColor(color: String) {
         super.setTextColor(color)
         val value = ThemeColor.values().find { value -> value.title == color }
-        if (value != null) {
+        if (value != null && value != ThemeColor.DEFAULT) {
             number.setTextColor(value.text)
         } else {
-            number.setTextColor(ThemeColor.DEFAULT.text)
+            number.setTextColor(itemView.context.getColor(R.color.anytype_text_default))
         }
     }
 

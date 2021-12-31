@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="@string/new_view" />
+            android:text="@string/edit_view" />
 
         <ImageView
             android:id="@+id/threeDotsButton"
@@ -41,7 +41,7 @@
         android:layout_marginTop="23dp"
         android:fontFamily="@font/inter_regular"
         android:text="@string/name"
-        android:textColor="#929082"
+        android:textColor="@color/text_secondary"
         android:textSize="@dimen/sp_13" />
 
     <EditText
@@ -51,11 +51,12 @@
         android:layout_marginTop="6dp"
         android:background="@null"
         android:fontFamily="@font/inter_bold"
-        android:hint="@string/new_view"
+        android:hint="@string/untitled"
         android:imeOptions="actionDone"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColorHint="@color/gray"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/text_primary"
         android:textCursorDrawable="@drawable/cursor"
         android:textSize="22sp" />
 
@@ -63,7 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:layout_marginTop="10dp"
-        android:background="@color/viewer_divider" />
+        android:background="@color/shape_primary" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -71,14 +72,14 @@
         android:layout_marginTop="27dp"
         android:fontFamily="@font/inter_regular"
         android:text="@string/viewer_as"
-        android:textColor="#929082"
+        android:textColor="@color/text_secondary"
         android:textSize="@dimen/sp_13" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:layout_marginTop="8dp"
-        android:background="@color/viewer_divider" />
+        android:background="@color/shape_primary" />
 
     <FrameLayout
         android:id="@+id/gridContainer"
@@ -119,7 +120,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/viewer_divider" />
+        android:background="@color/shape_primary" />
 
     <FrameLayout
         android:id="@+id/galleryContainer"
@@ -161,7 +162,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/viewer_divider" />
+        android:background="@color/shape_primary" />
 
     <FrameLayout
         android:id="@+id/listContainer"
@@ -203,7 +204,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/viewer_divider" />
+        android:background="@color/shape_primary" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -252,7 +253,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/viewer_divider" />
+        android:background="@color/shape_primary" />
 
     <FrameLayout
         android:id="@+id/btnDoneContainer"

@@ -17,17 +17,6 @@
     <color name="anytype_text_teal">#0FC8BA</color>
     <color name="anytype_text_green">#57C600</color>
 
-    <color name="anytype_background_default">#FFFFFF</color>
-    <color name="anytype_background_grey">#F3F2EC</color>
-    <color name="anytype_background_yellow">#FEF9CC</color>
-    <color name="anytype_background_orange">#FEF3C5</color>
-    <color name="anytype_background_red">#FFEBE5</color>
-    <color name="anytype_background_pink">#FEE3F5</color>
-    <color name="anytype_background_purple">#F4E3FA</color>
-    <color name="anytype_background_blue">#E4E7FC</color>
-    <color name="anytype_background_ice">#D6EFFD</color>
-    <color name="anytype_background_teal">#D6F5F3</color>
-    <color name="anytype_background_green">#E3F7D0</color>
     <color name="anytype_shadow_main">#8C000000</color>
 
     <color name="debug">#F44336</color>
@@ -135,9 +124,79 @@
     <color name="orange_button_background_color">#FFB522</color>
     <color name="editor_default_hint_text_color">#CBC9BD</color>
 
-
-    <color name="text_secondary">#929082</color>
-
     <color name="auth_background_color">#0066C3</color>
+
+    <color name="text_primary">#2C2B27</color>
+    <color name="text_secondary">#929082</color>
+    <color name="text_tertiary">#CBC9BD</color>
+    <color name="text_white">#FFFFFF</color>
+
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_secondary">#FFFFFF</color>
+    <color name="background_highlighted">#1450491C</color>
+
+    <color name="shape_primary">#DFDDD0</color>
+    <color name="shape_secondary">#EAE9E0</color>
+    <color name="shape_tertiary">#F1F0ED</color>
+    <color name="shape_transparent">#1450491C</color>
+
+    <color name="glyph_active">#ABA99B</color>
+    <color name="glyph_selected">#2C2B27</color>
+    <color name="glyph_inactive">#DFDDD0</color>
+    <color name="glyph_accent">#F09C0E</color>
+    <color name="glyph_white">#FFFFFF</color>
+
+    <color name="dashboard_card_background">#FFFFFF</color>
+    <color name="dashboard_background">#99F5F5F5</color>
+
+    <color name="palette_dark_default">#FFFFFF</color>
+    <color name="palette_dark_yellow">#AFA100</color>
+    <color name="palette_dark_orange">#C38400</color>
+    <color name="palette_dark_red">#E9410B</color>
+    <color name="palette_dark_pink">#D20D8F</color>
+    <color name="palette_dark_purple">#9F43C1</color>
+    <color name="palette_dark_blue">#3E58EB</color>
+    <color name="palette_dark_ice">#188DCF</color>
+    <color name="palette_dark_teal">#0BA599</color>
+    <color name="palette_dark_green">#4DAE00</color>
+    <color name="palette_dark_grey">#929082</color>
+
+    <color name="palette_light_default">#FFFFFF</color>
+    <color name="palette_light_yellow">#F4EB91</color>
+    <color name="palette_light_orange">#FCDC9C</color>
+    <color name="palette_light_red">#FCD1C3</color>
+    <color name="palette_light_pink">#F8C2E5</color>
+    <color name="palette_light_purple">#E8D0F1</color>
+    <color name="palette_light_blue">#CBD2FA</color>
+    <color name="palette_light_ice">#B2DFF9</color>
+    <color name="palette_light_teal">#A9EBE6</color>
+    <color name="palette_light_green">#C5EFA3</color>
+    <color name="palette_light_grey">#DEDCCC</color>
+
+    <color name="palette_very_light_default">#FFFFFF</color>
+    <color name="palette_very_light_yellow">#FCF8D6</color>
+    <color name="palette_very_light_orange">#FFF2D7</color>
+    <color name="palette_very_light_red">#FEE7E0</color>
+    <color name="palette_very_light_pink">#FBDFF2</color>
+    <color name="palette_very_light_purple">#F3E7F8</color>
+    <color name="palette_very_light_blue">#E4E8FC</color>
+    <color name="palette_very_light_ice">#DDF1FC</color>
+    <color name="palette_very_light_teal">#D9F6F4</color>
+    <color name="palette_very_light_green">#E5F8D6</color>
+    <color name="palette_very_light_grey">#F1F0ED</color>
+
+    <color name="anytype_background_default">#FFFFFF</color>
+    <color name="anytype_background_yellow">#FCF8D6</color>
+    <color name="anytype_background_orange">#FFF2D7</color>
+    <color name="anytype_background_red">#FEE7E0</color>
+    <color name="anytype_background_pink">#FBDFF2</color>
+    <color name="anytype_background_purple">#F3E7F8</color>
+    <color name="anytype_background_blue">#E4E8FC</color>
+    <color name="anytype_background_ice">#DDF1FC</color>
+    <color name="anytype_background_teal">#D9F6F4</color>
+    <color name="anytype_background_green">#E5F8D6</color>
+    <color name="anytype_background_grey">#F1F0ED</color>
+
+    <color name="dashboard_tab_color">#CC0066C3</color>
 
 </resources>

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
 class StatusWidget @JvmOverloads constructor(
@@ -14,11 +14,12 @@ class StatusWidget @JvmOverloads constructor(
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
     fun setColor(color: String?) {
+        val defaultTextColor = resources.getColor(R.color.text_primary, null)
         val themeColor = ThemeColor.values().find { it.title == color }
-        if (themeColor != null) {
-            setTextColor(themeColor.text)
+        if (themeColor != null && themeColor != ThemeColor.DEFAULT) {
+            setTextColor(resources.dark(themeColor, defaultTextColor))
         } else {
-            setTextColor(context.color(R.color.default_filter_tag_text_color))
+            setTextColor(defaultTextColor)
         }
     }
 }

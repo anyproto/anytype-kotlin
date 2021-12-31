@@ -21,7 +21,7 @@
             android:layout_marginTop="18sp"
             android:textSize="17sp"
             android:fontFamily="@font/inter_bold"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:text="@string/new_relation"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
@@ -36,7 +36,6 @@
     </LinearLayout>
 
     <FrameLayout
-        android:background="@color/white"
         android:layout_gravity="bottom"
         android:id="@+id/btnActionContainer"
         android:paddingStart="20dp"

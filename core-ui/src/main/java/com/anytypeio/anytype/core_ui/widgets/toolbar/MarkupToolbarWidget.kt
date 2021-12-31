@@ -5,6 +5,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -73,25 +76,37 @@ class MarkupToolbarWidget : LinearLayout {
 
         if (props?.markupTextColor != null) {
             val code = ThemeColor.values().first { it.title == props.markupTextColor }
-            textColorCircle.tint(code.text)
+            val default = resources.getColor(R.color.text_primary, null)
+            val value = resources.dark(code, default)
+            textColorCircle.tint(value)
         } else {
             val code = ThemeColor.values().find { it.title == props?.blockTextColor }
-            if (code != null)
-                textColorCircle.tint(code.text)
-            else
+            if (code != null) {
+                val default = resources.getColor(R.color.text_primary, null)
+                val value = resources.dark(code, default)
+                textColorCircle.tint(value)
+            }
+            else {
                 textColorCircle.backgroundTintList = null
+            }
         }
 
         if (props?.markupHighlightColor != null) {
             val code = ThemeColor.values().first { it.title == props.markupHighlightColor }
-            if (code == ThemeColor.DEFAULT)
+            if (code == ThemeColor.DEFAULT) {
                 backgroundColorCircle.backgroundTintList = null
-            else
-                backgroundColorCircle.tint(code.background)
+            } else {
+                val default = resources.getColor(R.color.background_primary, null)
+                val value = resources.light(code, default)
+                backgroundColorCircle.tint(value)
+            }
         } else {
             val code = ThemeColor.values().find { it.title == props?.blockBackroundColor }
-            if (code != null)
-                backgroundColorCircle.tint(code.background)
+            if (code != null) {
+                val default = resources.getColor(R.color.background_primary, null)
+                val value = resources.lighter(code, default)
+                backgroundColorCircle.tint(value)
+            }
             else
                 backgroundColorCircle.backgroundTintList = null
         }

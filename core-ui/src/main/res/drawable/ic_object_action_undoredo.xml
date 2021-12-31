@@ -5,18 +5,18 @@
     android:viewportHeight="24">
   <path
       android:pathData="M5.7804,4.4697C6.0733,4.7626 6.0733,5.2374 5.7804,5.5303L2.3108,9L5.7804,12.4697C6.0733,12.7626 6.0733,13.2374 5.7804,13.5303C5.4875,13.8232 5.0127,13.8232 4.7198,13.5303L0.1895,9L4.7198,4.4697C5.0127,4.1768 5.4875,4.1768 5.7804,4.4697Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M7,9.75H2V8.25H7C11.412,8.25 14.75,11.5836 14.75,15.9688V20H13.25V15.9688C13.25,12.4164 10.588,9.75 7,9.75Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M26.2196,4.4697C25.9267,4.7626 25.9267,5.2374 26.2196,5.5303L29.6892,9L26.2196,12.4697C25.9267,12.7626 25.9267,13.2374 26.2196,13.5303C26.5125,13.8232 26.9873,13.8232 27.2802,13.5303L31.8105,9L27.2802,4.4697C26.9873,4.1768 26.5125,4.1768 26.2196,4.4697Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M25,9.75H30V8.25H25C20.588,8.25 17.25,11.5836 17.25,15.9688V20H18.75V15.9688C18.75,12.4164 21.412,9.75 25,9.75Z"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/glyph_active"
       android:fillType="evenOdd"/>
 </vector>

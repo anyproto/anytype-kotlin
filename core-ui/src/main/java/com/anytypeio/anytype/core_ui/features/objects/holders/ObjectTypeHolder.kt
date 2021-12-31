@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -61,8 +60,4 @@ class ObjectTypeSearchHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         parent,
         false
     )
-) {
-    fun bind() {
-        itemView.icon.setImageDrawable(itemView.context.drawable(R.drawable.ic_search))
-    }
-}
+)

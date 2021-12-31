@@ -3,5 +3,5 @@
     <size
         android:width="0.5dp"
         android:height="0.5dp" />
-    <solid android:color="@color/data_view_divider_color" />
+    <solid android:color="@color/shape_primary" />
 </shape>

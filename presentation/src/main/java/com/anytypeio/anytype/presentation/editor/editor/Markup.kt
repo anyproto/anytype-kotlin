@@ -37,8 +37,7 @@ interface Markup {
             val color: String
         ) : Mark() {
 
-            fun color(): Int? =
-                ThemeColor.values().find { it.title == color }?.text
+            fun color(): ThemeColor? = ThemeColor.values().find { it.title == color }
         }
 
         data class BackgroundColor(
@@ -47,8 +46,8 @@ interface Markup {
             val background: String
         ) : Mark() {
 
-            fun background(): Int? =
-                ThemeColor.values().find { it.title == background }?.background
+            fun background(): ThemeColor? =
+                ThemeColor.values().find { it.title == background }
         }
 
         data class Link(

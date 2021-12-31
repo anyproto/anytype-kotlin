@@ -261,4 +261,5 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="clear_cache">Clear cache</string>
     <string name="download_from_node">All files will be deleted from your current device. They can be downloaded again from a backup node or another device.</string>
 
+    <string name="new_profile">new profile</string>
 </resources>

@@ -7,20 +7,20 @@
       android:pathData="M3.375,5.625h17.25v0.75h-17.25z"
       android:strokeWidth="0.75"
       android:fillColor="#00000000"
-      android:strokeColor="#ACA996"/>
+      android:strokeColor="@color/glyph_inactive"/>
   <path
       android:pathData="M3.375,17.625h11.25v0.75h-11.25z"
       android:strokeWidth="0.75"
       android:fillColor="#00000000"
-      android:strokeColor="#ACA996"/>
+      android:strokeColor="@color/glyph_inactive"/>
   <path
       android:pathData="M3.375,9.625h11.25v0.75h-11.25z"
       android:strokeWidth="0.75"
       android:fillColor="#00000000"
-      android:strokeColor="#ACA996"/>
+      android:strokeColor="@color/glyph_inactive"/>
   <path
       android:pathData="M3.375,13.625h17.25v0.75h-17.25z"
       android:strokeWidth="0.75"
       android:fillColor="#00000000"
-      android:strokeColor="#ACA996"/>
+      android:strokeColor="@color/glyph_inactive"/>
 </vector>

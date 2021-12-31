@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_page_nav_filter">
+    android:background="@drawable/rect_search_input">
 
     <ImageView
         android:id="@+id/searchIcon"
@@ -31,9 +31,9 @@
         android:inputType="textNoSuggestions"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColorHint="#ACA996"
-        android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textColorHint="@color/text_tertiary"
+        android:textColor="@color/text_primary"
+        android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="@+id/searchIcon"
         app:layout_constraintEnd_toStartOf="@+id/clearSearchText"
         app:layout_constraintStart_toEndOf="@+id/searchIcon"

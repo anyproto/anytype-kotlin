@@ -49,7 +49,7 @@
             android:layout_marginStart="20dp"
             android:fontFamily="@font/inter_regular"
             android:text="@string/default_object_type_title"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="17sp" />
 
         <TextView
@@ -66,7 +66,7 @@
             android:maxLines="1"
             android:singleLine="true"
             android:text="TextView"
-            android:textColor="#929082"
+            android:textColor="@color/text_secondary"
             android:textSize="17sp"
             tools:text="Note" />
 

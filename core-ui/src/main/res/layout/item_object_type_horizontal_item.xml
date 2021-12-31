@@ -11,7 +11,7 @@
         android:layout_width="@dimen/dp_48"
         android:layout_height="@dimen/dp_48"
         app:emojiSize="28dp"
-        app:hasEmojiRounded8Background="true"
+        app:hasEmojiRounded12Background="true"
         app:hasInitialRounded8Background="true"
         app:initialTextSize="22sp"
         android:layout_gravity="center_horizontal"

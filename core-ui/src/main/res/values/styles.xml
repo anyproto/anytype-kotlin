@@ -10,7 +10,7 @@
 
     <style name="DefaultEditorTextStyle">
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
     </style>
 
@@ -31,7 +31,7 @@
         <item name="android:fontFamily">@font/graphik_semibold</item>
         <item name="android:background">@null</item>
         <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">28sp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:lineSpacingExtra">4sp</item>
@@ -64,7 +64,7 @@
         <item name="text_size">17sp</item>
         <item name="android:lineSpacingExtra">3sp</item>
         <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">3dp</item>
         <item name="android:layout_width">match_parent</item>
@@ -76,7 +76,7 @@
         <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/anytype_text_default</item>
         <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
         <item name="android:textSize">28sp</item>
     </style>
@@ -95,7 +95,7 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:paddingTop">3dp</item>
         <item name="android:paddingBottom">3dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
@@ -111,7 +111,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:paddingTop">3dp</item>
         <item name="android:paddingBottom">3dp</item>
-        <item name="android:textColor">#ACA996</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">17sp</item>
     </style>
 
@@ -152,7 +152,7 @@
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:background">@null</item>
         <item name="android:lineSpacingExtra">7sp</item>
-        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
     </style>
 
@@ -161,48 +161,48 @@
         <item name="android:lineSpacingExtra">7sp</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:drawableEnd">@drawable/ic_turn_into_arrow</item>
-        <item name="android:textColor">#ACA996</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">15sp</item>
     </style>
 
     <style name="BlockDividerLineStyle">
         <item name="android:layout_marginTop">7dp</item>
         <item name="android:layout_marginBottom">6dp</item>
-        <item name="android:background">#DFDDD0</item>
+        <item name="android:background">@color/shape_primary</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0.5dp</item>
     </style>
 
     <style name="BlockBookmarkTitleStyle">
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="BlockBookmarkDescriptionStyle">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">13sp</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">2</item>
-        <item name="android:textColor">#6C6A5F</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
     <style name="BlockBookmarkUrlStyle">
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">13sp</item>
     </style>
 
     <style name="BlockFileFilenameContentStyle">
-        <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
     </style>
 
     <style name="BlockFileFileSizeContentStyle">
         <item name="android:textSize">13sp</item>
-        <item name="android:textColor">#ACA996</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">8dp</item>
@@ -213,9 +213,9 @@
 
     <style name="BlockVideoStyle">
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:inputType">textUri</item>
-        <item name="android:textColorHint">#ACA996</item>
+        <item name="android:textColorHint">@color/text_secondary</item>
         <item name="android:background">@null</item>
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
@@ -228,7 +228,7 @@
         <item name="android:layout_marginEnd">28dp</item>
         <item name="android:paddingTop">3dp</item>
         <item name="android:paddingBottom">3dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -236,7 +236,7 @@
     <style name="BlockHighlightContentStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:background">@null</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:lineSpacingExtra">3sp</item>
         <item name="android:layout_marginStart">15dp</item>
@@ -245,12 +245,12 @@
     </style>
 
     <style name="ModalRowTestStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="ModalTitleStyle">
-        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -266,7 +266,7 @@
 
     <style name="AddBlockOrTurnIntoItemTitleStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
     </style>
 
@@ -280,7 +280,7 @@
         <item name="android:fontFamily">@font/graphik_medium</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:textColor">#ACA996</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
     <style name="StyleToolbarTabStyle">
@@ -298,7 +298,7 @@
     <style name="BlockStyleGroupDividerStyle">
         <item name="android:layout_width">1dp</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:background">#DFDDD0</item>
+        <item name="android:background">@color/shape_primary</item>
     </style>
 
     <style name="BlockStyleDividerStyle">
@@ -333,7 +333,7 @@
     <style name="BottomMultiSelectToolbarOptionStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -370,11 +370,11 @@
     </style>
 
     <style name="GreyProgressBar" parent="ThemeOverlay.AppCompat.Light">
-        <item name="colorAccent">#ACA996</item>
+        <item name="colorAccent">@color/text_secondary</item>
     </style>
 
     <style name="GridCellDateTextStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">13sp</item>
@@ -382,7 +382,7 @@
     </style>
 
     <style name="RelationObjectTextStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">15sp</item>
@@ -390,25 +390,25 @@
     </style>
 
     <style name="ViewerModalItemStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="ViewerModalTitleStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_bold</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
     </style>
 
     <style name="ViewerBaseListItemStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="ViewerModalChipStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
         <item name="textStartPadding">8dp</item>
         <item name="textEndPadding">8dp</item>
@@ -429,7 +429,6 @@
     </style>
 
     <style name="TextAppearance.App.Body2" parent="TextAppearance.MaterialComponents.Body2">
-        <item name="fontFamily">@font/graphik_medium</item>
         <item name="android:fontFamily">@font/graphik_medium</item>
         <item name="android:gravity">center</item>
     </style>
@@ -459,47 +458,47 @@
     </style>
 
     <style name="DataViewCustomizePanelTextStyle">
-        <item name="android:textColor">#929082</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">11sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="DefaultCellInteractionTextButtonStyle">
         <item name="android:gravity">center</item>
-        <item name="android:textColor">#ACA996</item>
+        <item name="android:textColor">@color/glyph_active</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="ViewerModalStateButtonsStyle">
-        <item name="android:textColor">#ACA996</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="DefaultOrangeActionButtonStyle">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
     </style>
 
     <style name="DefaultOrangeTextButtonStyle">
         <item name="android:textColor">#F09C0E</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="DefaultTextButtonStyle">
-        <item name="android:textColor">@color/grey_50</item>
+        <item name="android:textColor">@color/glyph_active</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="ViewerFilterTitleStyle">
-        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="layout_goneMarginEnd">20dp</item>
@@ -508,13 +507,13 @@
     <style name="ViewerFilterConditionStyle">
         <item name="android:textColor">#6C6A5F</item>
         <item name="android:textSize">15sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="ViewerFilterTextValueStyle">
         <item name="android:textColor">#6C6A5F</item>
         <item name="android:textSize">15sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
@@ -523,7 +522,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/inter_medium</item>
     </style>
@@ -564,7 +563,7 @@
         <item name="android:background">@drawable/rect_relation_tag</item>
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
-        <item name="singleLine">true</item>
+        <item name="android:singleLine">true</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center</item>
@@ -575,7 +574,7 @@
     <style name="DefaultDataViewStatusTextViewStyle">
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
-        <item name="singleLine">true</item>
+        <item name="android:singleLine">true</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center</item>
@@ -600,9 +599,9 @@
     </style>
 
     <style name="DefaultDataViewDateCellTextViewStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <style name="DVFilterRemoveIcon">
@@ -620,11 +619,12 @@
     </style>
 
     <style name="RelationViewTitleStyle">
-        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">15sp</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:paddingEnd">8dp</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
     <style name="SelectedRelationCircleBadgeStyle">
@@ -648,7 +648,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:background">@null</item>
         <item name="android:textCursorDrawable">@drawable/cursor</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">13sp</item>
     </style>
@@ -656,7 +656,7 @@
     <style name="PasteUrlEditTextStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textColorHint">#CCCABB</item>
         <item name="android:background">@null</item>
         <item name="android:singleLine">true</item>
@@ -667,14 +667,14 @@
     <style name="SlashWidgetStyleItemTitle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:layout_gravity">center_vertical|start</item>
     </style>
 
     <style name="SlashWidgetStyleItemSubTitle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:textColor">#929082</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:layout_gravity">center_vertical|start</item>
     </style>
 
@@ -684,7 +684,7 @@
         <item name="android:paddingStart">10dp</item>
         <item name="android:paddingEnd">10dp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="DefaultRelationTitleStyle">
@@ -693,7 +693,7 @@
         <item name="maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
@@ -703,7 +703,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">#929082</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">13sp</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
@@ -714,26 +714,27 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textColorHint">#929082</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_secondary</item>
         <item name="android:textSize">15sp</item>
     </style>
 
     <style name="ModifyViewerTextStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
     <!-- Object items in lists -->
     <style name="ObjectListItemTitle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="ObjectListItemSubtitle">
-        <item name="android:textColor">#929082</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
@@ -744,11 +745,11 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/RelationPlaceholderTextColor</item>
+        <item name="android:textColor">@color/text_tertiary</item>
     </style>
 
     <style name="MoveToLinkToTitleStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
     </style>
@@ -756,7 +757,7 @@
     <style name="SyncStatusTextStyle">
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">#929082</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
     <style name="ObjectSetHeaderTitleStyle" parent="BlockTitleContentStyle">
@@ -766,14 +767,15 @@
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:textSize">32sp</item>
     </style>
 
     <style name="ObjectSetToolbarTitleStyle">
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
@@ -786,12 +788,12 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="DefaultSolidButtonStyle">
         <item name="android:clickable">true</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/glyph_white</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textSize">17sp</item>
         <item name="android:gravity">center</item>
@@ -812,7 +814,7 @@
     <style name="DefaultStrokeButtonStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:clickable">true</item>
-        <item name="android:textColor">#2C2B27</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:gravity">center</item>
         <item name="android:stateListAnimator">@animator/scale_shrink</item>
@@ -827,10 +829,13 @@
 
     <style name="ObjectTypeNameSmallStyle" parent="ObjectTypeNameStyle">
         <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
+        <item name="android:hint">@string/untitled</item>
     </style>
 
     <style name="ObjectLayoutTitleStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:textSize">15sp</item>
         <item name="android:singleLine">true</item>
@@ -848,14 +853,14 @@
     </style>
 
     <style name="CoverModalTitleStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textSize">17sp</item>
     </style>
 
     <!-- List View -->
     <style name="ListViewItemPrimaryStyle">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:textSize">17sp</item>
     </style>
@@ -873,7 +878,7 @@
     <style name="ViewerSettingOptionTextStyle">
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
     
     <style name="ObjectIcon15Style">

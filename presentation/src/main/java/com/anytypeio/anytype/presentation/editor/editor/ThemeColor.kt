@@ -67,9 +67,4 @@ enum class ThemeColor(
         text = Color.parseColor("#57C600"),
         background = Color.parseColor("#E3F7D0")
     );
-
-    companion object {
-        val text = values().associate { color -> color.text to color.title }
-        val background = values().associate { color -> color.background to color.title }
-    }
 }

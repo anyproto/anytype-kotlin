@@ -4,10 +4,10 @@ import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.core_ui.extensions.tint
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -86,13 +86,23 @@ class Bulleted(
 
     override fun setTextColor(color: String) {
         super.setTextColor(color)
-        val code = ThemeColor.values().find { value -> value.title == color }
-        if (code != null) bullet.setColorFilter(code.text)
+        val value = ThemeColor.values().find { value -> value.title == color }
+        if (value != null && value != ThemeColor.DEFAULT) {
+            DrawableCompat.setTint(
+                bullet.drawable,
+                content.context.resources.dark(value, getDefaultTextColor())
+            )
+        } else {
+            DrawableCompat.setTint(
+                bullet.drawable,
+                getDefaultTextColor()
+            )
+        }
     }
 
     override fun setTextColor(color: Int) {
         super.setTextColor(color)
-        bullet.tint(content.context.color(R.color.black))
+        DrawableCompat.setTint(bullet.drawable, color)
     }
 
     override fun indentize(item: BlockView.Indentable) {

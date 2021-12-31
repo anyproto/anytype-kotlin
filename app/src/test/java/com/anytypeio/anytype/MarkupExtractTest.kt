@@ -1,8 +1,10 @@
 package com.anytypeio.anytype
 
+import android.content.Context
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
+import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.toSpannable
@@ -26,6 +28,8 @@ import kotlin.test.assertTrue
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
 class MarkupExtractTest {
+
+    private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Mock
     lateinit var markup : Markup
@@ -51,7 +55,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = textColor)
+        val editable = markup.toSpannable(textColor = textColor, context = context)
 
         // TESTING
 
@@ -82,7 +86,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11)
+        val editable = markup.toSpannable(textColor = 11, context = context)
 
         // TESTING
 
@@ -113,7 +117,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11)
+        val editable = markup.toSpannable(textColor = 11, context = context)
 
         // TESTING
 
@@ -144,7 +148,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11)
+        val editable = markup.toSpannable(textColor = 11, context = context)
 
         // TESTING
 
@@ -171,12 +175,12 @@ class MarkupExtractTest {
         val mark = Markup.Mark.TextColor(
             from = 0,
             to = 5,
-            color = ThemeColor.BLUE.title
+            color = ThemeColor.DEFAULT.title
         )
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11)
+        val editable = markup.toSpannable(textColor = 11, context = context)
 
         // TESTING
 
@@ -186,7 +190,7 @@ class MarkupExtractTest {
         assertEquals(
             expected = Mark(
                 range = mark.from..mark.to,
-                param = ThemeColor.BLUE.title,
+                param = ThemeColor.DEFAULT.title,
                 type = Mark.Type.TEXT_COLOR
             ),
             actual = marks.first()
@@ -208,7 +212,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11)
+        val editable = markup.toSpannable(textColor = 11, context = context)
 
         // TESTING
 
@@ -240,7 +244,7 @@ class MarkupExtractTest {
 
         stubMarkup(source, mark)
 
-        val editable = markup.toSpannable(textColor = 11)
+        val editable = markup.toSpannable(textColor = 11, context = context)
 
         // TESTING
 

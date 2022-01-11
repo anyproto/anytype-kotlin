@@ -32,7 +32,7 @@ class MarkupExtractTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Mock
-    lateinit var markup : Markup
+    lateinit var markup: Markup
 
     @Before
     fun setup() {

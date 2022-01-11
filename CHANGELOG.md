@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.5.1 (WIP)
+
+### Design & UX 🔳
+
+* Sets | Fix tag and status colors for night mode for lists (#2030)
+
 ## Version 0.5.0
 
 ### New features & enhancements 🚀

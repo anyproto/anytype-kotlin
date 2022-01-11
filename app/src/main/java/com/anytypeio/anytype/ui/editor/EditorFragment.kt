@@ -2300,11 +2300,15 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                             )
                         }
                         in DragAndDropConfig.bottomRange -> {
-                            vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
-                                position = Position.BOTTOM
-                            )
+                            try {
+                                vm.onDragAndDrop(
+                                    dragged = blockAdapter.views[dndTargetPos].id,
+                                    target = blockAdapter.views[vh.bindingAdapterPosition].id,
+                                    position = Position.BOTTOM
+                                )
+                            } catch (e: Exception) {
+                                toast("Failed to drop. Please, try again later.")
+                            }
                         }
                         else -> toast("drop skipped, scenario 1")
                     }

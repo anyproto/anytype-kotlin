@@ -54,8 +54,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.Document)
-                            onDocumentClicked(item.target, item.isLoading)
+                            if (item is DashboardView.Document) {
+                                onDocumentClicked(item.target, item.isLoading)
+                            }
                         }
                     }
                 }
@@ -66,8 +67,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.Document)
-                            onDocumentClicked(item.target, item.isLoading)
+                            if (item is DashboardView.Document) {
+                                onDocumentClicked(item.target, item.isLoading)
+                            }
                         }
                     }
                 }
@@ -78,8 +80,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.Document)
-                            onDocumentClicked(item.target, item.isLoading)
+                            if (item is DashboardView.Document) {
+                                onDocumentClicked(item.target, item.isLoading)
+                            }
                         }
                     }
                 }
@@ -92,8 +95,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.Archive)
-                            onArchiveClicked(item.target)
+                            if (item is DashboardView.Archive) {
+                                onArchiveClicked(item.target)
+                            }
                         }
                     }
                 }
@@ -106,8 +110,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.ObjectSet)
-                            onObjectSetClicked(item.target)
+                            if (item is DashboardView.ObjectSet) {
+                                onObjectSetClicked(item.target)
+                            }
                         }
                     }
                     itemView.typeTitle.setText(R.string.set)
@@ -121,8 +126,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.ObjectSet)
-                            onObjectSetClicked(item.target)
+                            if (item is DashboardView.ObjectSet) {
+                                onObjectSetClicked(item.target)
+                            }
                         }
                     }
                     itemView.tvSetTypeName.setText(R.string.set)
@@ -134,8 +140,9 @@ class DashboardAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = data[pos]
-                            check(item is DashboardView.Document)
-                            onDocumentClicked(item.target, item.isLoading)
+                            if (item is DashboardView.Document) {
+                                onDocumentClicked(item.target, item.isLoading)
+                            }
                         }
                     }
                 }

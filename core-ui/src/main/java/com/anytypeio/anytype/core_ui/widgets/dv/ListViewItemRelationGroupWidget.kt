@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.widgets.ListViewRelationObjectValueView
 import com.anytypeio.anytype.core_ui.widgets.ListViewRelationTagValueView
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -128,6 +129,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                     }
                 }
                 is DefaultObjectRelationValueView.Status -> {
+                    val defaultTextColor = resources.getColor(R.color.text_primary, null)
                     if (relation.status.isNotEmpty()) {
                         val status = relation.status[0]
                         val color = ThemeColor.values().find { v -> v.title == status.color }
@@ -139,7 +141,9 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                             ellipsize = TextUtils.TruncateAt.END
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             if (color != null) {
-                                setTextColor(color.text)
+                                setTextColor(resources.dark(color, defaultTextColor))
+                            } else {
+                                setTextColor(defaultTextColor)
                             }
                         }
                         addView(view)

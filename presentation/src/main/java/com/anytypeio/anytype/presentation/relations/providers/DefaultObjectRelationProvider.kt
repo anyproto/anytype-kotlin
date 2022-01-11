@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.editor.editor.Store
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class DefaultObjectRelationProvider(
     private val relations: Store.Relations
@@ -14,8 +14,8 @@ class DefaultObjectRelationProvider(
     }
 
     override fun subscribe(relation: Id): Flow<Relation> {
-        return relations.stream().map { relations ->
-            relations.first { it.key == relation }
+        return relations.stream().mapNotNull { relations ->
+            relations.find { it.key == relation }
         }
     }
 }

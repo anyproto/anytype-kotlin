@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -29,9 +31,14 @@ class ListViewRelationTagValueView @JvmOverloads constructor(
             tvCount.gone()
         }
         val color = ThemeColor.values().find { it.title == tagColor }
+        val defaultTextColor = resources.getColor(R.color.text_primary, null)
+        val defaultBackground = resources.getColor(R.color.shape_primary, null)
         if (color != null) {
-            tvName.setTextColor(color.text)
-            tvName.background.setDrawableColor(color.background)
+            tvName.setTextColor(resources.dark(color, defaultTextColor))
+            tvName.background.setDrawableColor(resources.light(color, defaultBackground))
+        } else {
+            tvName.setTextColor(defaultTextColor)
+            tvName.background.setDrawableColor(defaultBackground)
         }
     }
 }

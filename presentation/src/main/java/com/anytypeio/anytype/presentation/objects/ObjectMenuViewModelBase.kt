@@ -30,6 +30,7 @@ abstract class ObjectMenuViewModelBase(
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
+    val isObjectArchived = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val actions = MutableStateFlow(emptyList<ObjectAction>())
 
@@ -123,7 +124,7 @@ abstract class ObjectMenuViewModelBase(
                     } else {
                         _toasts.emit(RESTORE_OBJECT_SUCCESS_MSG)
                     }
-                    isDismissed.value = true
+                    isObjectArchived.value = true
                 }
             )
         }

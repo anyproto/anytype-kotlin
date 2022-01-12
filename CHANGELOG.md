@@ -8,6 +8,7 @@
 
 ### Fixes & tech 🚒
 
+* Objects and sets | Close objects and sets after moving to bin (#2038)
 * Editor | Failing to render objects containing at least one file block with embedded pdf (#2037)
 * Editor | When trying to set a link to an object or to a web page for a text selection, the dedicated screen should not block the editor when the bottom sheet is hidden by swiping down (#2036)
 

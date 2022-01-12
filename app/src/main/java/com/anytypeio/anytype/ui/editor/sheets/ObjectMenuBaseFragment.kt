@@ -209,6 +209,15 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
     lateinit var factory: ObjectMenuViewModel.Factory
     override val vm by viewModels<ObjectMenuViewModel> { factory }
 
+    override fun onStart() {
+        super.onStart()
+        with(lifecycleScope) {
+            subscribe(vm.isObjectArchived) { isArchived ->
+                if (isArchived) parentFragment?.findNavController()?.popBackStack()
+            }
+        }
+    }
+
     override fun injectDependencies() {
         componentManager().objectMenuComponent.get(ctx).inject(this)
     }

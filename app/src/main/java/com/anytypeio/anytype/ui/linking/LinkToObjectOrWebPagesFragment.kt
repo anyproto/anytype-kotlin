@@ -58,6 +58,15 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
             skipCollapsed = true
+            addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) dismiss()
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                }
+            )
         }
         with(filterInputField) {
             setHint(R.string.paste_link_or_search)

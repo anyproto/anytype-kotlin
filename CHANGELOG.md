@@ -6,6 +6,10 @@
 
 * Sets | Fix tag and status colors for night mode for lists (#2030)
 
+### Fixes & tech 🚒
+
+* Editor | When trying to set a link to an object or to a web page for a text selection, the dedicated screen should not block the editor when the bottom sheet is hidden by swiping down (#2036)
+
 ## Version 0.5.0
 
 ### New features & enhancements 🚀

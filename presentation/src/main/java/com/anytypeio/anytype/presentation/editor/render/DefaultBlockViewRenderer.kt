@@ -976,6 +976,17 @@ class DefaultBlockViewRenderer(
                 selection = selection
             )
         )
+        Content.File.Type.PDF -> content.toFileView(
+            id = block.id,
+            urlBuilder = urlBuilder,
+            indent = indent,
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
         Content.File.Type.NONE -> content.toFileView(
             id = block.id,
             urlBuilder = urlBuilder,

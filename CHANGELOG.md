@@ -8,6 +8,7 @@
 
 ### Fixes & tech 🚒
 
+* Editor | Failing to render objects containing at least one file block with embedded pdf (#2037)
 * Editor | When trying to set a link to an object or to a web page for a text selection, the dedicated screen should not block the editor when the bottom sheet is hidden by swiping down (#2036)
 
 ## Version 0.5.0

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 sealed class Command {
 
@@ -87,17 +86,27 @@ sealed class Command {
     }
 
     sealed class OpenObjectRelationScreen : Command() {
-        data class List(val ctx: String, val target: String?) : OpenObjectRelationScreen()
-        data class Add(val ctx: String, val target: String) : OpenObjectRelationScreen()
+        data class RelationList(val ctx: String, val target: String?) : OpenObjectRelationScreen()
+        data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
-            data class Default(val ctx: Id, val target: Id, val relation: Id) :
-                OpenObjectRelationScreen.Value()
+            data class Default(
+                val ctx: Id,
+                val target: Id,
+                val relation: Id,
+                val targetObjectTypes: List<Id>
+            ) : OpenObjectRelationScreen.Value()
 
-            data class Text(val ctx: Id, val target: Id, val relation: Id) :
-                OpenObjectRelationScreen.Value()
+            data class Text(
+                val ctx: Id,
+                val target: Id,
+                val relation: Id
+            ) : OpenObjectRelationScreen.Value()
 
-            data class Date(val ctx: Id, val target: Id, val relation: Id) :
-                OpenObjectRelationScreen.Value()
+            data class Date(
+                val ctx: Id,
+                val target: Id,
+                val relation: Id
+            ) : OpenObjectRelationScreen.Value()
         }
     }
 
@@ -123,7 +132,7 @@ sealed class Command {
         val target: Id
     ) : Command()
 
-    object ShowTextLinkMenu: Command()
+    object ShowTextLinkMenu : Command()
 
     data class SaveTextToSystemClipboard(val text: String) : Command()
 }

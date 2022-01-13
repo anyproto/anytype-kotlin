@@ -2,13 +2,17 @@
 
 ## Version 0.5.1 (WIP)
 
+### New features & enhancements 🚀
+
+* Relations | Apply target object types in filtering when searching for an object for a relation's value (#2040)
+* Objects and sets | Close objects and sets after moving to bin (#2038)
+
 ### Design & UX 🔳
 
 * Sets | Fix tag and status colors for night mode for lists (#2030)
 
 ### Fixes & tech 🚒
 
-* Objects and sets | Close objects and sets after moving to bin (#2038)
 * Editor | Failing to render objects containing at least one file block with embedded pdf (#2037)
 * Editor | When trying to set a link to an object or to a web page for a text selection, the dedicated screen should not block the editor when the bottom sheet is hidden by swiping down (#2036)
 

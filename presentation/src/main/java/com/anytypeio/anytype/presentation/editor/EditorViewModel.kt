@@ -1820,7 +1820,7 @@ class EditorViewModel(
 
     fun onDocRelationsClicked() {
         Timber.d("onDocRelationsClicked, ")
-        dispatch(Command.OpenObjectRelationScreen.List(ctx = context, target = null))
+        dispatch(Command.OpenObjectRelationScreen.RelationList(ctx = context, target = null))
     }
 
     fun onSearchToolbarEvent(event: SearchInDocEvent) {
@@ -3338,7 +3338,7 @@ class EditorViewModel(
             is ListenerType.Relation.Placeholder -> {
                 when (mode) {
                     EditorMode.Edit -> dispatch(
-                        Command.OpenObjectRelationScreen.Add(
+                        Command.OpenObjectRelationScreen.RelationAdd(
                             ctx = context,
                             target = clicked.target
                         )
@@ -3394,7 +3394,8 @@ class EditorViewModel(
                                     Command.OpenObjectRelationScreen.Value.Default(
                                         ctx = context,
                                         target = context,
-                                        relation = relationId
+                                        relation = relationId,
+                                        targetObjectTypes = relation.objectTypes
                                     )
                                 )
                             }
@@ -3463,7 +3464,8 @@ class EditorViewModel(
                                     Command.OpenObjectRelationScreen.Value.Default(
                                         ctx = context,
                                         target = context,
-                                        relation = relationId
+                                        relation = relationId,
+                                        targetObjectTypes = relation.objectTypes
                                     )
                                 )
                             }

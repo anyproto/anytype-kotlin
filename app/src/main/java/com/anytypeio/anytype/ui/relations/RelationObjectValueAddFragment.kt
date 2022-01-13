@@ -33,6 +33,7 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
     private val relationId get() = argString(RELATION_ID)
+    private val types get() = arg<List<String>>(TARGET_TYPES)
     private val flow get() = arg<Int>(FLOW_KEY)
 
     private lateinit var searchRelationInput: EditText
@@ -103,7 +104,7 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
         }
         super.onStart()
         setupAppearance()
-        vm.onStart(objectId = objectId, relationId = relationId)
+        vm.onStart(objectId = objectId, relationId = relationId, targetTypes = types)
     }
 
     private fun observeState(state: ObjectValueAddView) {
@@ -162,12 +163,14 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
             ctx: Id,
             objectId: Id,
             relationId: Id,
+            types: List<Id>,
             flow: Int = FLOW_DEFAULT
         ) = RelationObjectValueAddFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,
                 RELATION_ID to relationId,
+                TARGET_TYPES to types,
                 FLOW_KEY to flow
             )
         }
@@ -175,6 +178,7 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
         const val CONTEXT_ID = "arg.relation.add.object.context"
         const val RELATION_ID = "arg.relation.add.object.relation.id"
         const val OBJECT_ID = "arg.relation.add.object.object.id"
+        const val TARGET_TYPES = "arg.relation.add.object.target_types"
         const val FLOW_KEY = "arg.relation.add.object.flow"
         const val FLOW_DEFAULT = 0
         const val FLOW_DATAVIEW = 1

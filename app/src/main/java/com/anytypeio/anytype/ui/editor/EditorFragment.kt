@@ -953,7 +953,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     SelectProgrammingLanguageFragment.new(command.target)
                         .show(childFragmentManager, null)
                 }
-                is Command.OpenObjectRelationScreen.Add -> {
+                is Command.OpenObjectRelationScreen.RelationAdd -> {
                     hideKeyboard()
                     RelationListFragment
                         .new(
@@ -963,7 +963,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         )
                         .show(childFragmentManager, null)
                 }
-                is Command.OpenObjectRelationScreen.List -> {
+                is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
                     findNavController().navigate(
                         R.id.objectRelationListScreen,
@@ -979,7 +979,8 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     val fr = RelationValueFragment.new(
                         ctx = command.ctx,
                         target = command.target,
-                        relation = command.relation
+                        relation = command.relation,
+                        targetObjectTypes = command.targetObjectTypes
                     )
                     fr.show(childFragmentManager, null)
                 }

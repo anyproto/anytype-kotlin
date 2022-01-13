@@ -436,13 +436,23 @@ class ObjectSetViewModel(
                 )
             }
             is CellView.Tag, is CellView.Status, is CellView.Object, is CellView.File -> {
+                val targetObjectTypes = mutableListOf<String>()
+                if (cell is CellView.Object) {
+                    val relation = reducer.state.value.dataview.content<DV>().relations.find { relation ->
+                        relation.key == cell.key
+                    }
+                    if (relation != null) {
+                        targetObjectTypes.addAll(relation.objectTypes)
+                    }
+                }
                 dispatch(
                     ObjectSetCommand.Modal.EditRelationCell(
                         ctx = context,
                         target = cell.id,
                         dataview = block.id,
                         relation = cell.key,
-                        viewer = viewer
+                        viewer = viewer,
+                        targetObjectTypes = targetObjectTypes
                     )
                 )
             }

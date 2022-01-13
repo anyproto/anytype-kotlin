@@ -500,7 +500,8 @@ open class ObjectSetFragment :
                         RelationValueBaseFragment.TARGET_KEY to command.target,
                         RelationValueBaseFragment.DATAVIEW_KEY to command.dataview,
                         RelationValueBaseFragment.RELATION_KEY to command.relation,
-                        RelationValueBaseFragment.VIEWER_KEY to command.viewer
+                        RelationValueBaseFragment.VIEWER_KEY to command.viewer,
+                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes
                     )
                 )
             }

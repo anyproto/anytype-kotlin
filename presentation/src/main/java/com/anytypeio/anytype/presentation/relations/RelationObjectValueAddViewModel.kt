@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -33,24 +33,27 @@ class RelationObjectValueAddViewModel(
     val commands = MutableSharedFlow<ObjectValueAddCommand>(0)
     val viewsFiltered: StateFlow<ObjectValueAddView> = _viewsFiltered
 
-    fun onStart(relationId: Id, objectId: String) {
+    fun onStart(relationId: Id, objectId: String, targetTypes: List<Id>) {
         processingViewsSelectionsAndFilter()
         val relation = relations.get(relationId)
         val values = values.get(objectId)
         when (val ids = values[relation.key]) {
             is List<*> -> {
                 proceedWithSearchObjects(
-                    ids = ids.typeOf()
+                    ids = ids.typeOf(),
+                    targetTypes = targetTypes
                 )
             }
             is Id -> {
                 proceedWithSearchObjects(
-                    ids = listOf(ids)
+                    ids = listOf(ids),
+                    targetTypes = targetTypes
                 )
             }
             null -> {
                 proceedWithSearchObjects(
-                    ids = emptyList()
+                    ids = emptyList(),
+                    targetTypes = targetTypes
                 )
             }
         }
@@ -121,12 +124,38 @@ class RelationObjectValueAddViewModel(
         }
     }
 
-    private fun proceedWithSearchObjects(ids: List<String>) {
+    private fun proceedWithSearchObjects(
+        ids: List<String>,
+        targetTypes: List<Id>
+    ) {
         viewModelScope.launch {
+            val filters = mutableListOf<DVFilter>()
+            filters.addAll(ObjectSearchConstants.filterAddObjectToRelation)
+            if (targetTypes.isEmpty()) {
+                filters.add(
+                    DVFilter(
+                        relationKey = Relations.TYPE,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = listOf(
+                            ObjectType.OBJECT_TYPE_URL,
+                            ObjectType.RELATION_URL,
+                            ObjectType.TEMPLATE_URL
+                        )
+                    )
+                )
+            } else {
+                filters.add(
+                    DVFilter(
+                        relationKey = Relations.TYPE,
+                        condition = DVFilterCondition.IN,
+                        value = targetTypes
+                    )
+                )
+            }
             searchObjects(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToRelation,
-                    filters = ObjectSearchConstants.filterAddObjectToRelation,
+                    filters = filters,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
                     limit = SearchObjects.LIMIT

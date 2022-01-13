@@ -168,7 +168,8 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                     bundleOf(
                         RelationValueBaseFragment.CTX_KEY to command.ctx,
                         RelationValueBaseFragment.TARGET_KEY to command.target,
-                        RelationValueBaseFragment.RELATION_KEY to command.relation
+                        RelationValueBaseFragment.RELATION_KEY to command.relation,
+                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes
                     )
                 )
             }

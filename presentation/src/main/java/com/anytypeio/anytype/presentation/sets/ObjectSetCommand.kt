@@ -57,6 +57,7 @@ sealed class ObjectSetCommand {
             val dataview: Id,
             val target: Id,
             val relation: Id,
+            val targetObjectTypes: List<Id>,
             val viewer: Id
         ) : Modal()
 

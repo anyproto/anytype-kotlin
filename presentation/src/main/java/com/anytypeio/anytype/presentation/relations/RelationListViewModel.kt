@@ -206,7 +206,8 @@ class RelationListViewModel(
                         Command.EditRelationValue(
                             ctx = ctx,
                             relation = view.relationId,
-                            target = ctx
+                            target = ctx,
+                            targetObjectTypes = relation.objectTypes
                         )
                     )
                 }
@@ -304,7 +305,8 @@ class RelationListViewModel(
         data class EditRelationValue(
             val ctx: Id,
             val relation: Id,
-            val target: Id
+            val target: Id,
+            val targetObjectTypes: List<Id>
         ) : Command()
 
         data class SetRelationKey(

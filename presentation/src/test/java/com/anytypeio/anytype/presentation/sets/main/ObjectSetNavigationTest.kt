@@ -166,7 +166,8 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                         dataview = dv.id,
                         target = firstRecordId,
                         viewer = viewer.id,
-                        relation = linkedProjectRelation.key
+                        relation = linkedProjectRelation.key,
+                        targetObjectTypes = emptyList()
                     )
                 )
                 cancelAndConsumeRemainingEvents()

@@ -59,6 +59,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     protected val target get() = argString(TARGET_KEY)
     protected val dataview get() = argString(DATAVIEW_KEY)
     protected val viewer get() = argString(VIEWER_KEY)
+    protected val types get() = arg<List<String>>(TARGET_TYPES_KEY)
 
     abstract val vm: RelationValueBaseViewModel
 
@@ -364,6 +365,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         const val TARGET_KEY = "arg.edit-cell-tag.target"
         const val DATAVIEW_KEY = "arg.edit-cell-tag.dataview"
         const val VIEWER_KEY = "arg.edit-cell-tag.viewer"
+        const val TARGET_TYPES_KEY = "arg.relation-value.target-types"
     }
 }
 
@@ -458,6 +460,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
                     ctx = ctx,
                     relationId = relation,
                     objectId = target,
+                    types = types,
                     flow = fragmentFlow
                 )
                 fr.show(childFragmentManager, null)
@@ -623,7 +626,8 @@ class RelationValueFragment : RelationValueBaseFragment() {
                 val fr = RelationObjectValueAddFragment.new(
                     ctx = ctx,
                     relationId = relation,
-                    objectId = target
+                    objectId = target,
+                    types = types
                 )
                 fr.show(childFragmentManager, null)
             }
@@ -691,12 +695,14 @@ class RelationValueFragment : RelationValueBaseFragment() {
         fun new(
             ctx: Id,
             target: Id,
-            relation: Id
+            relation: Id,
+            targetObjectTypes: List<Id>
         ) = RelationValueFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
-                RELATION_KEY to relation
+                RELATION_KEY to relation,
+                TARGET_TYPES_KEY to targetObjectTypes
             )
         }
     }

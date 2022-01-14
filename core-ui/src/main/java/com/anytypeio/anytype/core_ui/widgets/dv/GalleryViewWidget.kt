@@ -30,10 +30,14 @@ class GalleryViewWidget @JvmOverloads constructor(
     private val galleryViewAdapter = GalleryViewAdapter(
         onGalleryItemClicked = { id ->
             onGalleryItemClicked(id)
+        },
+        onTaskCheckboxClicked = { id ->
+            onTaskCheckboxClicked(id)
         }
     )
 
     var onGalleryItemClicked: (Id) -> Unit = {}
+    var onTaskCheckboxClicked: (Id) -> Unit = {}
 
     private val lm = GridLayoutManager(context, SMALL_CARDS_COLUMN_COUNT)
     private val smallCardsItemDecoration = GalleryViewItemDecoration(
@@ -84,7 +88,8 @@ class GalleryViewWidget @JvmOverloads constructor(
     }
 
     class GalleryViewAdapter(
-        private val onGalleryItemClicked: (Id) -> Unit
+        private val onGalleryItemClicked: (Id) -> Unit,
+        private val onTaskCheckboxClicked: (Id) -> Unit
     ) : ListAdapter<Viewer.GalleryView.Item, GalleryViewHolder>(Differ) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
             when (viewType) {
@@ -99,6 +104,15 @@ class GalleryViewWidget @JvmOverloads constructor(
                                 }
                             }
                         }
+                        icon.setOnClickListener {
+                            val pos = bindingAdapterPosition
+                            if (pos != NO_POSITION) {
+                                val item = getItem(pos)
+                                if (item is Viewer.GalleryView.Item && item.icon is ObjectIcon.Task) {
+                                    onTaskCheckboxClicked(item.objectId)
+                                }
+                            }
+                        }
                     }
                 }
                 VIEW_TYPE_BIG_ICON -> {
@@ -109,6 +123,15 @@ class GalleryViewWidget @JvmOverloads constructor(
                                 val item = getItem(pos)
                                 if (item is Viewer.GalleryView.Item) {
                                     onGalleryItemClicked(item.objectId)
+                                }
+                            }
+                        }
+                        icon.setOnClickListener {
+                            val pos = bindingAdapterPosition
+                            if (pos != NO_POSITION) {
+                                val item = getItem(pos)
+                                if (item is Viewer.GalleryView.Item && item.icon is ObjectIcon.Task) {
+                                    onTaskCheckboxClicked(item.objectId)
                                 }
                             }
                         }
@@ -148,6 +171,15 @@ class GalleryViewWidget @JvmOverloads constructor(
                                 val item = getItem(pos)
                                 if (item is Viewer.GalleryView.Item) {
                                     onGalleryItemClicked(item.objectId)
+                                }
+                            }
+                        }
+                        icon.setOnClickListener {
+                            val pos = bindingAdapterPosition
+                            if (pos != NO_POSITION) {
+                                val item = getItem(pos)
+                                if (item is Viewer.GalleryView.Item && item.icon is ObjectIcon.Task) {
+                                    onTaskCheckboxClicked(item.objectId)
                                 }
                             }
                         }
@@ -264,7 +296,7 @@ class GalleryViewWidget @JvmOverloads constructor(
 
             private val container get() = itemView.contentContainer
             private val title get() = itemView.tvTitle
-            private val icon get() = itemView.smallIconContainer
+            val icon get() = itemView.smallIconContainer
 
             fun bind(item: Viewer.GalleryView.Item) {
                 title.text = item.name
@@ -283,7 +315,7 @@ class GalleryViewWidget @JvmOverloads constructor(
 
             private val container get() = itemView.contentContainer
             private val title get() = itemView.tvTitle
-            private val icon get() = itemView.objectIcon
+            val icon get() = itemView.objectIcon
 
             fun bind(item: Viewer.GalleryView.Item) {
                 title.text = item.name
@@ -343,7 +375,7 @@ class GalleryViewWidget @JvmOverloads constructor(
             private val container get() = itemView.contentContainer
             private val title get() = itemView.tvTitle
             private val cover get() = itemView.cover
-            private val icon get() = itemView.smallIconContainer
+            val icon get() = itemView.smallIconContainer
 
             fun bind(item: Viewer.GalleryView.Item) {
                 check(item is Viewer.GalleryView.Item.Cover)

@@ -100,7 +100,7 @@ sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         )
     ) {
 
-        private val icon get() = itemView.findViewById<ObjectIconWidget>(R.id.icon)
+        val icon get() = itemView.findViewById<ObjectIconWidget>(R.id.icon)
         private val tvPrimary get() = itemView.findViewById<TextView>(R.id.tvPrimary)
         private val tvSecondary get() = itemView.findViewById<TextView>(R.id.tvSecondary)
         private val relations get() = itemView.findViewById<ListViewItemRelationGroupWidget>(R.id.relationsContainer)

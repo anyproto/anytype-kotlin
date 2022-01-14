@@ -15,11 +15,11 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlinx.android.synthetic.main.item_viewer_grid_row.view.*
-import timber.log.Timber
 
 class ViewerGridAdapter(
     private val onCellClicked: (CellView) -> Unit,
-    private val onObjectHeaderClicked: (Id) -> Unit
+    private val onObjectHeaderClicked: (Id) -> Unit,
+    private val onTaskCheckboxClicked : (Id) -> Unit
 ) : ListAdapter<Viewer.GridView.Row, ViewerGridAdapter.RecordHolder>(GridDiffUtil) {
 
     var recordNamePositionX = 0f
@@ -43,12 +43,20 @@ class ViewerGridAdapter(
                     onObjectHeaderClicked(item.id)
                 }
             }
+            itemView.objectIcon.checkbox.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = getItem(pos)
+                    onTaskCheckboxClicked(item.id)
+                }
+            }
         }
     }
 
     override fun onBindViewHolder(holder: RecordHolder, position: Int) {
-        holder.bindObjectHeader(getItem(position))
-        holder.bindObjectCells(getItem(position))
+        val item = getItem(position)
+        holder.bindObjectHeader(item)
+        holder.bindObjectCells(item)
     }
 
     override fun onBindViewHolder(holder: RecordHolder, position: Int, payloads: MutableList<Any>) {

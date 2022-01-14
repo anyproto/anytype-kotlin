@@ -522,6 +522,39 @@ class ObjectSetViewModel(
         }
     }
 
+    fun onTaskCheckboxClicked(target: Id) {
+        val set = reducer.state.value
+        if (set.isInitialized) {
+            val viewer = session.currentViewerId ?: set.viewers.first().id
+            val records = reducer.state.value.viewerDb[viewer] ?: return
+            val record = records.records.find { rec -> rec[Relations.ID] == target }
+            if (record != null) {
+                val obj = ObjectWrapper.Basic(record)
+                viewModelScope.launch {
+                    updateDataViewRecord(
+                        UpdateDataViewRecord.Params(
+                            context = context,
+                            target = set.dataview.id,
+                            record = target,
+                            values = mapOf(
+                                Relations.DONE to !(obj.done ?: false)
+                            )
+                        )
+                    ).process(
+                        failure = {
+                            Timber.e(it, "Error while updating checkbox")
+                        },
+                        success = {
+                            Timber.d("Checkbox successfully updated for record: $target")
+                        }
+                    )
+                }
+            } else {
+                toast("Record not found. Please, try again later.")
+            }
+        }
+    }
+
     fun onRelationTextValueChanged(
         ctx: String,
         value: Any?,

@@ -16,10 +16,11 @@ class ListViewWidget @JvmOverloads constructor(
 ) : RecyclerView(context, attrs) {
 
     var onListItemClicked: (Id) -> Unit = {}
+    var onTaskCheckboxClicked: (Id) -> Unit = {}
 
     private val listViewAdapter = ListViewAdapter(
         onListItemClicked = { onListItemClicked(it) },
-        onTaskClicked =  {}
+        onTaskCheckboxClicked =  { onTaskCheckboxClicked(it) }
     )
 
     init {

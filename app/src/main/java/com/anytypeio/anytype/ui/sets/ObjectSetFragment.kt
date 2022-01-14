@@ -132,7 +132,8 @@ open class ObjectSetFragment :
     private val viewerGridAdapter by lazy {
         ViewerGridAdapter(
             onCellClicked = vm::onGridCellClicked,
-            onObjectHeaderClicked = vm::onObjectHeaderClicked
+            onObjectHeaderClicked = vm::onObjectHeaderClicked,
+            onTaskCheckboxClicked = vm::onTaskCheckboxClicked
         )
     }
 
@@ -199,8 +200,16 @@ open class ObjectSetFragment :
             vm.onObjectHeaderClicked(id)
         }
 
+        galleryView.onTaskCheckboxClicked = { id ->
+            vm.onTaskCheckboxClicked(id)
+        }
+
         listView.onListItemClicked = { id ->
             vm.onObjectHeaderClicked(id)
+        }
+
+        listView.onTaskCheckboxClicked = { id ->
+            vm.onTaskCheckboxClicked(id)
         }
     }
 

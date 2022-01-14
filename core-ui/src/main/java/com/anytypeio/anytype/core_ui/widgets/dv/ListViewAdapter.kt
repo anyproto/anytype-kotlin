@@ -5,11 +5,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 class ListViewAdapter(
     private val onListItemClicked: (Id) -> Unit,
-    private val onTaskClicked: (Id) -> Unit
+    private val onTaskCheckboxClicked: (Id) -> Unit
 ) : ListAdapter<Viewer.ListView.Item, ListViewHolder>(Differ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
@@ -25,6 +26,7 @@ class ListViewAdapter(
                             }
                         }
                     }
+
                 }
             }
             VIEW_TYPE_PROFILE -> {
@@ -48,6 +50,15 @@ class ListViewAdapter(
                             val item = getItem(pos)
                             if (item is Viewer.ListView.Item) {
                                 onListItemClicked(item.objectId)
+                            }
+                        }
+                    }
+                    icon.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != NO_POSITION) {
+                            val item = getItem(pos)
+                            if (item is Viewer.ListView.Item && item.icon is ObjectIcon.Task) {
+                                onTaskCheckboxClicked(item.objectId)
                             }
                         }
                     }

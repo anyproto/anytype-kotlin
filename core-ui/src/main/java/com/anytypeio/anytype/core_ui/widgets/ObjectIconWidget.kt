@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
@@ -32,6 +33,8 @@ class ObjectIconWidget @JvmOverloads constructor(
         inflate(context)
         setupAttributeValues(attrs)
     }
+
+    val checkbox : View get() = ivCheckbox
 
     internal fun inflate(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.widget_object_icon, this)

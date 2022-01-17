@@ -398,10 +398,7 @@ class GalleryViewWidget @JvmOverloads constructor(
         override fun areContentsTheSame(
             oldItem: Viewer.GalleryView.Item,
             newItem: Viewer.GalleryView.Item
-        ): Boolean {
-            // TODO
-            return false
-        }
+        ): Boolean = oldItem == newItem
     }
 
     companion object {

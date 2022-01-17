@@ -99,10 +99,7 @@ class ListViewAdapter(
         override fun areContentsTheSame(
             oldItem: Viewer.ListView.Item,
             newItem: Viewer.ListView.Item
-        ): Boolean {
-            // TODO
-            return false
-        }
+        ): Boolean = oldItem == newItem
     }
 
     companion object {

@@ -50,7 +50,10 @@ fun List<DashboardView>.updateDetails(
             is DashboardView.Document -> {
                 if (view.target == target) {
                     val obj = ObjectWrapper.Basic(details.map)
-                    view.copy(
+                    if (obj.isDeleted == true)
+                        null
+                    else
+                        view.copy(
                         title = obj.getProperName(),
                         emoji = details.iconEmoji?.let { name ->
                             if (name.isNotEmpty())
@@ -82,15 +85,18 @@ fun List<DashboardView>.updateDetails(
             is DashboardView.ObjectSet -> {
                 if (view.target == target) {
                     val obj = ObjectWrapper.Basic(details.map)
-                    view.copy(
-                        title = details.name,
-                        isArchived = details.isArchived ?: false,
-                        icon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = builder
+                    if (obj.isDeleted == true)
+                        null
+                    else
+                        view.copy(
+                            title = details.name,
+                            isArchived = details.isArchived ?: false,
+                            icon = ObjectIcon.from(
+                                obj = obj,
+                                layout = obj.layout,
+                                builder = builder
+                            )
                         )
-                    )
                 } else {
                     view
                 }

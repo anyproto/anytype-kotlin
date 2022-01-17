@@ -1,11 +1,12 @@
 # Change log for Android @Anytype app.
 
-## Version 0.5.1 (WIP)
+## Version 0.5.1
 
 ### New features & enhancements 🚀
 
-* Relations | Apply target object types in filtering when searching for an object for a relation's value (#2040)
+* Relations | Apply target object types in filtering when searching for an object to set a relation's value (#2040)
 * Objects and sets | Close objects and sets after moving to bin (#2038)
+* Sets | Feature | Checking / unchecking tasks in Grid, Gallery, and List (#2042)
 
 ### Design & UX 🔳
 
@@ -13,7 +14,7 @@
 
 ### Fixes & tech 🚒
 
-* Editor | Failing to render objects containing at least one file block with embedded pdf (#2037)
+* Editor | Failing to render objects containing at least one file block with embedded PDF (#2037)
 * Editor | When trying to set a link to an object or to a web page for a text selection, the dedicated screen should not block the editor when the bottom sheet is hidden by swiping down (#2036)
 * Home | Deleted items reappearing in favorites (#2045)
 

@@ -360,6 +360,30 @@ class BlockMiddleware(
         limit = limit
     )
 
+    override suspend fun searchObjectsWithSubscription(
+        subscription: Id,
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int,
+        beforeId: Id?,
+        afterId: Id?
+    ): List<Map<String, Any?>> = middleware.searchObjectsWithSubscription(
+        subscription = subscription,
+        sorts = sorts,
+        filters = filters,
+        fulltext = fulltext,
+        offset = offset,
+        limit = limit,
+        afterId = afterId,
+        beforeId = beforeId
+    )
+
+    override suspend fun cancelObjectSearchSubscription(
+        subscriptions: List<Id>
+    ) = middleware.cancelObjectSearchSubscription(subscriptions = subscriptions)
+
     override suspend fun relationListAvailable(
         ctx: Id
     ): List<Relation> = middleware.relationListAvailable(ctx).map { it.toCoreModels() }

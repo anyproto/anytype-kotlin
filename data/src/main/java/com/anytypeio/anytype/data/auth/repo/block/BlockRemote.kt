@@ -149,6 +149,19 @@ interface BlockRemote {
         limit: Int
     ): List<Map<String, Any?>>
 
+    suspend fun searchObjectsWithSubscription(
+        subscription: Id,
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int,
+        beforeId: Id?,
+        afterId: Id?,
+    ): List<Map<String, Any?>>
+
+    suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
+
     suspend fun relationListAvailable(ctx: Id): List<Relation>
     suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload

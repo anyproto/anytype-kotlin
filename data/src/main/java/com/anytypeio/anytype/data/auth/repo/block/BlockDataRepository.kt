@@ -420,6 +420,30 @@ class BlockDataRepository(
         limit = limit
     )
 
+    override suspend fun searchObjectsWithSubscription(
+        subscription: Id,
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int,
+        beforeId: Id?,
+        afterId: Id?
+    ): List<Map<String, Any?>> = factory.remote.searchObjectsWithSubscription(
+        subscription = subscription,
+        sorts = sorts,
+        filters = filters,
+        fulltext = fulltext,
+        offset = offset,
+        limit = limit,
+        afterId = afterId,
+        beforeId = beforeId
+    )
+
+    override suspend fun cancelObjectSearchSubscription(
+        subscriptions: List<Id>
+    ) = factory.remote.cancelObjectSearchSubscription(subscriptions)
+
     override suspend fun relationListAvailable(ctx: Id) = factory.remote.relationListAvailable(ctx)
 
     override suspend fun addRelationToObject(

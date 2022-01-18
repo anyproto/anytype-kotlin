@@ -187,7 +187,7 @@ class Middleware(
     fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?, type: String?): Id {
 
         val details: MutableMap<String, Any> = mutableMapOf()
-        emoji?.let { details[iconEmojiKey] = it}
+        emoji?.let { details[iconEmojiKey] = it }
         isDraft?.let { details[isDraftKey] = it }
         type?.let { details[typeKey] = it }
 
@@ -1200,6 +1200,47 @@ class Middleware(
         return response.records.map { it?.toMap() ?: emptyMap() }
     }
 
+    //region SEARCHING WITH SUBSCRIPTIONS
+
+    @Throws(Exception::class)
+    fun searchObjectsWithSubscription(
+        subscription: Id,
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int,
+        beforeId: Id?,
+        afterId: Id?,
+    ): List<Map<String, Any?>> {
+        val request = Rpc.Object.SearchSubscribe.Request(
+            subId = subscription,
+            sorts = sorts.map { it.toMiddlewareModel() },
+            filters = filters.map { it.toMiddlewareModel() },
+            fullText = fulltext,
+            offset = offset,
+            limit = limit,
+            beforeId = beforeId.orEmpty(),
+            afterId = afterId.orEmpty()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSearchSubscribe(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.records.map { it?.toMap() ?: emptyMap() }
+    }
+
+    @Throws(Exception::class)
+    fun cancelObjectSearchSubscription(subscriptions: List<String>) {
+        val request = Rpc.Object.SearchUnsubscribe.Request(
+            subIds = subscriptions
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSearchUnsubscribe(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    //endregion
+
     @Throws(Exception::class)
     fun relationListAvailable(ctx: Id): List<MRelation> {
         val request = Rpc.Object.RelationListAvailable.Request(
@@ -1393,7 +1434,7 @@ class Middleware(
         )
     }
 
-    fun deleteRelationFromObject(ctx: Id, relation: Id) : Payload {
+    fun deleteRelationFromObject(ctx: Id, relation: Id): Payload {
         val request = Rpc.Object.RelationDelete.Request(
             contextId = ctx,
             relationKey = relation
@@ -1435,7 +1476,7 @@ class Middleware(
     fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
-    ) : Payload {
+    ): Payload {
         val request = Rpc.Object.SetIsFavorite.Request(
             contextId = ctx,
             isFavorite = isFavorite
@@ -1449,7 +1490,7 @@ class Middleware(
     fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ) : Payload {
+    ): Payload {
         val request = Rpc.Object.SetIsArchived.Request(
             contextId = ctx,
             isArchived = isArchived
@@ -1480,7 +1521,7 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
-    fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload {
+    fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload {
         val request = Rpc.Object.SetLayout.Request(
             contextId = ctx,
             layout = layout.toMiddlewareModel()

@@ -334,6 +334,30 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         limit = limit
     )
 
+    override suspend fun searchObjectsWithSubscription(
+        subscription: Id,
+        sorts: List<DVSort>,
+        filters: List<DVFilter>,
+        fulltext: String,
+        offset: Int,
+        limit: Int,
+        beforeId: Id?,
+        afterId: Id?
+    ): List<Map<String, Any?>> = remote.searchObjectsWithSubscription(
+        subscription = subscription,
+        sorts = sorts,
+        filters = filters,
+        fulltext = fulltext,
+        offset = offset,
+        limit = limit,
+        afterId = afterId,
+        beforeId = beforeId
+    )
+
+    override suspend fun cancelObjectSearchSubscription(
+        subscriptions: List<Id>
+    ) = remote.cancelObjectSearchSubscription(subscriptions)
+
     override suspend fun relationListAvailable(ctx: Id): List<Relation> =
         remote.relationListAvailable(ctx)
 

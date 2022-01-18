@@ -163,6 +163,12 @@ interface MiddlewareService {
     fun objectSearch(request: Object.Search.Request): Object.Search.Response
 
     @Throws(Exception::class)
+    fun objectSearchSubscribe(request: Object.SearchSubscribe.Request): Object.SearchSubscribe.Response
+
+    @Throws(Exception::class)
+    fun objectSearchUnsubscribe(request: Object.SearchUnsubscribe.Request): Object.SearchUnsubscribe.Response
+
+    @Throws(Exception::class)
     fun relationListAvailable(request: Object.RelationListAvailable.Request): Object.RelationListAvailable.Response
 
     @Throws(Exception::class)

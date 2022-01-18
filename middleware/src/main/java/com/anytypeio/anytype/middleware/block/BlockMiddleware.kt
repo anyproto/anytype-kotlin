@@ -365,19 +365,31 @@ class BlockMiddleware(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
+        keys: List<String>,
         offset: Int,
         limit: Int,
         beforeId: Id?,
         afterId: Id?
-    ): List<Map<String, Any?>> = middleware.searchObjectsWithSubscription(
+    ): SearchResult = middleware.searchObjectsWithSubscription(
         subscription = subscription,
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
+        keys = keys,
         offset = offset,
         limit = limit,
         afterId = afterId,
         beforeId = beforeId
+    )
+
+    override suspend fun searchObjectsByIdWithSubscription(
+        subscription: Id,
+        ids: List<Id>,
+        keys: List<String>
+    ): SearchResult = middleware.searchObjectsByIdWithSubscription(
+        subscription = subscription,
+        ids = ids,
+        keys = keys
     )
 
     override suspend fun cancelObjectSearchSubscription(

@@ -148,11 +148,18 @@ interface BlockDataStore {
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
+        keys: List<String>,
         offset: Int,
         limit: Int,
         beforeId: Id?,
         afterId: Id?,
-    ): List<Map<String, Any?>>
+    ): SearchResult
+
+    suspend fun searchObjectsByIdWithSubscription(
+        subscription: Id,
+        ids: List<Id>,
+        keys: List<String>
+    ): SearchResult
 
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 

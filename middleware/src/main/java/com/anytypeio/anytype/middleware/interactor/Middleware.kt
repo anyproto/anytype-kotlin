@@ -1208,16 +1208,18 @@ class Middleware(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
+        keys: List<String>,
         offset: Int,
         limit: Int,
         beforeId: Id?,
         afterId: Id?,
-    ): List<Map<String, Any?>> {
+    ): SearchResult {
         val request = Rpc.Object.SearchSubscribe.Request(
             subId = subscription,
             sorts = sorts.map { it.toMiddlewareModel() },
             filters = filters.map { it.toMiddlewareModel() },
             fullText = fulltext,
+            keys = keys,
             offset = offset,
             limit = limit,
             beforeId = beforeId.orEmpty(),
@@ -1226,7 +1228,50 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearchSubscribe(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.records.map { it?.toMap() ?: emptyMap() }
+        return SearchResult(
+            results = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            dependencies = response.dependencies.mapNotNull { record ->
+                if (record != null && record.isNotEmpty())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+        )
+    }
+
+    @Throws(Exception::class)
+    fun searchObjectsByIdWithSubscription(
+        subscription: Id,
+        ids: List<Id>,
+        keys: List<String>
+    ): SearchResult {
+        val request = Rpc.Object.IdsSubscribe.Request(
+            subId = subscription,
+            keys = keys,
+            ids = ids
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectIdsSubscribe(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return SearchResult(
+            results = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            dependencies = response.dependencies.mapNotNull { record ->
+                if (record != null && record.isNotEmpty())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+        )
     }
 
     @Throws(Exception::class)

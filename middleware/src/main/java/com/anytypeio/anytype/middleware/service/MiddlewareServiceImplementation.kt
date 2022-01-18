@@ -644,6 +644,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun objectIdsSubscribe(request: Object.IdsSubscribe.Request): Object.IdsSubscribe.Response {
+        val encoded = Service.objectIdsSubscribe(Object.IdsSubscribe.Request.ADAPTER.encode(request))
+        val response = Object.IdsSubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Object.IdsSubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectSearchUnsubscribe(request: Object.SearchUnsubscribe.Request): Object.SearchUnsubscribe.Response {
         val encoded = Service.objectSearch(Object.SearchUnsubscribe.Request.ADAPTER.encode(request))
         val response = Object.SearchUnsubscribe.Response.ADAPTER.decode(encoded)

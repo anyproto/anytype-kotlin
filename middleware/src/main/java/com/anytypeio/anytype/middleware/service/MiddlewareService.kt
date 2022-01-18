@@ -166,6 +166,9 @@ interface MiddlewareService {
     fun objectSearchSubscribe(request: Object.SearchSubscribe.Request): Object.SearchSubscribe.Response
 
     @Throws(Exception::class)
+    fun objectIdsSubscribe(request: Object.IdsSubscribe.Request): Object.IdsSubscribe.Response
+
+    @Throws(Exception::class)
     fun objectSearchUnsubscribe(request: Object.SearchUnsubscribe.Request): Object.SearchUnsubscribe.Response
 
     @Throws(Exception::class)

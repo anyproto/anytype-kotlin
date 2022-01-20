@@ -24,7 +24,7 @@ fun List<DashboardView>.sortByIds(
 }
 
 fun List<DashboardView>.filterByNotArchivedPages(): List<DashboardView> =
-    this.filterNot { it is DashboardView.Profile || it.isArchived }
+    this.filterNot { it.isArchived }
 
 fun List<DashboardView>.updateDetails(
     target: String,
@@ -34,19 +34,6 @@ fun List<DashboardView>.updateDetails(
 ): List<DashboardView> {
     return mapNotNull { view ->
         when (view) {
-            is DashboardView.Profile -> {
-                if (view.id == target) {
-                    view.copy(
-                        name = details.name.orEmpty(),
-                        avatar = details.iconImage.let {
-                            if (it.isNullOrEmpty()) null
-                            else builder.image(it)
-                        }
-                    )
-                } else {
-                    view
-                }
-            }
             is DashboardView.Document -> {
                 if (view.target == target) {
                     val obj = ObjectWrapper.Basic(details.map)

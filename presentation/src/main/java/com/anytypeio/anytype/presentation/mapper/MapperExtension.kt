@@ -258,21 +258,6 @@ fun List<Block>.toDashboardViews(
     objectTypes: List<ObjectType> = emptyList()
 ): List<DashboardView> = this.mapNotNull { block ->
     when (val content = block.content) {
-        is Block.Content.Smart -> {
-            when (content.type) {
-                SmartBlockType.PROFILE_PAGE -> {
-                    DashboardView.Profile(
-                        id = block.id,
-                        name = details.details[block.id]?.name.orEmpty(),
-                        avatar = details.details[block.id]?.iconImage.let {
-                            if (it.isNullOrEmpty()) null
-                            else builder.image(it)
-                        }
-                    )
-                }
-                else -> null
-            }
-        }
         is Block.Content.Link -> {
             val targetDetails = details.details[content.target]
             val typeUrl = targetDetails?.map?.type

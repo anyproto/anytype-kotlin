@@ -16,15 +16,12 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_RECENT
 import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_SETS
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
@@ -48,6 +45,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -76,7 +74,6 @@ class HomeDashboardViewModel(
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    private val isProfileNavigationEnabled = MutableStateFlow(false)
     val toasts = MutableSharedFlow<String>()
 
     private val machine = Interactor(scope = viewModelScope)
@@ -89,7 +86,6 @@ class HomeDashboardViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     private var ctx: Id = ""
-    private var profile: Id = ""
 
     val tabs = MutableStateFlow(listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.BIN))
 
@@ -109,9 +105,23 @@ class HomeDashboardViewModel(
     private val views: List<DashboardView>
         get() = stateData.value?.blocks ?: emptyList()
 
+    val profile = MutableStateFlow<ViewState<ObjectWrapper.Basic>>(ViewState.Init)
+
     init {
         startProcessingState()
         proceedWithGettingConfig()
+        viewModelScope.launch {
+            getProfile.observe(
+                subscription = Subscriptions.SUBSCRIPTION_PROFILE,
+                keys = listOf(
+                    Relations.ID,
+                    Relations.NAME,
+                    Relations.ICON_IMAGE
+                )
+            ).collect {
+                profile.value = ViewState.Success(it)
+            }
+        }
     }
 
     private fun startProcessingState() {
@@ -134,21 +144,10 @@ class HomeDashboardViewModel(
             result.either(
                 fnR = { config ->
                     ctx = config.home
-                    profile = config.profile
-                    isProfileNavigationEnabled.value = true
                     startInterceptingEvents(context = config.home)
                     processDragAndDrop(context = config.home)
                 },
                 fnL = { Timber.e(it, "Error while getting config") }
-            )
-        }
-    }
-
-    private fun proceedWithGettingAccount() {
-        getProfile(viewModelScope, BaseUseCase.None) { result ->
-            result.either(
-                fnL = { Timber.e(it, "Error while getting account") },
-                fnR = { payload -> processEvents(payload.events) }
             )
         }
     }
@@ -193,7 +192,6 @@ class HomeDashboardViewModel(
 
     fun onViewCreated() {
         Timber.d("onViewCreated, ")
-        proceedWithGettingAccount()
         proceedWithOpeningHomeDashboard()
     }
 
@@ -346,14 +344,19 @@ class HomeDashboardViewModel(
 
     fun onAvatarClicked() {
         Timber.d("onAvatarClicked, ")
-        if (isProfileNavigationEnabled.value) {
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = SCREEN_PROFILE
-            )
-            proceedWithOpeningDocument(profile)
-        } else {
-            toast("Profile is not ready yet. Please, try again later.")
+        profile.value.let { state ->
+            when(state) {
+                is ViewState.Success -> {
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = SCREEN_PROFILE
+                    )
+                    proceedWithOpeningDocument(state.data.id)
+                }
+                else -> {
+                    toast("Profile is not ready yet. Please, try again later.")
+                }
+            }
         }
     }
 

@@ -670,7 +670,6 @@ class DashboardViewExtensionKtTest {
         val target1 = MockDataFactory.randomUuid()
         val id2 = MockDataFactory.randomUuid()
         val target2 = MockDataFactory.randomUuid()
-        val id3 = MockDataFactory.randomUuid()
 
         val views = listOf(
             DashboardView.Document(
@@ -685,11 +684,6 @@ class DashboardViewExtensionKtTest {
                 id = id2,
                 target = target2,
                 title = "Title2"
-            ),
-            DashboardView.Profile(
-                isArchived = false,
-                id = id3,
-                name = "Profile"
             ),
             DashboardView.Document(
                 isArchived = false,

@@ -13,6 +13,7 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
 
     testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.turbine
 
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation unitTestDependencies.coroutineTesting

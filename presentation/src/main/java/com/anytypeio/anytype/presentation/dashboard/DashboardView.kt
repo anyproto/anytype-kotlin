@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.dashboard
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class DashboardView {
@@ -11,15 +10,6 @@ sealed class DashboardView {
     abstract val isArchived: Boolean
     abstract val isSelected: Boolean
     abstract val isLoading: Boolean
-
-    data class Profile(
-        override val id: Id,
-        val name: String,
-        val avatar: Url? = null,
-        override val isArchived: Boolean = false,
-        override val isSelected: Boolean = false,
-        override val isLoading: Boolean = false
-    ) : DashboardView()
 
     data class Document(
         override val id: Id,

@@ -75,13 +75,6 @@ sealed class HomeDashboardStateMachine {
             val objectTypes: List<ObjectType>
         ) : Event()
 
-        data class OnShowProfile(
-            val context: String,
-            val blocks: List<Block>,
-            val details: Block.Details,
-            val builder: UrlBuilder
-        ) : Event()
-
         data class OnDetailsUpdated(
             val context: String,
             val target: String,
@@ -157,43 +150,22 @@ sealed class HomeDashboardStateMachine {
                 )
                 is Event.OnShowDashboard -> {
 
-                    val current = state.blocks.filterIsInstance<DashboardView.Profile>()
-
-                    val new = event.blocks
-                        .toDashboardViews(
+                    val new = event.blocks.toDashboardViews(
                             details = event.details,
                             builder = event.builder,
                             objectTypes = event.objectTypes
-                        )
-
-                    val childrenIdsList = event.blocks.getChildrenIdsList(
-                        parent = event.context
                     )
+
+                    val childrenIdsList = event.blocks.getChildrenIdsList(parent = event.context)
 
                     state.copy(
                         isInitialzed = true,
                         isLoading = false,
                         error = null,
-                        blocks = current.addAndSortByIds(childrenIdsList, new),
+                        blocks = new,
                         childrenIdsList = childrenIdsList,
                         objectTypes = event.objectTypes,
                         details = event.details
-                    )
-                }
-                is Event.OnShowProfile -> {
-
-                    val current = state.blocks.filter { it !is DashboardView.Profile }
-
-                    val new = event.blocks.toDashboardViews(
-                        details = event.details,
-                        builder = event.builder
-                    ).filterIsInstance<DashboardView.Profile>()
-
-                    state.copy(
-                        isInitialzed = true,
-                        isLoading = false,
-                        error = null,
-                        blocks = current.addAndSortByIds(state.childrenIdsList, new)
                     )
                 }
                 is Event.OnStartedCreatingPage -> state.copy(

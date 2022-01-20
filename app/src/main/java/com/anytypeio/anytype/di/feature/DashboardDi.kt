@@ -8,7 +8,8 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.*
-import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.dashboard.DashboardFragment
@@ -87,9 +89,11 @@ object HomeDashboardModule {
     @Provides
     @PerScreen
     fun provideGetProfileUseCase(
-        repository: BlockRepository
+        repository: BlockRepository,
+        subscriptionEventChannel: SubscriptionEventChannel
     ): GetProfile = GetProfile(
-        repo = repository
+        repo = repository,
+        channel = subscriptionEventChannel
     )
 
     @JvmStatic
@@ -167,7 +171,7 @@ object HomeDashboardModule {
     @PerScreen
     fun provideGetDebugSettings(
         repo: InfrastructureRepository
-    ) : GetDebugSettings = GetDebugSettings(
+    ): GetDebugSettings = GetDebugSettings(
         repo = repo
     )
 
@@ -176,7 +180,7 @@ object HomeDashboardModule {
     @PerScreen
     fun provideSearchObjects(
         repo: BlockRepository
-    ) : SearchObjects = SearchObjects(
+    ): SearchObjects = SearchObjects(
         repo = repo
     )
 
@@ -191,7 +195,7 @@ object HomeDashboardModule {
     @PerScreen
     fun deleteObjects(
         repo: BlockRepository
-    ) : DeleteObjects = DeleteObjects(
+    ): DeleteObjects = DeleteObjects(
         repo = repo
     )
 
@@ -200,7 +204,7 @@ object HomeDashboardModule {
     @PerScreen
     fun setObjectListIsArchived(
         repo: BlockRepository
-    ) : SetObjectListIsArchived = SetObjectListIsArchived(
+    ): SetObjectListIsArchived = SetObjectListIsArchived(
         repo = repo
     )
 }

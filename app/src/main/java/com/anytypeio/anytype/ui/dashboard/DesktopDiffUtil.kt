@@ -58,15 +58,6 @@ class DesktopDiffUtil(
             }
         }
 
-        if (oldDoc is DashboardView.Profile && newDoc is DashboardView.Profile) {
-            if (oldDoc.avatar != newDoc.avatar) {
-                changes.add(IMAGE_CHANGED)
-            }
-            if (oldDoc.name != newDoc.name) {
-                changes.add(TITLE_CHANGED)
-            }
-        }
-
         if (oldDoc.isSelected != newDoc.isSelected) {
             changes.add(SELECTION_CHANGED)
         }

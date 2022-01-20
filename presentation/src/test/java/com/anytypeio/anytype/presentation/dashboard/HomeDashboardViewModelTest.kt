@@ -10,7 +10,8 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.*
-import com.anytypeio.anytype.domain.dashboard.interactor.*
+import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
+import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -135,6 +137,7 @@ class HomeDashboardViewModelTest {
 
         stubGetConfig(response)
         stubObserveEvents(params = InterceptEvents.Params(context = null))
+        stubObserveProfile()
 
         // TESTING
 
@@ -142,7 +145,6 @@ class HomeDashboardViewModelTest {
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verifyZeroInteractions(openDashboard)
-        verifyZeroInteractions(getProfile)
     }
 
     @Test
@@ -174,6 +176,7 @@ class HomeDashboardViewModelTest {
 
         stubGetConfig(response)
         stubObserveEvents(params = InterceptEvents.Params(context = config.home))
+        stubObserveProfile()
 
         // TESTING
 
@@ -181,7 +184,6 @@ class HomeDashboardViewModelTest {
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verifyZeroInteractions(openDashboard)
-        verifyZeroInteractions(getProfile)
     }
 
     @Test
@@ -286,26 +288,24 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should proceed with getting profile and opening dashboard when view is created`() {
+    fun `should proceed opening dashboard when view is created`() {
 
         // SETUP
 
         stubGetConfig(Either.Right(config))
         stubObserveEvents(params = InterceptEvents.Params(context = config.home))
         stubOpenDashboard()
+        stubObserveProfile()
 
         // TESTING
 
         vm = buildViewModel()
         vm.onViewCreated()
 
-        verify(getProfile, times(1)).invoke(any(), any(), any())
-
         runBlockingTest {
             verify(openDashboard, times(1)).invoke(eq(null))
         }
     }
-
 
     @Test
     fun `should start creating page when requested from UI`() {
@@ -395,7 +395,24 @@ class HomeDashboardViewModelTest {
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type, name))
+            onBlocking { invoke(Unit) } doReturn Either.Right(
+                GetDefaultEditorType.Response(
+                    type,
+                    name
+                )
+            )
+        }
+    }
+
+    private fun stubObserveProfile() {
+        getProfile.stub {
+            on {
+                observe(
+                    subscription = any(),
+                    keys = any(),
+                    dispatcher = any()
+                )
+            } doReturn emptyFlow()
         }
     }
 }

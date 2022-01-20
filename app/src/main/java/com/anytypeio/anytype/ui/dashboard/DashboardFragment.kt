@@ -10,8 +10,10 @@ import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
@@ -223,6 +225,32 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                 objectRemovalProgressBar.gone()
             }
         }
+        jobs += lifecycleScope.subscribe(vm.profile) { profile ->
+            setProfile(profile)
+        }
+    }
+
+    private fun setProfile(profile: ViewState<ObjectWrapper.Basic>) {
+        when (profile) {
+            is ViewState.Success -> {
+                val obj = profile.data
+                avatarContainer.bind(
+                    name = obj.name.orEmpty(),
+                    color = context?.getColor(R.color.dashboard_default_avatar_circle_color)
+                )
+                obj.iconImage?.let { avatar ->
+                    avatarContainer.icon(avatar)
+                }
+                if (obj.name.isNullOrEmpty()) {
+                    tvGreeting.text = getText(R.string.greet_user)
+                } else {
+                    tvGreeting.text = getString(R.string.greet, obj.name)
+                }
+            }
+            else -> {
+                // TODO reset profile view to zero
+            }
+        }
     }
 
     override fun onPause() {
@@ -264,31 +292,10 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun render(state: State) {
         when {
-            state.error != null -> {
-                requireActivity().toast("Error: ${state.error}")
-            }
+            state.error != null -> toast("Error: ${state.error}")
             state.isInitialzed -> {
-                state.blocks.let { views ->
-                    val profile = views.filterIsInstance<DashboardView.Profile>()
-                    val links = views.filter { it !is DashboardView.Profile && it !is DashboardView.Archive }.groupBy { it.isArchived }
-                    if (profile.isNotEmpty()) {
-                        val view = profile.first()
-                        avatarContainer.bind(
-                            name = view.name,
-                            color = context?.getColor(R.color.dashboard_default_avatar_circle_color)
-                        )
-                        view.avatar?.let { avatar ->
-                            avatarContainer.icon(avatar)
-                        }
-                        if (view.name.isNotEmpty()) {
-                            tvGreeting.text = getString(R.string.greet, view.name)
-                        } else {
-                            tvGreeting.text = getText(R.string.greet_user)
-                        }
-                    }
-                    // TODO refact (no need to filter anything in fragment)
-                    dashboardDefaultAdapter.update(links[false] ?: emptyList())
-                }
+                val links = state.blocks.filter { it !is DashboardView.Archive }.groupBy { it.isArchived }
+                dashboardDefaultAdapter.update(links[false] ?: emptyList())
             }
         }
     }

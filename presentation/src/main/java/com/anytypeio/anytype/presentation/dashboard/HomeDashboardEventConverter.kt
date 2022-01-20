@@ -34,14 +34,6 @@ interface HomeDashboardEventConverter {
                         objectTypes = objectTypesProvider.get()
                     )
                 }
-                SmartBlockType.PROFILE_PAGE -> {
-                    HomeDashboardStateMachine.Event.OnShowProfile(
-                        blocks = event.blocks,
-                        context = event.context,
-                        details = event.details,
-                        builder = builder
-                    )
-                }
                 else -> {
                     null
                 }

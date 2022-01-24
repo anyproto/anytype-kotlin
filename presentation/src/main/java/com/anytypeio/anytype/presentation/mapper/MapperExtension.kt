@@ -480,6 +480,8 @@ fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (thi
     DVFilterCondition.LESS -> Viewer.Filter.Condition.Number.Less()
     DVFilterCondition.GREATER_OR_EQUAL -> Viewer.Filter.Condition.Number.GreaterOrEqual()
     DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Number.LessOrEqual()
+    DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Number.Empty()
+    DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Number.NotEmpty()
     DVFilterCondition.NONE -> Viewer.Filter.Condition.Number.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
 }
@@ -544,6 +546,8 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
     is Viewer.Filter.Condition.Number.Less -> DVFilterCondition.LESS
     is Viewer.Filter.Condition.Number.LessOrEqual -> DVFilterCondition.LESS_OR_EQUAL
     is Viewer.Filter.Condition.Number.NotEqual -> DVFilterCondition.NOT_EQUAL
+    is Viewer.Filter.Condition.Number.Empty -> DVFilterCondition.EMPTY
+    is Viewer.Filter.Condition.Number.NotEmpty -> DVFilterCondition.NOT_EMPTY
     is Viewer.Filter.Condition.Selected.AllIn -> DVFilterCondition.ALL_IN
     is Viewer.Filter.Condition.Selected.Empty -> DVFilterCondition.EMPTY
     is Viewer.Filter.Condition.Selected.Equal -> DVFilterCondition.EQUAL

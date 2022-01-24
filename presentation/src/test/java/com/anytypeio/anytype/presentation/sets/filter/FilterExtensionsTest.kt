@@ -41,6 +41,26 @@ class FilterExtensionsTest {
     }
 
     @Test
+    fun shouldReturnNullValueOnCheckboxNoneCondition() {
+
+        val relationKey = MockDataFactory.randomUuid()
+        val condition = Viewer.Filter.Condition.Checkbox.None()
+
+        val views = listOf<CreateFilterView>()
+
+        val result = views.checkboxFilter(relationKey, condition)
+
+        val expected = DVFilter(
+            relationKey = relationKey,
+            operator = Block.Content.DataView.Filter.Operator.AND,
+            condition = DVFilterCondition.NONE,
+            value = null
+        )
+
+        Assert.assertEquals(expected, result)
+    }
+
+    @Test
     fun shouldReturnNotCheckedTrue() {
 
         val relationKey = MockDataFactory.randomUuid()

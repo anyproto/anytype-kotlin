@@ -120,6 +120,7 @@ private fun DVFilterCondition.toView(
         when (conditionType) {
             DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.Empty()
             DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.Empty()
+            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.Empty()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
         }
     }
@@ -127,6 +128,7 @@ private fun DVFilterCondition.toView(
         when (conditionType) {
             DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.NotEmpty()
             DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.NotEmpty()
+            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.NotEmpty()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
         }
     }

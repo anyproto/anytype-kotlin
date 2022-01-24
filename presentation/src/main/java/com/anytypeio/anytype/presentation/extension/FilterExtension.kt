@@ -16,6 +16,8 @@ fun Viewer.Filter.Condition.hasValue(): Boolean = when (this) {
     is Viewer.Filter.Condition.Text.NotEmpty,
     is Viewer.Filter.Condition.Checkbox.None,
     is Viewer.Filter.Condition.Number.None,
+    is Viewer.Filter.Condition.Number.Empty,
+    is Viewer.Filter.Condition.Number.NotEmpty,
     is Viewer.Filter.Condition.Selected.None,
     is Viewer.Filter.Condition.Text.None -> false
     else -> true
@@ -43,8 +45,8 @@ fun List<CreateFilterView>.checkboxFilter(
     condition: Viewer.Filter.Condition
 ): DVFilter {
     val checkboxes = filterIsInstance<CreateFilterView.Checkbox>()
-    val selected = checkboxes.first { it.isSelected }
-    val value = selected.isChecked
+    val selected = checkboxes.firstOrNull { it.isSelected }
+    val value = selected?.isChecked
     return DVFilter(
         relationKey = relationKey,
         condition = condition.toDomain(),

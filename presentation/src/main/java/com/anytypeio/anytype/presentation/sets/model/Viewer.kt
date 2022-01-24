@@ -212,6 +212,16 @@ sealed class Viewer {
                         get() = name
                 }
 
+                data class Empty(val name: String = "Is empty") : Number() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class NotEmpty(val name: String = "Is not empty") : Number() {
+                    override val title: String
+                        get() = name
+                }
+
                 data class None(val name: String = "All") : Number() {
                     override val title: String
                         get() = name
@@ -226,6 +236,8 @@ sealed class Viewer {
                             Less(),
                             GreaterOrEqual(),
                             LessOrEqual(),
+                            Empty(),
+                            NotEmpty(),
                             None()
                         )
                 }

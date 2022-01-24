@@ -1288,6 +1288,7 @@ class FilterConditionExtensionTest {
 
         val expectedText = Viewer.Filter.Condition.Text.Empty()
         val expectedSelected = Viewer.Filter.Condition.Selected.Empty()
+        val expectedNumber = Viewer.Filter.Condition.Number.Empty()
 
         asserter.assertEquals(
             message = "Condition should be Text Empty",
@@ -1314,12 +1315,19 @@ class FilterConditionExtensionTest {
             expected = expectedText,
             actual = relationUrl.toConditionView(condition = DVFilterCondition.EMPTY)
         )
-        assertFails {
-            relationNumber.toConditionView(condition = DVFilterCondition.EMPTY)
-        }
-        assertFails {
-            relationDate.toConditionView(condition = DVFilterCondition.EMPTY)
-        }
+
+        asserter.assertEquals(
+            message = "Condition should be Number Empty",
+            expected = expectedNumber,
+            actual = relationNumber.toConditionView(condition = DVFilterCondition.EMPTY)
+        )
+
+        asserter.assertEquals(
+            message = "Condition should be Date Empty",
+            expected = expectedNumber,
+            actual = relationDate.toConditionView(condition = DVFilterCondition.EMPTY)
+        )
+
         asserter.assertEquals(
             message = "Condition should be Selected Empty",
             expected = expectedSelected,
@@ -1386,6 +1394,7 @@ class FilterConditionExtensionTest {
 
         val expectedText = Viewer.Filter.Condition.Text.NotEmpty()
         val expectedSelected = Viewer.Filter.Condition.Selected.NotEmpty()
+        val expectedNumber = Viewer.Filter.Condition.Number.NotEmpty()
 
         asserter.assertEquals(
             message = "Condition should be Text Not Empty",
@@ -1412,12 +1421,19 @@ class FilterConditionExtensionTest {
             expected = expectedText,
             actual = relationUrl.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
         )
-        assertFails {
-            relationNumber.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
-        }
-        assertFails {
-            relationDate.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
-        }
+
+        asserter.assertEquals(
+            message = "Condition should be Number Not Empty",
+            expected = expectedNumber,
+            actual = relationNumber.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
+        )
+
+        asserter.assertEquals(
+            message = "Condition should be Date Not Empty",
+            expected = expectedNumber,
+            actual = relationDate.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
+        )
+
         asserter.assertEquals(
             message = "Condition should be Selected Not Empty",
             expected = expectedSelected,

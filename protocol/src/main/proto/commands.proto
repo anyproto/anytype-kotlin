@@ -4074,6 +4074,7 @@ message Rpc {
             message Request {
                 string blockId = 1;
                 string path = 2;
+                bool unanonymized = 3; // set to true to disable mocking of the actual data inside changes
             }
 
             message Response {

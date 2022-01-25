@@ -45,4 +45,5 @@ interface MainComponent {
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
     fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
+    fun createObjectComponent(): CreateObjectSubComponent.Builder
 }

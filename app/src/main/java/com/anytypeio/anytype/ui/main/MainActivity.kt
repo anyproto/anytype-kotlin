@@ -1,13 +1,16 @@
 package com.anytypeio.anytype.ui.main
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.di.common.componentManager
@@ -17,6 +20,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -41,10 +45,27 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null && intent.action == Intent.ACTION_VIEW) {
+            val bundle = intent.extras
+            if (bundle != null) {
+                val type = bundle.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)
+                if (type != null) {
+                    findNavController(R.id.fragment)
+                        .navigate(
+                            R.id.action_global_createObjectFragment,
+                            bundleOf(CreateObjectFragment.TYPE_KEY to type)
+                        )
+                }
+            }
+        }
+    }
+
     private fun setWallpaper(wallpaper: Wallpaper) {
         when (wallpaper) {
             is Wallpaper.Gradient -> {
-                when(wallpaper.code) {
+                when (wallpaper.code) {
                     CoverGradient.YELLOW -> fragment.setBackgroundResource(R.drawable.cover_gradient_yellow)
                     CoverGradient.RED -> fragment.setBackgroundResource(R.drawable.cover_gradient_red)
                     CoverGradient.BLUE -> fragment.setBackgroundResource(R.drawable.cover_gradient_blue)

@@ -440,5 +440,13 @@
         android:id="@+id/alertUpdateAppFragment"
         android:name="com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment"
         android:label="AlertUpdateAppFragment" />
+    <fragment
+        android:id="@+id/createObjectFragment"
+        android:name="com.anytypeio.anytype.ui.editor.CreateObjectFragment"
+        android:label="CreateObjectFragment" />
+    <action
+        android:id="@+id/action_global_createObjectFragment"
+        app:destination="@id/createObjectFragment"
+        app:launchSingleTop="true" />
 
 </navigation>

@@ -114,6 +114,13 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val createObjectComponent = Component {
+        main
+            .createObjectComponent()
+            .module(CreateObjectModule)
+            .build()
+    }
+
     val editorComponent = ComponentMap {
         main
             .editorComponentBuilder()

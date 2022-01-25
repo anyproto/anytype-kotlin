@@ -239,7 +239,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                     color = context?.getColor(R.color.dashboard_default_avatar_circle_color)
                 )
                 obj.iconImage?.let { avatar ->
-                    avatarContainer.icon(avatar)
+                    avatarContainer.icon(builder.image(avatar))
                 }
                 if (obj.name.isNullOrEmpty()) {
                     tvGreeting.text = getText(R.string.greet_user)

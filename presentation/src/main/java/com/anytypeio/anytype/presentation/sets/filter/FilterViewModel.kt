@@ -432,12 +432,12 @@ open class FilterViewModel(
                     ColumnView.Format.DATE -> {
                         val dates =
                             filterValueListState.value.filterIsInstance<CreateFilterView.Date>()
-                        val selected = dates.first { it.isSelected }
+                        val selected = dates.firstOrNull { it.isSelected }
                         proceedWithCreatingFilter(
                             ctx = ctx,
                             filter = DVFilter(
                                 relationKey = relation,
-                                value = selected.timeInMillis.toTimeSeconds(),
+                                value = selected?.timeInMillis?.toTimeSeconds(),
                                 condition = condition.toDomain()
                             )
                         )

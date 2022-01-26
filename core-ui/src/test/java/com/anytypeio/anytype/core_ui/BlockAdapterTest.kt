@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
@@ -53,10 +52,8 @@ import kotlinx.android.synthetic.main.item_block_object_link.view.*
 import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -1717,7 +1714,7 @@ class BlockAdapterTest {
         check(holder is Paragraph)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -1761,7 +1758,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -1867,7 +1864,7 @@ class BlockAdapterTest {
         check(holder is Document)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -1910,7 +1907,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2172,7 +2169,7 @@ class BlockAdapterTest {
         check(h3Holder is HeaderThree)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = h1Holder.content.inputType
         )
 
@@ -2182,7 +2179,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = h2Holder.content.inputType
         )
 
@@ -2192,7 +2189,7 @@ class BlockAdapterTest {
         )
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = h3Holder.content.inputType
         )
 
@@ -2265,7 +2262,7 @@ class BlockAdapterTest {
         // H1
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = h1Holder.content.inputType
         )
 
@@ -2301,7 +2298,7 @@ class BlockAdapterTest {
         // H2
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = h2Holder.content.inputType
         )
 
@@ -2337,7 +2334,7 @@ class BlockAdapterTest {
         // H3
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = h3Holder.content.inputType
         )
 
@@ -2500,7 +2497,7 @@ class BlockAdapterTest {
         check(holder is Highlight)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2544,7 +2541,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2646,7 +2643,7 @@ class BlockAdapterTest {
         check(holder is Bulleted)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2689,7 +2686,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2791,7 +2788,7 @@ class BlockAdapterTest {
         check(holder is Checkbox)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2834,7 +2831,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2938,7 +2935,7 @@ class BlockAdapterTest {
         check(holder is Numbered)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -2982,7 +2979,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -3090,7 +3087,7 @@ class BlockAdapterTest {
         check(holder is Toggle)
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 
@@ -3135,7 +3132,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+            expected = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
             actual = holder.content.inputType
         )
 

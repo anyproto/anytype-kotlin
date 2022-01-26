@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.TXT
@@ -225,6 +226,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var createObjectSet: CreateObjectSet
+
+    @Mock
+    lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -3980,7 +3984,8 @@ open class EditorViewModelTest {
             objectTypesProvider = objectTypesProvider,
             searchObjects = searchObjects,
             findObjectSetForType = findObjectSetForType,
-            createObjectSet = createObjectSet
+            createObjectSet = createObjectSet,
+            copyFileToCache = copyFileToCacheDirectory
         )
     }
 

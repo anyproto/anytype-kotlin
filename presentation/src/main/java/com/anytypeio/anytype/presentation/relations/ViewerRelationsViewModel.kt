@@ -259,7 +259,7 @@ class ViewerRelationsViewModel(
         private val deleteRelationFromDataView: DeleteRelationFromDataView
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerRelationsViewModel(
                 objectSetState = state,
                 session = session,

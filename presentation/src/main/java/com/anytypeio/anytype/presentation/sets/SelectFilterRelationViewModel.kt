@@ -20,7 +20,7 @@ class SelectFilterRelationViewModel(
         private val session: ObjectSetSession
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectFilterRelationViewModel(
                 objectSetState = state,
                 session = session

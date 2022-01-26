@@ -15,7 +15,7 @@ class SetupNewAccountViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SetupNewAccountViewModel(
             createAccount = createAccount,
             session = session,

@@ -404,7 +404,7 @@ class RelationOptionValueDVAddViewModel(
         private val dispatcher: Dispatcher<Payload>,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationOptionValueDVAddViewModel(
                 details = details,
                 values = values,
@@ -570,7 +570,7 @@ class RelationOptionValueAddViewModel(
         private val dispatcher: Dispatcher<Payload>,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationOptionValueAddViewModel(
                 details = details,
                 values = values,

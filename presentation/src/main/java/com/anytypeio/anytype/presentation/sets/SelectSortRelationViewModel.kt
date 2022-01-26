@@ -51,7 +51,7 @@ class SelectSortRelationViewModel(
         private val addDataViewViewerSort: AddDataViewViewerSort
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectSortRelationViewModel(
                 objectSetState = state,
                 session = session,

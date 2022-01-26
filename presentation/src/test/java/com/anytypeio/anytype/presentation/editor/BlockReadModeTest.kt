@@ -349,42 +349,4 @@ class BlockReadModeTest : EditorViewModelTest() {
             )
         )
     }
-
-    @Test
-    fun `should enter edit mode after action menu is closed by action item download`() {
-
-        val paragraphs = blocks
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onClickListener(
-            clicked = ListenerType.LongClick(
-                target = paragraphs[1].id,
-                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
-            )
-        )
-
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.Download)
-
-        val testObserver = vm.state.test()
-
-        val initial = blockViewsEditMode
-
-        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
-        runBlockingTest {
-            testObserver.assertValue(
-                ViewState.Success(
-                    blocks = listOf(titleEditModeView) + initial
-                )
-            )
-        }
-    }
 }

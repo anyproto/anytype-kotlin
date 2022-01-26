@@ -14,7 +14,7 @@ class MainViewModelFactory(
     private val restoreWallpaper: RestoreWallpaper
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(
+    override fun <T : ViewModel> create(
         modelClass: Class<T>
     ): T = MainViewModel(
         launchAccount = launchAccount,

@@ -18,7 +18,7 @@ sealed class Command {
     ) : Command()
 
     data class OpenGallery(
-        val mediaType: String
+        val mimeType: String
     ) : Command()
 
     data class OpenBookmarkSetter(
@@ -41,10 +41,6 @@ sealed class Command {
     data class OpenMultiSelectTurnIntoPanel(
         val excludedCategories: List<String> = emptyList(),
         val excludedTypes: List<String> = emptyList()
-    ) : Command()
-
-    data class RequestDownloadPermission(
-        val id: String
     ) : Command()
 
     data class OpenFileByDefaultApp(

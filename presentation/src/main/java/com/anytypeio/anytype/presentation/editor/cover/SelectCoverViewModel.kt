@@ -203,7 +203,7 @@ class SelectCoverObjectViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectCoverObjectViewModel(
                 setCoverColor = setCoverColor,
                 setCoverImage = setCoverImage,
@@ -246,7 +246,7 @@ class SelectCoverObjectSetViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectCoverObjectSetViewModel(
                 setCoverColor = setCoverColor,
                 setCoverImage = setCoverImage,

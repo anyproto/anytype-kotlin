@@ -16,7 +16,7 @@ class DocumentIconActionMenuViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T = DocumentIconActionMenuViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = DocumentIconActionMenuViewModel(
         setEmojiIcon = setEmojiIcon,
         setImageIcon = setImageIcon,
         dispatcher = dispatcher,

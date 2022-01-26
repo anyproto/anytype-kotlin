@@ -12,6 +12,10 @@ def apikeyPropertiesFile = rootProject.file("apikeys.properties")
 def apikeyProperties = new Properties()
 apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
+//def keystorePropertiesFile = rootProject.file("signing.properties")
+//def keystoreProperties = new Properties()
+//keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     def config = rootProject.extensions.getByName("ext")
 
@@ -26,14 +30,12 @@ android {
         versionName getBuildVersionName()
         testInstrumentationRunner config["test_runner"]
     }
-
     packagingOptions {
-        exclude 'LICENSE.txt'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
+        resources {
+            excludes += ['LICENSE.txt', 'META-INF/DEPENDENCIES', 'META-INF/ASL2.0', 'META-INF/NOTICE', 'META-INF/LICENSE']
+        }
     }
+
 
     lintOptions {
         quiet true
@@ -45,18 +47,39 @@ android {
         disable 'IconMissingDensityFolder'  //For testing purpose. This is safe to remove.
     }
 
+//    signingConfigs {
+//        //For proper signing, use debuggable false for a build.
+//        release {
+//            keyAlias keystoreProperties['RELEASE_KEY_ALIAS']
+//            keyPassword keystoreProperties['RELEASE_KEY_PASSWORD']
+//            storeFile file(keystoreProperties['RELEASE_STORE_FILE'])
+//            storePassword keystoreProperties['RELEASE_STORE_PASSWORD']
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
+//        debug {
+//            keyAlias keystoreProperties['DEBUG_KEY_ALIAS']
+//            keyPassword keystoreProperties['DEBUG_KEY_PASSWORD']
+//            storeFile file(keystoreProperties['DEBUG_STORE_FILE'])
+//            storePassword keystoreProperties['DEBUG_STORE_PASSWORD']
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
+//    }
+
     buildTypes {
         release {
             minifyEnabled false
-            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
+            //signingConfig signingConfigs.release
         }
 
         debug {
             applicationIdSuffix ".debug"
             debuggable true
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
+            //signingConfig signingConfigs.debug
         }
     }
 
@@ -90,12 +113,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_11
     }
 
     androidExtensions {
@@ -131,7 +154,6 @@ dependencies {
     //Compile time dependencies
     kapt applicationDependencies.daggerCompiler
     kapt applicationDependencies.glideCompiler
-    kapt applicationDependencies.permissionDispCompiler
     compileOnly applicationDependencies.javaxAnnotation
     compileOnly applicationDependencies.javaxInject
 
@@ -149,7 +171,6 @@ dependencies {
     implementation applicationDependencies.dagger
     implementation applicationDependencies.timber
     implementation applicationDependencies.gson
-    implementation applicationDependencies.permissionDisp
     implementation applicationDependencies.pickT
     implementation applicationDependencies.emojiCompat
 

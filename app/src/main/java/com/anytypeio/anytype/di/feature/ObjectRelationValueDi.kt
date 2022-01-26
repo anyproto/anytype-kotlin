@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import android.content.Context
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -14,6 +15,8 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
@@ -91,6 +94,13 @@ object ObjectSetObjectRelationValueModule {
     @JvmStatic
     @Provides
     @PerModal
+    fun provideCopyFileToCache(
+        context: Context
+    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+
+    @JvmStatic
+    @Provides
+    @PerModal
     fun provideViewModelFactoryForDataView(
         relations: ObjectRelationProvider,
         values: ObjectValueProvider,
@@ -99,9 +109,9 @@ object ObjectSetObjectRelationValueModule {
         removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
         removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
         urlBuilder: UrlBuilder,
-        dispatcher: Dispatcher<Payload>,
         updateDataViewRecord: UpdateDataViewRecord,
-        addFileToRecord: AddFileToRecord
+        addFileToRecord: AddFileToRecord,
+        copyFileToCacheDirectory: CopyFileToCacheDirectory
     ): RelationValueDVViewModel.Factory = RelationValueDVViewModel.Factory(
         relations = relations,
         values = values,
@@ -110,9 +120,9 @@ object ObjectSetObjectRelationValueModule {
         removeTagFromRecord = removeTagFromDataViewRecord,
         removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
         urlBuilder = urlBuilder,
-        dispatcher = dispatcher,
         updateDataViewRecord = updateDataViewRecord,
-        addFileToRecord = addFileToRecord
+        addFileToRecord = addFileToRecord,
+        copyFileToCache = copyFileToCacheDirectory
     )
 }
 
@@ -130,7 +140,8 @@ object ObjectObjectRelationValueModule {
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
-        addFileToObject: AddFileToObject
+        addFileToObject: AddFileToObject,
+        copyFileToCacheDirectory: CopyFileToCacheDirectory
     ): RelationValueViewModel.Factory = RelationValueViewModel.Factory(
         relations = relations,
         values = values,
@@ -139,6 +150,7 @@ object ObjectObjectRelationValueModule {
         urlBuilder = urlBuilder,
         dispatcher = dispatcher,
         updateDetail = updateDetail,
-        addFileToObject = addFileToObject
+        addFileToObject = addFileToObject,
+        copyFileToCache = copyFileToCacheDirectory
     )
 }

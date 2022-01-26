@@ -27,7 +27,7 @@ open class ArchiveViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ArchiveViewModel(
             openPage = openPage,
             closePage = closePage,

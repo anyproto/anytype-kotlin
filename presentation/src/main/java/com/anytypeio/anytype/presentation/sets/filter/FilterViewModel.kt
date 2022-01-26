@@ -706,7 +706,7 @@ open class FilterViewModel(
         private val objectTypesProvider: ObjectTypesProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return FilterViewModel(
                 objectSetState = objectSetState,
                 session = session,

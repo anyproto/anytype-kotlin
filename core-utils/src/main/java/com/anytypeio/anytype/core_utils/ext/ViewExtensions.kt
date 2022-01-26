@@ -30,6 +30,33 @@ fun View.showSnackbar(text: String) {
     Snackbar.make(this, text, Snackbar.LENGTH_LONG).show()
 }
 
+fun View.showSnackbar(msgId: Int, length: Int) = showSnackbar(context.getString(msgId), length)
+fun View.showSnackbar(msg: String, length: Int) = showSnackbar(msg, length, null, {})
+
+fun View.showSnackbar(
+    msgId: Int,
+    length: Int,
+    actionMessageId: Int,
+    action: (View) -> Unit
+): Snackbar =
+    showSnackbar(context.getString(msgId), length, context.getString(actionMessageId), action)
+
+fun View.showSnackbar(
+    msg: String,
+    length: Int,
+    actionMessage: CharSequence?,
+    action: (View) -> Unit
+): Snackbar {
+    val snackbar = Snackbar.make(this, msg, length)
+    if (actionMessage != null) {
+        snackbar.setAction(actionMessage) {
+            action(this)
+        }
+    }
+    snackbar.show()
+    return snackbar
+}
+
 fun View.hideKeyboard() {
     val inputMethodManager =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -50,7 +77,7 @@ fun Activity.hideSoftInput() {
 
 fun Fragment.hideSoftInput() = requireActivity().hideSoftInput()
 
-fun RecyclerView.containsItemDecoration(decoration: RecyclerView.ItemDecoration) : Boolean {
+fun RecyclerView.containsItemDecoration(decoration: RecyclerView.ItemDecoration): Boolean {
     if (itemDecorationCount > 0) {
         for (i in 0..itemDecorationCount.dec()) {
             val d = getItemDecorationAt(i)
@@ -63,7 +90,7 @@ fun RecyclerView.containsItemDecoration(decoration: RecyclerView.ItemDecoration)
     }
 }
 
-val Activity.statusBarHeight : Int
+val Activity.statusBarHeight: Int
     get() {
         val rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)

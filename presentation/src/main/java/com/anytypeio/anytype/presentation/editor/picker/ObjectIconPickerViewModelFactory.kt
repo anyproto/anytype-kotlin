@@ -20,7 +20,7 @@ class ObjectIconPickerViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectIconPickerViewModel(
             setEmojiIcon = setEmojiIcon,
             setImageIcon = setImageIcon,
@@ -42,7 +42,7 @@ class ObjectSetIconPickerViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetIconPickerViewModel(
             setEmojiIcon = setEmojiIcon,
             setImageIcon = setImageIcon,

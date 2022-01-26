@@ -198,7 +198,6 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         fun onAddCoverClicked()
         fun onSetIconClicked()
         fun onLayoutClicked()
-        fun onDownloadClicked()
         fun onUndoRedoClicked()
     }
 }

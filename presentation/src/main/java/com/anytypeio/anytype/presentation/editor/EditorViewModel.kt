@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -105,7 +106,10 @@ import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileStatus
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -140,7 +144,8 @@ class EditorViewModel(
     private val searchObjects: SearchObjects,
     private val getDefaultEditorType: GetDefaultEditorType,
     private val findObjectSetForType: FindObjectSetForType,
-    private val createObjectSet: CreateObjectSet
+    private val createObjectSet: CreateObjectSet,
+    private val copyFileToCache: CopyFileToCacheDirectory
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -1655,14 +1660,7 @@ class EditorViewModel(
             ActionItemType.Style -> {
                 viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
             }
-            ActionItemType.Download -> {
-                viewModelScope.launch {
-                    onExitActionMode()
-                    dispatch(Command.PopBackStack)
-                    delay(300)
-                    dispatch(Command.RequestDownloadPermission(id))
-                }
-            }
+            ActionItemType.Download -> { }
             ActionItemType.SAM -> {
                 mode = EditorMode.SAM
                 viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
@@ -1919,12 +1917,12 @@ class EditorViewModel(
 
     private fun onAddLocalVideoClicked(blockId: String) {
         mediaBlockId = blockId
-        dispatch(Command.OpenGallery(mediaType = MIME_VIDEO_ALL))
+        dispatch(Command.OpenGallery(mimeType = MIME_VIDEO_ALL))
     }
 
     private fun onAddLocalPictureClicked(blockId: String) {
         mediaBlockId = blockId
-        dispatch(Command.OpenGallery(mediaType = MIME_IMAGE_ALL))
+        dispatch(Command.OpenGallery(mimeType = MIME_IMAGE_ALL))
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
@@ -1951,7 +1949,7 @@ class EditorViewModel(
 
     private fun onAddLocalFileClicked(blockId: String) {
         mediaBlockId = blockId
-        dispatch(Command.OpenGallery(mediaType = MIME_FILE_ALL))
+        dispatch(Command.OpenGallery(mimeType = MIME_FILE_ALL))
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
@@ -2800,16 +2798,6 @@ class EditorViewModel(
             analytics = analytics,
             eventName = EventsDictionary.POPUP_CHOOSE_LAYOUT
         )
-    }
-
-    fun onDownloadClicked() {
-        Timber.d("onDownloadClicked, ")
-        val block = blocks.firstOrNull { it.content is Content.File }
-        if (block != null) {
-            dispatch(Command.RequestDownloadPermission(block.id))
-        } else {
-            Timber.e("onDownloadClicked, file not found in object")
-        }
     }
 
     fun onLayoutDialogDismissed() {
@@ -5386,6 +5374,42 @@ class EditorViewModel(
         return when (details.details[root.id]?.layout?.toInt()) {
             ObjectType.Layout.NOTE.code -> EditorFooter.Note
             else -> EditorFooter.None
+        }
+    }
+    //endregion
+
+    //region COPY FILE TO CACHE
+    val copyFileStatus = MutableSharedFlow<CopyFileStatus>(replay = 0)
+
+    fun onStartCopyFileToCacheDir(uri: Uri) {
+        copyFileToCache.execute(
+            uri = uri,
+            scope = viewModelScope,
+            listener = copyFileListener
+        )
+    }
+
+    fun onCancelCopyFileToCacheDir() {
+        copyFileToCache.cancel()
+    }
+
+    private val copyFileListener = object : OnCopyFileToCacheAction {
+        override fun onCopyFileStart() {
+            viewModelScope.launch {
+                copyFileStatus.emit(CopyFileStatus.Started)
+            }
+        }
+
+        override fun onCopyFileResult(result: String?) {
+            viewModelScope.launch {
+                copyFileStatus.emit(CopyFileStatus.Completed(result))
+            }
+        }
+
+        override fun onCopyFileError(msg: String) {
+            viewModelScope.launch {
+                copyFileStatus.emit(CopyFileStatus.Error(msg))
+            }
         }
     }
     //endregion

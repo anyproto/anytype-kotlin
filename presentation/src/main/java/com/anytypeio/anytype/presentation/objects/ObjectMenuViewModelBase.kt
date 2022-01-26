@@ -274,7 +274,7 @@ class ObjectMenuViewModel(
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<Payload>
     ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
                 setObjectIsArchived = setObjectIsArchived,
                 addToFavorite = addToFavorite,
@@ -312,7 +312,7 @@ class ObjectSetMenuViewModel(
         private val analytics: Analytics,
         private val state: StateFlow<ObjectSet>
     ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
                 setObjectIsArchived = setObjectIsArchived,
                 addToFavorite = addToFavorite,

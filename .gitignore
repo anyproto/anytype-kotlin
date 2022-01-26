@@ -13,3 +13,4 @@
 .externalNativeBuild
 ktlint
 .idea/*.xml
+signing.properties

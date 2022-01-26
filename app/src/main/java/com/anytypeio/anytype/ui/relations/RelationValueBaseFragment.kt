@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.ui.relations
 
-import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
-import androidx.annotation.StringRes
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -27,6 +27,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.sets.RelationValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
@@ -36,17 +38,19 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.editor.REQUEST_FILE_CODE
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import kotlinx.android.synthetic.main.fragment_relation_value.*
-import permissions.dispatcher.*
+import kotlinx.android.synthetic.main.fragment_relation_value.recycler
+import kotlinx.android.synthetic.main.fragment_relation_value.root
 import timber.log.Timber
+import java.util.ArrayList
 import javax.inject.Inject
 
-@RuntimePermissions
 abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     OnStartDragListener,
     RelationObjectValueAddFragment.ObjectValueAddReceiver,
@@ -145,6 +149,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.name) { tvTagOrStatusRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading) }
+        jobs += lifecycleScope.subscribe(vm.copyFileStatus) { command -> onCopyFileCommand(command) }
         super.onStart()
         vm.onStart(relationId = relation, objectId = target)
     }
@@ -212,47 +217,9 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         }
     }
 
-    //region READ STORAGE
+    //region PICK IT
 
     abstract fun onFilePathReady(filePath: String?)
-
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun openGallery(type: String) {
-        startActivityForResult(getVideoFileIntent(type), REQUEST_FILE_CODE)
-    }
-
-    @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun showRationaleForReadExternalStoragePermission(request: PermissionRequest) {
-        showRationaleDialog(R.string.permission_read_rationale, request)
-    }
-
-    @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadExternalStoragePermissionDenied() {
-        toast(getString(R.string.permission_read_denied))
-    }
-
-    @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadExternalStoragePermissionNeverAskAgain() {
-        toast(getString(R.string.permission_read_never_ask_again))
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        onRequestPermissionsResult(requestCode, grantResults)
-    }
-
-    private fun showRationaleDialog(@StringRes messageResId: Int, request: PermissionRequest) {
-        AlertDialog.Builder(requireContext())
-            .setPositiveButton(R.string.button_allow) { _, _ -> request.proceed() }
-            .setNegativeButton(R.string.button_deny) { _, _ -> request.cancel() }
-            .setCancelable(false)
-            .setMessage(messageResId)
-            .show()
-    }
 
     private lateinit var pickiT: PickiT
 
@@ -261,33 +228,18 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         pickiT = PickiT(requireContext(), this, requireActivity())
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_FILE_CODE -> {
-                    data?.data?.let {
-                        pickiT.getPath(it, Build.VERSION.SDK_INT)
-                    } ?: run {
-                        toast("Error while getting file")
-                    }
-                }
-                else -> toast("Unknown Request Code:$requestCode")
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
     private var pickitProgressDialog: ProgressDialog? = null
     private var pickitProgressBar: ProgressBar? = null
     private var pickitAlertDialog: AlertDialog? = null
 
     override fun PickiTonUriReturned() {
-        pickitProgressDialog = ProgressDialog(requireContext()).apply {
-            setMessage(getString(R.string.pickit_waiting))
-            setCancelable(false)
+        if (pickitProgressDialog == null || pickitProgressDialog?.isShowing == false) {
+            pickitProgressDialog = ProgressDialog(requireContext()).apply {
+                setMessage(getString(R.string.pickit_waiting))
+                setCancelable(false)
+            }
+            pickitProgressDialog?.show()
         }
-        pickitProgressDialog?.show()
     }
 
     override fun PickiTonStartListener() {
@@ -327,6 +279,9 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         if (pickitAlertDialog?.isShowing == true) {
             pickitAlertDialog?.cancel()
         }
+        if (pickitProgressDialog?.isShowing == true) {
+            pickitProgressDialog?.cancel()
+        }
         if (BuildConfig.DEBUG) {
             when {
                 wasDriveFile -> toast(getString(R.string.pickit_drive))
@@ -341,14 +296,107 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     }
 
     private fun clearPickit() {
+        val ctx = context
+        if (ctx != null) {
+            pickiT.deleteTemporaryFile(ctx)
+        }
         pickiT.cancelTask()
         pickitAlertDialog?.dismiss()
         pickitProgressDialog?.dismiss()
     }
     //endregion
 
+    //region READ PERMISSION
+    private fun takeReadStoragePermission() {
+        if (requireActivity().shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)) {
+            root.showSnackbar(
+                R.string.permission_read_rationale,
+                Snackbar.LENGTH_INDEFINITE,
+                R.string.button_ok
+            ) {
+                permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
+            }
+        } else {
+            permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
+        }
+    }
+
+    private val permissionReadStorage =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+            val readResult = grantResults[READ_EXTERNAL_STORAGE]
+            if (readResult == true) {
+                startFilePicker(MIME_FILE_ALL)
+            } else {
+                root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
+            }
+        }
+    //endregion
+
+    //region UPLOAD FILE LOGIC
+    private var mSnackbar: Snackbar? = null
+
+    protected fun openFilePicker() {
+        if (requireContext().isPermissionGranted(MIME_FILE_ALL)) {
+            startFilePicker(MIME_FILE_ALL)
+        } else {
+            takeReadStoragePermission()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_MEDIA_CODE -> {
+                    data?.data?.let { uri ->
+                        pickiT.getPath(uri, Build.VERSION.SDK_INT)
+                    }
+                }
+                REQUEST_FILE_SAF_CODE -> {
+                    data?.data?.let { uri ->
+                        vm.onStartCopyFileToCacheDir(uri)
+                    } ?: run {
+                        toast("Error while getting file")
+                    }
+                }
+                else -> toast("Unknown Request Code:$requestCode")
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun onCopyFileCommand(command: CopyFileStatus) {
+        when (command) {
+            is CopyFileStatus.Error -> {
+                mSnackbar?.dismiss()
+                activity?.toast("Error while loading file:${command.msg}")
+            }
+            is CopyFileStatus.Completed -> {
+                mSnackbar?.dismiss()
+                onFilePathReady(command.result)
+            }
+            CopyFileStatus.Started -> {
+                mSnackbar = root.showSnackbar(
+                    R.string.loading_file,
+                    Snackbar.LENGTH_INDEFINITE,
+                    R.string.cancel
+                ) {
+                    vm.onCancelCopyFileToCacheDir()
+                }
+            }
+        }
+    }
+
+    private fun clearOnCopyFile() {
+        vm.onCancelCopyFileToCacheDir()
+        mSnackbar?.dismiss()
+        mSnackbar = null
+    }
+    //endregion
+
     override fun onDestroyView() {
         clearPickit()
+        clearOnCopyFile()
         super.onDestroyView()
     }
 
@@ -487,7 +535,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
                 //turn off for now https://app.clickup.com/t/h59z1j
                 //FileActionsFragment().show(childFragmentManager, null)
-                openGalleryWithPermissionCheck(type = MIME_FILE_ALL)
+                openFilePicker()
             }
         }
     }
@@ -501,6 +549,9 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
         vm.onFileValueActionUploadFromGalleryClicked()
     }
 
+    /**
+     * Called when a file was picked from file picker.
+     */
     override fun onFilePathReady(filePath: String?) {
         if (filePath != null) {
             vm.onAddFileToRecord(
@@ -518,6 +569,14 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
     override fun onFileValueActionUploadFromStorage() {
         toast("Not implemented")
         vm.onFileValueActionUploadFromStorageClicked()
+    }
+
+    override fun PickiTonMultipleCompleteListener(
+        paths: ArrayList<String>?,
+        wasSuccessful: Boolean,
+        Reason: String?
+    ) {
+        toast("Not implemented yet")
     }
 
     override fun injectDependencies() {
@@ -620,6 +679,14 @@ class RelationValueFragment : RelationValueBaseFragment() {
         )
     }
 
+    override fun PickiTonMultipleCompleteListener(
+        paths: ArrayList<String>?,
+        wasSuccessful: Boolean,
+        Reason: String?
+    ) {
+        toast("Not implemented yet")
+    }
+
     override fun observeCommands(command: RelationValueBaseViewModel.ObjectRelationValueCommand) {
         when (command) {
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddObjectScreen -> {
@@ -651,7 +718,7 @@ class RelationValueFragment : RelationValueBaseFragment() {
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
                 //turn off for now https://app.clickup.com/t/h59z1j
                 //FileActionsFragment().show(childFragmentManager, null)
-                openGalleryWithPermissionCheck(type = MIME_FILE_ALL)
+                openFilePicker()
             }
         }
     }
@@ -670,6 +737,9 @@ class RelationValueFragment : RelationValueBaseFragment() {
         vm.onFileValueActionUploadFromStorageClicked()
     }
 
+    /**
+     * Called when a file was picked from file picker.
+     */
     override fun onFilePathReady(filePath: String?) {
         if (filePath != null) {
             vm.onAddFileToObject(

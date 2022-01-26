@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.ui.editor
 
-import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ProgressDialog
@@ -22,7 +22,7 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.addCallback
-import androidx.annotation.StringRes
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -67,6 +67,8 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.di.common.componentManager
@@ -84,6 +86,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
+import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
@@ -115,15 +118,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import permissions.dispatcher.*
 import timber.log.Timber
+import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.math.abs
 
-const val REQUEST_FILE_CODE = 745
-
-@RuntimePermissions
-open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
+open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     OnFragmentInteractionListener,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
@@ -349,76 +349,6 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_FILE_CODE -> {
-                    data?.data?.let {
-                        pickiT.getPath(it, Build.VERSION.SDK_INT)
-                    } ?: run {
-                        toast("Error while getting file")
-                    }
-                }
-                else -> toast("Unknown Request Code:$requestCode")
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        onRequestPermissionsResult(requestCode, grantResults)
-    }
-
-    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun startDownload(id: String) {
-        vm.startDownloadingFile(id)
-    }
-
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun openGallery(type: String) {
-        try {
-            startActivityForResult(getVideoFileIntent(type), REQUEST_FILE_CODE)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to open gallery")
-        }
-    }
-
-    @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun showRationaleForReadExternalStoragePermission(request: PermissionRequest) {
-        showRationaleDialog(R.string.permission_read_rationale, request)
-    }
-
-    @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadExternalStoragePermissionDenied() {
-        toast(getString(R.string.permission_read_denied))
-    }
-
-    @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadExternalStoragePermissionNeverAskAgain() {
-        toast(getString(R.string.permission_read_never_ask_again))
-    }
-
-    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun showRationaleForWriteExternalStoragePermission(request: PermissionRequest) {
-        showRationaleDialog(R.string.permission_write_rationale, request)
-    }
-
-    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun onWriteExternalStoragePermissionDenied() {
-        toast(getString(R.string.permission_write_denied))
-    }
-
-    @OnNeverAskAgain(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun onWriteExternalStoragePermissionNeverAskAgain() {
-        toast(getString(R.string.permission_write_never_ask_again))
-    }
-
     @Inject
     lateinit var factory: EditorViewModelFactory
 
@@ -464,6 +394,9 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         }
                     }
                 }
+            }
+            jobs += subscribe(vm.copyFileStatus) { command ->
+                onCopyFileCommand(command)
             }
         }
         vm.onStart(id = extractDocumentId())
@@ -746,8 +679,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 if (isVisible) {
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     behavior.addBottomSheetCallback(onHideBottomSheetCallback)
-                }
-                else {
+                } else {
                     behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     behavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
@@ -779,6 +711,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onDestroy() {
         pickiT.deleteTemporaryFile(requireContext())
+        clearOnCopyFile()
         super.onDestroy()
     }
 
@@ -849,10 +782,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     ).show(childFragmentManager, null)
                 }
                 is Command.OpenGallery -> {
-                    openGalleryWithPermissionCheck(command.mediaType)
-                }
-                is Command.RequestDownloadPermission -> {
-                    startDownloadWithPermissionCheck(command.id)
+                    openFilePicker(command.mimeType)
                 }
                 is Command.PopBackStack -> {
                     childFragmentManager.popBackStack()
@@ -1720,15 +1650,6 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
         hideSoftInput()
     }
 
-    private fun showRationaleDialog(@StringRes messageResId: Int, request: PermissionRequest) {
-        AlertDialog.Builder(requireContext())
-            .setPositiveButton(R.string.button_allow) { _, _ -> request.proceed() }
-            .setNegativeButton(R.string.button_deny) { _, _ -> request.cancel() }
-            .setCancelable(false)
-            .setMessage(messageResId)
-            .show()
-    }
-
     private fun extractDocumentId(): String {
         return requireArguments()
             .getString(ID_KEY)
@@ -1756,7 +1677,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun getEditorSettings() {
     }
 
-    // ----------- PickiT Listeners ------------------------------
+    //region PICK IT
 
     private var pickitProgressDialog: ProgressDialog? = null
     private var pickitProgressBar: ProgressBar? = null
@@ -1770,11 +1691,14 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
      *  are waiting for the file to be returned.
      */
     override fun PickiTonUriReturned() {
-        pickitProgressDialog = ProgressDialog(requireContext()).apply {
-            setMessage(getString(R.string.pickit_waiting))
-            setCancelable(false)
+        Timber.d("PickiTonUriReturned")
+        if (pickitProgressDialog == null || pickitProgressDialog?.isShowing == false) {
+            pickitProgressDialog = ProgressDialog(requireContext()).apply {
+                setMessage(getString(R.string.pickit_waiting))
+                setCancelable(false)
+            }
+            pickitProgressDialog?.show()
         }
-        pickitProgressDialog?.show()
     }
 
     /**
@@ -1791,6 +1715,7 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
      *  if the selected file is not local
      */
     override fun PickiTonStartListener() {
+        Timber.d("PickiTonStartListener")
         if (pickitProgressDialog?.isShowing == true) {
             pickitProgressDialog?.cancel()
         }
@@ -1829,6 +1754,9 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
         if (pickitAlertDialog?.isShowing == true) {
             pickitAlertDialog?.cancel()
         }
+        if (pickitProgressDialog?.isShowing == true) {
+            pickitProgressDialog?.dismiss()
+        }
         if (BuildConfig.DEBUG) {
             when {
                 wasDriveFile -> toast(getString(R.string.pickit_drive))
@@ -1842,8 +1770,23 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
     }
 
+    override fun PickiTonMultipleCompleteListener(
+        paths: ArrayList<String>?,
+        wasSuccessful: Boolean,
+        Reason: String?
+    ) {
+        toast("Not implemented yet")
+    }
+
+    /**
+     * Called when a file was picked from file picker.
+     */
     private fun onFilePathReady(filePath: String?) {
-        vm.onProceedWithFilePath(filePath)
+        if (filePath != null) {
+            vm.onProceedWithFilePath(filePath = filePath)
+        } else {
+            Timber.e("onFilePathReady, filePath is null")
+        }
     }
 
     private fun clearPickit() {
@@ -1851,6 +1794,8 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
         pickitAlertDialog?.dismiss()
         pickitProgressDialog?.dismiss()
     }
+
+    //endregion
 
     override fun onExitToDesktopClicked() {
         vm.navigateToDesktop()
@@ -1897,10 +1842,6 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     override fun onLayoutClicked() {
         vm.onLayoutClicked()
-    }
-
-    override fun onDownloadClicked() {
-        vm.onDownloadClicked()
     }
 
     override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {
@@ -2348,6 +2289,100 @@ open class  EditorFragment : NavigationFragment(R.layout.fragment_editor),
         scrollUpJob = null
     }
 
+    //endregion
+
+    //region READ PERMISSION
+    private fun takeReadStoragePermission() {
+        if (requireActivity().shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)) {
+            root.showSnackbar(
+                R.string.permission_read_rationale,
+                Snackbar.LENGTH_INDEFINITE,
+                R.string.button_ok
+            ) {
+                permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
+            }
+        } else {
+            permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
+        }
+    }
+
+    private val permissionReadStorage =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+            val readResult = grantResults[READ_EXTERNAL_STORAGE]
+            if (readResult == true) {
+                startFilePicker(mMimeType)
+            } else {
+                root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
+            }
+        }
+    //endregion
+
+    //region UPLOAD FILE LOGIC
+    private var mMimeType = ""
+    private var mSnackbar: Snackbar? = null
+
+    private fun openFilePicker(mimeType: String) {
+        mMimeType = mimeType
+        if (requireContext().isPermissionGranted(mimeType)) {
+            startFilePicker(mimeType)
+        } else {
+            takeReadStoragePermission()
+        }
+    }
+
+    private fun onCopyFileCommand(command: CopyFileStatus) {
+        when (command) {
+            is CopyFileStatus.Error -> {
+                mSnackbar?.dismiss()
+                activity?.toast("Error while loading file:${command.msg}")
+            }
+            is CopyFileStatus.Completed -> {
+                mSnackbar?.dismiss()
+                onFilePathReady(command.result)
+            }
+            CopyFileStatus.Started -> {
+                mSnackbar = root.showSnackbar(
+                    R.string.loading_file,
+                    Snackbar.LENGTH_INDEFINITE,
+                    R.string.cancel
+                ) {
+                    vm.onCancelCopyFileToCacheDir()
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_MEDIA_CODE -> {
+                    data?.data?.let { uri ->
+                        pickiT.getPath(uri, Build.VERSION.SDK_INT)
+                    }
+                }
+                REQUEST_FILE_SAF_CODE -> {
+                    data?.data?.let { uri ->
+                        vm.onStartCopyFileToCacheDir(uri)
+                    } ?: run {
+                        Timber.e("onActivityResult error, data is null")
+                        toast("Error while getting file")
+                    }
+                }
+                else -> {
+                    Timber.e("onActivityResult error, Unknown Request Code:$requestCode")
+                    toast("Unknown Request Code:$requestCode")
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun clearOnCopyFile() {
+        vm.onCancelCopyFileToCacheDir()
+        mSnackbar?.dismiss()
+        mSnackbar = null
+    }
     //endregion
 
     //------------ End of Anytype Custom Context Menu ------------

@@ -175,6 +175,7 @@
 
 
     <string name="loading">Loading…</string>
+    <string name="loading_file">Loading file, please wait</string>
     <string name="error_while_loading">Error while loading</string>
     <string name="error_while_loading_picture">Error while loading picture</string>
     <string name="block_with_a_picture">Block with a picture</string>

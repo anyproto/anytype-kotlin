@@ -13,6 +13,7 @@ import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.main.ContextModule
 import com.anytypeio.anytype.di.main.DaggerMainComponent
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.middleware.interactor.LocalNetworkAddressHandler
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -20,6 +21,9 @@ class AndroidApplication : Application() {
 
     @Inject
     lateinit var amplitudeTracker: AmplitudeTracker
+
+    @Inject
+    lateinit var localNetworkAddressHandler: LocalNetworkAddressHandler
 
     private val main: MainComponent by lazy {
         DaggerMainComponent
@@ -38,6 +42,7 @@ class AndroidApplication : Application() {
         setupAnalytics()
         setupEmojiCompat()
         setupTimber()
+        setupLocalNetworkAddressHandler()
     }
 
     private fun setupEmojiCompat() {
@@ -60,5 +65,9 @@ class AndroidApplication : Application() {
 
     private fun setupAnalytics() {
         Amplitude.getInstance().initialize(this, BuildConfig.AMPLITUDE_KEY)
+    }
+
+    private fun setupLocalNetworkAddressHandler() {
+        localNetworkAddressHandler.start()
     }
 }

@@ -3,12 +3,12 @@ apply from: './dependencies.gradle'
 buildscript {
     ext.kotlin_version = '1.5.21'
     ext.gradle_tools = '3.1.3'
-    ext.build_tools = '29.0.3'
+    ext.build_tools = '31.0.0'
     ext.nav_version = '2.3.0'
     ext.dokka_version = '1.4.32'
 
-    ext.compile_sdk = 29
-    ext.target_sdk = 29
+    ext.compile_sdk = 31
+    ext.target_sdk = 31
     ext.min_sdk = 24
 
     ext.application_id = 'com.anytypeio.anytype'
@@ -21,7 +21,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.0.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.google.gms:google-services:4.3.8'

@@ -128,7 +128,7 @@ class OtherSettingsViewModel(
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(
+        override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = OtherSettingsViewModel(
             getDefaultEditorType = getDefaultEditorType,

@@ -4,14 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 31
+    buildToolsVersion "31.0.0"
 
 
     defaultConfig {
         applicationId "com.anytypeio.anytype.sample"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -39,12 +39,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_11
     }
 }
 
@@ -66,12 +66,9 @@ dependencies {
     implementation applicationDependencies.timber
     implementation applicationDependencies.fragment
     implementation applicationDependencies.design
-    implementation applicationDependencies.permissionDisp
     implementation applicationDependencies.pickT
 
     //implementation 'com.github.gregcockroft:AndroidMath:ALPHA'
-
-    kapt applicationDependencies.permissionDispCompiler
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

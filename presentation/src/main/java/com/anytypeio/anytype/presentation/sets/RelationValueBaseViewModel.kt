@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -22,7 +23,10 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.util.CopyFileStatus
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -33,7 +37,8 @@ abstract class RelationValueBaseViewModel(
     private val values: ObjectValueProvider,
     private val details: ObjectDetailProvider,
     private val types: ObjectTypesProvider,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val copyFileToCache: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
     val navigation = MutableSharedFlow<AppNavigation.Command>()
@@ -304,6 +309,42 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
+    //region COPY FILE TO CACHE
+    val copyFileStatus = MutableSharedFlow<CopyFileStatus>(replay = 0)
+
+    fun onStartCopyFileToCacheDir(uri: Uri) {
+        copyFileToCache.execute(
+            uri = uri,
+            scope = viewModelScope,
+            listener = copyFileListener
+        )
+    }
+
+    fun onCancelCopyFileToCacheDir() {
+        copyFileToCache.cancel()
+    }
+
+    private val copyFileListener = object : OnCopyFileToCacheAction {
+        override fun onCopyFileStart() {
+            viewModelScope.launch {
+                copyFileStatus.emit(CopyFileStatus.Started)
+            }
+        }
+
+        override fun onCopyFileResult(result: String?) {
+            viewModelScope.launch {
+                copyFileStatus.emit(CopyFileStatus.Completed(result))
+            }
+        }
+
+        override fun onCopyFileError(msg: String) {
+            viewModelScope.launch {
+                copyFileStatus.emit(CopyFileStatus.Error(msg))
+            }
+        }
+    }
+    //endregion
+
     sealed class ObjectRelationValueCommand {
         object ShowAddStatusOrTagScreen : ObjectRelationValueCommand()
         object ShowAddObjectScreen : ObjectRelationValueCommand()
@@ -384,15 +425,16 @@ class RelationValueDVViewModel(
     private val removeTagFromDataViewRecord: RemoveTagFromDataViewRecord,
     private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
     private val updateDataViewRecord: UpdateDataViewRecord,
-    private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder,
-    private val addFileToRecord: AddFileToRecord
+    private val addFileToRecord: AddFileToRecord,
+    copyFileToCache: CopyFileToCacheDirectory
 ) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
     details = details,
     types = types,
-    urlBuilder = urlBuilder
+    urlBuilder = urlBuilder,
+    copyFileToCache = copyFileToCache
 ) {
 
     fun onRemoveTagFromDataViewRecordClicked(
@@ -582,27 +624,27 @@ class RelationValueDVViewModel(
     class Factory(
         private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
-        private val dispatcher: Dispatcher<Payload>,
         private val details: ObjectDetailProvider,
         private val types: ObjectTypesProvider,
         private val updateDataViewRecord: UpdateDataViewRecord,
         private val removeTagFromRecord: RemoveTagFromDataViewRecord,
         private val removeStatusFromDataViewRecord: RemoveStatusFromDataViewRecord,
         private val urlBuilder: UrlBuilder,
-        private val addFileToRecord: AddFileToRecord
+        private val addFileToRecord: AddFileToRecord,
+        private val copyFileToCache: CopyFileToCacheDirectory
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T = RelationValueDVViewModel(
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = RelationValueDVViewModel(
             relations = relations,
             values = values,
             details = details,
             types = types,
-            dispatcher = dispatcher,
             removeTagFromDataViewRecord = removeTagFromRecord,
             removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
             updateDataViewRecord = updateDataViewRecord,
-            addFileToRecord = addFileToRecord
+            addFileToRecord = addFileToRecord,
+            copyFileToCache = copyFileToCache
         ) as T
     }
 }
@@ -615,13 +657,15 @@ class RelationValueViewModel(
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder,
-    private val addFileToObject: AddFileToObject
+    private val addFileToObject: AddFileToObject,
+    copyFileToCache: CopyFileToCacheDirectory
 ) : RelationValueBaseViewModel(
     relations = relations,
     values = values,
     details = details,
     types = types,
-    urlBuilder = urlBuilder
+    urlBuilder = urlBuilder,
+    copyFileToCache = copyFileToCache
 ) {
 
     fun onObjectValueOrderChanged(
@@ -791,10 +835,11 @@ class RelationValueViewModel(
         private val types: ObjectTypesProvider,
         private val updateDetail: UpdateDetail,
         private val urlBuilder: UrlBuilder,
-        private val addFileToObject: AddFileToObject
+        private val addFileToObject: AddFileToObject,
+        private val copyFileToCache: CopyFileToCacheDirectory
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T = RelationValueViewModel(
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = RelationValueViewModel(
             relations = relations,
             values = values,
             details = details,
@@ -802,7 +847,8 @@ class RelationValueViewModel(
             dispatcher = dispatcher,
             updateDetail = updateDetail,
             urlBuilder = urlBuilder,
-            addFileToObject = addFileToObject
+            addFileToObject = addFileToObject,
+            copyFileToCache = copyFileToCache
         ) as T
     }
 }

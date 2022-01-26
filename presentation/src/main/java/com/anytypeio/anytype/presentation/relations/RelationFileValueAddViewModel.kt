@@ -163,7 +163,7 @@ class RelationFileValueAddViewModel(
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationFileValueAddViewModel(
                 relations = relations,
                 values = values,

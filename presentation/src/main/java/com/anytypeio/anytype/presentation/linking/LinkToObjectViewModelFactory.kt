@@ -15,7 +15,7 @@ class LinkToObjectViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LinkToObjectViewModel(
             urlBuilder = urlBuilder,
             getObjectTypes = getObjectTypes,
@@ -33,7 +33,7 @@ class LinkToObjectOrWebViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LinkToObjectOrWebViewModel(
             urlBuilder = urlBuilder,
             getObjectTypes = getObjectTypes,

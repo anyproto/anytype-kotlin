@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
@@ -52,6 +53,8 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.relations.providers.*
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -147,7 +150,8 @@ object EditorSessionModule {
         objectTypesProvider: ObjectTypesProvider,
         searchObjects: SearchObjects,
         getDefaultEditorType: GetDefaultEditorType,
-        findObjectSetForType: FindObjectSetForType
+        findObjectSetForType: FindObjectSetForType,
+        copyFileToCacheDirectory: CopyFileToCacheDirectory
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -173,7 +177,8 @@ object EditorSessionModule {
         searchObjects = searchObjects,
         getDefaultEditorType = getDefaultEditorType,
         findObjectSetForType = findObjectSetForType,
-        createObjectSet = createObjectSet
+        createObjectSet = createObjectSet,
+        copyFileToCacheDirectory = copyFileToCacheDirectory
     )
 
     @JvmStatic
@@ -752,4 +757,11 @@ object EditorUseCaseModule {
     fun provideCreateObjectSetUseCase(
         repo: BlockRepository
     ): CreateObjectSet = CreateObjectSet(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCopyFileToCache(
+        context: Context
+    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
 }

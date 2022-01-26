@@ -159,7 +159,7 @@ class ViewerSortByViewModel(private val state: StateFlow<ObjectSet>) : ViewModel
     class Factory(private val state: StateFlow<ObjectSet>) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerSortByViewModel(state = state) as T
         }
     }

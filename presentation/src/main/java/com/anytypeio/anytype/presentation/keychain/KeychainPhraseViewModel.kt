@@ -30,7 +30,7 @@ class KeychainPhraseViewModelFactory(
     private val getMnemonic: GetMnemonic
 ) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return KeychainPhraseViewModel(
             getMnemonic = getMnemonic
         ) as T

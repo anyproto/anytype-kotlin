@@ -32,7 +32,7 @@ class ObjectSetViewModelFactory(
     private val analytics: Analytics
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetViewModel(
             reducer = reducer,
             openObjectSet = openObjectSet,

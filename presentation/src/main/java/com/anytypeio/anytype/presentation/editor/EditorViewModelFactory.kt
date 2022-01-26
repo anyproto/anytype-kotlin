@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 open class EditorViewModelFactory(
@@ -51,11 +52,12 @@ open class EditorViewModelFactory(
     private val objectTypesProvider: ObjectTypesProvider,
     private val searchObjects: SearchObjects,
     private val getDefaultEditorType: GetDefaultEditorType,
-    private val findObjectSetForType: FindObjectSetForType
+    private val findObjectSetForType: FindObjectSetForType,
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EditorViewModel(
             openPage = openPage,
             closePage = closeObject,
@@ -81,7 +83,8 @@ open class EditorViewModelFactory(
             searchObjects = searchObjects,
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
-            createObjectSet = createObjectSet
+            createObjectSet = createObjectSet,
+            copyFileToCache = copyFileToCacheDirectory
         ) as T
     }
 }

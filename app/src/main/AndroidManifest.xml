@@ -22,6 +22,7 @@
         <activity
             android:name="com.anytypeio.anytype.ui.main.MainActivity"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter android:label="filter">
@@ -43,6 +44,7 @@
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
+            android:exported="false"
             tools:replace="screenOrientation" />
     </application>
 

@@ -1,14 +1,17 @@
 package com.anytypeio.anytype.core_utils.ext
 
+import android.Manifest
 import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
@@ -22,11 +25,15 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -135,21 +142,6 @@ inline fun <reified T> Editable.removeSpans() {
     getSpans(0, length, T::class.java).forEach { removeSpan(it) }
 }
 
-fun getVideoFileIntent(mediaType: String): Intent {
-    val intent =
-        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-        } else {
-            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
-        }
-    return intent.apply {
-        type = mediaType
-        action = Intent.ACTION_GET_CONTENT
-        putExtra("return-data", true)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-}
-
 fun String.getFileName(mime: String?): String =
     if (mime != null) {
         "$this.${mime.substringAfter("/")}"
@@ -254,3 +246,47 @@ fun View.focusAndShowKeyboard() {
 
 fun String.normalizeUrl(): String =
     if (!startsWith("http://") && !startsWith("https://")) "https://$this" else this
+
+fun Context.isPermissionGranted(mimeType: String): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && mimeType == MIME_FILE_ALL) {
+        true
+    } else {
+        val readExternalStorage: Int = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        readExternalStorage == PackageManager.PERMISSION_GRANTED
+    }
+}
+
+fun Activity.shouldShowRequestPermissionRationaleCompat(permission: String) =
+    ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
+
+fun Fragment.startFilePicker(mime: String) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+            type = mime
+        }
+        val code = if (mime == MIME_FILE_ALL) {
+            REQUEST_FILE_SAF_CODE
+        } else {
+            REQUEST_MEDIA_CODE
+        }
+        startActivityForResult(intent, code)
+    } else {
+        val intent =
+            if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+                Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+            } else {
+                Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
+            }
+        intent.apply {
+            type = mime
+            action = Intent.ACTION_GET_CONTENT
+            putExtra("return-data", true)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivityForResult(intent, REQUEST_MEDIA_CODE)
+    }
+}

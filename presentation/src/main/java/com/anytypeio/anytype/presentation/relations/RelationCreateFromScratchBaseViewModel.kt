@@ -104,7 +104,7 @@ class RelationCreateFromScratchForObjectViewModel(
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForObjectViewModel(
                 dispatcher = dispatcher,
                 addNewRelationToObject = addNewRelationToObject,
@@ -157,7 +157,7 @@ class RelationCreateFromScratchForObjectBlockViewModel(
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForObjectBlockViewModel(
                 dispatcher = dispatcher,
                 addNewRelationToObject = addNewRelationToObject,
@@ -247,7 +247,7 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForDataViewViewModel(
                 dispatcher = dispatcher,
                 addNewRelationToDataView = addNewRelationToDataView,

@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMa
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -196,6 +197,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var createObjectSet: CreateObjectSet
 
+    @Mock
+    lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
+
     private val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -281,7 +285,8 @@ open class EditorPresentationTestSetup {
             searchObjects = searchObjects,
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
-            createObjectSet = createObjectSet
+            createObjectSet = createObjectSet,
+            copyFileToCache = copyFileToCacheDirectory
         )
     }
 

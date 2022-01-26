@@ -81,6 +81,11 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
         vm.onStart(objectId = objectId, relationId = relationId)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     private fun observeState(state: FileValueAddView) {
         adapter.update(state.files)
         tvFilesCount.text = state.count

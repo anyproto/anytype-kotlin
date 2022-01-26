@@ -9,9 +9,8 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -24,12 +23,24 @@ class RelationDateValueViewModel(
     private val _views = MutableStateFlow(DateValueView())
     val views: StateFlow<DateValueView> = _views
 
+    private val jobs = mutableListOf<Job>()
+
     fun onStart(relationId: Id, objectId: String) {
-        val relation = relations.get(relationId)
-        val value = values.get(objectId)
-        setName(relation.name)
-        val timeInMillis = DateParser.parse(value[relationId])
-        setDate(timeInSeconds = timeInMillis?.toTimeSecondsLong())
+        jobs += viewModelScope.launch {
+            val pipeline = combine(
+                relations.subscribe(relationId),
+                values.subscribe(objectId)
+            ) { relation, value ->
+                setName(relation.name)
+                val timeInMillis = DateParser.parse(value[relationId])
+                setDate(timeInSeconds = timeInMillis?.toTimeSecondsLong())
+            }
+            pipeline.collect()
+        }
+    }
+
+    fun onStop() {
+        jobs.cancel()
     }
 
     fun onTodayClicked() {

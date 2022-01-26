@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,34 +31,45 @@ class RelationObjectValueAddViewModel(
     private val _filter = MutableStateFlow("")
     private var _selected = MutableStateFlow<List<Id>>(listOf())
     private val _viewsFiltered = MutableStateFlow(ObjectValueAddView())
+    private val jobs = mutableListOf<Job>()
 
     val commands = MutableSharedFlow<ObjectValueAddCommand>(0)
     val viewsFiltered: StateFlow<ObjectValueAddView> = _viewsFiltered
 
     fun onStart(relationId: Id, objectId: String, targetTypes: List<Id>) {
         processingViewsSelectionsAndFilter()
-        val relation = relations.get(relationId)
-        val values = values.get(objectId)
-        when (val ids = values[relation.key]) {
-            is List<*> -> {
-                proceedWithSearchObjects(
-                    ids = ids.typeOf(),
-                    targetTypes = targetTypes
-                )
+        jobs += viewModelScope.launch {
+            val pipeline = combine(
+                relations.subscribe(relationId),
+                values.subscribe(objectId)
+            ) { relation, value ->
+                when (val ids = value[relation.key]) {
+                    is List<*> -> {
+                        proceedWithSearchObjects(
+                            ids = ids.typeOf(),
+                            targetTypes = targetTypes
+                        )
+                    }
+                    is Id -> {
+                        proceedWithSearchObjects(
+                            ids = listOf(ids),
+                            targetTypes = targetTypes
+                        )
+                    }
+                    null -> {
+                        proceedWithSearchObjects(
+                            ids = emptyList(),
+                            targetTypes = targetTypes
+                        )
+                    }
+                }
             }
-            is Id -> {
-                proceedWithSearchObjects(
-                    ids = listOf(ids),
-                    targetTypes = targetTypes
-                )
-            }
-            null -> {
-                proceedWithSearchObjects(
-                    ids = emptyList(),
-                    targetTypes = targetTypes
-                )
-            }
+            pipeline.collect()
         }
+    }
+
+    fun onStop() {
+        jobs.cancel()
     }
 
     private fun processingViewsSelectionsAndFilter() {
@@ -66,7 +79,7 @@ class RelationObjectValueAddViewModel(
                     .map { obj ->
                         val index = selections.indexOf(obj.id)
                         if (index != -1) {
-                            when(obj) {
+                            when (obj) {
                                 is RelationValueView.Object.Default -> obj.copy(
                                     isSelected = true,
                                     selectedNumber = (index + 1).toString()
@@ -76,7 +89,7 @@ class RelationObjectValueAddViewModel(
                                 )
                             }
                         } else {
-                            when(obj) {
+                            when (obj) {
                                 is RelationValueView.Object.Default -> obj.copy(
                                     isSelected = false,
                                     selectedNumber = null

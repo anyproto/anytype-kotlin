@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.presentation.objects.toRelationFileValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -27,34 +29,45 @@ class RelationFileValueAddViewModel(
     private val _filter = MutableStateFlow("")
     private var _selected = MutableStateFlow<List<Id>>(listOf())
     private val _viewsFiltered = MutableStateFlow(FileValueAddView())
+    private val jobs = mutableListOf<Job>()
 
     val commands = MutableSharedFlow<FileValueAddCommand>(0)
     val viewsFiltered: StateFlow<FileValueAddView> = _viewsFiltered
 
     fun onStart(relationId: Id, objectId: String) {
         processingViewsSelectionsAndFilter()
-        val relation = relations.get(relationId)
-        val values = values.get(objectId)
-        when (val ids = values[relation.key]) {
-            is List<*> -> {
-                proceedWithSearchFiles(
-                    ids = ids.typeOf(),
-                    relation = relation
-                )
+        jobs += viewModelScope.launch {
+            val pipeline = combine(
+                relations.subscribe(relationId),
+                values.subscribe(objectId)
+            ) { relation, value ->
+                when (val ids = value[relation.key]) {
+                    is List<*> -> {
+                        proceedWithSearchFiles(
+                            ids = ids.typeOf(),
+                            relation = relation
+                        )
+                    }
+                    is Id -> {
+                        proceedWithSearchFiles(
+                            ids = listOf(ids),
+                            relation = relation
+                        )
+                    }
+                    null -> {
+                        proceedWithSearchFiles(
+                            ids = emptyList(),
+                            relation = relation
+                        )
+                    }
+                }
             }
-            is Id -> {
-                proceedWithSearchFiles(
-                    ids = listOf(ids),
-                    relation = relation
-                )
-            }
-            null -> {
-                proceedWithSearchFiles(
-                    ids = emptyList(),
-                    relation = relation
-                )
-            }
+            pipeline.collect()
         }
+    }
+
+    fun onStop() {
+        jobs.cancel()
     }
 
     private fun processingViewsSelectionsAndFilter() {

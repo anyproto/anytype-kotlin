@@ -107,6 +107,11 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
         vm.onStart(objectId = objectId, relationId = relationId, targetTypes = types)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     private fun observeState(state: ObjectValueAddView) {
         adapter.update(state.objects)
         tvObjectsCount.text = state.count

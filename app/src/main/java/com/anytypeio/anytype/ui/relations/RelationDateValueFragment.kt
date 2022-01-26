@@ -60,6 +60,11 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
         vm.onStart(objectId = objectId, relationId = relationId)
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     private fun observeState(state: DateValueView) {
         tvRelationHeader.text = state.title
         ivNoDateCheck.invisible()

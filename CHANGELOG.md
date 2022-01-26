@@ -1,5 +1,18 @@
 # Change log for Android @Anytype app.
 
+## Version 0.5.2
+
+### New features & enhancements 🚀
+
+* Editor | Less misspellings: auto-correct is there in experimental mode (#2059)
+
+### Fixes & tech 🚒
+
+* Relations | When opening date-format value for a relation, then exiting to your device's home screen, then returning back to Anytype caused application crash (#2060)
+* Sets | Fixes in Number, Date, and Checkbox filters (#2057)
+* App | Create a new object via app shortcuts wouldn't work correctly if Anytype is already open in background (#2056)
+* Tech | Fix missing file keys (#1353)
+
 ## Version 0.5.1
 
 ### New features & enhancements 🚀

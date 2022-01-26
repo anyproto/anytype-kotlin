@@ -5,7 +5,6 @@ import android.R.id.copy
 import android.content.Context
 import android.graphics.Canvas
 import android.text.InputType
-import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
@@ -81,10 +80,7 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun enableEditMode() {
-        multilineIme(
-            action = TEXT_INPUT_WIDGET_ACTION_GO,
-            inputType = TEXT_INPUT_WIDGET_INPUT_TYPE
-        )
+        multilineIme(action = TEXT_INPUT_WIDGET_ACTION_GO)
         setTextIsSelectable(true)
     }
 
@@ -304,7 +300,5 @@ class TextInputWidget : AppCompatEditText {
 
     companion object {
         const val TEXT_INPUT_WIDGET_ACTION_GO = EditorInfo.IME_ACTION_GO
-        const val TEXT_INPUT_WIDGET_INPUT_TYPE =
-            TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
     }
 }

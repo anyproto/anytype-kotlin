@@ -159,28 +159,15 @@ fun String.getFileName(mime: String?): String =
 
 fun Int.addDot(): String = "$this."
 
-fun EditText.multilineIme(action: Int, inputType: Int) {
+fun EditText.multilineIme(action: Int) {
     imeOptions = action
-    this.inputType = inputType
-    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
-    setHorizontallyScrolling(false)
-    maxLines = Integer.MAX_VALUE
-}
-
-fun EditText.enable() {
     inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
-    setRawInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+    setRawInputType(InputType.TYPE_CLASS_TEXT
+            or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
+    )
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
-    setTextIsSelectable(true)
-}
-
-fun EditText.disable() {
-    inputType = InputType.TYPE_NULL
-    setRawInputType(InputType.TYPE_NULL)
-    maxLines = Integer.MAX_VALUE
-    setHorizontallyScrolling(false)
-    setTextIsSelectable(false)
 }
 
 fun TextView.getCursorOffsetY(): Int? =
@@ -204,7 +191,7 @@ fun View.indentize(indent: Int, defIndent: Int, margin: Int) {
     }
 }
 
-fun Fragment.clipboard() : ClipboardManager {
+fun Fragment.clipboard(): ClipboardManager {
     return requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 }
 
@@ -238,7 +225,8 @@ fun View.focusAndShowKeyboard() {
             post {
                 // We still post the call, just in case we are being notified of the windows focus
                 // but InputMethodManager didn't get properly setup yet.
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
             }
         }

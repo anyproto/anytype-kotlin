@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.editor.modals
 import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
-import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -143,10 +142,7 @@ class SetLinkFragment : BaseBottomSheetFragment() {
     private fun enableEditMode() {
         with(link) {
             setTextColor(requireContext().color(R.color.black))
-            multilineIme(
-                action = EditorInfo.IME_ACTION_DONE,
-                inputType = TYPE_TEXT_FLAG_MULTI_LINE
-            )
+            multilineIme(action = EditorInfo.IME_ACTION_DONE)
             setTextIsSelectable(true)
         }
     }

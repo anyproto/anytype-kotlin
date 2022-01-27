@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.sets
 
 import android.os.Bundle
+import android.text.InputType.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +10,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
 import kotlinx.android.synthetic.main.fragment_set_object_set_record_name.*
 import javax.inject.Inject
@@ -40,6 +41,9 @@ class SetObjectSetRecordNameFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        textInputField.apply {
+            setRawInputType(TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_SENTENCES or TYPE_TEXT_FLAG_AUTO_CORRECT)
+        }
         lifecycleScope.subscribe(textInputField.editorActionEvents(handler)) {
             textInputField.clearFocus()
             textInputField.hideKeyboard()

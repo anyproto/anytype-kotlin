@@ -1,13 +1,18 @@
 package com.anytypeio.anytype.presentation.dashboard
 
+import MockDataFactory
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.Subscriptions
+import kotlinx.coroutines.flow.emptyFlow
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 
 class DashboardBinTest : DashboardTestSetup() {
@@ -19,7 +24,7 @@ class DashboardBinTest : DashboardTestSetup() {
         MockDataFactory.randomUuid(),
     )
 
-    private val objects : List<Map<String, Any?>> = listOf(
+    private val objects: List<Map<String, Any?>> = listOf(
         mapOf(
             Relations.ID to objectIds[0]
         ),
@@ -69,17 +74,31 @@ class DashboardBinTest : DashboardTestSetup() {
             )
         )
 
-        stubSearchObjects(
-            params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabArchive,
-                sorts = ObjectSearchConstants.sortTabArchive
-            ),
-            objects = objects
-        )
+        stubGetProfile()
+
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                    keys = ObjectSearchConstants.defaultKeys,
+                    filters = ObjectSearchConstants.filterTabArchive,
+                    sorts = ObjectSearchConstants.sortTabArchive,
+                    limit = 0,
+                    offset = 0,
+                    afterId = null,
+                    beforeId = null
+                )
+            } doReturn SearchResult(
+                results = objects.map {
+                    ObjectWrapper.Basic(it)
+                },
+                dependencies = emptyList()
+            )
+        }
 
         vm = buildViewModel()
 
-        vm.onViewCreated()
+        vm.onStart()
 
         // TESTING
 
@@ -170,17 +189,39 @@ class DashboardBinTest : DashboardTestSetup() {
             )
         )
 
-        stubSearchObjects(
-            params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabArchive,
-                sorts = ObjectSearchConstants.sortTabArchive
-            ),
-            objects = objects
-        )
+//        stubSearchObjects(
+//            params = SearchObjects.Params(
+//                filters = ObjectSearchConstants.filterTabArchive,
+//                sorts = ObjectSearchConstants.sortTabArchive
+//            ),
+//            objects = objects
+//        )
+
+        stubGetProfile()
+
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                    keys = ObjectSearchConstants.defaultKeys,
+                    filters = ObjectSearchConstants.filterTabArchive,
+                    sorts = ObjectSearchConstants.sortTabArchive,
+                    limit = 0,
+                    offset = 0,
+                    afterId = null,
+                    beforeId = null
+                )
+            } doReturn SearchResult(
+                results = objects.map {
+                    ObjectWrapper.Basic(it)
+                },
+                dependencies = emptyList()
+            )
+        }
 
         vm = buildViewModel()
 
-        vm.onViewCreated()
+        vm.onStart()
 
         // TESTING
 
@@ -300,17 +341,31 @@ class DashboardBinTest : DashboardTestSetup() {
             )
         )
 
-        stubSearchObjects(
-            params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabArchive,
-                sorts = ObjectSearchConstants.sortTabArchive
-            ),
-            objects = objects
-        )
+        stubGetProfile()
+
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                    keys = ObjectSearchConstants.defaultKeys,
+                    filters = ObjectSearchConstants.filterTabArchive,
+                    sorts = ObjectSearchConstants.sortTabArchive,
+                    limit = 0,
+                    offset = 0,
+                    afterId = null,
+                    beforeId = null
+                )
+            } doReturn SearchResult(
+                results = objects.map {
+                    ObjectWrapper.Basic(it)
+                },
+                dependencies = emptyList()
+            )
+        }
 
         vm = buildViewModel()
 
-        vm.onViewCreated()
+        vm.onStart()
 
         // TESTING
 
@@ -399,5 +454,17 @@ class DashboardBinTest : DashboardTestSetup() {
             expected = HomeDashboardViewModel.Mode.DEFAULT,
             actual = vm.mode.value
         )
+    }
+
+    private fun stubGetProfile() {
+        getProfile.stub {
+            onBlocking {
+                observe(
+                    keys = any(),
+                    subscription = any(),
+                    dispatcher = any()
+                )
+            } doReturn emptyFlow()
+        }
     }
 }

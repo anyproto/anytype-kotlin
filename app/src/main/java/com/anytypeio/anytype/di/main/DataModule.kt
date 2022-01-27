@@ -25,6 +25,8 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.database.repo.DatabaseRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
 import com.anytypeio.anytype.middleware.block.BlockMiddleware
@@ -277,4 +279,9 @@ object DataModule {
     fun provideAppActionManager(context: Context) : AppActionManager = DefaultAppActionManager(
         context = context
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideObjectStore() : ObjectStore = DefaultObjectStore()
 }

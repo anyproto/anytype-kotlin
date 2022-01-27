@@ -228,6 +228,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         jobs += lifecycleScope.subscribe(vm.profile) { profile ->
             setProfile(profile)
         }
+        vm.onStart()
     }
 
     private fun setProfile(profile: ViewState<ObjectWrapper.Basic>) {
@@ -261,6 +262,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun onStop() {
         super.onStop()
+        vm.onStop()
         jobs.cancel()
     }
 

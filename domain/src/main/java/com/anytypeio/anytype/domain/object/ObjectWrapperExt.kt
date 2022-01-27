@@ -16,3 +16,23 @@ fun ObjectWrapper.Basic.unset(keys: List<Id>) = ObjectWrapper.Basic(
         keys.forEach { k -> remove(k) }
     }
 )
+
+fun List<Id>.move(target: Id, afterId: Id?) : List<Id> {
+    val result = toMutableList()
+    val targetIdx = indexOfFirst { it == target }
+    if (targetIdx != -1) {
+        val item = get(targetIdx)
+        result.removeAt(targetIdx)
+        val prevIdx = indexOfFirst { it == afterId }
+        if (prevIdx != -1) {
+            if (prevIdx < targetIdx) {
+                result.add(prevIdx.inc(), item)
+            } else {
+                result.add(prevIdx, item)
+            }
+        } else {
+            result.add(0, item)
+        }
+    }
+    return result
+}

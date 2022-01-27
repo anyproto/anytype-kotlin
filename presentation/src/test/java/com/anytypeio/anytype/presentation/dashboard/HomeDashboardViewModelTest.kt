@@ -17,8 +17,11 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
@@ -89,6 +92,15 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
+    @Mock
+    lateinit var cancelSearchSubscription: CancelSearchSubscription
+
+    @Mock
+    lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
+
+    @Mock
+    lateinit var objectStore: ObjectStore
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = Config(
@@ -124,7 +136,10 @@ class HomeDashboardViewModelTest {
             setObjectListIsArchived = setObjectListIsArchived,
             urlBuilder = builder,
             getDefaultEditorType = getDefaultEditorType,
-            flavourConfigProvider = flavourConfigProvider
+            flavourConfigProvider = flavourConfigProvider,
+            cancelSearchSubscription = cancelSearchSubscription,
+            objectStore = objectStore,
+            objectSearchSubscriptionContainer = objectSearchSubscriptionContainer
         )
     }
 

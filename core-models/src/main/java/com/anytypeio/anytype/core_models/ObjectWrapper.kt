@@ -10,7 +10,7 @@ sealed class ObjectWrapper {
     /**
      * @property map [map] map with raw data containing relations.
      */
-    class Basic(val map: Map<String, Any?>) : ObjectWrapper() {
+    data class Basic(val map: Map<String, Any?>) : ObjectWrapper() {
 
         private val default = map.withDefault { null }
 

@@ -147,7 +147,6 @@ interface BlockDataStore {
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
-        fulltext: String,
         keys: List<String>,
         offset: Int,
         limit: Int,

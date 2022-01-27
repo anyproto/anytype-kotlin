@@ -128,7 +128,8 @@ class GetProfileTest {
                             diff = mapOf(
                                 Relations.NAME to nameAfterUpdate
                             ),
-                            target = config.profile
+                            target = config.profile,
+                            subscriptions = listOf(subscription)
                         )
                     )
                 )
@@ -196,13 +197,15 @@ class GetProfileTest {
                             diff = mapOf(
                                 Relations.NAME to nameAfterUpdate
                             ),
-                            target = config.profile
+                            target = config.profile,
+                            subscriptions = listOf(subscription)
                         ),
                         SubscriptionEvent.Amend(
                             diff = mapOf(
                                 Relations.ICON_IMAGE to iconImageAfterUpdate
                             ),
-                            target = config.profile
+                            target = config.profile,
+                            subscriptions = listOf(subscription)
                         )
                     )
                 )
@@ -274,7 +277,8 @@ class GetProfileTest {
                             diff = mapOf(
                                 Relations.NAME to nameAfterUpdate
                             ),
-                            target = config.profile
+                            target = config.profile,
+                            subscriptions = listOf(subscription)
                         )
                     )
                 )
@@ -284,7 +288,8 @@ class GetProfileTest {
                             diff = mapOf(
                                 Relations.ICON_IMAGE to iconImageAfterUpdate
                             ),
-                            target = config.profile
+                            target = config.profile,
+                            subscriptions = listOf(subscription)
                         )
                     )
                 )

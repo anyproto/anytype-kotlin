@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.*
@@ -16,8 +17,11 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
@@ -65,7 +69,10 @@ object HomeDashboardModule {
         urlBuilder: UrlBuilder,
         setObjectListIsArchived: SetObjectListIsArchived,
         deleteObjects: DeleteObjects,
-        flavourConfigProvider: FlavourConfigProvider
+        flavourConfigProvider: FlavourConfigProvider,
+        objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
+        cancelSearchSubscription: CancelSearchSubscription,
+        objectStore: ObjectStore
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -82,7 +89,10 @@ object HomeDashboardModule {
         setObjectListIsArchived = setObjectListIsArchived,
         deleteObjects = deleteObjects,
         getDefaultEditorType = getDefaultEditorType,
-        flavourConfigProvider = flavourConfigProvider
+        flavourConfigProvider = flavourConfigProvider,
+        objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
+        cancelSearchSubscription = cancelSearchSubscription,
+        objectStore = objectStore
     )
 
     @JvmStatic
@@ -206,5 +216,34 @@ object HomeDashboardModule {
         repo: BlockRepository
     ): SetObjectListIsArchived = SetObjectListIsArchived(
         repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun objectSearchSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        store: ObjectStore
+    ): ObjectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        store = store,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun cancelSearchSubscription(
+        repo: BlockRepository,
+        store: ObjectStore
+    ): CancelSearchSubscription = CancelSearchSubscription(
+        repo = repo,
+        store = store
     )
 }

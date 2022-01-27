@@ -43,6 +43,9 @@ class GetProfile(
                             is SubscriptionEvent.Unset -> {
                                 result.unset(event.keys)
                             }
+                            else -> {
+                                result
+                            }
                         }
                     }
                     result

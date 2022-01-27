@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.ext
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.`object`.amend
+import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.`object`.unset
 import com.anytypeio.anytype.domain.common.MockDataFactory
 import org.junit.Test
@@ -87,6 +88,62 @@ class ObjectWrapperExtTest {
         assertEquals(
             expected = expected.map,
             actual = result.map
+        )
+    }
+
+    @Test
+    fun `should move ids in two directions - to the left or to the right`() {
+
+        val initial = listOf("1", "2", "3", "4", "5")
+
+        val result1 = initial.move(
+            target = initial.last(),
+            afterId = null
+        )
+
+        assertEquals(
+            expected = listOf("5", "1", "2", "3", "4"),
+            actual = result1
+        )
+
+        val result2 = initial.move(
+            target = "2",
+            afterId = "3"
+        )
+
+        assertEquals(
+            expected = listOf("1", "3", "2", "4", "5"),
+            actual = result2
+        )
+
+        val result3 = initial.move(
+            target = "1",
+            afterId = "5"
+        )
+
+        assertEquals(
+            expected = listOf("2", "3", "4", "5", "1"),
+            actual = result3
+        )
+
+        val result4 = initial.move(
+            target = "4",
+            afterId = "2"
+        )
+
+        assertEquals(
+            expected = listOf("1", "2", "4", "3", "5"),
+            actual = result4
+        )
+
+        val result5 = initial.move(
+            target = "5",
+            afterId = "1"
+        )
+
+        assertEquals(
+            expected = listOf("1", "5", "2", "3", "4"),
+            actual = result5
         )
     }
 }

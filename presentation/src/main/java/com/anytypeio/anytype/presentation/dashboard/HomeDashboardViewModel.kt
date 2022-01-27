@@ -33,8 +33,11 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
@@ -47,6 +50,7 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.settings.EditorSettings
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -69,10 +73,15 @@ class HomeDashboardViewModel(
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects,
-    private val flavourConfigProvider: FlavourConfigProvider
+    private val flavourConfigProvider: FlavourConfigProvider,
+    private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
+    private val cancelSearchSubscription: CancelSearchSubscription,
+    private val objectStore: ObjectStore
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
+
+    val subscriptions = mutableListOf<Job>()
 
     val toasts = MutableSharedFlow<String>()
 
@@ -184,7 +193,7 @@ class HomeDashboardViewModel(
 
         viewModelScope.launch {
             openDashboard(params = null).either(
-                fnR = { payload -> processEvents(payload.events).also { proceedWithObjectSearch() } },
+                fnR = { payload -> processEvents(payload.events) },
                 fnL = { Timber.e(it, "Error while opening home dashboard") }
             )
         }
@@ -193,6 +202,28 @@ class HomeDashboardViewModel(
     fun onViewCreated() {
         Timber.d("onViewCreated, ")
         proceedWithOpeningHomeDashboard()
+    }
+
+    fun onStart() {
+        proceedWithObjectSearchWithSubscriptions()
+    }
+
+    fun onStop() {
+        viewModelScope.launch {
+            subscriptions.clear()
+            cancelSearchSubscription(
+                CancelSearchSubscription.Params(
+                    subscriptions = listOf(
+                        Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        Subscriptions.SUBSCRIPTION_RECENT,
+                        Subscriptions.SUBSCRIPTION_SETS
+                    )
+                )
+            ).process(
+                failure = { Timber.e(it, "Failed to cancel tabs subscriptions") },
+                success = { Timber.d("Sucessfully canceled subscriptions. Store contains ${objectStore.size} objects") }
+            )
+        }
     }
 
     fun onAddNewDocumentClicked() {
@@ -345,7 +376,7 @@ class HomeDashboardViewModel(
     fun onAvatarClicked() {
         Timber.d("onAvatarClicked, ")
         profile.value.let { state ->
-            when(state) {
+            when (state) {
                 is ViewState.Success -> {
                     viewModelScope.sendEvent(
                         analytics = analytics,
@@ -388,106 +419,7 @@ class HomeDashboardViewModel(
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
 
-    private fun proceedWithObjectSearch() {
-        proceedWithArchivedObjectSearch()
-        proceedWithRecentObjectSearch()
-        proceedWithSetsObjectSearch()
-        if (flavourConfigProvider.get().enableSpaces == true) {
-            tabs.value = listOf(TAB.FAVOURITE, TAB.RECENT, TAB.SETS, TAB.SHARED, TAB.BIN)
-            proceedWithSharedObjectsSearch()
-        }
-    }
-
-    private fun proceedWithArchivedObjectSearch() {
-        viewModelScope.launch {
-            val params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabArchive,
-                sorts = ObjectSearchConstants.sortTabArchive
-            )
-            searchObjects(params).process(
-                success = { objects ->
-                    archived.value = objects
-                        .map { obj ->
-                            val layout = obj.layout
-                            val oType = stateData.value?.findOTypeById(obj.type)
-                            DashboardView.Document(
-                                id = obj.id,
-                                target = obj.id,
-                                title = obj.getProperName(),
-                                isArchived = true,
-                                isLoading = false,
-                                emoji = obj.iconEmoji,
-                                image = obj.iconImage,
-                                type = obj.type.firstOrNull(),
-                                typeName = oType?.name,
-                                layout = obj.layout,
-                                done = obj.done,
-                                icon = ObjectIcon.from(
-                                    obj = obj,
-                                    layout = layout,
-                                    builder = urlBuilder
-                                )
-                            )
-                        }
-                },
-                failure = { Timber.e(it, "Error while searching for archived objects") }
-            )
-        }
-    }
-
-    private fun proceedWithRecentObjectSearch() {
-        viewModelScope.launch {
-            val params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabHistory,
-                sorts = ObjectSearchConstants.sortTabHistory,
-                limit = ObjectSearchConstants.limitTabHistory
-            )
-            searchObjects(params).process(
-                success = { objects ->
-                    recent.value = objects
-                        .map { obj ->
-                            val oType = stateData.value?.findOTypeById(obj.type)
-                            val layout = obj.layout
-                            if (layout == ObjectType.Layout.SET) {
-                                DashboardView.ObjectSet(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.getProperName(),
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
-                                    )
-                                )
-                            } else {
-                                DashboardView.Document(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.getProperName(),
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    emoji = obj.iconEmoji,
-                                    image = obj.iconImage,
-                                    type = obj.type.firstOrNull(),
-                                    typeName = oType?.name,
-                                    layout = obj.layout,
-                                    done = obj.done,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
-                                    )
-                                )
-                            }
-                        }
-                },
-                failure = { Timber.e(it, "Error while searching for recent objects") }
-            )
-        }
-    }
-
+    @Deprecated("Will be removed in favour of search with subscriptions")
     private fun proceedWithSharedObjectsSearch() {
         viewModelScope.launch {
             val params = SearchObjects.Params(
@@ -540,32 +472,131 @@ class HomeDashboardViewModel(
         }
     }
 
-    private fun proceedWithSetsObjectSearch() {
-        viewModelScope.launch {
-            val params = SearchObjects.Params(
-                filters = ObjectSearchConstants.filterTabSets,
-                sorts = ObjectSearchConstants.sortTabSets
-            )
-            searchObjects(params).process(
-                success = { objects ->
-                    sets.value = objects
-                        .map { obj ->
-                            DashboardView.ObjectSet(
-                                id = obj.id,
-                                target = obj.id,
-                                title = obj.getProperName(),
-                                isArchived = obj.isArchived ?: false,
-                                isLoading = false,
-                                icon = ObjectIcon.from(
-                                    obj = obj,
+    private fun proceedWithObjectSearchWithSubscriptions() {
+        subscriptions += viewModelScope.launch {
+            objectSearchSubscriptionContainer.observe(
+                subscription = Subscriptions.SUBSCRIPTION_RECENT,
+                keys = ObjectSearchConstants.defaultKeys + listOf(Relations.LAST_MODIFIED_DATE),
+                filters = ObjectSearchConstants.filterTabHistory,
+                sorts = ObjectSearchConstants.sortTabHistory,
+                limit = ObjectSearchConstants.limitTabHistory,
+                offset = 0
+            ).catch { Timber.e(it, "Error while collecting search results") }.collectLatest { objects ->
+                Timber.d("Results updated: $objects")
+                recent.value = objects.objects
+                    .mapNotNull { target ->
+                        val obj = objectStore.get(target)
+                        if (obj != null) {
+                            val oType = objectStore.get(obj.type.firstOrNull() ?: "")
+                            val layout = obj.layout
+                            if (layout == ObjectType.Layout.SET) {
+                                DashboardView.ObjectSet(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.getProperName(),
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
+                                )
+                            } else {
+                                DashboardView.Document(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.getProperName(),
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    emoji = obj.iconEmoji,
+                                    image = obj.iconImage,
+                                    type = obj.type.firstOrNull(),
+                                    typeName = oType?.name,
                                     layout = obj.layout,
-                                    builder = urlBuilder
-                            )
-                        )
+                                    done = obj.done,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
+                                )
+                            }
+                        } else {
+                            null
+                        }
                     }
-                },
-                failure = { Timber.e(it, "Error while searching for sets") }
-            )
+            }
+        }
+        subscriptions += viewModelScope.launch {
+            objectSearchSubscriptionContainer.observe(
+                subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                keys = ObjectSearchConstants.defaultKeys,
+                filters = ObjectSearchConstants.filterTabArchive,
+                sorts = ObjectSearchConstants.sortTabArchive,
+                limit = 0,
+                offset = 0
+            ).catch { Timber.e(it, "Error while collecting search results") }.collectLatest { objects ->
+                    archived.value = objects.objects
+                        .mapNotNull { target ->
+                            val obj = objectStore.get(target)
+                            if (obj != null) {
+                                val oType = objectStore.get(obj.type.firstOrNull() ?: "")
+                                val layout = obj.layout
+                                DashboardView.Document(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.getProperName(),
+                                    isArchived = true,
+                                    isLoading = false,
+                                    emoji = obj.iconEmoji,
+                                    image = obj.iconImage,
+                                    type = obj.type.firstOrNull(),
+                                    typeName = oType?.name,
+                                    layout = obj.layout,
+                                    done = obj.done,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = layout,
+                                        builder = urlBuilder
+                                    )
+                                )
+                            } else {
+                                null
+                            }
+                        }
+                }
+        }
+        subscriptions += viewModelScope.launch {
+            objectSearchSubscriptionContainer.observe(
+                subscription = Subscriptions.SUBSCRIPTION_SETS,
+                keys = ObjectSearchConstants.defaultKeys,
+                filters = ObjectSearchConstants.filterTabSets,
+                sorts = ObjectSearchConstants.sortTabSets,
+                limit = 0,
+                offset = 0
+            ).catch { Timber.e(it, "Error while collecting search results") }.collectLatest { objects ->
+                    sets.value = objects.objects
+                        .mapNotNull { target ->
+                            val obj = objectStore.get(target)
+                            if (obj != null) {
+                                DashboardView.ObjectSet(
+                                    id = obj.id,
+                                    target = obj.id,
+                                    title = obj.getProperName(),
+                                    isArchived = obj.isArchived ?: false,
+                                    isLoading = false,
+                                    icon = ObjectIcon.from(
+                                        obj = obj,
+                                        layout = obj.layout,
+                                        builder = urlBuilder
+                                    )
+                                )
+                            } else {
+                                null
+                            }
+                        }
+                }
         }
     }
 
@@ -641,10 +672,9 @@ class HomeDashboardViewModel(
             ).process(
                 failure = { e ->
                     Timber.e(e, "Error while restoring objects from archive")
-                    proceedWithArchivedObjectSearch()
                 },
                 success = {
-                    proceedWithArchivedObjectSearch()
+                    Timber.d("Object successfully archived")
                 }
             )
         }
@@ -676,11 +706,9 @@ class HomeDashboardViewModel(
                 failure = { e ->
                     isDeletionInProgress.value = false
                     Timber.e(e, "Error while deleting objects")
-                    proceedWithArchivedObjectSearch()
                 },
                 success = {
                     isDeletionInProgress.value = false
-                    proceedWithArchivedObjectSearch()
                 }
             )
         }
@@ -701,7 +729,7 @@ class HomeDashboardViewModel(
         val direction: Position
     )
 
-        enum class TAB { FAVOURITE, RECENT, SETS, SHARED, BIN }
+    enum class TAB { FAVOURITE, RECENT, SETS, SHARED, BIN }
 
     //region CREATE PAGE
     private fun proceedWithGettingDefaultPageType() {

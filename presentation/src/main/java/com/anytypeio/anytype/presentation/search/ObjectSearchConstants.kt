@@ -211,7 +211,7 @@ object ObjectSearchConstants {
         )
     )
 
-    val limitTabHistory = 30
+    val limitTabHistory = 50
     //endregion
 
     //region TAB SETS
@@ -283,6 +283,18 @@ object ObjectSearchConstants {
             relationKey = Relations.NAME,
             type = DVSortType.ASC
         )
+    )
+
+    val defaultKeys = listOf(
+        Relations.ID,
+        Relations.NAME,
+        Relations.ICON_IMAGE,
+        Relations.ICON_EMOJI,
+        Relations.TYPE,
+        Relations.LAYOUT,
+        Relations.IS_ARCHIVED,
+        Relations.IS_DELETED,
+        Relations.SNIPPET
     )
 
     //endregion

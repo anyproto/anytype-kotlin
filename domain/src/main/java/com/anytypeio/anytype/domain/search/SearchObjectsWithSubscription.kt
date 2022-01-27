@@ -17,7 +17,6 @@ class SearchObjectsWithSubscription(
             sorts = params.sorts,
             filters = params.filters,
             keys = params.keys,
-            fulltext = params.fulltext,
             offset = params.offset,
             limit = params.limit,
             afterId = params.afterId,

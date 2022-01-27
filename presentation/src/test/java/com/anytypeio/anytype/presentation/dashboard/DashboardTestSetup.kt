@@ -10,8 +10,10 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.auth.model.Account
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.*
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
@@ -19,9 +21,14 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -88,6 +95,19 @@ open class DashboardTestSetup {
     @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
+    @Mock
+    lateinit var cancelSearchSubscription: CancelSearchSubscription
+
+    @Mock
+    lateinit var repo: BlockRepository
+
+    @Mock
+    lateinit var subscriptionEventChannel: SubscriptionEventChannel
+
+    lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
+
+    lateinit var objectStore: ObjectStore
+
     lateinit var vm: HomeDashboardViewModel
 
     val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -98,27 +118,42 @@ open class DashboardTestSetup {
         profile = MockDataFactory.randomUuid()
     )
 
-    fun buildViewModel() = HomeDashboardViewModel(
-        getProfile = getProfile,
-        openDashboard = openDashboard,
-        closeDashboard = closeDashboard,
-        createPage = createPage,
-        getConfig = getConfig,
-        move = move,
-        interceptEvents = interceptEvents,
-        eventConverter = HomeDashboardEventConverter.DefaultConverter(
-            builder = builder,
-            objectTypesProvider = objectTypesProvider
-        ),
-        getDebugSettings = getDebugSettings,
-        analytics = analytics,
-        searchObjects = searchObjects,
-        urlBuilder = builder,
-        getDefaultEditorType = getDefaultEditorType,
-        setObjectListIsArchived = setObjectListIsArchived,
-        deleteObjects = deleteObjects,
-        flavourConfigProvider = flavourConfigProvider
-    )
+    fun buildViewModel() : HomeDashboardViewModel {
+        objectStore = DefaultObjectStore()
+        return HomeDashboardViewModel(
+            getProfile = getProfile,
+            openDashboard = openDashboard,
+            closeDashboard = closeDashboard,
+            createPage = createPage,
+            getConfig = getConfig,
+            move = move,
+            interceptEvents = interceptEvents,
+            eventConverter = HomeDashboardEventConverter.DefaultConverter(
+                builder = builder,
+                objectTypesProvider = objectTypesProvider
+            ),
+            getDebugSettings = getDebugSettings,
+            analytics = analytics,
+            searchObjects = searchObjects,
+            urlBuilder = builder,
+            getDefaultEditorType = getDefaultEditorType,
+            setObjectListIsArchived = setObjectListIsArchived,
+            deleteObjects = deleteObjects,
+            flavourConfigProvider = flavourConfigProvider,
+            cancelSearchSubscription = cancelSearchSubscription,
+            objectStore = objectStore,
+            objectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
+                repo = repo,
+                channel = subscriptionEventChannel,
+                store = objectStore,
+                dispatchers = AppCoroutineDispatchers(
+                    io = coroutineTestRule.testDispatcher,
+                    computation = coroutineTestRule.testDispatcher,
+                    main = coroutineTestRule.testDispatcher
+                )
+            )
+        )
+    }
 
     fun stubGetConfig(response: Either.Right<Config>) {
         getConfig.stub {

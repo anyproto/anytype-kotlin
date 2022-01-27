@@ -37,16 +37,6 @@ android {
     }
 
 
-    lintOptions {
-        quiet true
-        abortOnError false
-        ignoreWarnings true
-        disable 'InvalidPackage'            //Some libraries have issues with this.
-        disable 'OldTargetApi'              //Lint gives this warning but SDK 20 would be Android L Beta.
-        disable 'IconDensities'             //For testing purpose. This is safe to remove.
-        disable 'IconMissingDensityFolder'  //For testing purpose. This is safe to remove.
-    }
-
 //    signingConfigs {
 //        //For proper signing, use debuggable false for a build.
 //        release {
@@ -123,6 +113,12 @@ android {
 
     androidExtensions {
         experimental = true
+    }
+    lint {
+        abortOnError false
+        disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder'
+        ignoreWarnings true
+        quiet true
     }
 }
 

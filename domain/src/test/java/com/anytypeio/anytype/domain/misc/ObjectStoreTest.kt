@@ -4,13 +4,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class ObjectStoreTest {
 
     @Test
-    fun `should subscribe earch object to each subscription and clear store after all subscriptions have been unregistered`() {
+    fun `should subscribe earch object to each subscription and clear store after all subscriptions have been unregistered`() = runBlockingTest {
 
         val store = DefaultObjectStore()
 
@@ -68,7 +69,7 @@ class ObjectStoreTest {
     }
 
     @Test
-    fun `should subscribe each object to each subscription and unregister half of subscriptions`() {
+    fun `should subscribe each object to each subscription and unregister half of subscriptions`() = runBlockingTest {
 
         val store = DefaultObjectStore()
 

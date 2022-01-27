@@ -4,32 +4,34 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 interface ObjectStore {
 
     val size : Int
 
-    fun get(target: Id) : ObjectWrapper.Basic?
+    suspend fun get(target: Id) : ObjectWrapper.Basic?
 
-    fun amend(
+    suspend fun amend(
         target: Id,
         diff: Map<Id, Any?>,
         subscriptions: List<Id>
     )
 
-    fun unset(
+    suspend fun unset(
         target: Id,
         keys: List<Id>,
         subscriptions: List<Id>
     )
 
-    fun set(
+    suspend fun set(
         target: Id,
         data: Map<String, Any?>,
         subscriptions: List<Id>
     )
 
-    fun merge(
+    suspend fun merge(
         objects: List<ObjectWrapper.Basic>,
         dependencies: List<ObjectWrapper.Basic>,
         subscriptions: List<Id>
@@ -38,37 +40,36 @@ interface ObjectStore {
     /**
      * Registers [subscription] for [target]
      */
-    fun subscribe(subscription: Id, target: Id)
+    suspend fun subscribe(subscription: Id, target: Id)
 
     /**
      * Unregister [subscriptions] and clear store if needed.
      */
-    fun unsubscribe(subscriptions: List<Id>)
+    suspend fun unsubscribe(subscriptions: List<Id>)
 
     /**
      * Remove object if this object only has this [subscription]
      */
-    fun unsubscribe(subscription: Id, target: Id)
+    suspend fun unsubscribe(subscription: Id, target: Id)
 }
 
-/**
- * TODO make store thread-safe.
- */
 class DefaultObjectStore : ObjectStore {
+
+    private val mutex = Mutex()
 
     override val size: Int get() = map.size
 
     val map = mutableMapOf<Id, Holder>()
 
-    override fun get(target: Id): ObjectWrapper.Basic? {
+    override suspend fun get(target: Id): ObjectWrapper.Basic? = mutex.withLock {
         return map[target]?.obj
     }
 
-    override fun merge(
+    override suspend fun merge(
         objects: List<ObjectWrapper.Basic>,
         dependencies: List<ObjectWrapper.Basic>,
         subscriptions: List<Id>
-    ) {
+    ) = mutex.withLock {
         objects.forEach { o ->
             val current = map[o.id]
             if (current == null) {
@@ -103,11 +104,11 @@ class DefaultObjectStore : ObjectStore {
         }
     }
 
-    override fun amend(
+    override suspend fun amend(
         target: Id,
         diff: Map<Id, Any?>,
         subscriptions: List<Id>
-    ) {
+    ) = mutex.withLock {
         val current = map[target]
         if (current != null) {
             map[target] = current.copy(
@@ -122,11 +123,11 @@ class DefaultObjectStore : ObjectStore {
         }
     }
 
-    override fun unset(
+    override suspend fun unset(
         target: Id,
         keys: List<Id>,
         subscriptions: List<Id>
-    ) {
+    ) = mutex.withLock {
         val current = map[target]
         if (current != null) {
             map[target] = current.copy(
@@ -136,18 +137,18 @@ class DefaultObjectStore : ObjectStore {
         }
     }
 
-    override fun set(
+    override suspend fun set(
         target: Id,
         data: Map<String, Any?>,
         subscriptions: List<Id>
-    ) {
+    ) = mutex.withLock {
         map[target] = Holder(
             obj = ObjectWrapper.Basic(data),
             subscriptions = subscriptions
         )
     }
 
-    override fun subscribe(subscription: Id, target: Id) {
+    override suspend fun subscribe(subscription: Id, target: Id) = mutex.withLock {
         val current = map[target]
         if (current != null) {
             if (!current.subscriptions.contains(subscription)) {
@@ -158,7 +159,7 @@ class DefaultObjectStore : ObjectStore {
         }
     }
 
-    override fun unsubscribe(subscriptions: List<Id>) {
+    override suspend fun unsubscribe(subscriptions: List<Id>) = mutex.withLock {
         val all = subscriptions + subscriptions.map { "$it$DEPENDENT_SUBSRIPTION_POSTFIX" }
         val unsubscribed = mutableListOf<Id>()
         map.forEach { (id, holder) ->
@@ -176,7 +177,7 @@ class DefaultObjectStore : ObjectStore {
         }
     }
 
-    override fun unsubscribe(subscription: Id, target: Id) {
+    override suspend fun unsubscribe(subscription: Id, target: Id) = mutex.withLock {
         val current = map[target]
         if (current != null) {
             if (current.subscriptions.firstOrNull() == subscription) {

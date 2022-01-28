@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.render
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,7 +21,6 @@ import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
 class DefaultBlockViewRenderer(
-    private val counter: Counter,
     private val urlBuilder: UrlBuilder,
     private val toggleStateHolder: ToggleStateHolder,
     private val coverImageHashProvider: CoverImageHashProvider
@@ -37,7 +35,8 @@ class DefaultBlockViewRenderer(
         details: Block.Details,
         relations: List<Relation>,
         restrictions: List<ObjectRestriction>,
-        selection: Set<Id>
+        selection: Set<Id>,
+        count: Int
     ): List<BlockView> {
 
         val children = getValue(anchor)
@@ -58,14 +57,14 @@ class DefaultBlockViewRenderer(
             }
         }
 
-        counter.reset()
+        var mCounter = count
 
         children.forEach { block ->
             when (val content = block.content) {
                 is Content.Text -> {
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 title(
                                     mode = mode,
@@ -79,7 +78,7 @@ class DefaultBlockViewRenderer(
                             )
                         }
                         Content.Text.Style.P -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 paragraph(
                                     mode = mode,
@@ -108,13 +107,13 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.NUMBERED -> {
-                            counter.inc()
+                            mCounter = mCounter.inc()
                             result.add(
                                 numbered(
                                     mode = mode,
                                     block = block,
                                     content = content,
-                                    number = counter.current(),
+                                    number = mCounter,
                                     focus = focus,
                                     indent = indent,
                                     details = details,
@@ -138,7 +137,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.TOGGLE -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 toggle(
                                     mode = mode,
@@ -168,7 +167,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.H1 -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 headerOne(
                                     mode = mode,
@@ -197,7 +196,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.H2 -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 headerTwo(
                                     mode = mode,
@@ -226,7 +225,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.H3, Content.Text.Style.H4 -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 headerThree(
                                     mode = mode,
@@ -255,7 +254,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.QUOTE -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 highlight(
                                     mode = mode,
@@ -284,7 +283,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.BULLET -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 bulleted(
                                     mode = mode,
@@ -316,7 +315,7 @@ class DefaultBlockViewRenderer(
                             val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
                             val featured = detail.featuredRelations ?: emptyList()
                             if (featured.contains(Relations.DESCRIPTION)) {
-                                counter.reset()
+                                mCounter = 0
                                 result.add(
                                     description(
                                         block = block,
@@ -329,7 +328,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.CHECKBOX -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 checkbox(
                                     mode = mode,
@@ -358,7 +357,7 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
-                            counter.reset()
+                            mCounter = 0
                             result.add(
                                 code(
                                     mode = mode,
@@ -388,7 +387,7 @@ class DefaultBlockViewRenderer(
                     }
                 }
                 is Content.Bookmark -> {
-                    counter.reset()
+                    mCounter = 0
                     result.add(
                         bookmark(
                             mode = mode,
@@ -400,7 +399,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Divider -> {
-                    counter.reset()
+                    mCounter = 0
                     result.add(
                         divider(
                             block = block,
@@ -412,7 +411,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Link -> {
-                    counter.reset()
+                    mCounter = 0
                     val obj = ObjectWrapper.Basic(
                         map = details.details[content.target]?.map ?: emptyMap()
                     )
@@ -427,7 +426,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.File -> {
-                    counter.reset()
+                    mCounter = 0
                     result.add(
                         file(
                             mode = mode,
@@ -439,7 +438,14 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Layout -> {
-                    counter.reset()
+                    if (content.type != Content.Layout.Type.DIV) {
+                        mCounter = 0
+                    } else {
+                        val last = result.lastOrNull()
+                        if (last is BlockView.Text.Numbered) {
+                            mCounter = last.number
+                        }
+                    }
                     result.addAll(
                         render(
                             mode = mode,
@@ -450,12 +456,13 @@ class DefaultBlockViewRenderer(
                             details = details,
                             relations = relations,
                             restrictions = restrictions,
-                            selection = selection
+                            selection = selection,
+                            count = mCounter
                         )
                     )
                 }
                 is Content.RelationBlock -> {
-                    counter.reset()
+                    mCounter = 0
                     result.add(
                         relation(
                             ctx = root.id,
@@ -469,7 +476,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.FeaturedRelations -> {
-                    counter.reset()
+                    mCounter = 0
                     val featured = featured(
                         ctx = root.id,
                         block = block,
@@ -482,7 +489,7 @@ class DefaultBlockViewRenderer(
                     }
                 }
                 is Content.Latex -> {
-                    counter.reset()
+                    mCounter = 0
                     result.add(
                         latex(
                             block = block,
@@ -494,7 +501,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Unsupported -> {
-                    counter.reset()
+                    mCounter = 0
                     result.add(
                         unsupported(
                             block = block,

@@ -5,7 +5,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
@@ -3930,7 +3929,6 @@ open class EditorViewModelTest {
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
                 toggleStateHolder = ToggleStateHolder.Default(),
-                counter = Counter.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
             setObjectIsArchived = setObjectIsArchived,

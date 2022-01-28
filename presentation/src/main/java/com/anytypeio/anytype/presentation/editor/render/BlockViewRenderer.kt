@@ -29,6 +29,7 @@ interface BlockViewRenderer {
         details: Block.Details = Block.Details(emptyMap()),
         relations: List<Relation>,
         restrictions: List<ObjectRestriction>,
-        selection: Set<Id>
+        selection: Set<Id>,
+        count: Int = 0
     ): List<BlockView>
 }

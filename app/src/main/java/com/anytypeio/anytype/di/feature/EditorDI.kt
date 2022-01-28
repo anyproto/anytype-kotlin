@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
@@ -112,10 +111,6 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
-    fun provideCounter(): Counter = Counter.Default()
-
-    @JvmStatic
-    @Provides
     fun provideProxer(): Editor.Proxer = Editor.Proxer()
 
     @JvmStatic
@@ -186,12 +181,10 @@ object EditorSessionModule {
     fun provideDefaultBlockViewRenderer(
         urlBuilder: UrlBuilder,
         toggleStateHolder: ToggleStateHolder,
-        counter: Counter,
         coverImageHashProvider: CoverImageHashProvider
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
-        counter = counter,
         coverImageHashProvider = coverImageHashProvider
     )
 

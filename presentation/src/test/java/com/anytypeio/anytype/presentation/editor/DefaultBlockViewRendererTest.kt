@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.const.DetailsKeys
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -24,6 +23,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.TXT
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
@@ -88,7 +88,6 @@ class DefaultBlockViewRendererTest {
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
-            counter = Counter.Default(),
             coverImageHashProvider = coverImageHashProvider
         )
     }
@@ -1146,159 +1145,6 @@ class DefaultBlockViewRendererTest {
                 backgroundColor = c.content<Block.Content.Text>().backgroundColor,
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text
-            )
-        )
-
-        assertEquals(expected = expected, actual = result)
-    }
-
-    @Test
-    fun `should render nested numbered lists`() {
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
-
-        val d = Block(
-            id = "D",
-            children = listOf(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.NUMBERED,
-                marks = emptyList(),
-                align = Block.Align.AlignCenter
-            ),
-            fields = Block.Fields.empty()
-        )
-
-        val c = Block(
-            id = "C",
-            children = listOf(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.NUMBERED,
-                marks = emptyList(),
-                align = Block.Align.AlignCenter
-            ),
-            fields = Block.Fields.empty()
-        )
-
-        val b = Block(
-            id = "B",
-            children = listOf(c.id, d.id),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.NUMBERED,
-                marks = emptyList(),
-                align = Block.Align.AlignCenter
-            ),
-            fields = Block.Fields.empty()
-        )
-
-        val a = Block(
-            id = "A",
-            children = listOf(b.id),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.NUMBERED,
-                marks = emptyList(),
-                align = Block.Align.AlignCenter
-            ),
-            fields = Block.Fields.empty()
-        )
-
-        val fields = Block.Fields.empty()
-
-        val page = Block(
-            id = MockDataFactory.randomUuid(),
-            children = listOf(header.id, a.id),
-            fields = fields,
-            content = Block.Content.Smart()
-        )
-
-        val details = mapOf(page.id to fields)
-
-        val blocks = listOf(page, header, title, a, b, c, d)
-
-        val map = blocks.asMap()
-
-        wrapper = BlockViewRenderWrapper(
-            blocks = map,
-            renderer = renderer
-        )
-
-        val result = runBlocking {
-            wrapper.render(
-                root = page,
-                anchor = page.id,
-                focus = Editor.Focus.id(a.id),
-                indent = 0,
-                details = Block.Details(details)
-            )
-        }
-
-        val expected = listOf(
-            BlockView.Title.Basic(
-                id = title.id,
-                isFocused = false,
-                text = title.content<Block.Content.Text>().text,
-                image = null
-            ),
-            BlockView.Text.Numbered(
-                indent = 0,
-                isFocused = true,
-                id = a.id,
-                marks = emptyList(),
-                backgroundColor = a.content<Block.Content.Text>().backgroundColor,
-                color = a.content<Block.Content.Text>().color,
-                text = a.content<Block.Content.Text>().text,
-                number = 1
-            ),
-            BlockView.Text.Numbered(
-                indent = 1,
-                isFocused = false,
-                id = b.id,
-                marks = emptyList(),
-                backgroundColor = b.content<Block.Content.Text>().backgroundColor,
-                color = b.content<Block.Content.Text>().color,
-                text = b.content<Block.Content.Text>().text,
-                number = 1
-            ),
-            BlockView.Text.Numbered(
-                indent = 2,
-                isFocused = false,
-                id = c.id,
-                marks = emptyList(),
-                backgroundColor = c.content<Block.Content.Text>().backgroundColor,
-                color = c.content<Block.Content.Text>().color,
-                text = c.content<Block.Content.Text>().text,
-                number = 1
-            ),
-            BlockView.Text.Numbered(
-                indent = 2,
-                isFocused = false,
-                id = d.id,
-                marks = emptyList(),
-                backgroundColor = d.content<Block.Content.Text>().backgroundColor,
-                color = d.content<Block.Content.Text>().color,
-                text = d.content<Block.Content.Text>().text,
-                number = 2
             )
         )
 
@@ -2569,4 +2415,937 @@ class DefaultBlockViewRendererTest {
 
         assertEquals(expected = expected, actual = result)
     }
+
+    //region NUMBERED
+
+    @Test
+    fun `should render nested numbered lists`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val d = Block(
+            id = "D",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val c = Block(
+            id = "C",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val b = Block(
+            id = "B",
+            children = listOf(c.id, d.id),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a = Block(
+            id = "A",
+            children = listOf(b.id),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val fields = Block.Fields.empty()
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id, a.id),
+            fields = fields,
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to fields)
+
+        val blocks = listOf(page, header, title, a, b, c, d)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(a.id),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = true,
+                id = a.id,
+                marks = emptyList(),
+                backgroundColor = a.content<Block.Content.Text>().backgroundColor,
+                color = a.content<Block.Content.Text>().color,
+                text = a.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 1,
+                isFocused = false,
+                id = b.id,
+                marks = emptyList(),
+                backgroundColor = b.content<Block.Content.Text>().backgroundColor,
+                color = b.content<Block.Content.Text>().color,
+                text = b.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 2,
+                isFocused = false,
+                id = c.id,
+                marks = emptyList(),
+                backgroundColor = c.content<Block.Content.Text>().backgroundColor,
+                color = c.content<Block.Content.Text>().color,
+                text = c.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 2,
+                isFocused = false,
+                id = d.id,
+                marks = emptyList(),
+                backgroundColor = d.content<Block.Content.Text>().backgroundColor,
+                color = d.content<Block.Content.Text>().color,
+                text = d.content<Block.Content.Text>().text,
+                number = 2
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render list, nested list, then continue list`() {
+
+        val title = Block(
+            id = "titleId",
+            content = Block.Content.Text(
+                text = "Title",
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = "headerId",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val a1 = Block(
+            id = "a1",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A1",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val b1 = Block(
+            id = "b1",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "B1",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val b2 = Block(
+            id = "b2",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "B2",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val b3 = Block(
+            id = "b3",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "B3",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a2 = Block(
+            id = "a2",
+            children = listOf(b1.id, b2.id, b3.id),
+            content = Block.Content.Text(
+                text = "A2",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a3 = Block(
+            id = "a3",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A3",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a4 = Block(
+            id = "a4",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A4",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = "objectId",
+            children = listOf(header.id, a1.id, a2.id, a3.id, a4.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, header, title, a1, a2, a3, a4, b1, b2, b3)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a1.id,
+                marks = emptyList(),
+                backgroundColor = a1.content<Block.Content.Text>().backgroundColor,
+                color = a1.content<Block.Content.Text>().color,
+                text = a1.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a2.id,
+                marks = emptyList(),
+                backgroundColor = a2.content<Block.Content.Text>().backgroundColor,
+                color = a2.content<Block.Content.Text>().color,
+                text = a2.content<Block.Content.Text>().text,
+                number = 2
+            ),
+            BlockView.Text.Numbered(
+                indent = 1,
+                isFocused = false,
+                id = b1.id,
+                marks = emptyList(),
+                backgroundColor = b1.content<Block.Content.Text>().backgroundColor,
+                color = b1.content<Block.Content.Text>().color,
+                text = b1.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 1,
+                isFocused = false,
+                id = b2.id,
+                marks = emptyList(),
+                backgroundColor = b2.content<Block.Content.Text>().backgroundColor,
+                color = b2.content<Block.Content.Text>().color,
+                text = b2.content<Block.Content.Text>().text,
+                number = 2
+            ),
+            BlockView.Text.Numbered(
+                indent = 1,
+                isFocused = false,
+                id = b3.id,
+                marks = emptyList(),
+                backgroundColor = b3.content<Block.Content.Text>().backgroundColor,
+                color = b3.content<Block.Content.Text>().color,
+                text = b3.content<Block.Content.Text>().text,
+                number = 3
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a3.id,
+                marks = emptyList(),
+                backgroundColor = a3.content<Block.Content.Text>().backgroundColor,
+                color = a3.content<Block.Content.Text>().color,
+                text = a3.content<Block.Content.Text>().text,
+                number = 3
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a4.id,
+                marks = emptyList(),
+                backgroundColor = a4.content<Block.Content.Text>().backgroundColor,
+                color = a4.content<Block.Content.Text>().color,
+                text = a4.content<Block.Content.Text>().text,
+                number = 4
+            ),
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render list, nested list with only one child, then continue list`() {
+
+        val title = Block(
+            id = "titleId",
+            content = Block.Content.Text(
+                text = "Title",
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = "headerId",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val a1 = Block(
+            id = "a1",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A1",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val b1 = Block(
+            id = "b1",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "B1",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a2 = Block(
+            id = "a2",
+            children = listOf(b1.id),
+            content = Block.Content.Text(
+                text = "A2",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a3 = Block(
+            id = "a3",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A3",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a4 = Block(
+            id = "a4",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A4",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = "objectId",
+            children = listOf(header.id, a1.id, a2.id, a3.id, a4.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, header, title, a1, a2, a3, a4, b1)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a1.id,
+                marks = emptyList(),
+                backgroundColor = a1.content<Block.Content.Text>().backgroundColor,
+                color = a1.content<Block.Content.Text>().color,
+                text = a1.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a2.id,
+                marks = emptyList(),
+                backgroundColor = a2.content<Block.Content.Text>().backgroundColor,
+                color = a2.content<Block.Content.Text>().color,
+                text = a2.content<Block.Content.Text>().text,
+                number = 2
+            ),
+            BlockView.Text.Numbered(
+                indent = 1,
+                isFocused = false,
+                id = b1.id,
+                marks = emptyList(),
+                backgroundColor = b1.content<Block.Content.Text>().backgroundColor,
+                color = b1.content<Block.Content.Text>().color,
+                text = b1.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a3.id,
+                marks = emptyList(),
+                backgroundColor = a3.content<Block.Content.Text>().backgroundColor,
+                color = a3.content<Block.Content.Text>().color,
+                text = a3.content<Block.Content.Text>().text,
+                number = 3
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a4.id,
+                marks = emptyList(),
+                backgroundColor = a4.content<Block.Content.Text>().backgroundColor,
+                color = a4.content<Block.Content.Text>().color,
+                text = a4.content<Block.Content.Text>().text,
+                number = 4
+            ),
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render numbered list divided by divs`() {
+
+        val title = Block(
+            id = "titleId",
+            content = Block.Content.Text(
+                text = "Title",
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = "headerId",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val numbered = mutableListOf<Block>()
+
+        repeat(100) { idx ->
+            numbered.add(
+                Block(
+                    id = "block-${idx.inc()}",
+                    content = Block.Content.Text(
+                        text = idx.inc().toString(),
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.NUMBERED
+                    ),
+                    children = emptyList(),
+                    fields = Block.Fields.empty()
+                )
+            )
+        }
+
+        val fields = Block.Fields.empty()
+
+
+        val div1 = Block(
+            id = "div1Id",
+            children = numbered.subList(0, 25).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div2 = Block(
+            id = "div2Id",
+            children = numbered.subList(25, 50).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div3 = Block(
+            id = "div3Id",
+            children = numbered.subList(50, 75).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div4 = Block(
+            id = "div4Id",
+            children = numbered.subList(75, 100).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = "root",
+            children = listOf(header.id) + listOf(div1.id, div2.id, div3.id, div4.id),
+            fields = fields,
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to fields)
+
+        val blocks = listOf(page, header, title) + listOf(div1, div2, div3, div4) + numbered
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            )
+        ) + numbered.mapIndexed { idx, block ->
+            BlockView.Text.Numbered(
+                id = block.id,
+                text = block.content<TXT>().text,
+                number = idx.inc()
+            )
+        }
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render nested numbered list including other text blocks`() {
+
+        val title = Block(
+            id = "titleId",
+            content = Block.Content.Text(
+                text = "Title",
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = "headerId",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val a1 = Block(
+            id = "a1",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A1",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val c1 = Block(
+            id = "c1",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "C1",
+                style = Block.Content.Text.Style.P,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val c2 = Block(
+            id = "c2",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "C2",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val c3 = Block(
+            id = "c3",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "C3",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val c4 = Block(
+            id = "c4",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "C4",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val b1 = Block(
+            id = "b1",
+            children = listOf(c1.id, c2.id, c3.id, c4.id),
+            content = Block.Content.Text(
+                text = "B1",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a2 = Block(
+            id = "a2",
+            children = listOf(b1.id),
+            content = Block.Content.Text(
+                text = "A2",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a3 = Block(
+            id = "a3",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A3",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val a4 = Block(
+            id = "a4",
+            children = listOf(),
+            content = Block.Content.Text(
+                text = "A4",
+                style = Block.Content.Text.Style.NUMBERED,
+                marks = emptyList(),
+                align = Block.Align.AlignCenter
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = "objectId",
+            children = listOf(header.id, a1.id, a2.id, a3.id, a4.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, header, title, a1, a2, a3, a4, b1, c1, c2, c3, c4)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a1.id,
+                marks = emptyList(),
+                backgroundColor = a1.content<Block.Content.Text>().backgroundColor,
+                color = a1.content<Block.Content.Text>().color,
+                text = a1.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a2.id,
+                marks = emptyList(),
+                backgroundColor = a2.content<Block.Content.Text>().backgroundColor,
+                color = a2.content<Block.Content.Text>().color,
+                text = a2.content<Block.Content.Text>().text,
+                number = 2
+            ),
+            BlockView.Text.Numbered(
+                indent = 1,
+                isFocused = false,
+                id = b1.id,
+                marks = emptyList(),
+                backgroundColor = b1.content<Block.Content.Text>().backgroundColor,
+                color = b1.content<Block.Content.Text>().color,
+                text = b1.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Paragraph(
+                indent = 2,
+                isFocused = false,
+                id = c1.id,
+                marks = emptyList(),
+                backgroundColor = c1.content<Block.Content.Text>().backgroundColor,
+                color = c1.content<Block.Content.Text>().color,
+                text = c1.content<Block.Content.Text>().text,
+                alignment = Alignment.CENTER
+            ),
+            BlockView.Text.Numbered(
+                indent = 2,
+                isFocused = false,
+                id = c2.id,
+                marks = emptyList(),
+                backgroundColor = c2.content<Block.Content.Text>().backgroundColor,
+                color = c2.content<Block.Content.Text>().color,
+                text = c2.content<Block.Content.Text>().text,
+                number = 1
+            ),
+            BlockView.Text.Numbered(
+                indent = 2,
+                isFocused = false,
+                id = c3.id,
+                marks = emptyList(),
+                backgroundColor = c3.content<Block.Content.Text>().backgroundColor,
+                color = c3.content<Block.Content.Text>().color,
+                text = c3.content<Block.Content.Text>().text,
+                number = 2
+            ),
+            BlockView.Text.Numbered(
+                indent = 2,
+                isFocused = false,
+                id = c4.id,
+                marks = emptyList(),
+                backgroundColor = c4.content<Block.Content.Text>().backgroundColor,
+                color = c4.content<Block.Content.Text>().color,
+                text = c4.content<Block.Content.Text>().text,
+                number = 3
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a3.id,
+                marks = emptyList(),
+                backgroundColor = a3.content<Block.Content.Text>().backgroundColor,
+                color = a3.content<Block.Content.Text>().color,
+                text = a3.content<Block.Content.Text>().text,
+                number = 3
+            ),
+            BlockView.Text.Numbered(
+                indent = 0,
+                isFocused = false,
+                id = a4.id,
+                marks = emptyList(),
+                backgroundColor = a4.content<Block.Content.Text>().backgroundColor,
+                color = a4.content<Block.Content.Text>().color,
+                text = a4.content<Block.Content.Text>().text,
+                number = 4
+            ),
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    //endregion
 }

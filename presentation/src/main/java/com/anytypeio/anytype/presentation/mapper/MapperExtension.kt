@@ -714,3 +714,13 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Space -> ObjectType.Layout.SPACE
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
 }
+
+fun Block.Fields.toView(): BlockView.Appearance.Params =
+    BlockView.Appearance.Params(
+        iconSize = iconSize,
+        style = style,
+        withCover = withCover,
+        withIcon = withIcon,
+        withName = withName,
+        withDescription = withDescription
+    )

@@ -57,6 +57,20 @@ data class Block(
                 else -> null
             }
 
+        val withName: Boolean? by default
+        val withDescription: Boolean? by default
+        val withIcon: Boolean? by default
+        val withCover: Boolean? by default
+
+        /**
+         * 0.0 - text, 1.0 - card
+         */
+        val style: Double? by default
+        /**
+         *  1.0 - small, 2.0 - medium, 3.0 - large
+         */
+        val iconSize: Double? by default
+
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"

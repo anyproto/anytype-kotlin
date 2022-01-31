@@ -52,8 +52,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 
 /**
  * UI-models for different types of blocks.
@@ -165,6 +163,19 @@ sealed class BlockView : ViewType {
         Alignable,
         Selectable {
         val id: String
+    }
+
+    interface Appearance {
+        val appearanceParams: Params
+
+        data class Params(
+            val style: Double? = null,
+            val iconSize: Double? = null,
+            val withIcon: Boolean? = null,
+            val withCover: Boolean? = null,
+            val withName: Boolean? = null,
+            val withDescription: Boolean? = null
+        )
     }
 
     sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection {
@@ -821,12 +832,13 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val isLoading: Boolean = false,
+            override val appearanceParams: Appearance.Params,
             var text: String? = null,
             val icon: ObjectIcon,
             val isEmpty: Boolean = false,
             val isArchived: Boolean? = false,
             val isDeleted: Boolean? = false
-        ) : LinkToObject(), Searchable {
+        ) : LinkToObject(), Searchable, Appearance {
             override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
         }
 

@@ -143,7 +143,8 @@ class BlockViewSearchTextTest {
             text = MockDataFactory.randomString(),
             searchFields = listOf(field1),
             indent = 0,
-            icon = ObjectIcon.None
+            icon = ObjectIcon.None,
+            appearanceParams = BlockView.Appearance.Params()
         )
 
         val views = listOf(page)

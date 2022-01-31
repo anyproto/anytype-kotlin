@@ -1225,7 +1225,8 @@ class DefaultBlockViewRenderer(
             mode = mode,
             block = block,
             selection = selection
-        )
+        ),
+        appearanceParams = block.fields.toView()
     )
 
     private fun linkArchive(

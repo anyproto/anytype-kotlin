@@ -107,7 +107,12 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.NUMBERED -> {
-                            mCounter = mCounter.inc()
+                            val last = result.lastOrNull { it is BlockView.Indentable && it.indent == indent }
+                            mCounter = if (last is BlockView.Text.Numbered) {
+                                last.number.inc()
+                            } else {
+                                mCounter.inc()
+                            }
                             result.add(
                                 numbered(
                                     mode = mode,

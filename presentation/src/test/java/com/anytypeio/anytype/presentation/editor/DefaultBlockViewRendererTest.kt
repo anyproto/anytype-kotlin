@@ -1203,7 +1203,7 @@ class DefaultBlockViewRendererTest {
                 indent = 0,
                 details = Block.Details(details),
 
-            )
+                )
         }
 
         val expected = listOf(
@@ -2110,7 +2110,7 @@ class DefaultBlockViewRendererTest {
                     Markup.Mark.TextColor(
                         from = 0,
                         to = 5,
-                        color= textColor
+                        color = textColor
                     ),
                     Markup.Mark.Bold(
                         from = 13,
@@ -2187,7 +2187,7 @@ class DefaultBlockViewRendererTest {
 
         val fieldsUpdated1 = Block.Fields(mapOf(Relations.NAME to mentionText2))
 
-        val detailsAmend = mapOf(mentionTarget1 to fieldsUpdated1,)
+        val detailsAmend = mapOf(mentionTarget1 to fieldsUpdated1)
 
         val blocks = listOf(page, header, title, a)
 
@@ -3082,6 +3082,372 @@ class DefaultBlockViewRendererTest {
                 number = idx.inc()
             )
         }
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render numbered blocks with correct number after divs containing also numbered blocks`() {
+
+        val title = Block(
+            id = "titleId",
+            content = Block.Content.Text(
+                text = "Title",
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = "headerId",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val numbered = mutableListOf<Block>()
+
+        repeat(25) { idx ->
+            numbered.add(
+                Block(
+                    id = "block-${idx.inc()}",
+                    content = Block.Content.Text(
+                        text = idx.inc().toString(),
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.NUMBERED
+                    ),
+                    children = emptyList(),
+                    fields = Block.Fields.empty()
+                )
+            )
+        }
+
+        val fields = Block.Fields.empty()
+
+
+        val div1 = Block(
+            id = "div1Id",
+            children = numbered.subList(0, 5).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div2 = Block(
+            id = "div2Id",
+            children = numbered.subList(5, 10).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div3 = Block(
+            id = "div3Id",
+            children = numbered.subList(10, 15).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div4 = Block(
+            id = "div4Id",
+            children = numbered.subList(15, 20).map { it.id },
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = "root",
+            children = listOf(header.id) + listOf(
+                div1.id,
+                div2.id,
+                div3.id,
+                div4.id
+            ) + numbered.subList(20, 25).map { it.id },
+            fields = fields,
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to fields)
+
+        val blocks = listOf(page, header, title) + listOf(div1, div2, div3, div4) + numbered
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            )
+        ) + numbered.mapIndexed { idx, block ->
+            BlockView.Text.Numbered(
+                id = block.id,
+                text = block.content<TXT>().text,
+                number = idx.inc()
+            )
+        }
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render numbered blocks with correct number after divs containing also numbered blocks with inner lists`() {
+
+        val title = Block(
+            id = "titleId",
+            content = Block.Content.Text(
+                text = "Title",
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = "headerId",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val div1num1 = Block(
+            id = "div1num1",
+            content = Block.Content.Text(
+                text = "div1num1",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val div1num2 = Block(
+            id = "div1num2",
+            content = Block.Content.Text(
+                text = "div1num2",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val div2num1 = Block(
+            id = "div2num1",
+            content = Block.Content.Text(
+                text = "div2num1",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val div2num2num1 = Block(
+            id = "div2num2num1",
+            content = Block.Content.Text(
+                text = "div2num2num1",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val div2num2num2 = Block(
+            id = "div2num2num2",
+            content = Block.Content.Text(
+                text = "div2num2num2",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val div2num2 = Block(
+            id = "div2num2",
+            content = Block.Content.Text(
+                text = "div2num2",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = listOf(div2num2num1.id, div2num2num2.id),
+            fields = Block.Fields.empty()
+        )
+
+        val fields = Block.Fields.empty()
+
+
+        val div1 = Block(
+            id = "div1Id",
+            children = listOf(div1num1.id, div1num2.id),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val div2 = Block(
+            id = "div2Id",
+            children = listOf(div2num1.id, div2num2.id),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.DIV
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val afterDiv2Num1 = Block(
+            id = "afterDiv2Num1",
+            content = Block.Content.Text(
+                text = "afterDiv2Num1",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val afterDiv2Num2 = Block(
+            id = "afterDiv2Num2",
+            content = Block.Content.Text(
+                text = "afterDiv2Num2",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = "root",
+            children = listOf(header.id) + listOf(
+                div1.id,
+                div2.id
+            ) + listOf(afterDiv2Num1.id, afterDiv2Num2.id),
+            fields = fields,
+            content = Block.Content.Smart()
+        )
+
+        val details = mapOf(page.id to fields)
+
+        val blocks = listOf(page, header, title) + listOf(
+            div1,
+            div2
+        ) + listOf(
+            div1num1,
+            div1num2,
+            div2num1,
+            div2num2,
+            div2num2num1,
+            div2num2num2,
+            afterDiv2Num1,
+            afterDiv2Num2
+        )
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null
+            )
+        ) + listOf(
+            BlockView.Text.Numbered(
+                id = div1num1.id,
+                text = div1num1.content<TXT>().text,
+                number = 1,
+                indent = 0
+            ),
+            BlockView.Text.Numbered(
+                id = div1num2.id,
+                text = div1num2.content<TXT>().text,
+                number = 2,
+                indent = 0
+            ),
+            BlockView.Text.Numbered(
+                id = div2num1.id,
+                text = div2num1.content<TXT>().text,
+                number = 3,
+                indent = 0
+            ),
+            BlockView.Text.Numbered(
+                id = div2num2.id,
+                text = div2num2.content<TXT>().text,
+                number = 4,
+                indent = 0
+            ),
+            BlockView.Text.Numbered(
+                id = div2num2num1.id,
+                text = div2num2num1.content<TXT>().text,
+                number = 1,
+                indent = 1
+            ),
+            BlockView.Text.Numbered(
+                id = div2num2num2.id,
+                text = div2num2num2.content<TXT>().text,
+                number = 2,
+                indent = 1
+            ),
+            BlockView.Text.Numbered(
+                id = afterDiv2Num1.id,
+                text = afterDiv2Num1.content<TXT>().text,
+                number = 5,
+                indent = 0
+            ),
+            BlockView.Text.Numbered(
+                id = afterDiv2Num2.id,
+                text = afterDiv2Num2.content<TXT>().text,
+                number = 6,
+                indent = 0
+            )
+        )
 
         assertEquals(expected = expected, actual = result)
     }

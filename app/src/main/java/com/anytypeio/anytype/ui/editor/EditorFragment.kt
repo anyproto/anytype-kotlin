@@ -49,6 +49,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
 import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
@@ -119,7 +120,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -1643,6 +1643,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             is ClipboardInterceptor.Action.Copy -> vm.onCopy(action.selection)
             is ClipboardInterceptor.Action.Paste -> vm.onPaste(action.selection)
         }
+    }
+
+    override fun onUrlPasted(url: Url) {
+        vm.onUrlPasted(url)
     }
 
     private fun hideKeyboard() {

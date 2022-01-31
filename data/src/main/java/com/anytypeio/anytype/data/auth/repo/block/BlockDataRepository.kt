@@ -171,6 +171,10 @@ class BlockDataRepository(
         command: Command.SetupBookmark
     ): Payload = factory.remote.setupBookmark(command)
 
+    override suspend fun createBookmark(
+        command: Command.CreateBookmark
+    ): Payload = factory.remote.createBookmark(command)
+
     override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
         factory.remote.uploadBlock(command)
 

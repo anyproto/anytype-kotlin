@@ -129,6 +129,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.SetupBookmark
     ): Payload = remote.setupBookmark(command)
 
+    override suspend fun createBookmark(
+        command: Command.CreateBookmark
+    ): Payload = remote.createBookmark(command)
+
     override suspend fun undo(command: Command.Undo) = remote.undo(command)
 
     override suspend fun redo(command: Command.Redo) = remote.redo(command)

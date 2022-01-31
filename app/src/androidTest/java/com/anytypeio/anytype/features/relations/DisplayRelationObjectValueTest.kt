@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.*
@@ -51,6 +52,9 @@ class DisplayRelationObjectValueTest {
 
     @Mock
     lateinit var gateway: Gateway
+
+    @Mock
+    lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     private lateinit var addRelationOption: AddDataViewRelationOption
     private lateinit var removeTagFromDataViewRecord: RemoveTagFromDataViewRecord
@@ -95,9 +99,9 @@ class DisplayRelationObjectValueTest {
             removeTagFromRecord = removeTagFromDataViewRecord,
             removeStatusFromDataViewRecord = removeStatusFromDataViewRecord,
             urlBuilder = urlBuilder,
-            dispatcher = dispatcher,
             updateDataViewRecord = updateDataViewRecord,
-            addFileToRecord = addFileToRecord
+            addFileToRecord = addFileToRecord,
+            copyFileToCache = copyFileToCacheDirectory
         )
     }
 

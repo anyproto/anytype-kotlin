@@ -40,6 +40,7 @@ interface BlockDataStore {
     suspend fun removeDocumentCover(ctx: String): Payload
     suspend fun removeDocumentIcon(ctx: Id): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
+    suspend fun createBookmark(command: Command.CreateBookmark): Payload
     suspend fun undo(command: Command.Undo): Payload
     suspend fun redo(command: Command.Redo): Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>

@@ -95,6 +95,7 @@ interface BlockRepository {
     suspend fun removeDocumentIcon(ctx: Id): Payload
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
+    suspend fun createBookmark(command: Command.CreateBookmark): Payload
 
     suspend fun undo(command: Command.Undo): Undo.Result
     suspend fun redo(command: Command.Redo): Redo.Result

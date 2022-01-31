@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -237,6 +238,7 @@ object EditorSessionModule {
         updateFields: UpdateFields,
         updateAlignment: UpdateAlignment,
         setupBookmark: SetupBookmark,
+        createBookmark: CreateBookmark,
         turnIntoDocument: TurnIntoDocument,
         setObjectType: SetObjectType,
         matcher: DefaultPatternMatcher,
@@ -277,6 +279,7 @@ object EditorSessionModule {
         updateText = updateText,
         updateAlignment = updateAlignment,
         setupBookmark = setupBookmark,
+        createBookmark = createBookmark,
         move = move,
         paste = paste,
         copy = copy,
@@ -586,6 +589,15 @@ object EditorUseCaseModule {
     fun provideSetupBookmarkUseCase(
         repo: BlockRepository
     ): SetupBookmark = SetupBookmark(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateBookmarkUseCase(
+        repo: BlockRepository
+    ): CreateBookmark = CreateBookmark(
         repo = repo
     )
 

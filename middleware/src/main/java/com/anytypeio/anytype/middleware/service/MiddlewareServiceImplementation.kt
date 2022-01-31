@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.*
-import anytype.Rpc.Config
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -308,6 +307,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Block.Bookmark.Fetch.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Block.Bookmark.Fetch.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockBookmarkCreateAndFetch(request: Block.Bookmark.CreateAndFetch.Request): Block.Bookmark.CreateAndFetch.Response {
+        val encoded = Service.blockBookmarkCreateAndFetch(
+            Block.Bookmark.CreateAndFetch.Request.ADAPTER.encode(request)
+        )
+        val response = Block.Bookmark.CreateAndFetch.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Bookmark.CreateAndFetch.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

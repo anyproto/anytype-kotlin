@@ -85,6 +85,9 @@ interface MiddlewareService {
     fun blockBookmarkFetch(request: Block.Bookmark.Fetch.Request): Block.Bookmark.Fetch.Response
 
     @Throws(Exception::class)
+    fun blockBookmarkCreateAndFetch(request: Block.Bookmark.CreateAndFetch.Request): Block.Bookmark.CreateAndFetch.Response
+
+    @Throws(Exception::class)
     fun blockUpload(request: Block.Upload.Request): Block.Upload.Response
 
     @Throws(Exception::class)

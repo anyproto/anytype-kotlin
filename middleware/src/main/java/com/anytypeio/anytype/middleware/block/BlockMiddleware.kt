@@ -145,6 +145,10 @@ class BlockMiddleware(
         command: Command.SetupBookmark
     ): Payload = middleware.setupBookmark(command)
 
+    override suspend fun createBookmark(
+        command: Command.CreateBookmark
+    ): Payload = middleware.createAndSetupBookmark(command)
+
     override suspend fun undo(
         command: Command.Undo
     ): Payload = middleware.undo(command)

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_BACKGROUND_COLOR
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_COPY
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_CREATE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_CREATE_BOOKMARK
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_DIVIDER_UPDATE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_DOWNLOAD_FILE
 import com.anytypeio.anytype.analytics.base.EventsDictionary.BLOCK_DUPLICATE
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.getAnalyticsEvent
@@ -68,6 +70,7 @@ class Orchestrator(
     private val updateAlignment: UpdateAlignment,
     private val uploadBlock: UploadBlock,
     private val setupBookmark: SetupBookmark,
+    private val createBookmark: CreateBookmark,
     private val turnIntoDocument: TurnIntoDocument,
     private val updateFields: UpdateFields,
     private val move: Move,
@@ -654,6 +657,32 @@ class Orchestrator(
                         success = { payload ->
                             val event = EventAnalytics.Anytype(
                                 name = BLOCK_SETUP_BOOKMARK,
+                                props = Props.empty(),
+                                duration = EventAnalytics.Duration(
+                                    start = startTime,
+                                    middleware = System.currentTimeMillis()
+                                )
+                            )
+                            defaultPayloadWithEvent(Pair(payload, event))
+                        }
+                    )
+                }
+                is Intent.Bookmark.CreateBookmark -> {
+                    val startTime = System.currentTimeMillis()
+                    createBookmark(
+                        params = CreateBookmark.Params(
+                            context = intent.context,
+                            target = intent.target,
+                            url = intent.url,
+                            position = intent.position
+                        )
+                    ).proceed(
+                        failure = { throwable ->
+                            proxies.errors.send(throwable)
+                        },
+                        success = { payload ->
+                            val event = EventAnalytics.Anytype(
+                                name = BLOCK_CREATE_BOOKMARK,
                                 props = Props.empty(),
                                 duration = EventAnalytics.Duration(
                                     start = startTime,

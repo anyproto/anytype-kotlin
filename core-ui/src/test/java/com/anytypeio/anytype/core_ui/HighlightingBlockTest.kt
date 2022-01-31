@@ -8,9 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Highlight
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
@@ -33,6 +33,7 @@ class HighlightingBlockTest {
 
     private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) = Unit
+        override fun onUrlPasted(url: Url) {}
     }
 
     @Test

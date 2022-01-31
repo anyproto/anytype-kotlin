@@ -3132,6 +3132,22 @@ class EditorViewModel(
         }
     }
 
+    fun onUrlPasted(url: Url) {
+        val focus = orchestrator.stores.focus.current()
+        if (!focus.isEmpty) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Bookmark.CreateBookmark(
+                        context = context,
+                        target = focus.id,
+                        position = Position.TOP,
+                        url = url
+                    )
+                )
+            }
+        }
+    }
+
     fun onClickListener(clicked: ListenerType) {
         Timber.d("onClickListener, clicked:[$clicked]")
         if (mode is EditorMode.Styling) {

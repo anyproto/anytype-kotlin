@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
@@ -70,6 +71,7 @@ class BlockAdapterTest {
 
     private val clipboardInterceptor : ClipboardInterceptor = object: ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+        override fun onUrlPasted(url: Url) {}
     }
 
     @Test

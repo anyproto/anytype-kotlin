@@ -6,7 +6,6 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
@@ -32,6 +31,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -49,6 +49,7 @@ import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMa
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
@@ -73,6 +74,7 @@ open class EditorTestSetup {
     lateinit var updateAlignment: UpdateAlignment
     lateinit var replaceBlock: ReplaceBlock
     lateinit var setupBookmark: SetupBookmark
+    lateinit var createBookmark: CreateBookmark
     lateinit var uploadBlock: UploadBlock
     lateinit var splitBlock: SplitBlock
     lateinit var createPage: CreatePage
@@ -81,6 +83,9 @@ open class EditorTestSetup {
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
     lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
+
+    @Mock
+    lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     @Mock
     lateinit var openPage: OpenPage
@@ -232,6 +237,7 @@ open class EditorTestSetup {
         getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
+        createBookmark = CreateBookmark(repo)
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
@@ -247,7 +253,6 @@ open class EditorTestSetup {
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(
                 urlBuilder = urlBuilder,
-                counter = Counter.Default(),
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
@@ -290,7 +295,8 @@ open class EditorTestSetup {
                 turnIntoDocument = turnIntoDocument,
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
-                setObjectType = setObjectType
+                setObjectType = setObjectType,
+                createBookmark = createBookmark
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,
@@ -303,7 +309,8 @@ open class EditorTestSetup {
             searchObjects = getSearchObjects,
             getDefaultEditorType = getDefaultEditorType,
             createObjectSet = createObjectSet,
-            findObjectSetForType = findObjectSetForType
+            findObjectSetForType = findObjectSetForType,
+            copyFileToCacheDirectory = copyFileToCacheDirectory
         )
     }
 

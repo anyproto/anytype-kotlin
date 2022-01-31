@@ -729,6 +729,21 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun createAndSetupBookmark(command: Command.CreateBookmark): Payload {
+        val request: Rpc.Block.Bookmark.CreateAndFetch.Request = Rpc.Block.Bookmark.CreateAndFetch.Request(
+            contextId = command.context,
+            targetId = command.target,
+            url = command.url,
+            position = command.position.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockBookmarkCreateAndFetch(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
     fun undo(command: Command.Undo): Payload {
         val request = Rpc.Block.Undo.Request(contextId = command.context)
         if (BuildConfig.DEBUG) logRequest(request)

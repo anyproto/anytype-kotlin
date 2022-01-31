@@ -6,6 +6,7 @@ import android.text.Editable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
@@ -34,6 +35,7 @@ class BlockAdapterCursorBindingTest {
 
     private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+        override fun onUrlPasted(url: Url) {}
     }
 
     @Test

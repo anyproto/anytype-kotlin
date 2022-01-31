@@ -3,14 +3,16 @@ package com.anytypeio.anytype.core_ui.features.editor
 import android.content.Context
 import android.text.Editable
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import java.util.*
 
 open class BlockAdapterTestSetup {
 
-    val clipboardInterceptor: ClipboardInterceptor = object: ClipboardInterceptor {
+    private val clipboardInterceptor: ClipboardInterceptor = object: ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+        override fun onUrlPasted(url: Url) {}
     }
 
     val context: Context = ApplicationProvider.getApplicationContext()

@@ -180,11 +180,16 @@ sealed class Intent {
     }
 
     sealed class Bookmark : Intent() {
-
         class SetupBookmark(
             val context: Id,
             val target: Id,
             val url: String
+        ) : Bookmark()
+        class CreateBookmark(
+            val context: Id,
+            val target: Id,
+            val url: String,
+            val position: Position
         ) : Bookmark()
     }
 

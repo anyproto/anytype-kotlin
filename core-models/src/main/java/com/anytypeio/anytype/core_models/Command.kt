@@ -280,6 +280,20 @@ sealed class Command {
     )
 
     /**
+     * Command for creating a bookmark block from [url]
+     * @property context id of the context
+     * @property target id of the target block (future bookmark block)
+     * @property url bookmark url
+     * @property [position] position relative to [target] block
+     */
+    data class CreateBookmark(
+        val context: Id,
+        val target: Id,
+        val url: String,
+        val position: Position
+    )
+
+    /**
      * Command for undoing latest changes in document
      * @property context id of the context
      */

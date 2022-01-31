@@ -99,6 +99,7 @@ object EventsDictionary {
     const val BLOCK_DOWNLOAD_FILE = "DownloadFile"
     const val BLOCK_UPLOAD = "BlockUpload"
     const val BLOCK_SETUP_BOOKMARK = "BlockBookmarkFetch"
+    const val BLOCK_CREATE_BOOKMARK = "BlockBookmarkCreateAndFetch"
     const val BLOCK_PASTE = "BlockPaste"
     const val BLOCK_COPY = "BlockCopy"
     const val BLOCK_DIVIDER_UPDATE = "BlockListSetDivStyle"

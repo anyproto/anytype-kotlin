@@ -7,6 +7,7 @@ import android.text.Spannable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -35,6 +36,7 @@ class HeaderBlockTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) = Unit
+        override fun onUrlPasted(url: Url) {}
     }
 
     @Test

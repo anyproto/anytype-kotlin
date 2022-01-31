@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -140,6 +141,9 @@ open class EditorPresentationTestSetup {
     lateinit var setupBookmark: SetupBookmark
 
     @Mock
+    lateinit var createBookmark: CreateBookmark
+
+    @Mock
     lateinit var createDocument: CreateDocument
 
     @Mock
@@ -242,6 +246,7 @@ open class EditorPresentationTestSetup {
             ),
             updateAlignment = updateAlignment,
             setupBookmark = setupBookmark,
+            createBookmark = createBookmark,
             paste = paste,
             copy = copy,
             move = move,

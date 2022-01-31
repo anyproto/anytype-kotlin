@@ -265,7 +265,7 @@ fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =
         RelationKey = relationKey,
         operator_ = operator.toMiddlewareModel(),
         condition = condition.toMiddlewareModel(),
-        value = value
+        value_ = value
     )
 
 fun Block.Content.DataView.Filter.Operator.toMiddlewareModel(): MDVFilterOperator = when (this) {

@@ -225,7 +225,7 @@ class MiddlewareTest {
         val emojiValue = command.emoji
 
         val emojiDetail = Rpc.Block.Set.Details.Detail(
-            key = emojiIconKey, value = emojiValue
+            key = emojiIconKey, value_ = emojiValue
         )
 
         val imageValue = ""

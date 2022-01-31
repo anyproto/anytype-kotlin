@@ -361,7 +361,7 @@ fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
     relationKey = RelationKey,
     operator = operator_.toCoreModels(),
     condition = condition.toCoreModels(),
-    value = value
+    value = value_
 )
 
 fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {

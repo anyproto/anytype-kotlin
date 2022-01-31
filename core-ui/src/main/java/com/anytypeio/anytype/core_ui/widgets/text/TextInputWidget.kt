@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.text
 
-import android.R.id.paste
 import android.R.id.copy
+import android.R.id.paste
 import android.content.Context
 import android.graphics.Canvas
 import android.text.InputType

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.model.SelectAccountResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import timber.log.Timber
-import java.util.*
 
 class Middleware(
     private val service: MiddlewareService,
@@ -227,7 +226,7 @@ class Middleware(
 
         val detail = Rpc.Block.Set.Details.Detail(
             key = nameKey,
-            value = command.title
+            value_ = command.title
         )
 
         val request = Rpc.Block.Set.Details.Request(
@@ -556,12 +555,12 @@ class Middleware(
 
         val emojiDetail = Rpc.Block.Set.Details.Detail(
             key = iconEmojiKey,
-            value = command.emoji
+            value_ = command.emoji
         )
 
         val imageDetail = Rpc.Block.Set.Details.Detail(
             key = iconImageKey,
-            value = null
+            value_ = null
         )
 
         val request = Rpc.Block.Set.Details.Request(
@@ -583,11 +582,11 @@ class Middleware(
 
         val imageDetail = Rpc.Block.Set.Details.Detail(
             key = iconImageKey,
-            value = command.hash
+            value_ = command.hash
         )
         val emojiDetail = Rpc.Block.Set.Details.Detail(
             key = iconEmojiKey,
-            value = null
+            value_ = null
         )
 
         val request = Rpc.Block.Set.Details.Request(
@@ -611,11 +610,11 @@ class Middleware(
     ): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
-            value = color
+            value_ = color
         )
         val coverTypeDetail = Rpc.Block.Set.Details.Detail(
             key = coverTypeKey,
-            value = Constants.COVER_TYPE_COLOR.toDouble()
+            value_ = Constants.COVER_TYPE_COLOR.toDouble()
         )
         val request = Rpc.Block.Set.Details.Request(
             contextId = ctx,
@@ -634,11 +633,11 @@ class Middleware(
     ): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
-            value = gradient
+            value_ = gradient
         )
         val coverTypeDetail = Rpc.Block.Set.Details.Detail(
             key = coverTypeKey,
-            value = Constants.COVER_TYPE_GRADIENT.toDouble()
+            value_ = Constants.COVER_TYPE_GRADIENT.toDouble()
         )
         val request = Rpc.Block.Set.Details.Request(
             contextId = ctx,
@@ -657,11 +656,11 @@ class Middleware(
     ): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
-            value = hash
+            value_ = hash
         )
         val coverTypeDetail = Rpc.Block.Set.Details.Detail(
             key = coverTypeKey,
-            value = Constants.COVER_TYPE_UPLOADED_IMAGE.toDouble()
+            value_ = Constants.COVER_TYPE_UPLOADED_IMAGE.toDouble()
         )
         val request = Rpc.Block.Set.Details.Request(
             contextId = ctx,
@@ -677,11 +676,11 @@ class Middleware(
     fun removeDocumentCover(ctx: String): Payload {
         val coverIdDetail = Rpc.Block.Set.Details.Detail(
             key = coverIdKey,
-            value = null
+            value_ = null
         )
         val coverTypeDetail = Rpc.Block.Set.Details.Detail(
             key = coverTypeKey,
-            value = Constants.COVER_TYPE_NONE.toDouble()
+            value_ = Constants.COVER_TYPE_NONE.toDouble()
         )
         val request = Rpc.Block.Set.Details.Request(
             contextId = ctx,
@@ -697,11 +696,11 @@ class Middleware(
     fun removeDocumentIcon(ctx: String): Payload {
         val imageDetail = Rpc.Block.Set.Details.Detail(
             key = iconImageKey,
-            value = null
+            value_ = null
         )
         val emojiDetail = Rpc.Block.Set.Details.Detail(
             key = iconEmojiKey,
-            value = null
+            value_ = null
         )
 
         val request = Rpc.Block.Set.Details.Request(
@@ -1394,7 +1393,7 @@ class Middleware(
     ): Payload {
         val detail = Rpc.Block.Set.Details.Detail(
             key = key,
-            value = value
+            value_ = value
         )
         val request = Rpc.Block.Set.Details.Request(
             contextId = ctx,

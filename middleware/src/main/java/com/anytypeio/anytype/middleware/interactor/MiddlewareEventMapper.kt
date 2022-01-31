@@ -45,11 +45,11 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.GranularChange(
             context = context,
             id = event.id,
-            text = event.text?.value,
-            style = event.style?.value?.toCoreModels(),
-            color = event.color?.value,
-            marks = event.marks?.value?.marks?.map { it.toCoreModels() },
-            checked = event.checked?.value
+            text = event.text?.value_,
+            style = event.style?.value_?.toCoreModels(),
+            color = event.color?.value_,
+            marks = event.marks?.value_?.marks?.map { it.toCoreModels() },
+            checked = event.checked?.value_
         )
     }
     blockSetBackgroundColor != null -> {
@@ -93,7 +93,7 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.Details.Amend(
             context = context,
             target = event.id,
-            details = event.details.associate { it.key to it.value }
+            details = event.details.associate { it.key to it.value_ }
         )
     }
     objectDetailsUnset != null -> {
@@ -111,8 +111,8 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.LinkGranularChange(
             context = context,
             id = event.id,
-            target = event.targetBlockId?.value.orEmpty(),
-            fields = event.fields?.value.toCoreModel()
+            target = event.targetBlockId?.value_.orEmpty(),
+            fields = event.fields?.value_.toCoreModel()
         )
     }
     blockSetAlign != null -> {
@@ -140,12 +140,12 @@ fun anytype.Event.Message.toCoreModels(
             Event.Command.UpdateFileBlock(
                 context = context,
                 id = id,
-                state = state?.value?.toCoreModels(),
-                type = type?.value?.toCoreModels(),
-                name = name?.value,
-                hash = hash?.value,
-                mime = mime?.value,
-                size = size?.value
+                state = state?.value_?.toCoreModels(),
+                type = type?.value_?.toCoreModels(),
+                name = name?.value_,
+                hash = hash?.value_,
+                mime = mime?.value_,
+                size = size?.value_
             )
         }
     }
@@ -155,11 +155,11 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.BookmarkGranularChange(
             context = context,
             target = event.id,
-            url = event.url?.value,
-            title = event.title?.value,
-            description = event.description?.value,
-            image = event.imageHash?.value,
-            favicon = event.faviconHash?.value
+            url = event.url?.value_,
+            title = event.title?.value_,
+            description = event.description?.value_,
+            image = event.imageHash?.value_,
+            favicon = event.faviconHash?.value_
         )
     }
     blockDataviewRecordsSet != null -> {
@@ -203,7 +203,7 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.UpdateDividerBlock(
             context = context,
             id = event.id,
-            style = style.value.toCoreModels()
+            style = style.value_.toCoreModels()
         )
     }
     blockDataviewViewSet != null -> {
@@ -235,7 +235,7 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.BlockEvent.SetRelation(
             context = context,
             id = event.id,
-            key = event.key?.value
+            key = event.key?.value_
         )
     }
     objectRelationsSet != null -> {

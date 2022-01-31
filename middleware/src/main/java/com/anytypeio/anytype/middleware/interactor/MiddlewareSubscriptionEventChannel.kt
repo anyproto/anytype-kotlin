@@ -24,7 +24,7 @@ class MiddlewareSubscriptionEventChannel(
                         if (subscriptions.any { it in event.subIds || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" in event.subIds }) {
                             SubscriptionEvent.Amend(
                                 target = event.id,
-                                diff = event.details.associate { it.key to it.value },
+                                diff = event.details.associate { it.key to it.value_ },
                                 subscriptions = event.subIds
                             )
                         } else {

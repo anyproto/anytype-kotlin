@@ -57,7 +57,7 @@ ext {
     // Acceptance Testing
     runner_version = '1.1.0'
     espresso_version = '3.3.0'
-    android_junit_version = '1.1.0'
+    android_junit_version = '1.1.3'
     disable_animation_version = '2.0.0'
 
     // Development
@@ -73,7 +73,7 @@ ext {
 
     protobuf_java_version = '3.9.2'
     protoc_version = '3.9.0'
-    wire_version = '3.7.0'
+    wire_version = '4.0.1'
 
     // DBB
 

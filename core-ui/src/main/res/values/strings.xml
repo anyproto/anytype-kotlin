@@ -249,6 +249,7 @@
     <string name="content_desc_layout_icon">Layout icon</string>
     <string name="move">Move</string>
     <string name="move_to">Move to</string>
+    <string name="preview">Preview</string>
     <string name="link_to">Link to</string>
     <string name="mention_suggester_new_page">Create new object</string>
     <string name="widget_archive_select_pages">Select pages</string>
@@ -463,10 +464,15 @@
     <string name="large">Large</string>
     <string name="none">None</string>
     <string name="small">Small</string>
+    <string name="medium">Medium</string>
     <string name="card_size">Card size</string>
+    <string name="visible">Visible</string>
+    <string name="card">Card</string>
     <string name="fit_image">Fit image</string>
     <string name="image_preview">Image preview</string>
     <string name="cover">Cover</string>
     <string name="hide_icon">Hide icon</string>
+    <string name="description">Description</string>
+    <string name="preview_layout">Preview layout</string>
 
 </resources>

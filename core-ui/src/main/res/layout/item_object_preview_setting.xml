@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/settingName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/text_primary"
+        android:textSize="17sp"
+        tools:text="Card size" />
+
+    <TextView
+        android:id="@+id/settingValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="18dp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="17sp"
+        tools:text="Large" />
+
+    <ImageView
+        android:id="@+id/settingArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:src="@drawable/ic_arrow_forward" />
+
+</FrameLayout>

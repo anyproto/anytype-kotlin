@@ -168,6 +168,14 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val objectAppearanceSettingComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .objectAppearanceSettingComponent()
+            .module(ObjectAppearanceSettingModule)
+            .build()
+    }
+
     val createBookmarkSubComponent = Component {
         main
             .createBookmarkBuilder()

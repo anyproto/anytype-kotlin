@@ -1285,6 +1285,7 @@ class EditorViewModel(
                     is Content.Link -> {
                         excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
+                        targetActions.add(ActionItemType.Preview)
                     }
                     is Content.Page -> {
                         excludedActions.add(ActionItemType.Style)
@@ -4746,6 +4747,9 @@ class EditorViewModel(
                 startDownloadingFiles(ids = currentSelection().toList())
                 proceedWithExitingMultiSelectMode()
             }
+            ActionItemType.Preview -> {
+                proceedWithObjectAppearanceSettingClicked()
+            }
             else -> {
                 sendToast("TODO")
             }
@@ -5270,6 +5274,27 @@ class EditorViewModel(
             block.content<Content.Smart>().type
         } else {
             SmartBlockType.PAGE
+        }
+    }
+    //endregion
+
+    //region OBJECT APPEARANCE SETTING
+    private fun proceedWithObjectAppearanceSettingClicked() {
+        val selected = currentSelection().toList()
+        if (selected.size == 1) {
+            val block = blocks.firstOrNull { it.id == selected[0] } ?: return
+            val content = block.content
+            if (content is Content.Link) {
+                commands.value = EventWrapper(
+                    Command.OpenObjectAppearanceSettingScreen(
+                        ctx = context,
+                        block = block.id,
+                        target = content.target
+                    )
+                )
+            }
+        } else {
+            sendToast("Couldn't show Object Appearance Setting screen")
         }
     }
     //endregion

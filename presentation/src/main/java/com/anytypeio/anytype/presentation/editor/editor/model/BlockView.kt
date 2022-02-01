@@ -176,6 +176,13 @@ sealed class BlockView : ViewType {
             val withName: Boolean? = null,
             val withDescription: Boolean? = null
         )
+
+        companion object {
+            const val LINK_STYLE_CARD = 1.0
+            const val LINK_ICON_SIZE_SMALL = 1.0
+            const val LINK_ICON_SIZE_MEDIUM = 2.0
+            const val LINK_ICON_SIZE_LARGE = 3.0
+        }
     }
 
     sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection {

@@ -94,6 +94,7 @@ interface EditorSubComponent {
     fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
 
     fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
+    fun objectAppearanceSettingComponent() : ObjectAppearanceSettingSubComponent.Builder
 }
 
 

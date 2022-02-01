@@ -98,6 +98,10 @@ class BlockActionWidget @JvmOverloads constructor(
                         title.setText(R.string.download)
                         icon.setImageResource(R.drawable.ic_block_action_download)
                     }
+                    ActionItemType.Preview -> {
+                        title.setText(R.string.preview)
+                        icon.setImageResource(R.drawable.ic_block_action_preview)
+                    }
                     else -> {
                         title.text = action::class.simpleName
                     }

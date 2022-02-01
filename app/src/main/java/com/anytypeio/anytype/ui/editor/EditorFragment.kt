@@ -101,6 +101,7 @@ import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
+import com.anytypeio.anytype.ui.objects.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_REQUEST_KEY
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_URL_KEY
@@ -1022,6 +1023,14 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 is Command.SaveTextToSystemClipboard -> {
                     val clipData = ClipData.newPlainText("Uri", command.text)
                     clipboard().setPrimaryClip(clipData)
+                }
+                is Command.OpenObjectAppearanceSettingScreen -> {
+                    val fr = ObjectAppearanceSettingFragment.new(
+                        ctx = command.ctx,
+                        block = command.block,
+                        target = command.target
+                    )
+                    fr.show(childFragmentManager, null)
                 }
             }
         }

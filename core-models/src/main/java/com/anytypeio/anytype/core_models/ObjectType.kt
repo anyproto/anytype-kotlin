@@ -64,6 +64,8 @@ data class ObjectType(
         const val PROFILE_URL = "_otprofile" //contains User Profile page and Anytype Person page
         const val NOTE_URL = "_otnote"
         const val WORKSPACE_URL = "_otspace"
+        const val DASHBOARD_TYPE = "_otdashboard"
+
         const val MAX_SNIPPET_SIZE = 30
     }
 }

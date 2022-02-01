@@ -20,7 +20,7 @@ fun List<DashboardView>.sortByIds(
     ids: List<String>
 ): List<DashboardView> {
     val orderedByIds = ids.withIndex().associate { it.value to it.index }
-    return this.sortedBy { orderedByIds[it.id] }
+    return this.sortedBy { orderedByIds[it.id] }.filter { ids.contains(it.id) }
 }
 
 fun List<DashboardView>.filterByNotArchivedPages(): List<DashboardView> =

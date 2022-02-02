@@ -201,7 +201,7 @@ class EditorViewModel(
     /**
      * Current document
      */
-    var blocks: Document = emptyList()
+    val blocks: Document get() = orchestrator.stores.document.get()
 
     private val _focus: MutableLiveData<Id> = MutableLiveData()
     val focus: LiveData<Id> = _focus
@@ -323,7 +323,7 @@ class EditorViewModel(
                     // do nothing
                 }
             }
-            blocks = reduce(blocks, event)
+            orchestrator.stores.document.update(reduce(blocks, event))
         }
         if (BuildConfig.DEBUG) {
             Timber.d("Blocks after handling events: $blocks")
@@ -415,12 +415,13 @@ class EditorViewModel(
             range = selection.second
         )
 
-        blocks = blocks.map { block ->
+        val update = blocks.map { block ->
             if (block.id != target.id)
                 block
             else
                 new
         }
+        orchestrator.stores.document.update(update)
 
         refresh()
 
@@ -436,12 +437,13 @@ class EditorViewModel(
 
     private fun rerenderingBlocks(block: Block) =
         viewModelScope.launch {
-            blocks = blocks.map {
+            val update = blocks.map {
                 if (it.id != block.id)
                     it
                 else
                     block
             }
+            orchestrator.stores.document.update(update)
             refresh()
         }
 
@@ -543,12 +545,13 @@ class EditorViewModel(
             .onEach { if (it == pendingTextUpdate) pendingTextUpdate = null }
             .filterNotNull()
             .onEach { update ->
-                blocks = blocks.map { block ->
+                val updated = blocks.map { block ->
                     if (block.id == update.target) {
                         block.updateText(update)
                     } else
                         block
                 }
+                orchestrator.stores.document.update(updated)
             }
             .map { update ->
                 Intent.Text.UpdateText(
@@ -986,7 +989,8 @@ class EditorViewModel(
         val block = blocks.first { it.id == target }
         val content = block.content<Content.Text>()
 
-        blocks = blocks.updateTextContent(target, text, marks)
+        val update = blocks.updateTextContent(target, text, marks)
+        orchestrator.stores.document.update(update)
 
         viewModelScope.launch {
             orchestrator.proxies.saves.send(null)
@@ -1030,9 +1034,11 @@ class EditorViewModel(
             marks = marks
         )
 
-        blocks = blocks.replace(
+        val update = blocks.replace(
             replacement = { old -> old.copy(content = content) }
         ) { block -> block.id == id }
+
+        orchestrator.stores.document.update(update)
 
         if (content.isList() || content.isToggle()) {
             handleEndlineEnterPressedEventForListItem(content, id)
@@ -1113,7 +1119,7 @@ class EditorViewModel(
     ) {
         Timber.d("onNonEmptyBlockBackspaceClicked, id:[$id] text:[$text] marks:[$marks]")
 
-        blocks = blocks.map { block ->
+        val update = blocks.map { block ->
             if (block.id == id) {
                 block.copy(
                     content = block.content<Content.Text>().copy(
@@ -1125,6 +1131,8 @@ class EditorViewModel(
                 block
             }
         }
+
+        orchestrator.stores.document.update(update)
 
         viewModelScope.launch {
             orchestrator.proxies.saves.send(null)
@@ -1551,12 +1559,14 @@ class EditorViewModel(
                 param = null
             )
 
-            blocks = blocks.map { block ->
+            val update = blocks.map { block ->
                 if (block.id != target.id)
                     block
                 else
                     new
             }
+
+            orchestrator.stores.document.update(update)
 
             viewModelScope.launch { refresh() }
 
@@ -2009,7 +2019,7 @@ class EditorViewModel(
 
         Timber.d("onCheckboxClicked, view:[$view]")
 
-        blocks = blocks.map { block ->
+        val update = blocks.map { block ->
             if (block.id == view.id) {
                 block.copy(
                     content = block.content<Content.Text>().copy(
@@ -2020,6 +2030,8 @@ class EditorViewModel(
                 block
             }
         }
+
+        orchestrator.stores.document.update(update)
 
         val store = orchestrator.stores.views
 
@@ -2049,7 +2061,7 @@ class EditorViewModel(
 
         Timber.d("onTitleCheckboxClicked, view:[$view]")
 
-        blocks = blocks.map { block ->
+        val update = blocks.map { block ->
             if (block.id == view.id) {
                 block.copy(
                     content = block.content<Content.Text>().copy(
@@ -2060,6 +2072,8 @@ class EditorViewModel(
                 block
             }
         }
+
+        orchestrator.stores.document.update(update)
 
         val store = orchestrator.stores.views
 
@@ -4177,11 +4191,13 @@ class EditorViewModel(
         text: String,
         marks: List<Content.Text.Mark>
     ) {
-        blocks = blocks.updateTextContent(
+        val update = blocks.updateTextContent(
             target = targetId,
             text = text,
             marks = marks
         )
+
+        orchestrator.stores.document.update(update)
 
         //send new text to Middleware
         viewModelScope.launch {
@@ -5072,12 +5088,14 @@ class EditorViewModel(
             mentionTrigger = mentionTrigger
         )
 
-        blocks = blocks.map { block ->
+        val update = blocks.map { block ->
             if (block.id != target.id)
                 block
             else
                 new
         }
+
+        orchestrator.stores.document.update(update)
 
         viewModelScope.launch {
             val position = mentionFrom + name.length + 1

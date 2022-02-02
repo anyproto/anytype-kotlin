@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
+import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -26,6 +27,7 @@ interface Editor {
     }
 
     class Storage {
+        val document: DocumentProvider = DocumentProvider.Default()
         val views: Store<List<BlockView>> = Store.Screen()
         val focus: Store<Focus> = Store.Focus()
         val details: Store.Details = Store.Details()
@@ -58,6 +60,18 @@ interface Editor {
     sealed class Event {
         sealed class Text : Event() {
             data class OnSelectionChanged(val id: Id, val selection: IntRange) : Text()
+        }
+    }
+
+    interface DocumentProvider {
+        fun get(): Document
+        fun update(document: Document)
+        fun clear()
+        class Default : DocumentProvider {
+            var doc: Document = emptyList()
+            override fun get(): Document = doc
+            override fun update(document: Document) { this.doc = document }
+            override fun clear() { this.doc = emptyList() }
         }
     }
 }

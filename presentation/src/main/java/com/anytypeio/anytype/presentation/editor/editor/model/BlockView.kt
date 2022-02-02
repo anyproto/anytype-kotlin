@@ -169,15 +169,25 @@ sealed class BlockView : ViewType {
         val appearanceParams: Params
 
         data class Params(
-            val style: Double? = null,
-            val iconSize: Double? = null,
-            val withIcon: Boolean? = null,
-            val withCover: Boolean? = null,
-            val withName: Boolean? = null,
-            val withDescription: Boolean? = null
-        )
+            val style: Double,
+            val iconSize: Double,
+            val withIcon: Boolean,
+            val withName: Boolean,
+            val withDescription: Boolean? = null,
+            val withCover: Boolean? = null
+        ) {
+            companion object {
+                fun default(): Params = Params(
+                    style = LINK_STYLE_TEXT,
+                    iconSize = LINK_ICON_SIZE_SMALL,
+                    withIcon = true,
+                    withName = true
+                )
+            }
+        }
 
         companion object {
+            const val LINK_STYLE_TEXT = 0.0
             const val LINK_STYLE_CARD = 1.0
             const val LINK_ICON_SIZE_SMALL = 1.0
             const val LINK_ICON_SIZE_MEDIUM = 2.0

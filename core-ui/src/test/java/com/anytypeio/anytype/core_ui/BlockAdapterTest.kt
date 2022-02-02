@@ -1199,7 +1199,7 @@ class BlockAdapterTest {
             indent = MockDataFactory.randomInt(),
             isEmpty = MockDataFactory.randomBoolean(),
             icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params()
+            appearanceParams = BlockView.Appearance.Params.default()
         )
 
         val views = listOf(view)
@@ -3274,7 +3274,7 @@ class BlockAdapterTest {
             indent = MockDataFactory.randomInt(),
             isSelected = false,
             icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params()
+            appearanceParams = BlockView.Appearance.Params.default()
         )
 
         val updated = file.copy(isSelected = true)

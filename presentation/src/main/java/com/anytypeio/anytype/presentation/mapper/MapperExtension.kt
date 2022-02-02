@@ -8,6 +8,9 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_ICON_SIZE_SMALL
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_CARD
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_TEXT
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -715,12 +718,37 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
 }
 
-fun Block.Fields.toView(): BlockView.Appearance.Params =
-    BlockView.Appearance.Params(
+fun Block.Fields.toView(layout: ObjectType.Layout?): BlockView.Appearance.Params {
+
+    var iconSize = this.iconSize ?: LINK_ICON_SIZE_SMALL
+    val style = this.style ?: LINK_STYLE_TEXT
+    var withIcon = this.withIcon ?: true
+    val withName = this.withName ?: true
+    var withCover = this.withCover
+    var withDescription = this.withDescription
+
+    if (this.style == LINK_STYLE_TEXT) {
+        withCover = false
+    }
+
+    if (layout == ObjectType.Layout.TODO) {
+        withIcon = true
+        iconSize = LINK_ICON_SIZE_SMALL
+    }
+
+    if (layout == ObjectType.Layout.NOTE) {
+        withIcon = false
+        withCover = false
+        withDescription = false
+        iconSize = LINK_ICON_SIZE_SMALL
+    }
+
+    return BlockView.Appearance.Params(
         iconSize = iconSize,
         style = style,
-        withCover = withCover,
         withIcon = withIcon,
         withName = withName,
+        withCover = withCover,
         withDescription = withDescription
     )
+}

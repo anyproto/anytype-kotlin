@@ -66,6 +66,7 @@ data class Block(
          * 0.0 - text, 1.0 - card
          */
         val style: Double? by default
+
         /**
          *  1.0 - small, 2.0 - medium, 3.0 - large
          */

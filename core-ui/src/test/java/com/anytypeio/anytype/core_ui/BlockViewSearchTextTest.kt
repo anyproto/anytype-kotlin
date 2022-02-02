@@ -144,7 +144,7 @@ class BlockViewSearchTextTest {
             searchFields = listOf(field1),
             indent = 0,
             icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params()
+            appearanceParams = BlockView.Appearance.Params.default()
         )
 
         val views = listOf(page)

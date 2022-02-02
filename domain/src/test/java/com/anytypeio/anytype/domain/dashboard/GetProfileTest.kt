@@ -11,7 +11,7 @@ import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,7 +49,7 @@ class GetProfileTest {
     }
 
     @Test
-    fun `should emit initial data with profile and complete`() = runBlockingTest {
+    fun `should emit initial data with profile and complete`() = runTest {
 
         val subscription = MockDataFactory.randomUuid()
 
@@ -95,7 +95,7 @@ class GetProfileTest {
     }
 
     @Test
-    fun `should emit transformated profile object, then complete`() = runBlockingTest {
+    fun `should emit transformated profile object, then complete`() = runTest {
 
         val subscription = MockDataFactory.randomUuid()
 
@@ -167,7 +167,7 @@ class GetProfileTest {
     }
 
     @Test
-    fun `should apply several transformations, then complete`() = runBlockingTest {
+    fun `should apply several transformations, then complete`() = runTest {
 
         val subscription = MockDataFactory.randomUuid()
 
@@ -247,7 +247,7 @@ class GetProfileTest {
     }
 
     @Test
-    fun `should apply all transformations, then complete`() = runBlockingTest {
+    fun `should apply all transformations, then complete`() = runTest {
 
         val subscription = MockDataFactory.randomUuid()
 

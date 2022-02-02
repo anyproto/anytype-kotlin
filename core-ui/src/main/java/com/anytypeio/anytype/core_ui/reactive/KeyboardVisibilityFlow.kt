@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 fun View.keyboardVisibilityObserver(): Flow<Boolean> = callbackFlow {
     val listener = ViewTreeObserver.OnGlobalLayoutListener {
         val diff = rootView.height - height
-        if (diff > context.dp(200f)) offer(true) else offer(false)
+        if (diff > context.dp(200f)) trySend(true) else trySend(false)
     }
     viewTreeObserver.addOnGlobalLayoutListener(listener)
     awaitClose {

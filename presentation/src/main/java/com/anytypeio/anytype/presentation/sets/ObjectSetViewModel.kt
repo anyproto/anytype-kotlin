@@ -121,7 +121,7 @@ class ObjectSetViewModel(
 
     init {
         viewModelScope.launch {
-            dispatcher.flow().collect(defaultPayloadConsumer)
+            dispatcher.flow().collect { defaultPayloadConsumer(it) }
         }
 
         viewModelScope.launch {

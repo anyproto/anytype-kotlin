@@ -89,6 +89,6 @@ dependencies {
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.androidXTestCore
 }

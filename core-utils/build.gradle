@@ -49,7 +49,7 @@ dependencies {
     implementation applicationDependencies.navigation
     implementation applicationDependencies.navigationUi
 
-    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.robolectricLatest
     androidTestImplementation acceptanceTesting.androidJUnit
     androidTestImplementation acceptanceTesting.testRules
     testImplementation unitTestDependencies.archCoreTesting

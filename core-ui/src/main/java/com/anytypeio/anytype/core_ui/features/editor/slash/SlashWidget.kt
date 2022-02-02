@@ -28,70 +28,70 @@ class SlashWidget @JvmOverloads constructor(
     private val mainAdapter by lazy {
         SlashMainAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val styleAdapter by lazy {
         SlashStyleAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val mediaAdapter by lazy {
         SlashMediaAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val objectTypesAdapter by lazy {
         SlashObjectTypesAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val relationsAdapter by lazy {
         SlashRelationsAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val otherAdapter by lazy {
         SlashOtherAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val actionsAdapter by lazy {
         SlashActionsAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val alignAdapter by lazy {
         SlashAlignmentAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val colorAdapter by lazy {
         SlashColorAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 
     private val backgroundAdapter by lazy {
         SlashColorAdapter(
             items = listOf(),
-            clicks = { _clickEvents.offer(it) }
+            clicks = { _clickEvents.trySend(it) }
         )
     }
 

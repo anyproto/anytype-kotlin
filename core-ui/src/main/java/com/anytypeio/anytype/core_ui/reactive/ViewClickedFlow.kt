@@ -7,56 +7,47 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.annotation.CheckResult
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 
-@UseExperimental(ExperimentalCoroutinesApi::class)
-fun View.clicks(): Flow<Unit> = callbackFlow<Unit> {
+fun View.clicks(): Flow<Unit> = callbackFlow {
     checkMainThread()
     val listener = View.OnClickListener {
-        safeOffer(Unit)
+        trySend(Unit)
     }
     setOnClickListener(listener)
     awaitClose { setOnClickListener(null) }
 }.conflate()
 
-@CheckResult
-@OptIn(ExperimentalCoroutinesApi::class)
-fun EditText.textChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
+fun EditText.textChanges(): Flow<CharSequence> = callbackFlow {
     checkMainThread()
     val listener = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
         override fun afterTextChanged(s: Editable) = Unit
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            safeOffer(s)
+            trySend(s)
         }
     }
     addTextChangedListener(listener)
     awaitClose { removeTextChangedListener(listener) }
 }.conflate()
 
-@CheckResult
-@OptIn(ExperimentalCoroutinesApi::class)
-fun EditText.focusChanges(): Flow<Boolean> = callbackFlow<Boolean> {
+fun EditText.focusChanges(): Flow<Boolean> = callbackFlow {
     checkMainThread()
-    val listener = View.OnFocusChangeListener { _, hasFocus -> safeOffer(hasFocus) }
+    val listener = View.OnFocusChangeListener { _, hasFocus -> trySend(hasFocus) }
     onFocusChangeListener = listener
     awaitClose { onFocusChangeListener = null }
 }.conflate()
 
-@CheckResult
-@OptIn(ExperimentalCoroutinesApi::class)
+
 fun View.touches(handled: (MotionEvent) -> Boolean = { true }): Flow<MotionEvent> = callbackFlow<MotionEvent> {
     checkMainThread()
     val listener = View.OnTouchListener { _, event ->
         performClick()
         if (handled(event)) {
-            safeOffer(event)
+            trySend(event)
             true
         } else {
             false
@@ -66,39 +57,33 @@ fun View.touches(handled: (MotionEvent) -> Boolean = { true }): Flow<MotionEvent
     awaitClose { setOnTouchListener(null) }
 }.conflate()
 
-@CheckResult
-@OptIn(ExperimentalCoroutinesApi::class)
 fun EditText.afterTextChanges(): Flow<CharSequence> = callbackFlow<CharSequence> {
     checkMainThread()
     val listener = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
         override fun afterTextChanged(s: Editable) {
-            safeOffer(s.toString())
+            trySend(s.toString())
         }
     }
     addTextChangedListener(listener)
     awaitClose { removeTextChangedListener(listener) }
 }.conflate()
 
-@CheckResult
-@OptIn(ExperimentalCoroutinesApi::class)
 fun View.layoutChanges(): Flow<Unit> = callbackFlow {
     checkMainThread()
-    val listener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> safeOffer(Unit) }
+    val listener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> trySend(Unit) }
     addOnLayoutChangeListener(listener)
     awaitClose { removeOnLayoutChangeListener(listener) }
 }.conflate()
 
-@CheckResult
-@OptIn(ExperimentalCoroutinesApi::class)
 fun TextView.editorActionEvents(
     handled: (Int) -> Boolean
 ): Flow<Int> = callbackFlow {
     checkMainThread()
     val listener = TextView.OnEditorActionListener { _, actionId, _ ->
         if (handled(actionId)) {
-            safeOffer(actionId)
+            trySend(actionId)
             true
         } else {
             false
@@ -107,12 +92,6 @@ fun TextView.editorActionEvents(
     setOnEditorActionListener(listener)
     awaitClose { setOnEditorActionListener(null) }
 }.conflate()
-
-
-@UseExperimental(ExperimentalCoroutinesApi::class)
-fun <E> SendChannel<E>.safeOffer(value: E): Boolean {
-    return runCatching { offer(value) }.getOrDefault(false)
-}
 
 fun checkMainThread() = check(Looper.myLooper() == Looper.getMainLooper()) {
     "Expected to be called on the main thread but was " + Thread.currentThread().name

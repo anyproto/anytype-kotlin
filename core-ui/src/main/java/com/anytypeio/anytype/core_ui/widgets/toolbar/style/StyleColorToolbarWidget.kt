@@ -29,7 +29,7 @@ class StyleColorToolbarWidget @JvmOverloads constructor(
         enabledMarkup = arrayListOf()
     ) { event ->
         Timber.d("Styling Event : $event")
-        channel.offer(event)
+        channel.trySend(event)
     }
 
     val events = channel.consumeAsFlow()

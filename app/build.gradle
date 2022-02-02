@@ -194,7 +194,7 @@ dependencies {
     //Unit/Integration tests dependencies
     testImplementation unitTestDependencies.androidXTestCore
     testImplementation unitTestDependencies.junit
-    testImplementation unitTestDependencies.robolectric
+    testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin
 

@@ -11,7 +11,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -133,7 +133,7 @@ class ObjectSearchSubscriptionContainerTest {
             }
         }
 
-        runBlockingTest {
+        runTest {
             container.observe(
                 subscription1,
                 limit = defaultLimit,

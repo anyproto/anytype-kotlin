@@ -14,6 +14,7 @@ class ObjectAppearanceSettingViewModel(
 ) : ViewModel() {
 
     val objectPreviewState = MutableSharedFlow<State>(replay = 0)
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
     fun onStart(blockId: Id, targetId: Id) {
         val block = orchestrator.stores.views.current().firstOrNull { it.id == blockId }
@@ -34,10 +35,33 @@ class ObjectAppearanceSettingViewModel(
         }
     }
 
+    fun onItemClicked(item: ObjectAppearanceSettingView) {
+        viewModelScope.launch {
+            when (item) {
+                is ObjectAppearanceSettingView.Settings.Cover -> {
+                    commands.emit(Command.CoverScreen)
+                }
+                is ObjectAppearanceSettingView.Settings.Icon -> {
+                    commands.emit(Command.IconScreen)
+                }
+                is ObjectAppearanceSettingView.Settings.PreviewLayout -> {
+                    commands.emit(Command.PreviewLayoutScreen)
+                }
+                else -> {}
+            }
+        }
+    }
+
     //region STATE
     sealed class State {
         data class Success(val data: List<ObjectAppearanceSettingView>) : State()
         data class Error(val msg: String) : State()
+    }
+
+    sealed class Command {
+        object IconScreen : Command()
+        object CoverScreen : Command()
+        object PreviewLayoutScreen : Command()
     }
     //endregion
 

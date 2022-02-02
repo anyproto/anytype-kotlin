@@ -95,6 +95,9 @@ interface EditorSubComponent {
 
     fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
     fun objectAppearanceSettingComponent() : ObjectAppearanceSettingSubComponent.Builder
+    fun objectAppearanceIconComponent() : ObjectAppearanceIconSubComponent.Builder
+    fun objectAppearancePreviewLayoutComponent() : ObjectAppearancePreviewLayoutSubComponent.Builder
+    fun objectAppearanceCoverComponent() : ObjectAppearanceCoverSubComponent.Builder
 }
 
 

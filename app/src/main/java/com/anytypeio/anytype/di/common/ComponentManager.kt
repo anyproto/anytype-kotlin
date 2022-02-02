@@ -176,6 +176,30 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val objectAppearanceIconComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .objectAppearanceIconComponent()
+            .module(ObjectAppearanceIconModule)
+            .build()
+    }
+
+    val objectAppearancePreviewLayoutComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .objectAppearancePreviewLayoutComponent()
+            .module(ObjectAppearancePreviewLayoutModule)
+            .build()
+    }
+
+    val objectAppearanceCoverComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .objectAppearanceCoverComponent()
+            .module(ObjectAppearanceCoverModule)
+            .build()
+    }
+
     val createBookmarkSubComponent = Component {
         main
             .createBookmarkBuilder()

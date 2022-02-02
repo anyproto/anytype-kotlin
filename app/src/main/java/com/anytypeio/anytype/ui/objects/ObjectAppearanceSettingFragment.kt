@@ -30,9 +30,7 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
     private val block: String get() = argString(BLOCK_ID_KEY)
     private val target: String get() = argString(TARGET_ID_KEY)
     private val adapterAppearance by lazy {
-        ObjectAppearanceSettingAdapter(
-            onItemClick = {}
-        )
+        ObjectAppearanceSettingAdapter(onItemClick = vm::onItemClicked)
     }
 
     override fun onCreateView(
@@ -51,6 +49,7 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.objectPreviewState) { observeState(it) }
+        jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
         vm.onStart(
             targetId = target,
@@ -65,6 +64,23 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
             }
             is ObjectAppearanceSettingViewModel.State.Success -> {
                 adapterAppearance.submitList(state.data)
+            }
+        }
+    }
+
+    private fun observeCommands(command: ObjectAppearanceSettingViewModel.Command) {
+        when (command) {
+            ObjectAppearanceSettingViewModel.Command.CoverScreen -> {
+                val fr = ObjectAppearanceCoverFragment.new(block = block, ctx = ctx)
+                fr.show(parentFragmentManager, null)
+            }
+            ObjectAppearanceSettingViewModel.Command.IconScreen -> {
+                val fr = ObjectAppearanceIconFragment.new(block = block, ctx = ctx)
+                fr.show(parentFragmentManager, null)
+            }
+            ObjectAppearanceSettingViewModel.Command.PreviewLayoutScreen -> {
+                val fr = ObjectAppearancePreviewLayoutFragment.new(block = block, ctx = ctx)
+                fr.show(parentFragmentManager, null)
             }
         }
     }

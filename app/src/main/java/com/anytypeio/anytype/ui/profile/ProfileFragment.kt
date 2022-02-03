@@ -3,7 +3,9 @@ package com.anytypeio.anytype.ui.profile
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
@@ -19,7 +21,6 @@ import com.anytypeio.anytype.presentation.profile.ProfileViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileViewModelFactory
 import com.anytypeio.anytype.ui.base.ViewStateFragment
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,19 +33,20 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>>(R.layout.fragm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.state.observe(viewLifecycleOwner, this)
-        vm.version.observe(viewLifecycleOwner, { version(it) })
+        vm.version.observe(viewLifecycleOwner) { version(it) }
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        vm.onViewCreated()
         backButtonContainer.setOnClickListener { vm.onBackButtonClicked() }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        lifecycleScope.launch {
-            vm.isLoggingOut.collect { isLoggingOut ->
-                if (isLoggingOut) logoutProgressBar.visible() else logoutProgressBar.invisible()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.isLoggingOut.collect { isLoggingOut ->
+                    if (isLoggingOut)
+                        logoutProgressBar.visible()
+                    else
+                        logoutProgressBar.invisible()
+                }
             }
         }
+        vm.onViewCreated()
     }
 
     override fun render(state: ViewState<ProfileView>) {

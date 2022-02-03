@@ -5,12 +5,13 @@ import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewM
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import kotlinx.android.synthetic.main.fragment_setup_selected_account.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 open class SetupSelectedAccountFragment :
@@ -56,23 +58,23 @@ open class SetupSelectedAccountFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         icon.startAnimation(rotationAnimation)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         subscribe()
     }
 
     private fun subscribe() {
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
         vm.error.observe(viewLifecycleOwner, errorObserver)
-        lifecycleScope.subscribe(vm.isMigrationInProgress) { isInProgress ->
-            if (isInProgress) {
-                tvMigrationInProgress.visible()
-                tvMigrationInProgress.startAnimation(blinkingAnimation)
-            }
-            else {
-                tvMigrationInProgress.invisible()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.isMigrationInProgress.collect { isInProgress ->
+                    if (isInProgress) {
+                        tvMigrationInProgress.visible()
+                        tvMigrationInProgress.startAnimation(blinkingAnimation)
+                    }
+                    else {
+                        tvMigrationInProgress.invisible()
+                    }
+                }
             }
         }
     }

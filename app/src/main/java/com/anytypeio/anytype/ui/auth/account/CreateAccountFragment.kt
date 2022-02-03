@@ -45,6 +45,8 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
         }
         profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
         backButton.setOnClickListener { vm.onBackButtonClicked() }
+        setupNavigation()
+        vm.error.observe(viewLifecycleOwner, Observer(this::showError))
     }
 
     private fun getCode() = requireArguments().getString(ARGS_CODE, EMPTY_CODE)
@@ -52,12 +54,6 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     override fun onDestroyView() {
         super.onDestroyView()
         activity?.currentFocus?.hideKeyboard()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        setupNavigation()
-        vm.error.observe(viewLifecycleOwner, Observer(this::showError))
     }
 
     private fun showError(error: String) {

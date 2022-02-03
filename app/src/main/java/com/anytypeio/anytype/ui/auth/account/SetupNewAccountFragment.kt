@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.auth.account
 
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
@@ -8,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.di.common.componentManager
@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.auth.account.SetupNewAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SetupNewAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SetupNewAccountViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_setup_new_account.*
 import javax.inject.Inject
 
@@ -32,17 +31,13 @@ class SetupNewAccountFragment : NavigationFragment(R.layout.fragment_setup_new_a
         AnimationUtils.loadAnimation(requireContext(), R.anim.rotation)
     }
 
-    lateinit var callBack : OnBackPressedCallback
+    private lateinit var callBack : OnBackPressedCallback
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         callBack = requireActivity().onBackPressedDispatcher.addCallback(this) {}
-        setupNavigation()
-        vm.state.observe(viewLifecycleOwner, this)
-    }
-
-    private fun setupNavigation() {
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
+        vm.state.observe(viewLifecycleOwner, this)
     }
 
     override fun onChanged(state: SetupNewAccountViewState) {

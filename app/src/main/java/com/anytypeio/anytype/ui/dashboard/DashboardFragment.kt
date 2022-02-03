@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
@@ -28,12 +30,16 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) {
 
-    private val isMnemonicReminderDialogNeeded : Boolean? get() = argOrNull(SHOW_MNEMONIC_REMINDER_KEY)
+    private val isMnemonicReminderDialogNeeded: Boolean?
+        get() = argOrNull(
+            SHOW_MNEMONIC_REMINDER_KEY
+        )
 
     private val vm by viewModels<HomeDashboardViewModel> { factory }
 
@@ -71,7 +77,13 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     private val dashboardDefaultAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.FAVOURITE) },
+            onDocumentClicked = { target, isLoading ->
+                vm.onTabObjectClicked(
+                    target,
+                    isLoading,
+                    TAB.FAVOURITE
+                )
+            },
             onArchiveClicked = { vm.onArchivedClicked(it) },
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -80,7 +92,13 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     private val dashboardRecentAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.RECENT) },
+            onDocumentClicked = { target, isLoading ->
+                vm.onTabObjectClicked(
+                    target,
+                    isLoading,
+                    TAB.RECENT
+                )
+            },
             onArchiveClicked = {},
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -89,7 +107,13 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     private val dashboardSharedAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.SHARED) },
+            onDocumentClicked = { target, isLoading ->
+                vm.onTabObjectClicked(
+                    target,
+                    isLoading,
+                    TAB.SHARED
+                )
+            },
             onArchiveClicked = {},
             onObjectSetClicked = { vm.onObjectSetClicked(it) }
         )
@@ -107,7 +131,13 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     private val dashboardArchiveAdapter by lazy {
         DashboardAdapter(
             data = mutableListOf(),
-            onDocumentClicked = { target, isLoading -> vm.onTabObjectClicked(target, isLoading, TAB.BIN) },
+            onDocumentClicked = { target, isLoading ->
+                vm.onTabObjectClicked(
+                    target,
+                    isLoading,
+                    TAB.BIN
+                )
+            },
             onArchiveClicked = {},
             onObjectSetClicked = {}
         )
@@ -125,10 +155,11 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         )
     }
 
-    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener{
+    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab?) {
             vm.sendTabEvent(tab?.text)
         }
+
         override fun onTabUnselected(tab: TabLayout.Tab?) {}
         override fun onTabReselected(tab: TabLayout.Tab?) {}
     }
@@ -142,92 +173,138 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
             navigation.observe(viewLifecycleOwner, navObserver)
         }
         parseIntent()
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    vm.toasts.collect { toast(it) }
+                }
+                launch {
+                    vm.recent.collect { dashboardRecentAdapter.update(it) }
+                }
+                launch {
+                    vm.shared.collect { dashboardSharedAdapter.update(it) }
+                }
+                launch {
+                    vm.sets.collect { dashboardSetsAdapter.update(it) }
+                }
+                launch {
+                    vm.archived.collect { dashboardArchiveAdapter.update(it) }
+                }
+                launch {
+                    vm.count.collect { tvSelectedCount.text = "$it object selected" }
+                }
+                launch {
+                    vm.alerts.collect { alert ->
+                        when (alert) {
+                            is HomeDashboardViewModel.Alert.Delete -> {
+                                val dialog = DeleteAlertFragment.new(alert.count)
+                                dialog.onDeletionAccepted = { vm.onDeletionAccepted() }
+                                dialog.show(childFragmentManager, null)
+                            }
+                        }
+                    }
+                }
+                launch {
+                    vm.mode.collect { mode ->
+                        when (mode) {
+                            HomeDashboardViewModel.Mode.DEFAULT -> {
+                                selectionTopToolbar.invisible()
+                                tabsLayout.visible()
+                                val set = ConstraintSet().apply {
+                                    clone(dashboardRoot)
+                                    clear(R.id.selectionBottomToolbar, ConstraintSet.BOTTOM)
+                                    connect(
+                                        R.id.selectionBottomToolbar,
+                                        ConstraintSet.TOP,
+                                        R.id.dashboardRoot,
+                                        ConstraintSet.BOTTOM
+                                    )
+                                }
+                                val transitionSet = TransitionSet().apply {
+                                    addTransition(ChangeBounds())
+                                    duration = 100
+                                }
+                                TransitionManager.beginDelayedTransition(
+                                    dashboardRoot,
+                                    transitionSet
+                                )
+                                set.applyTo(dashboardRoot)
+                            }
+                            HomeDashboardViewModel.Mode.SELECTION -> {
+                                tabsLayout.invisible()
+                                selectionTopToolbar.visible()
+                                val set = ConstraintSet().apply {
+                                    clone(dashboardRoot)
+                                    clear(R.id.selectionBottomToolbar, ConstraintSet.TOP)
+                                    connect(
+                                        R.id.selectionBottomToolbar,
+                                        ConstraintSet.BOTTOM,
+                                        R.id.dashboardRoot,
+                                        ConstraintSet.BOTTOM
+                                    )
+                                }
+                                val transitionSet = TransitionSet().apply {
+                                    addTransition(ChangeBounds())
+                                    duration = 100
+                                }
+                                TransitionManager.beginDelayedTransition(
+                                    dashboardRoot,
+                                    transitionSet
+                                )
+                                set.applyTo(dashboardRoot)
+                            }
+                        }
+                    }
+                }
+                launch {
+                    vm.tabs.collect { tabs ->
+                        dashboardPagerAdapter.setItems(
+                            tabs.map { tab ->
+                                when (tab) {
+                                    TAB.FAVOURITE -> TabItem(
+                                        getString(R.string.favorites),
+                                        DashboardPager.TYPE_FAVOURITES
+                                    )
+                                    TAB.RECENT -> TabItem(
+                                        getString(R.string.history),
+                                        DashboardPager.TYPE_RECENT
+                                    )
+                                    TAB.SETS -> TabItem(
+                                        getString(R.string.sets),
+                                        DashboardPager.TYPE_SETS
+                                    )
+                                    TAB.SHARED -> TabItem(
+                                        getString(R.string.shared),
+                                        DashboardPager.TYPE_SHARED
+                                    )
+                                    TAB.BIN -> TabItem(
+                                        getString(R.string.bin),
+                                        DashboardPager.TYPE_BIN
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+                launch {
+                    vm.isDeletionInProgress.collect { isDeletionInProgress ->
+                        if (isDeletionInProgress) {
+                            objectRemovalProgressBar.visible()
+                        } else {
+                            objectRemovalProgressBar.gone()
+                        }
+                    }
+                }
+                launch {
+                    vm.profile.collect { profile -> setProfile(profile) }
+                }
+            }
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
-        jobs += lifecycleScope.subscribe(vm.recent) { dashboardRecentAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.shared) { dashboardSharedAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.sets) { dashboardSetsAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.archived) { dashboardArchiveAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.count) { tvSelectedCount.text = "$it object selected" }
-        jobs += lifecycleScope.subscribe(vm.alerts) { alert ->
-            when(alert) {
-                is HomeDashboardViewModel.Alert.Delete -> {
-                    val dialog = DeleteAlertFragment.new(alert.count)
-                    dialog.onDeletionAccepted = { vm.onDeletionAccepted() }
-                    dialog.show(childFragmentManager, null)
-                }
-            }
-        }
-        jobs += lifecycleScope.subscribe(vm.mode) { mode ->
-            when(mode) {
-                HomeDashboardViewModel.Mode.DEFAULT -> {
-                    selectionTopToolbar.invisible()
-                    tabsLayout.visible()
-                    val set = ConstraintSet().apply {
-                        clone(dashboardRoot)
-                        clear(R.id.selectionBottomToolbar, ConstraintSet.BOTTOM)
-                        connect(
-                            R.id.selectionBottomToolbar,
-                            ConstraintSet.TOP,
-                            R.id.dashboardRoot,
-                            ConstraintSet.BOTTOM
-                        )
-                    }
-                    val transitionSet = TransitionSet().apply {
-                        addTransition(ChangeBounds())
-                        duration = 100
-                    }
-                    TransitionManager.beginDelayedTransition(dashboardRoot, transitionSet)
-                    set.applyTo(dashboardRoot)
-                }
-                HomeDashboardViewModel.Mode.SELECTION -> {
-                    tabsLayout.invisible()
-                    selectionTopToolbar.visible()
-                    val set = ConstraintSet().apply {
-                        clone(dashboardRoot)
-                        clear(R.id.selectionBottomToolbar, ConstraintSet.TOP)
-                        connect(
-                            R.id.selectionBottomToolbar,
-                            ConstraintSet.BOTTOM,
-                            R.id.dashboardRoot,
-                            ConstraintSet.BOTTOM
-                        )
-                    }
-                    val transitionSet = TransitionSet().apply {
-                        addTransition(ChangeBounds())
-                        duration = 100
-                    }
-                    TransitionManager.beginDelayedTransition(dashboardRoot, transitionSet)
-                    set.applyTo(dashboardRoot)
-                }
-            }
-        }
-        jobs += lifecycleScope.subscribe(vm.tabs) { tabs ->
-            dashboardPagerAdapter.setItems(
-                tabs.map { tab ->
-                    when(tab) {
-                        TAB.FAVOURITE -> TabItem(getString(R.string.favorites), DashboardPager.TYPE_FAVOURITES)
-                        TAB.RECENT -> TabItem(getString(R.string.history), DashboardPager.TYPE_RECENT)
-                        TAB.SETS -> TabItem(getString(R.string.sets), DashboardPager.TYPE_SETS)
-                        TAB.SHARED -> TabItem(getString(R.string.shared), DashboardPager.TYPE_SHARED)
-                        TAB.BIN -> TabItem(getString(R.string.bin), DashboardPager.TYPE_BIN)
-                    }
-                }
-            )
-        }
-        jobs += lifecycleScope.subscribe(vm.isDeletionInProgress) { isDeletionInProgress ->
-            if (isDeletionInProgress) {
-                objectRemovalProgressBar.visible()
-            } else {
-                objectRemovalProgressBar.gone()
-            }
-        }
-        jobs += lifecycleScope.subscribe(vm.profile) { profile ->
-            setProfile(profile)
-        }
         vm.onStart()
     }
 
@@ -296,7 +373,8 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         when {
             state.error != null -> toast("Error: ${state.error}")
             state.isInitialzed -> {
-                val links = state.blocks.filter { it !is DashboardView.Archive }.groupBy { it.isArchived }
+                val links =
+                    state.blocks.filter { it !is DashboardView.Archive }.groupBy { it.isArchived }
                 dashboardDefaultAdapter.update(links[false] ?: emptyList())
             }
         }

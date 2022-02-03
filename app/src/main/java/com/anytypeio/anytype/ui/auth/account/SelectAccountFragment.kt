@@ -41,16 +41,9 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
             )
             adapter = profileAdapter
         }
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        vm.state.observe(viewLifecycleOwner, { state ->
-            profileAdapter.update(state)
-        })
+        vm.state.observe(viewLifecycleOwner) { state -> profileAdapter.update(state) }
         vm.error.observe(viewLifecycleOwner) { observeError(it) }
-
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
     }
 

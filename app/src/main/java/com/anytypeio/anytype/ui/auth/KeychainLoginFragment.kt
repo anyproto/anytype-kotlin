@@ -43,7 +43,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupNavigation()
-        vm.state.observe(viewLifecycleOwner, { state ->
+        vm.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 ViewState.Loading -> {
                     progress.visibility = View.VISIBLE
@@ -59,7 +59,7 @@ class KeychainLoginFragment : NavigationFragment(R.layout.fragment_keychain_logi
                     progress.visibility = View.INVISIBLE
                 }
             }
-        })
+        }
     }
 
     override fun onDestroyView() {

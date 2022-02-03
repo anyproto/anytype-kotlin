@@ -33,6 +33,7 @@ data class Block(
         val coverType: Double? by default
         val iconImage: String? by default
         val isArchived: Boolean? by default
+        val isLocked: Boolean? by default
         val isDeleted: Boolean? by default
         val isFavorite: Boolean? by default
         val done: Boolean? by default
@@ -76,6 +77,7 @@ data class Block(
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
+            const val IS_LOCKED_KEY = "isLocked"
         }
     }
 

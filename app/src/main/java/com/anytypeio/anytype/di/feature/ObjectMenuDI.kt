@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
@@ -74,14 +75,16 @@ object ObjectMenuModule {
         removeFromFavorite: RemoveFromFavorite,
         storage: Editor.Storage,
         analytics: Analytics,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        updateFields: UpdateFields
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         storage = storage,
         analytics = analytics,
-        dispatcher = dispatcher
+        dispatcher = dispatcher,
+        updateFields = updateFields
     )
 }
 

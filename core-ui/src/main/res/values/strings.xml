@@ -401,6 +401,8 @@
     <string name="name_is_required">Name is required</string>
     <string name="favourite">Favorite</string>
     <string name="template">Template</string>
+    <string name="lock">Lock</string>
+    <string name="unlock">Unlock</string>
     <string name="restore">Restore</string>
     <string name="unfavorite">Unfavorite</string>
     <string name="delete_view">Delete View</string>

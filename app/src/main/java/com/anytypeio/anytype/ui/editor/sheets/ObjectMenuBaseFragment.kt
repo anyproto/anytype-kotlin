@@ -106,7 +106,8 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
             addItemDecoration(
                 SpacingItemDecoration(
                     spacingStart = resources.getDimension(R.dimen.dp_20).toInt(),
-                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_16).toInt()
+                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_16).toInt(),
+                    lastItemSpacingEnd = resources.getDimension(R.dimen.dp_16).toInt()
                 )
             )
         }
@@ -121,6 +122,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         }
         super.onStart()
         vm.onStart(
+            ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
             isProfile = isProfile

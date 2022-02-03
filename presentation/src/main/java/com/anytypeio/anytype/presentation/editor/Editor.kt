@@ -24,6 +24,7 @@ interface Editor {
             ) : Styling()
             data class Multi(val targets: Set<Id>) : Styling()
         }
+        object Locked: Mode()
     }
 
     class Storage {

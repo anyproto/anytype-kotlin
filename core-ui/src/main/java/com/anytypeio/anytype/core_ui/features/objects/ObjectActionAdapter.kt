@@ -57,6 +57,14 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_restore)
                     tvActionTitle.setText(R.string.restore)
                 }
+                ObjectAction.LOCK -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_lock)
+                    tvActionTitle.setText(R.string.lock)
+                }
+                ObjectAction.UNLOCK -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_unlock)
+                    tvActionTitle.setText(R.string.unlock)
+                }
             }
         }
     }

@@ -468,6 +468,17 @@ class EditorViewModel(
                 orchestrator.stores.details.stream()
             ) { models, focus, details ->
                 val root = models.first { it.id == context }
+                if (mode == EditorMode.Locked) {
+                    if (root.fields.isLocked != true) {
+                        mode = EditorMode.Edit
+                        sendToast("Your object is unlocked")
+                    }
+                } else {
+                    if (root.fields.isLocked == true) {
+                        mode = EditorMode.Locked
+                        sendToast("Your object is locked")
+                    }
+                }
                 footers.value = getFooterState(root, details)
                 models.asMap().render(
                     mode = mode,
@@ -647,6 +658,7 @@ class EditorViewModel(
             val root = event.blocks.find { it.id == context }
             when {
                 root == null -> Timber.e("Could not find the root block on initial focusing")
+                root.fields.isLocked == true -> { mode = EditorMode.Locked }
                 root.children.size == 1 -> {
                     val first = event.blocks.first { it.id == root.children.first() }
                     val content = first.content
@@ -2799,11 +2811,15 @@ class EditorViewModel(
 
     fun onAddCoverClicked() {
         Timber.d("onAddCoverClicked, ")
-        dispatch(Command.OpenCoverGallery(context))
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.POPUP_CHOOSE_COVER
-        )
+        if (mode != EditorMode.Locked) {
+            dispatch(Command.OpenCoverGallery(context))
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = EventsDictionary.POPUP_CHOOSE_COVER
+            )
+        } else {
+            sendToast("Cannot change cover: your object is locked.")
+        }
     }
 
     fun onLayoutClicked() {

@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -26,7 +28,7 @@ abstract class ObjectMenuViewModelBase(
     private val setObjectIsArchived: SetObjectIsArchived,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
-    private val dispatcher: Dispatcher<Payload>
+    protected val dispatcher: Dispatcher<Payload>
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
@@ -39,8 +41,14 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onLayoutClicked()
     abstract fun onRelationsClicked()
     abstract fun onHistoryClicked()
-    fun onStart(isFavorite: Boolean, isArchived: Boolean, isProfile: Boolean) {
+    fun onStart(
+        ctx: Id,
+        isFavorite: Boolean,
+        isArchived: Boolean,
+        isProfile: Boolean
+    ) {
         actions.value = buildActions(
+            ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
             isProfile = isProfile
@@ -48,27 +56,12 @@ abstract class ObjectMenuViewModelBase(
     }
     abstract fun onActionClicked(ctx: Id, action: ObjectAction)
 
-    protected open fun buildActions(
+    abstract fun buildActions(
+        ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
         isProfile: Boolean
-    ): MutableList<ObjectAction> = mutableListOf<ObjectAction>().apply {
-        if (!isProfile) {
-            if (isArchived) {
-                add(ObjectAction.RESTORE)
-            } else {
-                add(ObjectAction.DELETE)
-            }
-        }
-        add(ObjectAction.UNDO_REDO)
-        if (isFavorite) {
-            add(ObjectAction.REMOVE_FROM_FAVOURITE)
-        } else {
-            add(ObjectAction.ADD_TO_FAVOURITE)
-        }
-        add(ObjectAction.SEARCH_ON_PAGE)
-        add(ObjectAction.USE_AS_TEMPLATE)
-    }
+    ): MutableList<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
         viewModelScope.launch {
@@ -150,6 +143,9 @@ abstract class ObjectMenuViewModelBase(
         const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
         const val COMING_SOON_MSG = "Coming soon..."
         const val NOT_ALLOWED = "Not allowed for this object"
+        const val OBJECT_IS_LOCKED_MSG = "Your object is locked"
+        const val OBJECT_IS_UNLOCKED_MSG = "Your object is locked"
+        const val SOMETHING_WENT_WRONG_MSG = "Something went wrong. Please, try again later."
     }
 }
 
@@ -157,9 +153,10 @@ class ObjectMenuViewModel(
     setObjectIsArchived: SetObjectIsArchived,
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
-    storage: Editor.Storage,
     dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val storage: Editor.Storage,
+    private val analytics: Analytics,
+    private val updateFields: UpdateFields
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -168,6 +165,39 @@ class ObjectMenuViewModel(
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
+
+    override fun buildActions(
+        ctx: Id,
+        isArchived: Boolean,
+        isFavorite: Boolean,
+        isProfile: Boolean
+    ): MutableList<ObjectAction> = mutableListOf<ObjectAction>().apply {
+        if (!isProfile) {
+            if (isArchived) {
+                add(ObjectAction.RESTORE)
+            } else {
+                add(ObjectAction.DELETE)
+            }
+        }
+        add(ObjectAction.UNDO_REDO)
+        if (isFavorite) {
+            add(ObjectAction.REMOVE_FROM_FAVOURITE)
+        } else {
+            add(ObjectAction.ADD_TO_FAVOURITE)
+        }
+        add(ObjectAction.SEARCH_ON_PAGE)
+
+        val root = storage.document.get().find { it.id == ctx }
+        if (root != null) {
+            if (root.fields.isLocked == true) {
+                add(ObjectAction.UNLOCK)
+            } else {
+                add(ObjectAction.LOCK)
+            }
+        }
+
+        add(ObjectAction.USE_AS_TEMPLATE)
+    }
 
     override fun onIconClicked() {
         viewModelScope.launch {
@@ -259,8 +289,54 @@ class ObjectMenuViewModel(
                 )
                 proceedWithRemovingFromFavorites(ctx)
             }
+            ObjectAction.UNLOCK -> {
+                proceedWithUpdatingLockStatus(ctx, false)
+            }
+            ObjectAction.LOCK -> {
+                proceedWithUpdatingLockStatus(ctx, true)
+            }
             else -> {
                 viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+            }
+        }
+    }
+
+    private fun proceedWithUpdatingLockStatus(
+        ctx: Id,
+        isLocked: Boolean
+    ) {
+        val root = storage.document.get().find { it.id == ctx }
+        if (root != null) {
+            viewModelScope.launch {
+                updateFields(
+                    UpdateFields.Params(
+                        context = ctx,
+                        fields = listOf(
+                            ctx to root.fields.copy(
+                                map = root.fields.map.toMutableMap().apply {
+                                    put(Block.Fields.IS_LOCKED_KEY, isLocked)
+                                }
+                            )
+                        )
+                    )
+                ).proceed(
+                    success = {
+                        dispatcher.send(it)
+                        if (isLocked) {
+                            _toasts.emit(OBJECT_IS_LOCKED_MSG).also {
+                                isDismissed.value = true
+                            }
+                        } else {
+                            _toasts.emit(OBJECT_IS_UNLOCKED_MSG).also {
+                                isDismissed.value = true
+                            }
+                        }
+                    },
+                    failure = {
+                        Timber.e(it, "Error while updating lock-status for object")
+                        _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                    }
+                )
             }
         }
     }
@@ -272,7 +348,8 @@ class ObjectMenuViewModel(
         private val removeFromFavorite: RemoveFromFavorite,
         private val storage: Editor.Storage,
         private val analytics: Analytics,
-        private val dispatcher: Dispatcher<Payload>
+        private val dispatcher: Dispatcher<Payload>,
+        private val updateFields: UpdateFields
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -281,7 +358,8 @@ class ObjectMenuViewModel(
                 removeFromFavorite = removeFromFavorite,
                 storage = storage,
                 analytics = analytics,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                updateFields = updateFields
             ) as T
         }
     }
@@ -385,6 +463,7 @@ class ObjectSetMenuViewModel(
     }
 
     override fun buildActions(
+        ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
         isProfile: Boolean

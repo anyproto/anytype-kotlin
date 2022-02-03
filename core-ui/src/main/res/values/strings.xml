@@ -475,4 +475,6 @@
     <string name="description">Description</string>
     <string name="preview_layout">Preview layout</string>
 
+    <string name="bookmark">Bookmark</string>
+
 </resources>

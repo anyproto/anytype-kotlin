@@ -207,24 +207,11 @@ class TextInputWidget : AppCompatEditText {
         when (id) {
             paste -> {
                 if (clipboardInterceptor != null) {
-                    if (editableText.isNotEmpty()) {
-                        clipboardInterceptor?.onClipboardAction(
-                            ClipboardInterceptor.Action.Paste(
-                                selection = selectionStart..selectionEnd
-                            )
+                    clipboardInterceptor?.onClipboardAction(
+                        ClipboardInterceptor.Action.Paste(
+                            selection = selectionStart..selectionEnd
                         )
-                    } else {
-                        val url = parseUrlFromPastedText()
-                        if (url == null) {
-                            clipboardInterceptor?.onClipboardAction(
-                                ClipboardInterceptor.Action.Paste(
-                                    selection = selectionStart..selectionEnd
-                                )
-                            )
-                        } else {
-                            clipboardInterceptor?.onUrlPasted(url = url)
-                        }
-                    }
+                    )
                     consumed = true
                 }
             }
@@ -247,7 +234,7 @@ class TextInputWidget : AppCompatEditText {
         }
     }
 
-    private fun parseUrlFromPastedText(): Url? {
+    fun parseUrlFromPastedText(): Url? {
         val mng = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = mng.primaryClip
         return if (clip != null && clip.itemCount > 0) {

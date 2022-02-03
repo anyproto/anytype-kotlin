@@ -1,9 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.editor
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Editable
 import android.text.Spannable
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.*
 import com.anytypeio.anytype.core_ui.extensions.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
@@ -35,6 +40,7 @@ interface TextBlockHolder : TextHolder {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
             //setupSelectionActionMode(onContextMenuStyleClick)
+            setupCustomInsertionActionMode()
         }
     }
 
@@ -372,6 +378,22 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
+    fun clearTextWatchers() {
+        content.clearTextWatchers()
+    }
+
+    fun getBlockTextColor(color: String?): Int {
+        val value = ThemeColor.values().find { value -> value.title == color }
+        val default = getDefaultTextColor()
+        return if (value != null && value != ThemeColor.DEFAULT) {
+            content.resources.dark(value, default)
+        } else {
+            default
+        }
+    }
+
+    //region CONTEXT MENU
+
     private fun setupSelectionActionMode(
         onContextMenuStyleClick: (IntRange) -> Unit
     ) {
@@ -388,17 +410,57 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
-    fun clearTextWatchers() {
-        content.clearTextWatchers()
-    }
+    private fun setupCustomInsertionActionMode() {
+        val bookmarkMenuItemTitle = content.resources.getString(R.string.bookmark)
+        content.customInsertionActionModeCallback = object : ActionMode.Callback2() {
+            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                val url = content.parseUrlFromPastedText()
+                if (url != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        menu.apply {
+                            add(0, android.R.id.textAssist, 0, bookmarkMenuItemTitle)
+                        }
+                    } else {
+                        menu.apply {
+                            add(0, R.id.menuStyle, 3, bookmarkMenuItemTitle)
+                        }
+                    }
+                }
+                return true
+            }
 
-    fun getBlockTextColor(color: String?): Int {
-        val value = ThemeColor.values().find { value -> value.title == color }
-        val default = getDefaultTextColor()
-        return if (value != null && value != ThemeColor.DEFAULT) {
-            content.resources.dark(value, default)
-        } else {
-            default
+            override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+                return false
+            }
+
+            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                return when (item.itemId) {
+                    android.R.id.textAssist -> {
+                        when (item.title) {
+                            bookmarkMenuItemTitle -> {
+                                mode.finish()
+                                content.clipboardInterceptor?.onUrlPasted(
+                                    content.parseUrlFromPastedText().toString()
+                                )
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                    R.id.menuBookmark -> {
+                        content.clipboardInterceptor?.onUrlPasted(
+                            content.parseUrlFromPastedText().toString()
+                        )
+                        mode.finish()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode) {}
         }
     }
+
+    //endregion
 }

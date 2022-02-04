@@ -135,11 +135,9 @@ sealed class Command {
     /**
      * @param ctx - Object Id
      * @param block - LinkBlock Id
-     * @param target - LinkBlock target Id
      */
     data class OpenObjectAppearanceSettingScreen(
         val ctx: Id,
-        val block: Id,
-        val target: Id
+        val block: Id
     ) : Command()
 }

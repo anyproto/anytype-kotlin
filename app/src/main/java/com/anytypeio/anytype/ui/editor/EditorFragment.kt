@@ -1027,8 +1027,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 is Command.OpenObjectAppearanceSettingScreen -> {
                     val fr = ObjectAppearanceSettingFragment.new(
                         ctx = command.ctx,
-                        block = command.block,
-                        target = command.target
+                        block = command.block
                     )
                     fr.show(childFragmentManager, null)
                 }

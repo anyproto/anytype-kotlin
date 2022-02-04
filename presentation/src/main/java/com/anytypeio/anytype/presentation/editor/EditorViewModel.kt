@@ -5317,16 +5317,12 @@ class EditorViewModel(
         val selected = currentSelection().toList()
         if (selected.size == 1) {
             val block = blocks.firstOrNull { it.id == selected[0] } ?: return
-            val content = block.content
-            if (content is Content.Link) {
-                commands.value = EventWrapper(
-                    Command.OpenObjectAppearanceSettingScreen(
-                        ctx = context,
-                        block = block.id,
-                        target = content.target
-                    )
+            commands.value = EventWrapper(
+                Command.OpenObjectAppearanceSettingScreen(
+                    ctx = context,
+                    block = block.id
                 )
-            }
+            )
         } else {
             sendToast("Couldn't show Object Appearance Setting screen")
         }

@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceCoverViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutViewModel
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.objects.ObjectAppearanceCoverFragment
 import com.anytypeio.anytype.ui.objects.ObjectAppearanceIconFragment
 import com.anytypeio.anytype.ui.objects.ObjectAppearancePreviewLayoutFragment
@@ -34,10 +37,14 @@ object ObjectAppearanceSettingModule {
     @Provides
     @PerModal
     fun provideObjectAppearanceSettingViewModelFactory(
-        orchestrator: Orchestrator
+        storage: Editor.Storage,
+        updateFields: UpdateFields,
+        dispatcher: Dispatcher<Payload>
     ): ObjectAppearanceSettingViewModel.Factory {
         return ObjectAppearanceSettingViewModel.Factory(
-            orchestrator = orchestrator
+            storage = storage,
+            updateFields = updateFields,
+            dispatcher = dispatcher
         )
     }
 }
@@ -63,10 +70,14 @@ object ObjectAppearanceIconModule {
     @Provides
     @PerModal
     fun provideObjectAppearanceIconViewModelFactory(
-        orchestrator: Orchestrator
+        storage: Editor.Storage,
+        updateFields: UpdateFields,
+        dispatcher: Dispatcher<Payload>
     ): ObjectAppearanceIconViewModel.Factory {
         return ObjectAppearanceIconViewModel.Factory(
-            orchestrator = orchestrator
+            storage = storage,
+            updateFields = updateFields,
+            dispatcher = dispatcher
         )
     }
 }
@@ -92,10 +103,14 @@ object ObjectAppearancePreviewLayoutModule {
     @Provides
     @PerModal
     fun provideObjectAppearancePreviewLayoutViewModelFactory(
-        orchestrator: Orchestrator
+        storage: Editor.Storage,
+        updateFields: UpdateFields,
+        dispatcher: Dispatcher<Payload>
     ): ObjectAppearancePreviewLayoutViewModel.Factory {
         return ObjectAppearancePreviewLayoutViewModel.Factory(
-            orchestrator = orchestrator
+            storage = storage,
+            updateFields = updateFields,
+            dispatcher = dispatcher
         )
     }
 }
@@ -121,10 +136,14 @@ object ObjectAppearanceCoverModule {
     @Provides
     @PerModal
     fun provideObjectAppearanceCoverViewModelFactory(
-        orchestrator: Orchestrator
+        storage: Editor.Storage,
+        updateFields: UpdateFields,
+        dispatcher: Dispatcher<Payload>
     ): ObjectAppearanceCoverViewModel.Factory {
         return ObjectAppearanceCoverViewModel.Factory(
-            orchestrator = orchestrator
+            storage = storage,
+            updateFields = updateFields,
+            dispatcher = dispatcher
         )
     }
 }

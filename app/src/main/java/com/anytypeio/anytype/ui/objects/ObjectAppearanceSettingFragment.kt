@@ -28,7 +28,6 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)
-    private val target: String get() = argString(TARGET_ID_KEY)
     private val adapterAppearance by lazy {
         ObjectAppearanceSettingAdapter(onItemClick = vm::onItemClicked)
     }
@@ -51,10 +50,7 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
         jobs += lifecycleScope.subscribe(vm.objectPreviewState) { observeState(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
-        vm.onStart(
-            targetId = target,
-            blockId = block
-        )
+        vm.onStart(blockId = block)
     }
 
     private fun observeState(state: ObjectAppearanceSettingViewModel.State) {
@@ -94,16 +90,14 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
     }
 
     companion object {
-        fun new(ctx: Id, block: Id, target: Id) = ObjectAppearanceSettingFragment().apply {
+        fun new(ctx: Id, block: Id) = ObjectAppearanceSettingFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID_KEY to ctx,
-                BLOCK_ID_KEY to block,
-                TARGET_ID_KEY to target
+                BLOCK_ID_KEY to block
             )
         }
 
         const val CONTEXT_ID_KEY = "arg.object-appearance-setting.ctx"
         const val BLOCK_ID_KEY = "arg.object-appearance-setting.block"
-        const val TARGET_ID_KEY = "arg.object-appearance-setting.target"
     }
 }

@@ -77,7 +77,11 @@ data class Block(
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
+            const val ICON_SIZE_KEY = "iconSize"
+            const val ICON_WITH_KEY = "withIcon"
             const val IS_LOCKED_KEY = "isLocked"
+            const val COVER_WITH_KEY = "withCover"
+            const val STYLE_KEY = "style"
         }
     }
 

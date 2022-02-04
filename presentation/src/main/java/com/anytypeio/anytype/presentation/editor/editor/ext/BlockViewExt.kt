@@ -1,12 +1,16 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.extension.shift
+import com.anytypeio.anytype.presentation.mapper.toView
 import timber.log.Timber
 
 fun List<BlockView>.singleStylingMode(
@@ -921,4 +925,16 @@ fun BlockView.Text.cutPartOfText(
 
 fun List<BlockView>.update(blockView: BlockView) = this.map {
     if (it.id == blockView.id) blockView else it
+}
+
+fun Document.getAppearanceParamsOfBlockLink(blockId: Id, details: Block.Details)
+        : BlockView.Appearance.Params? {
+    val block = this.find { it.id == blockId }
+    val content = block?.content
+    if (block != null && content is Block.Content.Link) {
+        val target = content.asLink().target
+        val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
+        return block.fields.toView(layout = obj.layout)
+    }
+    return null
 }

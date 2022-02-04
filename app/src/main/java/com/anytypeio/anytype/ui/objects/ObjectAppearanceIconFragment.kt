@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectAppearanceSettingAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjAppearanceBaseBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -29,7 +30,9 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
     private val vm by viewModels<ObjectAppearanceIconViewModel> { factory }
 
     private val adapterAppearance by lazy {
-        ObjectAppearanceSettingAdapter(onItemClick = {})
+        ObjectAppearanceSettingAdapter(onItemClick = { item ->
+            vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+        })
     }
 
     override fun onCreateView(
@@ -50,7 +53,18 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.state) { state ->
-            //todo
+            when (state) {
+                ObjectAppearanceIconViewModel.State.Dismiss -> {
+                    dismiss()
+                }
+                is ObjectAppearanceIconViewModel.State.Success -> {
+                    adapterAppearance.submitList(state.items)
+                }
+                is ObjectAppearanceIconViewModel.State.Error -> {
+                    toast(state.msg)
+                    dismiss()
+                }
+            }
         }
         super.onStart()
         vm.onStart(block)
@@ -90,6 +104,13 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
     lateinit var factory: ObjectAppearancePreviewLayoutViewModel.Factory
     private val vm by viewModels<ObjectAppearancePreviewLayoutViewModel> { factory }
 
+    private val adapterAppearance by lazy {
+        ObjectAppearanceSettingAdapter(onItemClick = { item ->
+            vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+        })
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -100,12 +121,25 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
         binding.tvScreenTitle.text = getString(R.string.preview_layout)
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
+            adapter = adapterAppearance
         }
 
         return binding.root
     }
 
     override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.state) { state ->
+            when (state) {
+                ObjectAppearancePreviewLayoutViewModel.State.Dismiss -> dismiss()
+                is ObjectAppearancePreviewLayoutViewModel.State.Error -> {
+                    toast(state.msg)
+                    dismiss()
+                }
+                is ObjectAppearancePreviewLayoutViewModel.State.Success -> {
+                    adapterAppearance.submitList(state.items)
+                }
+            }
+        }
         super.onStart()
         vm.onStart(block)
     }
@@ -144,6 +178,12 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
     lateinit var factory: ObjectAppearanceCoverViewModel.Factory
     private val vm by viewModels<ObjectAppearanceCoverViewModel> { factory }
 
+    private val adapterAppearance by lazy {
+        ObjectAppearanceSettingAdapter(onItemClick = { item ->
+            vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+        })
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -154,6 +194,7 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
         binding.tvScreenTitle.text = getString(R.string.cover)
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
+            adapter = adapterAppearance
         }
 
         return binding.root
@@ -161,6 +202,20 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
 
 
     override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.state) { state ->
+            when (state) {
+                ObjectAppearanceCoverViewModel.State.Dismiss -> {
+                    dismiss()
+                }
+                is ObjectAppearanceCoverViewModel.State.Success -> {
+                    adapterAppearance.submitList(state.items)
+                }
+                is ObjectAppearanceCoverViewModel.State.Error -> {
+                    toast(state.msg)
+                    dismiss()
+                }
+            }
+        }
         super.onStart()
         vm.onStart(block)
     }
@@ -185,7 +240,7 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
         fun new(ctx: Id, block: Id) = ObjectAppearanceCoverFragment().apply {
             arguments = bundleOf(CONTEXT_ID_KEY to ctx, BLOCK_ID_KEY to block)
         }
-        
+
         const val CONTEXT_ID_KEY = "arg.object-appearance-cover.ctx"
         const val BLOCK_ID_KEY = "arg.object-appearance-cover.block"
     }

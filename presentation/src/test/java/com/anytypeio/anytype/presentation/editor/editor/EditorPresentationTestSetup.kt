@@ -203,7 +203,7 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
-    private val builder: UrlBuilder get() = UrlBuilder(gateway)
+    protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
 

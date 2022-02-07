@@ -3190,6 +3190,7 @@ class EditorViewModel(
             is ListenerType.Bookmark.View -> {
                 when (mode) {
                     EditorMode.Edit -> onBookmarkClicked(clicked.item)
+                    EditorMode.Locked -> onBookmarkClicked(clicked.item)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
                 }
@@ -3211,6 +3212,7 @@ class EditorViewModel(
             is ListenerType.File.View -> {
                 when (mode) {
                     EditorMode.Edit -> onFileClicked(clicked.target)
+                    EditorMode.Locked -> onFileClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3238,7 +3240,7 @@ class EditorViewModel(
             }
             is ListenerType.Picture.View -> {
                 when (mode) {
-                    EditorMode.Edit -> {
+                    EditorMode.Edit, EditorMode.Locked -> {
                         val target = blocks.find { it.id == clicked.target }
                         if (target != null) {
                             val content = target.content
@@ -3316,6 +3318,7 @@ class EditorViewModel(
             is ListenerType.LinkToObject -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(clicked.target)
+                    EditorMode.Locked -> onPageClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3323,6 +3326,7 @@ class EditorViewModel(
             is ListenerType.LinkToObjectArchived -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(clicked.target)
+                    EditorMode.Locked -> onPageClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3336,7 +3340,7 @@ class EditorViewModel(
             }
             is ListenerType.Mention -> {
                 when (mode) {
-                    EditorMode.Edit -> {
+                    EditorMode.Edit, EditorMode.Locked -> {
                         viewModelScope.launch {
                             orchestrator.stores.focus.update(Editor.Focus.empty())
                         }
@@ -3389,7 +3393,7 @@ class EditorViewModel(
                     return
                 }
                 when (mode) {
-                    EditorMode.Edit -> {
+                    EditorMode.Edit, EditorMode.Locked -> {
                         val relationId = (clicked.value as BlockView.Relation.Related).view.relationId
                         val relation = orchestrator.stores.relations.current().first { it.key == relationId }
                         if (relation.isReadOnly) {
@@ -3446,7 +3450,7 @@ class EditorViewModel(
                     return
                 }
                 when (mode) {
-                    EditorMode.Edit -> {
+                    EditorMode.Edit, EditorMode.Locked -> {
                         val relationId = clicked.relation.relationId
                         val relation = orchestrator.stores.relations.current().first { it.key == relationId }
                         if (relation.isReadOnly) {
@@ -3512,22 +3516,26 @@ class EditorViewModel(
                 }
             }
             is ListenerType.Relation.ObjectType -> {
-                val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
-                    sendToast(NOT_ALLOWED_FOR_OBJECT)
-                    Timber.d("No interaction allowed with this object type")
-                    return
-                }
-                dispatch(
-                    Command.OpenChangeObjectTypeScreen(
-                        ctx = context,
-                        smartBlockType = getObjectSmartBlockType()
+                if (mode != EditorMode.Locked) {
+                    val restrictions = orchestrator.stores.objectRestrictions.current()
+                    if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
+                        sendToast(NOT_ALLOWED_FOR_OBJECT)
+                        Timber.d("No interaction allowed with this object type")
+                        return
+                    }
+                    dispatch(
+                        Command.OpenChangeObjectTypeScreen(
+                            ctx = context,
+                            smartBlockType = getObjectSmartBlockType()
+                        )
                     )
-                )
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
-                )
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
+                    )
+                } else {
+                    sendToast("Your object is locked. To change its type, simply unlock it.")
+                }
             }
             is ListenerType.Relation.ObjectTypeOpenSet -> {
                 viewModelScope.launch {

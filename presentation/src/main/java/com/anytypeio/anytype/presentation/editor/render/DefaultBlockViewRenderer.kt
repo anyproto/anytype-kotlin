@@ -887,6 +887,7 @@ class DefaultBlockViewRenderer(
                 )
             )
         } else {
+            // TODO maybe refact: if title is null, it does not mean that we have an error state.
             BlockView.Error.Bookmark(
                 id = block.id,
                 url = url,
@@ -1217,7 +1218,7 @@ class DefaultBlockViewRenderer(
         selection: Set<Id>
     ): BlockView.LinkToObject = BlockView.LinkToObject.Default(
         id = block.id,
-        isEmpty = true,
+        isEmpty = obj.isEmpty(),
         icon = ObjectIcon.from(
             obj = obj,
             layout = obj.layout,

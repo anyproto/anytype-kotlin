@@ -43,6 +43,9 @@ sealed class Command {
         val excludedTypes: List<String> = emptyList()
     ) : Command()
 
+    /**
+     * @property [id] id of the file block
+     */
     data class OpenFileByDefaultApp(
         val id: String,
         val mime: String,

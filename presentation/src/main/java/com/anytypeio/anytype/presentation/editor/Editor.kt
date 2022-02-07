@@ -8,6 +8,8 @@ import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.Store
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface Editor {
 
@@ -67,12 +69,14 @@ interface Editor {
     interface DocumentProvider {
         fun get(): Document
         fun update(document: Document)
+        fun observe() : Flow<Document>
         fun clear()
         class Default : DocumentProvider {
-            var doc: Document = emptyList()
-            override fun get(): Document = doc
-            override fun update(document: Document) { this.doc = document }
-            override fun clear() { this.doc = emptyList() }
+            val doc = MutableStateFlow<Document>(emptyList())
+            override fun observe(): Flow<Document> = doc
+            override fun get(): Document = doc.value
+            override fun update(document: Document) { this.doc.tryEmit(document) }
+            override fun clear() { this.doc.value = emptyList() }
         }
     }
 }

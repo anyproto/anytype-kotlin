@@ -82,12 +82,12 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
         optionLayout
             .clicks()
-            .onEach { vm.onLayoutClicked() }
+            .onEach { vm.onLayoutClicked(ctx) }
             .launchIn(lifecycleScope)
 
         optionIcon
             .clicks()
-            .onEach { vm.onIconClicked() }
+            .onEach { vm.onIconClicked(ctx) }
             .launchIn(lifecycleScope)
 
         optionRelations
@@ -97,7 +97,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
 
         optionCover
             .clicks()
-            .onEach { vm.onCoverClicked() }
+            .onEach { vm.onCoverClicked(ctx) }
             .launchIn(lifecycleScope)
 
         rvActions.apply {

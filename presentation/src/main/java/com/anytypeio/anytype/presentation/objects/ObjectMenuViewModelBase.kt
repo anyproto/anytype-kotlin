@@ -36,9 +36,9 @@ abstract class ObjectMenuViewModelBase(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val actions = MutableStateFlow(emptyList<ObjectAction>())
 
-    abstract fun onIconClicked()
-    abstract fun onCoverClicked()
-    abstract fun onLayoutClicked()
+    abstract fun onIconClicked(ctx: Id)
+    abstract fun onCoverClicked(ctx: Id)
+    abstract fun onLayoutClicked(ctx: Id)
     abstract fun onRelationsClicked()
     abstract fun onHistoryClicked()
     fun onStart(
@@ -199,12 +199,20 @@ class ObjectMenuViewModel(
         add(ObjectAction.USE_AS_TEMPLATE)
     }
 
-    override fun onIconClicked() {
+    override fun onIconClicked(ctx: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
-                commands.emit(Command.OpenObjectIcons)
+                try {
+                    if (!isThisObjectLocked(ctx)) {
+                        commands.emit(Command.OpenObjectIcons)
+                    } else {
+                        _toasts.emit("Your object is locked.")
+                    }
+                } catch (e: Exception) {
+                    _toasts.emit("Something went wrong. Please, try again later.")
+                }
             }
         }
         viewModelScope.sendEvent(
@@ -213,12 +221,20 @@ class ObjectMenuViewModel(
         )
     }
 
-    override fun onCoverClicked() {
+    override fun onCoverClicked(ctx: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
-                commands.emit(Command.OpenObjectCover)
+                try {
+                    if (!isThisObjectLocked(ctx)) {
+                        commands.emit(Command.OpenObjectCover)
+                    } else {
+                        _toasts.emit("Your object is locked.")
+                    }
+                } catch (e: Exception) {
+                    _toasts.emit("Something went wrong. Please, try again later.")
+                }
             }
         }
         viewModelScope.sendEvent(
@@ -227,12 +243,20 @@ class ObjectMenuViewModel(
         )
     }
 
-    override fun onLayoutClicked() {
+    override fun onLayoutClicked(ctx: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
                 _toasts.emit(NOT_ALLOWED)
             } else {
-                commands.emit(Command.OpenObjectLayout)
+                try {
+                    if (!isThisObjectLocked(ctx)) {
+                        commands.emit(Command.OpenObjectLayout)
+                    } else {
+                        _toasts.emit("Your object is locked.")
+                    }
+                } catch (e: Exception) {
+                    _toasts.emit("Something went wrong. Please, try again later.")
+                }
             }
         }
         viewModelScope.sendEvent(
@@ -341,6 +365,12 @@ class ObjectMenuViewModel(
         }
     }
 
+    @Throws(Exception::class)
+    fun isThisObjectLocked(ctx: Id) : Boolean {
+        val doc = storage.document.get().first { it.id == ctx }
+        return doc.fields.isLocked ?: false
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val setObjectIsArchived: SetObjectIsArchived,
@@ -402,7 +432,7 @@ class ObjectSetMenuViewModel(
         }
     }
 
-    override fun onIconClicked() {
+    override fun onIconClicked(ctx: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
@@ -416,7 +446,7 @@ class ObjectSetMenuViewModel(
         )
     }
 
-    override fun onCoverClicked() {
+    override fun onCoverClicked(ctx: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
@@ -430,7 +460,7 @@ class ObjectSetMenuViewModel(
         )
     }
 
-    override fun onLayoutClicked() {
+    override fun onLayoutClicked(ctx: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
                 _toasts.emit(NOT_ALLOWED)

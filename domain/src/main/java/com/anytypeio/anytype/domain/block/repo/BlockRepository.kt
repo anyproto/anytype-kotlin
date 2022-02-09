@@ -194,7 +194,8 @@ interface BlockRepository {
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        keys: List<Id> = emptyList()
     ): List<Map<String, Any?>>
 
     suspend fun searchObjectsWithSubscription(

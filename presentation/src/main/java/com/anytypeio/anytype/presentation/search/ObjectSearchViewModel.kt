@@ -73,7 +73,8 @@ open class ObjectSearchViewModel(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterSearchObjects,
         sorts = ObjectSearchConstants.sortsSearchObjects,
-        fulltext = EMPTY_QUERY
+        fulltext = EMPTY_QUERY,
+        keys = ObjectSearchConstants.defaultKeys
     )
 
     private fun startProcessingSearchQuery() {

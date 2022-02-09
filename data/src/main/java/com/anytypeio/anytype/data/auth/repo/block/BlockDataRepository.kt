@@ -415,13 +415,15 @@ class BlockDataRepository(
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        keys: List<Id>
     ): List<Map<String, Any?>> = factory.remote.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
         offset = offset,
-        limit = limit
+        limit = limit,
+        keys = keys
     )
 
     override suspend fun searchObjectsWithSubscription(

@@ -147,7 +147,8 @@ interface BlockRemote {
         filters: List<DVFilter>,
         fulltext: String,
         offset: Int,
-        limit: Int
+        limit: Int,
+        keys: List<Id>
     ): List<Map<String, Any?>>
 
     suspend fun searchObjectsWithSubscription(

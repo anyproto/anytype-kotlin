@@ -16,6 +16,7 @@
 * Editor | Incorrect numbers in numbered lists when there are nested lists or blocks are grouped by sections (#2072)
 * Dashboard | Removal from favorites is not synced correctly (#2075)
 * Sets | Enabled auto-correct when setting name for a new object (#2067)
+* Search | Optimized object search (#2095)
 
 ### Design & UX 🔳
 

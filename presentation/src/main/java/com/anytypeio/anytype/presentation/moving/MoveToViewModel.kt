@@ -96,7 +96,8 @@ class MoveToViewModel(
             limit = SEARCH_LIMIT,
             filters = ObjectSearchConstants.filterMoveTo(filteredTypes),
             sorts = ObjectSearchConstants.sortMoveTo,
-            fulltext = EMPTY_QUERY
+            fulltext = EMPTY_QUERY,
+            keys = ObjectSearchConstants.defaultKeys
         )
     }
 

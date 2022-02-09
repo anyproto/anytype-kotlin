@@ -32,7 +32,8 @@ class LinkToObjectViewModel(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterLinkTo,
         sorts = ObjectSearchConstants.sortLinkTo,
-        fulltext = EMPTY_QUERY
+        fulltext = EMPTY_QUERY,
+        keys = ObjectSearchConstants.defaultKeys
     )
 
     override fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {

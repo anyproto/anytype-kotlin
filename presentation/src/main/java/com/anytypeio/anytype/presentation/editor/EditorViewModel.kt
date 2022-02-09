@@ -5216,7 +5216,8 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.filterLinkTo,
                 sorts = ObjectSearchConstants.sortLinkTo,
-                fulltext = filter.removePrefix(MENTION_PREFIX)
+                fulltext = filter.removePrefix(MENTION_PREFIX),
+                keys = ObjectSearchConstants.defaultKeys
             )
             viewModelScope.launch {
                 searchObjects(params).process(

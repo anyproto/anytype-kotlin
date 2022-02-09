@@ -171,7 +171,8 @@ class RelationObjectValueAddViewModel(
                     filters = filters,
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
-                    limit = SearchObjects.LIMIT
+                    limit = SearchObjects.LIMIT,
+                    keys = ObjectSearchConstants.defaultKeys
                 )
             ).process(
                 failure = { Timber.e(it, "Error while getting objects") },

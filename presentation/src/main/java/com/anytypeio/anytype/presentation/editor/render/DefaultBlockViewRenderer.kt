@@ -1249,7 +1249,7 @@ class DefaultBlockViewRenderer(
         var coverImage: Url? = null
         var coverGradient: String? = null
 
-        if (isCard && appearanceParams.withCover == true) {
+        if (isCard && appearanceParams.canHaveCover && appearanceParams.withCover == true) {
             when (val type = obj.coverType) {
                 CoverType.UPLOADED_IMAGE -> {
                     coverImage = obj.coverId?.let { id ->

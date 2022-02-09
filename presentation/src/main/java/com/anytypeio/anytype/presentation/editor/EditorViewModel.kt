@@ -1349,7 +1349,7 @@ class EditorViewModel(
                     is Content.Link -> {
                         excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
-                        targetActions.add(ActionItemType.Preview)
+                        if (!isMultiMode) targetActions.add(ActionItemType.Preview)
                     }
                     is Content.Page -> {
                         excludedActions.add(ActionItemType.Style)

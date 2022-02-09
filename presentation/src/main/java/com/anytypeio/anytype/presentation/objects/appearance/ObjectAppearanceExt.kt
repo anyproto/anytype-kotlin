@@ -41,10 +41,11 @@ fun BlockView.Appearance.Params.getObjectAppearancePreviewLayoutState(): ObjectA
 fun Block.Fields.getLinkToObjectAppearanceParams(layout: ObjectType.Layout?): BlockView.Appearance.Params {
 
     var canHaveIcon = true
-    var canHaveCover = true
+    //todo Cover menu option is off. No proper design yet.
+    var canHaveCover = false
     var canHaveDescription = true
 
-    var iconSize = this.iconSize ?: LINK_ICON_SIZE_SMALL
+    var iconSize = this.iconSize ?: LINK_ICON_SIZE_MEDIUM
     val style = this.style ?: BlockView.Appearance.LINK_STYLE_TEXT
     var withIcon = this.withIcon ?: true
     val withName = this.withName ?: true
@@ -52,24 +53,24 @@ fun Block.Fields.getLinkToObjectAppearanceParams(layout: ObjectType.Layout?): Bl
     var withDescription = this.withDescription
 
     if (this.style == BlockView.Appearance.LINK_STYLE_TEXT) {
-        canHaveCover = false
+        //canHaveCover = false
         canHaveDescription = false
     }
 
     if (layout == ObjectType.Layout.TODO) {
         canHaveIcon = false
         withIcon = true
-        iconSize = LINK_ICON_SIZE_SMALL
+        iconSize = LINK_ICON_SIZE_MEDIUM
     }
 
     if (layout == ObjectType.Layout.NOTE) {
         canHaveIcon = false
-        canHaveCover = false
+        //canHaveCover = false
         canHaveDescription = false
         withIcon = false
         withCover = false
         withDescription = false
-        iconSize = LINK_ICON_SIZE_SMALL
+        iconSize = LINK_ICON_SIZE_MEDIUM
     }
 
     return BlockView.Appearance.Params(

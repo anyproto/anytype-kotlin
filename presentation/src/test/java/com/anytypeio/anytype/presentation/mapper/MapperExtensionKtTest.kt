@@ -761,11 +761,11 @@ class MapperExtensionKtTest {
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_SMALL,
+            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
             withIcon = true,
             withName = true,
             withDescription = null,
-            canHaveCover = true,
+            canHaveCover = false,
             canHaveDescription = true,
             canHaveIcon = true
         )
@@ -781,11 +781,11 @@ class MapperExtensionKtTest {
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_SMALL,
+            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
             withIcon = true,
             withName = true,
             withDescription = null,
-            canHaveCover = true,
+            canHaveCover = false,
             canHaveDescription = true,
             canHaveIcon = true
         )
@@ -815,7 +815,7 @@ class MapperExtensionKtTest {
             withName = false,
             withDescription = true,
             withCover = true,
-            canHaveCover = true,
+            canHaveCover = false,
             canHaveDescription = true,
             canHaveIcon = true
         )
@@ -870,7 +870,7 @@ class MapperExtensionKtTest {
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_SMALL,
+            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
             withIcon = true,
             withName = false,
             withDescription = true,
@@ -899,7 +899,7 @@ class MapperExtensionKtTest {
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_SMALL,
+            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
             withIcon = false,
             withName = true,
             withDescription = false,

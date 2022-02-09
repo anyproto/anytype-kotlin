@@ -17,6 +17,10 @@
 * Dashboard | Removal from favorites is not synced correctly (#2075)
 * Sets | Enabled auto-correct when setting name for a new object (#2067)
 
+### Design & UX 🔳
+
+* Editor | When opening an image block in fullscreen mode, background is not adapted to the current mode (light or dark) (#2094)
+
 ## Version 0.5.2
 
 ### New features & enhancements 🚀

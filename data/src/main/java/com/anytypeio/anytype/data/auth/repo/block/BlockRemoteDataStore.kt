@@ -345,8 +345,8 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         keys: List<String>,
-        offset: Int,
-        limit: Int,
+        offset: Long,
+        limit: Long,
         beforeId: Id?,
         afterId: Id?
     ): SearchResult = remote.searchObjectsWithSubscription(

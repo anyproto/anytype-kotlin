@@ -431,8 +431,8 @@ class BlockDataRepository(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         keys: List<String>,
-        offset: Int,
-        limit: Int,
+        offset: Long,
+        limit: Long,
         beforeId: Id?,
         afterId: Id?
     ): SearchResult = factory.remote.searchObjectsWithSubscription(

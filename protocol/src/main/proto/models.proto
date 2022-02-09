@@ -1,8 +1,9 @@
 syntax = "proto3";
 package anytype.model;
-option go_package = "pkg/lib/pb/model";
 
 import "google/protobuf/struct.proto";
+
+option go_package = "pkg/lib/pb/model";
 
 message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
@@ -66,6 +67,7 @@ message Block {
         Content.Relation relation = 22;
         Content.FeaturedRelations featuredRelations = 23;
         Content.Latex latex = 24;
+        Content.TableOfContents tableOfContents = 25;
     }
 
     message Restrictions {
@@ -170,6 +172,8 @@ message Block {
             Marks marks = 3; // list of marks to apply to the text
             bool checked = 4;
             string color = 5;
+            string iconEmoji = 6; // used with style Callout
+            string iconImage = 7; // in case both image and emoji are set, image should has a priority in the UI
 
             message Marks {
                 repeated Mark marks = 1;
@@ -209,6 +213,8 @@ message Block {
                 Numbered = 10;
                 Toggle = 11;
                 Description = 12; // currently only only one block of this style can exists on a page
+                Callout = 13; // currently only only one block of this style can exists on a page
+
             }
         }
 
@@ -354,6 +360,9 @@ message Block {
 
         message Latex {
             string text = 1;
+        }
+
+        message TableOfContents {
         }
     }
 }

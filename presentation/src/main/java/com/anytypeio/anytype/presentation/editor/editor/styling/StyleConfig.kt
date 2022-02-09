@@ -219,6 +219,23 @@ fun Block.Content.Text.getBlockStyle(style: Block.Content.Text.Style) = when (st
             enabledAlignment = emptyList()
         )
     }
+    Block.Content.Text.Style.CALLOUT -> {
+        StyleConfig(
+            visibleTypes = listOf(
+                StylingType.STYLE,
+                StylingType.TEXT_COLOR,
+                StylingType.BACKGROUND
+            ),
+            enabledMarkup = listOf(
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
+            ),
+            enabledAlignment = emptyList()
+        )
+    }
     Block.Content.Text.Style.DESCRIPTION -> throw IllegalStateException("Description block does not support styling")
 }
 
@@ -290,6 +307,23 @@ fun Block.Content.Text.getMarkupStyle(style: Block.Content.Text.Style) = when (s
     }
     Block.Content.Text.Style.BULLET, Block.Content.Text.Style.NUMBERED,
     Block.Content.Text.Style.TOGGLE, Block.Content.Text.Style.CHECKBOX -> {
+        StyleConfig(
+            visibleTypes = listOf(
+                StylingType.STYLE,
+                StylingType.TEXT_COLOR,
+                StylingType.BACKGROUND
+            ),
+            enabledMarkup = listOf(
+                Markup.Type.BOLD,
+                Markup.Type.ITALIC,
+                Markup.Type.STRIKETHROUGH,
+                Markup.Type.KEYBOARD,
+                Markup.Type.LINK
+            ),
+            enabledAlignment = emptyList()
+        )
+    }
+    Block.Content.Text.Style.CALLOUT -> {
         StyleConfig(
             visibleTypes = listOf(
                 StylingType.STYLE,

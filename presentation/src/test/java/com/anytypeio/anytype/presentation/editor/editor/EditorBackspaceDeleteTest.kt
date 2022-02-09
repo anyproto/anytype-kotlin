@@ -64,7 +64,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 text = "",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.values().filter { style ->
-                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION && style != Block.Content.Text.Style.CALLOUT
                 }.random()
             )
         )
@@ -191,7 +191,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 text = "",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.values().filter { style ->
-                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION && style != Block.Content.Text.Style.CALLOUT
                 }.random()
             )
         )
@@ -324,7 +324,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.values().filter { style ->
-                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION
+                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION && style != Block.Content.Text.Style.CALLOUT
                 }.random()
             )
         )

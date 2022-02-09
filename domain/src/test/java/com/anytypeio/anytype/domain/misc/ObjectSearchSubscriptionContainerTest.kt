@@ -30,8 +30,8 @@ class ObjectSearchSubscriptionContainerTest {
 
     private lateinit var container: ObjectSearchSubscriptionContainer
 
-    private val defaultLimit = 0
-    private val defaultOffset = 0
+    private val defaultLimit = 0L
+    private val defaultOffset = 0L
 
     private val defaultKeys = listOf(
         Relations.ID,

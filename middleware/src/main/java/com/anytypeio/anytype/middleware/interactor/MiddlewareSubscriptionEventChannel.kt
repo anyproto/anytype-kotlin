@@ -64,7 +64,7 @@ class MiddlewareSubscriptionEventChannel(
                         Timber.d("Subscription REMOVE")
                         val event = e.subscriptionRemove
                         checkNotNull(event)
-                        if (subscriptions.any { it == payload.contextId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == payload.contextId }) {
+                        if (subscriptions.any { it == event.subId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == event.subId }) {
                             SubscriptionEvent.Remove(
                                 target = event.id,
                                 subscription = payload.contextId
@@ -77,7 +77,7 @@ class MiddlewareSubscriptionEventChannel(
                         Timber.d("Subscription ADD")
                         val event = e.subscriptionAdd
                         checkNotNull(event)
-                        if (subscriptions.any { it == payload.contextId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == payload.contextId }) {
+                        if (subscriptions.any { it == event.subId || "$it$DEPENDENT_SUBSCRIPTION_POST_FIX" == event.subId }) {
                             SubscriptionEvent.Add(
                                 target = event.id,
                                 afterId = event.afterId,
@@ -92,7 +92,7 @@ class MiddlewareSubscriptionEventChannel(
                         val event = e.subscriptionPosition
                         checkNotNull(event)
                         // TODO should I handle here dependent subscriptions?
-                        if (subscriptions.any { it == payload.contextId }) {
+                        if (subscriptions.any { it == event.subId }) {
                             SubscriptionEvent.Position(
                                 target = event.id,
                                 afterId = event.afterId

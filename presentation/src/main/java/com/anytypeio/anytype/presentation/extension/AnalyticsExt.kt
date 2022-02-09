@@ -95,6 +95,7 @@ fun Block.Content.Text.Style.getStyleName(): String = when (this) {
     Block.Content.Text.Style.TOGGLE -> "Toggle"
     Block.Content.Text.Style.CHECKBOX -> "Checkbox"
     Block.Content.Text.Style.DESCRIPTION -> "Description"
+    Block.Content.Text.Style.CALLOUT -> "Callout"
 }
 
 fun Block.Prototype.Text.getStyleName() = this.style.getStyleName()

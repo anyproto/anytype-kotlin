@@ -1,12 +1,12 @@
 syntax = "proto3";
 package anytype;
-option go_package = "pb";
-
-import "models.proto";
-import "localstore.proto";
 
 import "events.proto";
 import "google/protobuf/struct.proto";
+import "localstore.proto";
+import "models.proto";
+
+option go_package = "pb";
 
 /*
  * Rpc is a namespace, that agregates all of the service commands between client and middleware.
@@ -933,7 +933,6 @@ message Rpc {
                     }
                 }
 
-
                 message Style {
                     message Request {
                         string contextId = 1;
@@ -964,6 +963,32 @@ message Rpc {
                         string contextId = 1;
                         string blockId = 2;
                         bool checked = 3;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+
+                message Icon {
+                    message Request {
+                        string contextId = 1;
+                        string blockId = 2;
+                        string iconImage = 3; // in case both image and emoji are set, image has a priority to show
+                        string iconEmoji = 5;
                     }
 
                     message Response {
@@ -2318,7 +2343,6 @@ message Rpc {
                 string name = 1; // Account name
                 oneof avatar {
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
-                    string avatarColor = 3; // Avatar color as an alternative for avatar image
                 }
 
 
@@ -3414,12 +3438,10 @@ message Rpc {
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 2;
                 // sorts
                 repeated anytype.model.Block.Content.Dataview.Sort sorts = 3;
-                // fulltext query (optional)
-                string fullText = 4;
                 // results limit
-                int32 limit = 5;
+                int64 limit = 5;
                 // initial offset; middleware will find afterId
-                int32 offset = 6;
+                int64 offset = 6;
                 // (required)  needed keys in details for return, for object fields mw will return (and subscribe) objects as dependent
                 repeated string keys = 7;
 
@@ -3431,6 +3453,8 @@ message Rpc {
                 repeated string source = 10;
 
                 string ignoreWorkspace = 12;
+                // disable dependent subscription
+                bool noDepSubscription = 13;
             }
 
             message Response {
@@ -3951,6 +3975,64 @@ message Rpc {
                     NULL = 0;
                     UNKNOWN_ERROR = 1;
                     BAD_INPUT = 2;
+                    // ...
+                }
+            }
+        }
+    }
+
+    message UnsplashSearch {
+        message Request {
+            string query = 1; // empty means random images
+            int32 limit = 2; // may be omitted if the request was cached previously with another limit
+        }
+
+        message Response {
+            Error error = 1;
+            repeated Picture pictures = 2;
+
+            message Picture {
+                string id = 1;
+                string url = 2;
+                string artist = 3;
+                string artistUrl = 4;
+            }
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+
+                    RATE_LIMIT_EXCEEDED = 100;
+                    // ...
+                }
+            }
+        }
+    }
+
+    message UnsplashDownload {
+        message Request {
+            string pictureId = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            string hash = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+
+                    RATE_LIMIT_EXCEEDED = 100;
                     // ...
                 }
             }

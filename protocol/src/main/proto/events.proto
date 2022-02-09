@@ -1,9 +1,10 @@
 syntax = "proto3";
 package anytype;
-option go_package = "pb";
 
-import "models.proto";
 import "google/protobuf/struct.proto";
+import "models.proto";
+
+option go_package = "pb";
 
 /*
  * Event – type of message, that could be sent from a middleware to the corresponding front-end.
@@ -137,17 +138,20 @@ message Event {
             message Add {
                 string id = 1; // object id
                 string afterId = 2; // id of previous doc in order, empty means first
+                string subId = 3; // subscription id
             }
 
             // Removes document from subscription
             message Remove {
                 string id = 1; // object id
+                string subId = 2; // subscription id
             }
 
             // Indicates new position of document
             message Position {
                 string id = 1; // object id
                 string afterId = 2;  // id of previous doc in order, empty means first
+                string subId = 3; // subscription id
             }
 
             message Counters {
@@ -157,6 +161,8 @@ message Event {
                 int64 nextCount = 2;
                 // how many records available before
                 int64 prevCount = 3;
+
+                string subId = 4; // subscription id
             }
 
         }
@@ -297,6 +303,8 @@ message Event {
                 Marks marks = 4;
                 Checked checked = 5;
                 Color color = 6;
+                IconEmoji iconEmoji = 7;
+                IconImage iconImage = 8;
 
                 message TText {
                     string value = 1;
@@ -318,6 +326,13 @@ message Event {
                     string value = 1;
                 }
 
+                message IconEmoji {
+                    string value = 1;
+                }
+
+                message IconImage {
+                    string value = 1;
+                }
             }
             message Latex {
                 string id = 1;

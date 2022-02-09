@@ -21,8 +21,8 @@ class ObjectSearchSubscriptionContainer(
         subscription: Id,
         sorts: List<DVSort> = emptyList(),
         filters: List<DVFilter> = emptyList(),
-        offset: Int,
-        limit: Int,
+        offset: Long,
+        limit: Long,
         keys: List<String>
     ): Flow<Subscription> {
         return flow {

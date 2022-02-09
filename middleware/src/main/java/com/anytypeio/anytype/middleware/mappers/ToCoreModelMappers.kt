@@ -293,6 +293,7 @@ fun MBTextStyle.toCoreModels(): Block.Content.Text.Style = when (this) {
     MBTextStyle.Toggle -> Block.Content.Text.Style.TOGGLE
     MBTextStyle.Marked -> Block.Content.Text.Style.BULLET
     MBTextStyle.Description -> Block.Content.Text.Style.DESCRIPTION
+    MBTextStyle.Callout -> Block.Content.Text.Style.CALLOUT
 }
 
 fun MBMarkType.toCoreModels(): Block.Content.Text.Mark.Type = when (this) {

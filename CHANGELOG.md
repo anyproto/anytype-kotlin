@@ -1,5 +1,22 @@
 # Change log for Android @Anytype app.
 
+## Version 0.5.3
+
+### New features & enhancements 🚀
+
+* Editor | Link appearance: customize how your link to an object looks: line, card, with icon or without, etc. (#2087)
+* Editor | Lock or unlock your page to prevent accidental editing (#2084)
+* Editor | Create a bookmark from a pasted url (#2074)
+* Editor | New logic for backspace press (#2091)
+* Dashboard | Changes in tabs are synchronized between peers (#2052)
+
+### Fixes & tech 🚒
+
+* Editor | Issues related to drag & drop sensitivity (#2068)
+* Editor | Incorrect numbers in numbered lists when there are nested lists or blocks are grouped by sections (#2072)
+* Dashboard | Removal from favorites is not synced correctly (#2075)
+* Sets | Enabled auto-correct when setting name for a new object (#2067)
+
 ## Version 0.5.2
 
 ### New features & enhancements 🚀

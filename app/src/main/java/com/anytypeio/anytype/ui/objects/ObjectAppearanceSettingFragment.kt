@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectAppearanceSettingAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -29,7 +31,12 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)
     private val adapterAppearance by lazy {
-        ObjectAppearanceSettingAdapter(onItemClick = vm::onItemClicked)
+        ObjectAppearanceSettingAdapter(
+            onItemClick = vm::onItemClicked,
+            onSettingToggleChanged = { item, isChecked ->
+                vm.onToggleClicked(item = item, blockId = block, ctx = ctx, isChecked = isChecked)
+            }
+        )
     }
 
     override fun onCreateView(
@@ -43,6 +50,11 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
         with(recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(R.drawable.divider_relations))
+                }
+            )
         }
     }
 

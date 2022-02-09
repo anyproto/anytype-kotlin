@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -756,14 +757,17 @@ class MapperExtensionKtTest {
         val emptyFields = Block.Fields(mapOf())
         val layout = ObjectType.Layout.BASIC
 
-        val result = emptyFields.toView(layout)
+        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
             iconSize = BlockView.Appearance.LINK_ICON_SIZE_SMALL,
             withIcon = true,
             withName = true,
-            withDescription = null
+            withDescription = null,
+            canHaveCover = true,
+            canHaveDescription = true,
+            canHaveIcon = true
         )
         assertEquals(expected, result)
     }
@@ -773,14 +777,17 @@ class MapperExtensionKtTest {
         val emptyFields = Block.Fields(mapOf())
         val layout = null
 
-        val result = emptyFields.toView(layout)
+        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
             iconSize = BlockView.Appearance.LINK_ICON_SIZE_SMALL,
             withIcon = true,
             withName = true,
-            withDescription = null
+            withDescription = null,
+            canHaveCover = true,
+            canHaveDescription = true,
+            canHaveIcon = true
         )
         assertEquals(expected, result)
     }
@@ -799,7 +806,7 @@ class MapperExtensionKtTest {
         )
         val layout = ObjectType.Layout.BASIC
 
-        val result = emptyFields.toView(layout)
+        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_CARD,
@@ -807,7 +814,10 @@ class MapperExtensionKtTest {
             withIcon = true,
             withName = false,
             withDescription = true,
-            withCover = true
+            withCover = true,
+            canHaveCover = true,
+            canHaveDescription = true,
+            canHaveIcon = true
         )
         assertEquals(expected, result)
     }
@@ -826,7 +836,7 @@ class MapperExtensionKtTest {
         )
         val layout = ObjectType.Layout.BASIC
 
-        val result = emptyFields.toView(layout)
+        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
@@ -834,7 +844,10 @@ class MapperExtensionKtTest {
             withIcon = true,
             withName = false,
             withDescription = true,
-            withCover = false
+            withCover = true,
+            canHaveCover = false,
+            canHaveDescription = false,
+            canHaveIcon = true
         )
         assertEquals(expected, result)
     }
@@ -853,7 +866,7 @@ class MapperExtensionKtTest {
         )
         val layout = ObjectType.Layout.TODO
 
-        val result = emptyFields.toView(layout)
+        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
@@ -861,7 +874,10 @@ class MapperExtensionKtTest {
             withIcon = true,
             withName = false,
             withDescription = true,
-            withCover = false
+            withCover = true,
+            canHaveCover = false,
+            canHaveDescription = false,
+            canHaveIcon = false
         )
         assertEquals(expected, result)
     }
@@ -879,7 +895,7 @@ class MapperExtensionKtTest {
         )
         val layout = ObjectType.Layout.NOTE
 
-        val result = emptyFields.toView(layout)
+        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
 
         val expected = BlockView.Appearance.Params(
             style = BlockView.Appearance.LINK_STYLE_TEXT,
@@ -887,7 +903,10 @@ class MapperExtensionKtTest {
             withIcon = false,
             withName = true,
             withDescription = false,
-            withCover = false
+            withCover = false,
+            canHaveCover = false,
+            canHaveDescription = false,
+            canHaveIcon = false
         )
         assertEquals(expected, result)
     }

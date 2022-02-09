@@ -138,13 +138,12 @@ class BlockViewSearchTextTest {
             target = IntRange.EMPTY
         )
 
-        val page = BlockView.LinkToObject.Default(
+        val page = BlockView.LinkToObject.Default.Text(
             id = MockDataFactory.randomString(),
             text = MockDataFactory.randomString(),
             searchFields = listOf(field1),
             indent = 0,
-            icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params.default()
+            icon = ObjectIcon.None
         )
 
         val views = listOf(page)

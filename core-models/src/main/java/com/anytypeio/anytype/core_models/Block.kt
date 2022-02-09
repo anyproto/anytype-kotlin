@@ -82,6 +82,8 @@ data class Block(
             const val IS_LOCKED_KEY = "isLocked"
             const val COVER_WITH_KEY = "withCover"
             const val STYLE_KEY = "style"
+            const val WITH_NAME_KEY = "withName"
+            const val WITH_DESCRIPTION_KEY = "withDescription"
         }
     }
 

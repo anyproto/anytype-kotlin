@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -65,6 +66,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
@@ -505,6 +507,15 @@ class BlockAdapter(
                 LinkToObject(
                     view = inflater.inflate(
                         R.layout.item_block_object_link,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_OBJECT_LINK_CARD -> {
+                LinkToObjectCard(
+                    binding = ItemBlockObjectLinkCardBinding.inflate(
+                        LayoutInflater.from(parent.context),
                         parent,
                         false
                     )
@@ -1020,6 +1031,12 @@ class BlockAdapter(
                             item = blocks[position]
                         )
                     }
+                    is LinkToObjectCard -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position]
+                        )
+                    }
                     is LinkToObjectArchive -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1349,7 +1366,13 @@ class BlockAdapter(
             }
             is LinkToObject -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.LinkToObject.Default,
+                    item = blocks[position] as BlockView.LinkToObject.Default.Text,
+                    clicked = onClickListener
+                )
+            }
+            is LinkToObjectCard -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.LinkToObject.Default.Card,
                     clicked = onClickListener
                 )
             }

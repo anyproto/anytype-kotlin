@@ -15,6 +15,11 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState.NONE
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutState.CARD
+import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearanceIconState
+import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearancePreviewLayoutState
+import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
@@ -107,7 +112,8 @@ class DefaultBlockViewRenderer(
                             }
                         }
                         Content.Text.Style.NUMBERED -> {
-                            val last = result.lastOrNull { it is BlockView.Indentable && it.indent == indent }
+                            val last =
+                                result.lastOrNull { it is BlockView.Indentable && it.indent == indent }
                             mCounter = if (last is BlockView.Text.Numbered) {
                                 last.number.inc()
                             } else {
@@ -1216,24 +1222,90 @@ class DefaultBlockViewRenderer(
         indent: Int,
         obj: ObjectWrapper.Basic,
         selection: Set<Id>
-    ): BlockView.LinkToObject = BlockView.LinkToObject.Default(
-        id = block.id,
-        isEmpty = obj.isEmpty(),
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        ),
-        text = obj.getProperObjectName(),
-        indent = indent,
-        isLoading = obj.isEmpty(),
-        isSelected = checkIfSelected(
-            mode = mode,
-            block = block,
-            selection = selection
-        ),
-        appearanceParams = block.fields.toView(obj.layout)
-    )
+    ): BlockView.LinkToObject {
+        val appearanceParams = block.fields.getLinkToObjectAppearanceParams(obj.layout)
+        val isCard = appearanceParams.getObjectAppearancePreviewLayoutState() == CARD
+        val icon = if (appearanceParams.getObjectAppearanceIconState() == NONE) {
+            ObjectIcon.None
+        } else {
+            ObjectIcon.from(
+                obj = obj,
+                layout = obj.layout,
+                builder = urlBuilder
+            )
+        }
+        val name = if (!appearanceParams.withName) {
+            null
+        } else {
+            obj.getProperObjectName()
+        }
+        val description = if (isCard && appearanceParams.withDescription == true) {
+            obj.description
+        } else {
+            null
+        }
+
+        var coverColor: CoverColor? = null
+        var coverImage: Url? = null
+        var coverGradient: String? = null
+
+        if (isCard && appearanceParams.withCover == true) {
+            when (val type = obj.coverType) {
+                CoverType.UPLOADED_IMAGE -> {
+                    coverImage = obj.coverId?.let { id ->
+                        urlBuilder.image(id)
+                    }
+                }
+                CoverType.BUNDLED_IMAGE -> {
+                    val hash = obj.coverId?.let { id ->
+                        coverImageHashProvider.provide(id)
+                    }
+                    if (hash != null) coverImage = urlBuilder.image(hash)
+                }
+                CoverType.COLOR -> {
+                    coverColor = obj.coverId?.let { id ->
+                        CoverColor.values().find { it.code == id }
+                    }
+                }
+                CoverType.GRADIENT -> {
+                    coverGradient = obj.coverId
+                }
+                else -> Timber.d("Missing cover type: $type")
+            }
+        }
+
+        return if (isCard) {
+            BlockView.LinkToObject.Default.Card(
+                id = block.id,
+                icon = icon,
+                text = name,
+                description = description,
+                indent = indent,
+                isLoading = obj.isEmpty(),
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                ),
+                coverColor = coverColor,
+                coverImage = coverImage,
+                coverGradient = coverGradient
+            )
+        } else {
+            BlockView.LinkToObject.Default.Text(
+                id = block.id,
+                icon = icon,
+                text = name,
+                indent = indent,
+                isLoading = obj.isEmpty(),
+                isSelected = checkIfSelected(
+                    mode = mode,
+                    block = block,
+                    selection = selection
+                )
+            )
+        }
+    }
 
     private fun linkArchive(
         block: Block,

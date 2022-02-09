@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE
@@ -166,9 +167,10 @@ sealed class BlockView : ViewType {
     }
 
     interface Appearance {
-        val appearanceParams: Params
-
         data class Params(
+            val canHaveIcon: Boolean,
+            val canHaveCover: Boolean,
+            val canHaveDescription: Boolean,
             val style: Double,
             val iconSize: Double,
             val withIcon: Boolean,
@@ -181,9 +183,14 @@ sealed class BlockView : ViewType {
                     style = LINK_STYLE_TEXT,
                     iconSize = LINK_ICON_SIZE_SMALL,
                     withIcon = true,
-                    withName = true
+                    withName = true,
+                    canHaveCover = true,
+                    canHaveDescription = true,
+                    canHaveIcon = true
                 )
             }
+
+            fun isCard() = style == LINK_STYLE_CARD
         }
 
         companion object {
@@ -833,6 +840,7 @@ sealed class BlockView : ViewType {
     }
 
     sealed class LinkToObject : BlockView(), Indentable, Selectable, Loadable {
+
         /**
          * UI-model for blocks containing links to objects.
          * @property id block's id
@@ -843,20 +851,40 @@ sealed class BlockView : ViewType {
          * @property isDeleted this property determines whether this linked object is deleted or not.
          * Whenever isDeleted is true, we don't care about isArchived flags
          */
-        data class Default(
-            override val id: String,
-            override val indent: Int = 0,
-            override val isSelected: Boolean = false,
-            override val searchFields: List<Searchable.Field> = emptyList(),
-            override val isLoading: Boolean = false,
-            override val appearanceParams: Appearance.Params,
-            var text: String? = null,
-            val icon: ObjectIcon,
-            val isEmpty: Boolean = false,
-            val isArchived: Boolean? = false,
-            val isDeleted: Boolean? = false
-        ) : LinkToObject(), Searchable, Appearance {
-            override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
+        sealed class Default: LinkToObject() {
+
+            abstract val text: String?
+            abstract val description: String?
+            abstract val icon: ObjectIcon
+
+            data class Text(
+                override val id: String,
+                override val indent: Int = 0,
+                override val isSelected: Boolean = false,
+                override val searchFields: List<Searchable.Field> = emptyList(),
+                override val isLoading: Boolean = false,
+                override val text: String? = null,
+                override val description: String? = null,
+                override val icon: ObjectIcon,
+            ) : Default(), Searchable {
+                override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
+            }
+
+            data class Card(
+                override val id: String,
+                override val indent: Int = 0,
+                override val isSelected: Boolean = false,
+                override val searchFields: List<Searchable.Field> = emptyList(),
+                override val isLoading: Boolean = false,
+                override val text: String? = null,
+                override val description: String? = null,
+                override val icon: ObjectIcon,
+                val coverColor: CoverColor? = null,
+                val coverImage: Url? = null,
+                val coverGradient: String? = null
+            ) : Default(), Searchable {
+                override fun getViewType() = HOLDER_OBJECT_LINK_CARD
+            }
         }
 
         /**

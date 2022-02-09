@@ -295,9 +295,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 text = title.content<TXT>().text,
                 mode = BlockView.Mode.READ
             ),
-            BlockView.LinkToObject.Default(
+            BlockView.LinkToObject.Default.Text(
                 id = link.id,
-                appearanceParams = BlockView.Appearance.Params.default(),
                 icon = ObjectIcon.Basic.Avatar("")
             )
         )

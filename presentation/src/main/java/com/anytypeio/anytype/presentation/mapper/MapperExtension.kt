@@ -717,38 +717,3 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Space -> ObjectType.Layout.SPACE
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
 }
-
-fun Block.Fields.toView(layout: ObjectType.Layout?): BlockView.Appearance.Params {
-
-    var iconSize = this.iconSize ?: LINK_ICON_SIZE_SMALL
-    val style = this.style ?: LINK_STYLE_TEXT
-    var withIcon = this.withIcon ?: true
-    val withName = this.withName ?: true
-    var withCover = this.withCover
-    var withDescription = this.withDescription
-
-    if (this.style == LINK_STYLE_TEXT) {
-        withCover = false
-    }
-
-    if (layout == ObjectType.Layout.TODO) {
-        withIcon = true
-        iconSize = LINK_ICON_SIZE_SMALL
-    }
-
-    if (layout == ObjectType.Layout.NOTE) {
-        withIcon = false
-        withCover = false
-        withDescription = false
-        iconSize = LINK_ICON_SIZE_SMALL
-    }
-
-    return BlockView.Appearance.Params(
-        iconSize = iconSize,
-        style = style,
-        withIcon = withIcon,
-        withName = withName,
-        withCover = withCover,
-        withDescription = withDescription
-    )
-}

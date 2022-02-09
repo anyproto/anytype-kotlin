@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.objects.appearance
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_ICON_SIZE_LARGE
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_ICON_SIZE_MEDIUM
@@ -34,4 +36,51 @@ fun BlockView.Appearance.Params.getObjectAppearancePreviewLayoutState(): ObjectA
     } else {
         ObjectAppearancePreviewLayoutState.TEXT
     }
+}
+
+fun Block.Fields.getLinkToObjectAppearanceParams(layout: ObjectType.Layout?): BlockView.Appearance.Params {
+
+    var canHaveIcon = true
+    var canHaveCover = true
+    var canHaveDescription = true
+
+    var iconSize = this.iconSize ?: LINK_ICON_SIZE_SMALL
+    val style = this.style ?: BlockView.Appearance.LINK_STYLE_TEXT
+    var withIcon = this.withIcon ?: true
+    val withName = this.withName ?: true
+    var withCover = this.withCover
+    var withDescription = this.withDescription
+
+    if (this.style == BlockView.Appearance.LINK_STYLE_TEXT) {
+        canHaveCover = false
+        canHaveDescription = false
+    }
+
+    if (layout == ObjectType.Layout.TODO) {
+        canHaveIcon = false
+        withIcon = true
+        iconSize = LINK_ICON_SIZE_SMALL
+    }
+
+    if (layout == ObjectType.Layout.NOTE) {
+        canHaveIcon = false
+        canHaveCover = false
+        canHaveDescription = false
+        withIcon = false
+        withCover = false
+        withDescription = false
+        iconSize = LINK_ICON_SIZE_SMALL
+    }
+
+    return BlockView.Appearance.Params(
+        canHaveIcon = canHaveIcon,
+        canHaveCover = canHaveCover,
+        canHaveDescription = canHaveDescription,
+        iconSize = iconSize,
+        style = style,
+        withIcon = withIcon,
+        withName = withName,
+        withCover = withCover,
+        withDescription = withDescription
+    )
 }

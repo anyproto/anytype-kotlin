@@ -151,9 +151,17 @@ class BlockViewDiffUtil(
         if (newBlock is BlockView.LinkToObject.Default && oldBlock is BlockView.LinkToObject.Default) {
             if (newBlock.text != oldBlock.text)
                 changes.add(OBJECT_TITLE_CHANGED)
-
             if (newBlock.icon != oldBlock.icon)
                 changes.add(OBJECT_ICON_CHANGED)
+            if (newBlock.description != oldBlock.description)
+                changes.add(OBJECT_DESCRIPTION_CHANGED)
+        }
+
+        if (newBlock is BlockView.LinkToObject.Default.Card && oldBlock is BlockView.LinkToObject.Default.Card) {
+            if (newBlock.coverImage != oldBlock.coverImage || newBlock.coverGradient != oldBlock.coverGradient ||
+                newBlock.coverColor != oldBlock.coverColor
+            )
+                changes.add(OBJECT_COVER_CHANGED)
         }
 
         if (newBlock is BlockView.Latex && oldBlock is BlockView.Latex) {
@@ -244,6 +252,8 @@ class BlockViewDiffUtil(
         val isTitleCheckboxChanged: Boolean get() = changes.contains(TITLE_CHECKBOX_CHANGED)
         val isObjectTitleChanged: Boolean get() = changes.contains(OBJECT_TITLE_CHANGED)
         val isObjectIconChanged: Boolean get() = changes.contains(OBJECT_ICON_CHANGED)
+        val isObjectDescriptionChanged: Boolean get() = changes.contains(OBJECT_DESCRIPTION_CHANGED)
+        val isObjectCoverChanged: Boolean get() = changes.contains(OBJECT_COVER_CHANGED)
 
         val isLatexChanged: Boolean get() = changes.contains(LATEX_CHANGED)
 
@@ -276,10 +286,13 @@ class BlockViewDiffUtil(
         const val COVER_CHANGED = 16
         const val TITLE_CHECKBOX_CHANGED = 17
         const val GHOST_EDITOR_SELECTION_CHANGED = 18
-        const val OBJECT_TITLE_CHANGED = 19
-        const val OBJECT_ICON_CHANGED = 20
         const val LATEX_CHANGED = 21
         const val RELATION_NAME_CHANGED = 22
         const val RELATION_VALUE_CHANGED = 23
+
+        const val OBJECT_TITLE_CHANGED = 19
+        const val OBJECT_ICON_CHANGED = 20
+        const val OBJECT_COVER_CHANGED = 24
+        const val OBJECT_DESCRIPTION_CHANGED = 25
     }
 }

@@ -10,7 +10,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bo
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.extension.shift
-import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
 import timber.log.Timber
 
 fun List<BlockView>.singleStylingMode(
@@ -299,7 +299,10 @@ fun List<BlockView>.enterSAM(
         is BlockView.Relation.Related -> view.copy(
             isSelected = isSelected
         )
-        is BlockView.LinkToObject.Default -> view.copy(
+        is BlockView.LinkToObject.Default.Text -> view.copy(
+            isSelected = isSelected
+        )
+        is BlockView.LinkToObject.Default.Card -> view.copy(
             isSelected = isSelected
         )
         is BlockView.LinkToObject.Archived -> view.copy(
@@ -498,7 +501,8 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.Title.Todo -> view.copy(searchFields = emptyList())
         is BlockView.Media.Bookmark -> view.copy(searchFields = emptyList())
         is BlockView.Media.File -> view.copy(searchFields = emptyList())
-        is BlockView.LinkToObject.Default -> view.copy(searchFields = emptyList())
+        is BlockView.LinkToObject.Default.Text -> view.copy(searchFields = emptyList())
+        is BlockView.LinkToObject.Default.Card -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Archived -> view.copy(searchFields = emptyList())
         else -> view.also { check(view !is BlockView.Searchable) }
     }
@@ -568,7 +572,11 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.name.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
-        is BlockView.LinkToObject.Default -> {
+        is BlockView.LinkToObject.Default.Text -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.LinkToObject.Default.Card -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
@@ -597,7 +605,8 @@ fun BlockView.setHighlight(
     is BlockView.Title.Todo -> copy(searchFields = highlights)
     is BlockView.Media.Bookmark -> copy(searchFields = highlights)
     is BlockView.Media.File -> copy(searchFields = highlights)
-    is BlockView.LinkToObject.Default -> copy(searchFields = highlights)
+    is BlockView.LinkToObject.Default.Text -> copy(searchFields = highlights)
+    is BlockView.LinkToObject.Default.Card -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Archived -> copy(searchFields = highlights)
     else -> this.also { check(this !is BlockView.Searchable) }
 }
@@ -829,7 +838,8 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Upload.Video -> copy(isSelected = newSelection)
     is BlockView.MediaPlaceholder.Video -> copy(isSelected = newSelection)
     is BlockView.Error.Video -> copy(isSelected = newSelection)
-    is BlockView.LinkToObject.Default -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Default.Text -> copy(isSelected = newSelection)
+    is BlockView.LinkToObject.Default.Card -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Archived -> copy(isSelected = newSelection)
     is BlockView.LinkToObject.Deleted -> copy(isSelected = newSelection)
     is BlockView.MediaPlaceholder.Bookmark -> copy(isSelected = newSelection)
@@ -934,7 +944,7 @@ fun Document.getAppearanceParamsOfBlockLink(blockId: Id, details: Block.Details)
     if (block != null && content is Block.Content.Link) {
         val target = content.asLink().target
         val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
-        return block.fields.toView(layout = obj.layout)
+        return block.fields.getLinkToObjectAppearanceParams(layout = obj.layout)
     }
     return null
 }

@@ -7,13 +7,12 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectAppearanceSettingAdapter
-import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjAppearanceBaseBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -30,9 +29,12 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
     private val vm by viewModels<ObjectAppearanceIconViewModel> { factory }
 
     private val adapterAppearance by lazy {
-        ObjectAppearanceSettingAdapter(onItemClick = { item ->
-            vm.onItemClicked(item = item, blockId = block, ctx = ctx)
-        })
+        ObjectAppearanceSettingAdapter(
+            onItemClick = { item ->
+                vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+            },
+            onSettingToggleChanged = { _, _ -> }
+        )
     }
 
     override fun onCreateView(
@@ -46,6 +48,11 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(R.drawable.divider_object_appearance))
+                }
+            )
         }
 
         return binding.root
@@ -105,9 +112,12 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
     private val vm by viewModels<ObjectAppearancePreviewLayoutViewModel> { factory }
 
     private val adapterAppearance by lazy {
-        ObjectAppearanceSettingAdapter(onItemClick = { item ->
-            vm.onItemClicked(item = item, blockId = block, ctx = ctx)
-        })
+        ObjectAppearanceSettingAdapter(
+            onItemClick = { item ->
+                vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+            },
+            onSettingToggleChanged = { _, _ -> }
+        )
     }
 
 
@@ -122,6 +132,11 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(R.drawable.divider_obj_appearance_preview_layout))
+                }
+            )
         }
 
         return binding.root
@@ -179,9 +194,12 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
     private val vm by viewModels<ObjectAppearanceCoverViewModel> { factory }
 
     private val adapterAppearance by lazy {
-        ObjectAppearanceSettingAdapter(onItemClick = { item ->
-            vm.onItemClicked(item = item, blockId = block, ctx = ctx)
-        })
+        ObjectAppearanceSettingAdapter(
+            onItemClick = { item ->
+                vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+            },
+            onSettingToggleChanged = { _, _ -> }
+        )
     }
 
     override fun onCreateView(
@@ -195,6 +213,11 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(R.drawable.divider_object_appearance))
+                }
+            )
         }
 
         return binding.root

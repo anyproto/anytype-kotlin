@@ -39,6 +39,7 @@
         android:layout_marginTop="14dp"
         android:paddingStart="@dimen/dp_20"
         android:paddingEnd="@dimen/dp_20"
+        android:paddingBottom="@dimen/dp_20"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

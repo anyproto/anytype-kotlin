@@ -13,13 +13,15 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_CARD
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState
+import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import kotlinx.android.synthetic.main.item_object_appearance_checkbox.view.*
 import kotlinx.android.synthetic.main.item_object_preview_relation.view.*
 import kotlinx.android.synthetic.main.item_object_preview_section.view.*
 import kotlinx.android.synthetic.main.item_object_preview_setting.view.*
 
 class ObjectAppearanceSettingAdapter(
-    private val onItemClick: (ObjectAppearanceSettingView) -> Unit
+    private val onItemClick: (ObjectAppearanceSettingView) -> Unit,
+    private val onSettingToggleChanged: (ObjectAppearanceSettingView, Boolean) -> Unit
 ) : ListAdapter<ObjectAppearanceSettingView, ObjectAppearanceSettingAdapter.ViewHolder>(
     ObjectPreviewDiffer
 ) {
@@ -28,10 +30,10 @@ class ObjectAppearanceSettingAdapter(
         return when (viewType) {
             TYPE_ITEM_RELATION_NAME, TYPE_ITEM_RELATION_DESCRIPTION ->
                 ViewHolder.Relation(parent).apply {
-                    itemView.setOnClickListener {
+                    itemView.relSwitch.setOnCheckedChangeListener { _, isChecked ->
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            onItemClick(getItem(pos))
+                            onSettingToggleChanged(getItem(pos), isChecked)
                         }
                     }
                 }
@@ -274,12 +276,12 @@ class ObjectAppearanceSettingAdapter(
                 when (item) {
                     is ObjectAppearanceSettingView.PreviewLayout.Text -> {
                         tvSize.text = context.getString(R.string.text)
-                        ivIcon.gone()
+                        ivIcon.setImageResource(R.drawable.ic_preview_layout_text)
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                     is ObjectAppearanceSettingView.PreviewLayout.Card -> {
                         tvSize.text = context.getString(R.string.card)
-                        ivIcon.gone()
+                        ivIcon.setImageResource(R.drawable.ic_preview_layout_card)
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                 }

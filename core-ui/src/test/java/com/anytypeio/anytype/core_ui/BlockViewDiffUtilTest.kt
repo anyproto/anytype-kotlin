@@ -645,12 +645,11 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.LinkToObject.Default(
+        val oldBlock = BlockView.LinkToObject.Default.Text(
             id = id,
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params.default()
+            icon = ObjectIcon.None
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -865,11 +864,10 @@ class BlockViewDiffUtilTest {
 
         val id = MockDataFactory.randomUuid()
 
-        val oldBlock = BlockView.LinkToObject.Default(
+        val oldBlock = BlockView.LinkToObject.Default.Text(
             id = id,
             isLoading = true,
-            icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params.default()
+            icon = ObjectIcon.None
         )
 
         val newBlock: BlockView = oldBlock.copy(

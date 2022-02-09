@@ -40,7 +40,7 @@ class LinkToObject(view: View) :
     }
 
     fun bind(
-        item: BlockView.LinkToObject.Default,
+        item: BlockView.LinkToObject.Default.Text,
         clicked: (ListenerType) -> Unit
     ) {
         indentize(item)
@@ -58,14 +58,29 @@ class LinkToObject(view: View) :
         bindLoading(item.isLoading)
     }
 
-    private fun applyText(item: BlockView.LinkToObject.Default) {
-        //title.enableReadMode()
-        val sb = SpannableString(if (item.text.isNullOrEmpty()) untitled else item.text)
-        sb.setSpan(UnderlineSpan(), 0, sb.length, 0)
-        title.setText(sb, TextView.BufferType.EDITABLE)
+    private fun applyText(item: BlockView.LinkToObject.Default.Text) {
+        val name = item.text
+        when {
+            name == null -> {
+                title.text = null
+                title.gone()
+            }
+            name.isEmpty() -> {
+                val sb = SpannableString(untitled)
+                sb.setSpan(UnderlineSpan(), 0, sb.length, 0)
+                title.visible()
+                title.setText(sb, TextView.BufferType.EDITABLE)
+            }
+            else -> {
+                val sb = SpannableString(name)
+                sb.setSpan(UnderlineSpan(), 0, sb.length, 0)
+                title.visible()
+                title.setText(sb, TextView.BufferType.EDITABLE)
+            }
+        }
     }
 
-    private fun applyImageOrEmoji(item: BlockView.LinkToObject.Default) {
+    private fun applyImageOrEmoji(item: BlockView.LinkToObject.Default.Text) {
         when (item.icon) {
             ObjectIcon.None -> {
                 objectIconContainer.gone()
@@ -119,8 +134,8 @@ class LinkToObject(view: View) :
     }
 
     private fun clearSearchHighlights() {
-        title.editableText.removeSpans<SearchHighlightSpan>()
-        title.editableText.removeSpans<SearchTargetHighlightSpan>()
+        title.editableText?.removeSpans<SearchHighlightSpan>()
+        title.editableText?.removeSpans<SearchTargetHighlightSpan>()
     }
 
     override fun indentize(item: BlockView.Indentable) {
@@ -128,7 +143,7 @@ class LinkToObject(view: View) :
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
-        check(item is BlockView.LinkToObject.Default) { "Expected a link to object block, but was: $item" }
+        check(item is BlockView.LinkToObject.Default.Text) { "Expected a link to object block, but was: $item" }
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
                 itemView.isSelected = item.isSelected

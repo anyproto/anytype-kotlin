@@ -1194,12 +1194,10 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to page view`() {
 
-        val view = BlockView.LinkToObject.Default(
+        val view = BlockView.LinkToObject.Default.Text(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt(),
-            isEmpty = MockDataFactory.randomBoolean(),
-            icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params.default()
+            icon = ObjectIcon.None
         )
 
         val views = listOf(view)
@@ -3269,12 +3267,11 @@ class BlockAdapterTest {
 
         // Setup
 
-        val file = BlockView.LinkToObject.Default(
+        val file = BlockView.LinkToObject.Default.Text(
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            icon = ObjectIcon.None,
-            appearanceParams = BlockView.Appearance.Params.default()
+            icon = ObjectIcon.None
         )
 
         val updated = file.copy(isSelected = true)

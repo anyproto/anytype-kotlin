@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Fields.Companion.ICON_SIZE_KEY
 import com.anytypeio.anytype.core_models.Block.Fields.Companion.ICON_WITH_KEY
+import com.anytypeio.anytype.core_models.Block.Fields.Companion.WITH_DESCRIPTION_KEY
+import com.anytypeio.anytype.core_models.Block.Fields.Companion.WITH_NAME_KEY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
@@ -43,9 +45,11 @@ class ObjectAppearanceIconViewModel(
                     State.Success(
                         items = listOf(
                             Icon.None(isSelected = iconState == ObjectAppearanceIconState.NONE),
-                            Icon.Small(isSelected = iconState == ObjectAppearanceIconState.SMALL),
-                            Icon.Medium(isSelected = iconState == ObjectAppearanceIconState.MEDIUM),
-                            Icon.Large(isSelected = iconState == ObjectAppearanceIconState.LARGE)
+                            // TODO small icons will be handled later
+                            //Icon.Small(isSelected = iconState == ObjectAppearanceIconState.SMALL),
+                            Icon.Medium(isSelected = iconState == ObjectAppearanceIconState.MEDIUM)
+                            // TODO large icons will be handled later
+                            //Icon.Large(isSelected = iconState == ObjectAppearanceIconState.LARGE)
                         )
                     )
                 )

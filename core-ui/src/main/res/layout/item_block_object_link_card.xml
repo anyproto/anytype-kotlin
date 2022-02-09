@@ -61,6 +61,7 @@
                 app:emojiSize="36dp"
                 app:imageSize="64dp"
                 app:initialTextSize="28sp"
+                app:hasEmojiRounded12Background="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

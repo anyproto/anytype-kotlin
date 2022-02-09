@@ -298,7 +298,7 @@ class EditorViewModel(
         }
     }
 
-    private suspend fun processEvents(events: List<Event>) : List<Flag> {
+    private suspend fun processEvents(events: List<Event>): List<Flag> {
         if (BuildConfig.DEBUG) {
             Timber.d("Blocks before handling events: $blocks")
             Timber.d("Events: $events")
@@ -658,7 +658,9 @@ class EditorViewModel(
             val root = event.blocks.find { it.id == context }
             when {
                 root == null -> Timber.e("Could not find the root block on initial focusing")
-                root.fields.isLocked == true -> { mode = EditorMode.Locked }
+                root.fields.isLocked == true -> {
+                    mode = EditorMode.Locked
+                }
                 root.children.size == 1 -> {
                     val first = event.blocks.first { it.id == root.children.first() }
                     val content = first.content
@@ -1121,7 +1123,29 @@ class EditorViewModel(
 
     fun onEmptyBlockBackspaceClicked(id: String) {
         Timber.d("onEmptyBlockBackspaceClicked, id:[$id]")
-        proceedWithUnlinking(target = id)
+        val position = views.indexOfFirst { it.id == id }
+        if (position > 0) {
+            val previous = views[position.dec()]
+            if (previous !is BlockView.Text
+                && previous !is BlockView.Title
+                && previous !is BlockView.Description
+                && previous !is BlockView.FeaturedRelation
+            ) {
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(
+                        Intent.CRUD.Unlink(
+                            context = context,
+                            targets = listOf(previous.id),
+                            previous = null,
+                            next = null,
+                            cursor = null
+                        )
+                    )
+                }
+            } else {
+                proceedWithUnlinking(target = id)
+            }
+        }
     }
 
     fun onNonEmptyBlockBackspaceClicked(
@@ -1165,15 +1189,31 @@ class EditorViewModel(
         val index = views.indexOfFirst { it.id == id }
 
         if (index > 0) {
-            val previous = views[index.dec()]
-            if (previous is BlockView.Text) {
-                proceedWithMergingBlocks(
-                    previous = previous.id,
-                    target = id
-                )
-            } else {
-                if (previous is BlockView.Title) sendToast("Merging with title currently not supported")
-                Timber.d("Skipping merge because previous block is not a text block")
+            when (val previous = views[index.dec()]) {
+                is BlockView.Text -> {
+                    proceedWithMergingBlocks(
+                        previous = previous.id,
+                        target = id
+                    )
+                }
+                is BlockView.FeaturedRelation,
+                is BlockView.Description,
+                is BlockView.Title -> {
+                    sendToast("Merging with title or description currently not supported")
+                }
+                else -> {
+                    viewModelScope.launch {
+                        orchestrator.proxies.intents.send(
+                            Intent.CRUD.Unlink(
+                                context = context,
+                                targets = listOf(previous.id),
+                                previous = null,
+                                next = null,
+                                cursor = null
+                            )
+                        )
+                    }
+                }
             }
         } else {
             Timber.d("Skipping merge on non-empty-block-backspace-pressed event")
@@ -1264,7 +1304,11 @@ class EditorViewModel(
                 views.enterSAM(targets = currentSelection())
             )
             renderCommand.send(Unit)
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter(currentSelection().size))
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.MultiSelect.OnEnter(
+                    currentSelection().size
+                )
+            )
             if (isSelected(target) && scrollTarget) {
                 dispatch(Command.ScrollToActionMenu(target = target))
             }
@@ -1683,7 +1727,7 @@ class EditorViewModel(
             ActionItemType.Style -> {
                 viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
             }
-            ActionItemType.Download -> { }
+            ActionItemType.Download -> {}
             ActionItemType.SAM -> {
                 mode = EditorMode.SAM
                 viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
@@ -3060,7 +3104,6 @@ class EditorViewModel(
         }
 
 
-
         val targetBlock = blocks.first { it.id == target }
 
         val parent = blocks.find { it.children.contains(target) }?.id
@@ -3394,8 +3437,10 @@ class EditorViewModel(
                 }
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
-                        val relationId = (clicked.value as BlockView.Relation.Related).view.relationId
-                        val relation = orchestrator.stores.relations.current().first { it.key == relationId }
+                        val relationId =
+                            (clicked.value as BlockView.Relation.Related).view.relationId
+                        val relation =
+                            orchestrator.stores.relations.current().first { it.key == relationId }
                         if (relation.isReadOnly) {
                             sendToast(NOT_ALLOWED_FOR_RELATION)
                             Timber.d("No interaction allowed with this relation")
@@ -3452,7 +3497,8 @@ class EditorViewModel(
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
                         val relationId = clicked.relation.relationId
-                        val relation = orchestrator.stores.relations.current().first { it.key == relationId }
+                        val relation =
+                            orchestrator.stores.relations.current().first { it.key == relationId }
                         if (relation.isReadOnly) {
                             sendToast(NOT_ALLOWED_FOR_RELATION)
                             return
@@ -3484,7 +3530,12 @@ class EditorViewModel(
                                             )
                                         ).process(
                                             success = { dispatcher.send(it) },
-                                            failure = { Timber.e(it, "Error while updating relation values") }
+                                            failure = {
+                                                Timber.e(
+                                                    it,
+                                                    "Error while updating relation values"
+                                                )
+                                            }
                                         )
                                     }
                                 }
@@ -3542,7 +3593,7 @@ class EditorViewModel(
                     findObjectSetForType(FindObjectSetForType.Params(clicked.type)).process(
                         failure = { Timber.e(it, "Error while search for a set for this type") },
                         success = { response ->
-                            when(response) {
+                            when (response) {
                                 is FindObjectSetForType.Response.NotFound -> {
                                     snacks.emit(Snack.ObjectSetNotFound(clicked.type))
                                 }
@@ -3838,16 +3889,19 @@ class EditorViewModel(
         const val FORMAT_WEBP = "webp"
         const val CANNOT_MOVE_BLOCK_ON_SAME_POSITION = "Selected block is already on the position"
         const val CANNOT_BE_DROPPED_INSIDE_ITSELF_ERROR = "A block cannot be moved inside itself."
-        const val CANNOT_CHANGE_NULL_OBJECT_TYPE = "Cannot change object type, when new one is unknown"
+        const val CANNOT_CHANGE_NULL_OBJECT_TYPE =
+            "Cannot change object type, when new one is unknown"
         const val CANNOT_BE_PARENT_ERROR = "This block does not support nesting."
         const val CANNOT_MOVE_PARENT_INTO_CHILD = "Cannot move parent into child."
 
         const val CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR =
             "Opening action menu for title currently not supported"
-        const val CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION = "Cannot open action menu for description"
+        const val CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION =
+            "Cannot open action menu for description"
         const val CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR =
             "Opening style panel for title currently not supported"
-        const val CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION = "Description block is text primitive and therefore no styling can be applied."
+        const val CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION =
+            "Description block is text primitive and therefore no styling can be applied."
         const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =
             "Opening style panel for code block currently not supported"
 
@@ -4764,7 +4818,7 @@ class EditorViewModel(
     }
 
     fun onMultiSelectAction(action: ActionItemType) {
-        when(action) {
+        when (action) {
             ActionItemType.AddBelow -> {
                 onMultiSelectAddBelow()
             }
@@ -4781,8 +4835,12 @@ class EditorViewModel(
                     restorePosition = null
                 )
             }
-            ActionItemType.SAM -> { onEnterScrollAndMoveClicked() }
-            ActionItemType.Style -> { onMultiSelectStyleButtonClicked() }
+            ActionItemType.SAM -> {
+                onEnterScrollAndMoveClicked()
+            }
+            ActionItemType.Style -> {
+                onMultiSelectStyleButtonClicked()
+            }
             ActionItemType.Download -> {
                 startDownloadingFiles(ids = currentSelection().toList())
                 proceedWithExitingMultiSelectMode()
@@ -5196,11 +5254,12 @@ class EditorViewModel(
 
         val targetBlock = blocks.find { it.id == target }
 
-        val targetContext = if (targetBlock?.content is Content.Link && position == Position.INNER) {
-            targetBlock.content<Content.Link>().target
-        } else {
-            context
-        }
+        val targetContext =
+            if (targetBlock?.content is Content.Link && position == Position.INNER) {
+                targetBlock.content<Content.Link>().target
+            } else {
+                context
+            }
 
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -5217,8 +5276,9 @@ class EditorViewModel(
     //endregion
 
     //region OBJECT TYPES WIDGET
-    private val isObjectTypesWidgetVisible : Boolean get() =
-        controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
+    private val isObjectTypesWidgetVisible: Boolean
+        get() =
+            controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
 
     fun onObjectTypesWidgetItemClicked(id: Id) {
         Timber.d("onObjectTypesWidgetItemClicked, id:[$id]")

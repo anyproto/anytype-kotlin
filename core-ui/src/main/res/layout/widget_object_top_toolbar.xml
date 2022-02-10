@@ -4,12 +4,12 @@
 
     <FrameLayout
         android:id="@+id/statusContainer"
-        android:layout_gravity="center_vertical"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="28dp">
+        android:layout_height="28dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
 
         <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
             android:id="@+id/statusBadge"
@@ -54,6 +54,7 @@
                 style="@style/ObjectSetToolbarTitleStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:drawablePadding="6dp"
                 tools:text="Your favorite movies" />
 
         </LinearLayout>

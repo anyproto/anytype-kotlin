@@ -1060,6 +1060,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             is ViewState.Success -> {
                 blockAdapter.updateWithDiffUtil(state.blocks)
                 recycler.invalidateItemDecorations()
+                val isLocked = vm.mode is Editor.Mode.Locked
+                topToolbar.setIsLocked(isLocked)
                 resetDocumentTitle(state)
             }
             is ViewState.OpenLinkScreen -> {

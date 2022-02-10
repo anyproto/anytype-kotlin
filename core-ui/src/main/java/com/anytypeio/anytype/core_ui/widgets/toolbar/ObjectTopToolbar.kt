@@ -54,4 +54,22 @@ class ObjectTopToolbar @JvmOverloads constructor(
     fun showStatusContainer() {
         statusContainer.animate().alpha(1f).setDuration(300).start()
     }
+
+    fun setIsLocked(isLocked: Boolean) {
+        if (isLocked) {
+            if (title.compoundDrawables.getOrNull(LOCKED_DRAWABLED_INDEX) == null) {
+                title.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0, 0, R.drawable.ic_locked_object_editor_top_toolbar, 0
+                )
+            }
+        } else {
+            if (title.compoundDrawables.getOrNull(LOCKED_DRAWABLED_INDEX) != null) {
+                title.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+            }
+        }
+    }
+
+    companion object {
+        const val LOCKED_DRAWABLED_INDEX = 2
+    }
 }

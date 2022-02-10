@@ -52,7 +52,10 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
                 ivIconEmoji.gone()
                 ivIconImage.setImageDrawable(null)
                 ivIconImage.gone()
-                tvAvatar.text = icon.name.first().toString()
+                tvAvatar.text = if (icon.name.isNotEmpty())
+                    icon.name.first().toString()
+                else
+                    resources.getString(R.string.u)
                 tvAvatar.visible()
             }
             is ObjectIcon.Task -> {

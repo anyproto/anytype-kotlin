@@ -42,7 +42,13 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
         showVersion()
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.commands.collect { observe(it) }
+                vm.commands.collect {
+                    try {
+                        observe(it)
+                    } catch (e: Exception) {
+                        toast(e.message ?: resources.getString(R.string.unknown_error))
+                    }
+                }
             }
         }
     }

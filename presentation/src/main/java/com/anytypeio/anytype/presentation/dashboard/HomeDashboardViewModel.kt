@@ -122,12 +122,11 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             getProfile.observe(
                 subscription = Subscriptions.SUBSCRIPTION_PROFILE,
-                keys = listOf(
-                    Relations.ID,
-                    Relations.NAME,
-                    Relations.ICON_IMAGE
-                )
-            ).collect {
+                keys = listOf(Relations.ID, Relations.NAME, Relations.ICON_IMAGE)
+            ).catch {
+                Timber.e(it, "Error while observing profile on dashboard")
+                toast("Could not load profile: ${it.message ?: "Unknown error"}")
+            }.collectLatest {
                 profile.value = ViewState.Success(it)
             }
         }

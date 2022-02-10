@@ -10,7 +10,7 @@
 
     <application
         android:name="com.anytypeio.anytype.app.AndroidApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:fullBackupContent="@xml/my_backup_rules"
         android:icon="@mipmap/ic_new_app_launcher"
         android:label="@string/app_name"

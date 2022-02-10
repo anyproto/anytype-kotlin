@@ -28,8 +28,6 @@ class LinkToObject(view: View) :
     private val objectIconContainer = itemView.iconObjectContainer
     private val title = itemView.pageTitle
     private val guideline = itemView.pageGuideline
-    private val progress = itemView.progress
-    private val syncing = itemView.syncing
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -54,8 +52,6 @@ class LinkToObject(view: View) :
         applyImageOrEmoji(item)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
-
-        bindLoading(item.isLoading)
     }
 
     private fun applyText(item: BlockView.LinkToObject.Default.Text) {
@@ -89,20 +85,6 @@ class LinkToObject(view: View) :
                 objectIconContainer.visible()
                 objectIcon.setIcon(item.icon)
             }
-        }
-    }
-
-    private fun bindLoading(isLoading: Boolean) {
-        if (isLoading) {
-            objectIcon.invisible()
-            title.invisible()
-            progress.visible()
-            syncing.visible()
-        } else {
-            progress.invisible()
-            syncing.invisible()
-            objectIcon.visible()
-            title.visible()
         }
     }
 
@@ -152,8 +134,6 @@ class LinkToObject(view: View) :
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
             }
-            if (payload.isLoadingChanged)
-                bindLoading(item.isLoading)
             if (payload.isObjectTitleChanged)
                 applyText(item)
             if (payload.isObjectIconChanged)

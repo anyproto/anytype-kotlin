@@ -1185,7 +1185,13 @@ class DefaultBlockViewRenderer(
         obj: ObjectWrapper.Basic,
         mode: EditorMode,
         selection: Set<Id>
-    ): BlockView {
+    ): BlockView.LinkToObject {
+        if (obj.isEmpty()) {
+            return BlockView.LinkToObject.Loading(
+                id = block.id,
+                indent = indent
+            )
+        }
         val isDeleted = obj.isDeleted
         val isArchived = obj.isArchived
         return if (isDeleted == true) {
@@ -1222,7 +1228,7 @@ class DefaultBlockViewRenderer(
         indent: Int,
         obj: ObjectWrapper.Basic,
         selection: Set<Id>
-    ): BlockView.LinkToObject {
+    ): BlockView.LinkToObject.Default {
         val appearanceParams = block.fields.getLinkToObjectAppearanceParams(obj.layout)
         val isCard = appearanceParams.getObjectAppearancePreviewLayoutState() == CARD
         val icon = if (appearanceParams.getObjectAppearanceIconState() == NONE) {
@@ -1281,7 +1287,6 @@ class DefaultBlockViewRenderer(
                 text = name,
                 description = description,
                 indent = indent,
-                isLoading = obj.isEmpty(),
                 isSelected = checkIfSelected(
                     mode = mode,
                     block = block,
@@ -1297,7 +1302,6 @@ class DefaultBlockViewRenderer(
                 icon = icon,
                 text = name,
                 indent = indent,
-                isLoading = obj.isEmpty(),
                 isSelected = checkIfSelected(
                     mode = mode,
                     block = block,

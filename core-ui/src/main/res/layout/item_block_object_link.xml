@@ -53,27 +53,4 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Partnership terms" />
 
-    <ProgressBar
-        android:visibility="gone"
-        android:id="@+id/progress"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:theme="@style/GreyProgressBar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/pageGuideline"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:visibility="invisible"
-        android:id="@+id/syncing"
-        style="@style/BlockPageContentStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/syncing"
-        android:textColor="#ACA996"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/iconObjectContainer"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

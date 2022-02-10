@@ -104,27 +104,6 @@
                 tools:text="When a few objects that can be m..."
                 tools:visibility="visible" />
 
-            <ProgressBar
-                android:id="@+id/progress"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:theme="@style/GreyProgressBar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/pageGuideline"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/syncing"
-                style="@style/BlockPageContentStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/syncing"
-                android:textColor="#ACA996"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardIcon"
-                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>

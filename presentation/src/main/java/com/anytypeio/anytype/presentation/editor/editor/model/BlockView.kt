@@ -29,6 +29,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
@@ -839,7 +840,7 @@ sealed class BlockView : ViewType {
         }
     }
 
-    sealed class LinkToObject : BlockView(), Indentable, Selectable, Loadable {
+    sealed class LinkToObject : BlockView(), Indentable, Selectable {
 
         /**
          * UI-model for blocks containing links to objects.
@@ -862,7 +863,6 @@ sealed class BlockView : ViewType {
                 override val indent: Int = 0,
                 override val isSelected: Boolean = false,
                 override val searchFields: List<Searchable.Field> = emptyList(),
-                override val isLoading: Boolean = false,
                 override val text: String? = null,
                 override val description: String? = null,
                 override val icon: ObjectIcon,
@@ -875,7 +875,6 @@ sealed class BlockView : ViewType {
                 override val indent: Int = 0,
                 override val isSelected: Boolean = false,
                 override val searchFields: List<Searchable.Field> = emptyList(),
-                override val isLoading: Boolean = false,
                 override val text: String? = null,
                 override val description: String? = null,
                 override val icon: ObjectIcon,
@@ -899,7 +898,6 @@ sealed class BlockView : ViewType {
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
-            override val isLoading: Boolean = false,
             var text: String? = null,
             val emoji: String? = null,
             val image: String? = null,
@@ -911,10 +909,17 @@ sealed class BlockView : ViewType {
         data class Deleted(
             override val id: String,
             override val indent: Int = 0,
-            override val isSelected: Boolean = false,
-            override val isLoading: Boolean = false
+            override val isSelected: Boolean = false
         ) : LinkToObject() {
             override fun getViewType() = HOLDER_OBJECT_LINK_DELETED
+        }
+
+        data class Loading(
+            override val id: String,
+            override val indent: Int = 0,
+            override val isSelected: Boolean = false
+        ) : LinkToObject() {
+            override fun getViewType() = HOLDER_OBJECT_LINK_LOADING
         }
     }
 

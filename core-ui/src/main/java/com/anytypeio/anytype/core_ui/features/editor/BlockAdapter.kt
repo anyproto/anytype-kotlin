@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -69,6 +70,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -534,6 +536,15 @@ class BlockAdapter(
                 LinkToObjectDelete(
                     view = inflater.inflate(
                         R.layout.item_block_object_link_delete,
+                        parent,
+                        false
+                    )
+                )
+            }
+            HOLDER_OBJECT_LINK_LOADING -> {
+                LinkToObjectLoading(
+                    binding = ItemBlockObjectLinkLoadingBinding.inflate(
+                        LayoutInflater.from(parent.context),
                         parent,
                         false
                     )

@@ -2678,17 +2678,12 @@ class EditorViewModel(
     }
 
     private fun onPageClicked(block: Id) {
-        val view = views.find { it.id == block }
-        if (view is BlockView.Loadable && !view.isLoading) {
-            val target = blocks.firstOrNull { it.id == block }?.content<Content.Link>()?.target
-            if (target != null) {
-                proceedWithOpeningObjectByLayout(target = target)
-            } else {
-                sendToast("Couldn't find the target of the link")
-                Timber.e("Error while getting target of Block Page")
-            }
+        val target = blocks.firstOrNull { it.id == block }?.content<Content.Link>()?.target
+        if (target != null) {
+            proceedWithOpeningObjectByLayout(target = target)
         } else {
-            sendToast("Still syncing...")
+            sendToast("Couldn't find the target of the link")
+            Timber.e("Error while getting target of Block Page")
         }
     }
 

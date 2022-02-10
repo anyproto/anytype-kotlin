@@ -19,6 +19,7 @@ object Types {
     const val HOLDER_OBJECT_LINK_CARD = 52
     const val HOLDER_OBJECT_LINK_ARCHIVE = 14
     const val HOLDER_OBJECT_LINK_DELETED = 15
+    const val HOLDER_OBJECT_LINK_LOADING = 53
 
     const val HOLDER_HIGHLIGHT = 17
 

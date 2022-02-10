@@ -3,8 +3,6 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Spannable
 import android.text.SpannableString
 import android.widget.TextView
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -31,8 +29,6 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     private val title = binding.cardName
     private val description = binding.cardDescription
     private val guideline = binding.pageGuideline
-    private val progress = binding.progress
-    private val syncing = binding.syncing
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -61,8 +57,6 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
         applyImageOrEmoji(item)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
-
-        bindLoading(item.isLoading)
     }
 
     private fun applyName(item: BlockView.LinkToObject.Default.Card) {
@@ -109,24 +103,6 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
             coverGradient = item.coverGradient,
             coverImage = item.coverImage
         )
-    }
-
-    private fun bindLoading(isLoading: Boolean) {
-        if (isLoading) {
-            if (objectIcon.isVisible) {
-                objectIcon.invisible()
-            }
-            title.invisible()
-            progress.visible()
-            syncing.visible()
-        } else {
-            progress.invisible()
-            syncing.invisible()
-            if (objectIcon.isInvisible) {
-                objectIcon.visible()
-            }
-            title.visible()
-        }
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {
@@ -176,8 +152,6 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
             }
-            if (payload.isLoadingChanged)
-                bindLoading(item.isLoading)
             if (payload.isObjectTitleChanged)
                 applyName(item)
             if (payload.isObjectIconChanged)

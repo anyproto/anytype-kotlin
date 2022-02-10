@@ -15,6 +15,7 @@
 * Editor | Issues related to drag & drop sensitivity (#2068)
 * Editor | Incorrect numbers in numbered lists when there are nested lists or blocks are grouped by sections (#2072)
 * Editor | Progress bar and text should not overlap when a link-to-object block is in loading state (#2098)
+* Editor | Title in the top toolbar is missing when your object has TODO layout (#2103)
 * Dashboard | Removal from favorites is not synced correctly (#2075)
 * Sets | Enabled auto-correct when setting name for a new object (#2067)
 * Search | Optimized object search (#2095)

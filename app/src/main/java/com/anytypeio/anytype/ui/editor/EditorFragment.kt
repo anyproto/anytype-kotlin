@@ -1085,7 +1085,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun resetDocumentTitle(state: ViewState.Success) {
         state.blocks.firstOrNull { view ->
-            view is BlockView.Title.Basic || view is BlockView.Title.Profile
+            view is BlockView.Title.Basic || view is BlockView.Title.Profile || view is BlockView.Title.Todo
         }?.let { view ->
             when (view) {
                 is BlockView.Title.Basic -> {
@@ -1105,6 +1105,22 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     }
                 }
                 is BlockView.Title.Profile -> {
+                    resetTopToolbarTitle(
+                        text = view.text,
+                        emoji = null,
+                        image = view.image
+                    )
+                    if (view.hasCover) {
+                        val mng = recycler.layoutManager as LinearLayoutManager
+                        val pos = mng.findFirstVisibleItemPosition()
+                        if (pos == -1 || pos == 0) {
+                            topToolbar.setStyle(overCover = true)
+                        }
+                    } else {
+                        topToolbar.setStyle(overCover = false)
+                    }
+                }
+                is BlockView.Title.Todo -> {
                     resetTopToolbarTitle(
                         text = view.text,
                         emoji = null,

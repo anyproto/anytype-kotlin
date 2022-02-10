@@ -3401,7 +3401,7 @@ class EditorViewModel(
             }
             is ListenerType.Latex -> {
                 when (mode) {
-                    EditorMode.Edit -> proceedWithEnteringActionMode(clicked.id)
+//                    EditorMode.Edit -> proceedWithEnteringActionMode(clicked.id)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.id)
                     else -> Unit
                 }

@@ -3,7 +3,8 @@ package com.anytypeio.anytype.library_page_icon_picker_widget.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.library_page_icon_picker_widget.R
+import com.anytypeio.anytype.library_page_icon_picker_widget.databinding.ItemPageIconPickerEmojiCategoryHeaderBinding
+import com.anytypeio.anytype.library_page_icon_picker_widget.databinding.ItemPageIconPickerEmojiItemBinding
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
@@ -21,15 +22,15 @@ class DocumentEmojiIconPickerAdapter(
 
         return when (viewType) {
             HOLDER_EMOJI_CATEGORY_HEADER -> DocumentEmojiIconPickerViewHolder.CategoryHeader(
-                view = inflater.inflate(
-                    R.layout.item_page_icon_picker_emoji_category_header,
+                ItemPageIconPickerEmojiCategoryHeaderBinding.inflate(
+                    inflater,
                     parent,
                     false
                 )
             )
             HOLDER_EMOJI_ITEM -> DocumentEmojiIconPickerViewHolder.EmojiItem(
-                view = LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_page_icon_picker_emoji_item,
+                ItemPageIconPickerEmojiItemBinding.inflate(
+                    inflater,
                     parent,
                     false
                 )

@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.R
+import com.anytypeio.anytype.databinding.ItemChooseProfileAddBinding
+import com.anytypeio.anytype.databinding.ItemChooseProfileProfileBinding
 import com.anytypeio.anytype.presentation.auth.model.SelectAccountView
 import com.anytypeio.anytype.presentation.auth.model.SelectAccountView.Companion.ADD_NEW_PROFILE
 import com.anytypeio.anytype.presentation.auth.model.SelectAccountView.Companion.PROFILE
-import kotlinx.android.synthetic.main.item_choose_profile_profile.view.*
 
 class SelectAccountAdapter(
     private val views: MutableList<SelectAccountView>,
@@ -23,12 +23,12 @@ class SelectAccountAdapter(
         return when (viewType) {
             PROFILE -> {
                 ViewHolder.ProfileHolder(
-                    view = inflater.inflate(R.layout.item_choose_profile_profile, parent, false)
+                    ItemChooseProfileProfileBinding.inflate(inflater, parent, false)
                 )
             }
             ADD_NEW_PROFILE -> {
                 ViewHolder.AddNewProfileViewHolder(
-                    view = inflater.inflate(R.layout.item_choose_profile_add, parent, false)
+                    ItemChooseProfileAddBinding.inflate(inflater, parent, false)
                 )
             }
             else -> throw IllegalStateException("Unknown view type: $viewType")
@@ -65,10 +65,10 @@ class SelectAccountAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class ProfileHolder(view: View) : ViewHolder(view) {
+        class ProfileHolder(val binding: ItemChooseProfileProfileBinding) : ViewHolder(binding.root) {
 
-            private val name = itemView.name
-            private val avatar = itemView.avatar
+            private val name = binding.name
+            private val avatar = binding.avatar
 
             fun bind(
                 model: SelectAccountView.AccountView,
@@ -85,7 +85,7 @@ class SelectAccountAdapter(
             }
         }
 
-        class AddNewProfileViewHolder(view: View) : ViewHolder(view) {
+        class AddNewProfileViewHolder(val binding: ItemChooseProfileAddBinding) : ViewHolder(binding.root) {
 
             fun bind(
                 onAddNewProfileClicked: () -> Unit

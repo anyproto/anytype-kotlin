@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.dashboard
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.databinding.FragmentDashboardBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
@@ -27,14 +30,13 @@ import com.anytypeio.anytype.ui.base.ViewStateFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) {
+class DashboardFragment : ViewStateFragment<State, FragmentDashboardBinding>(R.layout.fragment_dashboard) {
 
     private val isMnemonicReminderDialogNeeded: Boolean?
         get() = argOrNull(
@@ -167,7 +169,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
-        dashboardRoot.progress = motionProgress
+        binding.dashboardRoot.progress = motionProgress
         with(vm) {
             state.observe(viewLifecycleOwner, this@DashboardFragment)
             navigation.observe(viewLifecycleOwner, navObserver)
@@ -192,7 +194,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                     vm.archived.collect { dashboardArchiveAdapter.update(it) }
                 }
                 launch {
-                    vm.count.collect { tvSelectedCount.text = "$it object selected" }
+                    vm.count.collect { binding.tvSelectedCount.text = "$it object selected" }
                 }
                 launch {
                     vm.alerts.collect { alert ->
@@ -209,10 +211,10 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                     vm.mode.collect { mode ->
                         when (mode) {
                             HomeDashboardViewModel.Mode.DEFAULT -> {
-                                selectionTopToolbar.invisible()
-                                tabsLayout.visible()
+                                binding.selectionTopToolbar.invisible()
+                                binding.tabsLayout.visible()
                                 val set = ConstraintSet().apply {
-                                    clone(dashboardRoot)
+                                    clone(binding.dashboardRoot)
                                     clear(R.id.selectionBottomToolbar, ConstraintSet.BOTTOM)
                                     connect(
                                         R.id.selectionBottomToolbar,
@@ -226,16 +228,16 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                                     duration = 100
                                 }
                                 TransitionManager.beginDelayedTransition(
-                                    dashboardRoot,
+                                    binding.dashboardRoot,
                                     transitionSet
                                 )
-                                set.applyTo(dashboardRoot)
+                                set.applyTo(binding.dashboardRoot)
                             }
                             HomeDashboardViewModel.Mode.SELECTION -> {
-                                tabsLayout.invisible()
-                                selectionTopToolbar.visible()
+                                binding.tabsLayout.invisible()
+                                binding.selectionTopToolbar.visible()
                                 val set = ConstraintSet().apply {
-                                    clone(dashboardRoot)
+                                    clone(binding.dashboardRoot)
                                     clear(R.id.selectionBottomToolbar, ConstraintSet.TOP)
                                     connect(
                                         R.id.selectionBottomToolbar,
@@ -249,10 +251,10 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                                     duration = 100
                                 }
                                 TransitionManager.beginDelayedTransition(
-                                    dashboardRoot,
+                                    binding.dashboardRoot,
                                     transitionSet
                                 )
-                                set.applyTo(dashboardRoot)
+                                set.applyTo(binding.dashboardRoot)
                             }
                         }
                     }
@@ -290,9 +292,9 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
                 launch {
                     vm.isDeletionInProgress.collect { isDeletionInProgress ->
                         if (isDeletionInProgress) {
-                            objectRemovalProgressBar.visible()
+                            binding.objectRemovalProgressBar.visible()
                         } else {
-                            objectRemovalProgressBar.gone()
+                            binding.objectRemovalProgressBar.gone()
                         }
                     }
                 }
@@ -312,17 +314,17 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
         when (profile) {
             is ViewState.Success -> {
                 val obj = profile.data
-                avatarContainer.bind(
+                binding.avatarContainer.bind(
                     name = obj.name.orEmpty(),
                     color = context?.getColor(R.color.dashboard_default_avatar_circle_color)
                 )
                 obj.iconImage?.let { avatar ->
-                    avatarContainer.icon(builder.image(avatar))
+                    binding.avatarContainer.icon(builder.image(avatar))
                 }
                 if (obj.name.isNullOrEmpty()) {
-                    tvGreeting.text = getText(R.string.greet_user)
+                    binding.tvGreeting.text = getText(R.string.greet_user)
                 } else {
-                    tvGreeting.text = getString(R.string.greet, obj.name)
+                    binding.tvGreeting.text = getString(R.string.greet, obj.name)
                 }
             }
             else -> {
@@ -333,8 +335,8 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     override fun onPause() {
         super.onPause()
-        motionProgress = dashboardRoot.progress
-        tabsLayout.removeOnTabSelectedListener(onTabSelectedListener)
+        motionProgress = binding.dashboardRoot.progress
+        binding.tabsLayout.removeOnTabSelectedListener(onTabSelectedListener)
     }
 
     override fun onStop() {
@@ -346,7 +348,7 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
     override fun onResume() {
         super.onResume()
         vm.onResume()
-        tabsLayout.apply {
+        binding.tabsLayout.apply {
             addOnTabSelectedListener(onTabSelectedListener)
         }
         if (isMnemonicReminderDialogNeeded == true) {
@@ -382,62 +384,69 @@ class DashboardFragment : ViewStateFragment<State>(R.layout.fragment_dashboard) 
 
     private fun setup() {
 
-        tabsLayout.apply {
+        binding.tabsLayout.apply {
             tabMode = TabLayout.MODE_SCROLLABLE
         }
 
-        dashboardPager.apply {
+        binding.dashboardPager.apply {
             adapter = dashboardPagerAdapter
-            TabLayoutMediator(tabsLayout, dashboardPager) { tab, position ->
+            TabLayoutMediator(binding.tabsLayout, binding.dashboardPager) { tab, position ->
                 tab.text = dashboardPagerAdapter.getTitle(position)
             }.attach()
         }
 
-        btnAddDoc
+        binding.btnAddDoc
             .clicks()
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
 
-        btnSearch
+        binding.btnSearch
             .clicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
-        btnMarketplace
+        binding.btnMarketplace
             .clicks()
             .onEach { toast(getString(R.string.coming_soon)) }
             .launchIn(lifecycleScope)
 
-        ivSettings
+        binding.ivSettings
             .clicks()
             .onEach { vm.onSettingsClicked() }
             .launchIn(lifecycleScope)
 
-        avatarContainer
+        binding.avatarContainer
             .clicks()
             .onEach { vm.onAvatarClicked() }
             .launchIn(lifecycleScope)
 
-        tvCancel
+        binding.tvCancel
             .clicks()
             .onEach { vm.onCancelSelectionClicked() }
             .launchIn(lifecycleScope)
 
-        tvSelectAll
+        binding.tvSelectAll
             .clicks()
             .onEach { vm.onSelectAllClicked() }
             .launchIn(lifecycleScope)
 
-        tvPutBack
+        binding.tvPutBack
             .clicks()
             .onEach { vm.onPutBackClicked() }
             .launchIn(lifecycleScope)
 
-        tvDelete
+        binding.tvDelete
             .clicks()
             .onEach { vm.onDeleteObjectsClicked() }
             .launchIn(lifecycleScope)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentDashboardBinding = FragmentDashboardBinding.inflate(
+        inflater, container, false
+    )
 
     override fun injectDependencies() {
         componentManager().dashboardComponent.get().inject(this)

@@ -12,12 +12,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.editor.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.editor.modal.AddBlockOrTurnIntoAdapter
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentTurnIntoBinding
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.fragment_add_block.*
 
-class TurnIntoFragment : BaseBottomSheetFragment() {
+@Deprecated("To be deleted")
+class TurnIntoFragment : BaseBottomSheetFragment<FragmentTurnIntoBinding>() {
 
     private val excludedCategories: List<UiBlock.Category>
         get() {
@@ -61,7 +62,7 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
-        close.setOnClickListener { dismiss() }
+        binding.close.setOnClickListener { dismiss() }
         skipCollapsedState()
     }
 
@@ -78,7 +79,7 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
     }
 
     private fun setupAdapter() {
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = addBlockOrTurnIntoAdapter
             setHasFixedSize(true)
@@ -101,6 +102,13 @@ class TurnIntoFragment : BaseBottomSheetFragment() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentTurnIntoBinding = FragmentTurnIntoBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

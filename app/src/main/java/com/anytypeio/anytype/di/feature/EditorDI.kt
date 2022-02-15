@@ -91,8 +91,6 @@ interface EditorSubComponent {
     fun objectCoverComponent() : SelectCoverObjectSubComponent.Builder
     fun objectMenuComponent() : ObjectMenuComponent.Builder
 
-    fun documentAddNewBlockComponentBuilder(): DocumentAddNewBlockSubComponent.Builder
-
     fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
     fun objectAppearanceSettingComponent() : ObjectAppearanceSettingSubComponent.Builder
     fun objectAppearanceIconComponent() : ObjectAppearanceIconSubComponent.Builder

@@ -9,16 +9,16 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentViewerCustomizeBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.sets.ViewerCustomizeViewModel
 import com.anytypeio.anytype.presentation.sets.ViewerCustomizeViewState
-import kotlinx.android.synthetic.main.fragment_viewer_customize.*
 import javax.inject.Inject
 
-class ViewerCustomizeFragment : BaseBottomSheetFragment() {
+class ViewerCustomizeFragment : BaseBottomSheetFragment<FragmentViewerCustomizeBinding>() {
 
     private val ctx get() = argString(CONTEXT_ID_KEY)
     private val viewer get() = argString(VIEWER_ID_KEY)
@@ -30,12 +30,6 @@ class ViewerCustomizeFragment : BaseBottomSheetFragment() {
     lateinit var filtersCount: TextView
     lateinit var sortsCount: TextView
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_viewer_customize, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         filtersCount = view.findViewById(R.id.filterCount)
@@ -43,13 +37,13 @@ class ViewerCustomizeFragment : BaseBottomSheetFragment() {
         lifecycleScope.subscribe(vm.viewState) {
             observeViewState(it)
         }
-        itemFilter.setOnClickListener {
+        binding.itemFilter.root.setOnClickListener {
             withParent<ViewerBottomSheetRootFragment> { transitToFilter() }
         }
-        itemSort.setOnClickListener {
+        binding.itemSort.root.setOnClickListener {
             withParent<ViewerBottomSheetRootFragment> { transitToSorting() }
         }
-        itemRelations.setOnClickListener {
+        binding.itemRelations.root.setOnClickListener {
             withParent<ViewerBottomSheetRootFragment> { transitToRelations() }
         }
         vm.onViewCreated(viewerId = viewer)
@@ -60,7 +54,7 @@ class ViewerCustomizeFragment : BaseBottomSheetFragment() {
             ViewerCustomizeViewState.Init -> {
             }
             is ViewerCustomizeViewState.InitGrid -> {
-                itemTable.show()
+                binding.itemTable.root.show()
                 if (viewState.isShowFilterSize) {
                     filtersCount.text = viewState.filterSize
                 } else {
@@ -82,6 +76,13 @@ class ViewerCustomizeFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().viewerCustomizeComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentViewerCustomizeBinding = FragmentViewerCustomizeBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.viewer.customize.context"

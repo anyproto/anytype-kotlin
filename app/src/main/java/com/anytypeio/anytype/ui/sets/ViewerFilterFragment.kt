@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
@@ -23,10 +24,9 @@ import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFlowRootFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromInputFieldValueFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromSelectedValueFragment
-import kotlinx.android.synthetic.main.fragment_filter.*
 import javax.inject.Inject
 
-open class ViewerFilterFragment : BaseBottomSheetFragment() {
+open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>() {
 
     private val ctx get() = argString(CONTEXT_ID_KEY)
 
@@ -40,21 +40,15 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
     lateinit var factory: ViewerFilterViewModel.Factory
     private val vm: ViewerFilterViewModel by viewModels { factory }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_filter, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = filterAdapter
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.recycler.adapter = filterAdapter
         with(lifecycleScope) {
             subscribe(vm.commands) { observeCommands(it) }
-            subscribe(addButton.clicks()) { vm.onAddNewFilterClicked() }
-            subscribe(doneBtn.clicks()) { vm.onDoneButtonClicked() }
-            subscribe(editBtn.clicks()) { vm.onEditButtonClicked() }
+            subscribe(binding.addButton.clicks()) { vm.onAddNewFilterClicked() }
+            subscribe(binding.doneBtn.clicks()) { vm.onDoneButtonClicked() }
+            subscribe(binding.editBtn.clicks()) { vm.onEditButtonClicked() }
         }
     }
 
@@ -69,45 +63,51 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
     private fun render(state: ViewerFilterViewModel.ScreenState) {
         when (state) {
             ViewerFilterViewModel.ScreenState.LIST -> {
-                editBtn.visible()
-                addButton.visible()
-                doneBtn.invisible()
-                txtEmptyState.gone()
                 removeDivider()
-                recycler.addItemDecoration(
-                    DividerVerticalItemDecoration(
-                        divider = requireContext().drawable(R.drawable.divider_filter_list),
-                        isShowInLastItem = false
-                    ),
-                    0
-                )
+                with(binding) {
+                    editBtn.visible()
+                    addButton.visible()
+                    doneBtn.invisible()
+                    txtEmptyState.gone()
+                    recycler.addItemDecoration(
+                        DividerVerticalItemDecoration(
+                            divider = requireContext().drawable(R.drawable.divider_filter_list),
+                            isShowInLastItem = false
+                        ),
+                        0
+                    )
+                }
             }
             ViewerFilterViewModel.ScreenState.EDIT -> {
-                doneBtn.visible()
-                editBtn.invisible()
-                addButton.invisible()
-                txtEmptyState.gone()
                 removeDivider()
-                recycler.addItemDecoration(
-                    DividerVerticalItemDecoration(
-                        divider = requireContext().drawable(R.drawable.divider_filter_edit),
-                        isShowInLastItem = false
-                    ),
-                    0
-                )
+                with(binding) {
+                    doneBtn.visible()
+                    editBtn.invisible()
+                    addButton.invisible()
+                    txtEmptyState.gone()
+                    recycler.addItemDecoration(
+                        DividerVerticalItemDecoration(
+                            divider = requireContext().drawable(R.drawable.divider_filter_edit),
+                            isShowInLastItem = false
+                        ),
+                        0
+                    )
+                }
             }
             ViewerFilterViewModel.ScreenState.EMPTY -> {
-                doneBtn.invisible()
-                editBtn.invisible()
-                addButton.visible()
-                txtEmptyState.visible()
                 removeDivider()
+                with(binding) {
+                    doneBtn.invisible()
+                    editBtn.invisible()
+                    addButton.visible()
+                    txtEmptyState.visible()
+                }
             }
         }
     }
 
     private fun removeDivider() {
-        if (recycler.itemDecorationCount > 0) recycler.removeItemDecorationAt(0)
+        if (binding.recycler.itemDecorationCount > 0) binding.recycler.removeItemDecorationAt(0)
     }
 
     private fun observeCommands(command: ViewerFilterCommand) {
@@ -152,6 +152,13 @@ open class ViewerFilterFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().viewerFilterComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentFilterBinding = FragmentFilterBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.viewer.filters.context"

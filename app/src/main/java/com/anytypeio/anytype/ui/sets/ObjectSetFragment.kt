@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -62,55 +64,54 @@ import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.sets.modals.*
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.fragment_object_set.*
 import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
 open class ObjectSetFragment :
-    NavigationFragment(R.layout.fragment_object_set),
+    NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
     TextValueEditReceiver,
     DateValueEditReceiver {
 
     // Controls
 
     private val title: TextInputWidget
-        get() = objectHeader.findViewById(R.id.tvSetTitle)
+        get() = binding.objectHeader.root.findViewById(R.id.tvSetTitle)
 
     private val topToolbarTitle: TextView
-        get() = topToolbar.findViewById(R.id.tvTopToolbarTitle)
+        get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
 
     private val topToolbarThreeDotsButton : ViewGroup
-        get() = topToolbar.findViewById(R.id.threeDotsButton)
+        get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
     private val topToolbarStatusContainer: ViewGroup
-        get() = topToolbar.findViewById(R.id.statusContainer)
+        get() = binding.topToolbar.root.findViewById(R.id.statusContainer)
 
     private val topToolbarThreeDotsIcon : ImageView
-        get() = topToolbar.findViewById(R.id.ivThreeDots)
+        get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
 
     private val topToolbarStatusText: TextView
-        get() = topToolbar.findViewById(R.id.tvStatus)
+        get() = binding.topToolbar.root.findViewById(R.id.tvStatus)
 
     private val addNewButton: ImageView
-        get() = dataViewHeader.findViewById(R.id.addNewButton)
+        get() = binding.dataViewHeader.root.findViewById(R.id.addNewButton)
 
     private val customizeViewButton: ImageView
-        get() = dataViewHeader.findViewById(R.id.customizeViewButton)
+        get() = binding.dataViewHeader.root.findViewById(R.id.customizeViewButton)
 
     private val tvCurrentViewerName: TextView
-        get() = dataViewHeader.findViewById(R.id.tvCurrentViewerName)
+        get() = binding.dataViewHeader.root.findViewById(R.id.tvCurrentViewerName)
 
     private val menuButton: FrameLayout
-        get() = topToolbar.findViewById(R.id.threeDotsButton)
+        get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
     private val featuredRelations: FeaturedRelationGroupWidget
-        get() = objectHeader.findViewById(R.id.featuredRelationsWidget)
+        get() = binding.objectHeader.root.findViewById(R.id.featuredRelationsWidget)
 
-    private val rvHeaders: RecyclerView get() = root.findViewById(R.id.rvHeader)
-    private val rvRows: RecyclerView get() = root.findViewById(R.id.rvRows)
+    private val rvHeaders: RecyclerView get() = binding.root.findViewById(R.id.rvHeader)
+    private val rvRows: RecyclerView get() = binding.root.findViewById(R.id.rvRows)
 
     private val bottomPanelTranslationDelta: Float
-        get() = (bottomPanel.height + bottomPanel.marginBottom).toFloat()
+        get() = (binding.bottomPanel.root.height + binding.bottomPanel.root.marginBottom).toFloat()
 
     private val actionHandler: (Int) -> Boolean = { action ->
         action == IME_ACTION_GO || action == IME_ACTION_DONE
@@ -153,7 +154,7 @@ open class ObjectSetFragment :
         setupGridAdapters(view)
         title.clearFocus()
         topToolbarTitle.alpha = 0f
-        root.setTransitionListener(transitionListener)
+        binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
             subscribe(addNewButton.clicks()) { vm.onCreateNewRecord() }
@@ -167,28 +168,28 @@ open class ObjectSetFragment :
             subscribe(menuButton.clicks()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
-            subscribe(unsupportedViewError.clicks()) { vm.onUnsupportedViewErrorClicked() }
-            subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
+            subscribe(binding.unsupportedViewError.clicks()) { vm.onUnsupportedViewErrorClicked() }
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
                 vm.onViewerFiltersClicked()
             }
-            subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnRelations).clicks()) {
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnRelations).clicks()) {
                 vm.onViewerRelationsClicked()
             }
-            subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnSort).clicks()) {
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()) {
                 vm.onViewerSortsClicked()
             }
-            subscribe(bottomPanel.findViewById<FrameLayout>(R.id.btnGroup).clicks()) {
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnGroup).clicks()) {
                 toast(getString(R.string.coming_soon))
             }
 
-            subscribe(bottomPanel.touches()) { swipeDetector.onTouchEvent(it) }
+            subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            subscribe(bottomToolbar.homeClicks()) { vm.onHomeButtonClicked() }
-            subscribe(bottomToolbar.backClicks()) { vm.onBackButtonClicked() }
-            subscribe(bottomToolbar.searchClicks()) { vm.onSearchButtonClicked() }
+            subscribe(binding.bottomToolbar.homeClicks()) { vm.onHomeButtonClicked() }
+            subscribe(binding.bottomToolbar.backClicks()) { vm.onBackButtonClicked() }
+            subscribe(binding.bottomToolbar.searchClicks()) { vm.onSearchButtonClicked() }
         }
 
-        with(paginatorToolbar) {
+        with(binding.paginatorToolbar) {
             onNumberClickCallback = { (num, isSelected) ->
                 vm.onPaginatorToolbarNumberClicked(num, isSelected)
             }
@@ -196,19 +197,19 @@ open class ObjectSetFragment :
             onPrevious = { vm.onPaginatorNextElsePrevious(false) }
         }
 
-        galleryView.onGalleryItemClicked = { id ->
+        binding.galleryView.onGalleryItemClicked = { id ->
             vm.onObjectHeaderClicked(id)
         }
 
-        galleryView.onTaskCheckboxClicked = { id ->
+        binding.galleryView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
 
-        listView.onListItemClicked = { id ->
+        binding.listView.onListItemClicked = { id ->
             vm.onObjectHeaderClicked(id)
         }
 
-        listView.onTaskCheckboxClicked = { id ->
+        binding.listView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
     }
@@ -242,7 +243,7 @@ open class ObjectSetFragment :
             )
         }
 
-        gridContainer.setOnScrollChangeListener { _, scrollX, _, _, _ ->
+        binding.gridContainer.root.setOnScrollChangeListener { _, scrollX, _, _, _ ->
             val translationX = scrollX.toFloat()
             viewerGridAdapter.recordNamePositionX = translationX
             rvRows.children.forEach { child ->
@@ -252,7 +253,7 @@ open class ObjectSetFragment :
     }
 
     private fun showBottomPanel() {
-        val animation = bottomPanel.animate().translationY(-bottomPanelTranslationDelta).apply {
+        val animation = binding.bottomPanel.root.animate().translationY(-bottomPanelTranslationDelta).apply {
             duration = BOTTOM_PANEL_ANIM_DURATION
             interpolator = AccelerateDecelerateInterpolator()
         }
@@ -260,7 +261,7 @@ open class ObjectSetFragment :
     }
 
     private fun hideBottomPanel() {
-        val animation = bottomPanel.animate().translationY(0f).apply {
+        val animation = binding.bottomPanel.root.animate().translationY(0f).apply {
             duration = BOTTOM_PANEL_ANIM_DURATION
             interpolator = AccelerateDecelerateInterpolator()
         }
@@ -291,8 +292,8 @@ open class ObjectSetFragment :
     }
 
     private fun setStatus(status: SyncStatus) {
-        topToolbar.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
-        val tvStatus = topToolbar.findViewById<TextView>(R.id.tvStatus)
+        binding.topToolbar.root.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
+        val tvStatus = binding.topToolbar.root.findViewById<TextView>(R.id.tvStatus)
         when (status) {
             SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
             SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
@@ -303,72 +304,80 @@ open class ObjectSetFragment :
     }
 
     private fun observeGrid(viewer: Viewer) {
-        dataViewHeader.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer.title
+        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer.title
         when (viewer) {
             is Viewer.GridView -> {
-                unsupportedViewError.gone()
-                unsupportedViewError.text = null
-                galleryView.clear()
-                galleryView.gone()
-                listView.gone()
-                listView.setViews(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.clear()
+                    galleryView.gone()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
             }
             is Viewer.GalleryView -> {
-                unsupportedViewError.gone()
-                unsupportedViewError.text = null
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
-                listView.gone()
-                listView.setViews(emptyList())
-                galleryView.visible()
-                galleryView.setViews(
-                    views = viewer.items,
-                    largeCards = viewer.largeCards
-                )
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    galleryView.visible()
+                    galleryView.setViews(
+                        views = viewer.items,
+                        largeCards = viewer.largeCards
+                    )
+                }
             }
             is Viewer.ListView -> {
-                unsupportedViewError.gone()
-                unsupportedViewError.text = null
-                galleryView.gone()
-                galleryView.clear()
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
-                listView.visible()
-                listView.setViews(viewer.items)
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.visible()
+                    listView.setViews(viewer.items)
+                }
             }
             is Viewer.Unsupported -> {
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
-                galleryView.gone()
-                galleryView.clear()
-                listView.gone()
-                listView.setViews(emptyList())
-                unsupportedViewError.visible()
-                unsupportedViewError.text = viewer.error
+                with(binding) {
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    unsupportedViewError.visible()
+                    unsupportedViewError.text = viewer.error
+                }
             }
         }
     }
 
     private fun bindHeader(title: BlockView.Title.Basic) {
         this.title.setText(title.text)
-        topToolbar.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
+        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = title.text
 
-        objectHeader.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
+        binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
             if (title.emoji != null) visible() else gone()
             setOnClickListener { vm.onIconClicked() }
         }
 
-        objectHeader.findViewById<ViewGroup>(R.id.docImageIconContainer).apply {
+        binding.objectHeader.root.findViewById<ViewGroup>(R.id.docImageIconContainer).apply {
             if (title.image != null) visible() else gone()
             setOnClickListener { vm.onIconClicked() }
         }
 
-        objectHeader.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
+        binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
 
         if (title.image != null) {
-            objectHeader.findViewById<ImageView>(R.id.imageIcon).apply {
+            binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
                 Glide
                     .with(this)
                     .load(title.image)
@@ -376,7 +385,7 @@ open class ObjectSetFragment :
                     .into(this)
             }
         } else {
-            objectHeader.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
+            binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
         }
 
         setCover(
@@ -391,8 +400,8 @@ open class ObjectSetFragment :
         coverImage: String?,
         coverGradient: String?
     ) {
-        val ivCover = objectHeader.findViewById<ImageView>(R.id.cover)
-        val container = objectHeader.findViewById<FrameLayout>(R.id.coverAndIconContainer)
+        val ivCover = binding.objectHeader.root.findViewById<ImageView>(R.id.cover)
+        val container = binding.objectHeader.root.findViewById<FrameLayout>(R.id.coverAndIconContainer)
         ivCover.setOnClickListener { vm.onCoverClicked() }
         when {
             coverColor != null -> {
@@ -455,7 +464,7 @@ open class ObjectSetFragment :
         topToolbarStatusContainer.apply {
             setBackgroundResource(R.drawable.rect_object_menu_button_default)
         }
-        if (root.currentState == R.id.start) {
+        if (binding.root.currentState == R.id.start) {
             topToolbarStatusText.setTextColor(Color.WHITE)
             topToolbarThreeDotsIcon.apply {
                 imageTintList = ColorStateList.valueOf(Color.WHITE)
@@ -640,7 +649,7 @@ open class ObjectSetFragment :
                 title.enableReadMode()
                 topToolbarStatusText.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
-                topToolbar.findViewById<ImageView>(R.id.ivThreeDots).apply {
+                binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {
                     imageTintList = null
                 }
                 topToolbarThreeDotsButton.apply {
@@ -661,20 +670,20 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
         jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
-        jobs += lifecycleScope.subscribe(vm.error) { tvError.text = it }
+        jobs += lifecycleScope.subscribe(vm.error) { binding.tvError.text = it }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
-            paginatorToolbar.set(count = count, index = index)
+            binding.paginatorToolbar.set(count = count, index = index)
             if (count > 1) {
-                paginatorToolbar.visible()
+                binding.paginatorToolbar.visible()
             } else {
-                paginatorToolbar.gone()
+                binding.paginatorToolbar.gone()
             }
         }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading ->
             if (isLoading) {
-                dvProgressBar.show()
+                binding.dvProgressBar.show()
             } else {
-                dvProgressBar.hide()
+                binding.dvProgressBar.hide()
             }
         }
         vm.onStart(ctx)
@@ -758,6 +767,13 @@ open class ObjectSetFragment :
     override fun releaseDependencies() {
         componentManager().objectSetComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectSetBinding = FragmentObjectSetBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"

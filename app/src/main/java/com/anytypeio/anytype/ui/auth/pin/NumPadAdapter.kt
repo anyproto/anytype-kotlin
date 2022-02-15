@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.R
+import com.anytypeio.anytype.databinding.ItemNumPadEmptyBinding
+import com.anytypeio.anytype.databinding.ItemNumPadNumberBinding
+import com.anytypeio.anytype.databinding.ItemNumPadRemoveBinding
 import com.anytypeio.anytype.presentation.auth.pin.NumPadView
 import com.anytypeio.anytype.presentation.auth.pin.NumPadView.Companion.EMPTY
 import com.anytypeio.anytype.presentation.auth.pin.NumPadView.Companion.NUMBER
 import com.anytypeio.anytype.presentation.auth.pin.NumPadView.Companion.REMOVE
-import kotlinx.android.synthetic.main.item_num_pad_number.view.*
-import kotlinx.android.synthetic.main.item_num_pad_remove.view.*
 
 class NumPadAdapter(
     private val views: List<NumPadView> = initialData(),
@@ -23,16 +23,13 @@ class NumPadAdapter(
 
         return when (viewType) {
             NUMBER -> ViewHolder.NumberViewHolder(
-                view = inflater
-                    .inflate(R.layout.item_num_pad_number, parent, false)
+                ItemNumPadNumberBinding.inflate(inflater, parent, false)
             )
             REMOVE -> ViewHolder.RemoveViewHolder(
-                view = inflater
-                    .inflate(R.layout.item_num_pad_remove, parent, false)
+                ItemNumPadRemoveBinding.inflate(inflater, parent, false)
             )
             EMPTY -> ViewHolder.EmptyViewHolder(
-                view = inflater
-                    .inflate(R.layout.item_num_pad_empty, parent, false)
+                ItemNumPadEmptyBinding.inflate(inflater, parent, false)
             )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
@@ -55,14 +52,17 @@ class NumPadAdapter(
                     onRemoveClicked = onRemoveClicked
                 )
             }
+            is ViewHolder.EmptyViewHolder -> {
+                // Do nothing.
+            }
         }
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class NumberViewHolder(view: View) : ViewHolder(view) {
+        class NumberViewHolder(val binding: ItemNumPadNumberBinding) : ViewHolder(binding.root) {
 
-            private val number = itemView.number
+            private val number = binding.number
 
             fun bind(
                 view: NumPadView.NumberView,
@@ -74,13 +74,13 @@ class NumPadAdapter(
 
         }
 
-        class RemoveViewHolder(view: View) : ViewHolder(view) {
+        class RemoveViewHolder(val binding: ItemNumPadRemoveBinding) : ViewHolder(binding.root) {
             fun bind(onRemoveClicked: () -> Unit) {
-                itemView.remove.setOnClickListener { onRemoveClicked() }
+                binding.remove.setOnClickListener { onRemoveClicked() }
             }
         }
 
-        class EmptyViewHolder(view: View) : ViewHolder(view)
+        class EmptyViewHolder(val binding: ItemNumPadEmptyBinding) : ViewHolder(binding.root)
     }
 
     companion object {

@@ -19,13 +19,14 @@ import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
+import com.anytypeio.anytype.databinding.FragmentManageViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
-import kotlinx.android.synthetic.main.fragment_manage_viewer.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ManageViewerFragment : BaseBottomSheetFragment(), OnStartDragListener {
+class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding>(),
+    OnStartDragListener {
 
     private val manageViewerAdapter by lazy {
         ManageViewerDoneAdapter(
@@ -56,20 +57,14 @@ class ManageViewerFragment : BaseBottomSheetFragment(), OnStartDragListener {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_manage_viewer, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataViewViewerRecycler.apply {
+        binding.dataViewViewerRecycler.apply {
             layoutManager = LinearLayoutManager(context)
         }
         with(lifecycleScope) {
-            subscribe(btnEditViewers.clicks()) { vm.onButtonEditClicked() }
-            subscribe(btnAddNewViewer.clicks()) { vm.onButtonAddClicked() }
+            subscribe(binding.btnEditViewers.clicks()) { vm.onButtonEditClicked() }
+            subscribe(binding.btnAddNewViewer.clicks()) { vm.onButtonAddClicked() }
         }
     }
 
@@ -89,21 +84,25 @@ class ManageViewerFragment : BaseBottomSheetFragment(), OnStartDragListener {
             }
             jobs += subscribe(vm.isEditEnabled) { isEditEnabled ->
                 if (isEditEnabled) {
-                    btnEditViewers.setText(R.string.done)
-                    btnAddNewViewer.invisible()
-                    dataViewViewerRecycler.apply {
-                        adapter = manageViewerEditAdapter
-                        //ToDo temporary blocked, because of missing middleware command
-                        //dndItemTouchHelper.attachToRecyclerView(this)
+                    with(binding) {
+                        btnEditViewers.setText(R.string.done)
+                        btnAddNewViewer.invisible()
+                        dataViewViewerRecycler.apply {
+                            adapter = manageViewerEditAdapter
+                            //ToDo temporary blocked, because of missing middleware command
+                            //dndItemTouchHelper.attachToRecyclerView(this)
 
+                        }
                     }
                 } else {
-                    btnEditViewers.setText(R.string.edit)
-                    btnAddNewViewer.visible()
-                    dataViewViewerRecycler.apply {
-                        adapter = manageViewerAdapter
-                        //ToDo temporary blocked, because of missing middleware command
-                        //dndItemTouchHelper.attachToRecyclerView(null)
+                    with(binding) {
+                        btnEditViewers.setText(R.string.edit)
+                        btnAddNewViewer.visible()
+                        dataViewViewerRecycler.apply {
+                            adapter = manageViewerAdapter
+                            //ToDo temporary blocked, because of missing middleware command
+                            //dndItemTouchHelper.attachToRecyclerView(null)
+                        }
                     }
                 }
             }
@@ -137,6 +136,13 @@ class ManageViewerFragment : BaseBottomSheetFragment(), OnStartDragListener {
     override fun releaseDependencies() {
         componentManager().manageViewerComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentManageViewerBinding = FragmentManageViewerBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id, dataview: Id): ManageViewerFragment = ManageViewerFragment().apply {

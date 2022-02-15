@@ -17,16 +17,18 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterInputFieldValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.extension.getTextValue
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.sets.modals.PickFilterConditionFragment
-import kotlinx.android.synthetic.main.fragment_create_or_update_filter_input_field_value.*
 import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
-open class ModifyFilterFromInputFieldValueFragment : BaseBottomSheetFragment(), UpdateConditionActionReceiver {
+open class ModifyFilterFromInputFieldValueFragment :
+    BaseBottomSheetFragment<FragmentCreateOrUpdateFilterInputFieldValueBinding>(),
+    UpdateConditionActionReceiver {
 
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
@@ -37,21 +39,17 @@ open class ModifyFilterFromInputFieldValueFragment : BaseBottomSheetFragment(), 
 
     private val vm: FilterViewModel by viewModels { factory }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_create_or_update_filter_input_field_value, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnBottomAction.setText(R.string.apply)
+        binding.btnBottomAction.setText(R.string.apply)
         with(lifecycleScope) {
-            subscribe(btnBottomAction.clicks()) {
+            subscribe(binding.btnBottomAction.clicks()) {
                 vm.onModifyApplyClicked(
                     ctx = ctx,
-                    input = enterTextValueInputField.text.toString()
+                    input = binding.enterTextValueInputField.text.toString()
                 )
             }
-            subscribe(tvFilterCondition.clicks()) {
+            subscribe(binding.tvFilterCondition.clicks()) {
                 vm.onConditionClicked()
             }
         }
@@ -59,18 +57,18 @@ open class ModifyFilterFromInputFieldValueFragment : BaseBottomSheetFragment(), 
 
     private fun setupJobs() {
         jobs += lifecycleScope.subscribe(vm.relationState.filterNotNull()) {
-            tvRelationName.text = it.title
-            ivRelationIcon.setImageResource(it.format.relationIcon(true))
-            enterTextValueInputField.setInputTypeBaseOnFormat(it.format)
+            binding.tvRelationName.text = it.title
+            binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
+            binding.enterTextValueInputField.setInputTypeBaseOnFormat(it.format)
         }
         jobs += lifecycleScope.subscribe(vm.filterValueState) { value ->
-            enterTextValueInputField.setText(value.getTextValue())
+            binding.enterTextValueInputField.setText(value.getTextValue())
         }
         jobs += lifecycleScope.subscribe(vm.isCompleted) { isCompleted ->
             if (isCompleted) dismiss()
         }
         jobs += lifecycleScope.subscribe(vm.conditionState) {
-            tvFilterCondition.text = it?.condition?.title
+            binding.tvFilterCondition.text = it?.condition?.title
         }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
     }
@@ -86,10 +84,10 @@ open class ModifyFilterFromInputFieldValueFragment : BaseBottomSheetFragment(), 
                 ).show(childFragmentManager, null)
             }
             FilterViewModel.Commands.HideInput -> {
-                enterTextValueInputField.gone()
+                binding.enterTextValueInputField.gone()
             }
             FilterViewModel.Commands.ShowInput -> {
-                enterTextValueInputField.visible()
+                binding.enterTextValueInputField.visible()
             }
             else -> {}
         }
@@ -118,10 +116,18 @@ open class ModifyFilterFromInputFieldValueFragment : BaseBottomSheetFragment(), 
         componentManager().modifyFilterComponent.release(ctx)
     }
 
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateOrUpdateFilterInputFieldValueBinding = FragmentCreateOrUpdateFilterInputFieldValueBinding.inflate(
+        inflater, container, false
+    )
+
     companion object {
-        fun new(ctx: Id, relation: Id, index: Int) = ModifyFilterFromInputFieldValueFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, IDX_KEY to index)
-        }
+        fun new(ctx: Id, relation: Id, index: Int) =
+            ModifyFilterFromInputFieldValueFragment().apply {
+                arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, IDX_KEY to index)
+            }
 
         const val CTX_KEY = "arg.modify-filter-relation.ctx"
         const val RELATION_KEY = "arg.modify-filter-relation.relation"

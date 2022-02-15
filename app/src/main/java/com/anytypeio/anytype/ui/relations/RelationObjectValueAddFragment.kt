@@ -14,17 +14,17 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.databinding.FragmentRelationObjectValueAddBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ObjectValueAddCommand
 import com.anytypeio.anytype.presentation.relations.ObjectValueAddView
 import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_relation_object_value_add.*
 import javax.inject.Inject
 
-class RelationObjectValueAddFragment : BaseDialogFragment() {
+class RelationObjectValueAddFragment : BaseDialogFragment<FragmentRelationObjectValueAddBinding>() {
 
-    private val behavior get() = BottomSheetBehavior.from(sheet)
+    private val behavior get() = BottomSheetBehavior.from(binding.sheet)
 
     @Inject
     lateinit var factory: RelationObjectValueAddViewModel.Factory
@@ -49,8 +49,10 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_object_value_add, container, false).apply {
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    ): View? {
+        return super.onCreateView(inflater, container, savedInstanceState).apply {
+            dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,15 +60,15 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
         with(lifecycleScope) {
             subscribe(view.clicks()) { dismiss() }
         }
-        rvObjects.layoutManager = LinearLayoutManager(requireContext())
-        rvObjects.adapter = adapter
-        btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
+        binding.rvObjects.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvObjects.adapter = adapter
+        binding.btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
         setupBottomSheet()
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
@@ -83,11 +85,11 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
                     }
 
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        if (btnAddContainer == null) return
+                        if (binding.btnAddContainer == null) return
                         if (slideOffset < 0)
-                            btnAddContainer.gone()
+                            binding.btnAddContainer.gone()
                         else
-                            btnAddContainer.visible()
+                            binding.btnAddContainer.visible()
                     }
                 }
             )
@@ -114,7 +116,7 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
 
     private fun observeState(state: ObjectValueAddView) {
         adapter.update(state.objects)
-        tvObjectsCount.text = state.count
+        binding.tvObjectsCount.text = state.count
     }
 
     private fun observeCommands(command: ObjectValueAddCommand) {
@@ -161,6 +163,13 @@ class RelationObjectValueAddFragment : BaseDialogFragment() {
             componentManager().addObjectSetObjectRelationObjectValueComponent.release(ctx)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationObjectValueAddBinding = FragmentRelationObjectValueAddBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

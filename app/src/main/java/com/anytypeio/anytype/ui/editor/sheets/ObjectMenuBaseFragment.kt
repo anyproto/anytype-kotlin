@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
@@ -28,19 +29,18 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
-import kotlinx.android.synthetic.main.fragment_object_menu.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
+abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMenuBinding>() {
 
     protected val ctx get() = arg<String>(CTX_KEY)
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
     private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
 
-    abstract val vm : ObjectMenuViewModelBase
+    abstract val vm: ObjectMenuViewModelBase
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
@@ -66,41 +66,35 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_object_menu, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        optionHistory
+        binding.optionHistory
             .clicks()
             .onEach { vm.onHistoryClicked() }
             .launchIn(lifecycleScope)
 
-        optionLayout
+        binding.optionLayout
             .clicks()
             .onEach { vm.onLayoutClicked(ctx) }
             .launchIn(lifecycleScope)
 
-        optionIcon
+        binding.optionIcon
             .clicks()
             .onEach { vm.onIconClicked(ctx) }
             .launchIn(lifecycleScope)
 
-        optionRelations
+        binding.optionRelations
             .clicks()
             .onEach { vm.onRelationsClicked() }
             .launchIn(lifecycleScope)
 
-        optionCover
+        binding.optionCover
             .clicks()
             .onEach { vm.onCoverClicked(ctx) }
             .launchIn(lifecycleScope)
 
-        rvActions.apply {
+        binding.rvActions.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = actionAdapter
             addItemDecoration(
@@ -183,6 +177,13 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment() {
             }
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectMenuBinding = FragmentObjectMenuBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.doc-menu-bottom-sheet.ctx"

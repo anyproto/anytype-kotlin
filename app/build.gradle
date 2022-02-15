@@ -1,10 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'com.google.firebase.crashlytics'
-
 
 apply from: "$rootDir/versioning.gradle"
 
@@ -111,18 +109,17 @@ android {
         jvmTarget = JavaVersion.VERSION_11
     }
 
-    androidExtensions {
-        experimental = true
-    }
     lint {
         abortOnError false
         disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder'
         ignoreWarnings true
         quiet true
     }
+
     buildFeatures {
         viewBinding true
     }
+
     splits {
         // Configures multiple APKs based on ABI.
         abi {

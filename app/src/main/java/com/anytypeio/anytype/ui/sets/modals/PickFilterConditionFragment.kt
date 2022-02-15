@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.ui.sets.modals
 
-import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -15,16 +15,17 @@ import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentSelectFilterConditionBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.PickFilterConditionViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.sets.modals.filter.UpdateConditionActionReceiver
-import kotlinx.android.synthetic.main.fragment_select_filter_condition.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PickFilterConditionFragment : BaseBottomSheetFragment() {
+class PickFilterConditionFragment :
+    BaseBottomSheetFragment<FragmentSelectFilterConditionBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
     private val mode: Int get() = argInt(ARG_MODE)
@@ -37,25 +38,17 @@ class PickFilterConditionFragment : BaseBottomSheetFragment() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_select_filter_condition, container, false)
-    }
-
     override fun onStart() {
         super.onStart()
         with(lifecycleScope) {
             jobs += subscribe(isDismissed) { isDismissed -> if (isDismissed) dismiss() }
             jobs += subscribe(vm.views) { screenState ->
-                recycler.adapter = PickFilterConditionAdapter(
+                binding.recycler.adapter = PickFilterConditionAdapter(
                     picked = screenState.picked,
                     conditions = screenState.conditions,
                     click = this@PickFilterConditionFragment::click
                 )
-                recycler.addItemDecoration(
+                binding.recycler.addItemDecoration(
                     DividerVerticalItemDecoration(
                         divider = requireContext().drawable(R.drawable.divider_relations),
                         isShowInLastItem = false
@@ -89,6 +82,12 @@ class PickFilterConditionFragment : BaseBottomSheetFragment() {
         }
     }
 
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSelectFilterConditionBinding = FragmentSelectFilterConditionBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

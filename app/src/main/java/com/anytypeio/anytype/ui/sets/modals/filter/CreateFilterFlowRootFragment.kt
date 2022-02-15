@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.sets.modals.filter
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
@@ -11,20 +10,18 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentViewerBottomSheetRootBinding
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterFlowViewModel
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterFlowViewModel.Step
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 
-class CreateFilterFlowRootFragment : BaseBottomSheetFragment(), CreateFilterFlow {
+class CreateFilterFlowRootFragment :
+    BaseBottomSheetFragment<FragmentViewerBottomSheetRootBinding>(), CreateFilterFlow {
 
     private val ctx: String get() = arg(CTX_KEY)
 
     val vm by lazy { CreateFilterFlowViewModel() }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_viewer_bottom_sheet_root, container, false)
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -78,6 +75,13 @@ class CreateFilterFlowRootFragment : BaseBottomSheetFragment(), CreateFilterFlow
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentViewerBottomSheetRootBinding = FragmentViewerBottomSheetRootBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id): CreateFilterFlowRootFragment = CreateFilterFlowRootFragment().apply {

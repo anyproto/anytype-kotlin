@@ -7,20 +7,14 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import kotlinx.android.synthetic.main.alert_mnemonic_reminder.*
+import com.anytypeio.anytype.databinding.AlertMnemonicReminderBinding
 
-class MnemonicReminderDialog : BaseBottomSheetFragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) : View? = inflater.inflate(R.layout.alert_mnemonic_reminder, container, false)
+class MnemonicReminderDialog : BaseBottomSheetFragment<AlertMnemonicReminderBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnClose.setOnClickListener { dismiss() }
-        btnSettings.setOnClickListener {
+        binding.btnClose.setOnClickListener { dismiss() }
+        binding.btnSettings.setOnClickListener {
             dismiss()
             findNavController().navigate(R.id.keychainDialog)
         }
@@ -28,4 +22,11 @@ class MnemonicReminderDialog : BaseBottomSheetFragment() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): AlertMnemonicReminderBinding = AlertMnemonicReminderBinding.inflate(
+        inflater, container, false
+    )
 }

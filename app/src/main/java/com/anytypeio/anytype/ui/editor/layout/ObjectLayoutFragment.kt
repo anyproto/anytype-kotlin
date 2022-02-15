@@ -8,24 +8,22 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.common.FooterAdapter
 import com.anytypeio.anytype.core_ui.features.objects.ObjectLayoutAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentObjectLayoutBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.layout.ObjectLayoutViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
-import kotlinx.android.synthetic.main.fragment_object_layout.*
 import javax.inject.Inject
 
-class ObjectLayoutFragment : BaseBottomSheetFragment() {
+class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding>() {
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
 
@@ -41,15 +39,9 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_object_layout, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(rvLayouts) {
+        with(binding.rvLayouts) {
             layoutManager = LinearLayoutManager(context)
             adapter = adapterLayouts
             addItemDecoration(
@@ -85,12 +77,20 @@ class ObjectLayoutFragment : BaseBottomSheetFragment() {
         componentManager().objectLayoutComponent.release(ctx)
     }
 
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectLayoutBinding = FragmentObjectLayoutBinding.inflate(
+        inflater, container, false
+    )
+
     companion object {
-        fun new(ctx: Id) : ObjectLayoutFragment = ObjectLayoutFragment().apply {
+        fun new(ctx: Id): ObjectLayoutFragment = ObjectLayoutFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID_KEY to ctx
             )
         }
+
         const val CONTEXT_ID_KEY = "arg.object-layout.ctx"
     }
 }

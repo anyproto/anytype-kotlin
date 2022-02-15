@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentRelationCreateFromScratchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
@@ -28,11 +29,11 @@ import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchFor
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.fragment_relation_create_from_scratch.*
 import java.io.Serializable
 import javax.inject.Inject
 
-abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment() {
+abstract class RelationCreateFromScratchBaseFragment :
+    BaseBottomSheetFragment<FragmentRelationCreateFromScratchBinding>() {
 
     abstract val vm: RelationCreateFromScratchBaseViewModel
 
@@ -53,8 +54,8 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? =
-        inflater.inflate(R.layout.fragment_relation_create_from_scratch, container, false).apply {
+    ): View? {
+        return super.onCreateView(inflater, container, savedInstanceState).apply {
             dialog?.setOnShowListener { dg ->
                 val bottomSheet = (dg as? BottomSheetDialog)?.findViewById<FrameLayout>(
                     com.google.android.material.R.id.design_bottom_sheet
@@ -66,11 +67,12 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
                 }
             }
         }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         nameInputAdapter.query = query
-        rvCreateRelationFromScratch.apply {
+        binding.rvCreateRelationFromScratch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = concatAdapter
             addItemDecoration(
@@ -79,12 +81,12 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
                 }
             )
         }
-        btnAction.setOnClickListener { onCreateRelationClicked() }
+        binding.btnAction.setOnClickListener { onCreateRelationClicked() }
 
 
         with(lifecycleScope) {
             subscribe(vm.views) { relationAdapter.submitList(it) }
-            subscribe(vm.isActionButtonEnabled) { btnAction.isEnabled = it }
+            subscribe(vm.isActionButtonEnabled) { binding.btnAction.isEnabled = it }
             subscribe(vm.isDismissed) { isDismissed ->
                 if (isDismissed) {
                     // Refact parent dismissing
@@ -99,6 +101,13 @@ abstract class RelationCreateFromScratchBaseFragment : BaseBottomSheetFragment()
     }
 
     abstract fun onCreateRelationClicked()
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationCreateFromScratchBinding = FragmentRelationCreateFromScratchBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.relation-create-from-scratch.ctx"

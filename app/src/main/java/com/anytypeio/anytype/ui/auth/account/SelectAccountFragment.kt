@@ -1,21 +1,23 @@
 package com.anytypeio.anytype.ui.auth.account
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.databinding.FragmentSelectAccountBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModelFactory
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import kotlinx.android.synthetic.main.fragment_select_account.*
 import javax.inject.Inject
 
-class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_account) {
+class SelectAccountFragment : NavigationFragment<FragmentSelectAccountBinding>(R.layout.fragment_select_account) {
 
     @Inject
     lateinit var factory: SelectAccountViewModelFactory
@@ -32,7 +34,7 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileRecycler.apply {
+        binding.profileRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(
                 SpacingItemDecoration(
@@ -58,4 +60,11 @@ class SelectAccountFragment : NavigationFragment(R.layout.fragment_select_accoun
     override fun releaseDependencies() {
         componentManager().selectAccountComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSelectAccountBinding = FragmentSelectAccountBinding.inflate(
+        inflater, container, false
+    )
 }

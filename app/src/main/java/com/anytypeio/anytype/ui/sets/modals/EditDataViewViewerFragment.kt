@@ -14,12 +14,12 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentEditDataViewViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
-import kotlinx.android.synthetic.main.fragment_edit_data_view_viewer.*
 import javax.inject.Inject
 
-class EditDataViewViewerFragment : BaseBottomSheetFragment() {
+class EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerBinding>() {
 
     private val ctx: Id get() = arg(CTX_KEY)
     private val viewer: Id get() = arg(VIEWER_KEY)
@@ -28,25 +28,19 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
     lateinit var factory: EditDataViewViewerViewModel.Factory
     private val vm: EditDataViewViewerViewModel by viewModels { factory }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_edit_data_view_viewer, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(lifecycleScope) {
-            subscribe(viewerNameInput.textChanges()) { name ->
+            subscribe(binding.viewerNameInput.textChanges()) { name ->
                 vm.onViewerNameChanged(name = name.toString())
             }
-            subscribe(btnDone.clicks()) {
+            subscribe(binding.btnDone.clicks()) {
                 vm.onDoneClicked(ctx, viewer)
             }
-            subscribe(threeDotsButton.clicks()) { vm.onMenuClicked() }
-            subscribe(gridContainer.clicks()) { vm.onGridClicked() }
-            subscribe(galleryContainer.clicks()) { vm.onGalleryClicked() }
-            subscribe(listContainer.clicks()) { vm.onListClicked() }
+            subscribe(binding.threeDotsButton.clicks()) { vm.onMenuClicked() }
+            subscribe(binding.gridContainer.clicks()) { vm.onGridClicked() }
+            subscribe(binding.galleryContainer.clicks()) { vm.onGalleryClicked() }
+            subscribe(binding.listContainer.clicks()) { vm.onListClicked() }
         }
     }
 
@@ -55,7 +49,7 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
             jobs += subscribe(vm.viewState) { render(it) }
             jobs += subscribe(vm.isDismissed) { isDismissed ->
                 if (isDismissed) {
-                    viewerNameInput.apply {
+                    binding.viewerNameInput.apply {
                         clearFocus()
                         hideKeyboard()
                     }
@@ -63,13 +57,13 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
                 }
             }
             jobs += subscribe(vm.isLoading) { isLoading ->
-                if (isLoading) progressBar.visible() else progressBar.gone()
+                if (isLoading) binding.progressBar.visible() else binding.progressBar.gone()
             }
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.popupCommands) { cmd ->
                 DataViewEditViewPopupMenu(
                     requireContext(),
-                    threeDotsButton,
+                    binding.threeDotsButton,
                     cmd.isDeletionAllowed
                 ).apply {
                     setOnMenuItemClickListener { item ->
@@ -89,13 +83,15 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
     private fun render(state: EditDataViewViewerViewModel.ViewState) {
         when (state) {
             EditDataViewViewerViewModel.ViewState.Init -> {
-                viewerNameInput.text = null
-                isListChosen.invisible()
-                isTableChosen.invisible()
-                isGalleryChosen.invisible()
+                with(binding) {
+                    viewerNameInput.text = null
+                    isListChosen.invisible()
+                    isTableChosen.invisible()
+                    isGalleryChosen.invisible()
+                }
             }
             is EditDataViewViewerViewModel.ViewState.Name -> {
-                viewerNameInput.setText(state.name)
+                binding.viewerNameInput.setText(state.name)
             }
             EditDataViewViewerViewModel.ViewState.Completed -> {
                 dismiss()
@@ -104,20 +100,26 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
                 toast(state.msg)
             }
             EditDataViewViewerViewModel.ViewState.Gallery -> {
-                isListChosen.invisible()
-                isTableChosen.invisible()
-                isGalleryChosen.visible()
+                with(binding) {
+                    isListChosen.invisible()
+                    isTableChosen.invisible()
+                    isGalleryChosen.visible()
+                }
             }
             EditDataViewViewerViewModel.ViewState.Grid -> {
-                isListChosen.invisible()
-                isTableChosen.visible()
-                isGalleryChosen.invisible()
+                with(binding) {
+                    isListChosen.invisible()
+                    isTableChosen.visible()
+                    isGalleryChosen.invisible()
+                }
             }
 
             EditDataViewViewerViewModel.ViewState.List -> {
-                isListChosen.visible()
-                isTableChosen.invisible()
-                isGalleryChosen.invisible()
+                with(binding) {
+                    isListChosen.visible()
+                    isTableChosen.invisible()
+                    isGalleryChosen.invisible()
+                }
             }
             EditDataViewViewerViewModel.ViewState.Kanban -> {}
         }
@@ -130,6 +132,13 @@ class EditDataViewViewerFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().editDataViewViewerComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentEditDataViewViewerBinding = FragmentEditDataViewViewerBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.edit-data-view-viewer.ctx"

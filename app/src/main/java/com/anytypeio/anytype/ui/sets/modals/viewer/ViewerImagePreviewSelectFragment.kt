@@ -7,17 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.sets.viewer.ViewerCoverAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentViewerImagePreviewSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerImagePreviewSelectViewModel
-import kotlinx.android.synthetic.main.fragment_viewer_image_preview_select.*
 import javax.inject.Inject
 
-class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment() {
+class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerImagePreviewSelectBinding>() {
 
     @Inject
     lateinit var factory: ViewerImagePreviewSelectViewModel.Factory
@@ -31,15 +30,9 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_viewer_image_preview_select, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewrCoverRecycler.apply {
+        binding.viewrCoverRecycler.apply {
             adapter = viewerCoverAdapter
             layoutManager = LinearLayoutManager(context)
         }
@@ -59,6 +52,13 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().viewerImagePreviewSelectComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentViewerImagePreviewSelectBinding = FragmentViewerImagePreviewSelectBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.viewer-cover-select.ctx"

@@ -9,23 +9,23 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.DialogCreateBookmarkBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.bookmark.CreateBookmarkViewModel
 import com.anytypeio.anytype.presentation.editor.bookmark.CreateBookmarkViewModel.ViewState
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.dialog_create_bookmark.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
+class CreateBookmarkFragment : BaseBottomSheetFragment<DialogCreateBookmarkBinding>(),
+    Observer<ViewState> {
 
     private val target: String
         get() = requireArguments()
@@ -49,12 +49,6 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_create_bookmark, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.setOnShowListener { dg ->
@@ -63,15 +57,17 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
             )
             bottomSheet?.setBackgroundColor(requireContext().color(android.R.color.transparent))
         }
-        cancelBookmarkButton.setOnClickListener {
+
+        binding.cancelBookmarkButton.setOnClickListener {
             it.hideKeyboard()
             this.dismiss()
         }
-        createBookmarkButton
+
+        binding.createBookmarkButton
             .clicks()
             .onEach {
                 vm.onCreateBookmarkClicked(
-                    url = urlInput.text.toString()
+                    url = binding.urlInput.text.toString()
                 )
             }
             .launchIn(lifecycleScope)
@@ -104,4 +100,11 @@ class CreateBookmarkFragment : BaseBottomSheetFragment(), Observer<ViewState> {
     override fun releaseDependencies() {
         componentManager().createBookmarkSubComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): DialogCreateBookmarkBinding = DialogCreateBookmarkBinding.inflate(
+        inflater, container, false
+    )
 }

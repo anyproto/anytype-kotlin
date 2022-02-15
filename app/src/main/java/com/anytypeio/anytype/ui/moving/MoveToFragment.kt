@@ -21,17 +21,17 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.moving.MoveToView
 import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_object_search.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class MoveToFragment : BaseBottomSheetFragment() {
+class MoveToFragment : BaseBottomSheetFragment<FragmentObjectSearchBinding>() {
 
     private val vm by viewModels<MoveToViewModel> { factory }
 
@@ -52,17 +52,11 @@ class MoveToFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_object_search, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupFullHeight()
         setTransparent()
-        BottomSheetBehavior.from(sheet).apply {
+        BottomSheetBehavior.from(binding.sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
             skipCollapsed = true
@@ -77,8 +71,8 @@ class MoveToFragment : BaseBottomSheetFragment() {
                 }
             )
         }
-        clearSearchText = searchView.findViewById(R.id.clearSearchText)
-        filterInputField = searchView.findViewById(R.id.filterInputField)
+        clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
+        filterInputField = binding.searchView.root.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
         filterInputField.imeOptions = EditorInfo.IME_ACTION_DONE
         filterInputField.setOnEditorActionListener { _, actionId, _ ->
@@ -108,44 +102,57 @@ class MoveToFragment : BaseBottomSheetFragment() {
     private fun observe(state: MoveToView) {
         when (state) {
             MoveToView.Loading -> {
-                recyclerView.invisible()
-                tvScreenStateMessage.invisible()
-                tvScreenStateSubMessage.invisible()
-                progressBar.visible()
+                with(binding) {
+                    recyclerView.invisible()
+                    tvScreenStateMessage.invisible()
+                    tvScreenStateSubMessage.invisible()
+                    progressBar.visible()
+                }
             }
             is MoveToView.Success -> {
-                progressBar.invisible()
-                tvScreenStateMessage.invisible()
-                tvScreenStateSubMessage.invisible()
-                recyclerView.visible()
-                moveToAdapter.submitList(state.objects)
+                with(binding) {
+                    progressBar.invisible()
+                    tvScreenStateMessage.invisible()
+                    tvScreenStateSubMessage.invisible()
+                    recyclerView.visible()
+                    moveToAdapter.submitList(state.objects)
+                }
             }
             MoveToView.EmptyPages -> {
-                progressBar.invisible()
-                recyclerView.invisible()
-                tvScreenStateMessage.visible()
-                tvScreenStateMessage.text = getString(R.string.search_empty_pages)
-                tvScreenStateSubMessage.invisible()
+                with(binding) {
+                    progressBar.invisible()
+                    recyclerView.invisible()
+                    tvScreenStateMessage.visible()
+                    tvScreenStateMessage.text = getString(R.string.search_empty_pages)
+                    tvScreenStateSubMessage.invisible()
+                }
             }
             is MoveToView.NoResults -> {
-                progressBar.invisible()
-                recyclerView.invisible()
-                tvScreenStateMessage.visible()
-                tvScreenStateMessage.text = getString(R.string.search_no_results, state.searchText)
-                tvScreenStateSubMessage.visible()
+                with(binding) {
+                    progressBar.invisible()
+                    recyclerView.invisible()
+                    tvScreenStateMessage.visible()
+                    tvScreenStateMessage.text =
+                        getString(R.string.search_no_results, state.searchText)
+                    tvScreenStateSubMessage.visible()
+                }
             }
             is MoveToView.Error -> {
-                progressBar.invisible()
-                recyclerView.invisible()
-                tvScreenStateMessage.visible()
-                tvScreenStateMessage.text = state.error
-                tvScreenStateSubMessage.invisible()
+                with(binding) {
+                    progressBar.invisible()
+                    recyclerView.invisible()
+                    tvScreenStateMessage.visible()
+                    tvScreenStateMessage.text = state.error
+                    tvScreenStateSubMessage.invisible()
+                }
             }
             MoveToView.Init -> {
-                recyclerView.invisible()
-                tvScreenStateMessage.invisible()
-                tvScreenStateSubMessage.invisible()
-                progressBar.invisible()
+                with(binding) {
+                    recyclerView.invisible()
+                    tvScreenStateMessage.invisible()
+                    tvScreenStateSubMessage.invisible()
+                    progressBar.invisible()
+                }
             }
             else -> Timber.d("Skipping state: $state")
         }
@@ -181,13 +188,13 @@ class MoveToFragment : BaseBottomSheetFragment() {
     }
 
     private fun initialize() {
-        with(tvScreenTitle) {
+        with(binding.tvScreenTitle) {
             text = getString(R.string.move_to)
             visible()
         }
-        recyclerView.invisible()
-        tvScreenStateMessage.invisible()
-        progressBar.invisible()
+        binding.recyclerView.invisible()
+        binding.tvScreenStateMessage.invisible()
+        binding.progressBar.invisible()
         clearSearchText.setOnClickListener {
             filterInputField.setText(EMPTY_FILTER_TEXT)
             clearSearchText.invisible()
@@ -202,7 +209,7 @@ class MoveToFragment : BaseBottomSheetFragment() {
                 clearSearchText.visible()
             }
         }
-        with(recyclerView) {
+        with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = moveToAdapter
             addItemDecoration(
@@ -214,14 +221,14 @@ class MoveToFragment : BaseBottomSheetFragment() {
     }
 
     private fun setupFullHeight() {
-        val lp = (root.layoutParams as FrameLayout.LayoutParams)
+        val lp = (binding.root.layoutParams as FrameLayout.LayoutParams)
         lp.height =
             Resources.getSystem().displayMetrics.heightPixels - requireActivity().statusBarHeight
-        root.layoutParams = lp
+        binding.root.layoutParams = lp
     }
 
     private fun setTransparent() {
-        with(root) {
+        with(binding.root) {
             background = null
             (parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
         }
@@ -234,6 +241,13 @@ class MoveToFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().moveToComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectSearchBinding = FragmentObjectSearchBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val ARG_BLOCKS = "arg.move_to.blocks"

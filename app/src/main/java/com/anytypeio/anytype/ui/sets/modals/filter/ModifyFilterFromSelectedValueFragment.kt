@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -25,13 +26,13 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment.DatePickerReceiver
 import com.anytypeio.anytype.ui.sets.modals.PickFilterConditionFragment
-import kotlinx.android.synthetic.main.fragment_create_or_update_filter.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
+open class ModifyFilterFromSelectedValueFragment :
+    BaseBottomSheetFragment<FragmentCreateOrUpdateFilterBinding>(),
     UpdateConditionActionReceiver, DatePickerReceiver {
 
     private val ctx: String get() = arg(CTX_KEY)
@@ -52,23 +53,27 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_create_or_update_filter, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnBottomAction.setText(R.string.apply)
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        binding.btnBottomAction.setText(R.string.apply)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
         }
-        rvViewerFilterRecycler.apply {
+        binding.rvViewerFilterRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = createFilterAdapter
             addItemDecoration(
@@ -78,24 +83,24 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
             )
         }
         with(lifecycleScope) {
-            subscribe(tvFilterCondition.clicks()) {
+            subscribe(binding.tvFilterCondition.clicks()) {
                 vm.onConditionClicked()
             }
-            subscribe(btnBottomAction.clicks()) {
+            subscribe(binding.btnBottomAction.clicks()) {
                 vm.onModifyApplyClicked(ctx = ctx)
             }
             subscribe(vm.relationState.filterNotNull()) {
                 if (it.format == ColumnView.Format.DATE) {
-                    searchBar.gone()
-                    tvOptionCount.gone()
+                    binding.searchBar.root.gone()
+                    binding.tvOptionCount.gone()
                 }
-                tvRelationName.text = it.title
-                ivRelationIcon.setImageResource(it.format.relationIcon(true))
+                binding.tvRelationName.text = it.title
+                binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
             }
-            subscribe(vm.optionCountState) { tvOptionCount.text = it.toString() }
+            subscribe(vm.optionCountState) { binding.tvOptionCount.text = it.toString() }
             subscribe(vm.isCompleted) { isCompleted -> if (isCompleted) dismiss() }
             subscribe(vm.conditionState) {
-                tvFilterCondition.text = it?.condition?.title
+                binding.tvFilterCondition.text = it?.condition?.title
             }
             subscribe(searchRelationInput.textChanges()) {
                 if (it.isEmpty()) {
@@ -132,10 +137,10 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
                 )
                     .show(childFragmentManager, null)
             }
-            FilterViewModel.Commands.ShowCount -> tvOptionCount.visible()
-            FilterViewModel.Commands.HideCount -> tvOptionCount.gone()
-            FilterViewModel.Commands.ShowSearchbar -> searchBar.visible()
-            FilterViewModel.Commands.HideSearchbar -> searchBar.gone()
+            FilterViewModel.Commands.ShowCount -> binding.tvOptionCount.visible()
+            FilterViewModel.Commands.HideCount -> binding.tvOptionCount.gone()
+            FilterViewModel.Commands.ShowSearchbar -> binding.searchBar.root.visible()
+            FilterViewModel.Commands.HideSearchbar -> binding.searchBar.root.gone()
             FilterViewModel.Commands.DateDivider -> setDivider(R.drawable.divider_relation_date)
             FilterViewModel.Commands.ObjectDivider -> setDivider(R.drawable.divider_relation_object)
             FilterViewModel.Commands.TagDivider -> setDivider(R.drawable.divider_relation_tag)
@@ -145,7 +150,7 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
     }
 
     private fun setDivider(divider: Int) {
-        rvViewerFilterRecycler.apply {
+        binding.rvViewerFilterRecycler.apply {
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(drawable(divider))
@@ -181,10 +186,18 @@ open class ModifyFilterFromSelectedValueFragment : BaseBottomSheetFragment(),
         componentManager().modifyFilterComponent.release(ctx)
     }
 
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateOrUpdateFilterBinding = FragmentCreateOrUpdateFilterBinding.inflate(
+        inflater, container, false
+    )
+
     companion object {
-        fun new(ctx: Id, relation: Id, index: Int): ModifyFilterFromSelectedValueFragment = ModifyFilterFromSelectedValueFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, IDX_KEY to index)
-        }
+        fun new(ctx: Id, relation: Id, index: Int): ModifyFilterFromSelectedValueFragment =
+            ModifyFilterFromSelectedValueFragment().apply {
+                arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, IDX_KEY to index)
+            }
 
         const val CTX_KEY = "arg.modify-filter-relation.ctx"
         const val RELATION_KEY = "arg.modify-filter-relation.relation"

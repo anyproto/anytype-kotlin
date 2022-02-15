@@ -16,12 +16,13 @@ import com.anytypeio.anytype.core_ui.features.sets.SearchRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.SelectSortRelationViewModel
-import kotlinx.android.synthetic.main.fragment_select_sort_or_filter_relation.*
 import javax.inject.Inject
 
-class SelectSortRelationFragment : BaseBottomSheetFragment() {
+class SelectSortRelationFragment :
+    BaseBottomSheetFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
 
@@ -39,25 +40,19 @@ class SelectSortRelationFragment : BaseBottomSheetFragment() {
 
     private val vm: SelectSortRelationViewModel by viewModels { factory }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_select_sort_or_filter_relation, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_relation_to_sort)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
 
         }
-        searchRelationRecycler.apply {
+        binding.searchRelationRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = searchRelationAdapter
             addItemDecoration(
@@ -93,6 +88,14 @@ class SelectSortRelationFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().selectSortRelationComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSelectSortOrFilterRelationBinding =
+        FragmentSelectSortOrFilterRelationBinding.inflate(
+            inflater, container, false
+        )
 
     companion object {
 

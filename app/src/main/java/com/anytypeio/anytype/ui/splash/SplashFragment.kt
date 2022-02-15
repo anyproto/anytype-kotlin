@@ -3,7 +3,9 @@ package com.anytypeio.anytype.ui.splash
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -16,12 +18,12 @@ import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import kotlinx.android.synthetic.main.fragment_splash.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,7 +33,7 @@ import javax.inject.Inject
  * email :  ki@agileburo.com
  * on 2019-10-21.
  */
-class SplashFragment : BaseFragment(R.layout.fragment_splash) {
+class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_splash) {
 
     @Inject
     lateinit var factory: SplashViewModelFactory
@@ -61,7 +63,7 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
             }
             is SplashViewModel.Command.Error -> {
                 toast(command.msg)
-                error.visible()
+                binding.error.visible()
             }
             SplashViewModel.Command.NavigateToDashboard -> {
                 try {
@@ -113,7 +115,7 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
     }
 
     private fun showVersion() {
-        version.text = "${BuildConfig.VERSION_NAME}-alpha"
+        binding.version.text = "${BuildConfig.VERSION_NAME}-alpha"
     }
 
     private fun isFirstInstall(): Boolean {
@@ -142,4 +144,9 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
     override fun releaseDependencies() {
         componentManager().splashLoginComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSplashBinding = FragmentSplashBinding.inflate(inflater, container, false)
 }

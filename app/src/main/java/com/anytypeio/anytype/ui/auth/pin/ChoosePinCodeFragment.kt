@@ -1,15 +1,17 @@
 package com.anytypeio.anytype.ui.auth.pin
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.databinding.FragmentChoosePinCodeBinding
 import com.anytypeio.anytype.presentation.auth.pin.ChoosePinCodeViewModel
 import com.anytypeio.anytype.presentation.auth.pin.ChoosePinCodeViewModelFactory
-import kotlinx.android.synthetic.main.fragment_choose_pin_code.*
 
-class ChoosePinCodeFragment : PinCodeFragment(R.layout.fragment_choose_pin_code) {
+class ChoosePinCodeFragment : PinCodeFragment<FragmentChoosePinCodeBinding>(R.layout.fragment_choose_pin_code) {
 
     //@Inject
     lateinit var factory: ChoosePinCodeViewModelFactory
@@ -30,13 +32,13 @@ class ChoosePinCodeFragment : PinCodeFragment(R.layout.fragment_choose_pin_code)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclers()
-        doItLaterButton.setOnClickListener {
+        binding.doItLaterButton.setOnClickListener {
             //vm.onDoItLaterClicked()
         }
     }
 
-    override fun provideDotRecycler(): RecyclerView = dotRecycler
-    override fun provideNumPadRecycler(): RecyclerView = numPadRecycler
+    override fun provideDotRecycler(): RecyclerView = binding.dotRecycler
+    override fun provideNumPadRecycler(): RecyclerView = binding.numPadRecycler
     override fun provideNumPadAdapter(): NumPadAdapter = numPadAdapter
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,11 +51,13 @@ class ChoosePinCodeFragment : PinCodeFragment(R.layout.fragment_choose_pin_code)
         //vm.observeNavigation().subscribe { navigation(it) }.disposedBy(subscriptions)
     }
 
-    override fun injectDependencies() {
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
 
-    }
-
-    override fun releaseDependencies() {
-
-    }
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentChoosePinCodeBinding = FragmentChoosePinCodeBinding.inflate(
+        inflater, container, false
+    )
 }

@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectAppearanceSettingAdapter
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjAppearanceBaseBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -22,7 +25,7 @@ import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePre
 import javax.inject.Inject
 
 //region ICON
-class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
+class ObjectAppearanceIconFragment : BaseBottomSheetFragment<FragmentObjAppearanceBaseBinding>() {
 
     @Inject
     lateinit var factory: ObjectAppearanceIconViewModel.Factory
@@ -37,13 +40,8 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = FragmentObjAppearanceBaseBinding.inflate(inflater, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.tvScreenTitle.text = getString(R.string.icon)
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -55,7 +53,6 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
             )
         }
 
-        return binding.root
     }
 
     override fun onStart() {
@@ -90,6 +87,13 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
         componentManager().objectAppearanceIconComponent.release(ctx)
     }
 
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjAppearanceBaseBinding = FragmentObjAppearanceBaseBinding.inflate(
+        inflater, container, false
+    )
+
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)
 
@@ -105,7 +109,8 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment() {
 //endregion
 
 //region PREVIEW LAYOUT
-class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
+class ObjectAppearancePreviewLayoutFragment :
+    BaseBottomSheetFragment<FragmentObjAppearanceBaseBinding>() {
 
     @Inject
     lateinit var factory: ObjectAppearancePreviewLayoutViewModel.Factory
@@ -120,14 +125,8 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
         )
     }
 
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = FragmentObjAppearanceBaseBinding.inflate(inflater, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.tvScreenTitle.text = getString(R.string.preview_layout)
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -138,8 +137,6 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
                 }
             )
         }
-
-        return binding.root
     }
 
     override fun onStart() {
@@ -172,6 +169,13 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
         componentManager().objectAppearancePreviewLayoutComponent.release(ctx)
     }
 
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjAppearanceBaseBinding = FragmentObjAppearanceBaseBinding.inflate(
+        inflater, container, false
+    )
+
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)
 
@@ -187,7 +191,7 @@ class ObjectAppearancePreviewLayoutFragment : BaseBottomSheetFragment() {
 //endregion
 
 //region COVER
-class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
+class ObjectAppearanceCoverFragment : BaseBottomSheetFragment<FragmentObjAppearanceBaseBinding>() {
 
     @Inject
     lateinit var factory: ObjectAppearanceCoverViewModel.Factory
@@ -202,13 +206,8 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = FragmentObjAppearanceBaseBinding.inflate(inflater, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.tvScreenTitle.text = getString(R.string.cover)
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -219,10 +218,7 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
                 }
             )
         }
-
-        return binding.root
     }
-
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.state) { state ->
@@ -255,6 +251,13 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().objectAppearanceCoverComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjAppearanceBaseBinding = FragmentObjAppearanceBaseBinding.inflate(
+        inflater, container, false
+    )
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)

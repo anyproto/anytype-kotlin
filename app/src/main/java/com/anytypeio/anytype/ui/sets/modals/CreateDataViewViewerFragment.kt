@@ -7,16 +7,15 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentCreateDataViewViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.CreateDataViewViewerViewModel
-import kotlinx.android.synthetic.main.fragment_create_data_view_viewer.*
 import javax.inject.Inject
 
-class CreateDataViewViewerFragment : BaseBottomSheetFragment() {
+class CreateDataViewViewerFragment : BaseBottomSheetFragment<FragmentCreateDataViewViewerBinding>() {
 
     val ctx get() = arg<String>(CTX_KEY)
     val target get() = arg<String>(TARGET_KEY)
@@ -25,25 +24,19 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment() {
     lateinit var factory: CreateDataViewViewerViewModel.Factory
     private val vm: CreateDataViewViewerViewModel by viewModels { factory }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_create_data_view_viewer, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(lifecycleScope) {
-            subscribe(btnCreateViewer.clicks()) {
+            subscribe(binding.btnCreateViewer.clicks()) {
                 vm.onAddViewer(
-                    name = viewerNameInput.text.toString(),
+                    name = binding.viewerNameInput.text.toString(),
                     ctx = ctx,
                     target = target
                 )
             }
-            subscribe(gridContainer.clicks()) { vm.onGridClicked() }
-            subscribe(galleryContainer.clicks()) { vm.onGalleryClicked() }
-            subscribe(listContainer.clicks()) { vm.onListClicked() }
+            subscribe(binding.gridContainer.clicks()) { vm.onGridClicked() }
+            subscribe(binding.galleryContainer.clicks()) { vm.onGalleryClicked() }
+            subscribe(binding.listContainer.clicks()) { vm.onListClicked() }
         }
     }
 
@@ -57,9 +50,9 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment() {
     private fun render(state: CreateDataViewViewerViewModel.ViewState) {
         when (state) {
             CreateDataViewViewerViewModel.ViewState.Init -> {
-                isListChosen.invisible()
-                isTableChosen.visible()
-                isGalleryChosen.invisible()
+                binding.isListChosen.invisible()
+                binding.isTableChosen.visible()
+                binding.isGalleryChosen.invisible()
             }
             CreateDataViewViewerViewModel.ViewState.Completed -> {
                 dismiss()
@@ -68,20 +61,20 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment() {
                 toast(state.msg)
             }
             CreateDataViewViewerViewModel.ViewState.Gallery -> {
-                isListChosen.invisible()
-                isTableChosen.invisible()
-                isGalleryChosen.visible()
+                binding.isListChosen.invisible()
+                binding.isTableChosen.invisible()
+                binding.isGalleryChosen.visible()
             }
             CreateDataViewViewerViewModel.ViewState.Grid -> {
-                isListChosen.invisible()
-                isTableChosen.visible()
-                isGalleryChosen.invisible()
+                binding.isListChosen.invisible()
+                binding.isTableChosen.visible()
+                binding.isGalleryChosen.invisible()
             }
 
             CreateDataViewViewerViewModel.ViewState.List -> {
-                isListChosen.visible()
-                isTableChosen.invisible()
-                isGalleryChosen.invisible()
+                binding.isListChosen.visible()
+                binding.isTableChosen.invisible()
+                binding.isGalleryChosen.invisible()
             }
         }
     }
@@ -93,6 +86,13 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().createDataViewViewerComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateDataViewViewerBinding = FragmentCreateDataViewViewerBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: String, target: String) = CreateDataViewViewerFragment().apply {

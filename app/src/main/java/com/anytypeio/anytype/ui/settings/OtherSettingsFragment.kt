@@ -15,14 +15,14 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentUserSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
-import kotlinx.android.synthetic.main.fragment_user_settings.*
 import javax.inject.Inject
 
-class OtherSettingsFragment : BaseBottomSheetFragment() {
+class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBinding>() {
 
     @Inject
     lateinit var factory: OtherSettingsViewModel.Factory
@@ -38,18 +38,12 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_user_settings, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
-        btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
-        btnClearFileCache.setOnClickListener { vm.onClearCacheClicked() }
-        ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
+        binding.tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
+        binding.btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
+        binding.btnClearFileCache.setOnClickListener { vm.onClearCacheClicked() }
+        binding.ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
     }
 
     override fun onStart() {
@@ -58,9 +52,9 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
             jobs += subscribe(vm.commands) { observe(it) }
             jobs += subscribe(vm.isClearFileCacheInProgress) { isInProgress ->
                 if (isInProgress)
-                    clearFileCacheProgressBar.visible()
+                    binding.clearFileCacheProgressBar.visible()
                 else
-                    clearFileCacheProgressBar.gone()
+                    binding.clearFileCacheProgressBar.gone()
             }
         }
     }
@@ -77,7 +71,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
                 )
             }
             is OtherSettingsViewModel.Command.SetObjectType -> {
-                objectType.text = command.name
+                binding.objectType.text = command.name
             }
             is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
             OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
@@ -87,6 +81,13 @@ class OtherSettingsFragment : BaseBottomSheetFragment() {
             }
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentUserSettingsBinding = FragmentUserSettingsBinding.inflate(
+        inflater, container, false
+    )
 
     override fun injectDependencies() {
         componentManager().otherSettingsComponent.get().inject(this)

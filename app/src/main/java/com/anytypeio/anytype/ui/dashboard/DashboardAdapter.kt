@@ -15,13 +15,12 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.databinding.ItemDashboardCardDefaultBinding
+import com.anytypeio.anytype.databinding.ItemDesktopArchiveBinding
+import com.anytypeio.anytype.databinding.ItemDesktopSetWithoutIconBinding
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.facebook.shimmer.ShimmerFrameLayout
-import kotlinx.android.synthetic.main.item_dashboard_card_default.view.*
-import kotlinx.android.synthetic.main.item_dashboard_card_default.view.shimmer
-import kotlinx.android.synthetic.main.item_desktop_archive.view.*
-import kotlinx.android.synthetic.main.item_desktop_set_without_icon.view.*
 import timber.log.Timber
 
 class DashboardAdapter(
@@ -48,7 +47,7 @@ class DashboardAdapter(
         return when (viewType) {
             VIEW_TYPE_DOCUMENT -> {
                 ViewHolder.DocumentHolder(
-                    inflater.inflate(R.layout.item_dashboard_card_default, parent, false)
+                    ItemDashboardCardDefaultBinding.inflate(inflater, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -89,7 +88,7 @@ class DashboardAdapter(
             }
             VIEW_TYPE_ARCHIVE -> {
                 ViewHolder.ArchiveHolder(
-                    inflater.inflate(R.layout.item_desktop_archive, parent, false)
+                    ItemDesktopArchiveBinding.inflate(inflater, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -104,7 +103,7 @@ class DashboardAdapter(
             }
             VIEW_TYPE_SET -> {
                 ViewHolder.ObjectSetHolder(
-                    inflater.inflate(R.layout.item_dashboard_card_default, parent, false)
+                    ItemDashboardCardDefaultBinding.inflate(inflater, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -115,12 +114,12 @@ class DashboardAdapter(
                             }
                         }
                     }
-                    itemView.typeTitle.setText(R.string.set)
+                    binding.typeTitle.setText(R.string.set)
                 }
             }
             VIEW_TYPE_SET_WITHOUT_ICON -> {
                 ViewHolder.ObjectSetWithoutIconHolder(
-                    inflater.inflate(R.layout.item_desktop_set_without_icon, parent, false)
+                    ItemDesktopSetWithoutIconBinding.inflate(inflater, parent, false)
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -131,7 +130,7 @@ class DashboardAdapter(
                             }
                         }
                     }
-                    itemView.tvSetTypeName.setText(R.string.set)
+                    binding.tvSetTypeName.setText(R.string.set)
                 }
             }
             VIEW_TYPE_DOCUMENT_NOTE -> {
@@ -355,13 +354,13 @@ class DashboardAdapter(
 
         abstract fun bindSelection(isSelected: Boolean)
 
-        class ArchiveHolder(itemView: View) : ViewHolder(itemView) {
+        class ArchiveHolder(val binding: ItemDesktopArchiveBinding) : ViewHolder(binding.root) {
 
             private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindTitle(title: String) {
                 if (title.isNotEmpty()) {
-                    itemView.archiveTitle.text = title
+                    binding.archiveTitle.text = title
                 }
             }
 
@@ -370,11 +369,11 @@ class DashboardAdapter(
             }
         }
 
-        class DocumentHolder(itemView: View) : ViewHolder(itemView) {
+        class DocumentHolder(val binding: ItemDashboardCardDefaultBinding) : ViewHolder(binding.root) {
 
-            private val tvTitle = itemView.title
-            private val tvSubtitle = itemView.typeTitle
-            private val shimmer = itemView.shimmer
+            private val tvTitle = binding.title
+            private val tvSubtitle = binding.typeTitle
+            private val shimmer = binding.shimmer
             private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindTitle(title: String?) {
@@ -389,7 +388,7 @@ class DashboardAdapter(
             }
 
             fun bindIcon(icon: ObjectIcon) {
-                itemView.iconWidget.bind(icon)
+                binding.iconWidget.bind(icon)
             }
 
             fun bindLoading(isLoading: Boolean) {
@@ -538,10 +537,10 @@ class DashboardAdapter(
             }
         }
 
-        class ObjectSetHolder(itemView: View) : ViewHolder(itemView) {
+        class ObjectSetHolder(val binding: ItemDashboardCardDefaultBinding) : ViewHolder(binding.root) {
 
-            private val tvTitle = itemView.title
-            private val shimmer = itemView.shimmer
+            private val tvTitle = binding.title
+            private val shimmer = binding.shimmer
             private val selection = itemView.findViewById<ImageView>(R.id.ivSelection)
 
             fun bindLoading(isLoading: Boolean) {
@@ -564,7 +563,7 @@ class DashboardAdapter(
             }
 
             fun bindIcon(icon: ObjectIcon) {
-                itemView.iconWidget.bind(icon)
+                binding.iconWidget.bind(icon)
             }
 
             override fun bindSelection(isSelected: Boolean) {
@@ -572,7 +571,7 @@ class DashboardAdapter(
             }
         }
 
-        class ObjectSetWithoutIconHolder(itemView: View) : ViewHolder(itemView) {
+        class ObjectSetWithoutIconHolder(val binding: ItemDesktopSetWithoutIconBinding) : ViewHolder(binding.root) {
 
             private val tvTitle = itemView.findViewById<TextView>(R.id.tvSetTitle)
             private val shimmer = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer)

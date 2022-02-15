@@ -7,7 +7,9 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -18,17 +20,17 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.databinding.FragmentCreateAccountBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.fragment_create_account.*
 import timber.log.Timber
 import javax.inject.Inject
 
 
-class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_account) {
+class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R.layout.fragment_create_account) {
 
     @Inject
     lateinit var factory: CreateAccountViewModelFactory
@@ -37,14 +39,14 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        createProfileButton.setOnClickListener {
+        binding.createProfileButton.setOnClickListener {
             vm.onCreateProfileClicked(
-                input = nameInputField.text.toString(),
+                input = binding.nameInputField.text.toString(),
                 invitationCode = getCode()
             )
         }
-        profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
-        backButton.setOnClickListener { vm.onBackButtonClicked() }
+        binding.profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
+        binding.backButton.setOnClickListener { vm.onBackButtonClicked() }
         setupNavigation()
         vm.error.observe(viewLifecycleOwner, Observer(this::showError))
     }
@@ -78,7 +80,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
             if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
                 data?.data?.let { uri ->
 
-                    profileIcon.apply {
+                    binding.profileIcon.apply {
                         visible()
                         Glide
                             .with(this)
@@ -87,7 +89,7 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
                             .into(this)
                     }
 
-                    profileIconPlaceholder.invisible()
+                    binding.profileIconPlaceholder.invisible()
 
                     vm.onAvatarSet(uri.parsePath(requireContext()))
                 }
@@ -146,6 +148,13 @@ class CreateAccountFragment : NavigationFragment(R.layout.fragment_create_accoun
     override fun releaseDependencies() {
         componentManager().createAccountComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateAccountBinding = FragmentCreateAccountBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val ARGS_CODE = "args.code"

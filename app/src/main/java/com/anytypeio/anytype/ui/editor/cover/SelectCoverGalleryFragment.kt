@@ -26,17 +26,17 @@ import com.anytypeio.anytype.core_ui.features.editor.modal.DocCoverGalleryAdapte
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentDocCoverGalleryBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverViewModel
-import kotlinx.android.synthetic.main.fragment_doc_cover_gallery.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
-abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment() {
+abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocCoverGalleryBinding>() {
 
     abstract val ctx: String
     abstract val vm: SelectCoverViewModel
@@ -64,28 +64,20 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_doc_cover_gallery, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnRemove.clicks()
+        binding.btnRemove.clicks()
             .onEach { vm.onRemoveCover(ctx) }
             .launchIn(lifecycleScope)
 
-        btnUpload.clicks()
+        binding.btnUpload.clicks()
             .onEach { proceedWithImagePick() }
             .launchIn(lifecycleScope)
 
         val spacing = requireContext().dimen(R.dimen.cover_gallery_item_spacing).toInt() / 2
 
-        docCoverGalleryRecycler.apply {
+        binding.docCoverGalleryRecycler.apply {
             adapter = docCoverGalleryAdapter
             layoutManager = GridLayoutManager(context, 2).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -145,6 +137,13 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment() {
         requireActivity(),
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentDocCoverGalleryBinding = FragmentDocCoverGalleryBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         private const val SELECT_IMAGE_CODE = 1

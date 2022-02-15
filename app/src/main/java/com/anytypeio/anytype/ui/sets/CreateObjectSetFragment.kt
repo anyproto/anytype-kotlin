@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.sets
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -11,18 +13,18 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.sets.CreateSetHeaderAdapter
 import com.anytypeio.anytype.core_ui.features.sets.CreateSetObjectTypeAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.databinding.FragmentCreateSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.CreateObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.CreateObjectTypeView
 import com.anytypeio.anytype.presentation.sets.CreateSetViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
-import kotlinx.android.synthetic.main.fragment_create_set.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
-class CreateObjectSetFragment : NavigationFragment(R.layout.fragment_create_set),
+class CreateObjectSetFragment : NavigationFragment<FragmentCreateSetBinding>(R.layout.fragment_create_set),
     CreateObjectTypeCallback {
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
@@ -47,7 +49,7 @@ class CreateObjectSetFragment : NavigationFragment(R.layout.fragment_create_set)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.state.observe(viewLifecycleOwner) { observe(it) }
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = createSetAdapter
         }
@@ -83,6 +85,13 @@ class CreateObjectSetFragment : NavigationFragment(R.layout.fragment_create_set)
             }
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateSetBinding = FragmentCreateSetBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.create_object_set.context"

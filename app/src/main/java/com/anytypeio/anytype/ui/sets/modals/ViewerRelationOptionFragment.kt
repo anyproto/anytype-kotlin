@@ -15,33 +15,27 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.databinding.FragmentViewerRelationOptionBinding
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
-import kotlinx.android.synthetic.main.fragment_viewer_relation_option.*
 import java.util.*
 
-class ViewerRelationOptionFragment : BaseDialogFragment() {
+class ViewerRelationOptionFragment : BaseDialogFragment<FragmentViewerRelationOptionBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
     private val format: ColumnView.Format? get() = requireArguments().getParcelable(FORMAT_KEY)
     private val title: String get() = arg(TITLE_KEY)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_viewer_relation_option, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvTitle.text = title
+        binding.tvTitle.text = title
         format?.let {
-            tvFormat.text = it.name.toLowerCase(Locale.ROOT).capitalize(Locale.ROOT)
-            iconFormat.setBackgroundResource(it.relationIcon())
+            binding.tvFormat.text = it.name.toLowerCase(Locale.ROOT).capitalize(Locale.ROOT)
+            binding.iconFormat.setBackgroundResource(it.relationIcon())
         }
         with(lifecycleScope) {
-            subscribe(openToEditViewContainer.clicks()) { toast("Not implemented yet") }
-            subscribe(removeViewContainer.clicks()) { toast("Not implemented yet") }
+            subscribe(binding.openToEditViewContainer.clicks()) { toast("Not implemented yet") }
+            subscribe(binding.removeViewContainer.clicks()) { toast("Not implemented yet") }
         }
     }
 
@@ -64,6 +58,13 @@ class ViewerRelationOptionFragment : BaseDialogFragment() {
             setWindowAnimations(R.style.DefaultBottomDialogAnimation)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentViewerRelationOptionBinding = FragmentViewerRelationOptionBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id, title: String, relation: Id, format: ColumnView.Format) =

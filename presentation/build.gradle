@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
+apply plugin: 'kotlin-parcelize'
 
 android {
     def config = rootProject.extensions.getByName("ext")
@@ -45,13 +44,9 @@ android {
         }
     }
 
-    androidExtensions {
-        experimental = true
-    }
     lint {
         disable 'NullSafeMutableLiveData'
     }
-
 }
 
 dependencies {

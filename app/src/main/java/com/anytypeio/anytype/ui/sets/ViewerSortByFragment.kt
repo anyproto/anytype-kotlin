@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentSortingBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ViewerSortByCommand
 import com.anytypeio.anytype.presentation.sets.ViewerSortByViewModel
@@ -23,10 +24,9 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.sets.modals.PickSortingKeyFragment
 import com.anytypeio.anytype.ui.sets.modals.PickSortingTypeFragment
 import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
-import kotlinx.android.synthetic.main.fragment_sorting.*
 import javax.inject.Inject
 
-class ViewerSortByFragment : BaseBottomSheetFragment() {
+class ViewerSortByFragment : BaseBottomSheetFragment<FragmentSortingBinding>() {
 
     private val sortingAdapter by lazy {
         SortByAdapter(click = vm::itemClicked)
@@ -47,12 +47,12 @@ class ViewerSortByFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(recyclerView) {
+        with(binding.recyclerView) {
             adapter = sortingAdapter
         }
         lifecycleScope.subscribe(vm.viewState) { observeState(it) }
         lifecycleScope.subscribe(vm.commands.stream()) { observeCommands(it) }
-        lifecycleScope.subscribe(ivBack.clicks()) { vm.onBackClicked() }
+        lifecycleScope.subscribe(binding.ivBack.clicks()) { vm.onBackClicked() }
         vm.onViewCreated(viewer)
     }
 
@@ -118,6 +118,13 @@ class ViewerSortByFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().viewerSortByComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSortingBinding = FragmentSortingBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.viewer.sorts.context"

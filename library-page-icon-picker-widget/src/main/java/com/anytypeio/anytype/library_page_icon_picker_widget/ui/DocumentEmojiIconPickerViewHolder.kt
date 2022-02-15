@@ -5,18 +5,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.library_page_icon_picker_widget.R
+import com.anytypeio.anytype.library_page_icon_picker_widget.databinding.ItemPageIconPickerEmojiCategoryHeaderBinding
+import com.anytypeio.anytype.library_page_icon_picker_widget.databinding.ItemPageIconPickerEmojiItemBinding
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_page_icon_picker_emoji_category_header.view.*
-import kotlinx.android.synthetic.main.item_page_icon_picker_emoji_item.view.*
 import timber.log.Timber
 
 sealed class DocumentEmojiIconPickerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    class CategoryHeader(view: View) : DocumentEmojiIconPickerViewHolder(view) {
+    class CategoryHeader(val binding: ItemPageIconPickerEmojiCategoryHeaderBinding) : DocumentEmojiIconPickerViewHolder(binding.root) {
 
-        private val category = itemView.category
+        private val category = binding.category
 
         fun bind(item: EmojiPickerView.GroupHeader) {
             when (item.category) {
@@ -33,9 +33,9 @@ sealed class DocumentEmojiIconPickerViewHolder(view: View) : RecyclerView.ViewHo
         }
     }
 
-    class EmojiItem(view: View) : DocumentEmojiIconPickerViewHolder(view) {
+    class EmojiItem(val binding: ItemPageIconPickerEmojiItemBinding) : DocumentEmojiIconPickerViewHolder(binding.root) {
 
-        private val image = itemView.image
+        private val image = binding.image
 
         fun bind(
             item: EmojiPickerView.Emoji,

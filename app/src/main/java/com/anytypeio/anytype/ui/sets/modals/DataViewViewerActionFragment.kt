@@ -14,13 +14,13 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.databinding.FragmentDataViewViewerActionsBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.DataViewViewerActionViewModel
-import kotlinx.android.synthetic.main.fragment_data_view_viewer_actions.*
 import javax.inject.Inject
 
 @Deprecated("Legacy")
-class DataViewViewerActionFragment : BaseDialogFragment() {
+class DataViewViewerActionFragment : BaseDialogFragment<FragmentDataViewViewerActionsBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
     private val viewer: String get() = arg(VIEWER_KEY)
@@ -31,23 +31,17 @@ class DataViewViewerActionFragment : BaseDialogFragment() {
 
     private val vm: DataViewViewerActionViewModel by viewModels { factory }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_data_view_viewer_actions, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvTitle.text = title
+        binding.tvTitle.text = title
         with(lifecycleScope) {
-            subscribe(duplicateViewContainer.clicks()) {
+            subscribe(binding.duplicateViewContainer.clicks()) {
                 vm.onDuplicateClicked(ctx = ctx, viewer = viewer)
             }
-            subscribe(deleteViewContainer.clicks()) {
+            subscribe(binding.deleteViewContainer.clicks()) {
                 vm.onDeleteClicked(ctx = ctx, viewer = viewer)
             }
-            subscribe(editViewContainer.clicks()) {
+            subscribe(binding.editViewContainer.clicks()) {
                 val fr = EditDataViewViewerFragment.new(
                     ctx = ctx,
                     viewer = viewer
@@ -76,6 +70,13 @@ class DataViewViewerActionFragment : BaseDialogFragment() {
     override fun releaseDependencies() {
         componentManager().dataviewViewerActionComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentDataViewViewerActionsBinding = FragmentDataViewViewerActionsBinding.inflate(
+        inflater, container, false
+    )
 
     private fun setupAppearance() {
         dialog?.window?.apply {

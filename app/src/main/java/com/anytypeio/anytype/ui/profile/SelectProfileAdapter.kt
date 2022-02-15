@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.ViewType
-import kotlinx.android.synthetic.main.item_select_profile_profile.view.*
+import com.anytypeio.anytype.databinding.ItemSelectProfileAddProfileBinding
+import com.anytypeio.anytype.databinding.ItemSelectProfileProfileBinding
 
 class SelectProfileAdapter(
     private val models: MutableList<Model>,
@@ -18,20 +18,18 @@ class SelectProfileAdapter(
         return LayoutInflater.from(parent.context).let { inflater ->
             when (viewType) {
                 PROFILE_HOLDER -> {
-                    inflater.inflate(
-                        R.layout.item_select_profile_profile,
-                        parent, false
-                    ).let { view ->
-                        ViewHolder.ProfileViewHolder(view)
-                    }
+                    ViewHolder.ProfileViewHolder(
+                        ItemSelectProfileProfileBinding.inflate(
+                            inflater, parent, false
+                        )
+                    )
                 }
                 ADD_PROFILE_HOLDER -> {
-                    inflater.inflate(
-                        R.layout.item_select_profile_add_profile,
-                        parent, false
-                    ).let { view ->
-                        ViewHolder.AddProfileViewHolder(view)
-                    }
+                    ViewHolder.AddProfileViewHolder(
+                        ItemSelectProfileAddProfileBinding.inflate(
+                            inflater, parent, false
+                        )
+                    )
                 }
                 else -> throw IllegalStateException("Unexpected type: $viewType")
             }
@@ -63,23 +61,25 @@ class SelectProfileAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class ProfileViewHolder(view: View) : ViewHolder(view) {
+        class ProfileViewHolder(val binding: ItemSelectProfileProfileBinding) :
+            ViewHolder(binding.root) {
 
             fun bind(
                 model: Model,
                 onClick: (Model.Profile) -> Unit
             ) {
                 check(model is Model.Profile)
-                itemView.apply {
-                    isSelected = model.active
+                binding.apply {
+                    root.isSelected = model.active
                     name.text = model.name
                     status.text = model.status
-                    setOnClickListener { onClick(model) }
+                    root.setOnClickListener { onClick(model) }
                 }
             }
         }
 
-        class AddProfileViewHolder(view: View) : ViewHolder(view) {
+        class AddProfileViewHolder(val binding: ItemSelectProfileAddProfileBinding) :
+            ViewHolder(binding.root) {
             fun bind(onClick: () -> Unit) {
                 itemView.setOnClickListener { onClick() }
             }

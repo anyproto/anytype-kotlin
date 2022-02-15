@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.archive
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,16 +13,16 @@ import com.anytypeio.anytype.core_ui.tools.FirstItemInvisibilityDetector
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.databinding.FragmentArchiveBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewModel
 import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewModelFactory
 import com.anytypeio.anytype.presentation.editor.archive.ArchiveViewState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_archive.*
 import javax.inject.Inject
 
-open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
+open class ArchiveFragment : NavigationFragment<FragmentArchiveBinding>(R.layout.fragment_archive) {
 
     @Inject
     lateinit var factory: ArchiveViewModelFactory
@@ -37,9 +39,9 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
     private val titleVisibilityDetector by lazy {
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
-                topToolbar.title.invisible()
+                binding.topToolbar.title.invisible()
             } else {
-                topToolbar.title.visible()
+                binding.topToolbar.title.visible()
             }
         }
     }
@@ -47,10 +49,10 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vm.state.observe(viewLifecycleOwner, { render(it) })
+        vm.state.observe(viewLifecycleOwner) { render(it) }
         vm.navigation.observe(viewLifecycleOwner, navObserver)
 
-        BottomSheetBehavior.from(sheet).apply {
+        BottomSheetBehavior.from(binding.sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
             addBottomSheetCallback(
@@ -66,16 +68,16 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
             )
         }
 
-        topToolbar.menu.invisible()
+        binding.topToolbar.menu.invisible()
 
-        with(bottomMenu) {
+        with(binding.bottomMenu) {
             update(COUNTER_INIT)
             findViewById<TextView>(R.id.btnPutBack).setOnClickListener {
                 vm.onPutBackClicked()
             }
         }
 
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter = archiveAdapter
@@ -88,7 +90,7 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
             ArchiveViewState.Loading -> {}
             is ArchiveViewState.Success -> {
                 archiveAdapter.update(state.blocks)
-                bottomMenu.update(state.selections)
+                binding.bottomMenu.update(state.selections)
             }
         }
     }
@@ -115,6 +117,14 @@ open class ArchiveFragment : NavigationFragment(R.layout.fragment_archive) {
         requireArguments()
             .getString(ID_KEY)
             ?: throw IllegalStateException("Document id missing")
+
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentArchiveBinding = FragmentArchiveBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val ID_KEY = "args.id"

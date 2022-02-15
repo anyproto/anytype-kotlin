@@ -7,17 +7,17 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.features.editor.modal.SelectProgrammingLanguageAdapter
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentSelectProgrammingLanguageBinding
 import com.anytypeio.anytype.library_syntax_highlighter.obtainLanguages
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.fragment_select_programming_language.*
 import timber.log.Timber
 
-class SelectProgrammingLanguageFragment : BaseBottomSheetFragment() {
+class SelectProgrammingLanguageFragment :
+    BaseBottomSheetFragment<FragmentSelectProgrammingLanguageBinding>() {
 
     private val selectLangAdapter by lazy {
         SelectProgrammingLanguageAdapter(
@@ -35,12 +35,6 @@ class SelectProgrammingLanguageFragment : BaseBottomSheetFragment() {
             .getString(ARG_TARGET)
             ?: throw IllegalStateException(MISSING_TARGET_ERROR)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_select_programming_language, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("onViewCreated")
@@ -50,7 +44,7 @@ class SelectProgrammingLanguageFragment : BaseBottomSheetFragment() {
             )
             bottomSheet?.setBackgroundColor(requireContext().color(android.R.color.transparent))
         }
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = selectLangAdapter
         }
@@ -58,6 +52,13 @@ class SelectProgrammingLanguageFragment : BaseBottomSheetFragment() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSelectProgrammingLanguageBinding = FragmentSelectProgrammingLanguageBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(target: Id) = SelectProgrammingLanguageFragment().apply {

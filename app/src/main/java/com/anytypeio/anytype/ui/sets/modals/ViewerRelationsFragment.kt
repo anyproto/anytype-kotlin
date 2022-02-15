@@ -22,16 +22,17 @@ import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
+import com.anytypeio.anytype.databinding.FragmentViewerRelationsListBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ViewerRelationsViewModel
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
 import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment
 import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment
-import kotlinx.android.synthetic.main.fragment_viewer_relations_list.*
 import javax.inject.Inject
 
-class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
+class ViewerRelationsFragment : BaseBottomSheetFragment<FragmentViewerRelationsListBinding>(),
+    OnStartDragListener {
 
     @Inject
     lateinit var factory: ViewerRelationsViewModel.Factory
@@ -112,12 +113,6 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     private lateinit var itemDivider: DividerVerticalItemDecoration
     private lateinit var itemDividerEdit: DividerVerticalItemDecoration
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_viewer_relations_list, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         itemDivider = DividerVerticalItemDecoration(
@@ -128,13 +123,13 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
             divider = requireContext().drawable(R.drawable.divider_relation_layer_edit),
             isShowInLastItem = false
         )
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
         }
         with(lifecycleScope) {
-            subscribe(editBtn.clicks()) { vm.onEditButtonClicked() }
-            subscribe(doneBtn.clicks()) { vm.onDoneButtonClicked() }
-            subscribe(iconAdd.clicks()) {
+            subscribe(binding.editBtn.clicks()) { vm.onEditButtonClicked() }
+            subscribe(binding.doneBtn.clicks()) { vm.onDoneButtonClicked() }
+            subscribe(binding.iconAdd.clicks()) {
                 RelationAddToDataViewFragment.new(
                     ctx = ctx,
                     dv = dv,
@@ -159,29 +154,33 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     private fun render(state: ViewerRelationsViewModel.ScreenState) {
         when (state) {
             ViewerRelationsViewModel.ScreenState.LIST -> {
-                recycler.apply {
-                    dndItemTouchHelper.attachToRecyclerView(null)
-                }
-                iconAdd.visible()
-                editBtn.visible()
-                doneBtn.invisible()
-                recycler.apply {
-                    adapter = listAdapter
-                    removeItemDecoration(itemDividerEdit)
-                    addItemDecoration(itemDivider)
+                with(binding) {
+                    recycler.apply {
+                        dndItemTouchHelper.attachToRecyclerView(null)
+                    }
+                    iconAdd.visible()
+                    editBtn.visible()
+                    doneBtn.invisible()
+                    recycler.apply {
+                        adapter = listAdapter
+                        removeItemDecoration(itemDividerEdit)
+                        addItemDecoration(itemDivider)
+                    }
                 }
             }
             ViewerRelationsViewModel.ScreenState.EDIT -> {
-                recycler.apply {
-                    dndItemTouchHelper.attachToRecyclerView(this)
-                }
-                iconAdd.invisible()
-                doneBtn.visible()
-                editBtn.invisible()
-                recycler.apply {
-                    adapter = editAdapter
-                    removeItemDecoration(itemDivider)
-                    addItemDecoration(itemDividerEdit)
+                with(binding) {
+                    recycler.apply {
+                        dndItemTouchHelper.attachToRecyclerView(this)
+                    }
+                    iconAdd.invisible()
+                    doneBtn.visible()
+                    editBtn.invisible()
+                    recycler.apply {
+                        adapter = editAdapter
+                        removeItemDecoration(itemDivider)
+                        addItemDecoration(itemDividerEdit)
+                    }
                 }
             }
         }
@@ -208,6 +207,13 @@ class ViewerRelationsFragment : BaseBottomSheetFragment(), OnStartDragListener {
     override fun releaseDependencies() {
         componentManager().viewerRelationsComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentViewerRelationsListBinding = FragmentViewerRelationsListBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id, dv: Id, viewer: Id) = ViewerRelationsFragment().apply {

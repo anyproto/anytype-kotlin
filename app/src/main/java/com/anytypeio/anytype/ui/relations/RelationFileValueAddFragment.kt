@@ -15,14 +15,15 @@ import com.anytypeio.anytype.core_ui.features.relations.RelationFileValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentRelationValueFileAddBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.FileValueAddCommand
 import com.anytypeio.anytype.presentation.relations.FileValueAddView
 import com.anytypeio.anytype.presentation.relations.RelationFileValueAddViewModel
-import kotlinx.android.synthetic.main.fragment_relation_value_file_add.*
 import javax.inject.Inject
 
-class RelationFileValueAddFragment : BaseBottomSheetFragment() {
+class RelationFileValueAddFragment :
+    BaseBottomSheetFragment<FragmentRelationValueFileAddBinding>() {
 
     @Inject
     lateinit var factory: RelationFileValueAddViewModel.Factory
@@ -42,12 +43,6 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_value_file_add, container, false)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentBackground()
@@ -55,14 +50,14 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rvFiles.layoutManager = LinearLayoutManager(requireContext())
-        rvFiles.adapter = adapter
-        btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        binding.rvFiles.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFiles.adapter = adapter
+        binding.btnBottomAction.setOnClickListener { vm.onActionButtonClicked() }
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
@@ -88,7 +83,7 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
 
     private fun observeState(state: FileValueAddView) {
         adapter.update(state.files)
-        tvFilesCount.text = state.count
+        binding.tvFilesCount.text = state.count
     }
 
     private fun observeCommands(command: FileValueAddCommand) {
@@ -130,6 +125,13 @@ class RelationFileValueAddFragment : BaseBottomSheetFragment() {
             componentManager().relationFileValueDVComponent.release(ctx)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationValueFileAddBinding = FragmentRelationValueFileAddBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

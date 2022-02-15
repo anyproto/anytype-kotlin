@@ -5,39 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.argLong
 import com.anytypeio.anytype.core_utils.ext.timeInSeconds
 import com.anytypeio.anytype.core_utils.ext.withParent
-import kotlinx.android.synthetic.main.fragment_date_picker.*
-import timber.log.Timber
+import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.databinding.FragmentDatePickerBinding
 import java.util.*
 
-class DatePickerFragment : DialogFragment() {
+class DatePickerFragment : BaseDialogFragment<FragmentDatePickerBinding>() {
 
     private val mTimeInSeconds get() = argLong(TIMESTAMP_KEY)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_date_picker, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setTransparentBackground()
         initializePicker()
-        saveButton.setOnClickListener {
+        binding.saveButton.setOnClickListener {
             dispatchResultAndDismiss()
         }
     }
 
     private fun dispatchResultAndDismiss() {
         val calendar = Calendar.getInstance().apply {
-            set(Calendar.YEAR, picker.year)
-            set(Calendar.MONTH, picker.month)
-            set(Calendar.DAY_OF_MONTH, picker.dayOfMonth)
+            set(Calendar.YEAR, binding.picker.year)
+            set(Calendar.MONTH, binding.picker.month)
+            set(Calendar.DAY_OF_MONTH, binding.picker.dayOfMonth)
         }
         withParent<DatePickerReceiver> { onPickDate(calendar.timeInSeconds()) }
         dismiss()
@@ -51,7 +43,7 @@ class DatePickerFragment : DialogFragment() {
                 Date(System.currentTimeMillis())
             }
         }
-        picker.init(
+        binding.picker.init(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH),
@@ -62,6 +54,16 @@ class DatePickerFragment : DialogFragment() {
     private fun setTransparentBackground() {
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
+
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentDatePickerBinding = FragmentDatePickerBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

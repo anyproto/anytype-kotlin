@@ -17,12 +17,12 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentObjectAppearanceSettingBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingViewModel
-import kotlinx.android.synthetic.main.fragment_object_appearance_setting.*
 import javax.inject.Inject
 
-class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
+class ObjectAppearanceSettingFragment : BaseBottomSheetFragment<FragmentObjectAppearanceSettingBinding>() {
 
     @Inject
     lateinit var factory: ObjectAppearanceSettingViewModel.Factory
@@ -39,15 +39,9 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_object_appearance_setting, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(recyclerView) {
+        with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
             addItemDecoration(
@@ -100,6 +94,13 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().objectAppearanceSettingComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectAppearanceSettingBinding = FragmentObjectAppearanceSettingBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id, block: Id) = ObjectAppearanceSettingFragment().apply {

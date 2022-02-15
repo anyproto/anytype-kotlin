@@ -14,15 +14,15 @@ import com.anytypeio.anytype.core_ui.reactive.focusChanges
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.databinding.RelationOptionValueAddFragmentBinding
 import com.anytypeio.anytype.presentation.relations.AddObjectRelationValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.relation_option_value_add_fragment.*
 
-abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
+abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment<RelationOptionValueAddFragmentBinding>() {
 
-    private val behavior get() = BottomSheetBehavior.from(sheet)
+    private val behavior get() = BottomSheetBehavior.from(binding.sheet)
 
     val ctx get() = argString(CTX_KEY)
     val relation get() = argString(RELATION_KEY)
@@ -58,13 +58,16 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.relation_option_value_add_fragment, container, false).apply {
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    ): View? {
+        return super.onCreateView(inflater, container, savedInstanceState).apply {
+            dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = editCellTagAdapter
             addItemDecoration(
@@ -73,15 +76,15 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                 }
             )
         }
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
         }
         with(lifecycleScope) {
             subscribe(view.clicks()) { dismiss() }
-            subscribe(btnAdd.clicks()) { onAddButtonClicked() }
+            subscribe(binding.btnAdd.clicks()) { onAddButtonClicked() }
             subscribe(searchRelationInput.textChanges()) {
                 if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
                 vm.onFilterInputChanged(it.toString())
@@ -102,9 +105,9 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
                     override fun onSlide(bottomSheet: View, slideOffset: Float) {
                         if (vm.isMultiple.value) {
                             if (slideOffset < 0)
-                                btnAddContainer.gone()
+                                binding.btnAddContainer.gone()
                             else
-                                btnAddContainer.visible()
+                                binding.btnAddContainer.visible()
                         }
                     }
                 }
@@ -116,9 +119,9 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
             subscribe(vm.ui) { editCellTagAdapter.update(it) }
-            subscribe(vm.counter) { tvSelectionCounter.text = it.toString() }
+            subscribe(vm.counter) { binding.tvSelectionCounter.text = it.toString() }
             subscribe(vm.isAddButtonVisible) { isVisible ->
-                if (!isVisible) btnAddContainer.gone() else btnAddContainer.visible()
+                if (!isVisible) binding.btnAddContainer.gone() else binding.btnAddContainer.visible()
             }
             subscribe(vm.isDismissed) { isDismissed ->
                 if (isDismissed) {
@@ -132,12 +135,12 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
             }
             subscribe(vm.isMultiple) { isMultiple ->
                 if (isMultiple) {
-                    recycler.updatePadding(
+                    binding.recycler.updatePadding(
                         bottom = dimen(R.dimen.multiple_option_value_bottom_list_margin)
                     )
                     searchRelationInput.setHint(R.string.choose_options)
                 } else {
-                    recycler.updatePadding(
+                    binding.recycler.updatePadding(
                         bottom = dimen(R.dimen.single_option_value_bottom_list_margin)
                     )
                     searchRelationInput.setHint(R.string.choose_option)
@@ -180,6 +183,13 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment() {
             setWindowAnimations(R.style.DefaultBottomDialogAnimation)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): RelationOptionValueAddFragmentBinding = RelationOptionValueAddFragmentBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.add-object-relation-value.ctx"

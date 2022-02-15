@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.sets.model
 
 import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Block
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Deprecated("To be deleted")
 @Parcelize

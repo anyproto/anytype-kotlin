@@ -1,11 +1,9 @@
 package com.anytypeio.anytype.ui.auth.pin
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.R
-import kotlinx.android.synthetic.main.item_dot.view.*
+import com.anytypeio.anytype.databinding.ItemDotBinding
 
 class DotAdapter(
     val dots: MutableList<DotView> = initialData().toMutableList()
@@ -13,8 +11,7 @@ class DotAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_dot, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(ItemDotBinding.inflate(inflater, parent, false))
     }
 
     override fun getItemCount(): Int = dots.size
@@ -23,9 +20,9 @@ class DotAdapter(
         holder.bind(model = dots[position])
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val bindind: ItemDotBinding) : RecyclerView.ViewHolder(bindind.root) {
 
-        private val dot = itemView.dot
+        private val dot = bindind.dot
 
         fun bind(model: DotView) {
             dot.isSelected = model.active

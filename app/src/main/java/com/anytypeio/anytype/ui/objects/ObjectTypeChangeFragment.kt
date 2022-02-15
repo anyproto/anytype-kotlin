@@ -9,8 +9,6 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
@@ -18,14 +16,14 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import kotlinx.android.synthetic.main.fragment_object_type_change.*
 import javax.inject.Inject
 
-class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
+class ObjectTypeChangeFragment : BaseBottomSheetFragment<FragmentObjectTypeChangeBinding>() {
 
     private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
 
@@ -41,15 +39,9 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_object_type_change, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.apply {
+        binding.recycler.apply {
             adapter = objectTypeAdapter
             layoutManager = LinearLayoutManager(context)
         }
@@ -69,7 +61,7 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     override fun onStart() {
         with(lifecycleScope) {
             jobs += subscribe(vm.results) { observeViews(it) }
-            jobs += subscribe(searchObjectTypeInput.textChanges()) {
+            jobs += subscribe(binding.searchObjectTypeInput.textChanges()) {
                 vm.onQueryChanged(it.toString())
             }
         }
@@ -84,6 +76,13 @@ class ObjectTypeChangeFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().objectTypeChangeComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectTypeChangeBinding = FragmentObjectTypeChangeBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val ARG_SMART_BLOCK_TYPE = "arg.object-type.smart-block-type"

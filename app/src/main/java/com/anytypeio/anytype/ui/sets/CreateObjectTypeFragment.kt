@@ -7,18 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.sets.CreateObjectTypeAdapter
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentCreateObjectTypeBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.CreateObjectTypeView
 import com.anytypeio.anytype.presentation.sets.CreateObjectTypeViewModel
 import com.anytypeio.anytype.presentation.sets.CreateObjectTypeViewState
-import kotlinx.android.synthetic.main.fragment_create_object_type.*
 import javax.inject.Inject
 
-class CreateObjectTypeFragment : BaseBottomSheetFragment() {
+class CreateObjectTypeFragment : BaseBottomSheetFragment<FragmentCreateObjectTypeBinding>() {
 
     @Inject
     lateinit var factory: CreateObjectTypeViewModel.Factory
@@ -33,19 +32,12 @@ class CreateObjectTypeFragment : BaseBottomSheetFragment() {
             return list
         }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_create_object_type, container, false)
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnCreate.setOnClickListener { vm.onCreateClicked(edtTypeName.text.toString()) }
+        binding.btnCreate.setOnClickListener { vm.onCreateClicked(binding.edtTypeName.text.toString()) }
         vm.state.observe(viewLifecycleOwner) { observeData(it) }
-        rvTypes.layoutManager = LinearLayoutManager(requireContext())
-        rvTypes.adapter = typesAdapter
+        binding.rvTypes.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvTypes.adapter = typesAdapter
         vm.init(types)
     }
 
@@ -61,7 +53,7 @@ class CreateObjectTypeFragment : BaseBottomSheetFragment() {
                     state.type,
                     state.name
                 )
-                edtTypeName.hideKeyboard()
+                binding.edtTypeName.hideKeyboard()
                 dismiss()
             }
         }
@@ -74,6 +66,13 @@ class CreateObjectTypeFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().createObjectTypeComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateObjectTypeBinding = FragmentCreateObjectTypeBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

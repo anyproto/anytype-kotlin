@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
-import com.anytypeio.anytype.ui.profile.SelectProfileAdapter
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.dialog_select_profile.*
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.DialogSelectProfileBinding
 
-class SelectProfileDialog : BottomSheetDialogFragment() {
+class SelectProfileDialog : BaseBottomSheetFragment<DialogSelectProfileBinding>() {
 
     private val selectProfileAdapter by lazy {
         SelectProfileAdapter(
@@ -33,21 +31,21 @@ class SelectProfileDialog : BottomSheetDialogFragment() {
         )
     }
 
-    companion object {
-        fun newInstance(): SelectProfileDialog = SelectProfileDialog()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_select_profile, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        selectProfileRecycler.apply {
+        binding.selectProfileRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = selectProfileAdapter
         }
     }
+
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): DialogSelectProfileBinding = DialogSelectProfileBinding.inflate(
+        inflater, container, false
+    )
 }

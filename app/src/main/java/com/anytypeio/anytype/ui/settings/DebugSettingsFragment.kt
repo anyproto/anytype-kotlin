@@ -7,18 +7,20 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.databinding.FragmentDebugSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
 import com.anytypeio.anytype.domain.dataview.interactor.DebugLocalStore
 import com.anytypeio.anytype.domain.dataview.interactor.DebugSync
-import kotlinx.android.synthetic.main.fragment_debug_settings.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -26,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
+class DebugSettingsFragment : BaseFragment<FragmentDebugSettingsBinding>(R.layout.fragment_debug_settings) {
 
     @Inject
     lateinit var useCustomContextMenu: UseCustomContextMenu
@@ -50,7 +52,7 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
             )
         }
 
-        btnSync.setOnClickListener {
+        binding.btnSync.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 debugSync.invoke(Unit).proceed(
                     failure = {},
@@ -59,7 +61,7 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
             }
         }
 
-        btnLocalStore.setOnClickListener {
+        binding.btnLocalStore.setOnClickListener {
             val directory = File(requireContext().getExternalFilesDir(null), "debugLocalStore")
             directory.mkdir()
             viewLifecycleOwner.lifecycleScope.launch {
@@ -70,16 +72,16 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
             }
         }
 
-        tvSync.setOnClickListener {
+        binding.tvSync.setOnClickListener {
             val cm = activity?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            cm.text = tvSync.text
+            cm.text = binding.tvSync.text
             requireContext().toast("Sync status is copied to the clipboard")
         }
     }
 
     private fun showStatus(msg: String) {
-        scrollContainer.visible()
-        tvSync.text = msg
+        binding.scrollContainer.visible()
+        binding.tvSync.text = msg
     }
 
     private fun saveToFile(status: String) {
@@ -130,4 +132,11 @@ class DebugSettingsFragment : BaseFragment(R.layout.fragment_debug_settings) {
     override fun releaseDependencies() {
         componentManager().debugSettingsComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentDebugSettingsBinding = FragmentDebugSettingsBinding.inflate(
+        inflater, container, false
+    )
 }

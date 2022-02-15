@@ -8,30 +8,24 @@ import android.view.ViewGroup
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
-import kotlinx.android.synthetic.main.fragment_relation_file_value_action.*
+import com.anytypeio.anytype.databinding.FragmentRelationFileValueActionBinding
 
-class FileActionsFragment : BaseDialogFragment() {
+class FileActionsFragment : BaseDialogFragment<FragmentRelationFileValueActionBinding>() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_file_value_action, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnAdd.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
             withParent<FileActionReceiver> { onFileValueActionAdd() }
             dismiss()
         }
-        btnUploadFromGallery.setOnClickListener {
+        binding.btnUploadFromGallery.setOnClickListener {
             withParent<FileActionReceiver> { onFileValueActionUploadFromGallery() }
             dismiss()
         }
-        btnUploadFromStorage.setOnClickListener {
+        binding.btnUploadFromStorage.setOnClickListener {
             withParent<FileActionReceiver> { onFileValueActionUploadFromStorage() }
             dismiss()
         }
@@ -50,6 +44,13 @@ class FileActionsFragment : BaseDialogFragment() {
             setWindowAnimations(R.style.DefaultBottomDialogAnimation)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationFileValueActionBinding = FragmentRelationFileValueActionBinding.inflate(
+        inflater, container, false
+    )
 
     interface FileActionReceiver {
         fun onFileValueActionAdd()

@@ -17,17 +17,17 @@ import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentRelationListBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
-import kotlinx.android.synthetic.main.fragment_relation_list.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-open class RelationListFragment : BaseBottomSheetFragment(),
+open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver {
 
@@ -68,24 +68,18 @@ open class RelationListFragment : BaseBottomSheetFragment(),
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_list, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
         }
-        recycler.apply {
+        binding.recycler.apply {
             adapter = docRelationAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(
@@ -94,10 +88,10 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                 }
             )
         }
-        btnPlus.setOnClickListener {
+        binding.btnPlus.setOnClickListener {
             RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
         }
-        btnEditOrDone.setOnClickListener {
+        binding.btnEditOrDone.setOnClickListener {
             vm.onEditOrDoneClicked()
         }
     }
@@ -106,7 +100,7 @@ open class RelationListFragment : BaseBottomSheetFragment(),
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
             if (mode == MODE_ADD) {
-                searchBar.visible()
+                binding.searchBar.root.visible()
                 val queries = searchRelationInput.textChanges()
                     .onStart { emit(searchRelationInput.text.toString()) }
                 val views = vm.views.combine(queries) { views, query ->
@@ -127,18 +121,18 @@ open class RelationListFragment : BaseBottomSheetFragment(),
                 }
                 subscribe(views) { docRelationAdapter.update(it) }
             } else {
-                searchBar.gone()
+                binding.searchBar.root.gone()
                 subscribe(vm.views) { docRelationAdapter.update(it) }
             }
             subscribe(vm.commands) { command -> execute(command) }
             subscribe(vm.toasts) { toast(it) }
             subscribe(vm.isEditMode) { isEditMode ->
                 if (isEditMode) {
-                    btnEditOrDone.setText(R.string.done)
-                    btnPlus.invisible()
+                    binding.btnEditOrDone.setText(R.string.done)
+                    binding.btnPlus.invisible()
                 } else {
-                    btnPlus.visible()
-                    btnEditOrDone.setText(R.string.edit)
+                    binding.btnPlus.visible()
+                    binding.btnEditOrDone.setText(R.string.edit)
                 }
             }
         }
@@ -235,6 +229,13 @@ open class RelationListFragment : BaseBottomSheetFragment(),
     override fun releaseDependencies() {
         componentManager().documentRelationComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationListBinding = FragmentRelationListBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: String, target: String?, mode: Int) = RelationListFragment().apply {

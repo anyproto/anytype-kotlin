@@ -11,21 +11,20 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_relation_text_value.*
 import javax.inject.Inject
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
-open class RelationTextValueFragment : BaseBottomSheetFragment() {
+open class RelationTextValueFragment : BaseBottomSheetFragment<FragmentRelationTextValueBinding>() {
 
     @Inject
     lateinit var factory: RelationTextValueViewModel.Factory
@@ -59,15 +58,9 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_text_value, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = relationValueAdapter
         }
@@ -76,7 +69,7 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.title) { tvRelationHeader.text = it }
+        jobs += lifecycleScope.subscribe(vm.title) { binding.tvRelationHeader.text = it }
         super.onStart()
         vm.onStart(relationId = relationId, recordId = objectId)
     }
@@ -129,7 +122,7 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
     }
 
     private fun dispatchTextResultAndExit(txt: String) {
-        recycler.hideKeyboard()
+        binding.recycler.hideKeyboard()
         withParent<TextValueEditReceiver> {
             onTextValueChanged(
                 ctx = ctx,
@@ -142,7 +135,7 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
     }
 
     private fun dispatchNumberResultAndExit(number: Double?) {
-        recycler.hideKeyboard()
+        binding.recycler.hideKeyboard()
         withParent<TextValueEditReceiver> {
             onNumberValueChanged(
                 ctx = ctx,
@@ -165,6 +158,7 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
                             bottomSheet.hideKeyboard()
                         }
                     }
+
                     override fun onStateChanged(bottomSheet: View, newState: Int) {}
                 })
             }
@@ -186,6 +180,13 @@ open class RelationTextValueFragment : BaseBottomSheetFragment() {
             componentManager().relationTextValueComponent.release(ctx)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationTextValueBinding = FragmentRelationTextValueBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

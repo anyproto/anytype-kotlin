@@ -7,19 +7,18 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentRelationDateValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.DateValueCommand
 import com.anytypeio.anytype.presentation.sets.DateValueView
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
-import kotlinx.android.synthetic.main.fragment_relation_date_value.*
 import javax.inject.Inject
 
-open class RelationDateValueFragment : BaseBottomSheetFragment(),
+open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationDateValueBinding>(),
     DatePickerFragment.DatePickerReceiver {
 
     @Inject
@@ -31,26 +30,22 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
     private val relationId get() = argString(RELATION_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_date_value, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setTransparentBackground()
-        btnBottomAction.setOnClickListener { vm.onActionClicked() }
-        tvNoDate.setOnClickListener { vm.onNoDateClicked() }
-        ivExactDayCheck.setOnClickListener { vm.onExactDayClicked() }
-        tvExactDay.setOnClickListener { vm.onExactDayClicked() }
-        tvDate.setOnClickListener { vm.onExactDayClicked() }
-        tvToday.setOnClickListener { vm.onTodayClicked() }
-        ivTodayCheck.setOnClickListener { vm.onTodayClicked() }
-        tvTomorrow.setOnClickListener { vm.onTomorrowClicked() }
-        ivTomorrowCheck.setOnClickListener { vm.onTomorrowClicked() }
-        tvYesterday.setOnClickListener { vm.onYesterdayClicked() }
-        ivYesterdayCheck.setOnClickListener { vm.onYesterdayClicked() }
+        with(binding) {
+            btnBottomAction.setOnClickListener { vm.onActionClicked() }
+            tvNoDate.setOnClickListener { vm.onNoDateClicked() }
+            ivExactDayCheck.setOnClickListener { vm.onExactDayClicked() }
+            tvExactDay.setOnClickListener { vm.onExactDayClicked() }
+            tvDate.setOnClickListener { vm.onExactDayClicked() }
+            tvToday.setOnClickListener { vm.onTodayClicked() }
+            ivTodayCheck.setOnClickListener { vm.onTodayClicked() }
+            tvTomorrow.setOnClickListener { vm.onTomorrowClicked() }
+            ivTomorrowCheck.setOnClickListener { vm.onTomorrowClicked() }
+            tvYesterday.setOnClickListener { vm.onYesterdayClicked() }
+            ivYesterdayCheck.setOnClickListener { vm.onYesterdayClicked() }
+        }
     }
 
     override fun onStart() {
@@ -66,28 +61,30 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
     }
 
     private fun observeState(state: DateValueView) {
-        tvRelationHeader.text = state.title
-        ivNoDateCheck.invisible()
-        ivTodayCheck.invisible()
-        ivYesterdayCheck.invisible()
-        ivTomorrowCheck.invisible()
-        ivExactDayCheck.invisible()
-        tvDate.text = null
-        if (state.isToday) {
-            ivTodayCheck.visible()
-        }
-        if (state.isYesterday) {
-            ivYesterdayCheck.visible()
-        }
-        if (state.isTomorrow) {
-            ivTomorrowCheck.visible()
-        }
-        if (state.exactDayFormat != null) {
-            tvDate.text = state.exactDayFormat
-            ivExactDayCheck.visible()
-        }
-        if (state.timeInSeconds == null) {
-            ivNoDateCheck.visible()
+        with(binding) {
+            tvRelationHeader.text = state.title
+            ivNoDateCheck.invisible()
+            ivTodayCheck.invisible()
+            ivYesterdayCheck.invisible()
+            ivTomorrowCheck.invisible()
+            ivExactDayCheck.invisible()
+            tvDate.text = null
+            if (state.isToday) {
+                ivTodayCheck.visible()
+            }
+            if (state.isYesterday) {
+                ivYesterdayCheck.visible()
+            }
+            if (state.isTomorrow) {
+                ivTomorrowCheck.visible()
+            }
+            if (state.exactDayFormat != null) {
+                tvDate.text = state.exactDayFormat
+                ivExactDayCheck.visible()
+            }
+            if (state.timeInSeconds == null) {
+                ivNoDateCheck.visible()
+            }
         }
     }
 
@@ -138,6 +135,13 @@ open class RelationDateValueFragment : BaseBottomSheetFragment(),
             componentManager().objectObjectRelationDateValueComponet.release(ctx)
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationDateValueBinding = FragmentRelationDateValueBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
 

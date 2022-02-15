@@ -14,12 +14,12 @@ import com.anytypeio.anytype.core_ui.features.wallpaper.WallpaperSelectAdapter
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentWallpaperSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperSelectViewModel
-import kotlinx.android.synthetic.main.fragment_wallpaper_select.*
 import javax.inject.Inject
 
-class WallpaperSelectFragment : BaseBottomSheetFragment() {
+class WallpaperSelectFragment : BaseBottomSheetFragment<FragmentWallpaperSelectBinding>() {
 
     @Inject
     lateinit var factory: WallpaperSelectViewModel.Factory
@@ -30,16 +30,10 @@ class WallpaperSelectFragment : BaseBottomSheetFragment() {
         WallpaperSelectAdapter { vm.onWallpaperSelected(it) }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_wallpaper_select, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val spacing = requireContext().dimen(R.dimen.cover_gallery_item_spacing).toInt()
-        wallpaperRecycler.apply {
+        binding.wallpaperRecycler.apply {
             adapter = wallpaperSelectAdapter
             layoutManager = GridLayoutManager(context, 3).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -86,4 +80,11 @@ class WallpaperSelectFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().wallpaperSelectComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentWallpaperSelectBinding = FragmentWallpaperSelectBinding.inflate(
+        inflater, container, false
+    )
 }

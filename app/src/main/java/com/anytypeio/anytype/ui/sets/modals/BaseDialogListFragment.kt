@@ -6,7 +6,6 @@ import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
-import kotlinx.android.synthetic.main.fragment_list.*
 
 abstract class BaseDialogListFragment : DialogFragment() {
 
@@ -28,7 +27,7 @@ abstract class BaseDialogListFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAdapter(recycler)
+        setAdapter(view.findViewById(R.id.recycler))
     }
 
     override fun onStart() {

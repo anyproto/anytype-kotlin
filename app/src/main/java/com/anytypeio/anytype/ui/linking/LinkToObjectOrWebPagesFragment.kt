@@ -18,43 +18,37 @@ import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.ObjectLinksAdapter
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentLinkToObjectOrWebBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_link_to_object_or_web.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
+class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment<FragmentLinkToObjectOrWebBinding>() {
 
     private val vm by viewModels<LinkToObjectOrWebViewModel> { factory }
 
     @Inject
     lateinit var factory: LinkToObjectOrWebViewModelFactory
 
-    private val clearSearchText: View get() = searchView.findViewById(R.id.clearSearchText)
-    private val filterInputField: EditText get() = searchView.findViewById(R.id.filterInputField)
+    private val clearSearchText: View get() = binding.searchView.root.findViewById(R.id.clearSearchText)
+    private val filterInputField: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
     private val uri get() = arg<String>(LINK_TO_OBJ_OR_WEB_FILTER_ARG)
 
     private val objectLinksAdapter by lazy {
         ObjectLinksAdapter(onClicked = { vm.onClicked(it) })
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_link_to_object_or_web, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupFullHeight()
         setTransparent()
-        BottomSheetBehavior.from(sheet).apply {
+        BottomSheetBehavior.from(binding.sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
             skipCollapsed = true
@@ -78,14 +72,14 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
                 true
             }
         }
-        recyclerView.invisible()
-        tvScreenStateMessage.invisible()
-        progressBar.invisible()
+        binding.recyclerView.invisible()
+        binding.tvScreenStateMessage.invisible()
+        binding.progressBar.invisible()
         clearSearchText.setOnClickListener {
             filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
             clearSearchText.invisible()
         }
-        with(recyclerView) {
+        with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = objectLinksAdapter
         }
@@ -137,10 +131,10 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     private fun state(state: LinkToObjectOrWebViewModel.ViewState) {
         when (state) {
             LinkToObjectOrWebViewModel.ViewState.Init -> {
-                recyclerView.invisible()
+                binding.recyclerView.invisible()
             }
             is LinkToObjectOrWebViewModel.ViewState.Success -> {
-                recyclerView.visible()
+                binding.recyclerView.visible()
                 objectLinksAdapter.submitList(state.items)
             }
             is LinkToObjectOrWebViewModel.ViewState.SetFilter -> {
@@ -150,14 +144,14 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     }
 
     private fun setupFullHeight() {
-        val lp = (root.layoutParams as FrameLayout.LayoutParams)
+        val lp = (binding.root.layoutParams as FrameLayout.LayoutParams)
         val metrics = Resources.getSystem().displayMetrics
         lp.height = metrics.heightPixels - requireActivity().statusBarHeight
-        root.layoutParams = lp
+        binding.root.layoutParams = lp
     }
 
     private fun setTransparent() {
-        with(root) {
+        with(binding.root) {
             background = null
             (parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
         }
@@ -170,6 +164,13 @@ class LinkToObjectOrWebPagesFragment() : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().linkToObjectOrWebComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentLinkToObjectOrWebBinding = FragmentLinkToObjectOrWebBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val LINK_TO_OBJ_OR_WEB_FILTER_ARG = "link-to-object-or-web.filter.arg"

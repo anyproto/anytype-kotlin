@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.editor
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -10,11 +12,12 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.databinding.FragmentCreateObjectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
 import javax.inject.Inject
 
-class CreateObjectFragment : BaseFragment(R.layout.fragment_create_object) {
+class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.fragment_create_object) {
 
     @Inject
     lateinit var factory: CreateObjectViewModel.Factory
@@ -51,6 +54,13 @@ class CreateObjectFragment : BaseFragment(R.layout.fragment_create_object) {
     override fun releaseDependencies() {
         componentManager().createObjectComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateObjectBinding = FragmentCreateObjectBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val TYPE_KEY = "arg.ui.editor.create.type"

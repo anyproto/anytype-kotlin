@@ -21,19 +21,18 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_link_to_object.progressBar
-import kotlinx.android.synthetic.main.fragment_object_search.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class LinkToObjectFragment : BaseBottomSheetFragment() {
+class LinkToObjectFragment : BaseBottomSheetFragment<FragmentObjectSearchBinding>() {
 
     private val vm by viewModels<LinkToObjectViewModel> { factory }
 
@@ -52,17 +51,11 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_object_search, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupFullHeight()
         setTransparent()
-        BottomSheetBehavior.from(sheet).apply {
+        BottomSheetBehavior.from(binding.sheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             isHideable = true
             skipCollapsed = true
@@ -77,9 +70,9 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
                 }
             )
         }
-        vm.state.observe(viewLifecycleOwner, { observe(it) })
-        clearSearchText = searchView.findViewById(R.id.clearSearchText)
-        filterInputField = searchView.findViewById(R.id.filterInputField)
+        vm.state.observe(viewLifecycleOwner) { observe(it) }
+        clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
+        filterInputField = binding.searchView.root.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
         filterInputField.imeOptions = EditorInfo.IME_ACTION_DONE
         filterInputField.setOnEditorActionListener { _, actionId, _ ->
@@ -108,38 +101,49 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
     private fun observe(state: ObjectSearchView) {
         when (state) {
             ObjectSearchView.Loading -> {
-                recyclerView.invisible()
-                tvScreenStateMessage.invisible()
-                tvScreenStateSubMessage.invisible()
-                progressBar.visible()
+                with(binding) {
+                    recyclerView.invisible()
+                    tvScreenStateMessage.invisible()
+                    tvScreenStateSubMessage.invisible()
+                    progressBar.visible()
+                }
             }
             is ObjectSearchView.Success -> {
-                progressBar.invisible()
-                tvScreenStateMessage.invisible()
-                tvScreenStateSubMessage.invisible()
-                recyclerView.visible()
-                moveToAdapter.submitList(state.objects)
+                with(binding) {
+                    progressBar.invisible()
+                    tvScreenStateMessage.invisible()
+                    tvScreenStateSubMessage.invisible()
+                    recyclerView.visible()
+                    moveToAdapter.submitList(state.objects)
+                }
             }
             ObjectSearchView.EmptyPages -> {
-                progressBar.invisible()
-                recyclerView.invisible()
-                tvScreenStateMessage.visible()
-                tvScreenStateMessage.text = getString(R.string.search_empty_pages)
-                tvScreenStateSubMessage.invisible()
+                with(binding) {
+                    progressBar.invisible()
+                    recyclerView.invisible()
+                    tvScreenStateMessage.visible()
+                    tvScreenStateMessage.text = getString(R.string.search_empty_pages)
+                    tvScreenStateSubMessage.invisible()
+                }
             }
             is ObjectSearchView.NoResults -> {
-                progressBar.invisible()
-                recyclerView.invisible()
-                tvScreenStateMessage.visible()
-                tvScreenStateMessage.text = getString(R.string.search_no_results, state.searchText)
-                tvScreenStateSubMessage.visible()
+                with(binding) {
+                    progressBar.invisible()
+                    recyclerView.invisible()
+                    tvScreenStateMessage.visible()
+                    tvScreenStateMessage.text =
+                        getString(R.string.search_no_results, state.searchText)
+                    tvScreenStateSubMessage.visible()
+                }
             }
             is ObjectSearchView.Error -> {
-                progressBar.invisible()
-                recyclerView.invisible()
-                tvScreenStateMessage.visible()
-                tvScreenStateMessage.text = state.error
-                tvScreenStateSubMessage.invisible()
+                with(binding) {
+                    progressBar.invisible()
+                    recyclerView.invisible()
+                    tvScreenStateMessage.visible()
+                    tvScreenStateMessage.text = state.error
+                    tvScreenStateSubMessage.invisible()
+                }
             }
             else -> Timber.d("Skipping state: $state")
         }
@@ -170,13 +174,13 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
     }
 
     private fun initialize() {
-        with(tvScreenTitle) {
+        with(binding.tvScreenTitle) {
             text = getString(R.string.link_to)
             visible()
         }
-        recyclerView.invisible()
-        tvScreenStateMessage.invisible()
-        progressBar.invisible()
+        binding.recyclerView.invisible()
+        binding.tvScreenStateMessage.invisible()
+        binding.progressBar.invisible()
         clearSearchText.setOnClickListener {
             filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
             clearSearchText.invisible()
@@ -191,7 +195,7 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
                 clearSearchText.visible()
             }
         }
-        with(recyclerView) {
+        with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = moveToAdapter
             addItemDecoration(
@@ -203,14 +207,14 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
     }
 
     private fun setupFullHeight() {
-        val lp = (root.layoutParams as FrameLayout.LayoutParams)
+        val lp = (binding.root.layoutParams as FrameLayout.LayoutParams)
         lp.height =
             Resources.getSystem().displayMetrics.heightPixels - requireActivity().statusBarHeight
-        root.layoutParams = lp
+        binding.root.layoutParams = lp
     }
 
     private fun setTransparent() {
-        with(root) {
+        with(binding.root) {
             background = null
             (parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
         }
@@ -223,6 +227,13 @@ class LinkToObjectFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().linkToObjectComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentObjectSearchBinding = FragmentObjectSearchBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val ARG_TARGET = "arg.link_to.target"

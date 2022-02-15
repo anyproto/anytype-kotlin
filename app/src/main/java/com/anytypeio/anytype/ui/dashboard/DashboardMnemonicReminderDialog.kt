@@ -10,17 +10,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.databinding.DialogDashboardKeychainPhraseBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.keychain.KeychainPhraseViewModel
 import com.anytypeio.anytype.presentation.keychain.KeychainPhraseViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.dialog_keychain_phrase.*
 import javax.inject.Inject
 
 class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<ViewState<String>> {
+
+    private var _binding: DialogDashboardKeychainPhraseBinding? = null
+    private val binding: DialogDashboardKeychainPhraseBinding get() = _binding!!
 
     private val vm : KeychainPhraseViewModel by viewModels { factory }
 
@@ -41,30 +43,38 @@ class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<Vi
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_dashboard_keychain_phrase, container, false)
+    ): View? {
+        _binding = DialogDashboardKeychainPhraseBinding.inflate(inflater, container, false)
+        return _binding?.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBlur()
-        keychain.setOnClickListener {
-            if (keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
+        binding.keychain.setOnClickListener {
+            if (binding.keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
                 removeBlur()
             }
         }
-        btnCopy.setOnClickListener {
+        binding.btnCopy.setOnClickListener {
             copyMnemonicToClipboard()
         }
-        root.setOnClickListener {
+        binding.root.setOnClickListener {
             setBlur()
         }
 
         vm.state.observe(viewLifecycleOwner, this)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun copyMnemonicToClipboard() {
         try {
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText(MNEMONIC_LABEL, keychain.text.toString())
+            val clip = ClipData.newPlainText(MNEMONIC_LABEL, binding.keychain.text.toString())
             clipboard.setPrimaryClip(clip)
             toast("Mnemonic copied to clipboard.")
         } catch (e: Exception) {
@@ -75,7 +85,7 @@ class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<Vi
     override fun onChanged(state: ViewState<String>) {
         when (state) {
             is ViewState.Success -> {
-                keychain.text = state.data
+                binding.keychain.text = state.data
             }
             is ViewState.Error -> {
                 // TODO
@@ -83,17 +93,20 @@ class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<Vi
             is ViewState.Loading -> {
                 // TODO
             }
+            is ViewState.Init -> {
+
+            }
         }
     }
 
-    private fun setBlur() = with(keychain) {
+    private fun setBlur() = with(binding.keychain) {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         val radius = textSize / 3
         val filter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
         paint.maskFilter = filter
     }
 
-    private fun removeBlur() = with(keychain) {
+    private fun removeBlur() = with(binding.keychain) {
         setLayerType(View.LAYER_TYPE_NONE, null)
         paint.maskFilter = null
         isFocusable = true

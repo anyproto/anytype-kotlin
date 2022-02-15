@@ -15,13 +15,13 @@ import com.anytypeio.anytype.core_ui.features.sets.ViewerSortAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentViewerSortBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel.ScreenState
-import kotlinx.android.synthetic.main.fragment_viewer_sort.*
 import javax.inject.Inject
 
-open class ViewerSortFragment : BaseBottomSheetFragment() {
+open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
 
@@ -39,7 +39,7 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
         )
     }
 
-    private lateinit var dividerItem : DividerItemDecoration
+    private lateinit var dividerItem: DividerItemDecoration
     private lateinit var dividerItemEdit: DividerItemDecoration
 
     private fun navigateToSelectSort() {
@@ -52,12 +52,6 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
         fr.show(parentFragmentManager, null)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_viewer_sort, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
@@ -66,16 +60,16 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
         dividerItemEdit = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
             setDrawable(drawable(R.drawable.decoration_viewer_sort_edit))
         }
-        viewerSortRecycler.apply {
+        binding.viewerSortRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewerSortAdapter
         }
         with(lifecycleScope) {
-            subscribe(btnAdd.clicks()) { navigateToSelectSort() }
-            subscribe(btnEditSortOrDone.clicks()) {
-                if (btnEditSortOrDone.text == getString(R.string.edit))
+            subscribe(binding.btnAdd.clicks()) { navigateToSelectSort() }
+            subscribe(binding.btnEditSortOrDone.clicks()) {
+                if (binding.btnEditSortOrDone.text == getString(R.string.edit))
                     vm.onEditClicked()
-                else if (btnEditSortOrDone.text == getString(R.string.done))
+                else if (binding.btnEditSortOrDone.text == getString(R.string.done))
                     vm.onDoneClicked()
             }
         }
@@ -93,27 +87,33 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
     private fun render(state: ScreenState) {
         when (state) {
             ScreenState.READ -> {
-                btnEditSortOrDone.setText(R.string.edit)
-                btnAdd.visible()
-                viewerSortRecycler.apply {
-                    removeItemDecoration(dividerItemEdit)
-                    addItemDecoration(dividerItem)
+                with(binding) {
+                    btnEditSortOrDone.setText(R.string.edit)
+                    btnAdd.visible()
+                    viewerSortRecycler.apply {
+                        removeItemDecoration(dividerItemEdit)
+                        addItemDecoration(dividerItem)
+                    }
+                    txtEmptyState.gone()
                 }
-                txtEmptyState.gone()
             }
             ScreenState.EDIT -> {
-                btnEditSortOrDone.setText(R.string.done)
-                btnAdd.invisible()
-                viewerSortRecycler.apply {
-                    removeItemDecoration(dividerItem)
-                    addItemDecoration(dividerItemEdit)
+                with(binding) {
+                    btnEditSortOrDone.setText(R.string.done)
+                    btnAdd.invisible()
+                    viewerSortRecycler.apply {
+                        removeItemDecoration(dividerItem)
+                        addItemDecoration(dividerItemEdit)
+                    }
+                    txtEmptyState.gone()
                 }
-                txtEmptyState.gone()
             }
             ScreenState.EMPTY -> {
-                txtEmptyState.visible()
-                btnEditSortOrDone.text = ""
-                btnAdd.visible()
+                with(binding) {
+                    txtEmptyState.visible()
+                    btnEditSortOrDone.text = ""
+                    btnAdd.visible()
+                }
             }
         }
     }
@@ -125,6 +125,13 @@ open class ViewerSortFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().viewerSortComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentViewerSortBinding = FragmentViewerSortBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id): ViewerSortFragment = ViewerSortFragment().apply {

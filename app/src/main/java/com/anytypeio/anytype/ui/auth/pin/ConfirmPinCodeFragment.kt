@@ -2,19 +2,18 @@ package com.anytypeio.anytype.feature_login.ui.login.presentation.ui.pin
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.databinding.FragmentConfirmPinCodeBinding
 import com.anytypeio.anytype.presentation.auth.pin.ConfirmPinCodeViewModel
 import com.anytypeio.anytype.presentation.auth.pin.ConfirmPinCodeViewModelFactory
 import com.anytypeio.anytype.ui.auth.pin.NumPadAdapter
 import com.anytypeio.anytype.ui.auth.pin.PinCodeFragment
-import kotlinx.android.synthetic.main.fragment_confirm_pin_code.*
 import javax.inject.Inject
 
-class ConfirmPinCodeFragment : PinCodeFragment(R.layout.fragment_confirm_pin_code) {
+class ConfirmPinCodeFragment : PinCodeFragment<FragmentConfirmPinCodeBinding>(R.layout.fragment_confirm_pin_code) {
 
     @Inject
     lateinit var factory: ConfirmPinCodeViewModelFactory
@@ -32,15 +31,9 @@ class ConfirmPinCodeFragment : PinCodeFragment(R.layout.fragment_confirm_pin_cod
         )
     }
 
-    override fun provideDotRecycler(): RecyclerView = dotRecycler
-    override fun provideNumPadRecycler(): RecyclerView = numPadRecycler
+    override fun provideDotRecycler(): RecyclerView = binding.dotRecycler
+    override fun provideNumPadRecycler(): RecyclerView = binding.numPadRecycler
     override fun provideNumPadAdapter(): NumPadAdapter = numPadAdapter
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_confirm_pin_code, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -64,4 +57,11 @@ class ConfirmPinCodeFragment : PinCodeFragment(R.layout.fragment_confirm_pin_cod
     override fun releaseDependencies() {
 
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentConfirmPinCodeBinding = FragmentConfirmPinCodeBinding.inflate(
+        inflater, container, false
+    )
 }

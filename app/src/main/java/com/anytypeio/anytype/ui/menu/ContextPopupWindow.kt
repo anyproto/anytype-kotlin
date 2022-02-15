@@ -15,15 +15,13 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.HorizontalScrollView
-import android.widget.PopupWindow
+import android.widget.*
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.menu.ContextMenuType
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.ext.isSpanInRange
-import kotlinx.android.synthetic.main.popup_context_menu.view.*
 
 class ContextPopupWindow @JvmOverloads constructor(
     type: ContextMenuType,
@@ -106,37 +104,37 @@ class ContextPopupWindow @JvmOverloads constructor(
     }
 
     private fun init(view: View, ids: List<Int>, editable: Editable, textRange: IntRange) {
-        view.btnCopy.apply {
+        view.findViewById<View>(R.id.btnCopy).apply {
             if (this.id in ids) {
                 visible()
-                view.divCopy.visible()
+                view.findViewById<View>(R.id.divCopy).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Copy)
             }
         }
-        view.btnCut.apply {
+        view.findViewById<View>(R.id.btnCut).apply {
             if (this.id in ids) {
                 visible()
-                view.divCut.visible()
+                view.findViewById<View>(R.id.divCut).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Cut)
             }
         }
-        view.btnPaste.apply {
+        view.findViewById<View>(R.id.btnPaste).apply {
             if (this.id in ids) {
                 visible()
-                view.divPaste.visible()
+                view.findViewById<View>(R.id.divPaste).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Paste)
             }
         }
-        view.btnBold.apply {
+        view.findViewById<ImageView>(R.id.btnBold).apply {
             if (this.id in ids) {
                 visible()
-                view.divBold.visible()
+                view.findViewById<View>(R.id.divBold).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Bold)
@@ -149,10 +147,10 @@ class ContextPopupWindow @JvmOverloads constructor(
                 imageTintList = tintColor
             }
         }
-        view.btnItalic.apply {
+        view.findViewById<ImageView>(R.id.btnItalic).apply {
             if (this.id in ids) {
                 visible()
-                view.divItalic.visible()
+                view.findViewById<View>(R.id.divItalic).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Italic)
@@ -165,10 +163,10 @@ class ContextPopupWindow @JvmOverloads constructor(
                 imageTintList = tintColor
             }
         }
-        view.btnStroke.apply {
+        view.findViewById<ImageView>(R.id.btnStroke).apply {
             if (this.id in ids) {
                 visible()
-                view.divStroke.visible()
+                view.findViewById<View>(R.id.divStroke).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Stroke)
@@ -181,10 +179,10 @@ class ContextPopupWindow @JvmOverloads constructor(
                 imageTintList = tintColor
             }
         }
-        view.btnCode.apply {
+        view.findViewById<ImageView>(R.id.btnCode).apply {
             if (this.id in ids) {
                 visible()
-                view.divCode.visible()
+                view.findViewById<View>(R.id.divCode).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Code)
@@ -197,10 +195,10 @@ class ContextPopupWindow @JvmOverloads constructor(
                 imageTintList = tintColor
             }
         }
-        view.btnLink.apply {
+        view.findViewById<ImageView>(R.id.btnLink).apply {
             if (this.id in ids) {
                 visible()
-                view.divLink.visible()
+                view.findViewById<View>(R.id.divLink).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Link)
@@ -213,10 +211,10 @@ class ContextPopupWindow @JvmOverloads constructor(
                 imageTintList = tintColor
             }
         }
-        view.btnColor.apply {
+        view.findViewById<TextView>(R.id.btnColor).apply {
             if (this.id in ids) {
                 visible()
-                view.divColor.visible()
+                view.findViewById<View>(R.id.divColor).visible()
             }
             setOnClickListener {
                 onContextMenuButtonClicked(ContextMenuButtonClick.Color)
@@ -229,7 +227,7 @@ class ContextPopupWindow @JvmOverloads constructor(
                 setTextColor(tintColor)
             }
         }
-        view.btnBackground.apply {
+        view.findViewById<TextView>(R.id.btnBackground).apply {
             if (this.id in ids) {
                 visible()
             }
@@ -245,17 +243,19 @@ class ContextPopupWindow @JvmOverloads constructor(
             }
         }
 
-        val arrowRight = view.arrowRightContainer
+        val arrowRight = view.findViewById<FrameLayout>(R.id.arrowRightContainer)
         arrowRight.setOnClickListener {
-            view.scrollContainer.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
+            view.findViewById<HorizontalScrollView>(R.id.scrollContainer)
+                .fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
-        view.scrollContainer.setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
-            if (scrollX != oldScrollX) {
-                if (scrollX == 0) arrowRight.visible() else arrowRight.invisible()
-            } else {
-                arrowRight.visible()
+        view.findViewById<HorizontalScrollView>(R.id.scrollContainer)
+            .setOnScrollChangeListener { _, scrollX, _, oldScrollX, _ ->
+                if (scrollX != oldScrollX) {
+                    if (scrollX == 0) arrowRight.visible() else arrowRight.invisible()
+                } else {
+                    arrowRight.visible()
+                }
             }
-        }
     }
 
     private fun createEnterAnimation(view: View): AnimatorSet? {
@@ -289,7 +289,7 @@ class ContextPopupWindow @JvmOverloads constructor(
         val availableHeightBelowContent = viewPortOnScreen.bottom - selectedContentBounds.bottom
         val margin = popupMargin * 2
         val toolbarHeightWithVerticalMargin = popupHeight + margin
-        
+
         val y = if (availableHeightAboveContent >= toolbarHeightWithVerticalMargin) {
             // There is enough space at the top of the content.
             selectedContentBounds.top - toolbarHeightWithVerticalMargin
@@ -314,49 +314,49 @@ class ContextPopupWindow @JvmOverloads constructor(
      * Updates buttons state, when markup changed in text
      */
     fun updateMarkupButtons(textRange: IntRange, spanned: Spanned) {
-        contentView.btnBold.apply {
+        contentView.findViewById<ImageView>(R.id.btnBold).apply {
             imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Bold::class.java
                 )
             ) tintColor else null
         }
-        contentView.btnItalic.apply {
+        contentView.findViewById<ImageView>(R.id.btnItalic).apply {
             imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Italic::class.java
                 )
             ) tintColor else null
         }
-        contentView.btnStroke.apply {
+        contentView.findViewById<ImageView>(R.id.btnStroke).apply {
             imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Strikethrough::class.java
                 )
             ) tintColor else null
         }
-        contentView.btnCode.apply {
+        contentView.findViewById<ImageView>(R.id.btnCode).apply {
             imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Keyboard::class.java
                 )
             ) tintColor else null
         }
-        contentView.btnLink.apply {
+        contentView.findViewById<ImageView>(R.id.btnLink).apply {
             imageTintList = if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Url::class.java
                 )
             ) tintColor else null
         }
-        contentView.btnColor.apply {
+        contentView.findViewById<TextView>(R.id.btnColor).apply {
             if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.TextColor::class.java
                 )
             ) setTextColor(tintColor) else setTextColor(textDefaultColor)
         }
-        contentView.btnBackground.apply {
+        contentView.findViewById<TextView>(R.id.btnBackground).apply {
             if (spanned.isSpanInRange(
                     textRange = textRange,
                     type = Span.Highlight::class.java

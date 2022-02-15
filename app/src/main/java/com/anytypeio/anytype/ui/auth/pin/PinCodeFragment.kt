@@ -3,15 +3,16 @@ package com.anytypeio.anytype.ui.auth.pin
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.presentation.auth.pin.PinCodeState
 
-abstract class PinCodeFragment(
+abstract class PinCodeFragment<T : ViewBinding>(
     @LayoutRes private val layout: Int
-) : BaseFragment(layout) {
+) : BaseFragment<T>(layout) {
 
     private val dotAdapter by lazy { DotAdapter() }
 

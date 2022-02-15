@@ -9,19 +9,18 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentSetObjectSetRecordNameBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
-import kotlinx.android.synthetic.main.fragment_set_object_set_record_name.*
 import javax.inject.Inject
 
-class SetObjectSetRecordNameFragment : BaseBottomSheetFragment() {
+class SetObjectSetRecordNameFragment : BaseBottomSheetFragment<FragmentSetObjectSetRecordNameBinding>() {
 
     private val ctx: String get() = argString(CONTEXT_KEY)
 
@@ -33,21 +32,15 @@ class SetObjectSetRecordNameFragment : BaseBottomSheetFragment() {
         action == EditorInfo.IME_ACTION_DONE
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_set_object_set_record_name, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        textInputField.apply {
+        binding.textInputField.apply {
             setRawInputType(TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_SENTENCES or TYPE_TEXT_FLAG_AUTO_CORRECT)
         }
-        lifecycleScope.subscribe(textInputField.editorActionEvents(handler)) {
-            textInputField.clearFocus()
-            textInputField.hideKeyboard()
-            vm.onComplete(ctx, textInputField.text.toString())
+        lifecycleScope.subscribe(binding.textInputField.editorActionEvents(handler)) {
+            binding.textInputField.clearFocus()
+            binding.textInputField.hideKeyboard()
+            vm.onComplete(ctx, binding.textInputField.text.toString())
         }
     }
 
@@ -63,6 +56,13 @@ class SetObjectSetRecordNameFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().objectSetRecordComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSetObjectSetRecordNameBinding = FragmentSetObjectSetRecordNameBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CONTEXT_KEY = "arg.object-set-record.context"

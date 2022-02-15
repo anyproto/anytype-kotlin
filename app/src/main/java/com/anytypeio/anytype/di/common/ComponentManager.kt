@@ -310,14 +310,6 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val documentAddNewBlockComponent = DependentComponentMap { ctx ->
-        editorComponent
-            .get(ctx)
-            .documentAddNewBlockComponentBuilder()
-            .documentAddNewBlockModule(DocumentAddNewBlockModule)
-            .build()
-    }
-
     val viewerFilterComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)

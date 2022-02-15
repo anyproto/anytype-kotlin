@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.sets.modals.filter
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -23,14 +26,13 @@ import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment.DatePickerReceiver
 import com.anytypeio.anytype.ui.sets.modals.PickFilterConditionFragment
 import com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFromInputFieldValueFragment.Companion.FILTER_INDEX_EMPTY
-import kotlinx.android.synthetic.main.fragment_create_or_update_filter.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 open class CreateFilterFromSelectedValueFragment :
-    BaseFragment(R.layout.fragment_create_or_update_filter),
+    BaseFragment<FragmentCreateOrUpdateFilterBinding>(R.layout.fragment_create_or_update_filter),
     UpdateConditionActionReceiver,
     DatePickerReceiver {
 
@@ -53,17 +55,17 @@ open class CreateFilterFromSelectedValueFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnBottomAction.setText(R.string.create)
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        binding.btnBottomAction.setText(R.string.create)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_options)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
         }
-        rvViewerFilterRecycler.apply {
+        binding.rvViewerFilterRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = createFilterAdapter
             addItemDecoration(
@@ -73,22 +75,22 @@ open class CreateFilterFromSelectedValueFragment :
             )
         }
         with(lifecycleScope) {
-            subscribe(tvFilterCondition.clicks()) {
+            subscribe(binding.tvFilterCondition.clicks()) {
                 vm.onConditionClicked()
             }
-            subscribe(btnBottomAction.clicks()) {
+            subscribe(binding.btnBottomAction.clicks()) {
                 vm.onCreateFilterFromSelectedValueClicked(ctx = ctx, relation = relation)
             }
             subscribe(vm.relationState.filterNotNull()) {
-                tvRelationName.text = it.title
-                ivRelationIcon.setImageResource(it.format.relationIcon(true))
+                binding.tvRelationName.text = it.title
+                binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
             }
-            subscribe(vm.optionCountState) { tvOptionCount.text = it.toString() }
+            subscribe(vm.optionCountState) { binding.tvOptionCount.text = it.toString() }
             subscribe(vm.isCompleted) { isCompleted ->
                 if (isCompleted) withParent<CreateFilterFlow> { onFilterCreated() }
             }
             subscribe(vm.conditionState) {
-                tvFilterCondition.text = it?.condition?.title
+                binding.tvFilterCondition.text = it?.condition?.title
             }
             subscribe(searchRelationInput.textChanges()) {
                 if (it.isEmpty()) {
@@ -136,10 +138,10 @@ open class CreateFilterFromSelectedValueFragment :
                     index = commands.index
                 ).show(childFragmentManager, null)
             }
-            FilterViewModel.Commands.ShowCount -> tvOptionCount.visible()
-            FilterViewModel.Commands.HideCount -> tvOptionCount.gone()
-            FilterViewModel.Commands.ShowSearchbar -> searchBar.visible()
-            FilterViewModel.Commands.HideSearchbar -> searchBar.gone()
+            FilterViewModel.Commands.ShowCount -> binding.tvOptionCount.visible()
+            FilterViewModel.Commands.HideCount -> binding.tvOptionCount.gone()
+            FilterViewModel.Commands.ShowSearchbar -> binding.searchBar.root.visible()
+            FilterViewModel.Commands.HideSearchbar -> binding.searchBar.root.gone()
             FilterViewModel.Commands.DateDivider -> setDivider(R.drawable.divider_relation_date)
             FilterViewModel.Commands.ObjectDivider -> setDivider(R.drawable.divider_relation_object)
             FilterViewModel.Commands.TagDivider -> setDivider(R.drawable.divider_relation_tag)
@@ -149,7 +151,7 @@ open class CreateFilterFromSelectedValueFragment :
     }
 
     private fun setDivider(divider: Int) {
-        rvViewerFilterRecycler.apply {
+        binding.rvViewerFilterRecycler.apply {
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(drawable(divider))
@@ -173,6 +175,13 @@ open class CreateFilterFromSelectedValueFragment :
     override fun releaseDependencies() {
         componentManager().createFilterComponent.release(ctx)
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCreateOrUpdateFilterBinding = FragmentCreateOrUpdateFilterBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         fun new(ctx: Id, relation: Id): CreateFilterFromSelectedValueFragment = CreateFilterFromSelectedValueFragment().apply {

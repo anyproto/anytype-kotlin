@@ -10,12 +10,12 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.databinding.FragmentEnterPinCodeBinding
 import com.anytypeio.anytype.presentation.auth.pin.EnterPinCodeViewModel
 import com.anytypeio.anytype.presentation.auth.pin.EnterPinCodeViewModelFactory
-import kotlinx.android.synthetic.main.fragment_enter_pin_code.*
 import javax.inject.Inject
 
-class EnterPinCodeFragment : BaseFragment(R.layout.fragment_enter_pin_code) {
+class EnterPinCodeFragment : BaseFragment<FragmentEnterPinCodeBinding>(R.layout.fragment_enter_pin_code) {
 
     @Inject
     lateinit var factory: EnterPinCodeViewModelFactory
@@ -57,7 +57,7 @@ class EnterPinCodeFragment : BaseFragment(R.layout.fragment_enter_pin_code) {
         super.onViewCreated(view, savedInstanceState)
         setupNumPad()
 
-        dotRecycler.apply {
+        binding.dotRecycler.apply {
             layoutManager = GridLayoutManager(
                 requireContext(), 1, GridLayoutManager.HORIZONTAL, false
             )
@@ -74,11 +74,13 @@ class EnterPinCodeFragment : BaseFragment(R.layout.fragment_enter_pin_code) {
         //
     }
 
-    override fun injectDependencies() {
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
 
-    }
-
-    override fun releaseDependencies() {
-
-    }
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentEnterPinCodeBinding = FragmentEnterPinCodeBinding.inflate(
+        inflater, container, false
+    )
 }

@@ -72,6 +72,7 @@ import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_COD
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
+import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -113,7 +114,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
-import kotlinx.android.synthetic.main.fragment_editor.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -124,7 +124,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
 
-open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
+open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
     TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
@@ -156,19 +156,19 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                 when (bottomSheet.id) {
-                    styleToolbarOther.id -> {
+                    binding.styleToolbarOther.id -> {
                         vm.onCloseBlockStyleExtraToolbarClicked()
                     }
-                    styleToolbarMain.id -> {
+                    binding.styleToolbarMain.id -> {
                         vm.onCloseBlockStyleToolbarClicked()
                     }
-                    styleToolbarColors.id -> {
+                    binding.styleToolbarColors.id -> {
                         vm.onCloseBlockStyleColorToolbarClicked()
                     }
-                    blockActionToolbar.id -> {
+                    binding.blockActionToolbar.id -> {
                         vm.onBlockActionPanelHidden()
                     }
-                    undoRedoToolbar.id -> {
+                    binding.undoRedoToolbar.id -> {
                         vm.onUndoRedoToolbarIsHidden()
                     }
                 }
@@ -277,27 +277,27 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun searchScrollAndMoveTarget() {
 
-        recycler.findFocus().let { child ->
+        binding.recycler.findFocus().let { child ->
             if (child is TextInputWidget) child.text
         }
 
         val centerX = screen.x / 2f
 
-        val centerY = (targeter.y + (targeter.height / 2f)) - scrollAndMoveTopMargin
+        val centerY = (binding.targeter.y + (binding.targeter.height / 2f)) - scrollAndMoveTopMargin
 
-        var target: View? = recycler.findChildViewUnder(centerX, centerY)
+        var target: View? = binding.recycler.findChildViewUnder(centerX, centerY)
 
         if (target == null) {
-            target = recycler.findChildViewUnder(centerX, centerY - 5)
+            target = binding.recycler.findChildViewUnder(centerX, centerY - 5)
             if (target == null) {
-                target = recycler.findChildViewUnder(centerX, centerY + 5)
+                target = binding.recycler.findChildViewUnder(centerX, centerY + 5)
             }
         }
 
         if (target == null) {
             scrollAndMoveTargetDescriptor.clear()
         } else {
-            val position = recycler.getChildAdapterPosition(target)
+            val position = binding.recycler.getChildAdapterPosition(target)
             val top = target.top
             val height = target.height
 
@@ -326,26 +326,26 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private val titleVisibilityDetector by lazy {
         FirstItemInvisibilityDetector { isVisible ->
             if (isVisible) {
-                topToolbar.setBackgroundColor(0)
-                topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.setBackgroundColor(0)
+                binding.topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
-                topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
                 if (blockAdapter.views.isNotEmpty()) {
                     val firstView = blockAdapter.views.first()
                     if (firstView is BlockView.Title && firstView.hasCover) {
-                        topToolbar.setStyle(overCover = true)
+                        binding.topToolbar.setStyle(overCover = true)
                     } else {
-                        topToolbar.setStyle(overCover = false)
+                        binding.topToolbar.setStyle(overCover = false)
                     }
                 }
             } else {
-                topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
-                topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
+                binding.topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
-                topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
-                topToolbar.setStyle(overCover = false)
+                binding.topToolbar.setStyle(overCover = false)
             }
         }
     }
@@ -372,7 +372,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     is Snack.ObjectSetNotFound -> {
                         Snackbar
                             .make(
-                                root,
+                                binding.root,
                                 resources.getString(R.string.snack_object_set_not_found),
                                 Snackbar.LENGTH_LONG
                             )
@@ -385,13 +385,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             jobs += subscribe(vm.footers) { footer ->
                 when (footer) {
                     EditorFooter.None -> {
-                        if (recycler.containsItemDecoration(noteHeaderDecorator)) {
-                            recycler.removeItemDecoration(noteHeaderDecorator)
+                        if (binding.recycler.containsItemDecoration(noteHeaderDecorator)) {
+                            binding.recycler.removeItemDecoration(noteHeaderDecorator)
                         }
                     }
                     EditorFooter.Note -> {
-                        if (!recycler.containsItemDecoration(noteHeaderDecorator)) {
-                            recycler.addItemDecoration(noteHeaderDecorator)
+                        if (!binding.recycler.containsItemDecoration(noteHeaderDecorator)) {
+                            binding.recycler.addItemDecoration(noteHeaderDecorator)
                         }
                     }
                 }
@@ -419,11 +419,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recycler.addOnItemTouchListener(
+        binding.recycler.addOnItemTouchListener(
             OutsideClickDetector(vm::onOutsideClicked)
         )
 
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             itemAnimator = null
@@ -431,7 +431,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             addOnScrollListener(titleVisibilityDetector)
         }
 
-        toolbar.apply {
+        binding.toolbar.apply {
             blockActionsClick()
                 .onEach { vm.onBlockToolbarBlockActionsClicked() }
                 .launchIn(lifecycleScope)
@@ -449,27 +449,27 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 .launchIn(lifecycleScope)
         }
 
-        bottomMenu
+        binding.bottomMenu
             .doneClicks()
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
-        bottomMenu
+        binding.bottomMenu
             .deleteClicks()
             .onEach { vm.onMultiSelectModeDeleteClicked() }
             .launchIn(lifecycleScope)
 
-        bottomMenu
+        binding.bottomMenu
             .copyClicks()
             .onEach { vm.onMultiSelectCopyClicked() }
             .launchIn(lifecycleScope)
 
-        bottomMenu
+        binding.bottomMenu
             .enterScrollAndMove()
             .onEach { vm.onEnterScrollAndMoveClicked() }
             .launchIn(lifecycleScope)
 
-        scrollAndMoveBottomAction
+        binding.scrollAndMoveBottomAction
             .apply
             .clicks()
             .onEach {
@@ -478,71 +478,71 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             }
             .launchIn(lifecycleScope)
 
-        scrollAndMoveBottomAction
+        binding.scrollAndMoveBottomAction
             .cancel
             .clicks()
             .onEach { vm.onExitScrollAndMoveClicked() }
             .launchIn(lifecycleScope)
 
-        bottomMenu
+        binding.bottomMenu
             .turnIntoClicks()
             .onEach { vm.onMultiSelectTurnIntoButtonClicked() }
             .launchIn(lifecycleScope)
 
-        bottomMenu
+        binding.bottomMenu
             .styleClicks()
             .onEach { vm.onMultiSelectStyleButtonClicked() }
             .launchIn(lifecycleScope)
 
-        multiSelectTopToolbar
+        binding.multiSelectTopToolbar
             .doneButton
             .clicks()
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
-        bottomToolbar
+        binding.bottomToolbar
             .homeClicks()
             .onEach { vm.onHomeButtonClicked() }
             .launchIn(lifecycleScope)
 
-        bottomToolbar
+        binding.bottomToolbar
             .backClicks()
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
-        bottomToolbar
+        binding.bottomToolbar
             .searchClicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
-        topToolbar.menu
+        binding.topToolbar.menu
             .clicks()
             .onEach { vm.onDocumentMenuClicked() }
             .launchIn(lifecycleScope)
 
-        markupToolbar
+        binding.markupToolbar
             .highlightClicks()
             .onEach { vm.onMarkupHighlightToggleClicked() }
             .launchIn(lifecycleScope)
 
-        markupToolbar
+        binding.markupToolbar
             .colorClicks()
             .onEach { vm.onMarkupColorToggleClicked() }
             .launchIn(lifecycleScope)
 
-        markupToolbar
+        binding.markupToolbar
             .linkClicks()
             .onEach { vm.onMarkupUrlClicked() }
             .launchIn(lifecycleScope)
 
-        markupToolbar
+        binding.markupToolbar
             .markup()
             .onEach { type -> vm.onStyleToolbarMarkupAction(type, null) }
             .launchIn(lifecycleScope)
 
-        blockActionToolbar.actionListener = { action -> vm.onMultiSelectAction(action) }
+        binding.blockActionToolbar.actionListener = { action -> vm.onMultiSelectAction(action) }
 
-        markupColorToolbar.onColorClickedListener = { color ->
+        binding.markupColorToolbar.onColorClickedListener = { color ->
             if (color is MarkupColorView.Text) {
                 vm.onStyleToolbarMarkupAction(
                     type = Markup.Type.TEXT_COLOR,
@@ -556,64 +556,64 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             }
         }
 
-        undoRedoToolbar.undo.clicks().onEach {
+        binding.undoRedoToolbar.undo.clicks().onEach {
             vm.onActionUndoClicked()
         }.launchIn(lifecycleScope)
 
-        undoRedoToolbar.redo.clicks().onEach {
+        binding.undoRedoToolbar.redo.clicks().onEach {
             vm.onActionRedoClicked()
         }.launchIn(lifecycleScope)
 
-        lifecycleScope.subscribe(styleToolbarMain.styles) {
+        lifecycleScope.subscribe(binding.styleToolbarMain.styles) {
             vm.onUpdateTextBlockStyle(it)
         }
 
-        lifecycleScope.subscribe(styleToolbarMain.other) {
+        lifecycleScope.subscribe(binding.styleToolbarMain.other) {
             vm.onBlockStyleToolbarOtherClicked()
         }
 
-        lifecycleScope.subscribe(styleToolbarMain.colors) {
+        lifecycleScope.subscribe(binding.styleToolbarMain.colors) {
             vm.onBlockStyleToolbarColorClicked()
         }
 
-        lifecycleScope.subscribe(styleToolbarColors.events) {
+        lifecycleScope.subscribe(binding.styleToolbarColors.events) {
             vm.onStylingToolbarEvent(it)
         }
 
-        lifecycleScope.subscribe(styleToolbarOther.actions) {
+        lifecycleScope.subscribe(binding.styleToolbarOther.actions) {
             vm.onStylingToolbarEvent(it)
         }
 
-        mentionSuggesterToolbar.setupClicks(
+        binding.mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked
         )
 
-        objectTypesToolbar.setupClicks(
+        binding.objectTypesToolbar.setupClicks(
             onItemClick = vm::onObjectTypesWidgetItemClicked,
             onSearchClick = vm::onObjectTypesWidgetSearchClicked,
             onDoneClick = vm::onObjectTypesWidgetDoneClicked
         )
 
         lifecycleScope.launch {
-            slashWidget.clickEvents.collect { item ->
+            binding.slashWidget.clickEvents.collect { item ->
                 vm.onSlashItemClicked(item)
             }
         }
 
         lifecycleScope.launch {
-            searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
+            binding.searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }
 
-        objectNotExist.findViewById<TextView>(R.id.btnToDashboard).setOnClickListener {
+        binding.objectNotExist.root.findViewById<TextView>(R.id.btnToDashboard).setOnClickListener {
             vm.onHomeButtonClicked()
         }
 
-        BottomSheetBehavior.from(styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
     }
@@ -655,15 +655,15 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         vm.commands.observe(viewLifecycleOwner) { execute(it) }
         vm.searchResultScrollPosition
             .filter { it != EditorViewModel.NO_SEARCH_RESULT_POSITION }
-            .onEach { recycler.smoothScrollToPosition(it) }
+            .onEach { binding.recycler.smoothScrollToPosition(it) }
             .launchIn(lifecycleScope)
 
         vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
         vm.isSyncStatusVisible.onEach { isSyncStatusVisible ->
             if (isSyncStatusVisible)
-                topToolbar.findViewById<ViewGroup>(R.id.statusContainer).visible()
+                binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).visible()
             else
-                topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
+                binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
         }.launchIn(lifecycleScope)
 
         vm.isUndoEnabled.onEach {
@@ -674,9 +674,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }.launchIn(lifecycleScope)
 
         with(lifecycleScope) {
-            subscribe(vm.actions) { blockActionToolbar.bind(it) }
+            subscribe(vm.actions) { binding.blockActionToolbar.bind(it) }
             subscribe(vm.isUndoRedoToolbarIsVisible) { isVisible ->
-                val behavior = BottomSheetBehavior.from(undoRedoToolbar)
+                val behavior = BottomSheetBehavior.from(binding.undoRedoToolbar)
                 if (isVisible) {
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     behavior.addBottomSheetCallback(onHideBottomSheetCallback)
@@ -689,19 +689,22 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun bindSyncStatus(status: SyncStatus?) {
-        topToolbar.status.bind(status)
+        binding.topToolbar.status.bind(status)
         if (status == null) {
-            topToolbar.hideStatusContainer()
+            binding.topToolbar.hideStatusContainer()
         } else {
-            topToolbar.showStatusContainer()
+            binding.topToolbar.showStatusContainer()
         }
-        val tvStatus = topToolbar.statusText
+        val tvStatus = binding.topToolbar.statusText
         when (status) {
             SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
             SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
             SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
             SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
             SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
+            else -> {
+                // Do nothing
+            }
         }
     }
 
@@ -760,8 +763,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     )
                 }
                 is Command.OpenAddBlockPanel -> {
-                    hideKeyboard()
-                    AddBlockFragment.newInstance(command.ctx).show(childFragmentManager, null)
+//                    hideKeyboard()
+//                    AddBlockFragment.newInstance(command.ctx).show(childFragmentManager, null)
                 }
                 is Command.OpenTurnIntoPanel -> {
                     TurnIntoFragment.single(
@@ -797,7 +800,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 is Command.Measure -> {
                     val views = blockAdapter.views
                     val position = views.indexOfFirst { it.id == command.target }
-                    val lm = recycler.layoutManager as? LinearLayoutManager
+                    val lm = binding.recycler.layoutManager as? LinearLayoutManager
                     val target = lm?.findViewByPosition(position)
                     val rect = calculateRectInWindow(target)
                     val dimensions = BlockDimensions(
@@ -805,8 +808,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         top = rect.top,
                         bottom = rect.bottom,
                         right = rect.right,
-                        height = root.height,
-                        width = root.width
+                        height = binding.root.height,
+                        width = binding.root.width
                     )
                     vm.onMeasure(
                         target = command.target,
@@ -875,10 +878,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
                         AlertUpdateAppFragment().show(childFragmentManager, TAG_ALERT)
                     } else {
+                        // Do nothing
                     }
                 }
                 is Command.ClearSearchInput -> {
-                    searchToolbar.clear()
+                    binding.searchToolbar.clear()
                 }
                 is Command.Dialog.SelectLanguage -> {
                     SelectProgrammingLanguageFragment.new(command.target)
@@ -934,7 +938,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     fr.show(childFragmentManager, null)
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
-                    recycler.addTextFromSelectedStart(text = "/")
+                    binding.recycler.addTextFromSelectedStart(text = "/")
                 }
                 is Command.OpenChangeObjectTypeScreen -> {
                     hideKeyboard()
@@ -971,7 +975,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     }
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
-                    recycler.addTextFromSelectedStart(text = "@")
+                    binding.recycler.addTextFromSelectedStart(text = "@")
                 }
                 is Command.OpenAddRelationScreen -> {
                     hideSoftInput()
@@ -989,7 +993,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     fr.show(childFragmentManager, null)
                 }
                 is Command.ShowKeyboard -> {
-                    recycler.findFocus()?.focusAndShowKeyboard()
+                    binding.recycler.findFocus()?.focusAndShowKeyboard()
                 }
                 is Command.OpenFileByDefaultApp -> {
                     try {
@@ -1010,7 +1014,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     }
                 }
                 Command.ShowTextLinkMenu -> {
-                    val urlButton = markupToolbar.findViewById<View>(R.id.url)
+                    val urlButton = binding.markupToolbar.findViewById<View>(R.id.url)
                     val popup = TextLinkPopupMenu(
                         context = requireContext(),
                         view = urlButton,
@@ -1039,18 +1043,18 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         val lastSelected =
             (vm.state.value as ViewState.Success).blocks.indexOfLast { it.id == command.target }
         if (lastSelected != -1) {
-            val lm = recycler.layoutManager as LinearLayoutManager
+            val lm = binding.recycler.layoutManager as LinearLayoutManager
             val targetView = lm.findViewByPosition(lastSelected)
             if (targetView != null) {
-                val behavior = BottomSheetBehavior.from(blockActionToolbar)
+                val behavior = BottomSheetBehavior.from(binding.blockActionToolbar)
                 val toolbarTop: Float = if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
-                    blockActionToolbar.y - blockActionToolbar.measuredHeight
+                    binding.blockActionToolbar.y - binding.blockActionToolbar.measuredHeight
                 } else {
-                    blockActionToolbar.y
+                    binding.blockActionToolbar.y
                 }
                 val targetBottom = targetView.y + targetView.measuredHeight
                 val delta = toolbarTop - targetBottom
-                if (delta < 0) recycler.smoothScrollBy(0, abs(delta.toInt()))
+                if (delta < 0) binding.recycler.smoothScrollBy(0, abs(delta.toInt()))
             }
         }
     }
@@ -1059,9 +1063,9 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         when (state) {
             is ViewState.Success -> {
                 blockAdapter.updateWithDiffUtil(state.blocks)
-                recycler.invalidateItemDecorations()
+                binding.recycler.invalidateItemDecorations()
                 val isLocked = vm.mode is Editor.Mode.Locked
-                topToolbar.setIsLocked(isLocked)
+                binding.topToolbar.setIsLocked(isLocked)
                 resetDocumentTitle(state)
             }
             is ViewState.OpenLinkScreen -> {
@@ -1077,8 +1081,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             }
             ViewState.Loading -> {}
             ViewState.NotExist -> {
-                recycler.gone()
-                objectNotExist.visible()
+                binding.recycler.gone()
+                binding.objectNotExist.root.visible()
             }
         }
     }
@@ -1095,13 +1099,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         image = view.image
                     )
                     if (view.hasCover) {
-                        val mng = recycler.layoutManager as LinearLayoutManager
+                        val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
                         if (pos == -1 || pos == 0) {
-                            topToolbar.setStyle(overCover = true)
+                            binding.topToolbar.setStyle(overCover = true)
                         }
                     } else {
-                        topToolbar.setStyle(overCover = false)
+                        binding.topToolbar.setStyle(overCover = false)
                     }
                 }
                 is BlockView.Title.Profile -> {
@@ -1111,13 +1115,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         image = view.image
                     )
                     if (view.hasCover) {
-                        val mng = recycler.layoutManager as LinearLayoutManager
+                        val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
                         if (pos == -1 || pos == 0) {
-                            topToolbar.setStyle(overCover = true)
+                            binding.topToolbar.setStyle(overCover = true)
                         }
                     } else {
-                        topToolbar.setStyle(overCover = false)
+                        binding.topToolbar.setStyle(overCover = false)
                     }
                 }
                 is BlockView.Title.Todo -> {
@@ -1127,13 +1131,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                         image = view.image
                     )
                     if (view.hasCover) {
-                        val mng = recycler.layoutManager as LinearLayoutManager
+                        val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
                         if (pos == -1 || pos == 0) {
-                            topToolbar.setStyle(overCover = true)
+                            binding.topToolbar.setStyle(overCover = true)
                         }
                     } else {
-                        topToolbar.setStyle(overCover = false)
+                        binding.topToolbar.setStyle(overCover = false)
                     }
                 }
                 else -> {
@@ -1143,7 +1147,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
-        topToolbar.title.text = text
+        binding.topToolbar.title.text = text
 //        when {
 //            emoji != null && emoji.isNotEmpty() -> {
 //                try {
@@ -1174,50 +1178,50 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         keyboardDelayJobs.cancel()
 
-        val insets = ViewCompat.getRootWindowInsets(root)
+        val insets = ViewCompat.getRootWindowInsets(binding.root)
 
         if (state.navigationToolbar.isVisible) {
-            placeholder.requestFocus()
+            binding.placeholder.requestFocus()
             hideKeyboard()
-            bottomToolbar.visible()
+            binding.bottomToolbar.visible()
         } else {
-            bottomToolbar.gone()
+            binding.bottomToolbar.gone()
         }
 
         if (state.mainToolbar.isVisible)
-            toolbar.visible()
+            binding.toolbar.visible()
         else
-            toolbar.invisible()
+            binding.toolbar.invisible()
 
         setMainMarkupToolbarState(state)
 
         state.multiSelect.apply {
-            val behavior = BottomSheetBehavior.from(blockActionToolbar)
+            val behavior = BottomSheetBehavior.from(binding.blockActionToolbar)
             if (isVisible) {
-                multiSelectTopToolbar.visible()
+                binding.multiSelectTopToolbar.visible()
                 when {
                     count > 1 -> {
-                        multiSelectTopToolbar.selectText.text =
+                        binding.multiSelectTopToolbar.selectText.text =
                             getString(R.string.number_selected_blocks, count)
                     }
                     count == 1 -> {
-                        multiSelectTopToolbar.selectText.setText(R.string.one_selected_block)
+                        binding.multiSelectTopToolbar.selectText.setText(R.string.one_selected_block)
                     }
                     else -> {
-                        multiSelectTopToolbar.selectText.text = null
+                        binding.multiSelectTopToolbar.selectText.text = null
                     }
                 }
-                bottomMenu.update(count)
-                if (!bottomMenu.isShowing) {
-                    recycler.apply { itemAnimator = DefaultItemAnimator() }
+                binding.bottomMenu.update(count)
+                if (!binding.bottomMenu.isShowing) {
+                    binding.recycler.apply { itemAnimator = DefaultItemAnimator() }
 
                     proceedWithHidingSoftInput()
 
-                    topToolbar.invisible()
+                    binding.topToolbar.invisible()
 
                     if (!state.multiSelect.isScrollAndMoveEnabled) {
-                        if (!recycler.containsItemDecoration(actionToolbarFooter)) {
-                            recycler.addItemDecoration(actionToolbarFooter)
+                        if (!binding.recycler.containsItemDecoration(actionToolbarFooter)) {
+                            binding.recycler.addItemDecoration(actionToolbarFooter)
                         }
                         keyboardDelayJobs += lifecycleScope.launch {
                             if (insets != null) {
@@ -1238,13 +1242,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     }
                 }
             } else {
-                recycler.apply { itemAnimator = null }
+                binding.recycler.apply { itemAnimator = null }
                 behavior.apply {
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                 }
                 hideSelectButton()
-                recycler.removeItemDecoration(actionToolbarFooter)
+                binding.recycler.removeItemDecoration(actionToolbarFooter)
             }
             if (isScrollAndMoveEnabled)
                 enterScrollAndMove()
@@ -1253,13 +1257,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         }
 
         state.stylingToolbar.apply {
-            val behavior = BottomSheetBehavior.from(styleToolbarMain)
+            val behavior = BottomSheetBehavior.from(binding.styleToolbarMain)
             if (isVisible) {
-                styleToolbarMain.setSelectedStyle(style)
+                binding.styleToolbarMain.setSelectedStyle(style)
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     keyboardDelayJobs += lifecycleScope.launch {
-                        if (recycler.itemDecorationCount == 0) {
-                            recycler.addItemDecoration(styleToolbarFooter)
+                        if (binding.recycler.itemDecorationCount == 0) {
+                            binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
                         proceedWithHidingSoftInput()
                         if (insets != null) {
@@ -1277,7 +1281,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 }
             } else {
                 if (!state.styleColorToolbar.isVisible && !state.styleExtraToolbar.isVisible) {
-                    recycler.removeItemDecoration(styleToolbarFooter)
+                    binding.recycler.removeItemDecoration(styleToolbarFooter)
                 }
                 behavior.apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
@@ -1288,18 +1292,18 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         state.styleExtraToolbar.apply {
             if (isVisible) {
-                styleToolbarOther.setProperties(
+                binding.styleToolbarOther.setProperties(
                     props = state.stylingToolbar.props,
                     config = state.stylingToolbar.config
                 )
                 lifecycleScope.launch {
-                    BottomSheetBehavior.from(styleToolbarOther).apply {
+                    BottomSheetBehavior.from(binding.styleToolbarOther).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
                         addBottomSheetCallback(onHideBottomSheetCallback)
                     }
                 }
             } else {
-                BottomSheetBehavior.from(styleToolbarOther).apply {
+                BottomSheetBehavior.from(binding.styleToolbarOther).apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
@@ -1309,19 +1313,19 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
         state.styleColorToolbar.apply {
             if (isVisible) {
                 state.stylingToolbar.config?.let { config ->
-                    styleToolbarColors.update(
+                    binding.styleToolbarColors.update(
                         config,
                         state.stylingToolbar.props
                     )
                 }
                 lifecycleScope.launch {
-                    BottomSheetBehavior.from(styleToolbarColors).apply {
+                    BottomSheetBehavior.from(binding.styleToolbarColors).apply {
                         setState(BottomSheetBehavior.STATE_EXPANDED)
                         addBottomSheetCallback(onHideBottomSheetCallback)
                     }
                 }
             } else {
-                BottomSheetBehavior.from(styleToolbarColors).apply {
+                BottomSheetBehavior.from(binding.styleToolbarColors).apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
@@ -1330,53 +1334,53 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
         state.mentionToolbar.apply {
             if (isVisible) {
-                if (!mentionSuggesterToolbar.isVisible) {
+                if (!binding.mentionSuggesterToolbar.isVisible) {
                     showMentionToolbar(this)
                 }
                 if (updateList) {
-                    mentionSuggesterToolbar.addItems(mentions)
+                    binding.mentionSuggesterToolbar.addItems(mentions)
                 }
                 mentionFilter?.let {
-                    mentionSuggesterToolbar.updateFilter(it)
+                    binding.mentionSuggesterToolbar.updateFilter(it)
                 }
             } else {
-                mentionSuggesterToolbar.invisible()
-                mentionSuggesterToolbar.clear()
-                recycler.removeItemDecoration(footerMentionDecorator)
+                binding.mentionSuggesterToolbar.invisible()
+                binding.mentionSuggesterToolbar.clear()
+                binding.recycler.removeItemDecoration(footerMentionDecorator)
             }
         }
 
         state.slashWidget.apply {
             if (isVisible) {
-                if (!slashWidget.isVisible) {
-                    slashWidget.scrollToTop()
+                if (!binding.slashWidget.isVisible) {
+                    binding.slashWidget.scrollToTop()
                     showSlashWidget(this)
                 }
                 widgetState?.let {
-                    slashWidget.onStateChanged(it)
+                    binding.slashWidget.onStateChanged(it)
                 }
             } else {
-                slashWidget.gone()
-                recycler.removeItemDecoration(slashWidgetFooter)
+                binding.slashWidget.gone()
+                binding.recycler.removeItemDecoration(slashWidgetFooter)
             }
         }
 
         state.searchToolbar.apply {
             if (isVisible) {
-                searchToolbar.visible()
-                searchToolbar.focus()
+                binding.searchToolbar.visible()
+                binding.searchToolbar.focus()
             } else {
-                searchToolbar.gone()
+                binding.searchToolbar.gone()
             }
         }
 
         state.objectTypesToolbar.apply {
             if (isVisible) {
-                objectTypesToolbar.visible()
-                objectTypesToolbar.update(data)
+                binding.objectTypesToolbar.visible()
+                binding.objectTypesToolbar.update(data)
             } else {
-                objectTypesToolbar.gone()
-                objectTypesToolbar.clear()
+                binding.objectTypesToolbar.gone()
+                binding.objectTypesToolbar.clear()
             }
         }
     }
@@ -1397,76 +1401,76 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun hideBlockActionPanel() {
-        BottomSheetBehavior.from(blockActionToolbar).apply {
+        BottomSheetBehavior.from(binding.blockActionToolbar).apply {
             setState(BottomSheetBehavior.STATE_HIDDEN)
         }
     }
 
     private fun setMainMarkupToolbarState(state: ControlPanelState) {
         if (state.markupMainToolbar.isVisible) {
-            markupToolbar.setProps(
+            binding.markupToolbar.setProps(
                 props = state.markupMainToolbar.style,
                 supportedTypes = state.markupMainToolbar.supportedTypes,
                 isBackgroundColorSelected = state.markupMainToolbar.isBackgroundColorSelected,
                 isTextColorSelected = state.markupMainToolbar.isTextColorSelected
             )
-            markupToolbar.visible()
+            binding.markupToolbar.visible()
 
             if (state.markupColorToolbar.isVisible) {
                 if (state.markupMainToolbar.isTextColorSelected) {
-                    markupColorToolbar.setTextColor(
+                    binding.markupColorToolbar.setTextColor(
                         state.markupMainToolbar.style?.markupTextColor
                             ?: state.markupMainToolbar.style?.blockTextColor
                             ?: ThemeColor.DEFAULT.title
                     )
                 }
                 if (state.markupMainToolbar.isBackgroundColorSelected) {
-                    markupColorToolbar.setBackgroundColor(
+                    binding.markupColorToolbar.setBackgroundColor(
                         state.markupMainToolbar.style?.markupHighlightColor
                             ?: state.markupMainToolbar.style?.blockBackroundColor
                             ?: ThemeColor.DEFAULT.title
                     )
                 }
-                if (markupColorToolbar.translationY > 0) {
-                    recycler.addItemDecoration(markupColorToolbarFooter)
+                if (binding.markupColorToolbar.translationY > 0) {
+                    binding.recycler.addItemDecoration(markupColorToolbarFooter)
                 }
                 showMarkupColorToolbarWithAnimation()
             } else {
-                if (markupColorToolbar.translationY == 0f) {
-                    recycler.removeItemDecoration(markupColorToolbarFooter)
+                if (binding.markupColorToolbar.translationY == 0f) {
+                    binding.recycler.removeItemDecoration(markupColorToolbarFooter)
                     hideMarkupColorToolbarWithAnimation()
                 }
             }
 
         } else {
-            markupToolbar.invisible()
-            if (markupColorToolbar.translationY == 0f) {
-                markupColorToolbar.translationY = dimen(R.dimen.dp_104).toFloat()
+            binding.markupToolbar.invisible()
+            if (binding.markupColorToolbar.translationY == 0f) {
+                binding.markupColorToolbar.translationY = dimen(R.dimen.dp_104).toFloat()
             }
         }
     }
 
     private fun showMarkupColorToolbarWithAnimation() {
 
-        val focus = recycler.findFocus()
+        val focus = binding.recycler.findFocus()
 
         if (focus != null && focus is TextInputWidget) {
             val cursorCoord = focus.cursorYBottomCoordinate()
 
-            val parentBottom = calculateRectInWindow(recycler).bottom
-            val toolbarHeight = markupToolbar.height + markupColorToolbar.height
+            val parentBottom = calculateRectInWindow(binding.recycler).bottom
+            val toolbarHeight = binding.markupToolbar.height + binding.markupColorToolbar.height
 
             val minPosY = parentBottom - toolbarHeight
 
             if (minPosY <= cursorCoord) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoord)
                 Timber.d("New scroll y: $scrollY")
-                recycler.post {
-                    recycler.smoothScrollBy(0, scrollY)
+                binding.recycler.post {
+                    binding.recycler.smoothScrollBy(0, scrollY)
                 }
             }
 
-            markupColorToolbar
+            binding.markupColorToolbar
                 .animate()
                 .translationY(0f)
                 .setDuration(DEFAULT_ANIM_DURATION)
@@ -1475,7 +1479,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun hideMarkupColorToolbarWithAnimation() {
-        markupColorToolbar
+        binding.markupColorToolbar
             .animate()
             .translationY(dimen(R.dimen.dp_104).toFloat())
             .setDuration(DEFAULT_ANIM_DURATION)
@@ -1484,22 +1488,22 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun showMentionToolbar(state: ControlPanelState.Toolbar.MentionToolbar) {
         state.cursorCoordinate?.let { cursorCoordinate ->
-            val parentBottom = calculateRectInWindow(recycler).bottom
-            val toolbarHeight = mentionSuggesterToolbar.getMentionSuggesterWidgetMinHeight()
+            val parentBottom = calculateRectInWindow(binding.recycler).bottom
+            val toolbarHeight = binding.mentionSuggesterToolbar.getMentionSuggesterWidgetMinHeight()
             val minPosY = parentBottom - toolbarHeight
 
             if (minPosY <= cursorCoordinate) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
-                recycler.addItemDecoration(footerMentionDecorator)
-                recycler.post {
-                    recycler.smoothScrollBy(0, scrollY)
+                binding.recycler.addItemDecoration(footerMentionDecorator)
+                binding.recycler.post {
+                    binding.recycler.smoothScrollBy(0, scrollY)
                 }
             }
-            mentionSuggesterToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            binding.mentionSuggesterToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = toolbarHeight
             }
             val set = ConstraintSet().apply {
-                clone(sheet)
+                clone(binding.sheet)
                 setVisibility(R.id.mentionSuggesterToolbar, View.VISIBLE)
                 connect(
                     R.id.mentionSuggesterToolbar,
@@ -1514,29 +1518,29 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 interpolator = LinearInterpolator()
                 ordering = TransitionSet.ORDERING_TOGETHER
             }
-            TransitionManager.beginDelayedTransition(sheet, transitionSet)
-            set.applyTo(sheet)
+            TransitionManager.beginDelayedTransition(binding.sheet, transitionSet)
+            set.applyTo(binding.sheet)
         }
     }
 
     private fun showSlashWidget(state: ControlPanelState.Toolbar.SlashWidget) {
         state.cursorCoordinate?.let { cursorCoordinate ->
-            val parentBottom = calculateRectInWindow(recycler).bottom
-            val toolbarHeight = slashWidget.getWidgetMinHeight()
+            val parentBottom = calculateRectInWindow(binding.recycler).bottom
+            val toolbarHeight = binding.slashWidget.getWidgetMinHeight()
             val minPosY = parentBottom - toolbarHeight
 
             if (minPosY <= cursorCoordinate) {
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
-                recycler.addItemDecoration(slashWidgetFooter)
-                recycler.post {
-                    recycler.smoothScrollBy(0, scrollY)
+                binding.recycler.addItemDecoration(slashWidgetFooter)
+                binding.recycler.post {
+                    binding.recycler.smoothScrollBy(0, scrollY)
                 }
             }
-            slashWidget.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            binding.slashWidget.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = toolbarHeight
             }
             val set = ConstraintSet().apply {
-                clone(sheet)
+                clone(binding.sheet)
                 setVisibility(R.id.slashWidget, View.VISIBLE)
                 connect(
                     R.id.slashWidget,
@@ -1551,13 +1555,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 interpolator = LinearInterpolator()
                 ordering = TransitionSet.ORDERING_TOGETHER
             }
-            TransitionManager.beginDelayedTransition(sheet, transitionSet)
-            set.applyTo(sheet)
+            TransitionManager.beginDelayedTransition(binding.sheet, transitionSet)
+            set.applyTo(binding.sheet)
         }
     }
 
     private fun enterScrollAndMove() {
-        if (recycler.itemDecorationCount == 0 || recycler.getItemDecorationAt(0) !is ScrollAndMoveTargetHighlighter) {
+        if (binding.recycler.itemDecorationCount == 0 || binding.recycler.getItemDecorationAt(0) !is ScrollAndMoveTargetHighlighter) {
 
 //            val offset = recycler.computeVerticalScrollOffset()
 //
@@ -1567,22 +1571,22 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 //                }
 //            }
 
-            recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
+            binding.recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
 
             showTargeterWithAnimation()
 
-            recycler.addOnScrollListener(scrollAndMoveStateListener)
-            multiSelectTopToolbar.invisible()
+            binding.recycler.addOnScrollListener(scrollAndMoveStateListener)
+            binding.multiSelectTopToolbar.invisible()
 
             showTopScrollAndMoveToolbar()
-            scrollAndMoveBottomAction.show()
+            binding.scrollAndMoveBottomAction.show()
 
             hideBlockActionPanel()
 
             lifecycleScope.launch {
                 delay(300)
                 searchScrollAndMoveTarget()
-                recycler.invalidate()
+                binding.recycler.invalidate()
             }
         } else {
             Timber.d("Skipping enter scroll-and-move")
@@ -1590,47 +1594,47 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun showTargeterWithAnimation() {
-        targeter.translationY = -targeter.y
+        binding.targeter.translationY = -binding.targeter.y
         ObjectAnimator.ofFloat(
-            targeter,
+            binding.targeter,
             TARGETER_ANIMATION_PROPERTY,
             0f
         ).apply {
             duration = 300
-            doOnStart { targeter.visible() }
+            doOnStart { binding.targeter.visible() }
             interpolator = OvershootInterpolator()
             start()
         }
     }
 
     private fun exitScrollAndMove() {
-        recycler.apply {
+        binding.recycler.apply {
             removeItemDecoration(scrollAndMoveTargetHighlighter)
             removeOnScrollListener(scrollAndMoveStateListener)
         }
         hideTopScrollAndMoveToolbar()
-        scrollAndMoveBottomAction.hide()
-        targeter.invisible()
-        bottomMenu.hideScrollAndMoveModeControls()
+        binding.scrollAndMoveBottomAction.hide()
+        binding.targeter.invisible()
+        binding.bottomMenu.hideScrollAndMoveModeControls()
         scrollAndMoveTargetDescriptor.clear()
     }
 
     private fun hideSelectButton() {
         ObjectAnimator.ofFloat(
-            multiSelectTopToolbar,
+            binding.multiSelectTopToolbar,
             SELECT_BUTTON_ANIMATION_PROPERTY,
             -requireContext().dimen(R.dimen.dp_48)
         ).apply {
             duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
             interpolator = DecelerateInterpolator()
-            doOnEnd { topToolbar?.visible() }
+            doOnEnd { binding.topToolbar?.visible() }
             start()
         }
     }
 
     private fun showSelectButton() {
         ObjectAnimator.ofFloat(
-            multiSelectTopToolbar,
+            binding.multiSelectTopToolbar,
             SELECT_BUTTON_ANIMATION_PROPERTY,
             0f
         ).apply {
@@ -1642,7 +1646,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun hideTopScrollAndMoveToolbar() {
         ObjectAnimator.ofFloat(
-            scrollAndMoveHint,
+            binding.scrollAndMoveHint,
             SELECT_BUTTON_ANIMATION_PROPERTY,
             -requireContext().dimen(R.dimen.dp_48)
         ).apply {
@@ -1654,7 +1658,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun showTopScrollAndMoveToolbar() {
         ObjectAnimator.ofFloat(
-            scrollAndMoveHint,
+            binding.scrollAndMoveHint,
             SELECT_BUTTON_ANIMATION_PROPERTY,
             0f
         ).apply {
@@ -1692,7 +1696,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 .consumeAsFlow()
                 .mapLatest { searchScrollAndMoveTarget() }
                 .debounce(SAM_DEBOUNCE)
-                .collect { recycler.invalidate() }
+                .collect { binding.recycler.invalidate() }
         }
     }
 
@@ -2004,8 +2008,8 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 proceedWithDropping(target, ratio)
             },
             onDragExited = {
-                if (dndTargetLine != null) {
-                    dndTargetLine.invisible()
+                if (binding.dndTargetLine != null) {
+                    binding.dndTargetLine.invisible()
                 }
             },
             onDragEnded = {
@@ -2017,7 +2021,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
 
     private fun handleDragAndDropTrigger(vh: RecyclerView.ViewHolder): Boolean {
         if (vm.mode is Editor.Mode.Edit) {
-            if (vh is BlockViewHolder.DragAndDropHolder && recycler?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+            if (vh is BlockViewHolder.DragAndDropHolder && binding.recycler.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 dndTargetPos = vh.bindingAdapterPosition
 
                 val item = ClipData.Item(EMPTY_TEXT)
@@ -2053,10 +2057,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     }
 
     private fun handleDragging(target: View, ratio: Float) {
-        val vh = recycler.findContainingViewHolder(target)
+        val vh = binding.recycler.findContainingViewHolder(target)
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
-                dndTargetLine.visible()
+                binding.dndTargetLine.visible()
                 if (vh is SupportNesting) {
                     when (ratio) {
                         in DragAndDropConfig.topRange -> {
@@ -2075,11 +2079,11 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                     when (ratio) {
                         in DragAndDropConfig.topHalfRange -> {
                             if (vh is FeaturedRelationListViewHolder) {
-                                dndTargetLine.invisible()
+                                binding.dndTargetLine.invisible()
                             } else if (vh is Title) {
-                                dndTargetLine.invisible()
+                                binding.dndTargetLine.invisible()
                             } else {
-                                dndTargetLine.visible()
+                                binding.dndTargetLine.visible()
                                 if (handleDragAbove(vh, ratio))
                                     return
                             }
@@ -2134,7 +2138,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun startScrollingDown() {
         scrollDownJob = lifecycleScope.launch {
             while (isActive) {
-                recycler.smoothScrollBy(0, 350)
+                binding.recycler.smoothScrollBy(0, 350)
                 delay(60)
             }
         }
@@ -2143,7 +2147,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun startScrollingUp() {
         scrollUpJob = lifecycleScope.launch {
             while (isActive) {
-                recycler.smoothScrollBy(0, -350)
+                binding.recycler.smoothScrollBy(0, -350)
                 delay(60)
             }
         }
@@ -2182,14 +2186,14 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             indent = block.indent * dimen(R.dimen.indent)
         }
 
-        dndTargetLine.translationY = vh.itemView.bottom.toFloat()
+        binding.dndTargetLine.translationY = vh.itemView.bottom.toFloat()
         //                                    dndTargetLineAnimator?.cancel()
         //                                    dndTargetLineAnimator = dndTargetLine
         //                                        .animate()
         //                                        .translationY(vh.itemView.bottom.toFloat())
         //                                        .setDuration(100)
         //                                    dndTargetLineAnimator?.start()
-        dndTargetLine.translationX = indent.toFloat()
+        binding.dndTargetLine.translationX = indent.toFloat()
 
         return false
     }
@@ -2197,10 +2201,10 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     private fun handleDragInside(vh: RecyclerView.ViewHolder) {
         //dndTargetLineAnimator?.cancel()
         if (vh !is SupportNesting) {
-            dndTargetLine.invisible()
+            binding.dndTargetLine.invisible()
         }
-        dndTargetLine.translationY = vh.itemView.top.toFloat() + vh.itemView.height / 2
-        dndTargetLine.translationX = -(vh.itemView.width.toFloat() - 100)
+        binding.dndTargetLine.translationY = vh.itemView.top.toFloat() + vh.itemView.height / 2
+        binding.dndTargetLine.translationX = -(vh.itemView.width.toFloat() - 100)
     }
 
     private fun handleDragAbove(
@@ -2236,20 +2240,20 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             indent = block.indent * dimen(R.dimen.indent)
         }
 
-        dndTargetLine.translationY = vh.itemView.top.toFloat()
+        binding.dndTargetLine.translationY = vh.itemView.top.toFloat()
         //                                    dndTargetLineAnimator?.cancel()
         //                                    dndTargetLineAnimator = dndTargetLine
         //                                        .animate()
         //                                        .translationY(vh.itemView.top.toFloat())
         //                                        .setDuration(100)
         //dndTargetLineAnimator?.start()
-        dndTargetLine.translationX = indent.toFloat()
+        binding.dndTargetLine.translationX = indent.toFloat()
         return false
     }
 
     private fun proceedWithDropping(target: View, ratio: Float) {
-        dndTargetLine.invisible()
-        val vh = recycler.findContainingViewHolder(target)
+        binding.dndTargetLine.invisible()
+        val vh = binding.recycler.findContainingViewHolder(target)
 
         blockAdapter.notifyItemChanged(dndTargetPos)
 
@@ -2324,7 +2328,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     //region READ PERMISSION
     private fun takeReadStoragePermission() {
         if (requireActivity().shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)) {
-            root.showSnackbar(
+            binding.root.showSnackbar(
                 R.string.permission_read_rationale,
                 Snackbar.LENGTH_INDEFINITE,
                 R.string.button_ok
@@ -2342,7 +2346,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
             if (readResult == true) {
                 startFilePicker(mMimeType)
             } else {
-                root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
+                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
             }
         }
     //endregion
@@ -2371,7 +2375,7 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
                 onFilePathReady(command.result)
             }
             CopyFileStatus.Started -> {
-                mSnackbar = root.showSnackbar(
+                mSnackbar = binding.root.showSnackbar(
                     R.string.loading_file,
                     Snackbar.LENGTH_INDEFINITE,
                     R.string.cancel
@@ -2416,6 +2420,13 @@ open class EditorFragment : NavigationFragment(R.layout.fragment_editor),
     //endregion
 
     //------------ End of Anytype Custom Context Menu ------------
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentEditorBinding = FragmentEditorBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val ID_KEY = "id"

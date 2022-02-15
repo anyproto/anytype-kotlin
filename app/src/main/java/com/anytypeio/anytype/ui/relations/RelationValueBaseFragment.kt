@@ -33,6 +33,7 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
+import com.anytypeio.anytype.databinding.FragmentRelationValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
@@ -44,14 +45,10 @@ import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
-import kotlinx.android.synthetic.main.fragment_relation_value.*
-import kotlinx.android.synthetic.main.fragment_relation_value.recycler
-import kotlinx.android.synthetic.main.fragment_relation_value.root
 import timber.log.Timber
-import java.util.ArrayList
 import javax.inject.Inject
 
-abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
+abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelationValueBinding>(),
     OnStartDragListener,
     RelationObjectValueAddFragment.ObjectValueAddReceiver,
     FileActionsFragment.FileActionReceiver,
@@ -116,15 +113,9 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_relation_value, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.apply {
+        binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = relationValueAdapter
         }
@@ -135,8 +126,8 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             setDrawable(drawable(R.drawable.divider_relations_edit))
         }
         with(lifecycleScope) {
-            subscribe(btnEditOrDone.clicks()) { vm.onEditOrDoneClicked() }
-            subscribe(btnAddValue.clicks()) { vm.onAddValueClicked() }
+            subscribe(binding.btnEditOrDone.clicks()) { vm.onEditOrDoneClicked() }
+            subscribe(binding.btnAddValue.clicks()) { vm.onAddValueClicked() }
         }
     }
 
@@ -146,7 +137,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
         jobs += lifecycleScope.subscribe(vm.isDimissed) { observeDismiss(it) }
         jobs += lifecycleScope.subscribe(vm.isEditing) { observeEditing(it) }
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
-        jobs += lifecycleScope.subscribe(vm.name) { tvTagOrStatusRelationHeader.text = it }
+        jobs += lifecycleScope.subscribe(vm.name) { binding.tvTagOrStatusRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading) }
         jobs += lifecycleScope.subscribe(vm.copyFileStatus) { command -> onCopyFileCommand(command) }
@@ -156,11 +147,11 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private fun observeLoading(isLoading: Boolean) {
         if (isLoading) {
-            refresh.visible()
-            btnAddValue.invisible()
+            binding.refresh.visible()
+            binding.btnAddValue.invisible()
         } else {
-            refresh.gone()
-            btnAddValue.visible()
+            binding.refresh.gone()
+            binding.btnAddValue.visible()
         }
     }
 
@@ -193,20 +184,20 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
 
     private fun observeEditing(isEditing: Boolean) {
         if (isEditing) {
-            recycler.apply {
+            binding.recycler.apply {
                 removeItemDecoration(dividerItem)
                 addItemDecoration(dividerItemEdit)
             }
-            btnAddValue.invisible()
-            btnEditOrDone.setText(R.string.done)
-            dndItemTouchHelper.attachToRecyclerView(recycler)
+            binding.btnAddValue.invisible()
+            binding.btnEditOrDone.setText(R.string.done)
+            dndItemTouchHelper.attachToRecyclerView(binding.recycler)
         } else {
-            recycler.apply {
+            binding.recycler.apply {
                 removeItemDecoration(dividerItemEdit)
                 addItemDecoration(dividerItem)
             }
-            btnAddValue.visible()
-            btnEditOrDone.setText(R.string.edit)
+            binding.btnAddValue.visible()
+            binding.btnEditOrDone.setText(R.string.edit)
             dndItemTouchHelper.attachToRecyclerView(null)
         }
     }
@@ -309,7 +300,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     //region READ PERMISSION
     private fun takeReadStoragePermission() {
         if (requireActivity().shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)) {
-            root.showSnackbar(
+            binding.root.showSnackbar(
                 R.string.permission_read_rationale,
                 Snackbar.LENGTH_INDEFINITE,
                 R.string.button_ok
@@ -327,7 +318,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
             if (readResult == true) {
                 startFilePicker(MIME_FILE_ALL)
             } else {
-                root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
+                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
             }
         }
     //endregion
@@ -376,7 +367,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
                 onFilePathReady(command.result)
             }
             CopyFileStatus.Started -> {
-                mSnackbar = root.showSnackbar(
+                mSnackbar = binding.root.showSnackbar(
                     R.string.loading_file,
                     Snackbar.LENGTH_INDEFINITE,
                     R.string.cancel
@@ -406,6 +397,13 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment(),
     abstract fun onRemoveStatusClicked(status: RelationValueBaseViewModel.RelationValueView.Status)
     abstract fun onRemoveObjectClicked(objectId: Id)
     abstract fun onRemoveFileClicked(fileId: Id)
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationValueBinding = FragmentRelationValueBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.edit-cell-tag.ctx"

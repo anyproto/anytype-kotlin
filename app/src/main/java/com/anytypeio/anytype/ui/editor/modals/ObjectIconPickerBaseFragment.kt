@@ -15,9 +15,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
@@ -26,11 +26,10 @@ import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseView
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseViewModel.ViewState
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
-import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import timber.log.Timber
 import javax.inject.Inject
 
-abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment() {
+abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment<FragmentPageIconPickerBinding>() {
 
     protected val target: String
         get() = requireArguments()
@@ -57,28 +56,24 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_page_icon_picker, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycler()
-        clearSearchText.setOnClickListener {
-            filterInputField.setText(EMPTY_FILTER_TEXT)
-            clearSearchText.invisible()
+        with(binding) {
+            clearSearchText.setOnClickListener {
+                filterInputField.setText(EMPTY_FILTER_TEXT)
+                clearSearchText.invisible()
+            }
+            filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
+            btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(context) }
+            tvTabRandom.setOnClickListener { vm.onRandomEmoji(ctx = context, target = target) }
+            tvTabUpload.setOnClickListener { proceedWithImagePick() }
         }
-        filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
-        btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(context) }
-        tvTabRandom.setOnClickListener { vm.onRandomEmoji(ctx = context, target = target) }
-        tvTabUpload.setOnClickListener { proceedWithImagePick() }
         expand()
     }
 
     private fun setupRecycler() {
-        pickerRecycler.apply {
+        binding.pickerRecycler.apply {
             setItemViewCacheSize(EMOJI_RECYCLER_ITEM_VIEW_CACHE_SIZE)
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT).apply {
@@ -103,24 +98,26 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment() {
     }
 
     private fun render(state: ViewState) {
-        when (state) {
-            is ViewState.Success -> {
-                if (filterInputField.text.isNotEmpty())
-                    clearSearchText.visible()
-                else
+        with(binding) {
+            when (state) {
+                is ViewState.Success -> {
+                    if (filterInputField.text.isNotEmpty())
+                        clearSearchText.visible()
+                    else
+                        clearSearchText.invisible()
+                    emojiPickerAdapter.update(state.views)
+                    progressBar.invisible()
+                }
+                is ViewState.Loading -> {
                     clearSearchText.invisible()
-                emojiPickerAdapter.update(state.views)
-                progressBar.invisible()
+                    progressBar.visible()
+                }
+                is ViewState.Init -> {
+                    clearSearchText.visible()
+                    progressBar.invisible()
+                }
+                is ViewState.Exit -> dismiss()
             }
-            is ViewState.Loading -> {
-                clearSearchText.invisible()
-                progressBar.visible()
-            }
-            is ViewState.Init -> {
-                clearSearchText.visible()
-                progressBar.invisible()
-            }
-            is ViewState.Exit -> dismiss()
         }
     }
 
@@ -179,6 +176,13 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment() {
             toast("Failed to open gallery. Please, try again later.")
         }
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentPageIconPickerBinding = FragmentPageIconPickerBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         private const val EMPTY_FILTER_TEXT = ""

@@ -22,17 +22,17 @@ import com.anytypeio.anytype.core_ui.reactive.focusChanges
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentRelationAddBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationAddBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.fragment_relation_add.*
 import java.io.Serializable
 import javax.inject.Inject
 
 
-abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
+abstract class RelationAddBaseFragment : BaseBottomSheetFragment<FragmentRelationAddBinding>() {
 
     abstract val vm: RelationAddBaseViewModel
 
@@ -59,17 +59,17 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchRelationInput = searchBar.findViewById(R.id.filterInputField)
+        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.find_a_relation)
         }
-        clearSearchText = searchBar.findViewById(R.id.clearSearchText)
+        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
             searchRelationInput.setText("")
             clearSearchText.invisible()
         }
         setupFullHeight()
-        relationAddRecycler.apply {
+        binding.relationAddRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = concatAdapter
             addItemDecoration(
@@ -94,9 +94,10 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
     }
 
     private fun setupFullHeight() {
-        val lp = (root.layoutParams as FrameLayout.LayoutParams)
-        lp.height = Resources.getSystem().displayMetrics.heightPixels - requireActivity().statusBarHeight
-        root.layoutParams = lp
+        val lp = (binding.root.layoutParams as FrameLayout.LayoutParams)
+        lp.height =
+            Resources.getSystem().displayMetrics.heightPixels - requireActivity().statusBarHeight
+        binding.root.layoutParams = lp
     }
 
     private fun expand(root: View) {
@@ -110,6 +111,13 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment() {
 
     abstract fun onRelationSelected(ctx: Id, relation: Id)
     abstract fun onCreateFromScratchClicked()
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRelationAddBinding = FragmentRelationAddBinding.inflate(
+        inflater, container, false
+    )
 
     companion object {
         const val CTX_KEY = "arg.relation-add.ctx"

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.multilineIme
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.databinding.FragmentLinkBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.LinkAddViewModel
 import com.anytypeio.anytype.presentation.editor.LinkAddViewModelFactory
@@ -24,10 +25,9 @@ import com.anytypeio.anytype.presentation.editor.LinkViewState
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.fragment_link.*
 import javax.inject.Inject
 
-class SetLinkFragment : BaseBottomSheetFragment() {
+class SetLinkFragment : BaseBottomSheetFragment<FragmentLinkBinding>() {
 
     companion object {
         const val ARG_URL = "arg.link.url"
@@ -57,12 +57,6 @@ class SetLinkFragment : BaseBottomSheetFragment() {
     @Inject
     lateinit var factory: LinkAddViewModelFactory
     private val vm by viewModels<LinkAddViewModel> { factory }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_link, container, false)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -97,24 +91,24 @@ class SetLinkFragment : BaseBottomSheetFragment() {
     private fun render(state: LinkViewState) {
         when (state) {
             is LinkViewState.Init -> {
-                text.text = state.text
-                link.setText(state.url)
+                binding.text.text = state.text
+                binding.link.setText(state.url)
                 if (state.url.isNullOrBlank()) {
                     enableEditMode()
-                    buttonLink.visible()
-                    buttonUnlink.invisible()
+                    binding.buttonLink.visible()
+                    binding.buttonUnlink.invisible()
                 } else {
                     enableReadMode()
-                    buttonLink.invisible()
-                    buttonUnlink.visible()
+                    binding.buttonLink.invisible()
+                    binding.buttonUnlink.visible()
                 }
-                buttonCancel.setOnClickListener {
+                binding.buttonCancel.setOnClickListener {
                     vm.onCancelClicked()
                 }
-                buttonLink.setOnClickListener {
-                    vm.onLinkButtonClicked(link.text.toString())
+                binding.buttonLink.setOnClickListener {
+                    vm.onLinkButtonClicked(binding.link.text.toString())
                 }
-                buttonUnlink.setOnClickListener {
+                binding.buttonUnlink.setOnClickListener {
                     vm.onUnlinkButtonClicked()
                 }
             }
@@ -140,7 +134,7 @@ class SetLinkFragment : BaseBottomSheetFragment() {
     }
 
     private fun enableEditMode() {
-        with(link) {
+        with(binding.link) {
             setTextColor(requireContext().color(R.color.black))
             multilineIme(action = EditorInfo.IME_ACTION_DONE)
             setTextIsSelectable(true)
@@ -148,7 +142,7 @@ class SetLinkFragment : BaseBottomSheetFragment() {
     }
 
     private fun enableReadMode() {
-        with(link) {
+        with(binding.link) {
             setTextColor(requireContext().color(R.color.hint_color))
             inputType = InputType.TYPE_NULL
             setRawInputType(InputType.TYPE_NULL)
@@ -165,4 +159,11 @@ class SetLinkFragment : BaseBottomSheetFragment() {
     override fun releaseDependencies() {
         componentManager().linkAddComponent.release()
     }
+
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentLinkBinding = FragmentLinkBinding.inflate(
+        inflater, container, false
+    )
 }

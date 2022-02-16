@@ -57,7 +57,6 @@ object MainEntryModule {
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
-        context = Dispatchers.Main,
         flavourConfigProvider = flavourConfigProvider
     )
 

@@ -51,12 +51,6 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment<FragmentRelatio
 
     private val concatAdapter = ConcatAdapter(createFromScratchAdapter, relationAdapter)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_relation_add, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)

@@ -6,8 +6,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -49,7 +49,7 @@ class FlowExtTest {
     }
 
     @Test
-    fun `should apply withLatestFrom operator for several streams`() = runBlocking {
+    fun `should apply withLatestFrom operator for several streams`() = runTest {
 
         run {
             val flow = flowOf('a', 'b', 'c').onEach { delay(1000) }

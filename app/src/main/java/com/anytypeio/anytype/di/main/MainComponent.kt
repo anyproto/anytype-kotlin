@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import dagger.Component
 import javax.inject.Singleton
@@ -26,6 +27,7 @@ interface MainComponent {
 
     fun authComponentBuilder(): AuthSubComponent.Builder
     fun profileComponentBuilder(): ProfileSubComponent.Builder
+    fun aboutAppComponent() : AboutAppSubComponent.Builder
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder

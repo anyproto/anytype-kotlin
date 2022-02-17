@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
+import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -16,6 +18,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.AboutAppViewModel
@@ -66,15 +70,7 @@ fun aboutAppScreen(
         Box(
             modifier = Modifier.padding(top = 6.dp).align(Alignment.CenterHorizontally)
         ) {
-            Box(
-                modifier = Modifier.size(
-                    height = 4.dp,
-                    width = 48.dp
-                ).background(
-                    color = colorResource(R.color.shape_primary),
-                    shape = RoundedCornerShape(6.dp)
-                )
-            )
+            Dragger()
         }
         Box(
             modifier = Modifier.align(Alignment.CenterHorizontally).padding(
@@ -211,25 +207,25 @@ val fonts = FontFamily(
     Font(R.font.inter_semibold, weight = FontWeight.SemiBold)
 )
 
-//val     typography = Typography(
-//    body1 = TextStyle(
-//        fontFamily = fonts,
-//        fontWeight = FontWeight.Normal,
-//        fontSize = 16.sp
-//    ),
-//    h1 = TextStyle(
-//        fontFamily = fonts,
-//        fontWeight = FontWeight.Bold,
-//        fontSize = 28.sp
-//    ),
-//    h2 = TextStyle(
-//        fontFamily = fonts,
-//        fontWeight = FontWeight.Bold,
-//        fontSize = 22.sp
-//    ),
-//    h3 = TextStyle(
-//        fontFamily = fonts,
-//        fontWeight = FontWeight.Bold,
-//        fontSize = 17.sp
-//    )
-//)
+val typography = Typography(
+    body1 = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+    h1 = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Bold,
+        fontSize = 28.sp
+    ),
+    h2 = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp
+    ),
+    h3 = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 17.sp
+    )
+)

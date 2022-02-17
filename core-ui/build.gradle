@@ -64,11 +64,18 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion config["compose_version"]
+    }
+
     lint {
         abortOnError false
     }
+    
     buildFeatures {
         viewBinding true
+        compose true
     }
 }
 
@@ -97,6 +104,12 @@ dependencies {
     implementation applicationDependencies.exoPlayer
     implementation applicationDependencies.urlcleaner
     implementation applicationDependencies.katex
+
+    implementation applicationDependencies.compose
+    implementation applicationDependencies.composeFoundation
+    implementation applicationDependencies.composeMaterial
+    implementation applicationDependencies.composeToolingPreview
+    debugImplementation applicationDependencies.composeTooling
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

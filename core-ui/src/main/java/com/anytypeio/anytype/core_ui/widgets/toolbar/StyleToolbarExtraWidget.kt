@@ -4,14 +4,13 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleExtraBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import kotlinx.android.synthetic.main.widget_block_style_extra.view.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -21,27 +20,25 @@ class StyleToolbarExtraWidget @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : CardView(context, attrs) {
 
-    init {
-        LayoutInflater
-            .from(context)
-            .inflate(R.layout.widget_block_style_extra, this)
-    }
+    val binding = WidgetBlockStyleExtraBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    val actions : Flow<StylingEvent> = merge(
-        bold.clicks().map { StylingEvent.Markup.Bold },
-        italic.clicks().map { StylingEvent.Markup.Italic },
-        strikethrough.clicks().map { StylingEvent.Markup.StrikeThrough },
-        code.clicks().map { StylingEvent.Markup.Code },
-        alignmentLeft.clicks().map { StylingEvent.Alignment.Left },
-        alignmentMiddle.clicks().map { StylingEvent.Alignment.Center },
-        alignmentRight.clicks().map { StylingEvent.Alignment.Right },
-        setUrl.clicks().map { StylingEvent.Markup.Link }
+    val actions: Flow<StylingEvent> = merge(
+        binding.bold.clicks().map { StylingEvent.Markup.Bold },
+        binding.italic.clicks().map { StylingEvent.Markup.Italic },
+        binding.strikethrough.clicks().map { StylingEvent.Markup.StrikeThrough },
+        binding.code.clicks().map { StylingEvent.Markup.Code },
+        binding.alignmentLeft.clicks().map { StylingEvent.Alignment.Left },
+        binding.alignmentMiddle.clicks().map { StylingEvent.Alignment.Center },
+        binding.alignmentRight.clicks().map { StylingEvent.Alignment.Right },
+        binding.setUrl.clicks().map { StylingEvent.Markup.Link }
     )
 
     fun setProperties(
         props: ControlPanelState.Toolbar.Styling.Props?,
         config: StyleConfig?
-    ) {
+    ) = with(binding) {
         bold.isSelected = props?.isBold ?: false
         italic.isSelected = props?.isItalic ?: false
         strikethrough.isSelected = props?.isStrikethrough ?: false

@@ -5,10 +5,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetMentionMenuBinding
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
 import com.anytypeio.anytype.core_utils.ui.NpaLinearLayoutManager
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import kotlinx.android.synthetic.main.widget_mention_menu.view.*
 
 class MentionToolbar @JvmOverloads constructor(
     context: Context,
@@ -30,10 +30,11 @@ class MentionToolbar @JvmOverloads constructor(
         )
     }
 
+    val binding = WidgetMentionMenuBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
+
     init {
-        LayoutInflater
-            .from(context)
-            .inflate(R.layout.widget_mention_menu, this)
         setup(context)
     }
 
@@ -46,7 +47,7 @@ class MentionToolbar @JvmOverloads constructor(
     }
 
     private fun setup(context: Context) {
-        with(recyclerView) {
+        with(binding.recyclerView) {
             val lm = NpaLinearLayoutManager(context)
             layoutManager = lm
             adapter = mentionAdapter

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetStyleBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.StyleMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
@@ -17,7 +18,11 @@ class SlashStyleAdapter(
         inflater: LayoutInflater,
         parent: ViewGroup,
         viewType: Int
-    ): RecyclerView.ViewHolder = StyleMenuHolder(inflater.inflate(viewType, parent, false))
+    ): RecyclerView.ViewHolder = StyleMenuHolder(
+        binding = ItemSlashWidgetStyleBinding.inflate(
+            inflater, parent, false
+        )
+    )
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {

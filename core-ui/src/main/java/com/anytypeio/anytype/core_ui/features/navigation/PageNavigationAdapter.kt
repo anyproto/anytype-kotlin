@@ -3,14 +3,13 @@ package com.anytypeio.anytype.core_ui.features.navigation
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemPageLinkListBinding
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 
 class PageNavigationAdapter(
     private val onClick: (String) -> Unit,
     private val onSearchClick: (MutableList<ObjectView>) -> Unit
-) :
-    RecyclerView.Adapter<PageLinksListHolder>() {
+) : RecyclerView.Adapter<PageLinksListHolder>() {
 
     private var inbound = mutableListOf<ObjectView>()
     private var outbound = mutableListOf<ObjectView>()
@@ -34,7 +33,9 @@ class PageNavigationAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageLinksListHolder {
         val inflater = LayoutInflater.from(parent.context)
         return PageLinksListHolder(
-            view = inflater.inflate(R.layout.item_page_link_list, parent, false)
+            binding = ItemPageLinkListBinding.inflate(
+                inflater, parent, false
+            )
         )
     }
 

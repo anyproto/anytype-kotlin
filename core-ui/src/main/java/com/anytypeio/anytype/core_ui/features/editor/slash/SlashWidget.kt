@@ -7,9 +7,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetEditorSlashBinding
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
-import kotlinx.android.synthetic.main.widget_editor_slash.view.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onEach
@@ -108,13 +108,16 @@ class SlashWidget @JvmOverloads constructor(
         backgroundAdapter
     )
 
+    private val binding: WidgetEditorSlashBinding = WidgetEditorSlashBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_editor_slash, this)
         setup(context)
     }
 
     private fun setup(context: Context) {
-        with(rvSlash) {
+        with(binding.rvSlash) {
             val lm = LinearLayoutManager(context)
             layoutManager = lm
             adapter = concatAdapter
@@ -144,7 +147,7 @@ class SlashWidget @JvmOverloads constructor(
     }
 
     fun scrollToTop() {
-        rvSlash?.scrollToPosition(0)
+        binding.rvSlash.scrollToPosition(0)
     }
 
     fun getWidgetMinHeight() = with(context.resources) {

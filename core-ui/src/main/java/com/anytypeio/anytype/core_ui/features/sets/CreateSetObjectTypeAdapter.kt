@@ -1,15 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.sets
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateSetObjectTypeBinding
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.sets.CreateObjectSetObjectTypeView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_create_set_object_type.view.*
 import timber.log.Timber
 
 class CreateSetObjectTypeAdapter(
@@ -21,10 +19,8 @@ class CreateSetObjectTypeAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(
-            view = inflater.inflate(
-                R.layout.item_create_set_object_type,
-                parent,
-                false
+            binding = ItemCreateSetObjectTypeBinding.inflate(
+                inflater, parent, false
             )
         )
     }
@@ -35,10 +31,10 @@ class CreateSetObjectTypeAdapter(
 
     override fun getItemCount(): Int = views.size
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val binding: ItemCreateSetObjectTypeBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private val emoji = itemView.linkEmoji
-        private val title = itemView.pageTitle
+        private val emoji = binding.linkEmoji
+        private val title = binding.pageTitle
 
         fun bind(
             view: CreateObjectSetObjectTypeView,

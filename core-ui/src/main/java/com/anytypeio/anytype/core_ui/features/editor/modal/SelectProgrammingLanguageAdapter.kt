@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.modal.SelectProgrammingLanguageAdapter.Holder
-import kotlinx.android.synthetic.main.item_select_programming_language.view.*
 
 class SelectProgrammingLanguageAdapter(
     private val items: List<Pair<String, String>>,
@@ -33,7 +32,7 @@ class SelectProgrammingLanguageAdapter(
     override fun getItemCount(): Int = items.size
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
-        val lang: TextView = itemView.lang
+        val lang: TextView = itemView.findViewById(R.id.lang)
         fun bind(value: String, onClick: () -> Unit) {
             lang.text = value
             itemView.setOnClickListener { onClick() }

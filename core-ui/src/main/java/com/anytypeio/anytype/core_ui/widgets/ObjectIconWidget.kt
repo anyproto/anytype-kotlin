@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -18,7 +19,6 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.widget_object_icon.view.*
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(
@@ -29,18 +29,17 @@ class ObjectIconWidget @JvmOverloads constructor(
         val DEFAULT_SIZE = 24
     }
 
+    val binding = WidgetObjectIconBinding.inflate(
+        LayoutInflater.from(context), this
+    )
+
     init {
-        inflate(context)
         setupAttributeValues(attrs)
     }
 
-    val checkbox : View get() = ivCheckbox
+    val checkbox: View get() = binding.ivCheckbox
 
-    internal fun inflate(context: Context) {
-        LayoutInflater.from(context).inflate(R.layout.widget_object_icon, this)
-    }
-
-    private fun setupAttributeValues(set: AttributeSet?) {
+    private fun setupAttributeValues(set: AttributeSet?) = with(binding) {
         if (set == null) return
 
         val attrs = context.obtainStyledAttributes(set, R.styleable.ObjectIconWidget, 0, 0)
@@ -108,7 +107,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     fun setIcon(icon: ObjectIcon) {
-        when(icon) {
+        when (icon) {
             is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
@@ -134,115 +133,131 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     fun setNonExistentIcon() {
-        ivImage.setImageResource(R.drawable.ic_non_existent_object)
+        binding.ivImage.setImageResource(R.drawable.ic_non_existent_object)
     }
 
     fun setProfileInitials(
         name: String
     ) {
         val textColor = context.color(R.color.default_object_profile_avatar_text_color)
-        ivImage.invisible()
-        emojiContainer.invisible()
-        ivCheckbox.invisible()
-        initialContainer.visible()
-        rectangularIconContainer.invisible()
-        initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-        initial.setTextColor(textColor)
-        initial.setHintTextColor(textColor)
-        initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+        with(binding) {
+            ivImage.invisible()
+            emojiContainer.invisible()
+            ivCheckbox.invisible()
+            initialContainer.visible()
+            rectangularIconContainer.invisible()
+            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
+            initial.setTextColor(textColor)
+            initial.setHintTextColor(textColor)
+            initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+        }
     }
 
     private fun setBasicInitials(name: String) {
         val textColor = context.color(R.color.text_tertiary)
-        ivImage.invisible()
-        emojiContainer.invisible()
-        ivCheckbox.invisible()
-        initialContainer.visible()
-        rectangularIconContainer.invisible()
-        initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
-        initial.setTextColor(textColor)
-        initial.setHintTextColor(textColor)
-        initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+        with(binding) {
+            ivImage.invisible()
+            emojiContainer.invisible()
+            ivCheckbox.invisible()
+            initialContainer.visible()
+            rectangularIconContainer.invisible()
+            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
+            initial.setTextColor(textColor)
+            initial.setHintTextColor(textColor)
+            initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+        }
     }
 
     fun setEmoji(emoji: String?) {
         if (!emoji.isNullOrBlank()) {
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            rectangularIconContainer.invisible()
-            ivImage.invisible()
-            emojiContainer.visible()
+            with(binding) {
+                ivCheckbox.invisible()
+                initialContainer.invisible()
+                rectangularIconContainer.invisible()
+                ivImage.invisible()
+                emojiContainer.visible()
+            }
             try {
                 Glide
                     .with(this)
                     .load(Emojifier.uri(emoji))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(ivEmoji)
+                    .into(binding.ivEmoji)
             } catch (e: Throwable) {
                 Timber.e(e, "Error while setting emoji icon for: ${emoji}")
             }
         } else {
-            ivEmoji.setImageDrawable(null)
+            binding.ivEmoji.setImageDrawable(null)
         }
     }
 
     fun setCircularImage(image: Url?) {
         if (!image.isNullOrBlank()) {
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            emojiContainer.invisible()
-            rectangularIconContainer.invisible()
-            ivImage.visible()
+            with(binding) {
+                ivCheckbox.invisible()
+                initialContainer.invisible()
+                emojiContainer.invisible()
+                rectangularIconContainer.invisible()
+                ivImage.visible()
+            }
             Glide
                 .with(this)
                 .load(image)
                 .centerInside()
                 .circleCrop()
-                .into(ivImage)
+                .into(binding.ivImage)
         } else {
-            ivImage.setImageDrawable(null)
+            binding.ivImage.setImageDrawable(null)
         }
     }
 
     fun setRectangularImage(image: Url?) {
         if (!image.isNullOrBlank()) {
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            emojiContainer.invisible()
-            ivImage.invisible()
-            rectangularIconContainer.visible()
+            with(binding) {
+                ivCheckbox.invisible()
+                initialContainer.invisible()
+                emojiContainer.invisible()
+                ivImage.invisible()
+                rectangularIconContainer.visible()
+            }
             Glide
                 .with(this)
                 .load(image)
                 .centerCrop()
-                .into(ivImageRectangular)
+                .into(binding.ivImageRectangular)
         } else {
-            rectangularIconContainer.gone()
-            ivImage.setImageDrawable(null)
+            binding.rectangularIconContainer.gone()
+            binding.ivImage.setImageDrawable(null)
         }
     }
 
     fun setImageDrawable(drawable: Drawable) {
-        ivCheckbox.invisible()
-        initialContainer.invisible()
-        rectangularIconContainer.invisible()
-        ivImage.invisible()
-        emojiContainer.visible()
-        ivEmoji.setImageDrawable(drawable)
+        with(binding) {
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            rectangularIconContainer.invisible()
+            ivImage.invisible()
+            emojiContainer.visible()
+            ivEmoji.setImageDrawable(drawable)
+        }
     }
 
     fun setCheckbox(isChecked: Boolean?) {
-        ivCheckbox.visible()
-        ivCheckbox.isSelected = isChecked ?: false
-        initialContainer.invisible()
-        emojiContainer.invisible()
-        rectangularIconContainer.invisible()
-        ivImage.invisible()
+        with(binding) {
+            ivCheckbox.visible()
+            ivCheckbox.isSelected = isChecked ?: false
+            initialContainer.invisible()
+            emojiContainer.invisible()
+            rectangularIconContainer.invisible()
+            ivImage.invisible()
+        }
     }
 
     private fun removeIcon() {
-        ivEmoji.setImageDrawable(null)
-        ivImage.setImageDrawable(null)
-        ivCheckbox.invisible()
+        with(binding) {
+            ivEmoji.setImageDrawable(null)
+            ivImage.setImageDrawable(null)
+            ivCheckbox.invisible()
+        }
     }
 }

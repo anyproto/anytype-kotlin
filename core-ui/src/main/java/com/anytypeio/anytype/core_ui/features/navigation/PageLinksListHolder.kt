@@ -1,19 +1,21 @@
 package com.anytypeio.anytype.core_ui.features.navigation
 
-import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemPageLinkListBinding
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_utils.ui.BottomOffsetDecoration
 import com.anytypeio.anytype.presentation.navigation.ObjectView
-import kotlinx.android.synthetic.main.item_page_link_list.view.*
 
-class PageLinksListHolder(view: View) : RecyclerView.ViewHolder(view) {
+@Deprecated("Maybe legacy?")
+class PageLinksListHolder(
+    val binding: ItemPageLinkListBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    private val recycler = itemView.recyclerView
-    private val searchView = itemView.searchView
-    private val sorting = itemView.icSorting
+    private val recycler = binding.recyclerView
+    private val searchView = binding.searchView
+    private val sorting = binding.icSorting
 
     fun bind(
         links: List<ObjectView>,

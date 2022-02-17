@@ -1,14 +1,12 @@
 package com.anytypeio.anytype.core_ui.features.sets
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemListBaseBinding
 import com.anytypeio.anytype.core_ui.extensions.formatIcon
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
-import kotlinx.android.synthetic.main.item_list_base.view.*
 
 abstract class PickColumnAdapter(
     private val columns: List<ColumnView>,
@@ -21,7 +19,9 @@ abstract class PickColumnAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColumnHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ColumnHolder(
-            inflater.inflate(R.layout.item_list_base, parent, false)
+            binding = ItemListBaseBinding.inflate(
+                inflater, parent, false
+            )
         )
     }
 
@@ -36,11 +36,12 @@ abstract class PickColumnAdapter(
 
     override fun getItemCount(): Int = columns.size
 
-    inner class ColumnHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ColumnHolder(val binding: ItemListBaseBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         private val root = itemView
-        private val title = itemView.text
-        private val icon = itemView.icon
+        private val title = binding.text
+        private val icon = binding.icon
 
         fun bind(
             columnSelectedKey: String?,

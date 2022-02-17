@@ -4,6 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemFeaturedRelationDefaultBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemFeaturedRelationStatusBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemFeaturedRelationTagsBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.FeaturedRelationViewHolder
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 
@@ -18,17 +21,23 @@ class FeaturedRelationAdapter(
         return when(viewType) {
             R.layout.item_featured_relation_default -> {
                 FeaturedRelationViewHolder.Default(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemFeaturedRelationDefaultBinding.inflate(
+                        inflater, parent, false
+                    )
                 )
             }
             R.layout.item_featured_relation_tags -> {
                 FeaturedRelationViewHolder.Tags(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemFeaturedRelationTagsBinding.inflate(
+                        inflater, parent, false
+                    )
                 )
             }
             R.layout.item_featured_relation_status -> {
                 FeaturedRelationViewHolder.Status(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemFeaturedRelationStatusBinding.inflate(
+                        inflater, parent, false
+                    )
                 )
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")

@@ -1,24 +1,25 @@
 package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarColorBinding
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import kotlinx.android.synthetic.main.block_style_toolbar_color.view.*
 
-class StyleTextColorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class StyleTextColorViewHolder(
+    val binding: BlockStyleToolbarColorBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    private val default = itemView.textColorDefault
-    private val grey = itemView.textColorGrey
-    private val yellow = itemView.textColorYellow
-    private val orange = itemView.textColorOrange
-    private val red = itemView.textColorRed
-    private val pink = itemView.textColorPink
-    private val purple = itemView.textColorPurple
-    private val blue = itemView.textColorBlue
-    private val ice = itemView.textColorIce
-    private val teal = itemView.textColorTeal
-    private val green = itemView.textColorGreen
+    private val default = binding.textColorDefault
+    private val grey = binding.textColorGrey
+    private val yellow = binding.textColorYellow
+    private val orange = binding.textColorOrange
+    private val red = binding.textColorRed
+    private val pink = binding.textColorPink
+    private val purple = binding.textColorPurple
+    private val blue = binding.textColorBlue
+    private val ice = binding.textColorIce
+    private val teal = binding.textColorTeal
+    private val green = binding.textColorGreen
 
     fun bind(
         onStylingEvent: (StylingEvent) -> Unit,

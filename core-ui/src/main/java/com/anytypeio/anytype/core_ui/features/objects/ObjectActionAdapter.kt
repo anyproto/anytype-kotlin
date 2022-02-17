@@ -6,28 +6,31 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectMenuActionBinding
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import kotlinx.android.synthetic.main.item_object_menu_action.view.*
 
 class ObjectActionAdapter(
     val onObjectActionClicked: (ObjectAction) -> Unit
 ) : ListAdapter<ObjectAction, ObjectActionAdapter.ViewHolder>(Differ) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent).apply {
-        itemView.btnContainer.setOnClickListener {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+        binding = ItemObjectMenuActionBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+    ).apply {
+        binding.btnContainer.setOnClickListener {
             val pos = bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION)
                 onObjectActionClicked(getItem(pos))
         }
     }
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(getItem(position))
 
-    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_object_menu_action, parent, false
-        )
-    ) {
-        fun bind(item: ObjectAction) = with(itemView) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) =
+        holder.bind(getItem(position))
+
+    class ViewHolder(val binding: ItemObjectMenuActionBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: ObjectAction) = with(binding) {
             when (item) {
                 ObjectAction.DELETE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
@@ -64,6 +67,9 @@ class ObjectActionAdapter(
                 ObjectAction.UNLOCK -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_unlock)
                     tvActionTitle.setText(R.string.unlock)
+                }
+                ObjectAction.MOVE_TO -> {
+
                 }
             }
         }

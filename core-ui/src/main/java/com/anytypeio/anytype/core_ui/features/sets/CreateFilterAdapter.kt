@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
@@ -14,12 +15,6 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.DateDescription
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
-import kotlinx.android.synthetic.main.item_create_filter_checkbox.view.*
-import kotlinx.android.synthetic.main.item_create_filter_date.view.*
-import kotlinx.android.synthetic.main.item_create_filter_date.view.iconChecked
-import kotlinx.android.synthetic.main.item_create_filter_object.view.*
-import kotlinx.android.synthetic.main.item_create_filter_status.view.*
-import kotlinx.android.synthetic.main.item_create_filter_tag.view.*
 
 class CreateFilterAdapter(
     private val onItemClicked: (CreateFilterView) -> Unit
@@ -35,7 +30,9 @@ class CreateFilterAdapter(
         return when (viewType) {
             R.layout.item_create_filter_tag -> {
                 ViewHolder.Tag(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemCreateFilterTagBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -47,7 +44,9 @@ class CreateFilterAdapter(
             }
             R.layout.item_create_filter_date -> {
                 ViewHolder.Date(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemCreateFilterDateBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -59,7 +58,9 @@ class CreateFilterAdapter(
             }
             R.layout.item_create_filter_status -> {
                 ViewHolder.Status(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemCreateFilterStatusBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -71,7 +72,9 @@ class CreateFilterAdapter(
             }
             R.layout.item_create_filter_object -> {
                 ViewHolder.Object(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemCreateFilterObjectBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -83,7 +86,9 @@ class CreateFilterAdapter(
             }
             R.layout.item_create_filter_checkbox -> {
                 ViewHolder.Checkbox(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemCreateFilterCheckboxBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -124,16 +129,21 @@ class CreateFilterAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class Tag(view: View) : ViewHolder(view) {
-            fun bind(item: CreateFilterView.Tag) = with(itemView) {
+        class Tag(val binding: ItemCreateFilterTagBinding) : ViewHolder(binding.root) {
+            fun bind(item: CreateFilterView.Tag) = with(binding) {
                 ivSelectTagIcon.isSelected = item.isSelected
                 tvTagName.text = item.name
                 val color = ThemeColor.values().find { v -> v.title == item.color }
-                val defaultTextColor = resources.getColor(R.color.text_primary, null)
-                val defaultBackground = resources.getColor(R.color.shape_primary, null)
+                val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
+                val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
                 if (color != null && color != ThemeColor.DEFAULT) {
-                    tvTagName.background.setDrawableColor(resources.light(color, defaultTextColor))
-                    tvTagName.setTextColor(resources.dark(color, defaultBackground))
+                    tvTagName.background.setDrawableColor(
+                        itemView.resources.light(
+                            color,
+                            defaultTextColor
+                        )
+                    )
+                    tvTagName.setTextColor(itemView.resources.dark(color, defaultBackground))
                 } else {
                     tvTagName.background.setDrawableColor(defaultBackground)
                     tvTagName.setTextColor(defaultTextColor)
@@ -141,22 +151,22 @@ class CreateFilterAdapter(
             }
         }
 
-        class Status(view: View) : ViewHolder(view) {
-            fun bind(item: CreateFilterView.Status) = with(itemView) {
+        class Status(val binding: ItemCreateFilterStatusBinding) : ViewHolder(binding.root) {
+            fun bind(item: CreateFilterView.Status) = with(binding) {
                 ivSelectStatusIcon.isSelected = item.isSelected
                 tvStatusName.text = item.name
                 val color = ThemeColor.values().find { v -> v.title == item.color }
-                val defaultTextColor = resources.getColor(R.color.text_primary, null)
+                val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
                 if (color != null && color != ThemeColor.DEFAULT) {
-                    tvStatusName.setTextColor(resources.dark(color, defaultTextColor))
+                    tvStatusName.setTextColor(itemView.resources.dark(color, defaultTextColor))
                 } else {
                     tvStatusName.setTextColor(defaultTextColor)
                 }
             }
         }
 
-        class Date(view: View) : ViewHolder(view) {
-            fun bind(item: CreateFilterView.Date) = with(itemView) {
+        class Date(val binding: ItemCreateFilterDateBinding) : ViewHolder(binding.root) {
+            fun bind(item: CreateFilterView.Date) = with(binding) {
                 tvDateTitle.text = item.description
                 if (item.type == DateDescription.EXACT_DAY) {
                     tvDate.visible()
@@ -173,8 +183,8 @@ class CreateFilterAdapter(
             }
         }
 
-        class Object(view: View) : ViewHolder(view) {
-            fun bind(item: CreateFilterView.Object) = with(itemView) {
+        class Object(val binding: ItemCreateFilterObjectBinding) : ViewHolder(binding.root) {
+            fun bind(item: CreateFilterView.Object) = with(binding) {
                 tvObjectName.text = item.name
                 tvObjectType.text = item.typeName
                 ivSelectObjectIcon.isSelected = item.isSelected
@@ -182,12 +192,12 @@ class CreateFilterAdapter(
             }
         }
 
-        class Checkbox(view: View): ViewHolder(view) {
-            fun bind(item: CreateFilterView.Checkbox) = with(itemView) {
+        class Checkbox(val binding: ItemCreateFilterCheckboxBinding) : ViewHolder(binding.root) {
+            fun bind(item: CreateFilterView.Checkbox) = with(binding) {
                 tvCheckbox.text = if (item.isChecked) {
-                    context.getString(R.string.dv_filter_checkbox_checked)
+                    itemView.resources.getString(R.string.dv_filter_checkbox_checked)
                 } else {
-                    context.getString(R.string.dv_filter_checkbox_not_checked)
+                    itemView.resources.getString(R.string.dv_filter_checkbox_not_checked)
                 }
                 if (item.isSelected) {
                     iconChecked.visible()

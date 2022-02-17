@@ -2,11 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.slash
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 
 abstract class SlashBaseAdapter(
     protected var items: List<SlashItem>,
@@ -49,9 +50,11 @@ abstract class SlashBaseAdapter(
             }
             R.layout.item_slash_widget_subheader -> {
                 SubheaderMenuHolder(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemSlashWidgetSubheaderBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
-                    itemView.flBack.setOnClickListener {
+                    itemView.findViewById<FrameLayout>(R.id.flBack).setOnClickListener {
                         clicks.invoke(SlashItem.Back)
                     }
                 }

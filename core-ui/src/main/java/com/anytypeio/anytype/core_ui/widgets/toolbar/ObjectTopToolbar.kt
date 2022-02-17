@@ -11,29 +11,32 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTopToolbarBinding
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
-import kotlinx.android.synthetic.main.widget_object_top_toolbar.view.*
 
 class ObjectTopToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    val status: StatusBadgeWidget get() = statusBadge
-    val statusText: TextView get() = tvStatus
-    val menu: View get() = threeDotsButton
-    val container: ViewGroup get() = titleContainer
-    val title: TextView get() = tvTopToolbarTitle
-    val image: ImageView get() = ivTopToolbarIcon
+    val binding = WidgetObjectTopToolbarBinding.inflate(
+        LayoutInflater.from(context), this
+    )
+
+    val status: StatusBadgeWidget get() = binding.statusBadge
+    val statusText: TextView get() = binding.tvStatus
+    val menu: View get() = binding.threeDotsButton
+    val container: ViewGroup get() = binding.titleContainer
+    val title: TextView get() = binding.tvTopToolbarTitle
+    val image: ImageView get() = binding.ivTopToolbarIcon
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_object_top_toolbar, this)
         container.alpha = 0f
     }
 
     fun setStyle(
         overCover: Boolean
-    ) {
+    ) = with(binding) {
         if (overCover) {
             menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
             ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
@@ -48,11 +51,11 @@ class ObjectTopToolbar @JvmOverloads constructor(
     }
 
     fun hideStatusContainer() {
-        statusContainer.alpha = 0f
+        binding.statusContainer.alpha = 0f
     }
 
     fun showStatusContainer() {
-        statusContainer.animate().alpha(1f).setDuration(300).start()
+        binding.statusContainer.animate().alpha(1f).setDuration(300).start()
     }
 
     fun setIsLocked(isLocked: Boolean) {

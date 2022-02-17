@@ -10,14 +10,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ViewPageLinksFilterBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.navigation.ObjectView
 import com.anytypeio.anytype.presentation.navigation.filterBy
-import kotlinx.android.synthetic.main.view_page_links_filter.view.*
-import kotlinx.android.synthetic.main.widget_search_view.view.*
 
 class FilterView @JvmOverloads constructor(
     context: Context,
@@ -30,34 +28,38 @@ class FilterView @JvmOverloads constructor(
     private val sorting: View
     private var links: MutableList<ObjectView> = mutableListOf()
 
-    val inputField : EditText get() = filterInputField
+
+    val binding = ViewPageLinksFilterBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
+
+    val inputField: EditText get() = binding.searchWidget.filterInputField
 
     var cancelClicked: (() -> Unit)? = null
     var pageClicked: ((String) -> Unit)? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.view_page_links_filter, this, true)
-        recycler = recyclerView
-        cancel = btnCancel
-        sorting = icSorting
+        recycler = binding.recyclerView
+        cancel = binding.btnCancel
+        sorting = binding.icSorting
         recycler.layoutManager = LinearLayoutManager(context)
         cancel.setOnClickListener { cancelClicked?.invoke() }
         sorting.setOnClickListener { context.toast("Not implemented yet") }
-        clearSearchText.setOnClickListener {
-            filterInputField.setText(EMPTY_FILTER_TEXT)
-            clearSearchText.invisible()
+        binding.searchWidget.clearSearchText.setOnClickListener {
+            binding.searchWidget.filterInputField.setText(EMPTY_FILTER_TEXT)
+            binding.searchWidget.clearSearchText.invisible()
         }
-        filterInputField.doAfterTextChanged { newText ->
+        binding.searchWidget.filterInputField.doAfterTextChanged { newText ->
             if (newText != null && recycler.adapter != null) {
-                        (recycler.adapter as PageLinksAdapter).let {
-                            val filtered = links.filterBy(newText.toString())
-                            it.updateLinks(filtered)
-                        }
-                    }
+                (recycler.adapter as PageLinksAdapter).let {
+                    val filtered = links.filterBy(newText.toString())
+                    it.updateLinks(filtered)
+                }
+            }
             if (newText.isNullOrEmpty()) {
-                clearSearchText.invisible()
+                binding.searchWidget.clearSearchText.invisible()
             } else {
-                clearSearchText.visible()
+                binding.searchWidget.clearSearchText.visible()
             }
         }
     }

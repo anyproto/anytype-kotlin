@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -24,19 +25,18 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.synthetic.main.item_block_bookmark.view.*
 import timber.log.Timber
 
-class Bookmark(view: View) : Media(view) {
+class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
 
     override val root: View = itemView
-    private val title = itemView.bookmarkTitle
-    private val description = itemView.bookmarkDescription
-    private val url = itemView.bookmarkUrl
-    private val image = itemView.bookmarkImage
-    private val logo = itemView.bookmarkLogo
-    private val error = itemView.loadBookmarkPictureError
-    private val card = itemView.bookmarkRoot
+    private val title = binding.bookmarkTitle
+    private val description = binding.bookmarkDescription
+    private val url = binding.bookmarkUrl
+    private val image = binding.bookmarkImage
+    private val logo = binding.bookmarkLogo
+    private val error = binding.loadBookmarkPictureError
+    private val card = binding.bookmarkRoot
     override val clickContainer: View = card
 
     override val editorTouchProcessor: EditorTouchProcessor = EditorTouchProcessor(

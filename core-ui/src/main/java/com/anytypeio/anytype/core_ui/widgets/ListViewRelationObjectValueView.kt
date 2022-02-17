@@ -6,22 +6,20 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetDvListViewRelationObjectBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.android.synthetic.main.widget_dv_grid_object.view.objectIcon
-import kotlinx.android.synthetic.main.widget_dv_grid_object.view.tvName
-import kotlinx.android.synthetic.main.widget_dv_list_view_relation_object.view.*
 
 class ListViewRelationObjectValueView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_dv_list_view_relation_object, this)
-    }
+    private val binding = WidgetDvListViewRelationObjectBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    fun setup(name: String, icon: ObjectIcon, size: Int) {
+    fun setup(name: String, icon: ObjectIcon, size: Int) = with(binding) {
         tvName.visible()
         tvName.text = name
         objectIcon.setIcon(icon)
@@ -33,7 +31,7 @@ class ListViewRelationObjectValueView @JvmOverloads constructor(
         }
     }
 
-    fun setupAsNonExistent(size: Int) {
+    fun setupAsNonExistent(size: Int) = with(binding) {
         tvName.visible()
         tvName.setText(R.string.non_existent_object)
         tvName.setTextColor(Color.parseColor("#CBC9BD"))

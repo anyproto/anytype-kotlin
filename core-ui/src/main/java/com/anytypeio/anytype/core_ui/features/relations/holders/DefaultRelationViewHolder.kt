@@ -1,49 +1,39 @@
 package com.anytypeio.anytype.core_ui.features.relations.holders
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_ui.R
-import kotlinx.android.synthetic.main.item_relation_format_create_from_scratch.view.*
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatCreateFromScratchBinding
 
-class DefaultRelationViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(parent.context).inflate(
-        R.layout.item_relation_format,
-        parent,
-        false
-    )
-) {
+class DefaultRelationViewHolder(
+    val binding: ItemRelationFormatBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(
         name: String,
         format: Relation.Format
-    ) = with(itemView) {
+    ) = with(binding) {
         ivRelationFormat.bind(format)
         tvRelationName.text = name
     }
 }
 
-class DefaultRelationFormatViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(parent.context).inflate(
-        R.layout.item_relation_format_create_from_scratch,
-        parent,
-        false
-    )
-) {
+class DefaultRelationFormatViewHolder(
+    val binding: ItemRelationFormatCreateFromScratchBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(
         name: String,
         format: Relation.Format,
         isSelected: Boolean
     ) {
-        itemView.ivRelationFormat.bind(format)
-        itemView.tvRelationName.text = name
-        itemView.selectionIcon.isVisible = isSelected
+        binding.ivRelationFormat.bind(format)
+        binding.tvRelationName.text = name
+        binding.selectionIcon.isVisible = isSelected
     }
 
     fun setIsSelected(isSelected: Boolean) {
-        itemView.selectionIcon.isVisible = isSelected
+        binding.selectionIcon.isVisible = isSelected
     }
 }

@@ -16,7 +16,7 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 ) : BottomSheetDialogFragment() {
 
     private var _binding: T? = null
-    protected val binding: T get() = _binding!!
+    val binding: T get() = _binding!!
 
     protected val jobs = mutableListOf<Job>()
 

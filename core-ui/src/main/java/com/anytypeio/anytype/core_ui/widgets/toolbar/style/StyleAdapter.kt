@@ -3,7 +3,8 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarBackgroundBinding
+import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarColorBinding
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -34,17 +35,13 @@ class StyleAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             HOLDER_TEXT_COLOR -> StyleTextColorViewHolder(
-                view = inflater.inflate(
-                    R.layout.block_style_toolbar_color,
-                    parent,
-                    false
+                binding = BlockStyleToolbarColorBinding.inflate(
+                    inflater, parent, false
                 )
             )
             HOLDER_BACKGROUND_COLOR -> StyleBackgroundViewHolder(
-                view = inflater.inflate(
-                    R.layout.block_style_toolbar_background,
-                    parent,
-                    false
+                binding = BlockStyleToolbarBackgroundBinding.inflate(
+                    inflater, parent, false
                 )
             )
             else -> throw IllegalStateException("Unexpected view type: $viewType")

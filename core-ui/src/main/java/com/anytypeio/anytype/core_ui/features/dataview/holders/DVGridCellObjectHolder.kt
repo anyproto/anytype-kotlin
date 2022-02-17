@@ -1,16 +1,16 @@
 package com.anytypeio.anytype.core_ui.features.dataview.holders
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
-import kotlinx.android.synthetic.main.item_viewer_grid_cell_object.view.*
 
-class DVGridCellObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
+class DVGridCellObjectHolder(
+    val binding: ItemViewerGridCellObjectBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(cell: CellView.Object) = with(itemView) {
         for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
@@ -32,10 +32,10 @@ class DVGridCellObjectHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     private fun getViewByIndex(index: Int): GridCellObjectItem? = when (index) {
-        0 -> itemView.object0
-        1 -> itemView.object1
-        2 -> itemView.object2
-        3 -> itemView.object3
+        0 -> binding.object0
+        1 -> binding.object1
+        2 -> binding.object2
+        3 -> binding.object3
         else -> null
     }
 

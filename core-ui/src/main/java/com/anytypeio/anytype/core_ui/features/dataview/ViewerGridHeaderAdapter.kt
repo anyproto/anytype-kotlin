@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemGridColumnHeaderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemGridColumnHeaderPlusBinding
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
-import kotlinx.android.synthetic.main.viewer_cell.view.*
-import timber.log.Timber
 
 class ViewerGridHeaderAdapter() :
     ListAdapter<ColumnView, ViewerGridHeaderAdapter.HeaderViewHolder>(ColumnHeaderDiffCallback) {
@@ -35,17 +34,17 @@ class ViewerGridHeaderAdapter() :
 //    override fun getItemCount(): Int = if (super.getItemCount() == 0) 0 else super.getItemCount() + 1
 
     sealed class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class DefaultHolder(view: View) : HeaderViewHolder(view) {
+        class DefaultHolder(val binding: ItemGridColumnHeaderBinding) : HeaderViewHolder(binding.root) {
             fun bind(item: ColumnView) {
-                itemView.cellText.text = item.text
+                binding.cellText.text = item.text
             }
 
             companion object {
                 fun create(
                     parent: ViewGroup
                 ): DefaultHolder = DefaultHolder(
-                    LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_grid_column_header,
+                    ItemGridColumnHeaderBinding.inflate(
+                        LayoutInflater.from(parent.context),
                         parent,
                         false
                     )
@@ -53,13 +52,13 @@ class ViewerGridHeaderAdapter() :
             }
         }
 
-        class PlusHolder(view: View) : HeaderViewHolder(view) {
+        class PlusHolder(val binding: ItemGridColumnHeaderPlusBinding) : HeaderViewHolder(binding.root) {
             companion object {
                 fun create(
                     parent: ViewGroup
                 ): PlusHolder = PlusHolder(
-                    LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_grid_column_header_plus,
+                    ItemGridColumnHeaderPlusBinding.inflate(
+                        LayoutInflater.from(parent.context),
                         parent,
                         false
                     )

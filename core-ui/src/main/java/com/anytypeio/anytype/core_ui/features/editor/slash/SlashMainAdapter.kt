@@ -3,7 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.slash
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetMainBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MainMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
@@ -32,7 +32,9 @@ class SlashMainAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainMenuHolder {
         val inflater = LayoutInflater.from(parent.context)
         return MainMenuHolder(
-            view = inflater.inflate(R.layout.item_slash_widget_main, parent, false)
+            binding = ItemSlashWidgetMainBinding.inflate(
+                inflater, parent, false
+            )
         ).apply {
             itemView.setOnClickListener {
                 val pos = bindingAdapterPosition

@@ -3,16 +3,16 @@ package com.anytypeio.anytype.core_ui.features.relations
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.updatePadding
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
-import kotlinx.android.synthetic.main.item_document_relation_default.view.*
-import kotlinx.android.synthetic.main.item_relation_list_section.view.*
 import timber.log.Timber
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder as ViewHolder
 
@@ -83,7 +83,11 @@ class DocumentRelationAdapter(
                 }
             }
             R.layout.item_relation_list_relation_object -> {
-                ViewHolder.Object(view = inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.Object(
+                    binding = ItemBlockRelationObjectBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -139,7 +143,11 @@ class DocumentRelationAdapter(
                 }
             }
             R.layout.item_relation_list_relation_tag -> {
-                ViewHolder.Tags(view = inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.Tags(
+                    binding = ItemBlockRelationTagBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -167,7 +175,11 @@ class DocumentRelationAdapter(
                 }
             }
             R.layout.item_relation_list_relation_file -> {
-                ViewHolder.File(view = inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.File(
+                    binding = ItemBlockRelationFileBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -311,10 +323,10 @@ class DocumentRelationAdapter(
         fun bind(section: RelationListViewModel.Model.Section) {
             when (section) {
                 RelationListViewModel.Model.Section.Featured -> {
-                    itemView.tvSectionName.setText(R.string.featured_relations)
+                    itemView.findViewById<TextView>(R.id.tvSectionName).setText(R.string.featured_relations)
                 }
                 RelationListViewModel.Model.Section.Other -> {
-                    itemView.tvSectionName.setText(R.string.other_relations)
+                    itemView.findViewById<TextView>(R.id.tvSectionName).setText(R.string.other_relations)
                 }
                 else -> throw IllegalStateException("Unexpected item type: $section")
             }

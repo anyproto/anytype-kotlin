@@ -4,21 +4,20 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetDvGridFileBinding
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import kotlinx.android.synthetic.main.widget_dv_grid_file.view.*
 
 class GridCellFileItem @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+    context: Context, attrs: AttributeSet? = null
+) : FrameLayout(context, attrs) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_dv_grid_file, this)
-    }
+    val binding = WidgetDvGridFileBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    fun setup(name: String, mime: String?) {
+    fun setup(name: String, mime: String?) = with(binding) {
         tvName.visible()
         tvName.text = name
         if (mime != null) {

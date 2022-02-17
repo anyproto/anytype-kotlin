@@ -6,20 +6,19 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconTextBinding
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.android.synthetic.main.widget_object_icon_text.view.*
 
 class ObjectIconTextWidget @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    init {
-        inflate(context)
-        setupAttributeValues(attrs)
-    }
+    val binding = WidgetObjectIconTextBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    internal fun inflate(context: Context) {
-        LayoutInflater.from(context).inflate(R.layout.widget_object_icon_text, this)
+    init {
+        setupAttributeValues(attrs)
     }
 
     private fun setupAttributeValues(set: AttributeSet?) {
@@ -29,17 +28,17 @@ class ObjectIconTextWidget @JvmOverloads constructor(
 
         val nameTextSize = attrs.getDimensionPixelSize(R.styleable.ObjectIconTextWidget_nameTextSize, 0)
         if (nameTextSize > 0) {
-            objectName.setTextSize(TypedValue.COMPLEX_UNIT_PX, nameTextSize.toFloat())
+            binding.objectName.setTextSize(TypedValue.COMPLEX_UNIT_PX, nameTextSize.toFloat())
         }
 
         val nameTextColor = attrs.getColor(R.styleable.ObjectIconTextWidget_nameTextColor, 0)
-        objectName.setTextColor(nameTextColor)
+        binding.objectName.setTextColor(nameTextColor)
 
         attrs.recycle()
     }
 
     fun setup(name: String?, icon: ObjectIcon) {
-        objectName.text = name
-        objectIcon.setIcon(icon)
+        binding.objectName.text = name
+        binding.objectIcon.setIcon(icon)
     }
 }

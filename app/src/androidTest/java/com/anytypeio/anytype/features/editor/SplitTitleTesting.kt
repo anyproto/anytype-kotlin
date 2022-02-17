@@ -18,7 +18,6 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.*
 import com.anytypeio.anytype.utils.espresso.SetEditTextSelectionAction
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -142,7 +141,7 @@ class SplitTitleTesting : EditorTestSetup() {
         Thread.sleep(300)
 
         scenario.onFragment(action = { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(R.id.tvBlockDescription)
             val descLength = description.content.asText().text.length
             assertEquals(expected = descLength, actual = view.selectionStart)

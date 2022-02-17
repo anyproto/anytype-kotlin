@@ -5,43 +5,37 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetSetMarkupUrlBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import kotlinx.android.synthetic.main.widget_set_markup_url.view.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-class SetMarkupUrlWidget : LinearLayout {
+class SetMarkupUrlWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : LinearLayout(context, attrs) {
 
-    constructor(context: Context) : this(context, null)
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
-        init()
-    }
+    val binding = WidgetSetMarkupUrlBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    fun onApply() = setMarkupDoneButton
-        .clicks()
-        .map { setUrlMarkupTextInput.text.toString() }
-        .onEach { setUrlMarkupTextInput.clearFocus() }
-
-    fun takeFocus() {
-        setUrlMarkupTextInput.requestFocus()
-    }
-
-    fun init() {
-        LayoutInflater.from(context).inflate(R.layout.widget_set_markup_url, this)
-        orientation = HORIZONTAL
-        clearUrlButton.setOnClickListener {
-            setUrlMarkupTextInput.text = null
+    init {
+        binding.clearUrlButton.setOnClickListener {
+            binding.setUrlMarkupTextInput.text = null
         }
     }
 
+    fun onApply() = binding.setMarkupDoneButton
+        .clicks()
+        .map { binding.setUrlMarkupTextInput.text.toString() }
+        .onEach { binding.setUrlMarkupTextInput.clearFocus() }
+
+    fun takeFocus() {
+        binding.setUrlMarkupTextInput.requestFocus()
+    }
+
     fun bind(url: String?) {
-        setUrlMarkupTextInput.setText(url, TextView.BufferType.EDITABLE)
-        if (url != null) setUrlMarkupTextInput.setSelection(url.length)
+        binding.setUrlMarkupTextInput.setText(url, TextView.BufferType.EDITABLE)
+        if (url != null) binding.setUrlMarkupTextInput.setSelection(url.length)
     }
 }

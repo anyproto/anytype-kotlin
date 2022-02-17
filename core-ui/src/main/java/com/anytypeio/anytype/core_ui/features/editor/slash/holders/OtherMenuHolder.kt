@@ -1,15 +1,16 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetStyleBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import kotlinx.android.synthetic.main.item_slash_widget_style.view.*
 
-class OtherMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
+class OtherMenuHolder(
+    val binding: ItemSlashWidgetStyleBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: SlashItem.Other) = with(itemView) {
+    fun bind(item: SlashItem.Other) = with(binding) {
         when (item) {
             SlashItem.Other.Line -> {
                 tvTitle.setText(R.string.slash_widget_other_line)

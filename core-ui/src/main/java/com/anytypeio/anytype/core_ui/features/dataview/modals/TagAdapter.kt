@@ -3,10 +3,10 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.sets.model.TagValue
-import kotlinx.android.synthetic.main.modal_item_filter_tag_value.view.*
 
 class TagAdapter(private val tags: List<TagValue>) : RecyclerView.Adapter<TagAdapter.TagHolder>() {
 
@@ -26,7 +26,7 @@ class TagAdapter(private val tags: List<TagValue>) : RecyclerView.Adapter<TagAda
     inner class TagHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(tag: TagValue) {
-            itemView.tagTitle.text = tag.text
+            itemView.findViewById<TextView>(R.id.tagTitle).text = tag.text
         }
     }
 }

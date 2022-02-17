@@ -46,14 +46,14 @@
 
     <include
         android:id="@+id/searchWidget"
+        layout="@layout/widget_search_view"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        layout="@layout/widget_search_view"
         android:layout_marginStart="@dimen/dp_16"
         android:layout_marginEnd="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/icSorting"
         app:layout_constraintEnd_toStartOf="@+id/icSorting"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/icSorting"/>
+        app:layout_constraintTop_toTopOf="@+id/icSorting" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

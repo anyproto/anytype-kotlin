@@ -5,7 +5,10 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputType
+import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,10 +50,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.android.synthetic.main.item_block_bookmark_placeholder.view.*
-import kotlinx.android.synthetic.main.item_block_checkbox.view.*
-import kotlinx.android.synthetic.main.item_block_object_link.view.*
-import kotlinx.android.synthetic.main.item_block_toggle.view.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -933,7 +932,7 @@ class BlockAdapterTest {
 
         check(holder is Checkbox)
 
-        val actual = holder.itemView.checkboxIcon.paddingLeft
+        val actual = holder.itemView.findViewById<ImageView>(R.id.checkboxIcon).paddingLeft
 
         val expected = view.indent * holder.dimen(R.dimen.indent)
 
@@ -969,7 +968,7 @@ class BlockAdapterTest {
         check(holder is Toggle)
 
         val actual =
-            (holder.itemView.guideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
+            (holder.itemView.findViewById<Guideline>(R.id.guideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
 
         val expected = view.indent * holder.dimen(R.dimen.indent)
 
@@ -1215,7 +1214,7 @@ class BlockAdapterTest {
         check(holder is LinkToObject)
 
         val actual =
-            (holder.itemView.pageGuideline.layoutParams as ConstraintLayout.LayoutParams).guideBegin
+            (holder.itemView.findViewById<Guideline>(R.id.pageGuideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
 
         val expected = view.indent * holder.dimen(R.dimen.indent)
 
@@ -1280,7 +1279,7 @@ class BlockAdapterTest {
 
         check(holder is BookmarkPlaceholder)
 
-        val actual = holder.itemView.root.marginLeft
+        val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).marginLeft
 
         val expected = view.indent * holder.dimen(R.dimen.indent)+ holder.dimen(R.dimen.bookmark_default_margin_start)
 

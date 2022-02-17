@@ -4,24 +4,30 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemFeaturedRelationDefaultBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemFeaturedRelationStatusBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemFeaturedRelationTagsBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import kotlinx.android.synthetic.main.item_featured_relation_default.view.*
-import kotlinx.android.synthetic.main.item_featured_relation_status.view.*
-import kotlinx.android.synthetic.main.item_featured_relation_tags.view.*
+
 
 sealed class FeaturedRelationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    class Default(view: View) : FeaturedRelationViewHolder(view) {
+
+    class Default(
+        val binding: ItemFeaturedRelationDefaultBinding
+    ) : FeaturedRelationViewHolder(binding.root) {
         fun bind(item: DocumentRelationView) {
-            itemView.tvFeaturedRelationValue.text = item.value
+            binding.tvFeaturedRelationValue.text = item.value
         }
     }
 
-    class Tags(view: View) : FeaturedRelationViewHolder(view) {
+    class Tags(
+        val binding: ItemFeaturedRelationTagsBinding
+    ) : FeaturedRelationViewHolder(binding.root) {
 
-        private val container = itemView.featuredRelationTagContainer
+        private val container = binding.featuredRelationTagContainer
 
         fun bind(item: DocumentRelationView.Tags) {
             container.removeAllViews()
@@ -44,9 +50,11 @@ sealed class FeaturedRelationViewHolder(view: View) : RecyclerView.ViewHolder(vi
         }
     }
 
-    class Status(view: View) : FeaturedRelationViewHolder(view) {
+    class Status(
+        val binding: ItemFeaturedRelationStatusBinding
+    ) : FeaturedRelationViewHolder(binding.root) {
 
-        private val container = itemView.featuredRelationStatusContainer
+        private val container = binding.featuredRelationStatusContainer
 
         fun bind(item: DocumentRelationView.Status) {
             container.removeAllViews()

@@ -1,14 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetMainBinding
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import kotlinx.android.synthetic.main.item_slash_widget_main.view.*
 
-class MainMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
+class MainMenuHolder(val binding: ItemSlashWidgetMainBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: SlashItem.Main) = with(itemView) {
+    fun bind(item: SlashItem.Main) = with(binding) {
         when (item) {
             SlashItem.Main.Actions -> {
                 textMain.setText(R.string.slash_widget_main_actions)

@@ -25,7 +25,6 @@ import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManage
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
-import kotlinx.android.synthetic.main.fragment_page_icon_picker.*
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Test
@@ -256,7 +255,7 @@ class DocumentEmojiPickerFragmentTest {
         Thread.sleep(500)
 
         scenario.onFragment { fragment ->
-            val count = fragment.pickerRecycler.adapter?.itemCount
+            val count = fragment.binding.pickerRecycler.adapter?.itemCount
             assertEquals(
                 expected = (6 * 8) + 8,
                 actual = count
@@ -327,7 +326,7 @@ class DocumentEmojiPickerFragmentTest {
         Thread.sleep(500)
 
         scenario.onFragment { fragment ->
-            val count = fragment.pickerRecycler.adapter?.itemCount
+            val count = fragment.binding.pickerRecycler.adapter?.itemCount
             assertEquals(
                 expected = (6 * 8) + 8,
                 actual = count

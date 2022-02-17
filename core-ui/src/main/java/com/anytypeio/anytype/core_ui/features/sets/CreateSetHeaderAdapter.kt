@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import kotlinx.android.synthetic.main.item_create_set_header.view.*
 
 class CreateSetHeaderAdapter(
     private val onCreateNewObjectTypeClicked: () -> Unit
@@ -31,7 +30,7 @@ class CreateSetHeaderAdapter(
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val container: ConstraintLayout = itemView.createNewContainer
+        val container: ConstraintLayout = itemView.findViewById(R.id.createNewContainer)
 
         fun bind(onCreateNewObjectTypeClicked: () -> Unit) {
             container.setOnClickListener {

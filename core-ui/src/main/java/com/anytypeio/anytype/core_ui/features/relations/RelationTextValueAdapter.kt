@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectRelationTextBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.*
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
-import kotlinx.android.synthetic.main.item_object_relation_text.view.*
 
 class RelationTextValueAdapter(
     private var items: List<RelationTextValueView>,
@@ -20,49 +20,73 @@ class RelationTextValueAdapter(
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_object_relation_text, parent, false)
         return when (viewType) {
-            TYPE_TEXT -> RelationTextHolder(view).apply {
-                itemView.textInputField.setHint(R.string.enter_text)
-                itemView.textInputField.setOnEditorActionListener(
+            TYPE_TEXT -> RelationTextHolder(
+                binding = ItemObjectRelationTextBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.textInputField.setHint(R.string.enter_text)
+                binding.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_TEXT_SHORT -> RelationTextShortHolder(view).apply {
-                itemView.textInputField.setHint(R.string.enter_text)
-                itemView.textInputField.setOnEditorActionListener(
+            TYPE_TEXT_SHORT -> RelationTextShortHolder(
+                binding = ItemObjectRelationTextBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.textInputField.setHint(R.string.enter_text)
+                binding.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_URL -> RelationUrlHolder(view).apply {
-                itemView.textInputField.setHint(R.string.enter_url)
-                itemView.textInputField.setOnEditorActionListener(
+            TYPE_URL -> RelationUrlHolder(
+                binding = ItemObjectRelationTextBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.textInputField.setHint(R.string.enter_url)
+                binding.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_PHONE -> RelationPhoneHolder(view).apply {
-                itemView.textInputField.setHint(R.string.enter_phone)
-                itemView.textInputField.setOnEditorActionListener(
+            TYPE_PHONE -> RelationPhoneHolder(
+                binding = ItemObjectRelationTextBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.textInputField.setHint(R.string.enter_phone)
+                binding.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_EMAIL -> RelationEmailHolder(view).apply {
-                itemView.textInputField.setHint(R.string.enter_email)
-                itemView.textInputField.setOnEditorActionListener(
+            TYPE_EMAIL -> RelationEmailHolder(
+                binding = ItemObjectRelationTextBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.textInputField.setHint(R.string.enter_email)
+                binding.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
             }
-            TYPE_NUMBER -> RelationNumberHolder(view).apply {
-                itemView.textInputField.setHint(R.string.enter_number)
-                itemView.textInputField.setOnEditorActionListener(
+            TYPE_NUMBER -> RelationNumberHolder(
+                binding = ItemObjectRelationTextBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.textInputField.setHint(R.string.enter_number)
+                binding.textInputField.setOnEditorActionListener(
                     ActionDoneListener { txt ->
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }

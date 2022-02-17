@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemWallpaperSelectSectionBinding
 import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperSelectView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
-import kotlinx.android.synthetic.main.item_wallpaper_select_section.view.*
 
 class WallpaperSelectAdapter(
     val onWallpaperSelected: (WallpaperView) -> Unit
@@ -20,7 +20,13 @@ class WallpaperSelectAdapter(
     private var items: List<WallpaperSelectView> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH = when (viewType) {
-        R.layout.item_wallpaper_select_section -> SectionViewHolder(parent)
+        R.layout.item_wallpaper_select_section -> SectionViewHolder(
+            binding = ItemWallpaperSelectSectionBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
         R.layout.item_wallpaper_select_gradient -> GradientViewHolder(parent).apply {
             itemView.setOnClickListener {
                 val pos = bindingAdapterPosition
@@ -83,14 +89,8 @@ class WallpaperSelectAdapter(
 
     sealed class VH(view: View) : RecyclerView.ViewHolder(view)
 
-    class SectionViewHolder(parent: ViewGroup) : VH(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_wallpaper_select_section,
-            parent,
-            false
-        )
-    ) {
-        fun bind(item: WallpaperSelectView.Section) = with(itemView) {
+    class SectionViewHolder(val binding: ItemWallpaperSelectSectionBinding) : VH(binding.root) {
+        fun bind(item: WallpaperSelectView.Section) = with(binding) {
             when (item) {
                 WallpaperSelectView.Section.Gradient -> {
                     tvSectionName.setText(R.string.cover_gradients)
@@ -113,7 +113,7 @@ class WallpaperSelectAdapter(
             val item = wallpaper.item
             check(item is WallpaperView.SolidColor)
             val color = WallpaperColor.values().find { it.code == item.code }
-            if (color != null ) {
+            if (color != null) {
                 itemView.tint(Color.parseColor(color.hex))
             } else {
                 itemView.tint(Color.WHITE)

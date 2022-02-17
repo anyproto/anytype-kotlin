@@ -8,6 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemModifyViewerRelationOrderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListSectionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListSettingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListSettingToggleBinding
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -18,12 +22,7 @@ import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
-import kotlinx.android.synthetic.main.item_modify_viewer_relation_order.view.*
-import kotlinx.android.synthetic.main.item_modify_viewer_relation_order.view.iconRelation
-import kotlinx.android.synthetic.main.item_modify_viewer_relation_order.view.title
-import kotlinx.android.synthetic.main.item_viewer_relation_list.view.*
-import kotlinx.android.synthetic.main.item_viewer_relation_list_section.view.*
-import kotlinx.android.synthetic.main.item_viewer_relation_list_setting.view.*
+
 
 class ViewerModifyOrderAdapter(
     private val dragListener: OnStartDragListener,
@@ -41,10 +40,15 @@ class ViewerModifyOrderAdapter(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return when(viewType) {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
             VIEW_TYPE_RELATION -> {
-                RelationViewHolder(parent).apply {
-                    itemView.iconDrag.setOnTouchListener { _, event ->
+                RelationViewHolder(
+                    ItemModifyViewerRelationOrderBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    binding.iconDrag.setOnTouchListener { _, event ->
                         if (event.action == ACTION_DOWN) dragListener.onStartDrag(this)
                         false
                     }
@@ -57,7 +61,7 @@ class ViewerModifyOrderAdapter(
                             }
                         }
                     }
-                    itemView.iconDelete.setOnClickListener {
+                    binding.iconDelete.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             val item = items[pos]
@@ -68,13 +72,23 @@ class ViewerModifyOrderAdapter(
                     }
                 }
             }
-            VIEW_TYPE_SECTION -> SectionViewHolder(parent)
-            VIEW_TYPE_SETTING -> SettingViewHolder(parent)
-            VIEW_TYPE_SETTING_TOGGLE -> ToggleViewHolder(parent).apply {
-                itemView.switchView.setOnCheckedChangeListener { _, isChecked ->
+            VIEW_TYPE_SECTION -> SectionViewHolder(
+                ItemViewerRelationListSectionBinding.inflate(inflater, parent, false)
+            )
+            VIEW_TYPE_SETTING -> SettingViewHolder(
+                ItemViewerRelationListSettingBinding.inflate(
+                    inflater, parent, false
+                )
+            )
+            VIEW_TYPE_SETTING_TOGGLE -> ToggleViewHolder(
+                ItemViewerRelationListSettingToggleBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.switchView.setOnCheckedChangeListener { _, isChecked ->
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
-                        val item  = items[bindingAdapterPosition]
+                        val item = items[bindingAdapterPosition]
                         if (item is ViewerRelationListView.Setting.Toggle) {
                             onSettingToggleChanged(item, isChecked)
                         }
@@ -86,7 +100,7 @@ class ViewerModifyOrderAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        when(holder) {
+        when (holder) {
             is RelationViewHolder -> {
                 holder.bind(items[position] as ViewerRelationListView.Relation)
             }
@@ -104,7 +118,7 @@ class ViewerModifyOrderAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    override fun getItemViewType(position: Int): Int = when(items[position]) {
+    override fun getItemViewType(position: Int): Int = when (items[position]) {
         is ViewerRelationListView.Relation -> VIEW_TYPE_RELATION
         is ViewerRelationListView.Section -> VIEW_TYPE_SECTION
         is ViewerRelationListView.Setting.Toggle -> VIEW_TYPE_SETTING_TOGGLE
@@ -112,7 +126,7 @@ class ViewerModifyOrderAdapter(
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        return when(val to = items[toPosition]) {
+        return when (val to = items[toPosition]) {
             is ViewerRelationListView.Relation -> {
                 if (to.view.key == Relations.NAME)
                     false
@@ -129,26 +143,21 @@ class ViewerModifyOrderAdapter(
 
     sealed class VH(view: View) : RecyclerView.ViewHolder(view)
 
-    class RelationViewHolder(parent: ViewGroup) : VH(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_modify_viewer_relation_order,
-            parent,
-            false
-        )
-    ), ItemTouchHelperViewHolder {
+    class RelationViewHolder(val binding: ItemModifyViewerRelationOrderBinding) : VH(binding.root),
+        ItemTouchHelperViewHolder {
 
         fun bind(item: ViewerRelationListView.Relation) {
             if (item.view.key == ObjectSetConfig.NAME_KEY) {
-                itemView.iconDrag.invisible()
+                binding.iconDrag.invisible()
             } else {
-                itemView.iconDrag.visible()
+                binding.iconDrag.visible()
             }
-            itemView.title.text = item.view.title
-            itemView.iconRelation.bind(item.view.format)
+            binding.title.text = item.view.title
+            binding.iconRelation.bind(item.view.format)
             if (item.view.isReadonly || item.view.isDefault) {
-                itemView.iconDelete.gone()
+                binding.iconDelete.gone()
             } else {
-                itemView.iconDelete.visible()
+                binding.iconDelete.visible()
             }
         }
 
@@ -163,34 +172,22 @@ class ViewerModifyOrderAdapter(
         }
     }
 
-    class SectionViewHolder(parent: ViewGroup) : VH(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_viewer_relation_list_section,
-            parent,
-            false
-        )
-    ) {
+    class SectionViewHolder(val binding: ItemViewerRelationListSectionBinding) : VH(binding.root) {
         fun bind(item: ViewerRelationListView.Section) {
-            when(item) {
+            when (item) {
                 ViewerRelationListView.Section.Relations -> {
-                    itemView.tvSectionName.setText(R.string.relations)
+                    binding.tvSectionName.setText(R.string.relations)
                 }
                 ViewerRelationListView.Section.Settings -> {
-                    itemView.tvSectionName.setText(R.string.settings)
+                    binding.tvSectionName.setText(R.string.settings)
                 }
             }
         }
     }
 
-    class SettingViewHolder(parent: ViewGroup) : VH(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_viewer_relation_list_setting,
-            parent,
-            false
-        )
-    ) {
-        fun bind(item: ViewerRelationListView.Setting) = with(itemView) {
-            when(item) {
+    class SettingViewHolder(val binding: ItemViewerRelationListSettingBinding) : VH(binding.root) {
+        fun bind(item: ViewerRelationListView.Setting) = with(binding) {
+            when (item) {
                 is ViewerRelationListView.Setting.CardSize.Small -> {
                     tvSettingName.setText(R.string.card_size)
                     tvSettingValue.setText(R.string.small)
@@ -211,19 +208,20 @@ class ViewerModifyOrderAdapter(
                     tvSettingName.setText(R.string.image_preview)
                     tvSettingValue.text = item.name
                 }
+                is ViewerRelationListView.Setting.Toggle.FitImage -> {
+                    // Do nothing
+                }
+                is ViewerRelationListView.Setting.Toggle.HideIcon -> {
+                    // Do nothing
+                }
             }
         }
     }
 
-    class ToggleViewHolder(parent: ViewGroup) : VH(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_viewer_relation_list_setting_toggle,
-            parent,
-            false
-        )
-    ) {
-        fun bind(item: ViewerRelationListView.Setting.Toggle) = with(itemView) {
-            when(item) {
+    class ToggleViewHolder(val binding: ItemViewerRelationListSettingToggleBinding) :
+        VH(binding.root) {
+        fun bind(item: ViewerRelationListView.Setting.Toggle) = with(binding) {
+            when (item) {
                 is ViewerRelationListView.Setting.Toggle.FitImage -> {
                     tvSettingName.setText(R.string.fit_image)
                     switchView.isChecked = item.toggled

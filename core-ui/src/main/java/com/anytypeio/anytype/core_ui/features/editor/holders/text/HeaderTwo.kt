@@ -4,15 +4,15 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import kotlinx.android.synthetic.main.item_block_header_two.view.*
 
 class HeaderTwo(
-    view: View,
+    val binding: ItemBlockHeaderTwoBinding,
     onContextMenuStyleClick: (IntRange) -> Unit
-) : Header(view) {
+) : Header(binding.root) {
 
-    override val header: TextInputWidget = itemView.headerTwo
+    override val header: TextInputWidget = binding.headerTwo
     override val content: TextInputWidget get() = header
     override val root: View = itemView
 
@@ -31,7 +31,8 @@ class HeaderTwo(
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_header_two)
             mentionUncheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_0_h2)
             mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_h2)
-            mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_header_two)
+            mentionInitialsSize =
+                resources.getDimension(R.dimen.mention_span_initials_size_header_two)
         }
     }
 

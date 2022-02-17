@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -19,14 +20,13 @@ import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import kotlinx.android.synthetic.main.item_block_file.view.*
 
-class File(view: View) : Media(view) {
+class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
 
     override val root: View = itemView
-    override val clickContainer: View = itemView.filename
-    private val icon = itemView.fileIcon
-    private val name = itemView.filename
+    override val clickContainer: View = binding.filename
+    private val icon = binding.fileIcon
+    private val name = binding.filename
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }

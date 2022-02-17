@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
+import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -23,7 +22,10 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setup
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setupPlaceholder
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
+import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
+import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
+import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.*
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
@@ -94,7 +96,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import kotlinx.android.synthetic.main.item_block_description.view.*
 import timber.log.Timber
 import java.util.*
 
@@ -157,11 +158,7 @@ class BlockAdapter(
             }
             HOLDER_TITLE -> {
                 Title.Document(
-                    view = inflater.inflate(
-                        R.layout.item_block_title,
-                        parent,
-                        false
-                    )
+                    ItemBlockTitleBinding.inflate(inflater, parent, false)
                 ).apply {
                     with(content) {
                         enableEnterKeyDetector(
@@ -200,11 +197,7 @@ class BlockAdapter(
             }
             HOLDER_PROFILE_TITLE -> {
                 Title.Profile(
-                    view = inflater.inflate(
-                        R.layout.item_block_title_profile,
-                        parent,
-                        false
-                    )
+                    ItemBlockTitleProfileBinding.inflate(inflater, parent, false)
                 ).apply {
                     with(content) {
                         enableEnterKeyDetector(
@@ -243,11 +236,7 @@ class BlockAdapter(
             }
             HOLDER_TODO_TITLE -> {
                 Title.Todo(
-                    view = inflater.inflate(
-                        R.layout.item_block_title_todo,
-                        parent,
-                        false
-                    )
+                    ItemBlockTitleTodoBinding.inflate(inflater, parent, false)
                 ).apply {
                     checkbox.setOnClickListener {
                         val view = views[bindingAdapterPosition]
@@ -293,90 +282,62 @@ class BlockAdapter(
             }
             HOLDER_HEADER_ONE -> {
                 HeaderOne(
-                    view = inflater.inflate(
-                        R.layout.item_block_header_one,
-                        parent,
-                        false
-                    ),
+                    binding = ItemBlockHeaderOneBinding.inflate(inflater, parent, false),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_HEADER_TWO -> {
                 HeaderTwo(
-                    view = inflater.inflate(
-                        R.layout.item_block_header_two,
-                        parent,
-                        false
-                    ),
+                    binding = ItemBlockHeaderTwoBinding.inflate(inflater, parent, false),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_HEADER_THREE -> {
                 HeaderThree(
-                    view = inflater.inflate(
-                        R.layout.item_block_header_three,
-                        parent,
-                        false
-                    ),
+                    binding = ItemBlockHeaderThreeBinding.inflate(inflater, parent, false),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_CODE_SNIPPET -> {
                 Code(
-                    view = inflater.inflate(
-                        R.layout.item_block_code_snippet,
-                        parent,
-                        false
-                    )
+                    ItemBlockCodeSnippetBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_CHECKBOX -> {
                 Checkbox(
-                    view = inflater.inflate(
-                        R.layout.item_block_checkbox,
-                        parent,
-                        false
+                    binding = ItemBlockCheckboxBinding.inflate(
+                        inflater, parent, false
                     ),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_BULLET -> {
                 Bulleted(
-                    view = inflater.inflate(
-                        R.layout.item_block_bulleted,
-                        parent,
-                        false
+                    binding = ItemBlockBulletedBinding.inflate(
+                        inflater, parent, false
                     ),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_NUMBERED -> {
                 Numbered(
-                    view = inflater.inflate(
-                        R.layout.item_block_numbered,
-                        parent,
-                        false
+                    binding = ItemBlockNumberedBinding.inflate(
+                        inflater, parent, false
                     ),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_TOGGLE -> {
                 Toggle(
-                    view = inflater.inflate(
-                        R.layout.item_block_toggle,
-                        parent,
-                        false
+                    binding = ItemBlockToggleBinding.inflate(
+                        inflater, parent, false
                     ),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
             }
             HOLDER_DESCRIPTION -> {
                 Description(
-                    view = inflater.inflate(
-                        R.layout.item_block_description,
-                        parent,
-                        false
-                    )
+                    ItemBlockDescriptionBinding.inflate(inflater, parent, false)
                 ).apply {
                     with(content) {
                         enableEnterKeyDetector(
@@ -435,11 +396,7 @@ class BlockAdapter(
             }
             HOLDER_FILE -> {
                 File(
-                    view = inflater.inflate(
-                        R.layout.item_block_file,
-                        parent,
-                        false
-                    )
+                    ItemBlockFileBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_FILE_PLACEHOLDER -> {
@@ -471,11 +428,7 @@ class BlockAdapter(
             }
             HOLDER_VIDEO -> {
                 Video(
-                    view = inflater.inflate(
-                        R.layout.item_block_video,
-                        parent,
-                        false
-                    )
+                    ItemBlockVideoBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO_PLACEHOLDER -> {
@@ -507,11 +460,7 @@ class BlockAdapter(
             }
             HOLDER_OBJECT_LINK_DEFAULT -> {
                 LinkToObject(
-                    view = inflater.inflate(
-                        R.layout.item_block_object_link,
-                        parent,
-                        false
-                    )
+                    ItemBlockObjectLinkBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_CARD -> {
@@ -525,20 +474,12 @@ class BlockAdapter(
             }
             HOLDER_OBJECT_LINK_ARCHIVE -> {
                 LinkToObjectArchive(
-                    view = inflater.inflate(
-                        R.layout.item_block_object_link_archive,
-                        parent,
-                        false
-                    )
+                    ItemBlockObjectLinkArchiveBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_DELETED -> {
                 LinkToObjectDelete(
-                    view = inflater.inflate(
-                        R.layout.item_block_object_link_delete,
-                        parent,
-                        false
-                    )
+                    ItemBlockObjectLinkDeleteBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_LOADING -> {
@@ -552,11 +493,7 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK -> {
                 Bookmark(
-                    view = inflater.inflate(
-                        R.layout.item_block_bookmark,
-                        parent,
-                        false
-                    )
+                    ItemBlockBookmarkBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_BOOKMARK_PLACEHOLDER -> {
@@ -570,20 +507,12 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK_ERROR -> {
                 BookmarkError(
-                    view = inflater.inflate(
-                        R.layout.item_block_bookmark_error,
-                        parent,
-                        false
-                    )
+                    ItemBlockBookmarkErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE -> {
                 Picture(
-                    view = inflater.inflate(
-                        R.layout.item_block_picture,
-                        parent,
-                        false
-                    )
+                    ItemBlockPictureBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE_PLACEHOLDER -> {
@@ -633,10 +562,8 @@ class BlockAdapter(
             }
             HOLDER_HIGHLIGHT -> {
                 Highlight(
-                    view = inflater.inflate(
-                        R.layout.item_block_highlight,
-                        parent,
-                        false
+                    binding = ItemBlockHighlightBinding.inflate(
+                        inflater, parent, false
                     ),
                     onContextMenuStyleClick = onContextMenuStyleClick
                 )
@@ -652,11 +579,7 @@ class BlockAdapter(
             }
             HOLDER_RELATION_PLACEHOLDER -> {
                 RelationViewHolder.Placeholder(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_placeholder,
-                        parent,
-                        false
-                    )
+                    ItemBlockRelationPlaceholderBinding.inflate(inflater, parent, false)
                 ).setupPlaceholder(this)
             }
             HOLDER_RELATION_STATUS -> {
@@ -670,29 +593,17 @@ class BlockAdapter(
             }
             HOLDER_RELATION_TAGS -> {
                 RelationViewHolder.Tags(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_tag,
-                        parent,
-                        false
-                    )
+                    ItemBlockRelationTagBinding.inflate(inflater, parent, false)
                 ).setup(this)
             }
             HOLDER_RELATION_OBJECT -> {
                 RelationViewHolder.Object(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_object,
-                        parent,
-                        false
-                    )
+                    ItemBlockRelationObjectBinding.inflate(inflater, parent, false)
                 ).setup(this)
             }
             HOLDER_RELATION_FILE -> {
                 RelationViewHolder.File(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_file,
-                        parent,
-                        false
-                    )
+                    ItemBlockRelationFileBinding.inflate(inflater, parent, false)
                 ).setup(this)
             }
             HOLDER_RELATION_CHECKBOX -> {
@@ -706,14 +617,12 @@ class BlockAdapter(
             }
             HOLDER_FEATURED_RELATION -> {
                 FeaturedRelationListViewHolder(
-                    view = inflater.inflate(
-                        R.layout.item_block_featured_relations,
-                        parent,
-                        false
-                    )
+                    ItemBlockFeaturedRelationsBinding.inflate(inflater, parent, false)
                 )
             }
-            HOLDER_LATEX -> Latex(parent).apply {
+            HOLDER_LATEX -> Latex(
+                ItemBlockLatexBinding.inflate(inflater, parent, false)
+            ).apply {
                 //latexView.isLongClickable = true
                 latexView.setOnTouchListener { v, event ->
                     if (event.action == MotionEvent.ACTION_DOWN) {
@@ -728,7 +637,9 @@ class BlockAdapter(
                     }
                 }
             }
-            HOLDER_UNSUPPORTED -> Unsupported(parent)
+            HOLDER_UNSUPPORTED -> Unsupported(
+                ItemBlockUnsupportedBinding.inflate(inflater, parent, false)
+            )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
 

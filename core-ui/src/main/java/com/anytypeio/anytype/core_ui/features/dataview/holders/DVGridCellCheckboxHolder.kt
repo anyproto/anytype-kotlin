@@ -1,13 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.dataview.holders
 
 import android.view.View
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.sets.model.CellView
-import kotlinx.android.synthetic.main.item_viewer_grid_cell_checkbox.view.*
 
 class DVGridCellCheckboxHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(cell: CellView.Checkbox) {
-        itemView.ivCheckbox.isSelected = cell.isChecked
+        itemView.findViewById<ImageView>(R.id.ivCheckbox).isSelected = cell.isChecked
     }
 }

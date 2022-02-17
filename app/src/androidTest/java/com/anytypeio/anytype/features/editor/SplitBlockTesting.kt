@@ -24,7 +24,6 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -149,7 +148,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -183,7 +182,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -298,7 +297,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -332,7 +331,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -447,7 +446,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -481,7 +480,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -596,7 +595,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -630,7 +629,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -747,7 +746,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -781,7 +780,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -898,7 +897,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -932,7 +931,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -1049,7 +1048,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -1083,7 +1082,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -1200,7 +1199,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -1234,7 +1233,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -1351,7 +1350,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
+            fragment.binding.recycler.findViewById<TextInputWidget>(targetViewId).setSelection(3)
         }
 
         Thread.sleep(100)
@@ -1385,7 +1384,7 @@ class SplitBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 0,
@@ -1412,7 +1411,7 @@ class SplitBlockTesting : EditorTestSetup() {
     }
 
     private fun launchFragment(args: Bundle) : FragmentScenario<TestEditorFragment> {
-        return launchFragmentInContainer<TestEditorFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

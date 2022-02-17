@@ -2,17 +2,17 @@ package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconCardBinding
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import kotlinx.android.synthetic.main.widget_object_icon_card.view.*
 import timber.log.Timber
 
 class ObjectCardIconWidget @JvmOverloads constructor(
@@ -23,11 +23,11 @@ class ObjectCardIconWidget @JvmOverloads constructor(
     private val emojiSize = resources.getDimension(R.dimen.object_icon_card_emoji_size).toInt()
     private val rectangleImageRadius = resources.getDimension(R.dimen.object_icon_card_rectangle_image_radius).toInt()
 
-    init {
-        View.inflate(context, R.layout.widget_object_icon_card, this)
-    }
+    val binding = WidgetObjectIconCardBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    fun bind(icon: ObjectIcon) {
+    fun bind(icon: ObjectIcon) = with(binding) {
         when(icon) {
             is ObjectIcon.Basic.Emoji -> {
                 clearInitials()
@@ -38,7 +38,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                 }
                 try {
                     Glide
-                        .with(this)
+                        .with(this@ObjectCardIconWidget)
                         .load(Emojifier.uri(icon.unicode))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(ivIcon)
@@ -54,7 +54,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     width = LayoutParams.MATCH_PARENT
                 }
                 Glide
-                    .with(this)
+                    .with(this@ObjectCardIconWidget)
                     .load(icon.hash)
                     .transform(
                         CenterCrop(),
@@ -76,7 +76,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     width = LayoutParams.MATCH_PARENT
                 }
                 Glide
-                    .with(this)
+                    .with(this@ObjectCardIconWidget)
                     .load(icon.hash)
                     .centerInside()
                     .circleCrop()
@@ -89,7 +89,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
     }
 
     private fun clearInitials() {
-        tvInitial.text = null
+        binding.tvInitial.text = null
     }
 
     companion object {

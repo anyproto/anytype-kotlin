@@ -12,15 +12,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.ThemeColorCode
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
 import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
-import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
-import com.anytypeio.anytype.core_ui.widgets.text.EditorLongClickListener
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
@@ -29,19 +27,19 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
-import kotlinx.android.synthetic.main.item_block_code_snippet.view.*
 import timber.log.Timber
 
-class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolder {
+class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.root),
+    BlockViewHolder.DragAndDropHolder {
 
     val menu: TextView
-        get() = itemView.code_menu
+        get() = binding.codeMenu
     val root: View
         get() = itemView
     val content: CodeTextInputWidget
-        get() = itemView.snippet
+        get() = binding.snippet
     val container: LinearLayout
-        get() = itemView.snippetContainer
+        get() = binding.snippetContainer
 
     val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -120,7 +118,7 @@ class Code(view: View) : BlockViewHolder(view), BlockViewHolder.DragAndDropHolde
     }
 
     fun indentize(item: BlockView.Indentable) {
-        itemView.snippetContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+        binding.snippetContainer.updateLayoutParams<FrameLayout.LayoutParams> {
             apply {
                 val extra = item.indent * dimen(R.dimen.indent)
                 leftMargin = 0 + extra

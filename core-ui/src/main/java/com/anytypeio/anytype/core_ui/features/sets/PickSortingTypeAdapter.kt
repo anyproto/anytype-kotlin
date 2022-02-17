@@ -1,13 +1,11 @@
 package com.anytypeio.anytype.core_ui.features.sets
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemListBaseBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import kotlinx.android.synthetic.main.item_list_base.view.*
 
 class PickSortingTypeAdapter(
     private val items: List<Viewer.SortType>,
@@ -18,7 +16,11 @@ class PickSortingTypeAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SortHolder {
         return SortHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_list_base, parent, false)
+            binding = ItemListBaseBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         )
     }
 
@@ -33,7 +35,7 @@ class PickSortingTypeAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    class SortHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class SortHolder(val binding: ItemListBaseBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
             key: String,
@@ -41,11 +43,11 @@ class PickSortingTypeAdapter(
             item: Viewer.SortType,
             click: (String, Viewer.SortType) -> Unit
         ) {
-            with(itemView) {
+            with(binding) {
                 icon.gone()
                 text.text = item.name
-                isSelected = item.ordinal == type
-                setOnClickListener {
+                itemView.isSelected = item.ordinal == type
+                itemView.setOnClickListener {
                     click(key, item)
                 }
             }

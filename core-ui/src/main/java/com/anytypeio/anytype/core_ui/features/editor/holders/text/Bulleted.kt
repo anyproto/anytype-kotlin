@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
@@ -17,17 +18,16 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import kotlinx.android.synthetic.main.item_block_bulleted.view.*
 
 class Bulleted(
-    view: View,
+    val binding: ItemBlockBulletedBinding,
     onContextMenuStyleClick: (IntRange) -> Unit
-) : Text(view), SupportNesting {
+) : Text(binding.root), SupportNesting {
 
-    val indent: View = itemView.bulletIndent
-    val bullet = itemView.bullet
-    private val container = itemView.bulletBlockContainer
-    override val content: TextInputWidget = itemView.bulletedListContent
+    val indent: View = binding.bulletIndent
+    val bullet = binding.bullet
+    private val container = binding.bulletBlockContainer
+    override val content: TextInputWidget = binding.bulletedListContent
     override val root: View = itemView
 
     private val mentionIconSize: Int

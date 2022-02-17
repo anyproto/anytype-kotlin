@@ -27,7 +27,6 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -358,7 +357,7 @@ class DeleteBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(0)
+            val item = fragment.binding.recycler.getChildAt(0)
             val view = item.findViewById<TextInputWidget>(firstViewId)
             assertEquals(
                 expected = 3,
@@ -583,7 +582,7 @@ class DeleteBlockTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-            fragment.recycler.findViewById<TextInputWidget>(firstViewId).setSelection(
+            fragment.binding.recycler.findViewById<TextInputWidget>(firstViewId).setSelection(
                 a.content<Block.Content.Text>().text.length
             )
         }
@@ -616,7 +615,7 @@ class DeleteBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(0)
+            val item = fragment.binding.recycler.getChildAt(0)
             val view = item.findViewById<TextInputWidget>(R.id.title)
             assertEquals(
                 expected = title.length,

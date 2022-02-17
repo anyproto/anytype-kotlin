@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemPaginatorPageBinding
+import com.anytypeio.anytype.core_ui.databinding.WidgetDataViewPaginationToolbarBinding
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
-import kotlinx.android.synthetic.main.item_paginator_page.view.*
-import kotlinx.android.synthetic.main.widget_data_view_pagination_toolbar.view.*
 
 class DataViewPaginatorToolbar @JvmOverloads constructor(
     context: Context,
@@ -25,10 +25,13 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
 
     private val paginatorAdapter = Adapter { onNumberClickCallback(it) }
 
+    val binding = WidgetDataViewPaginationToolbarBinding.inflate(
+        LayoutInflater.from(context), this
+    )
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_data_view_pagination_toolbar, this)
         setBackgroundColor(resources.getColor(R.color.background_primary, null))
-        rvPaginator.apply {
+        binding.rvPaginator.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             val spacing = resources.getDimension(R.dimen.dp_12).toInt()
             addItemDecoration(
@@ -41,11 +44,11 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
             )
             adapter = paginatorAdapter
         }
-        ivNextPage.setOnClickListener { onNext() }
-        ivPreviousPage.setOnClickListener { onPrevious() }
+        binding.ivNextPage.setOnClickListener { onNext() }
+        binding.ivPreviousPage.setOnClickListener { onPrevious() }
     }
 
-    fun set(count: Int, index: Int) {
+    fun set(count: Int, index: Int) = with(binding) {
         val update = mutableListOf<Pair<Int, Boolean>>()
         repeat(count) {
             val number = it
@@ -77,7 +80,13 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
 
         override fun onCreateViewHolder(
             parent: ViewGroup, viewType: Int
-        ): ViewHolder = ViewHolder(parent).apply {
+        ): ViewHolder = ViewHolder(
+            ItemPaginatorPageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
             itemView.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
@@ -90,17 +99,13 @@ class DataViewPaginatorToolbar @JvmOverloads constructor(
             holder.bind(getItem(position))
         }
 
-        class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_paginator_page,
-                parent,
-                false
-            )
-        ) {
+        class ViewHolder(
+            val binding: ItemPaginatorPageBinding
+        ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(item: Pair<Int, Boolean>) {
                 val (num, isSelected) = item
-                itemView.tvNumber.text = num.inc().toString()
-                itemView.tvNumber.isSelected = isSelected
+                binding.tvNumber.text = num.inc().toString()
+                binding.tvNumber.isSelected = isSelected
             }
         }
     }

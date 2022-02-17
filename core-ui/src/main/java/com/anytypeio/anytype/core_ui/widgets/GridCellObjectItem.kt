@@ -8,20 +8,20 @@ import android.widget.FrameLayout
 import androidx.core.view.marginStart
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetDvGridObjectBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.android.synthetic.main.widget_dv_grid_object.view.*
 
 class GridCellObjectItem @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+    context: Context, attrs: AttributeSet? = null
+) : FrameLayout(context, attrs) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_dv_grid_object, this)
-    }
+    val binding = WidgetDvGridObjectBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    fun setup(name: String, icon: ObjectIcon) {
+    fun setup(name: String, icon: ObjectIcon) = with(binding) {
         tvName.visible()
         tvName.text = name
         tvName.setTextColor(context.getColor(R.color.black))
@@ -42,7 +42,7 @@ class GridCellObjectItem @JvmOverloads constructor(
         }
     }
 
-    fun setupAsNonExistent() {
+    fun setupAsNonExistent() = with(binding) {
         tvName.visible()
         tvName.setText(R.string.non_existent_object)
         tvName.setTextColor(Color.parseColor("#CBC9BD"))

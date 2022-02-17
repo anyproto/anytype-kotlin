@@ -5,20 +5,23 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
-import kotlinx.android.synthetic.main.widget_object_menu_item.view.*
+import com.anytypeio.anytype.core_ui.databinding.WidgetObjectMenuItemBinding
 
 class ObjectMenuItemWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs) {
 
+    val binding = WidgetObjectMenuItemBinding.inflate(
+        LayoutInflater.from(context), this
+    )
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_object_menu_item, this)
         orientation = HORIZONTAL
         setupAttributeValues(attrs)
     }
 
-    private fun setupAttributeValues(set: AttributeSet?) {
+    private fun setupAttributeValues(set: AttributeSet?) = with(binding) {
         if (set == null) return
         val attrs = context.obtainStyledAttributes(set, R.styleable.ObjectMenuItemWidget, 0, 0)
         tvTitle.text = attrs.getString(R.styleable.ObjectMenuItemWidget_title)
@@ -26,5 +29,4 @@ class ObjectMenuItemWidget @JvmOverloads constructor(
         ivIcon.setImageResource(attrs.getResourceId(R.styleable.ObjectMenuItemWidget_icon, -1))
         attrs.recycle()
     }
-
 }

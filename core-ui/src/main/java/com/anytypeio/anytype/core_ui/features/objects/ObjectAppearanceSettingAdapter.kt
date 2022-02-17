@@ -7,17 +7,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectAppearanceCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSectionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSettingBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_CARD
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState
-import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
-import kotlinx.android.synthetic.main.item_object_appearance_checkbox.view.*
-import kotlinx.android.synthetic.main.item_object_preview_relation.view.*
-import kotlinx.android.synthetic.main.item_object_preview_section.view.*
-import kotlinx.android.synthetic.main.item_object_preview_setting.view.*
 
 class ObjectAppearanceSettingAdapter(
     private val onItemClick: (ObjectAppearanceSettingView) -> Unit,
@@ -27,17 +26,26 @@ class ObjectAppearanceSettingAdapter(
 ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_ITEM_RELATION_NAME, TYPE_ITEM_RELATION_DESCRIPTION ->
-                ViewHolder.Relation(parent).apply {
-                    itemView.relSwitch.setOnCheckedChangeListener { _, isChecked ->
+                ViewHolder.Relation(
+                    binding = ItemObjectPreviewRelationBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    binding.relSwitch.setOnCheckedChangeListener { _, isChecked ->
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             onSettingToggleChanged(getItem(pos), isChecked)
                         }
                     }
                 }
-            TYPE_ITEM_SECTION -> ViewHolder.Section(parent)
+            TYPE_ITEM_SECTION -> ViewHolder.Section(
+                binding = ItemObjectPreviewSectionBinding.inflate(
+                    inflater, parent, false
+                )
+            )
             TYPE_ITEM_SETTING_ICON -> ViewHolder.Setting.Icon(parent).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
@@ -62,7 +70,11 @@ class ObjectAppearanceSettingAdapter(
                     }
                 }
             }
-            TYPE_ITEM_ICON -> ViewHolder.Icon(parent).apply {
+            TYPE_ITEM_ICON -> ViewHolder.Icon(
+                binding = ItemObjectAppearanceCheckboxBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -70,7 +82,11 @@ class ObjectAppearanceSettingAdapter(
                     }
                 }
             }
-            TYPE_ITEM_COVER -> ViewHolder.Cover(parent).apply {
+            TYPE_ITEM_COVER -> ViewHolder.Cover(
+                binding = ItemObjectAppearanceCheckboxBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -78,7 +94,11 @@ class ObjectAppearanceSettingAdapter(
                     }
                 }
             }
-            TYPE_ITEM_PREVIEW_LAYOUT -> ViewHolder.PreviewLayout(parent).apply {
+            TYPE_ITEM_PREVIEW_LAYOUT -> ViewHolder.PreviewLayout(
+                binding = ItemObjectAppearanceCheckboxBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -133,111 +153,113 @@ class ObjectAppearanceSettingAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        sealed class Setting(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_object_preview_setting, parent, false
-            )
-        ) {
-            class PreviewLayout(parent: ViewGroup) : Setting(parent) {
+        sealed class Setting(val binding: ItemObjectPreviewSettingBinding) :
+            ViewHolder(binding.root) {
+            class PreviewLayout(parent: ViewGroup) : Setting(
+                ItemObjectPreviewSettingBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+            ) {
 
-                fun bind(item: ObjectAppearanceSettingView.Settings.PreviewLayout) =
-                    with(itemView) {
-                        settingName.text = context.getString(R.string.preview_layout)
-                        settingValue.text = if (item.style == LINK_STYLE_CARD) {
-                            context.getString(R.string.card)
-                        } else {
-                            context.getString(R.string.text)
-                        }
-                    }
-            }
-
-            class Icon(parent: ViewGroup) : Setting(parent) {
-
-                fun bind(item: ObjectAppearanceSettingView.Settings.Icon) = with(itemView) {
-                    settingName.text = context.getString(R.string.icon)
-                    settingValue.text = when (item.state) {
-                        ObjectAppearanceIconState.NONE -> context.getString(R.string.none)
-                        ObjectAppearanceIconState.SMALL -> context.getString(R.string.small)
-                        ObjectAppearanceIconState.MEDIUM -> context.getString(R.string.medium)
-                        ObjectAppearanceIconState.LARGE -> context.getString(R.string.large)
-                        ObjectAppearanceIconState.UNKNOWN -> context.getString(R.string.unknown)
+                fun bind(item: ObjectAppearanceSettingView.Settings.PreviewLayout) = with(binding) {
+                    settingName.text = itemView.context.getString(R.string.preview_layout)
+                    settingValue.text = if (item.style == LINK_STYLE_CARD) {
+                        itemView.context.getString(R.string.card)
+                    } else {
+                        itemView.context.getString(R.string.text)
                     }
                 }
             }
 
-            class Cover(parent: ViewGroup) : Setting(parent) {
+            class Icon(parent: ViewGroup) : Setting(
+                ItemObjectPreviewSettingBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+            ) {
 
-                fun bind(item: ObjectAppearanceSettingView.Settings.Cover) = with(itemView) {
-                    settingName.text = context.getString(R.string.cover)
+                fun bind(item: ObjectAppearanceSettingView.Settings.Icon) = with(binding) {
+                    settingName.text = itemView.context.getString(R.string.icon)
+                    settingValue.text = when (item.state) {
+                        ObjectAppearanceIconState.NONE -> itemView.context.getString(R.string.none)
+                        ObjectAppearanceIconState.SMALL -> itemView.context.getString(R.string.small)
+                        ObjectAppearanceIconState.MEDIUM -> itemView.context.getString(R.string.medium)
+                        ObjectAppearanceIconState.LARGE -> itemView.context.getString(R.string.large)
+                        ObjectAppearanceIconState.UNKNOWN -> itemView.context.getString(R.string.unknown)
+                    }
+                }
+            }
+
+            class Cover(parent: ViewGroup) : Setting(
+                ItemObjectPreviewSettingBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+            ) {
+
+                fun bind(item: ObjectAppearanceSettingView.Settings.Cover) = with(binding) {
+                    settingName.text = itemView.context.getString(R.string.cover)
                     settingValue.text = if (item.withCover == true) {
-                        context.getString(R.string.visible)
+                        itemView.context.getString(R.string.visible)
                     } else {
-                        context.getString(R.string.none)
+                        itemView.context.getString(R.string.none)
                     }
                 }
             }
         }
 
-        class Section(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_object_preview_section, parent, false)
-        ) {
+        class Section(
+            val binding: ItemObjectPreviewSectionBinding
+        ) : ViewHolder(binding.root) {
 
             fun bind(item: ObjectAppearanceSettingView.Section) {
-                itemView.section.text = when (item) {
-                    ObjectAppearanceSettingView.Section.FeaturedRelations ->
+                binding.section.text = when (item) {
+                    ObjectAppearanceSettingView.Section.FeaturedRelations -> {
                         itemView.context.getString(R.string.relations)
+                    }
                 }
             }
         }
 
-        class Relation(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_object_preview_relation, parent, false
-            )
-        ) {
+        class Relation(
+            val binding: ItemObjectPreviewRelationBinding
+        ) : ViewHolder(binding.root) {
 
-            fun bind(item: ObjectAppearanceSettingView.Relation) = with(itemView) {
+            fun bind(item: ObjectAppearanceSettingView.Relation) = with(binding) {
                 when (item) {
                     is ObjectAppearanceSettingView.Relation.Description -> {
                         relIcon.setImageResource(R.drawable.ic_relation_description)
-                        relName.text = context.getString(R.string.description)
+                        relName.text = itemView.context.getString(R.string.description)
                         relSwitch.isChecked = item.withDescription ?: false
                     }
                     is ObjectAppearanceSettingView.Relation.Name -> {
                         relIcon.setImageResource(R.drawable.ic_relation_name)
-                        relName.text = context.getString(R.string.name)
+                        relName.text = itemView.context.getString(R.string.name)
                         relSwitch.isChecked = item.withName ?: false
                     }
                 }
             }
         }
 
-        class Icon(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_object_appearance_checkbox, parent, false
-            )
-        ) {
+        class Icon(val binding: ItemObjectAppearanceCheckboxBinding) : ViewHolder(binding.root) {
 
-            fun bind(item: ObjectAppearanceSettingView.Icon) = with(itemView) {
+            fun bind(item: ObjectAppearanceSettingView.Icon) = with(binding) {
                 when (item) {
                     is ObjectAppearanceSettingView.Icon.Large -> {
-                        tvSize.text = context.getString(R.string.large)
+                        tvSize.text = itemView.context.getString(R.string.large)
                         ivIcon.gone()
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                     is ObjectAppearanceSettingView.Icon.Medium -> {
-                        tvSize.text = context.getString(R.string.medium)
+                        tvSize.text = itemView.context.getString(R.string.medium)
                         ivIcon.gone()
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                     is ObjectAppearanceSettingView.Icon.Small -> {
-                        tvSize.text = context.getString(R.string.small)
+                        tvSize.text = itemView.context.getString(R.string.small)
                         ivIcon.gone()
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                     is ObjectAppearanceSettingView.Icon.None -> {
-                        tvSize.text = context.getString(R.string.none)
+                        tvSize.text = itemView.context.getString(R.string.none)
                         ivIcon.gone()
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
@@ -245,21 +267,17 @@ class ObjectAppearanceSettingAdapter(
             }
         }
 
-        class Cover(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_object_appearance_checkbox, parent, false
-            )
-        ) {
+        class Cover(val binding: ItemObjectAppearanceCheckboxBinding) : ViewHolder(binding.root) {
 
-            fun bind(item: ObjectAppearanceSettingView.Cover) = with(itemView) {
+            fun bind(item: ObjectAppearanceSettingView.Cover) = with(binding) {
                 when (item) {
                     is ObjectAppearanceSettingView.Cover.None -> {
-                        tvSize.text = context.getString(R.string.none)
+                        tvSize.text = itemView.context.getString(R.string.none)
                         ivIcon.gone()
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                     is ObjectAppearanceSettingView.Cover.Visible -> {
-                        tvSize.text = context.getString(R.string.visible)
+                        tvSize.text = itemView.context.getString(R.string.visible)
                         ivIcon.gone()
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
@@ -267,20 +285,18 @@ class ObjectAppearanceSettingAdapter(
             }
         }
 
-        class PreviewLayout(parent: ViewGroup) : ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_object_appearance_checkbox, parent, false
-            )
-        ) {
-            fun bind(item: ObjectAppearanceSettingView.PreviewLayout) = with(itemView) {
+        class PreviewLayout(
+            val binding: ItemObjectAppearanceCheckboxBinding
+        ) : ViewHolder(binding.root) {
+            fun bind(item: ObjectAppearanceSettingView.PreviewLayout) = with(binding) {
                 when (item) {
                     is ObjectAppearanceSettingView.PreviewLayout.Text -> {
-                        tvSize.text = context.getString(R.string.text)
+                        tvSize.text = itemView.context.getString(R.string.text)
                         ivIcon.setImageResource(R.drawable.ic_preview_layout_text)
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }
                     is ObjectAppearanceSettingView.PreviewLayout.Card -> {
-                        tvSize.text = context.getString(R.string.card)
+                        tvSize.text = itemView.context.getString(R.string.card)
                         ivIcon.setImageResource(R.drawable.ic_preview_layout_card)
                         if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
                     }

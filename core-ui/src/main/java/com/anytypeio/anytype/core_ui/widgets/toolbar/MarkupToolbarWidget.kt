@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetMarkupToolbarMainBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.extensions.lighter
@@ -15,41 +16,26 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
-import kotlinx.android.synthetic.main.widget_markup_toolbar_main.view.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
-class MarkupToolbarWidget : LinearLayout {
+class MarkupToolbarWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : LinearLayout(context, attrs) {
 
-    constructor(
-        context: Context
-    ) : this(context, null)
+    val binding = WidgetMarkupToolbarMainBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet?
-    ) : this(context, attrs, 0)
+    private fun bold() = binding.bold.clicks().map { Markup.Type.BOLD }
+    private fun italic() = binding.italic.clicks().map { Markup.Type.ITALIC }
+    private fun strike() = binding.strike.clicks().map { Markup.Type.STRIKETHROUGH }
+    private fun code() = binding.code.clicks().map { Markup.Type.KEYBOARD }
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
-        inflate()
-    }
-
-    private fun inflate() {
-        LayoutInflater.from(context).inflate(R.layout.widget_markup_toolbar_main, this)
-    }
-
-    private fun bold() = bold.clicks().map { Markup.Type.BOLD }
-    private fun italic() = italic.clicks().map { Markup.Type.ITALIC }
-    private fun strike() = strike.clicks().map { Markup.Type.STRIKETHROUGH }
-    private fun code() = code.clicks().map { Markup.Type.KEYBOARD }
-
-    fun linkClicks() = url.clicks().map { Markup.Type.LINK }
-    fun colorClicks() = color.clicks()
-    fun highlightClicks() = highlight.clicks()
+    fun linkClicks() = binding.url.clicks().map { Markup.Type.LINK }
+    fun colorClicks() = binding.color.clicks()
+    fun highlightClicks() = binding.highlight.clicks()
     fun markup() = merge(bold(), italic(), strike(), code())
 
     fun setProps(
@@ -57,7 +43,7 @@ class MarkupToolbarWidget : LinearLayout {
         supportedTypes: List<Markup.Type>,
         isBackgroundColorSelected: Boolean,
         isTextColorSelected: Boolean
-    ) {
+    ) = with(binding) {
         bold.isSelected = props?.isBold ?: false
         bold.isEnabled = supportedTypes.contains(Markup.Type.BOLD)
         boldIcon.isEnabled = bold.isEnabled
@@ -85,8 +71,7 @@ class MarkupToolbarWidget : LinearLayout {
                 val default = resources.getColor(R.color.text_primary, null)
                 val value = resources.dark(code, default)
                 textColorCircle.tint(value)
-            }
-            else {
+            } else {
                 textColorCircle.backgroundTintList = null
             }
         }
@@ -106,8 +91,7 @@ class MarkupToolbarWidget : LinearLayout {
                 val default = resources.getColor(R.color.background_primary, null)
                 val value = resources.lighter(code, default)
                 backgroundColorCircle.tint(value)
-            }
-            else
+            } else
                 backgroundColorCircle.backgroundTintList = null
         }
 

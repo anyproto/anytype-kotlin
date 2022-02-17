@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
@@ -15,20 +16,19 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import kotlinx.android.synthetic.main.item_block_toggle.view.*
 
 class Toggle(
-    view: View,
+    val binding: ItemBlockToggleBinding,
     onContextMenuStyleClick: (IntRange) -> Unit
-) : Text(view), SupportNesting {
+) : Text(binding.root), SupportNesting {
 
     private var mode = BlockView.Mode.EDIT
 
-    val toggle = itemView.toggle
-    private val line = itemView.guideline
-    private val placeholder = itemView.togglePlaceholder
-    private val container = itemView.toolbarBlockContentContainer
-    override val content: TextInputWidget = itemView.toggleContent
+    val toggle = binding.toggle
+    private val line = binding.guideline
+    private val placeholder = binding.togglePlaceholder
+    private val container = binding.toolbarBlockContentContainer
+    override val content: TextInputWidget = binding.toggleContent
     override val root: View = itemView
 
     private val mentionIconSize: Int
@@ -127,7 +127,15 @@ class Toggle(
         onSlashEvent: (SlashEvent) -> Unit
     ) {
         check(item is BlockView.Text.Toggle) { "Expected a toggle block, but was: $item" }
-        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent, onSlashEvent)
+        super.processChangePayload(
+            payloads,
+            item,
+            onTextChanged,
+            onSelectionChanged,
+            clicked,
+            onMentionEvent,
+            onSlashEvent
+        )
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED))
                 placeholder.isVisible = item.isEmpty

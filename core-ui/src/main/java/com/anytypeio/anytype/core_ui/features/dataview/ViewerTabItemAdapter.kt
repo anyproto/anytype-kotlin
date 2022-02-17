@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerTabBinding
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
-import kotlinx.android.synthetic.main.item_dv_viewer_tab.view.*
 
 @Deprecated("Outdated.")
 class ViewerTabItemAdapter(
@@ -39,8 +39,7 @@ class ViewerTabItemAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TAB_TYPE -> {
-                val view = inflater.inflate(R.layout.item_dv_viewer_tab, parent, false)
-                TabHolder(view).apply {
+                TabHolder(ItemDvViewerTabBinding.inflate(inflater, parent, false)).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
@@ -61,9 +60,9 @@ class ViewerTabItemAdapter(
         }
     }
 
-    class TabHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class TabHolder(val binding: ItemDvViewerTabBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private val title = itemView.tvTabTitle
+        private val title = binding.tvTabTitle
 
         fun bind(item: ViewerTabView) {
             title.text = item.name

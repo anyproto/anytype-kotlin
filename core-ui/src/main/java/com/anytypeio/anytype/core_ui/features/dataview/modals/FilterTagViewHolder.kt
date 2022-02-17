@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.core_ui.features.dataview.modals
 
 import android.content.res.ColorStateList
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTagBinding
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
@@ -16,22 +16,19 @@ import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.google.android.material.chip.Chip
-import kotlinx.android.synthetic.main.item_dv_viewer_filter_tag.view.*
-import kotlinx.android.synthetic.main.item_dv_viewer_filter_tag_value.view.*
 
+class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) : FilterViewHolder(binding.root) {
 
-class FilterTagViewHolder(view: View) : FilterViewHolder(view) {
+    override val textTitle: TextView get() = binding.tvTitle
+    override val textCondition: TextView get() = binding.tvCondition
+    override val iconFormat: ImageView get() = binding.iconFormat
+    override val iconArrow: ImageView get() = binding.iconArrow
+    override val iconRemove: ImageView get() = binding.iconRemoveTag
 
-    override val textTitle: TextView get() = itemView.tvTitle
-    override val textCondition: TextView get() = itemView.tvCondition
-    override val iconFormat: ImageView get() = itemView.iconFormat
-    override val iconArrow: ImageView get() = itemView.iconArrow
-    override val iconRemove: ImageView get() = itemView.iconRemoveTag
-
-    private val chip1 = itemView.chip1
-    private val chip2 = itemView.chip2
-    private val chipDots = itemView.chipDots
-    private val chips = listOf<Chip>(chip1, chip2, chipDots)
+    private val chip1 = binding.tvValue.chip1
+    private val chip2 = binding.tvValue.chip2
+    private val chipDots = binding.tvValue.chipDots
+    private val chips = listOf(chip1, chip2, chipDots)
 
     fun bind(
         item: FilterView.Expression.Tag

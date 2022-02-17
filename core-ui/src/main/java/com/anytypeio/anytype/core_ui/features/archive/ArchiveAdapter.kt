@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectArchive
@@ -35,20 +36,12 @@ class ArchiveAdapter(
         return when (viewType) {
             HOLDER_ARCHIVE_TITLE -> {
                 Title.Archive(
-                    view = inflater.inflate(
-                        R.layout.item_block_title,
-                        parent,
-                        false
-                    )
+                    ItemBlockTitleBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_ARCHIVE -> {
                 LinkToObjectArchive(
-                    view = inflater.inflate(
-                        R.layout.item_block_object_link_archive,
-                        parent,
-                        false
-                    )
+                    ItemBlockObjectLinkArchiveBinding.inflate(inflater, parent, false)
                 )
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")

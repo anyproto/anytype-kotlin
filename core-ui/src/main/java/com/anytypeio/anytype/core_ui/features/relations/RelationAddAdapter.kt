@@ -7,11 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchNameInputBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatCreateFromScratchBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationFormatViewHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationViewHolder
 import com.anytypeio.anytype.presentation.relations.model.RelationView
-import kotlinx.android.synthetic.main.item_relation_create_from_scratch.view.*
-import kotlinx.android.synthetic.main.item_relation_create_from_scratch_name_input.view.*
 
 class RelationAddAdapter(
     val onItemClick: (RelationView.Existing) -> Unit
@@ -20,7 +22,13 @@ class RelationAddAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ) = DefaultRelationViewHolder(parent).apply {
+    ) = DefaultRelationViewHolder(
+        binding = ItemRelationFormatBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+    ).apply {
         itemView.setOnClickListener {
             if (bindingAdapterPosition != RecyclerView.NO_POSITION)
                 onItemClick(getItem(bindingAdapterPosition))
@@ -53,7 +61,13 @@ class RelationFormatAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ) = DefaultRelationFormatViewHolder(parent).apply {
+    ) = DefaultRelationFormatViewHolder(
+        binding = ItemRelationFormatCreateFromScratchBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+    ).apply {
         itemView.setOnClickListener {
             if (bindingAdapterPosition != RecyclerView.NO_POSITION)
                 onItemClick(getItem(bindingAdapterPosition))
@@ -122,8 +136,14 @@ class RelationNameInputAdapter(
     var query: String = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ViewHolder(parent).apply {
-            itemView.textInputField.doAfterTextChanged {
+        ViewHolder(
+            binding = ItemRelationCreateFromScratchNameInputBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
+            binding.textInputField.doAfterTextChanged {
                 query = it.toString()
                 onTextInputChanged(it.toString())
             }
@@ -139,15 +159,11 @@ class RelationNameInputAdapter(
 
     override fun getItemCount(): Int = 1
 
-    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_relation_create_from_scratch_name_input,
-            parent,
-            false
-        )
-    ) {
+    class ViewHolder(
+        val binding: ItemRelationCreateFromScratchNameInputBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(query: String) {
-            itemView.textInputField.setText(query)
+            binding.textInputField.setText(query)
         }
     }
 }
@@ -163,7 +179,13 @@ class RelationAddHeaderAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(parent).apply {
+        ViewHolder(
+            binding = ItemRelationCreateFromScratchBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
             itemView.setOnClickListener { onItemClick() }
         }
 
@@ -177,18 +199,16 @@ class RelationAddHeaderAdapter(
 
     override fun getItemCount(): Int = 1
 
-    class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_relation_create_from_scratch,
-            parent,
-            false
-        )
-    ) {
-        fun bind(query: String) = with(itemView) {
+    class ViewHolder(
+        val binding: ItemRelationCreateFromScratchBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(query: String) = with(binding) {
             if (query.isEmpty()) {
                 tvCreateFromScratch.setText(R.string.create_from_scratch)
             } else {
-                tvCreateFromScratch.text = context.getString(R.string.create_relation_with_name, query)
+                tvCreateFromScratch.text = itemView.resources.getString(
+                    R.string.create_relation_with_name, query
+                )
             }
         }
     }

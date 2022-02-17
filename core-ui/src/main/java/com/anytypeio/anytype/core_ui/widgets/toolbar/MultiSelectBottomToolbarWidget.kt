@@ -9,47 +9,33 @@ import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.LayoutBottomMultiSelectToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import kotlinx.android.synthetic.main.layout_bottom_multi_select_toolbar.view.*
 
 
-class MultiSelectBottomToolbarWidget : ConstraintLayout {
+class MultiSelectBottomToolbarWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : ConstraintLayout(context, attrs) {
 
-    constructor(
-        context: Context
-    ) : this(context, null)
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet?
-    ) : this(context, attrs, 0)
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
-        inflate()
-    }
+    val binding = LayoutBottomMultiSelectToolbarBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
     var isShowing = false
 
-    fun inflate() {
-        LayoutInflater.from(context).inflate(R.layout.layout_bottom_multi_select_toolbar, this)
-    }
+    fun doneClicks() = binding.done.clicks()
+    fun deleteClicks() = binding.delete.clicks()
+    fun turnIntoClicks() = binding.turnInto.clicks()
+    fun styleClicks() = binding.multiStyle.clicks()
+    fun copyClicks() = binding.copy.clicks()
 
-    fun doneClicks() = done.clicks()
-    fun deleteClicks() = delete.clicks()
-    fun turnIntoClicks() = turnInto.clicks()
-    fun styleClicks() = multiStyle.clicks()
-    fun copyClicks() = copy.clicks()
-
-    fun enterScrollAndMove() = enterScrollAndMove.clicks()
-    fun applyScrollAndMoveClicks() = move1.clicks()
-    fun exitScrollAndMoveClicks() = cancel1.clicks()
+    fun enterScrollAndMove() = binding.enterScrollAndMove.clicks()
+    fun applyScrollAndMoveClicks() = binding.move1.clicks()
+    fun exitScrollAndMoveClicks() = binding.cancel1.clicks()
 
     fun showWithAnimation() {
         ObjectAnimator.ofFloat(this, ANIMATED_PROPERTY, 0f).apply {
@@ -78,26 +64,26 @@ class MultiSelectBottomToolbarWidget : ConstraintLayout {
     }
 
     fun hideMultiSelectControls() {
-        controls.invisible()
+        binding.controls.invisible()
     }
 
     fun showScrollAndMoveModeControls() {
-        scrollandMoveControls.visible()
-        done.invisible()
+        binding.scrollandMoveControls.visible()
+        binding.done.invisible()
     }
 
     fun hideScrollAndMoveModeControls() {
-        scrollandMoveControls.invisible()
-        done.visible()
+        binding.scrollandMoveControls.invisible()
+        binding.done.visible()
     }
 
     fun update(count: Int) {
         if (count == 0) {
-            title.visible()
-            controls.invisible()
+            binding.title.visible()
+            binding.controls.invisible()
         } else {
-            title.invisible()
-            controls.visible()
+            binding.title.invisible()
+            binding.controls.visible()
         }
     }
 

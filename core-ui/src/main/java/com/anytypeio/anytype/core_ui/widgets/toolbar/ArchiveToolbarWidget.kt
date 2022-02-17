@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetArchiveToolbarBinding
 import com.anytypeio.anytype.core_ui.extensions.color
-import kotlinx.android.synthetic.main.widget_archive_toolbar.view.*
 
 class ArchiveToolbarWidget @JvmOverloads constructor(
     context: Context,
@@ -14,11 +14,11 @@ class ArchiveToolbarWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_archive_toolbar, this)
-    }
+    val binding = WidgetArchiveToolbarBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    fun update(count: Int) {
+    fun update(count: Int) = with(binding) {
         if (count == 0) {
             tvSelect.text = resources.getString(R.string.widget_archive_select_pages)
             btnPutBack.setTextColor(context.color(R.color.toolbar_archive_button_disable))

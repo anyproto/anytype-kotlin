@@ -6,25 +6,25 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetRelationObjectBinding
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.android.synthetic.main.widget_dv_grid_object.view.*
 
 class RelationObjectItem @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_relation_object, this)
-    }
+    val binding = WidgetRelationObjectBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    fun setup(name: String, icon: ObjectIcon) {
+    fun setup(name: String, icon: ObjectIcon) = with(binding) {
         tvName.visible()
         tvName.text = name
         objectIcon.setIcon(icon)
     }
 
-    fun setupAsNonExistent() {
+    fun setupAsNonExistent() = with(binding) {
         tvName.visible()
         tvName.setText(R.string.non_existent_object)
         tvName.setTextColor(Color.parseColor("#CBC9BD"))

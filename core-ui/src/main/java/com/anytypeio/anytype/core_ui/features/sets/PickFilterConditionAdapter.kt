@@ -1,14 +1,12 @@
 package com.anytypeio.anytype.core_ui.features.sets
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterConditionBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import kotlinx.android.synthetic.main.item_dv_viewer_filter_condition.view.*
 
 class PickFilterConditionAdapter(
     private val conditions: List<Viewer.Filter.Condition>,
@@ -17,10 +15,14 @@ class PickFilterConditionAdapter(
 ) : RecyclerView.Adapter<PickFilterConditionAdapter.ConditionHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConditionHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_dv_viewer_filter_condition, parent, false)
-        return ConditionHolder(view = view).apply {
-            itemView.root.setOnClickListener {
+        return ConditionHolder(
+            binding = ItemDvViewerFilterConditionBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
+            binding.root.setOnClickListener {
                 click.invoke(conditions[bindingAdapterPosition])
             }
         }
@@ -35,18 +37,20 @@ class PickFilterConditionAdapter(
 
     override fun getItemCount(): Int = conditions.size
 
-    inner class ConditionHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ConditionHolder(
+        val binding: ItemDvViewerFilterConditionBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
             isChecked: Boolean,
             condition: Viewer.Filter.Condition,
         ) {
             if (isChecked) {
-                itemView.iconCheck.visible()
+                binding.iconCheck.visible()
             } else {
-                itemView.iconCheck.invisible()
+                binding.iconCheck.invisible()
             }
-            itemView.tvCondition.text = condition.title
+            binding.tvCondition.text = condition.title
         }
     }
 }

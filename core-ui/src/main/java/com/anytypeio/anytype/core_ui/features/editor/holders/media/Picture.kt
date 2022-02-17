@@ -1,10 +1,9 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
-import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -16,15 +15,14 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.synthetic.main.item_block_picture.view.*
 import timber.log.Timber
 
-class Picture(view: View) : Media(view) {
+class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root) {
 
     override val root: View = itemView
     override val clickContainer: View = root
-    private val image = itemView.image
-    private val error = itemView.error
+    private val image = binding.image
+    private val error = binding.error
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }

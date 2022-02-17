@@ -25,7 +25,6 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
 import org.junit.Rule
@@ -225,7 +224,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(0)
+            val item = fragment.binding.recycler.getChildAt(0)
             item.findViewById<TextInputWidget>(view).apply {
                 assertEquals(expected = result.length, actual = selectionStart)
                 assertEquals(expected = result.length, actual = selectionEnd)
@@ -528,7 +527,7 @@ class ClipboardTesting : EditorTestSetup() {
         }
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(2)
+            val item = fragment.binding.recycler.getChildAt(2)
             item.findViewById<TextInputWidget>(secondPastedBlockView).apply {
                 assertEquals(expected = pasted.second.length, actual = selectionStart)
                 assertEquals(expected = pasted.second.length, actual = selectionEnd)

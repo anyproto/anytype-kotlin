@@ -1,24 +1,25 @@
 package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarBackgroundBinding
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import kotlinx.android.synthetic.main.block_style_toolbar_background.view.*
 
-class StyleBackgroundViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class StyleBackgroundViewHolder(
+    val binding: BlockStyleToolbarBackgroundBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    private val default = itemView.backgroundColorDefault
-    private val grey = itemView.backgroundColorGrey
-    private val yellow = itemView.backgroundColorYellow
-    private val orange = itemView.backgroundColorOrange
-    private val red = itemView.backgroundColorRed
-    private val pink = itemView.backgroundColorPink
-    private val purple = itemView.backgroundColorPurple
-    private val blue = itemView.backgroundColorBlue
-    private val ice = itemView.backgroundColorIce
-    private val teal = itemView.backgroundColorTeal
-    private val green = itemView.backgroundColorGreen
+    private val default = binding.backgroundColorDefault
+    private val grey = binding.backgroundColorGrey
+    private val yellow = binding.backgroundColorYellow
+    private val orange = binding.backgroundColorOrange
+    private val red = binding.backgroundColorRed
+    private val pink = binding.backgroundColorPink
+    private val purple = binding.backgroundColorPurple
+    private val blue = binding.backgroundColorBlue
+    private val ice = binding.backgroundColorIce
+    private val teal = binding.backgroundColorTeal
+    private val green = binding.backgroundColorGreen
 
     fun bind(
         onStylingEvent: (StylingEvent) -> Unit,

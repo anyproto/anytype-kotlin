@@ -1,12 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.dataview.modals
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerSortAddBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerSortApplyBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerSortSetBinding
 import com.anytypeio.anytype.core_ui.extensions.formatIcon
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -16,8 +17,6 @@ import com.anytypeio.anytype.presentation.sets.model.SortingView.Companion.HOLDE
 import com.anytypeio.anytype.presentation.sets.model.SortingView.Companion.HOLDER_APPLY
 import com.anytypeio.anytype.presentation.sets.model.SortingView.Companion.HOLDER_SET
 import com.google.android.material.chip.Chip
-import kotlinx.android.synthetic.main.item_viewer_sort_apply.view.*
-import kotlinx.android.synthetic.main.item_viewer_sort_set.view.*
 
 class SortByAdapter(
     private var items: List<SortingView> = listOf(),
@@ -33,16 +32,25 @@ class SortByAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             HOLDER_SET -> {
-                val view = inflater.inflate(R.layout.item_viewer_sort_set, parent, false)
-                ItemHolder(view)
+                ItemHolder(
+                    ItemViewerSortSetBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
             }
             HOLDER_ADD -> {
-                val view = inflater.inflate(R.layout.item_viewer_sort_add, parent, false)
-                AddItemHolder(view)
+                AddItemHolder(
+                    ItemViewerSortAddBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
             }
             HOLDER_APPLY -> {
-                val view = inflater.inflate(R.layout.item_viewer_sort_apply, parent, false)
-                ButtonHolder(view)
+                ButtonHolder(
+                    ItemViewerSortApplyBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
@@ -75,10 +83,9 @@ class SortByAdapter(
     }
 
 
-    class AddItemHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class AddItemHolder(val binding: ItemViewerSortAddBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(click: (SortClick) -> Unit) {
-            val context = itemView.context
             itemView.setOnClickListener {
                 click(SortClick.Add)
             }
@@ -92,9 +99,9 @@ class SortByAdapter(
         }
     }
 
-    class ButtonHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ButtonHolder(val binding: ItemViewerSortApplyBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val button: TextView = itemView.btnApply
+        val button: TextView = binding.btnApply
 
         fun bind(click: (SortClick) -> Unit) {
             button.setOnClickListener {
@@ -103,12 +110,12 @@ class SortByAdapter(
         }
     }
 
-    class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ItemHolder(val binding: ItemViewerSortSetBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val close: ImageView = itemView.ivDelete
-        private val prefix: Chip = itemView.tvPrefix
-        val key: Chip = itemView.tvKey
-        val type: Chip = itemView.tvType
+        val close: ImageView = binding.ivDelete
+        private val prefix: Chip = binding.tvPrefix
+        val key: Chip = binding.tvKey
+        val type: Chip = binding.tvType
 
         fun bind(
             item: SortingView.Set,

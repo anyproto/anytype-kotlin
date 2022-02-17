@@ -26,7 +26,6 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -262,7 +261,7 @@ class MergeBlockTesting : EditorTestSetup() {
         // Set cursor at the beginning of B
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             view.setSelection(0)
         }
@@ -290,7 +289,7 @@ class MergeBlockTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(0)
+            val item = fragment.binding.recycler.getChildAt(0)
             val view = item.findViewById<TextInputWidget>(targetViewId)
             assertEquals(
                 expected = 3,
@@ -325,7 +324,7 @@ class MergeBlockTesting : EditorTestSetup() {
     }
 
     private fun launchFragment(args: Bundle) : FragmentScenario<TestEditorFragment> {
-        return launchFragmentInContainer<TestEditorFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

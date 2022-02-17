@@ -3,31 +3,34 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkBinding
 import com.anytypeio.anytype.core_ui.features.editor.*
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.removeSpans
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.android.synthetic.main.item_block_object_link.view.*
 
-class LinkToObject(view: View) :
-    BlockViewHolder(view),
+class LinkToObject(
+    val binding: ItemBlockObjectLinkBinding
+) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     SupportCustomTouchProcessor,
     SupportNesting {
 
     private val untitled = itemView.resources.getString(R.string.untitled)
-    private val objectIcon = itemView.objectIconWidget
-    private val objectIconContainer = itemView.iconObjectContainer
-    private val title = itemView.pageTitle
-    private val guideline = itemView.pageGuideline
+    private val objectIcon = binding.objectIconWidget
+    private val objectIconContainer = binding.iconObjectContainer
+    private val title = binding.pageTitle
+    private val guideline = binding.pageGuideline
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }

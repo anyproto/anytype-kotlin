@@ -3,7 +3,7 @@ package com.anytypeio.anytype.core_ui.features.relations
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemEditCellObjectBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.ObjectRelationObjectHolder
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
 
@@ -20,8 +20,11 @@ class RelationObjectValueAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectRelationObjectHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_edit_cell_object, parent, false)
-        return ObjectRelationObjectHolder(view).apply {
+        return ObjectRelationObjectHolder(
+            binding = ItemEditCellObjectBinding.inflate(
+                inflater, parent, false
+            )
+        ).apply {
             itemView.setOnClickListener {
                 val item = views[bindingAdapterPosition]
                 onObjectClick(item.id)

@@ -1,9 +1,12 @@
 package com.anytypeio.anytype.core_ui.features.objects
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeHorizontalItemBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeItemBinding
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHolder
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHorizontalHolder
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeSearchHolder
@@ -22,9 +25,14 @@ abstract class ObjectTypeBaseAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
         val viewHolder: RecyclerView.ViewHolder = when (viewType) {
             R.layout.item_object_type_item -> {
-                ObjectTypeHolder(parent).apply {
+                ObjectTypeHolder(
+                    binding = ItemObjectTypeItemBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                             val item = data[bindingAdapterPosition] as ObjectTypeView.Item
@@ -34,7 +42,11 @@ abstract class ObjectTypeBaseAdapter(
                 }
             }
             R.layout.item_object_type_horizontal_item -> {
-                ObjectTypeHorizontalHolder(parent).apply {
+                ObjectTypeHorizontalHolder(
+                    binding = ItemObjectTypeHorizontalItemBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                             val item = data[bindingAdapterPosition] as ObjectTypeView.Item

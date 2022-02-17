@@ -8,6 +8,10 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
@@ -20,9 +24,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
-import kotlinx.android.synthetic.main.item_document_relation_file.view.*
-import kotlinx.android.synthetic.main.item_document_relation_object.view.*
-import kotlinx.android.synthetic.main.item_document_relation_tag.view.*
 import timber.log.Timber
 
 sealed class RelationViewHolder(
@@ -56,7 +57,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Placeholder(view: View) : RelationViewHolder(view) {
+    class Placeholder(val binding: ItemBlockRelationPlaceholderBinding) : RelationViewHolder(binding.root) {
 
         val icon: View get() = itemView.findViewById(R.id.relationIcon)
 
@@ -140,7 +141,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Tags(view: View) : RelationViewHolder(view) {
+    class Tags(val binding: ItemBlockRelationTagBinding) : RelationViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -164,12 +165,12 @@ sealed class RelationViewHolder(
         }
 
         private fun getViewByIndex(index: Int): TagWidget? = when (index) {
-            0 -> itemView.tag0
-            1 -> itemView.tag1
-            2 -> itemView.tag2
-            3 -> itemView.tag3
-            4 -> itemView.tag4
-            5 -> itemView.tag5
+            0 -> binding.content.tag0
+            1 -> binding.content.tag1
+            2 -> binding.content.tag2
+            3 -> binding.content.tag3
+            4 -> binding.content.tag4
+            5 -> binding.content.tag5
             else -> null
         }
 
@@ -184,7 +185,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Object(view: View) : RelationViewHolder(view) {
+    class Object(val binding: ItemBlockRelationObjectBinding) : RelationViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -220,10 +221,10 @@ sealed class RelationViewHolder(
         }
 
         private fun getViewByIndex(index: Int): RelationObjectItem? = when (index) {
-            0 -> itemView.obj0
-            1 -> itemView.obj1
-            2 -> itemView.obj2
-            3 -> itemView.obj3
+            0 -> binding.content.obj0
+            1 -> binding.content.obj1
+            2 -> binding.content.obj2
+            3 -> binding.content.obj3
             else -> null
         }
 
@@ -232,7 +233,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class File(view: View) : RelationViewHolder(view) {
+    class File(val binding: ItemBlockRelationFileBinding) : RelationViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -256,9 +257,9 @@ sealed class RelationViewHolder(
         }
 
         private fun getViewByIndex(index: Int): GridCellFileItem? = when (index) {
-            0 -> itemView.file0
-            1 -> itemView.file1
-            2 -> itemView.file2
+            0 -> binding.content.file0
+            1 -> binding.content.file1
+            2 -> binding.content.file2
             else -> null
         }
 

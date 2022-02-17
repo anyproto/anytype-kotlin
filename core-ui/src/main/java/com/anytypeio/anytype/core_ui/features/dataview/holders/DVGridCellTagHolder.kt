@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.core_ui.features.dataview.holders
 
-import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -11,9 +11,8 @@ import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.sets.model.CellView
-import kotlinx.android.synthetic.main.item_viewer_grid_cell_tag.view.*
 
-class DVGridCellTagHolder(view: View) : RecyclerView.ViewHolder(view) {
+class DVGridCellTagHolder(val binding: ItemViewerGridCellTagBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(cell: CellView.Tag) {
         for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
@@ -40,11 +39,11 @@ class DVGridCellTagHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     private fun getViewByIndex(index: Int): TextView? = when (index) {
-        0 -> itemView.tag0
-        1 -> itemView.tag1
-        2 -> itemView.tag2
-        3 -> itemView.tag3
-        4 -> itemView.tag4
+        0 -> binding.tag0
+        1 -> binding.tag1
+        2 -> binding.tag2
+        3 -> binding.tag3
+        4 -> binding.tag4
         else -> null
     }
 

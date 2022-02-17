@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
@@ -19,16 +20,15 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import kotlinx.android.synthetic.main.item_block_numbered.view.*
 
 class Numbered(
-    view: View,
+    val binding: ItemBlockNumberedBinding,
     onContextMenuStyleClick: (IntRange) -> Unit
-) : Text(view), SupportNesting {
+) : Text(binding.root), SupportNesting {
 
-    private val container = itemView.numberedBlockContentContainer
-    val number = itemView.number
-    override val content: TextInputWidget = itemView.numberedListContent
+    private val container = binding.numberedBlockContentContainer
+    val number = binding.number
+    override val content: TextInputWidget = binding.numberedListContent
     override val root: View = itemView
 
     private val mentionIconSize: Int
@@ -103,7 +103,15 @@ class Numbered(
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit
     ) {
-        super.processChangePayload(payloads, item, onTextChanged, onSelectionChanged, clicked, onMentionEvent, onSlashEvent)
+        super.processChangePayload(
+            payloads,
+            item,
+            onTextChanged,
+            onSelectionChanged,
+            clicked,
+            onMentionEvent,
+            onSlashEvent
+        )
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.NUMBER_CHANGED))
                 number.text = (item as BlockView.Text.Numbered).number.addDot()

@@ -1,38 +1,37 @@
 package com.anytypeio.anytype.core_ui.features.objects.holders
 
-import android.view.View
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
-import com.anytypeio.anytype.core_ui.extensions.getIconSize24
-import com.anytypeio.anytype.core_ui.extensions.getName
+import com.anytypeio.anytype.core_ui.databinding.ItemLayoutBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
-import kotlinx.android.synthetic.main.item_layout.view.*
 
-class ObjectLayoutHolder(view: View) : AbstractViewHolder<ObjectLayoutView>(view) {
+class ObjectLayoutHolder(
+    val binding: ItemLayoutBinding
+) : AbstractViewHolder<ObjectLayoutView>(binding.root) {
 
-    override fun bind(item: ObjectLayoutView) {
-        when(item) {
+    override fun bind(item: ObjectLayoutView) = with(binding) {
+        when (item) {
             is ObjectLayoutView.Basic -> {
-                itemView.ivIcon.setImageResource(R.drawable.ic_layout_basic)
-                itemView.tvTitle.setText(R.string.layout_basic_name)
-                itemView.tvSubtitle.setText(R.string.layout_basic_description)
+                ivIcon.setImageResource(R.drawable.ic_layout_basic)
+                tvTitle.setText(R.string.layout_basic_name)
+                tvSubtitle.setText(R.string.layout_basic_description)
             }
             is ObjectLayoutView.Note -> {
-                itemView.ivIcon.setImageResource(R.drawable.ic_layout_note)
-                itemView.tvTitle.setText(R.string.layout_note_name)
-                itemView.tvSubtitle.setText(R.string.layout_note_description)
+                ivIcon.setImageResource(R.drawable.ic_layout_note)
+                tvTitle.setText(R.string.layout_note_name)
+                tvSubtitle.setText(R.string.layout_note_description)
             }
             is ObjectLayoutView.Profile -> {
-                itemView.ivIcon.setImageResource(R.drawable.ic_layout_profile)
-                itemView.tvTitle.setText(R.string.layout_profile_name)
-                itemView.tvSubtitle.setText(R.string.layout_profile_description)
+                ivIcon.setImageResource(R.drawable.ic_layout_profile)
+                tvTitle.setText(R.string.layout_profile_name)
+                tvSubtitle.setText(R.string.layout_profile_description)
             }
             is ObjectLayoutView.Todo -> {
-                itemView.ivIcon.setImageResource(R.drawable.ic_layout_task)
-                itemView.tvTitle.setText(R.string.layout_todo_name)
-                itemView.tvSubtitle.setText(R.string.layout_todo_description)
+                ivIcon.setImageResource(R.drawable.ic_layout_task)
+                tvTitle.setText(R.string.layout_todo_name)
+                tvSubtitle.setText(R.string.layout_todo_description)
             }
             else -> {
                 // TODO
@@ -40,9 +39,9 @@ class ObjectLayoutHolder(view: View) : AbstractViewHolder<ObjectLayoutView>(view
         }
 
         if (item.isSelected) {
-            itemView.ivChecked.visible()
+            ivChecked.visible()
         } else {
-            itemView.ivChecked.invisible()
+            ivChecked.invisible()
         }
     }
 }

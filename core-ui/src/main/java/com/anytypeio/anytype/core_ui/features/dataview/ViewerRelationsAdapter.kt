@@ -1,16 +1,17 @@
 package com.anytypeio.anytype.core_ui.features.dataview
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListSectionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListSettingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerRelationListSettingToggleBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
-import kotlinx.android.synthetic.main.item_viewer_relation_list.view.*
 
 class ViewerRelationsAdapter(
     private val onSwitchClick: (SimpleRelationView) -> Unit,
@@ -27,14 +28,25 @@ class ViewerRelationsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when(viewType) {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
             VIEW_TYPE_RELATION -> {
-                val inflater = LayoutInflater.from(parent.context)
-                val view = inflater.inflate(R.layout.item_viewer_relation_list, parent, false)
-                Holder(view)
+                Holder(
+                    ItemViewerRelationListBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
             }
-            VIEW_TYPE_SECTION -> ViewerModifyOrderAdapter.SectionViewHolder(parent)
-            VIEW_TYPE_SETTING -> ViewerModifyOrderAdapter.SettingViewHolder(parent).apply {
+            VIEW_TYPE_SECTION -> ViewerModifyOrderAdapter.SectionViewHolder(
+                ItemViewerRelationListSectionBinding.inflate(
+                    inflater, parent, false
+                )
+            )
+            VIEW_TYPE_SETTING -> ViewerModifyOrderAdapter.SettingViewHolder(
+                ItemViewerRelationListSettingBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -47,11 +59,15 @@ class ViewerRelationsAdapter(
                     }
                 }
             }
-            VIEW_TYPE_SETTING_TOGGLE -> ViewerModifyOrderAdapter.ToggleViewHolder(parent).apply {
-                itemView.switchView.setOnCheckedChangeListener { _, isChecked ->
+            VIEW_TYPE_SETTING_TOGGLE -> ViewerModifyOrderAdapter.ToggleViewHolder(
+                ItemViewerRelationListSettingToggleBinding.inflate(
+                    inflater, parent, false
+                )
+            ).apply {
+                binding.switchView.setOnCheckedChangeListener { _, isChecked ->
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
-                        val item  = items[bindingAdapterPosition]
+                        val item = items[bindingAdapterPosition]
                         if (item is ViewerRelationListView.Setting.Toggle) {
                             onSettingToggleChanged(item, isChecked)
                         }
@@ -63,7 +79,7 @@ class ViewerRelationsAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder) {
+        when (holder) {
             is Holder -> {
                 val item = items[position] as ViewerRelationListView.Relation
                 holder.bind(item.view, onSwitchClick)
@@ -83,7 +99,7 @@ class ViewerRelationsAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int = when(items[position]) {
+    override fun getItemViewType(position: Int): Int = when (items[position]) {
         is ViewerRelationListView.Relation -> VIEW_TYPE_RELATION
         is ViewerRelationListView.Section -> VIEW_TYPE_SECTION
         is ViewerRelationListView.Setting.Toggle -> VIEW_TYPE_SETTING_TOGGLE
@@ -96,24 +112,28 @@ class ViewerRelationsAdapter(
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
         if (holder is Holder) {
-            holder.itemView.switchView.setOnCheckedChangeListener(null)
+            holder.binding.switchView.setOnCheckedChangeListener(null)
         }
     }
 
     override fun getItemCount(): Int = items.size
 
-    class Holder(view: View) : RecyclerView.ViewHolder(view) {
+    class Holder(val binding: ItemViewerRelationListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: SimpleRelationView, onSwitchClick: (SimpleRelationView) -> Unit) {
+        fun bind(
+            item: SimpleRelationView,
+            onSwitchClick: (SimpleRelationView) -> Unit
+        ) = with(binding) {
             if (item.key == ObjectSetConfig.NAME_KEY) {
-                itemView.switchView.invisible()
+                switchView.invisible()
             } else {
-                itemView.switchView.visible()
+                switchView.visible()
             }
-            itemView.iconRelation.bind(item.format)
-            itemView.title.text = item.title
-            itemView.switchView.isChecked = item.isVisible
-            itemView.switchView.setOnCheckedChangeListener { _, isChecked ->
+            iconRelation.bind(item.format)
+            title.text = item.title
+            switchView.isChecked = item.isVisible
+            switchView.setOnCheckedChangeListener { _, isChecked ->
                 onSwitchClick(item.copy(isVisible = isChecked))
             }
         }

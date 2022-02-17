@@ -2,12 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.view.View
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.common.Span
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
 import com.anytypeio.anytype.core_ui.features.editor.*
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -20,9 +20,10 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_block_object_link_archive.view.*
 
-class LinkToObjectArchive(view: View) : BlockViewHolder(view),
+class LinkToObjectArchive(
+    val binding: ItemBlockObjectLinkArchiveBinding
+) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     SupportCustomTouchProcessor,
@@ -30,11 +31,11 @@ class LinkToObjectArchive(view: View) : BlockViewHolder(view),
 
     private val untitled = itemView.resources.getString(R.string.untitled)
     private val archived = itemView.resources.getString(R.string.archived)
-    private val icon = itemView.pageIcon
-    private val emoji = itemView.linkEmoji
-    private val image = itemView.linkImage
-    private val title = itemView.pageTitle
-    private val guideline = itemView.pageGuideline
+    private val icon = binding.pageIcon
+    private val emoji = binding.linkEmoji
+    private val image = binding.linkImage
+    private val title = binding.pageTitle
+    private val guideline = binding.pageGuideline
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }

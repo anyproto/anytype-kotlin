@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
@@ -28,12 +31,6 @@ import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.item_block_title.view.*
-import kotlinx.android.synthetic.main.item_block_title.view.emojiIcon
-import kotlinx.android.synthetic.main.item_block_title.view.imageIcon
-import kotlinx.android.synthetic.main.item_block_title.view.title
-import kotlinx.android.synthetic.main.item_block_title_profile.view.*
-import kotlinx.android.synthetic.main.item_block_title_todo.view.*
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -237,14 +234,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     override fun select(item: BlockView.Selectable) = Unit
 
-    class Document(view: View) : Title(view) {
+    class Document(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = itemView.docEmojiIconContainer
-        override val image: ImageView = itemView.imageIcon
-        private val emoji: ImageView = itemView.emojiIcon
+        override val icon: FrameLayout = binding.docEmojiIconContainer
+        override val image: ImageView = binding.imageIcon
+        private val emoji: ImageView = binding.emojiIcon
 
         override val root: View = itemView
-        override val content: TextInputWidget = itemView.title
+        override val content: TextInputWidget = binding.title
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -273,28 +270,28 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         private fun setupIconVisibility(item: BlockView.Title.Basic) {
             when {
                 item.image != null -> {
-                    itemView.docImageIconContainer.visible()
-                    itemView.docEmojiIconContainer.gone()
-                    itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                    binding.docImageIconContainer.visible()
+                    binding.docEmojiIconContainer.gone()
+                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_12)
                     }
                 }
                 item.emoji != null -> {
-                    itemView.docImageIconContainer.gone()
-                    itemView.docEmojiIconContainer.visible()
-                    itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                    binding.docImageIconContainer.gone()
+                    binding.docEmojiIconContainer.visible()
+                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_8)
                     }
                 }
                 else -> {
-                    itemView.docImageIconContainer.gone()
-                    itemView.docEmojiIconContainer.gone()
+                    binding.docImageIconContainer.gone()
+                    binding.docEmojiIconContainer.gone()
                     if (!item.hasCover) {
-                        itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                        binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                             topMargin = dimen(R.dimen.dp_48)
                         }
                     } else {
-                        itemView.title.updateLayoutParams<LinearLayout.LayoutParams> {
+                        binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                             topMargin = dimen(R.dimen.dp_8)
                         }
                     }
@@ -342,13 +339,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    class Archive(view: View) : Title(view) {
+    class Archive(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = itemView.docEmojiIconContainer
-        override val image: ImageView = itemView.imageIcon
+        override val icon: FrameLayout = binding.docEmojiIconContainer
+        override val image: ImageView = binding.imageIcon
 
         override val root: View = itemView
-        override val content: TextInputWidget = itemView.title
+        override val content: TextInputWidget = binding.title
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -373,13 +370,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    class Profile(view: View) : Title(view) {
+    class Profile(val binding: ItemBlockTitleProfileBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = itemView.docProfileIconContainer
-        override val image: ImageView = itemView.imageIcon
-        override val content: TextInputWidget = itemView.title
+        override val icon: FrameLayout = binding.docProfileIconContainer
+        override val image: ImageView = binding.imageIcon
+        override val content: TextInputWidget = binding.title
 
-        private val iconText = itemView.imageText
+        private val iconText = binding.imageText
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -445,15 +442,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    class Todo(view: View) : Title(view) {
+    class Todo(val binding: ItemBlockTitleTodoBinding) : Title(binding.root) {
 
-        override val icon: FrameLayout = itemView.documentIconContainer
-        override val image: ImageView = itemView.imageIcon
+        override val icon: FrameLayout = binding.documentIconContainer
+        override val image: ImageView = binding.imageIcon
 
-        val checkbox = itemView.todoTitleCheckbox
+        val checkbox = binding.todoTitleCheckbox
 
         override val root: View = itemView
-        override val content: TextInputWidget = itemView.title
+        override val content: TextInputWidget = binding.title
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())

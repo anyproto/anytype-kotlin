@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
-import android.view.View
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -9,14 +9,15 @@ import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import kotlinx.android.synthetic.main.item_block_object_link_delete.view.*
 
-class LinkToObjectDelete(view: View) : BlockViewHolder(view),
+class LinkToObjectDelete(
+    val binding: ItemBlockObjectLinkDeleteBinding
+) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     SupportCustomTouchProcessor {
 
-    private val guideline = itemView.pageGuideline
+    private val guideline = binding.pageGuideline
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }

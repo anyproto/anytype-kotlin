@@ -4,23 +4,25 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetBlockToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import kotlinx.android.synthetic.main.widget_block_toolbar.view.*
 
 class BlockToolbarWidget  @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs) {
 
+    val binding = WidgetBlockToolbarBinding.inflate(
+        LayoutInflater.from(context), this
+    )
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_block_toolbar, this)
         orientation = HORIZONTAL
     }
 
-    fun hideKeyboardClicks() = hideKeyboardButton.clicks()
-    fun blockActionsClick() = btnBlockActions.clicks()
-    fun openSlashWidgetClicks() = slashWidgetButton.clicks()
-    fun changeStyleClicks() = changeStyleButton.clicks()
-    fun mentionClicks() = blockMentionButton.clicks()
+    fun hideKeyboardClicks() = binding.hideKeyboardButton.clicks()
+    fun blockActionsClick() = binding.btnBlockActions.clicks()
+    fun openSlashWidgetClicks() = binding.slashWidgetButton.clicks()
+    fun changeStyleClicks() = binding.changeStyleButton.clicks()
+    fun mentionClicks() = binding.blockMentionButton.clicks()
 }

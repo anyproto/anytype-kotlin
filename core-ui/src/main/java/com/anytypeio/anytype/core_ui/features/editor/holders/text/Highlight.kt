@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
@@ -15,17 +16,16 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import kotlinx.android.synthetic.main.item_block_highlight.view.*
 
 class Highlight(
-    view: View,
+    val binding: ItemBlockHighlightBinding,
     onContextMenuStyleClick: (IntRange) -> Unit
-) : Text(view), BlockViewHolder.IndentableHolder {
+) : Text(binding.root), BlockViewHolder.IndentableHolder {
 
-    override val content: TextInputWidget = itemView.highlightContent
+    override val content: TextInputWidget = binding.highlightContent
     override val root: View = itemView
-    private val indent = itemView.highlightIndent
-    private val container = itemView.highlightBlockContentContainer
+    private val indent = binding.highlightIndent
+    private val container = binding.highlightBlockContentContainer
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int

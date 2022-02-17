@@ -5,20 +5,17 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.cardview.widget.CardView
-import com.anytypeio.anytype.core_ui.R
-import kotlinx.android.synthetic.main.widet_undo_redo_panel.view.*
+import com.anytypeio.anytype.core_ui.databinding.WidetUndoRedoPanelBinding
 
 class UndoRedoToolbarWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : CardView(context, attrs) {
 
-    init {
-        LayoutInflater
-            .from(context)
-            .inflate(R.layout.widet_undo_redo_panel, this)
-    }
+    val binding = WidetUndoRedoPanelBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    val undo: View get() = btnUndo
-    val redo: View get() = btnRedo
+    val undo: View get() = binding.btnUndo
+    val redo: View get() = binding.btnRedo
 }

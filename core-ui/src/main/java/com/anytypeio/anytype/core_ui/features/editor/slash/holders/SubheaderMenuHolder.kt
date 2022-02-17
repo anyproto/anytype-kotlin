@@ -1,16 +1,17 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 
-class SubheaderMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
+class SubheaderMenuHolder(
+    val binding: ItemSlashWidgetSubheaderBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: SlashItem.Subheader) = with(itemView) {
+    fun bind(item: SlashItem.Subheader) = with(binding) {
         val text = when (item) {
             SlashItem.Subheader.Style -> {
                 flBack.invisible()

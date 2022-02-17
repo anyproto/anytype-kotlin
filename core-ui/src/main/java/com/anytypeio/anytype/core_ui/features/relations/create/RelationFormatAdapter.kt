@@ -1,15 +1,15 @@
 package com.anytypeio.anytype.core_ui.features.relations.create
 
 import android.content.res.ColorStateList
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.anytypeio.anytype.core_models.Relation.Format.*
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.AbstractAdapter
 import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateDataViewRelationRelationFormatBinding
 import com.anytypeio.anytype.core_utils.tools.randomColor
 import com.anytypeio.anytype.presentation.relations.RelationFormatView
-import kotlinx.android.synthetic.main.item_create_data_view_relation_relation_format.view.*
 
 class RelationFormatAdapter(
     private val onClick: (RelationFormatView) -> Unit
@@ -18,7 +18,11 @@ class RelationFormatAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AbstractViewHolder<RelationFormatView> = ViewHolder(
-        view = inflate(parent, R.layout.item_create_data_view_relation_relation_format)
+        ItemCreateDataViewRelationRelationFormatBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
     )
 
     override fun onBindViewHolder(holder: AbstractViewHolder<RelationFormatView>, position: Int) {
@@ -28,10 +32,12 @@ class RelationFormatAdapter(
         }
     }
 
-    class ViewHolder(view: View) : AbstractViewHolder<RelationFormatView>(view) {
+    class ViewHolder(
+        val binding: ItemCreateDataViewRelationRelationFormatBinding
+    ) : AbstractViewHolder<RelationFormatView>(binding.root) {
 
-        private val name = itemView.formatName
-        private val icon = itemView.formatIcon
+        private val name = binding.formatName
+        private val icon = binding.formatIcon
 
         override fun bind(item: RelationFormatView) {
             when (item.format) {

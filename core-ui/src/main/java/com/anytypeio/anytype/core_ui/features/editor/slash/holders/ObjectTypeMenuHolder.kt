@@ -1,15 +1,16 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.databinding.ItemListObjectSmallBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import kotlinx.android.synthetic.main.item_list_object_small.view.*
 
-class ObjectTypeMenuHolder(view: View) : RecyclerView.ViewHolder(view) {
+class ObjectTypeMenuHolder(
+    val binding: ItemListObjectSmallBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: SlashItem.ObjectType) = with(itemView) {
+    fun bind(item: SlashItem.ObjectType) = with(binding) {
         ivIcon.setIcon(
             emoji = item.emoji,
             image = null,

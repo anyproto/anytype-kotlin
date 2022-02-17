@@ -11,16 +11,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
 import com.anytypeio.anytype.core_utils.ui.GalleryViewItemDecoration
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import kotlinx.android.synthetic.main.item_dv_gallery_view_big_icon.view.*
-import kotlinx.android.synthetic.main.item_dv_gallery_view_default.view.contentContainer
-import kotlinx.android.synthetic.main.item_dv_gallery_view_default.view.tvTitle
-import kotlinx.android.synthetic.main.item_dv_gallery_view_small_icon.view.*
-import kotlinx.android.synthetic.main.item_dv_gallery_view_with_cover.view.*
 
 class GalleryViewWidget @JvmOverloads constructor(
     context: Context,
@@ -92,9 +88,14 @@ class GalleryViewWidget @JvmOverloads constructor(
         private val onTaskCheckboxClicked: (Id) -> Unit
     ) : ListAdapter<Viewer.GalleryView.Item, GalleryViewHolder>(Differ) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
             when (viewType) {
                 VIEW_TYPE_SMALL_ICON -> {
-                    return GalleryViewHolder.SmallIcon(parent).apply {
+                    return GalleryViewHolder.SmallIcon(
+                        binding = ItemDvGalleryViewSmallIconBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
                         itemView.setOnClickListener {
                             val pos = bindingAdapterPosition
                             if (pos != NO_POSITION) {
@@ -116,7 +117,11 @@ class GalleryViewWidget @JvmOverloads constructor(
                     }
                 }
                 VIEW_TYPE_BIG_ICON -> {
-                    return GalleryViewHolder.BigIcon(parent).apply {
+                    return GalleryViewHolder.BigIcon(
+                        binding = ItemDvGalleryViewBigIconBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
                         itemView.setOnClickListener {
                             val pos = bindingAdapterPosition
                             if (pos != NO_POSITION) {
@@ -138,7 +143,11 @@ class GalleryViewWidget @JvmOverloads constructor(
                     }
                 }
                 VIEW_TYPE_WITH_COVER -> {
-                    return GalleryViewHolder.WithCover(parent).apply {
+                    return GalleryViewHolder.WithCover(
+                        binding = ItemDvGalleryViewWithCoverBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
                         itemView.setOnClickListener {
                             val pos = bindingAdapterPosition
                             if (pos != NO_POSITION) {
@@ -151,7 +160,11 @@ class GalleryViewWidget @JvmOverloads constructor(
                     }
                 }
                 VIEW_TYPE_WITH_COVER_BIG -> {
-                    return GalleryViewHolder.WithCoverBig(parent).apply {
+                    return GalleryViewHolder.WithCoverBig(
+                        binding = ItemDvGalleryViewWithCoverBigBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
                         itemView.setOnClickListener {
                             val pos = bindingAdapterPosition
                             if (pos != NO_POSITION) {
@@ -164,7 +177,11 @@ class GalleryViewWidget @JvmOverloads constructor(
                     }
                 }
                 VIEW_TYPE_WITH_COVER_AND_ICON -> {
-                    return GalleryViewHolder.WithCoverAndIcon(parent).apply {
+                    return GalleryViewHolder.WithCoverAndIcon(
+                        binding = ItemDvGalleryViewWithCoverAndIconBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
                         itemView.setOnClickListener {
                             val pos = bindingAdapterPosition
                             if (pos != NO_POSITION) {
@@ -186,7 +203,11 @@ class GalleryViewWidget @JvmOverloads constructor(
                     }
                 }
                 else -> {
-                    return GalleryViewHolder.Default(parent).apply {
+                    return GalleryViewHolder.Default(
+                        binding = ItemDvGalleryViewDefaultBinding.inflate(
+                            inflater, parent, false
+                        )
+                    ).apply {
                         itemView.setOnClickListener {
                             val pos = bindingAdapterPosition
                             if (pos != NO_POSITION) {
@@ -269,16 +290,12 @@ class GalleryViewWidget @JvmOverloads constructor(
 
     sealed class GalleryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        class Default(parent: ViewGroup) : GalleryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_dv_gallery_view_default,
-                parent,
-                false
-            )
-        ) {
+        class Default(
+            val binding: ItemDvGalleryViewDefaultBinding
+        ) : GalleryViewHolder(binding.root) {
 
-            private val container get() = itemView.contentContainer
-            private val title get() = itemView.tvTitle
+            private val container get() = binding.contentContainer
+            private val title get() = binding.tvTitle
 
             fun bind(item: Viewer.GalleryView.Item) {
                 title.text = item.name
@@ -286,17 +303,13 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        class SmallIcon(parent: ViewGroup) : GalleryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_dv_gallery_view_small_icon,
-                parent,
-                false
-            )
-        ) {
+        class SmallIcon(
+            val binding: ItemDvGalleryViewSmallIconBinding
+        ) : GalleryViewHolder(binding.root) {
 
-            private val container get() = itemView.contentContainer
-            private val title get() = itemView.tvTitle
-            val icon get() = itemView.smallIconContainer
+            private val container get() = binding.contentContainer
+            private val title get() = binding.tvTitle
+            val icon get() = binding.smallIconContainer
 
             fun bind(item: Viewer.GalleryView.Item) {
                 title.text = item.name
@@ -305,17 +318,13 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        class BigIcon(parent: ViewGroup) : GalleryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_dv_gallery_view_big_icon,
-                parent,
-                false
-            )
-        ) {
+        class BigIcon(
+            val binding: ItemDvGalleryViewBigIconBinding
+        ) : GalleryViewHolder(binding.root) {
 
-            private val container get() = itemView.contentContainer
-            private val title get() = itemView.tvTitle
-            val icon get() = itemView.objectIcon
+            private val container get() = binding.contentContainer
+            private val title get() = binding.tvTitle
+            val icon get() = binding.objectIcon
 
             fun bind(item: Viewer.GalleryView.Item) {
                 title.text = item.name
@@ -324,17 +333,13 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        class WithCover(parent: ViewGroup) : GalleryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_dv_gallery_view_with_cover,
-                parent,
-                false
-            )
-        ) {
+        class WithCover(
+            val binding: ItemDvGalleryViewWithCoverBinding
+        ) : GalleryViewHolder(binding.root) {
 
-            private val container get() = itemView.contentContainer
-            private val title get() = itemView.tvTitle
-            private val cover get() = itemView.cover
+            private val container get() = binding.contentContainer
+            private val title get() = binding.tvTitle
+            private val cover get() = binding.cover
 
             fun bind(item: Viewer.GalleryView.Item) {
                 check(item is Viewer.GalleryView.Item.Cover)
@@ -344,17 +349,13 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        class WithCoverBig(parent: ViewGroup) : GalleryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_dv_gallery_view_with_cover_big,
-                parent,
-                false
-            )
-        ) {
+        class WithCoverBig(
+            val binding: ItemDvGalleryViewWithCoverBigBinding
+        ) : GalleryViewHolder(binding.root) {
 
-            private val container get() = itemView.contentContainer
-            private val title get() = itemView.tvTitle
-            private val cover get() = itemView.cover
+            private val container get() = binding.contentContainer
+            private val title get() = binding.tvTitle
+            private val cover get() = binding.cover
 
             fun bind(item: Viewer.GalleryView.Item) {
                 check(item is Viewer.GalleryView.Item.Cover)
@@ -364,18 +365,14 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        class WithCoverAndIcon(parent: ViewGroup) : GalleryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_dv_gallery_view_with_cover_and_icon,
-                parent,
-                false
-            )
-        ) {
+        class WithCoverAndIcon(
+            val binding: ItemDvGalleryViewWithCoverAndIconBinding
+        ) : GalleryViewHolder(binding.root) {
 
-            private val container get() = itemView.contentContainer
-            private val title get() = itemView.tvTitle
-            private val cover get() = itemView.cover
-            val icon get() = itemView.smallIconContainer
+            private val container get() = binding.contentContainer
+            private val title get() = binding.tvTitle
+            private val cover get() = binding.cover
+            val icon get() = binding.smallIconContainer
 
             fun bind(item: Viewer.GalleryView.Item) {
                 check(item is Viewer.GalleryView.Item.Cover)

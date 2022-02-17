@@ -767,18 +767,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 //                    AddBlockFragment.newInstance(command.ctx).show(childFragmentManager, null)
                 }
                 is Command.OpenTurnIntoPanel -> {
-                    TurnIntoFragment.single(
-                        target = command.target,
-                        excludedCategories = command.excludedCategories,
-                        excludedTypes = command.excludedTypes
-
-                    ).show(childFragmentManager, null)
+//                    TurnIntoFragment.single(
+//                        target = command.target,
+//                        excludedCategories = command.excludedCategories,
+//                        excludedTypes = command.excludedTypes
+//
+//                    ).show(childFragmentManager, null)
                 }
                 is Command.OpenMultiSelectTurnIntoPanel -> {
-                    TurnIntoFragment.multiple(
-                        excludedTypes = command.excludedTypes,
-                        excludedCategories = command.excludedCategories
-                    ).show(childFragmentManager, null)
+//                    TurnIntoFragment.multiple(
+//                        excludedTypes = command.excludedTypes,
+//                        excludedCategories = command.excludedCategories
+//                    ).show(childFragmentManager, null)
                 }
                 is Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(

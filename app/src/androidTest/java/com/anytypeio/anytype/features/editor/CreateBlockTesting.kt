@@ -27,7 +27,6 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -213,7 +212,7 @@ class CreateBlockTesting : EditorTestSetup() {
         // Check cursor position at block B
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             item.findViewById<TextInputWidget>(R.id.textContent).apply {
                 assertEquals(
                     expected = 0,
@@ -321,7 +320,7 @@ class CreateBlockTesting : EditorTestSetup() {
         // Check cursor position at block B
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(0)
+            val item = fragment.binding.recycler.getChildAt(0)
             item.findViewById<TextInputWidget>(R.id.textContent).apply {
                 assertEquals(
                     expected = 0,

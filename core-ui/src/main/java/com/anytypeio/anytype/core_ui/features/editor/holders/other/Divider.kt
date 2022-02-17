@@ -10,14 +10,13 @@ import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import kotlinx.android.synthetic.main.item_block_divider_line.view.*
 
 open class Divider(view: View) : BlockViewHolder(view),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
     SupportCustomTouchProcessor {
 
-    val divider: View get() = itemView.divider
+    val divider: View get() = itemView.findViewById(R.id.divider)
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }

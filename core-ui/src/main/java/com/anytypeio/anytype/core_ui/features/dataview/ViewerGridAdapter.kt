@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.dataview
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
@@ -9,17 +8,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import kotlinx.android.synthetic.main.item_viewer_grid_row.view.*
 
 class ViewerGridAdapter(
     private val onCellClicked: (CellView) -> Unit,
     private val onObjectHeaderClicked: (Id) -> Unit,
-    private val onTaskCheckboxClicked : (Id) -> Unit
+    private val onTaskCheckboxClicked: (Id) -> Unit
 ) : ListAdapter<Viewer.GridView.Row, ViewerGridAdapter.RecordHolder>(GridDiffUtil) {
 
     var recordNamePositionX = 0f
@@ -29,21 +27,23 @@ class ViewerGridAdapter(
         viewType: Int
     ): RecordHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_viewer_grid_row, parent, false)
-        view.rowCellRecycler.apply {
+        val binding = ItemViewerGridRowBinding.inflate(
+            inflater, parent, false
+        )
+        binding.rowCellRecycler.apply {
             adapter = ViewerGridCellsAdapter(
                 onCellClicked = onCellClicked
             )
         }
-        return RecordHolder(view).apply {
-            itemView.headerContainer.setOnClickListener {
+        return RecordHolder(binding).apply {
+            binding.headerContainer.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val item = getItem(pos)
                     onObjectHeaderClicked(item.id)
                 }
             }
-            itemView.objectIcon.checkbox.setOnClickListener {
+            binding.objectIcon.checkbox.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val item = getItem(pos)
@@ -74,49 +74,50 @@ class ViewerGridAdapter(
 
     override fun onViewAttachedToWindow(holder: RecordHolder) {
         super.onViewAttachedToWindow(holder)
-        holder.root.headerContainer.translationX = recordNamePositionX
+        holder.binding.headerContainer.translationX = recordNamePositionX
     }
 
     fun clear() {
         recordNamePositionX = 0f
     }
 
-    class RecordHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class RecordHolder(val binding: ItemViewerGridRowBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        val root: LinearLayout = itemView.holderRoot
-        val adapter get() = itemView.rowCellRecycler.adapter as ViewerGridCellsAdapter
+        val root: LinearLayout = binding.holderRoot
+        val adapter get() = binding.rowCellRecycler.adapter as ViewerGridCellsAdapter
 
         fun bindObjectHeader(row: Viewer.GridView.Row) {
             when (row.layout) {
                 ObjectType.Layout.TODO -> {
-                    itemView.objectIcon.visible()
-                    itemView.objectIcon.setCheckbox(row.isChecked)
+                    binding.objectIcon.visible()
+                    binding.objectIcon.setCheckbox(row.isChecked)
                 }
                 ObjectType.Layout.BASIC -> {
                     if (row.image != null || row.emoji != null) {
-                        itemView.objectIcon.visible()
+                        binding.objectIcon.visible()
                         if (row.image != null) {
-                            itemView.objectIcon.setRectangularImage(row.image)
+                            binding.objectIcon.setRectangularImage(row.image)
                         } else if (row.emoji != null) {
-                            itemView.objectIcon.setEmoji(row.emoji)
+                            binding.objectIcon.setEmoji(row.emoji)
                         }
                     } else {
-                        itemView.objectIcon.gone()
+                        binding.objectIcon.gone()
                     }
                 }
                 ObjectType.Layout.PROFILE -> {
-                    itemView.objectIcon.visible()
+                    binding.objectIcon.visible()
                     if (row.image != null) {
-                        itemView.objectIcon.setCircularImage(row.image)
+                        binding.objectIcon.setCircularImage(row.image)
                     } else {
-                        itemView.objectIcon.setProfileInitials(row.name.orEmpty())
+                        binding.objectIcon.setProfileInitials(row.name.orEmpty())
                     }
                 }
                 else -> {
-                    itemView.objectIcon.gone()
+                    binding.objectIcon.gone()
                 }
             }
-            itemView.tvTitle.text = row.name
+            binding.tvTitle.text = row.name
         }
 
         fun bindObjectCells(row: Viewer.GridView.Row) {

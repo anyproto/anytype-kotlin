@@ -5,23 +5,23 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetDvListViewRelationTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
-import kotlinx.android.synthetic.main.widget_dv_list_view_relation_tag.view.*
 
 class ListViewRelationTagValueView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_dv_list_view_relation_tag, this)
-    }
+    val binding = WidgetDvListViewRelationTagBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
-    fun setup(name: String, tagColor: String, size: Int) {
+    fun setup(name: String, tagColor: String, size: Int) = with(binding) {
         tvName.visible()
         tvName.text = name
         if (size > 1) {

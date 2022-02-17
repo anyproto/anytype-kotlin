@@ -5,11 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerCoverDefaultBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerCoverRelationBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerImagePreviewSelectView
-import kotlinx.android.synthetic.main.item_viewer_cover_default.view.*
-import kotlinx.android.synthetic.main.item_viewer_cover_relation.view.*
 
 class ViewerCoverAdapter(
     val onItemClicked: (ViewerImagePreviewSelectView.Item) -> Unit
@@ -20,7 +20,13 @@ class ViewerCoverAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when(viewType) {
             VIEW_TYPE_SECTION -> Section(parent)
-            VIEW_TYPE_DEFAULT -> Default(parent).apply {
+            VIEW_TYPE_DEFAULT -> Default(
+                binding = ItemViewerCoverDefaultBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -28,7 +34,13 @@ class ViewerCoverAdapter(
                     }
                 }
             }
-            VIEW_TYPE_RELATION -> Relation(parent).apply {
+            VIEW_TYPE_RELATION -> Relation(
+                binding = ItemViewerCoverRelationBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -70,14 +82,8 @@ class ViewerCoverAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    class Default(parent: ViewGroup) : ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_viewer_cover_default,
-            parent,
-            false
-        )
-    ) {
-        fun bind(item: ViewerImagePreviewSelectView.Item) = with(itemView) {
+    class Default(val binding: ItemViewerCoverDefaultBinding) : ViewHolder(binding.root) {
+        fun bind(item: ViewerImagePreviewSelectView.Item) = with(binding) {
             if (item.isSelected)
                 ivCheckbox.visible()
             else
@@ -104,15 +110,9 @@ class ViewerCoverAdapter(
         )
     )
 
-    class Relation(parent: ViewGroup) : ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_viewer_cover_relation,
-            parent,
-            false
-        )
-    ) {
+    class Relation(val binding: ItemViewerCoverRelationBinding) : ViewHolder(binding.root) {
 
-        fun bind(item: ViewerImagePreviewSelectView.Item.Relation) = with(itemView) {
+        fun bind(item: ViewerImagePreviewSelectView.Item.Relation) = with(binding) {
             if (item.isSelected)
                 ivRelationCheckbox.visible()
             else

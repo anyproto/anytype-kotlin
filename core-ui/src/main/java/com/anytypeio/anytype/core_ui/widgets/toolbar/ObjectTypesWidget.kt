@@ -5,12 +5,11 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTypesListBinding
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeHorizontalListAdapter
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import kotlinx.android.synthetic.main.widget_object_types_list.view.*
 
 class ObjectTypesWidget @JvmOverloads constructor(
     context: Context,
@@ -31,14 +30,15 @@ class ObjectTypesWidget @JvmOverloads constructor(
         )
     }
 
+    val binding = WidgetObjectTypesListBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
+
     init {
-        LayoutInflater
-            .from(context)
-            .inflate(R.layout.widget_object_types_list, this)
         setup()
     }
 
-    private fun setup() {
+    private fun setup() = with(binding) {
         with(objectTypesRecycler) {
             adapter = typesAdapter
         }
@@ -75,14 +75,14 @@ class ObjectTypesWidget @JvmOverloads constructor(
         typesAdapter.update(listOf())
     }
 
-    private fun setOpenState() {
+    private fun setOpenState() = with(binding) {
         isOpenState = true
         iconArrowUp.visible()
         iconArrowDown.gone()
         objectTypesRecycler.visible()
     }
 
-    private fun setHiddenState() {
+    private fun setHiddenState() = with(binding) {
         isOpenState = false
         objectTypesRecycler.gone()
         iconArrowUp.gone()

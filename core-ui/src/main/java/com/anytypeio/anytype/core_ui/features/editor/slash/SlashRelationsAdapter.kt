@@ -3,21 +3,23 @@ package com.anytypeio.anytype.core_ui.features.editor.slash
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.updatePadding
+import android.widget.FrameLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import kotlinx.android.synthetic.main.item_slash_widget_subheader.view.*
 import timber.log.Timber
 
 class SlashRelationsAdapter(
@@ -60,7 +62,11 @@ class SlashRelationsAdapter(
                     }
             }
             R.layout.item_relation_list_relation_object -> {
-                RelationViewHolder.Object(view = inflater.inflate(viewType, parent, false)).apply {
+                RelationViewHolder.Object(
+                    binding = ItemBlockRelationObjectBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is SlashRelationView.Item)
@@ -90,7 +96,11 @@ class SlashRelationsAdapter(
                 }
             }
             R.layout.item_relation_list_relation_tag -> {
-                RelationViewHolder.Tags(view = inflater.inflate(viewType, parent, false)).apply {
+                RelationViewHolder.Tags(
+                    binding = ItemBlockRelationTagBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is SlashRelationView.Item)
@@ -105,7 +115,11 @@ class SlashRelationsAdapter(
                 }
             }
             R.layout.item_relation_list_relation_file -> {
-                RelationViewHolder.File(view = inflater.inflate(viewType, parent, false)).apply {
+                RelationViewHolder.File(
+                    ItemBlockRelationFileBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val view = items[bindingAdapterPosition]
                         check(view is SlashRelationView.Item)
@@ -121,9 +135,11 @@ class SlashRelationsAdapter(
             }
             R.layout.item_slash_widget_subheader -> {
                 RelationsSubheaderMenuHolder(
-                    view = inflater.inflate(viewType, parent, false)
+                    binding = ItemSlashWidgetSubheaderBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
-                    itemView.flBack.setOnClickListener {
+                    itemView.findViewById<FrameLayout>(R.id.flBack).setOnClickListener {
                         clicks(SlashItem.Back)
                     }
                 }

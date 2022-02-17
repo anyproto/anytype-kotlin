@@ -8,17 +8,12 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.tools.SupportDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
-import kotlinx.android.synthetic.main.item_edit_cell_file.view.*
-import kotlinx.android.synthetic.main.item_edit_cell_object.view.*
-import kotlinx.android.synthetic.main.item_edit_cell_object.view.tvTitle
-import kotlinx.android.synthetic.main.item_edit_cell_option_create.view.*
-import kotlinx.android.synthetic.main.item_edit_cell_status.view.*
-import kotlinx.android.synthetic.main.item_edit_cell_tag.view.*
 
 class RelationValueAdapter(
     private val onTagClicked: (RelationValueView.Tag) -> Unit,
@@ -30,7 +25,7 @@ class RelationValueAdapter(
     private val onRemoveObjectClicked: (Id) -> Unit,
     private val onFileClicked: (RelationValueView.File) -> Unit,
     private val onRemoveFileClicked: (Id) -> Unit,
-    ) : RecyclerView.Adapter<RelationValueAdapter.ViewHolder>(), SupportDragAndDropBehavior {
+) : RecyclerView.Adapter<RelationValueAdapter.ViewHolder>(), SupportDragAndDropBehavior {
 
     private var views = emptyList<RelationValueView>()
 
@@ -44,7 +39,11 @@ class RelationValueAdapter(
                 ViewHolder.Empty(inflater.inflate(viewType, parent, false))
             }
             R.layout.item_edit_cell_option_create -> {
-                ViewHolder.Create(inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.Create(
+                    binding = ItemEditCellOptionCreateBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Create
                         onCreateOptionClicked(item.name)
@@ -52,64 +51,84 @@ class RelationValueAdapter(
                 }
             }
             R.layout.item_edit_cell_tag -> {
-                ViewHolder.Tag(inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.Tag(
+                    binding = ItemEditCellTagBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Tag
                         if (!item.removeable) onTagClicked(item)
                     }
-                    itemView.btnRemoveTag.setOnClickListener {
+                    binding.btnRemoveTag.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Tag
                         onRemoveTagClicked(item)
                     }
                 }
             }
             R.layout.item_edit_cell_status -> {
-                ViewHolder.Status(inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.Status(
+                    binding = ItemEditCellStatusBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Status
                         if (!item.removeable) onStatusClicked(item)
                     }
-                    itemView.btnRemoveStatus.setOnClickListener {
+                    binding.btnRemoveStatus.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Status
                         onRemoveStatusClicked(item)
                     }
                 }
             }
             R.layout.item_edit_cell_object -> {
-                ViewHolder.Object(inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.Object(
+                    binding = ItemEditCellObjectBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
                         if (item is RelationValueView.Object.Default && !item.removeable) {
                             onObjectClicked(item)
                         }
                     }
-                    itemView.btnRemoveObject.setOnClickListener {
+                    binding.btnRemoveObject.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
                         onRemoveObjectClicked(item.id)
                     }
                 }
             }
             R.layout.item_edit_cell_object_non_existent -> {
-                ViewHolder.NonExistentObject(inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.NonExistentObject(
+                    binding = ItemEditCellObjectNonExistentBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
                         if (item is RelationValueView.Object.NonExistent && !item.removeable) {
                             onObjectClicked(item)
                         }
                     }
-                    itemView.btnRemoveObject.setOnClickListener {
+                    binding.btnRemoveObject.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
                         onRemoveObjectClicked(item.id)
                     }
                 }
             }
             R.layout.item_edit_cell_file -> {
-                ViewHolder.File(inflater.inflate(viewType, parent, false)).apply {
+                ViewHolder.File(
+                    binding = ItemEditCellFileBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.File
                         if (!item.removeable) onFileClicked(item)
                     }
-                    itemView.btnRemoveFile.setOnClickListener {
+                    binding.btnRemoveFile.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.File
                         onRemoveFileClicked(item.id)
                     }
@@ -167,9 +186,9 @@ class RelationValueAdapter(
         return true
     }
 
-    fun order() : List<Id> {
+    fun order(): List<Id> {
         return views.mapNotNull { view ->
-            when(view) {
+            when (view) {
                 is RelationValueView.Status -> view.id
                 is RelationValueView.Tag -> view.id
                 is RelationValueView.Object -> view.id
@@ -183,14 +202,16 @@ class RelationValueAdapter(
 
         class Empty(view: View) : ViewHolder(view)
 
-        class Create(view: View) : ViewHolder(view) {
+        class Create(val binding: ItemEditCellOptionCreateBinding) : ViewHolder(binding.root) {
             fun bind(item: RelationValueView.Create) {
-                itemView.tvCreateOptionValue.text = itemView.context.getString(R.string.create_option, item.name)
+                binding.tvCreateOptionValue.text =
+                    itemView.context.getString(R.string.create_option, item.name)
             }
         }
 
-        class Tag(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: RelationValueView.Tag): Unit = with(itemView) {
+        class Tag(val binding: ItemEditCellTagBinding) : ViewHolder(binding.root),
+            DragAndDropViewHolder {
+            fun bind(item: RelationValueView.Tag): Unit = with(binding) {
                 tvTagName.setup(item.name, item.color)
                 if (!item.removeable) {
                     btnRemoveTag.gone()
@@ -202,7 +223,8 @@ class RelationValueAdapter(
                     btnRemoveTag.visible()
                     btnDragAndDropTag.visible()
                     tvTagName.updateLayoutParams<FrameLayout.LayoutParams> {
-                        marginStart = itemView.context.dimen(R.dimen.edit_tag_list_text_margin_start).toInt()
+                        marginStart =
+                            itemView.context.dimen(R.dimen.edit_tag_list_text_margin_start).toInt()
                     }
                 }
                 item.isSelected?.let { isTagSelected ->
@@ -212,8 +234,8 @@ class RelationValueAdapter(
             }
         }
 
-        class Status(view: View) : ViewHolder(view) {
-            fun bind(item: RelationValueView.Status) = with(itemView) {
+        class Status(val binding: ItemEditCellStatusBinding) : ViewHolder(binding.root) {
+            fun bind(item: RelationValueView.Status) = with(binding) {
                 tvStatusName.text = item.name
                 tvStatusName.setColor(item.color)
                 if (!item.removeable) {
@@ -224,14 +246,16 @@ class RelationValueAdapter(
                 } else {
                     btnRemoveStatus.visible()
                     tvStatusName.updateLayoutParams<FrameLayout.LayoutParams> {
-                        marginStart = itemView.context.dimen(R.dimen.edit_tag_list_text_margin_start).toInt()
+                        marginStart =
+                            itemView.context.dimen(R.dimen.edit_tag_list_text_margin_start).toInt()
                     }
                 }
             }
         }
 
-        class Object(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: RelationValueView.Object.Default) = with(itemView) {
+        class Object(val binding: ItemEditCellObjectBinding) : ViewHolder(binding.root),
+            DragAndDropViewHolder {
+            fun bind(item: RelationValueView.Object.Default) = with(binding) {
                 tvTitle.text = item.name
                 if (item.typeName != null) {
                     tvSubtitle.text = item.typeName
@@ -249,8 +273,10 @@ class RelationValueAdapter(
             }
         }
 
-        class NonExistentObject(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: RelationValueView.Object.NonExistent) = with(itemView) {
+        class NonExistentObject(
+            val binding: ItemEditCellObjectNonExistentBinding
+        ) : ViewHolder(binding.root), DragAndDropViewHolder {
+            fun bind(item: RelationValueView.Object.NonExistent) = with(binding) {
                 if (!item.removeable) {
                     btnRemoveObject.gone()
                     btnDragAndDropObject.gone()
@@ -261,8 +287,9 @@ class RelationValueAdapter(
             }
         }
 
-        class File(view: View) : ViewHolder(view), DragAndDropViewHolder {
-            fun bind(item: RelationValueView.File) = with(itemView) {
+        class File(val binding: ItemEditCellFileBinding) : ViewHolder(binding.root),
+            DragAndDropViewHolder {
+            fun bind(item: RelationValueView.File) = with(binding) {
                 tvTitle.text = "${item.name}.${item.ext}"
                 val mimeIcon = item.mime.getMimeIcon(item.name)
                 iconMime.setImageResource(mimeIcon)

@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerSortBinding
 import com.anytypeio.anytype.core_ui.extensions.icon
 import com.anytypeio.anytype.core_ui.extensions.text
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel.ScreenState
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel.ViewerSortView
-import kotlinx.android.synthetic.main.item_viewer_sort.view.*
 
 class ViewerSortAdapter(
     private val onViewerSortClicked: (ViewerSortView) -> Unit,
@@ -25,12 +24,14 @@ class ViewerSortAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder.Sort(
-            view = inflater.inflate(R.layout.item_viewer_sort, parent, false)
+            binding = ItemViewerSortBinding.inflate(
+                inflater, parent, false
+            )
         ).apply {
             itemView.setOnClickListener {
                 onViewerSortClicked(views[bindingAdapterPosition])
             }
-            itemView.ivRemove.setOnClickListener {
+            binding.ivRemove.setOnClickListener {
                 onRemoveViewerSortClicked(views[bindingAdapterPosition])
             }
         }
@@ -50,8 +51,8 @@ class ViewerSortAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class Sort(view: View) : ViewHolder(view) {
-            fun bind(item: ViewerSortView) = with(itemView) {
+        class Sort(val binding: ItemViewerSortBinding) : ViewHolder(binding.root) {
+            fun bind(item: ViewerSortView) = with(binding) {
                 if (item.mode == ScreenState.READ) {
                     ivRemove.gone()
                     ivGo.visible()

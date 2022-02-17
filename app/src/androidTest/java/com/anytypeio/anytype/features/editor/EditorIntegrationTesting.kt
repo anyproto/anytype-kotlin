@@ -39,7 +39,6 @@ import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import kotlinx.android.synthetic.main.fragment_editor.*
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -332,7 +331,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         // Set cursor programmatically
 
         scenario.onFragment { fragment ->
-           fragment.recycler.findViewById<TextInputWidget>(R.id.textContent).setSelection(3)
+           fragment.binding.recycler.findViewById<TextInputWidget>(R.id.textContent).setSelection(3)
         }
 
         // Press ENTER
@@ -357,7 +356,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
         // Check cursor position
 
         scenario.onFragment { fragment ->
-            val item = fragment.recycler.getChildAt(1)
+            val item = fragment.binding.recycler.getChildAt(1)
             val view = item.findViewById<TextInputWidget>(R.id.textContent)
             assertEquals(
                 expected = 0,

@@ -12,22 +12,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetBlockActionBinding
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
-import kotlinx.android.synthetic.main.widget_block_action.view.*
 
 class BlockActionWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : CardView(context, attrs) {
 
+    val binding = WidgetBlockActionBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
+
     var actionListener : (ActionItemType) -> Unit = {}
 
     private val blockActionAdapter = Adapter { action -> actionListener(action) }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_block_action, this)
-        blockActionRecycler.apply {
+        binding.blockActionRecycler.apply {
             adapter = blockActionAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(

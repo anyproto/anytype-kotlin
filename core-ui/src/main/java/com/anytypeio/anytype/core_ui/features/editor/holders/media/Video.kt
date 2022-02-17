@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -13,14 +14,13 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import kotlinx.android.synthetic.main.item_block_video.view.*
 
-class Video(view: View) : Media(view) {
+class Video(val binding: ItemBlockVideoBinding) : Media(binding.root) {
 
     override val root: View = itemView
 
     override val clickContainer: View =
-        itemView.playerView.findViewById<FrameLayout>(R.id.exo_controller)
+        binding.playerView.findViewById<FrameLayout>(R.id.exo_controller)
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
@@ -28,7 +28,7 @@ class Video(view: View) : Media(view) {
 
     fun bind(item: BlockView.Media.Video, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
-        itemView.playerView.visibility = View.VISIBLE
+        binding.playerView.visibility = View.VISIBLE
         val player = SimpleExoPlayer.Builder(itemView.context).build()
         val source = DefaultDataSourceFactory(
             itemView.context,
@@ -39,7 +39,7 @@ class Video(view: View) : Media(view) {
         player.playWhenReady = false
         player.seekTo(0)
         player.prepare(mediaSource, false, false)
-        itemView.playerView.player = player
+        binding.playerView.player = player
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {

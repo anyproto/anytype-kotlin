@@ -13,7 +13,6 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import kotlinx.android.synthetic.main.item_block_text.view.*
 
 class Paragraph(
     view: View,
@@ -21,7 +20,7 @@ class Paragraph(
 ) : Text(view), SupportNesting {
 
     override val root: View = itemView
-    override val content: TextInputWidget = itemView.textContent
+    override val content: TextInputWidget = itemView.findViewById(R.id.textContent)
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int

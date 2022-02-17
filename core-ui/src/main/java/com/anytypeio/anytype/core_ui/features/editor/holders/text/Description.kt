@@ -1,19 +1,18 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
-import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import kotlinx.android.synthetic.main.item_block_description.view.*
 import timber.log.Timber
 
-class Description(view: View) : BlockViewHolder(view) {
+class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(binding.root) {
 
-    val content: TextInputWidget = itemView.tvBlockDescription
+    val content: TextInputWidget = binding.tvBlockDescription
 
     fun bind(
         view: BlockView.Description
@@ -98,13 +97,13 @@ class Description(view: View) : BlockViewHolder(view) {
     }
 
     fun enableReadMode() {
-        itemView.tvBlockDescription.enableReadMode()
-        itemView.tvBlockDescription.selectionWatcher = null
-        itemView.tvBlockDescription.clearTextWatchers()
+        binding.tvBlockDescription.enableReadMode()
+        binding.tvBlockDescription.selectionWatcher = null
+        binding.tvBlockDescription.clearTextWatchers()
     }
 
     fun enableEditMode() {
-        itemView.tvBlockDescription.enableEditMode()
+        binding.tvBlockDescription.enableEditMode()
     }
 
     fun onDescriptionEnterKeyListener(

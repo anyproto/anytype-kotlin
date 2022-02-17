@@ -5,11 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellDescriptionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellTagBinding
 import com.anytypeio.anytype.core_ui.features.dataview.diff.CellViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.dataview.holders.*
-import com.anytypeio.anytype.presentation.sets.CellAction
 import com.anytypeio.anytype.presentation.sets.model.CellView
-import timber.log.Timber
 
 class ViewerGridCellsAdapter(
     var cells: List<CellView> = listOf(),
@@ -139,7 +141,9 @@ class ViewerGridCellsAdapter(
             }
             HOLDER_TAG -> {
                 DVGridCellTagHolder(
-                    view = inflater.inflate(R.layout.item_viewer_grid_cell_tag, parent, false)
+                    ItemViewerGridCellTagBinding.inflate(
+                        inflater, parent, false
+                    )
                 ).apply {
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
@@ -151,10 +155,8 @@ class ViewerGridCellsAdapter(
             }
             HOLDER_STATUS -> {
                 DVGridCellStatusHolder(
-                    view = inflater.inflate(
-                        R.layout.item_viewer_grid_cell_description,
-                        parent,
-                        false
+                    ItemViewerGridCellDescriptionBinding.inflate(
+                        inflater, parent, false
                     )
                 ).apply {
                     itemView.setOnClickListener {
@@ -167,10 +169,8 @@ class ViewerGridCellsAdapter(
             }
             HOLDER_OBJECT -> {
                 DVGridCellObjectHolder(
-                    view = inflater.inflate(
-                        R.layout.item_viewer_grid_cell_object,
-                        parent,
-                        false
+                    ItemViewerGridCellObjectBinding.inflate(
+                        inflater, parent, false
                     )
                 ).apply {
                     itemView.setOnClickListener {
@@ -183,10 +183,8 @@ class ViewerGridCellsAdapter(
             }
             HOLDER_FILE -> {
                 DVGridCellFileHolder(
-                    view = inflater.inflate(
-                        R.layout.item_viewer_grid_cell_file,
-                        parent,
-                        false
+                    ItemViewerGridCellFileBinding.inflate(
+                        inflater, parent, false
                     )
                 ).apply {
                     itemView.setOnClickListener {

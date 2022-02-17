@@ -3,14 +3,13 @@ package com.anytypeio.anytype.core_ui.features.dataview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import kotlinx.android.synthetic.main.item_viewer_container.view.*
-import kotlinx.android.synthetic.main.item_viewer_grid_row.view.*
 import timber.log.Timber
 
 class ViewerTypeAdapter(
@@ -67,11 +66,13 @@ class ViewerTypeAdapter(
 
     class GridHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val columns: RecyclerView = itemView.rvHeader
-        val rows: RecyclerView = itemView.rvRows
+        val columns: RecyclerView = itemView.findViewById(R.id.rvHeader)
+        val rows: RecyclerView = itemView.findViewById(R.id.rvRows)
 
-        private val horizontalDivider = ContextCompat.getDrawable(view.context, R.drawable.divider_dv_horizontal)
-        private val verticalDivider = ContextCompat.getDrawable(view.context, R.drawable.divider_dv_grid)
+        private val horizontalDivider =
+            ContextCompat.getDrawable(view.context, R.drawable.divider_dv_horizontal)
+        private val verticalDivider =
+            ContextCompat.getDrawable(view.context, R.drawable.divider_dv_grid)
 
         init {
             rows.setItemViewCacheSize(20)
@@ -112,19 +113,21 @@ class ViewerTypeAdapter(
             headerAdapter.submitList(viewer.columns)
             gridAdapter.submitList(viewer.rows)
 
-            itemView.horizontalScrollView.setOnScrollChangeListener { _, scrollX, _, _, _ ->
-                val translationX = scrollX.toFloat()
-                gridAdapter.recordNamePositionX = translationX
-                rows.children.forEach { view ->
-                    view.headerContainer.translationX = translationX
+            itemView.findViewById<HorizontalScrollView>(R.id.horizontalScrollView)
+                .setOnScrollChangeListener { _, scrollX, _, _, _ ->
+                    val translationX = scrollX.toFloat()
+                    gridAdapter.recordNamePositionX = translationX
+                    rows.children.forEach { view ->
+                        view.findViewById<ViewGroup>(R.id.headerContainer).translationX =
+                            translationX
+                    }
                 }
-            }
         }
     }
 
     class ListHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(adapter: ViewerListAdapter) {
-            itemView.rvRows.adapter = adapter
+            itemView.findViewById<RecyclerView>(R.id.rvRows).adapter = adapter
         }
     }
 

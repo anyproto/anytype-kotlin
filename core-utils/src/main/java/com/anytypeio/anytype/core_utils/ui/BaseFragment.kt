@@ -15,7 +15,7 @@ abstract class BaseFragment<T : ViewBinding>(
 ) : Fragment(layout) {
 
     private var _binding: T? = null
-    protected val binding: T get() = _binding!!
+    val binding: T get() = _binding!!
 
     protected val jobs = mutableListOf<Job>()
 

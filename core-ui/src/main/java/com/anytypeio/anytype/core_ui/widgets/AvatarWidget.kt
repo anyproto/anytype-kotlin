@@ -8,33 +8,22 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetAvatarBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.widget_avatar.view.*
 
-class AvatarWidget : FrameLayout {
+class AvatarWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : FrameLayout(context, attrs) {
 
-    constructor(
-        context: Context
-    ) : this(context, null)
+    val binding = WidgetAvatarBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet?
-    ) : this(context, attrs, 0)
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
-        inflate()
+    init {
         setupAttributeValues(attrs)
-    }
-
-    private fun inflate() {
-        LayoutInflater.from(context).inflate(R.layout.widget_avatar, this)
     }
 
     private fun setupAttributeValues(
@@ -45,7 +34,10 @@ class AvatarWidget : FrameLayout {
 
             val textSize = attrs.getDimensionPixelSize(R.styleable.AvatarWidget_text_size, 0)
 
-            if (textSize > 0) initials.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
+            if (textSize > 0) binding.initials.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                textSize.toFloat()
+            )
 
             attrs.recycle()
         }
@@ -53,14 +45,15 @@ class AvatarWidget : FrameLayout {
 
 
     fun bind(name: String, color: Int? = null) {
-        initials.visible()
-        initials.text = if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
-        icon.invisible()
+        binding.initials.visible()
+        binding.initials.text =
+            if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
+        binding.icon.invisible()
         backgroundTintList = ColorStateList.valueOf(color ?: randomColor(name))
     }
 
     fun setInitialColor(color: Int) {
-        initials.setTextColor(color)
+        binding.initials.setTextColor(color)
     }
 
     private fun randomColor(name: String): Int {
@@ -77,13 +70,13 @@ class AvatarWidget : FrameLayout {
 
     fun icon(url: String) {
         Glide
-            .with(icon)
+            .with(binding.icon)
             .load(url)
             .centerInside()
             .circleCrop()
-            .into(icon)
+            .into(binding.icon)
 
-        icon.visible()
-        initials.invisible()
+        binding.icon.visible()
+        binding.initials.invisible()
     }
 }

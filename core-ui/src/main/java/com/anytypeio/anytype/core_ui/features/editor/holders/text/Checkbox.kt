@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -15,18 +16,17 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import kotlinx.android.synthetic.main.item_block_checkbox.view.*
 
 class Checkbox(
-    view: View,
+    val binding: ItemBlockCheckboxBinding,
     onContextMenuStyleClick: (IntRange) -> Unit
-) : Text(view), SupportNesting {
+) : Text(binding.root), SupportNesting {
 
     var mode = BlockView.Mode.EDIT
 
-    val checkbox: ImageView = itemView.checkboxIcon
-    private val container = itemView.checkboxBlockContentContainer
-    override val content: TextInputWidget = itemView.checkboxContent
+    val checkbox: ImageView = binding.checkboxIcon
+    private val container = binding.checkboxBlockContentContainer
+    override val content: TextInputWidget = binding.checkboxContent
     override val root: View = itemView
 
     private val mentionIconSize: Int

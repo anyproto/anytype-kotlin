@@ -1,10 +1,9 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockLatexBinding
 import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -12,20 +11,13 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.judemanutd.katexview.KatexView
-import kotlinx.android.synthetic.main.item_block_latex.view.*
 
 class Latex(
-    parent: ViewGroup
-) : BlockViewHolder(
-    view = LayoutInflater.from(parent.context).inflate(
-        R.layout.item_block_latex,
-        parent,
-        false
-    )
-), BlockViewHolder.IndentableHolder {
+    val binding: ItemBlockLatexBinding
+) : BlockViewHolder(binding.root), BlockViewHolder.IndentableHolder {
 
-    val content : View = itemView.latexContainer
-    val latexView: KatexView = itemView.latexView
+    val content: View = binding.latexContainer
+    val latexView: KatexView = binding.latexView
 
     init {
         latexView.setTextColor(
@@ -41,12 +33,12 @@ class Latex(
     }
 
     private fun setIsSelected(item: BlockView.Latex) {
-        itemView.latexContainer.isSelected = item.isSelected
+        binding.latexContainer.isSelected = item.isSelected
     }
 
     private fun setLatex(latex: String) {
         val encode = "$$ $latex $$"
-        itemView.latexView.setText(encode)
+        binding.latexView.setText(encode)
     }
 
     private fun setBackground(backgroundColor: String?) {
@@ -70,7 +62,7 @@ class Latex(
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        itemView.latexView.updatePadding(
+        binding.latexView.updatePadding(
             left = dimen(R.dimen.default_document_content_padding_start) + item.indent * dimen(R.dimen.indent)
         )
     }

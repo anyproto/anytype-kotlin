@@ -1,15 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.sets
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemListBaseBinding
 import com.anytypeio.anytype.core_ui.extensions.formatIcon
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
-import kotlinx.android.synthetic.main.item_list_base.view.*
 
 abstract class RelationPickerAdapter(
     private val relations: List<SimpleRelationView>,
@@ -22,7 +20,9 @@ abstract class RelationPickerAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelationHolder {
         val inflater = LayoutInflater.from(parent.context)
         return RelationHolder(
-            inflater.inflate(R.layout.item_list_base, parent, false)
+            binding = ItemListBaseBinding.inflate(
+                inflater, parent, false
+            )
         )
     }
 
@@ -37,11 +37,13 @@ abstract class RelationPickerAdapter(
 
     override fun getItemCount(): Int = relations.size
 
-    inner class RelationHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class RelationHolder(
+        val binding: ItemListBaseBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private val root = itemView
-        private val title = itemView.text
-        private val icon = itemView.icon
+        private val title = binding.text
+        private val icon = binding.icon
 
         fun bind(
             relationSelectedKey: String?,

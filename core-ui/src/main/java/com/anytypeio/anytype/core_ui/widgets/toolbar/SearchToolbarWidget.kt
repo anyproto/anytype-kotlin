@@ -5,33 +5,25 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetDocSearchEngineToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.afterTextChanges
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import kotlinx.android.synthetic.main.widget_doc_search_engine_toolbar.view.*
 import kotlinx.coroutines.flow.*
 import com.anytypeio.anytype.presentation.editor.editor.search.SearchInDocEvent as Event
 
-class SearchToolbarWidget : ConstraintLayout {
+class SearchToolbarWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : ConstraintLayout(context, attrs) {
 
-    constructor(
-        context: Context
-    ) : this(context, null)
+    val binding = WidgetDocSearchEngineToolbarBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet?
-    ) : this(context, attrs, 0)
-
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
-        inflate()
+    init {
         setupFocusListener()
     }
 
@@ -44,7 +36,7 @@ class SearchToolbarWidget : ConstraintLayout {
 //        }
     }
 
-    fun events(): Flow<Event> {
+    fun events(): Flow<Event> = with(binding) {
         val next = docSearchNextSearchResult.clicks().map { Event.Next }
         val previous = docSearchPreviousSearchResult.clicks().map { Event.Previous }
         val cancel = docSearchCancelButton.clicks().map { Event.Cancel }
@@ -66,16 +58,10 @@ class SearchToolbarWidget : ConstraintLayout {
     }
 
     fun focus() {
-        docSearchInputField.focusAndShowKeyboard()
+        binding.docSearchInputField.focusAndShowKeyboard()
     }
 
     private fun clearSearchInput() {
-        docSearchInputField.setText("")
+        binding.docSearchInputField.setText("")
     }
-
-    private fun inflate() {
-        LayoutInflater.from(context).inflate(R.layout.widget_doc_search_engine_toolbar, this)
-    }
-
-    companion object
 }

@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.ObjectView
-import kotlinx.android.synthetic.main.item_list_object.view.*
 
 @Deprecated("LEGACY SUSPECT")
 class PageLinksAdapter(
@@ -32,7 +32,11 @@ class PageLinksAdapter(
         parent: ViewGroup,
         viewType: Int
     ): PageLinkHolder = PageLinkHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_list_object, parent, false)
+        binding = ItemListObjectBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
     ).apply {
         itemView.setOnClickListener {
             val pos = bindingAdapterPosition
@@ -48,15 +52,16 @@ class PageLinksAdapter(
         holderLink.bind(data[position])
     }
 
-    class PageLinkHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class PageLinkHolder(val binding: ItemListObjectBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         private val untitled = itemView.resources.getString(R.string.untitled)
-        private val title = itemView.tvTitle
-        private val subtitle = itemView.tvSubtitle
-        private val icon = itemView.ivIcon
+        private val title = binding.tvTitle
+        private val subtitle = binding.tvSubtitle
+        private val icon = binding.ivIcon
 
         fun bind(link: ObjectView) {
-            title.text = if (link.title.isEmpty()) untitled else link.title
+            title.text = link.title.ifEmpty { untitled }
             if (link.subtitle.isBlank()) {
                 subtitle.gone()
             } else {

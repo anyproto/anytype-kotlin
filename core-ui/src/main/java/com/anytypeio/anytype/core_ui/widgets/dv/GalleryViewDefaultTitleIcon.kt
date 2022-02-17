@@ -6,13 +6,13 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.WidgetGalleryViewDefaultTitleIconBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.android.synthetic.main.widget_gallery_view_default_title_icon.view.*
 import timber.log.Timber
 
 class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
@@ -20,11 +20,11 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.widget_gallery_view_default_title_icon, this)
-    }
+    val binding = WidgetGalleryViewDefaultTitleIconBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    fun bind(icon: ObjectIcon) {
+    fun bind(icon: ObjectIcon) = with(binding) {
         when (icon) {
             is ObjectIcon.Basic.Emoji -> {
                 ivIconImage.setImageDrawable(null)
@@ -76,7 +76,7 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
         }
     }
 
-    private fun setEmoji(emoji: String) {
+    private fun setEmoji(emoji: String) = with(binding) {
         if (emoji.isNotBlank()) {
             try {
                 Glide
@@ -93,7 +93,7 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
         ivIconEmoji.visible()
     }
 
-    private fun setImage(image: Url) {
+    private fun setImage(image: Url) = with(binding) {
         if (image.isNotBlank()) {
             Glide
                 .with(ivIconImage)
@@ -106,7 +106,7 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
         ivIconImage.visible()
     }
 
-    private fun setCircularImage(image: Url) {
+    private fun setCircularImage(image: Url) = with(binding) {
         if (image.isNotBlank()) {
             Glide
                 .with(ivIconEmoji)

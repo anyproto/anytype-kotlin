@@ -58,7 +58,7 @@ class BlockAdapterToggleTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = triggerCount,
-            expected = 0
+            expected = 1
         )
 
         // Updating views
@@ -85,8 +85,7 @@ class BlockAdapterToggleTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = triggerCount,
-            expected = 1
+            expected = 2
         )
     }
-
 }

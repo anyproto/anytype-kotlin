@@ -87,7 +87,7 @@ class Toggle(
             }
         }
         toggle.setOnClickListener {
-            if (mode == BlockView.Mode.EDIT) onToggleClicked(item.id)
+            onToggleClicked(item.id)
         }
         setupMentionWatcher(onMentionEvent)
         setupSlashWatcher(onSlashEvent, item.getViewType())

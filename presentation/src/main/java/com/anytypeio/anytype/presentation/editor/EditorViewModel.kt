@@ -2010,8 +2010,10 @@ class EditorViewModel(
 
     fun onToggleClicked(target: Id) {
         Timber.d("onToggleClicked, target:[$target]")
-        onToggleChanged(target)
-        viewModelScope.launch { refresh() }
+        if (mode is EditorMode.Edit || mode is EditorMode.Locked) {
+            onToggleChanged(target)
+            viewModelScope.launch { refresh() }
+        }
     }
 
     private fun onAddLocalFileClicked(blockId: String) {

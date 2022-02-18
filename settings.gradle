@@ -15,3 +15,4 @@ include ':app',
         ':analytics',
         ':protocol',
         ':core-models'
+include ':ui-settings'

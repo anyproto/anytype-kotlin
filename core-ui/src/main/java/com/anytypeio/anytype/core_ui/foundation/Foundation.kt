@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_ui.foundation
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
@@ -21,7 +24,8 @@ fun Toolbar(title: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.h3
+            style = MaterialTheme.typography.h3,
+            color = colorResource(R.color.text_primary)
         )
     }
 }
@@ -49,5 +53,48 @@ fun Divider(
             .background(color = colorResource(R.color.shape_primary))
             .height(0.5.dp)
             .fillMaxWidth()
+    )
+}
+
+@Composable
+fun Option(
+    @DrawableRes image: Int,
+    text: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.height(52.dp)
+    ) {
+        Image(
+            painterResource(image),
+            contentDescription = "Option icon",
+            modifier = Modifier.padding(
+                start = 20.dp
+            )
+        )
+        Text(
+            text = text,
+            color = colorResource(R.color.text_primary),
+            modifier = Modifier.padding(
+                start = 12.dp
+            )
+        )
+        Box(
+            modifier = Modifier.weight(1.0f, true),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Arrow()
+        }
+    }
+}
+
+@Composable
+fun Arrow() {
+    Image(
+        painterResource(R.drawable.ic_arrow_forward),
+        contentDescription = "Arrow forward",
+        modifier = Modifier.padding(
+            end = 20.dp
+        )
     )
 }

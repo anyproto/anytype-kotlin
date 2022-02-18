@@ -6,8 +6,8 @@ import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.settings.AboutAppViewModel
 import com.anytypeio.anytype.ui.settings.AboutAppFragment
+import com.anytypeio.anytype.ui_settings.about.AboutAppViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

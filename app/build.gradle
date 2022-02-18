@@ -153,6 +153,7 @@ dependencies {
     implementation project(':library-emojifier')
     implementation project(':library-syntax-highlighter')
     implementation project(':analytics')
+    implementation project(':ui-settings')
 
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting

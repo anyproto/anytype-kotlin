@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">About</string>
+    <string name="app_version">App version</string>
+    <string name="library">Library</string>
+    <string name="user_id">User ID</string>
+    <string name="account_and_data"><![CDATA[Account & Data]]></string>
+    <string name="personalization">Personalization</string>
+    <string name="appearance">Appearance</string>
+    <string name="keychain_phrase">Keychain phrase</string>
+    <string name="clear_file_cache">Clear file cache</string>
+    <string name="account">Account</string>
+    <string name="reset_account">Reset account</string>
+    <string name="delete_account">Delete account</string>
+    <string name="data">Data</string>
+    <string name="log_out">Logout</string>
+    <string name="pin_code">Pin code</string>
+    <string name="access">Access</string>
+</resources>

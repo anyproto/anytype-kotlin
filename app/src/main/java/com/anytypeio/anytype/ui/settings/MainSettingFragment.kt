@@ -8,9 +8,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
-import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
+import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
 
-class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
+class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,18 +21,12 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    AccountAndDataScreen()
+                    MainSettingScreen()
                 }
             }
         }
     }
 
-    override fun injectDependencies() {
-        // TODO in the next PR
-    }
-
-    override fun releaseDependencies() {
-        // TODO in the next PR
-    }
+    override fun injectDependencies() {}
+    override fun releaseDependencies() {}
 }
-

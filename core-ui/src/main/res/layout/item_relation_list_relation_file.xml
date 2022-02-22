@@ -26,6 +26,7 @@
         </FrameLayout>
 
         <include
+            android:id="@+id/content"
             layout="@layout/item_document_relation_file"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

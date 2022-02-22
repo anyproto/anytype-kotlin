@@ -7,9 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBinding
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -84,7 +84,7 @@ class DocumentRelationAdapter(
             }
             R.layout.item_relation_list_relation_object -> {
                 ViewHolder.Object(
-                    binding = ItemBlockRelationObjectBinding.inflate(
+                    binding = ItemRelationListRelationObjectBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {
@@ -144,7 +144,7 @@ class DocumentRelationAdapter(
             }
             R.layout.item_relation_list_relation_tag -> {
                 ViewHolder.Tags(
-                    binding = ItemBlockRelationTagBinding.inflate(
+                    binding = ItemRelationListRelationTagBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {
@@ -176,7 +176,7 @@ class DocumentRelationAdapter(
             }
             R.layout.item_relation_list_relation_file -> {
                 ViewHolder.File(
-                    binding = ItemBlockRelationFileBinding.inflate(
+                    binding = ItemRelationListRelationFileBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {

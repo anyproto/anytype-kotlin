@@ -6,12 +6,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
@@ -141,7 +139,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Tags(val binding: ItemBlockRelationTagBinding) : RelationViewHolder(binding.root) {
+    class Tags(val binding: ViewBinding) : RelationViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -164,13 +162,29 @@ sealed class RelationViewHolder(
             }
         }
 
-        private fun getViewByIndex(index: Int): TagWidget? = when (index) {
-            0 -> binding.content.tag0
-            1 -> binding.content.tag1
-            2 -> binding.content.tag2
-            3 -> binding.content.tag3
-            4 -> binding.content.tag4
-            5 -> binding.content.tag5
+        private fun getViewByIndex(index: Int): TagWidget? = when(binding) {
+            is ItemBlockRelationTagBinding -> {
+                when (index) {
+                    0 -> binding.content.tag0
+                    1 -> binding.content.tag1
+                    2 -> binding.content.tag2
+                    3 -> binding.content.tag3
+                    4 -> binding.content.tag4
+                    5 -> binding.content.tag5
+                    else -> null
+                }
+            }
+            is ItemRelationListRelationTagBinding -> {
+                when (index) {
+                    0 -> binding.content.tag0
+                    1 -> binding.content.tag1
+                    2 -> binding.content.tag2
+                    3 -> binding.content.tag3
+                    4 -> binding.content.tag4
+                    5 -> binding.content.tag5
+                    else -> null
+                }
+            }
             else -> null
         }
 
@@ -185,7 +199,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Object(val binding: ItemBlockRelationObjectBinding) : RelationViewHolder(binding.root) {
+    class Object(val binding: ViewBinding) : RelationViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -220,11 +234,25 @@ sealed class RelationViewHolder(
             title.updatePadding(left = indent)
         }
 
-        private fun getViewByIndex(index: Int): RelationObjectItem? = when (index) {
-            0 -> binding.content.obj0
-            1 -> binding.content.obj1
-            2 -> binding.content.obj2
-            3 -> binding.content.obj3
+        private fun getViewByIndex(index: Int): RelationObjectItem? = when(binding) {
+            is ItemBlockRelationObjectBinding -> {
+                when (index) {
+                    0 -> binding.content.obj0
+                    1 -> binding.content.obj1
+                    2 -> binding.content.obj2
+                    3 -> binding.content.obj3
+                    else -> null
+                }
+            }
+            is ItemRelationListRelationObjectBinding -> {
+                when (index) {
+                    0 -> binding.content.obj0
+                    1 -> binding.content.obj1
+                    2 -> binding.content.obj2
+                    3 -> binding.content.obj3
+                    else -> null
+                }
+            }
             else -> null
         }
 
@@ -233,7 +261,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class File(val binding: ItemBlockRelationFileBinding) : RelationViewHolder(binding.root) {
+    class File(val binding: ViewBinding) : RelationViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -256,10 +284,23 @@ sealed class RelationViewHolder(
             }
         }
 
-        private fun getViewByIndex(index: Int): GridCellFileItem? = when (index) {
-            0 -> binding.content.file0
-            1 -> binding.content.file1
-            2 -> binding.content.file2
+        private fun getViewByIndex(index: Int): GridCellFileItem? = when(binding) {
+            is ItemBlockRelationFileBinding -> {
+                when (index) {
+                    0 -> binding.content.file0
+                    1 -> binding.content.file1
+                    2 -> binding.content.file2
+                    else -> null
+                }
+            }
+            is ItemRelationListRelationFileBinding -> {
+                when (index) {
+                    0 -> binding.content.file0
+                    1 -> binding.content.file1
+                    2 -> binding.content.file2
+                    else -> null
+                }
+            }
             else -> null
         }
 

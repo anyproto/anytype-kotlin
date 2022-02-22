@@ -7,9 +7,9 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
@@ -63,7 +63,7 @@ class SlashRelationsAdapter(
             }
             R.layout.item_relation_list_relation_object -> {
                 RelationViewHolder.Object(
-                    binding = ItemBlockRelationObjectBinding.inflate(
+                    binding = ItemRelationListRelationObjectBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {
@@ -97,7 +97,7 @@ class SlashRelationsAdapter(
             }
             R.layout.item_relation_list_relation_tag -> {
                 RelationViewHolder.Tags(
-                    binding = ItemBlockRelationTagBinding.inflate(
+                    binding = ItemRelationListRelationTagBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {
@@ -116,7 +116,7 @@ class SlashRelationsAdapter(
             }
             R.layout.item_relation_list_relation_file -> {
                 RelationViewHolder.File(
-                    ItemBlockRelationFileBinding.inflate(
+                    ItemRelationListRelationFileBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {

@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:gravity="center"
-        android:text="@string/other_settings"
+        android:text="@string/personalization"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sheet_top" />
@@ -91,37 +91,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnDefaultObjectType" />
 
-    <FrameLayout
-        android:id="@+id/btnClearFileCache"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:background="@drawable/default_ripple"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="Clear file cache"
-            android:textColor="#F55522"
-            android:textSize="17sp" />
-
-        <ProgressBar
-            android:id="@+id/clearFileCacheProgressBar"
-            style="?android:attr/progressBarStyleSmall"
-            android:visibility="gone"
-            android:indeterminateTint="@color/light_grayish"
-            android:layout_marginEnd="20dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </FrameLayout>
-
     <View
         android:id="@+id/divider2"
         android:layout_width="0dp"
@@ -133,6 +102,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnClearFileCache" />
+        app:layout_constraintTop_toBottomOf="@+id/btnDefaultObjectType" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

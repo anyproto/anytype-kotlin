@@ -944,7 +944,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideKeyboard()
                     findNavController()
                         .navigate(
-                            R.id.objectTypeChangeFragment,
+                            R.id.objectTypeChangeScreen,
                             bundleOf(
                                 ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType
                             )

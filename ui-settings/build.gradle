@@ -36,6 +36,7 @@ dependencies {
     def unitTestDependencies = rootProject.ext.unitTesting
 
     implementation applicationDependencies.lifecycleViewModel
+    implementation applicationDependencies.lifecycleRuntime
 
     implementation applicationDependencies.compose
     implementation applicationDependencies.composeFoundation
@@ -43,6 +44,8 @@ dependencies {
     implementation applicationDependencies.composeToolingPreview
 
     debugImplementation applicationDependencies.composeTooling
+
+    implementation applicationDependencies.timber
 
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

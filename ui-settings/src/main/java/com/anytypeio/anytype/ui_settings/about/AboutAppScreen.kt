@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.ui_settings.about
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -19,8 +19,10 @@ import com.anytypeio.anytype.ui_settings.R
 
 @Composable
 fun AboutAppScreen(
-    vm: AboutAppViewModel,
-    version: String
+    libraryVersion: String,
+    anytypeId: String,
+    version: String,
+    onAnytypeIdClicked: () -> Unit
 ) {
     Column {
         Box(
@@ -87,7 +89,7 @@ fun AboutAppScreen(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = vm.libraryVersion.collectAsState().value,
+                    text = libraryVersion,
                     fontSize = 17.sp,
                     color = colorResource(R.color.text_primary)
                 )
@@ -99,7 +101,7 @@ fun AboutAppScreen(
                 end = 20.dp,
                 top = 12.dp,
                 bottom = 32.dp
-            )
+            ).clickable(onClick = onAnytypeIdClicked)
         ) {
             Box(modifier = Modifier.weight(1.0f, true)) {
                 Text(
@@ -113,7 +115,7 @@ fun AboutAppScreen(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = vm.userId.collectAsState().value,
+                    text = anytypeId,
                     fontSize = 17.sp,
                     color = colorResource(R.color.text_primary)
                 )

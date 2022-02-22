@@ -10,6 +10,7 @@ import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
 import com.anytypeio.anytype.di.feature.settings.AboutAppModule
+import com.anytypeio.anytype.di.feature.settings.AccountAndDataModule
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.main.MainComponent
 
@@ -603,7 +604,12 @@ class ComponentManager(private val main: MainComponent) {
 
     // Settings
 
-    val aboutAppComponent = Component { main.aboutAppComponent().module(AboutAppModule).build() }
+    val aboutAppComponent = Component {
+        main.aboutAppComponent().module(AboutAppModule).build()
+    }
+    val accountAndDataComponent = Component {
+        main.accountAndDataComponent().module(AccountAndDataModule).build()
+    }
 
     class Component<T>(private val builder: () -> T) {
 

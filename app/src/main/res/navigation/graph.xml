@@ -127,12 +127,8 @@
         android:label="DesktopFragment"
         tools:layout="@layout/fragment_dashboard">
         <action
-            android:id="@+id/action_open_profile"
-            app:destination="@id/profileScreen"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            android:id="@+id/action_open_settings"
+            app:destination="@id/settingsScreen"/>
         <action
             android:id="@+id/action_desktopScreen_to_pageNavigationFragment"
             app:destination="@id/pageNavigationFragment" />
@@ -144,11 +140,14 @@
             app:destination="@id/createSetScreen" />
     </fragment>
 
-    <fragment
-        android:id="@+id/profileScreen"
-        android:name="com.anytypeio.anytype.ui.profile.ProfileFragment"
-        android:label="ProfileScreen"
-        tools:layout="@layout/fragment_profile">
+    <dialog
+        android:id="@+id/settingsScreen"
+        android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
+        android:label="SettingScreen">
+        <action android:id="@+id/actionOpenAccountAndDataScreen" app:destination="@id/accountAndDataScreen"/>
+        <action android:id="@+id/actionOpenAboutAppScreen" app:destination="@id/aboutAppScreen"/>
+        <action android:id="@+id/actionOpenPersonalizationScreen" app:destination="@+id/personalizationScreen"/>
+        <action android:id="@+id/actionOpenAppearanceScreen" app:destination="@+id/appearanceScreen"/>
         <action
             android:id="@+id/action_profileScreen_to_splashFragment"
             app:destination="@+id/main_navigation"
@@ -169,12 +168,27 @@
             app:destination="@id/debugSettingsFragment" />
         <action
             android:id="@+id/action_profileScreen_to_userSettingsFragment"
-            app:destination="@id/userSettingsFragment"
+            app:destination="@id/personalizationScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-    </fragment>
+    </dialog>
+
+    <dialog
+        android:id="@+id/accountAndDataScreen"
+        android:name="com.anytypeio.anytype.ui.settings.AccountAndDataFragment">
+        <action
+            android:id="@+id/actionLogout"
+            app:destination="@+id/main_navigation"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="true" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/aboutAppScreen"
+        android:name="com.anytypeio.anytype.ui.settings.AboutAppFragment" />
+
     <fragment
         android:id="@+id/createAccountScreen"
         android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
@@ -422,17 +436,22 @@
         android:label="CreateSetScreen"
         tools:layout="@layout/fragment_create_set" />
     <dialog
-        android:id="@+id/userSettingsFragment"
+        android:id="@+id/personalizationScreen"
         android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
         android:label="fragment_user_settings"
         tools:layout="@layout/fragment_user_settings"/>
     <dialog
-        android:id="@+id/wallpaperSetFragment"
+        android:id="@+id/wallpaperSetScreen"
         android:name="com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment"
         android:label="fragment_wallpaper_set"
         tools:layout="@layout/fragment_wallpaper_select"/>
     <dialog
-        android:id="@+id/objectTypeChangeFragment"
+        android:id="@+id/appearanceScreen"
+        android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
+        android:label="fragment_wallpaper_set"
+        tools:layout="@layout/fragment_wallpaper_select"/>
+    <dialog
+        android:id="@+id/objectTypeChangeScreen"
         android:name="com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment"
         android:label="ObjectTypeChangeFragment"
         tools:layout="@layout/fragment_object_type_change"/>

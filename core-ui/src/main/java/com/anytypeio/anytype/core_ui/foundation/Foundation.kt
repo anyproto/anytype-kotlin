@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.foundation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -59,11 +60,13 @@ fun Divider(
 @Composable
 fun Option(
     @DrawableRes image: Int,
-    text: String
+    text: String,
+    onClick: () -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(52.dp)
+        modifier = Modifier.height(52.dp).clickable(onClick = onClick)
+
     ) {
         Image(
             painterResource(image),

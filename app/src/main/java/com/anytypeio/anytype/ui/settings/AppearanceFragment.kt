@@ -10,24 +10,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
-import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
+import com.anytypeio.anytype.ui_settings.appearance.AppearanceScreen
 
-class MainSettingFragment : BaseBottomSheetComposeFragment() {
+class AppearanceFragment : BaseBottomSheetComposeFragment() {
 
-    private val onAccountAndDataClicked = {
-        findNavController().navigate(R.id.actionOpenAccountAndDataScreen)
-    }
-
-    private val onAboutAppClicked = {
-        findNavController().navigate(R.id.actionOpenAboutAppScreen)
-    }
-
-    private val onPersonalizationClicked = {
-        findNavController().navigate(R.id.actionOpenPersonalizationScreen)
-    }
-
-    private val onAppearanceClicked = {
-        findNavController().navigate(R.id.actionOpenAppearanceScreen)
+    private val onWallpaperClicked = {
+        findNavController().navigate(R.id.wallpaperSetScreen)
     }
 
     override fun onCreateView(
@@ -39,11 +27,8 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    MainSettingScreen(
-                        onAccountAndDataClicked = onAccountAndDataClicked,
-                        onAboutAppClicked = onAboutAppClicked,
-                        onAppearanceClicked = onAppearanceClicked,
-                        onPersonalizationClicked = onPersonalizationClicked
+                    AppearanceScreen(
+                        onWallpaperClicked = onWallpaperClicked
                     )
                 }
             }

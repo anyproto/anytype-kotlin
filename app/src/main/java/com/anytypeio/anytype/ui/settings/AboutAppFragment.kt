@@ -1,11 +1,15 @@
 package com.anytypeio.anytype.ui.settings
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
@@ -16,8 +20,10 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.about.AboutAppScreen
 import com.anytypeio.anytype.ui_settings.about.AboutAppViewModel
 import javax.inject.Inject
@@ -40,11 +46,38 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     AboutAppScreen(
-                        vm = vm,
-                        version = BuildConfig.VERSION_NAME
+                        version = getVersionText(),
+                        libraryVersion = vm.libraryVersion.collectAsState().value,
+                        anytypeId = vm.userId.collectAsState().value,
+                        onAnytypeIdClicked = { copyAnytypeIdToClipboard(vm.userId.value) }
                     )
                 }
             }
+        }
+    }
+
+    private fun getVersionText() : String {
+        val version = BuildConfig.VERSION_NAME
+        return if (version.isNotEmpty()) {
+            if (BuildConfig.DEBUG)
+                "$version-debug"
+            else
+                "$version-alpha"
+        } else {
+            resources.getString(R.string.unknown)
+        }
+    }
+
+    private fun copyAnytypeIdToClipboard(id: String) {
+        try {
+            val clipboard =
+                requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip =
+                ClipData.newPlainText(KeychainPhraseDialog.MNEMONIC_LABEL, id)
+            clipboard.setPrimaryClip(clip)
+            toast("Your Anytype ID is copied to clipboard.")
+        } catch (e: Exception) {
+            toast("Could not copy your Anytype ID. Please try again later, or copy it manually.")
         }
     }
 

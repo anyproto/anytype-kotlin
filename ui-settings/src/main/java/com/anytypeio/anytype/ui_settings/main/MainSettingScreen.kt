@@ -15,7 +15,12 @@ import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.ui_settings.R
 
 @Composable
-fun MainSettingScreen() {
+fun MainSettingScreen(
+    onAccountAndDataClicked: () -> Unit,
+    onAboutAppClicked: () -> Unit,
+    onPersonalizationClicked: () -> Unit,
+    onAppearanceClicked: () -> Unit
+) {
     Column {
         Box(
             modifier = Modifier.padding(vertical = 6.dp).align(Alignment.CenterHorizontally)
@@ -23,23 +28,27 @@ fun MainSettingScreen() {
             Dragger()
         }
         Option(
-            image = R.drawable.ic_key,
-            text = stringResource(R.string.account_and_data)
+            image = R.drawable.ic_account_and_data,
+            text = stringResource(R.string.account_and_data),
+            onClick = onAccountAndDataClicked
         )
         Divider()
         Option(
-            image = R.drawable.ic_key,
-            text = stringResource(R.string.personalization)
+            image = R.drawable.ic_personalization,
+            text = stringResource(R.string.personalization),
+            onClick = onPersonalizationClicked
         )
         Divider()
         Option(
-            image = R.drawable.ic_key,
-            text = stringResource(R.string.appearance)
+            image = R.drawable.ic_appearance,
+            text = stringResource(R.string.appearance),
+            onClick = onAppearanceClicked
         )
         Divider()
         Option(
-            image = R.drawable.ic_key,
-            text = stringResource(R.string.about)
+            image = R.drawable.ic_about,
+            text = stringResource(R.string.about),
+            onClick = onAboutAppClicked
         )
         Divider()
         Box(modifier = Modifier.height(16.dp))

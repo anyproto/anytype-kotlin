@@ -15,7 +15,7 @@ interface AppNavigation {
     fun setupSelectedAccount(id: String)
     fun chooseAccount()
     fun workspace()
-    fun openProfile()
+    fun openSettings()
 
     fun openArchive(target: String)
     fun openObjectSet(target: String)
@@ -69,7 +69,7 @@ interface AppNavigation {
         data class LaunchObjectFromSplash(val target: Id) : Command()
         data class LaunchObjectSetFromSplash(val target: Id) : Command()
 
-        object OpenProfile : Command()
+        object OpenSettings : Command()
         object OpenKeychainScreen : Command()
         object OpenPinCodeScreen : Command()
         object OpenUserSettingsScreen : Command()

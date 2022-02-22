@@ -10,10 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentUserSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -42,7 +40,6 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
         super.onViewCreated(view, savedInstanceState)
         binding.tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
         binding.btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
-        binding.btnClearFileCache.setOnClickListener { vm.onClearCacheClicked() }
         binding.ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
     }
 
@@ -50,12 +47,6 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
         super.onStart()
         with(lifecycleScope) {
             jobs += subscribe(vm.commands) { observe(it) }
-            jobs += subscribe(vm.isClearFileCacheInProgress) { isInProgress ->
-                if (isInProgress)
-                    binding.clearFileCacheProgressBar.visible()
-                else
-                    binding.clearFileCacheProgressBar.gone()
-            }
         }
     }
 
@@ -64,7 +55,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
             is OtherSettingsViewModel.Command.Exit -> dismiss()
             is OtherSettingsViewModel.Command.NavigateToObjectTypesScreen -> {
                 findNavController().navigate(
-                    R.id.objectTypeChangeFragment,
+                    R.id.objectTypeChangeScreen,
                     bundleOf(
                         ObjectTypeChangeFragment.ARG_SMART_BLOCK_TYPE to command.smartBlockType
                     )

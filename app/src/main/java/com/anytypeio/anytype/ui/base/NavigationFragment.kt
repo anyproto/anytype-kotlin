@@ -37,7 +37,7 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
             is Command.SetupNewAccountScreen -> navigation.setupNewAccount()
             is Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(command.id)
             is Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
-            is Command.OpenProfile -> navigation.openProfile()
+            is Command.OpenSettings -> navigation.openSettings()
             is Command.OpenObject -> navigation.openDocument(command.id, command.editorSettings)
             is Command.OpenArchive -> navigation.openArchive(command.target)
             is Command.OpenObjectSet -> navigation.openObjectSet(command.target)

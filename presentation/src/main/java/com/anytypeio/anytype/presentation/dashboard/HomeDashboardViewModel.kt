@@ -406,7 +406,7 @@ class HomeDashboardViewModel(
             analytics = analytics,
             eventName = EventsDictionary.POPUP_SETTINGS
         )
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenProfile))
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenSettings))
     }
 
     fun onPageSearchClicked() {

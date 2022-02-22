@@ -69,8 +69,8 @@ class Navigator : AppNavigation {
 
     override fun workspace() {}
 
-    override fun openProfile() {
-        navController?.navigate(R.id.action_open_profile)
+    override fun openSettings() {
+        navController?.navigate(R.id.action_open_settings)
     }
 
     override fun openDocument(id: String, editorSettings: EditorSettings?) {

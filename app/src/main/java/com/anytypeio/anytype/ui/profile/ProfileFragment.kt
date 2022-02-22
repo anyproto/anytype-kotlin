@@ -26,6 +26,7 @@ import com.anytypeio.anytype.ui.base.ViewStateFragment
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Deprecated("To be deleted")
 class ProfileFragment : ViewStateFragment<ViewState<ProfileView>, FragmentProfileBinding>(R.layout.fragment_profile) {
 
     @Inject
@@ -56,7 +57,7 @@ class ProfileFragment : ViewStateFragment<ViewState<ProfileView>, FragmentProfil
             is ViewState.Init -> {
                 with(binding) {
                     wallpaperText.setOnClickListener {
-                        findNavController().navigate(R.id.wallpaperSetFragment)
+                        findNavController().navigate(R.id.wallpaperSetScreen)
                     }
                     logoutButton.setOnClickListener { vm.onLogoutClicked() }
                     pinCodeText.setOnClickListener {

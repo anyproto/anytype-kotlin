@@ -30,11 +30,9 @@ object AccountAndDataModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        clearFileCache: ClearFileCache,
-        logout: Logout
+        clearFileCache: ClearFileCache
     ): AccountAndDataViewModel.Factory = AccountAndDataViewModel.Factory(
-        clearFileCache = clearFileCache,
-        logout = logout
+        clearFileCache = clearFileCache
     )
 
     @JvmStatic

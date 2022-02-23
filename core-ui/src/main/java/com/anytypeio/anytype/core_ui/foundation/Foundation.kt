@@ -3,18 +3,23 @@ package com.anytypeio.anytype.core_ui.foundation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
 
 @Composable
@@ -100,4 +105,82 @@ fun Arrow() {
             end = 20.dp
         )
     )
+}
+
+@Composable
+fun Warning(
+    title: String,
+    subtitle: String,
+    actionButtonText: String,
+    cancelButtonText: String,
+    onNegativeClick: () -> Unit,
+    onPositiveClick: () -> Unit,
+    isInProgress: Boolean = false
+) {
+    Column {
+        Text(
+            style = MaterialTheme.typography.h2,
+            text = title,
+            modifier = Modifier.padding(
+                top = 24.dp,
+                start = 20.dp,
+                end = 20.dp
+            ),
+            color = colorResource(R.color.text_primary)
+        )
+        Text(
+            text = subtitle,
+            modifier = Modifier.padding(
+                top = 12.dp,
+                start = 20.dp,
+                end = 20.dp
+            ),
+            color = colorResource(R.color.text_primary)
+        )
+        Row(
+            modifier = Modifier.height(68.dp).padding(
+                top = 8.dp,
+                start = 20.dp,
+                end = 20.dp
+            ).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.height(48.dp).border(
+                    width = 1.dp,
+                    color = colorResource(R.color.shape_primary),
+                    shape = RoundedCornerShape(10.dp)
+                ).weight(1.0f, true).clickable(onClick = onNegativeClick),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = cancelButtonText,
+                    color = colorResource(R.color.text_primary),
+                    fontSize = 17.sp
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Box(
+                modifier = Modifier.height(48.dp).background(
+                    color = colorResource(R.color.anytype_text_red),
+                    shape = RoundedCornerShape(10.dp)
+                ).weight(1.0f, true).clickable(onClick = onPositiveClick),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = actionButtonText,
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                if (isInProgress) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterEnd).padding(end = 20.dp).size(16.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
+        }
+    }
 }

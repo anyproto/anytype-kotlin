@@ -189,6 +189,16 @@
         android:id="@+id/aboutAppScreen"
         android:name="com.anytypeio.anytype.ui.settings.AboutAppFragment" />
 
+    <dialog
+        android:id="@+id/logoutWarningScreen"
+        android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment" >
+        <action
+            android:id="@+id/actionLogout"
+            app:destination="@+id/main_navigation"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="true" />
+    </dialog>
+
     <fragment
         android:id="@+id/createAccountScreen"
         android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"

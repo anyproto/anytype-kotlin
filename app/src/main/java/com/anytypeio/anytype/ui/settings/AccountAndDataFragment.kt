@@ -9,9 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -20,7 +17,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
@@ -32,6 +28,10 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
 
     private val onKeychainPhraseClicked = {
         findNavController().navigate(R.id.keychainDialog)
+    }
+
+    private val onLogoutClicked = {
+        findNavController().navigate(R.id.logoutWarningScreen)
     }
 
     override fun onCreateView(
@@ -48,26 +48,11 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                         onClearFileCachedClicked = { proceedWithClearFileCacheWarning() },
                         onDeleteAccountClicked = { toast(resources.getString(R.string.coming_soon)) },
                         onResetAccountClicked = { toast(resources.getString(R.string.coming_soon)) },
-                        onLogoutClicked = { vm.onLogoutClicked() },
+                        onLogoutClicked = onLogoutClicked,
                         onPinCodeClicked = { toast(resources.getString(R.string.coming_soon)) },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value
                     )
-                }
-            }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.commands.collect { command ->
-                    when(command) {
-                        AccountAndDataViewModel.Command.Logout -> {
-                            findNavController().navigate(R.id.actionLogout)
-                        }
-                    }
                 }
             }
         }

@@ -3,21 +3,14 @@ package com.anytypeio.anytype.ui_settings.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class AccountAndDataViewModel(
-    private val clearFileCache: ClearFileCache,
-    private val logout: Logout,
-) : ViewModel() {
-
-    val commands = MutableSharedFlow<Command>(replay = 0)
+class AccountAndDataViewModel(private val clearFileCache: ClearFileCache) : ViewModel() {
 
     val isClearFileCacheInProgress = MutableStateFlow(false)
     val isLoggingOut = MutableStateFlow(false)
@@ -43,40 +36,12 @@ class AccountAndDataViewModel(
         }
     }
 
-    fun onLogoutClicked() {
-        viewModelScope.launch {
-            logout(params = BaseUseCase.None).collect { status ->
-                when (status) {
-                    is Interactor.Status.Started -> {
-                        isLoggingOut.value = true
-                    }
-                    is Interactor.Status.Success -> {
-                        isLoggingOut.value = false
-                        commands.emit(Command.Logout)
-                    }
-                    is Interactor.Status.Error -> {
-                        isLoggingOut.value = true
-                        Timber.e(status.throwable, "Error while logging out")
-                    }
-                }
-            }
-        }
-    }
-
-    class Factory(
-        private val clearFileCache: ClearFileCache,
-        private val logout: Logout,
-    ) : ViewModelProvider.Factory {
+    class Factory(private val clearFileCache: ClearFileCache) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AccountAndDataViewModel(
-                clearFileCache = clearFileCache,
-                logout = logout
+                clearFileCache = clearFileCache
             ) as T
         }
-    }
-
-    sealed class Command {
-        object Logout : Command()
     }
 }

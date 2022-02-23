@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="about">About</string>
     <string name="app_version">App version</string>
     <string name="library">Library</string>
@@ -17,4 +18,8 @@
     <string name="pin_code">Pin code</string>
     <string name="access">Access</string>
     <string name="wallpaper">Wallpaper</string>
+
+    <string name="have_you_back_up_your_keychain">Have you backed up your keychain phrase?</string>
+    <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+
 </resources>

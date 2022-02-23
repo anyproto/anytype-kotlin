@@ -12,6 +12,7 @@
         android:layout_marginStart="@dimen/auth_default_card_margin"
         android:layout_marginEnd="@dimen/auth_default_card_margin"
         android:layout_marginBottom="@dimen/auth_default_card_margin"
+        app:cardBackgroundColor="@color/background_secondary"
         app:cardElevation="0dp"
         app:cardCornerRadius="@dimen/auth_default_card_corner_radius">
 
@@ -80,7 +81,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="11dp"
                 android:layout_marginEnd="20dp"
-                android:background="@color/auth_divider"
+                android:background="@color/shape_primary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameInputField" />

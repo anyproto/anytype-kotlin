@@ -52,7 +52,11 @@ class Navigator : AppNavigation {
     }
 
     override fun enterInvitationCode() {
-        navController?.navigate(R.id.action_startLoginScreen_to_invitationFragment)
+        navController?.navigate(R.id.openInviteCodeScreen)
+    }
+
+    override fun aboutAnalyticsScreen() {
+        navController?.navigate(R.id.openAboutAnalyticsScreen)
     }
 
     override fun exitToInvitationCodeScreen() {

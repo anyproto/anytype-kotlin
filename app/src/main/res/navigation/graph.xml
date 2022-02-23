@@ -371,8 +371,8 @@
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right" />
             <action
-                android:id="@+id/action_startLoginScreen_to_invitationFragment"
-                app:destination="@id/invitationFragment"
+                android:id="@+id/openAboutAnalyticsScreen"
+                app:destination="@id/aboutAnalyticsScreen"
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
@@ -405,6 +405,18 @@
             <action
                 android:id="@+id/action_invitationFragment_to_createAccountScreen"
                 app:destination="@id/createAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+        <fragment
+            android:id="@+id/aboutAnalyticsScreen"
+            android:name="com.anytypeio.anytype.ui.auth.AboutAnalyticsFragment"
+            android:label="About analytics">
+            <action
+                android:id="@+id/openInviteCodeScreen"
+                app:destination="@id/invitationFragment"
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"

@@ -480,5 +480,7 @@
     <string name="unknown_error">Unknown error</string>
 
     <string name="bookmark">Bookmark</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 
 </resources>

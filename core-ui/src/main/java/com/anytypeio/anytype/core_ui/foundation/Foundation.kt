@@ -1,21 +1,17 @@
 package com.anytypeio.anytype.core_ui.foundation
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -180,6 +176,95 @@ fun Warning(
                         strokeWidth = 2.dp
                     )
                 }
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun Announcement(
+    title: String,
+    subtitle: String,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit
+) {
+    Box(contentAlignment = Alignment.BottomCenter) {
+        Card(
+            modifier = Modifier.padding(
+                start = 20.dp,
+                end = 20.dp,
+                bottom = 16.dp
+            ),
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = colorResource(R.color.background_secondary)
+        ) {
+            Column {
+                Text(
+                    style = MaterialTheme.typography.h2,
+                    text = title,
+                    modifier = Modifier.padding(
+                        top = 24.dp,
+                        start = 20.dp,
+                        end = 20.dp
+                    ),
+                    color = colorResource(R.color.text_primary)
+                )
+                Text(
+                    text = subtitle,
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                        start = 20.dp,
+                        end = 20.dp
+                    ),
+                    color = colorResource(R.color.text_primary)
+                )
+                Row(
+                    modifier = Modifier.height(68.dp).padding(
+                        top = 8.dp,
+                        start = 20.dp,
+                        end = 20.dp
+                    ).fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Card(
+                        modifier = Modifier.height(48.dp).weight(1.0f, true),
+                        onClick = onBackClicked,
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = colorResource(R.color.shape_primary)
+                        ),
+                        elevation = 0.dp,
+                        backgroundColor = Color.Transparent
+                    ) {
+                        Box(Modifier.wrapContentSize(Alignment.Center)) {
+                            Text(
+                                text = stringResource(R.string.back),
+                                color = colorResource(R.color.text_primary),
+                                fontSize = 17.sp
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Card(
+                        modifier = Modifier.height(48.dp).weight(1.0f, true),
+                        onClick = onNextClicked,
+                        backgroundColor = colorResource(R.color.glyph_accent),
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = 0.dp
+                    ) {
+                        Box(Modifier.wrapContentSize(Alignment.Center)) {
+                            Text(
+                                text = stringResource(R.string.next),
+                                color = Color.White,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
             }
         }
     }

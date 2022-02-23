@@ -13,6 +13,7 @@
         android:layout_marginStart="@dimen/auth_default_card_margin"
         android:layout_marginEnd="@dimen/auth_default_card_margin"
         android:layout_marginBottom="@dimen/auth_default_card_margin"
+        app:cardBackgroundColor="@color/background_secondary"
         app:cardElevation="0dp"
         app:cardCornerRadius="@dimen/auth_default_card_corner_radius">
 

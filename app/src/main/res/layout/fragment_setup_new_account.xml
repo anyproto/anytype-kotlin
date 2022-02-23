@@ -19,6 +19,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/background_secondary"
             app:cardCornerRadius="@dimen/auth_default_card_corner_radius"
             app:cardElevation="0dp">
 
@@ -34,7 +35,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="16dp"
-                    android:background="@drawable/circle_emoji_icon_background"
+                    android:background="@drawable/ic_auth_clock_background"
                     app:layout_constraintBottom_toTopOf="@+id/header"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">

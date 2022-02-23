@@ -44,7 +44,7 @@ class StartLoginViewModel(
                 },
                 fnR = {
                     sendWalletEvent(startTime)
-                    navigation.postValue(EventWrapper(AppNavigation.Command.InvitationCodeScreen))
+                    navigation.postValue(EventWrapper(AppNavigation.Command.AboutAnalyticsScreen))
                 }
             )
         }

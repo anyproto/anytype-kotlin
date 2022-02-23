@@ -33,6 +33,7 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
             is Command.SelectAccountScreen -> navigation.chooseAccount()
             is Command.WorkspaceScreen -> navigation.workspace()
             is Command.InvitationCodeScreen -> navigation.enterInvitationCode()
+            is Command.AboutAnalyticsScreen -> navigation.aboutAnalyticsScreen()
             is Command.ExitToInvitationCodeScreen -> navigation.exitToInvitationCodeScreen()
             is Command.SetupNewAccountScreen -> navigation.setupNewAccount()
             is Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(command.id)

@@ -16,12 +16,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:gravity="center_horizontal"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
+            android:gravity="center_horizontal"
+            android:text="@string/wait_a_bit_message"
             android:textColor="@color/text_white"
             android:textSize="12sp"
-            android:text="@string/wait_a_bit_message"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -75,6 +75,22 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/btnRetry"
+                    style="@style/DefaultSolidButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/auth_default_button_height"
+                    android:layout_marginStart="16dp"
+                    android:backgroundTint="@color/anytype_text_red"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/retry"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+                    app:layout_constraintStart_toEndOf="@+id/frameLayout"
+                    app:layout_constraintTop_toTopOf="@+id/frameLayout"
+                    tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

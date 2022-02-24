@@ -47,6 +47,7 @@ open class SetupSelectedAccountFragment : NavigationFragment<FragmentSetupSelect
         rotationAnimation.cancel()
         blinkingAnimation.cancel()
         binding.tvMigrationInProgress.gone()
+        binding.btnRetry.visible()
     }
 
     private val vm : SetupSelectedAccountViewModel by viewModels { factory }
@@ -59,6 +60,13 @@ open class SetupSelectedAccountFragment : NavigationFragment<FragmentSetupSelect
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.icon.startAnimation(rotationAnimation)
+        binding.btnRetry.setOnClickListener {
+            binding.btnRetry.gone()
+            binding.icon.startAnimation(rotationAnimation)
+            binding.tvError.gone()
+            binding.tvError.text = null
+            vm.onRetryClicked(arguments?.getString(Keys.SELECTED_ACCOUNT_ID_KEY) ?: throw IllegalStateException())
+        }
         subscribe()
     }
 

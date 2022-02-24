@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
@@ -19,7 +20,6 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -72,6 +72,10 @@ class SetupSelectedAccountViewModel(
                 }
             )
         }
+    }
+
+    fun onRetryClicked(id: Id) {
+        selectAccount(id)
     }
 
     private fun proceedWithUpdatingObjectTypesStore() {

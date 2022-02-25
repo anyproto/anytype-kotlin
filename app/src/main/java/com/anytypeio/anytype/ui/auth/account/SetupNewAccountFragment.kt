@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.databinding.FragmentSetupNewAccountBinding
@@ -40,6 +41,7 @@ class SetupNewAccountFragment : NavigationFragment<FragmentSetupNewAccountBindin
         callBack = requireActivity().onBackPressedDispatcher.addCallback(this) {}
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
         vm.state.observe(viewLifecycleOwner, this)
+        binding.btnRetry.setOnClickListener { vm.onRetryClicked() }
     }
 
     override fun onChanged(state: SetupNewAccountViewState) {
@@ -48,6 +50,7 @@ class SetupNewAccountFragment : NavigationFragment<FragmentSetupNewAccountBindin
                 binding.tvError.gone()
                 disableBackNavigation()
                 binding.icon.startAnimation(animation)
+                binding.btnRetry.invisible()
             }
             is SetupNewAccountViewState.Success -> {
                 binding.tvError.gone()
@@ -65,6 +68,12 @@ class SetupNewAccountFragment : NavigationFragment<FragmentSetupNewAccountBindin
                 animation.cancel()
                 binding.tvError.gone()
                 requireActivity().toast(state.message)
+            }
+            is SetupNewAccountViewState.ErrorNetwork -> {
+                animation.cancel()
+                binding.tvError.text = state.msg
+                binding.tvError.visible()
+                binding.btnRetry.visible()
             }
         }
     }

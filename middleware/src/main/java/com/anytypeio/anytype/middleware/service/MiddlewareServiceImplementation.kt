@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.*
+import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -57,7 +58,18 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Account.Create.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Account.Create.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Account.Create.Response.Error.Code.NET_OFFLINE -> {
+                    throw CreateAccountException.OfflineDevice
+                }
+                Account.Create.Response.Error.Code.BAD_INVITE_CODE -> {
+                    throw CreateAccountException.BadInviteCode
+                }
+                Account.Create.Response.Error.Code.NET_ERROR -> {
+                    throw CreateAccountException.NetworkError
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

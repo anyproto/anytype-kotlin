@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
@@ -25,6 +26,7 @@ sealed class SetupNewAccountViewState{
     object Success: SetupNewAccountViewState()
     data class Error(val message: String) : SetupNewAccountViewState()
     data class InvalidCodeError(val message: String) : SetupNewAccountViewState()
+    data class ErrorNetwork(val msg: String) : SetupNewAccountViewState()
 }
 
 class SetupNewAccountViewModel(
@@ -46,8 +48,12 @@ class SetupNewAccountViewModel(
         proceedWithCreatingAccount()
     }
 
-    private fun proceedWithCreatingAccount() {
+    fun onRetryClicked() {
+        _state.postValue(SetupNewAccountViewState.Loading)
+        proceedWithCreatingAccount()
+    }
 
+    private fun proceedWithCreatingAccount() {
         Timber.d("Starting setting up new account")
         val startTime = System.currentTimeMillis()
         createAccount.invoke(
@@ -60,19 +66,35 @@ class SetupNewAccountViewModel(
         ) { result ->
             result.either(
                 fnL = { error ->
-                    //todo Remove this, after adding proper error handling logic
-                    if (error.message?.contains("not found") == true) {
-                        _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invitation code!"))
-                        viewModelScope.launch {
-                            delay(300)
-                            navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))
+                    when(error) {
+                        CreateAccountException.BadInviteCode -> {
+                            _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invitation code!"))
+                            viewModelScope.launch {
+                                delay(300)
+                                navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))
+                            }
                         }
-                    } else {
-                        _state.postValue(
-                            SetupNewAccountViewState.Error(
-                                "Error while creating an account: ${error.message ?:"Unknown error"}"
+                        CreateAccountException.NetworkError -> {
+                            _state.postValue(
+                                SetupNewAccountViewState.ErrorNetwork(
+                                    "Failed to create your account due to a network error: ${error.message}"
+                                )
                             )
-                        )
+                        }
+                        CreateAccountException.OfflineDevice -> {
+                            _state.postValue(
+                                SetupNewAccountViewState.ErrorNetwork(
+                                    "Your device seems to be offline. Please, check your connection and try again."
+                                )
+                            )
+                        }
+                        else -> {
+                            _state.postValue(
+                                SetupNewAccountViewState.Error(
+                                    "Error while creating an account: ${error.message ?:"Unknown error"}"
+                                )
+                            )
+                        }
                     }
                     Timber.e(error, "Error while creating account")
                 },

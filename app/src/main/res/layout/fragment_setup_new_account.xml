@@ -62,6 +62,22 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
+                <TextView
+                    android:id="@+id/btnRetry"
+                    style="@style/DefaultSolidButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/auth_default_button_height"
+                    android:layout_marginStart="16dp"
+                    android:backgroundTint="@color/anytype_text_red"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/retry"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+                    app:layout_constraintStart_toEndOf="@+id/frameLayout"
+                    app:layout_constraintTop_toTopOf="@+id/frameLayout"
+                    tools:visibility="visible" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>

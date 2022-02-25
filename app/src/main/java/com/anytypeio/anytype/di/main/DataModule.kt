@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.database.repo.DatabaseRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
@@ -236,11 +235,6 @@ object DataModule {
     @Provides
     @Singleton
     fun provideMiddlewareService(): MiddlewareService = MiddlewareServiceImplementation()
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideDatabaseRepo(): DatabaseRepository = DatabaseDataRepository()
 
     @JvmStatic
     @Provides

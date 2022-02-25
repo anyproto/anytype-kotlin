@@ -75,13 +75,6 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
-    val profileComponent = Component {
-        main
-            .profileComponentBuilder()
-            .profileModule(ProfileModule)
-            .build()
-    }
-
     val debugSettingsComponent = Component {
         main
             .debugSettingsBuilder()

@@ -28,7 +28,6 @@ interface MainComponent {
     fun inject(app: AndroidApplication)
 
     fun authComponentBuilder(): AuthSubComponent.Builder
-    fun profileComponentBuilder(): ProfileSubComponent.Builder
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder

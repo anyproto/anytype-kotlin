@@ -235,12 +235,14 @@ class BlockMiddleware(
         context: String,
         target: String,
         name: String,
-        format: Relation.Format
+        format: Relation.Format,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> = middleware.addNewRelationToDataView(
         context = context,
         target = target,
         format = format,
-        name = name
+        name = name,
+        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun addRelationToDataView(
@@ -411,11 +413,13 @@ class BlockMiddleware(
     override suspend fun addNewRelationToObject(
         ctx: Id,
         name: String,
-        format: RelationFormat
+        format: RelationFormat,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> = middleware.addNewRelationToObject(
         ctx = ctx,
         format = format,
-        name = name
+        name = name,
+        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun deleteRelationFromObject(

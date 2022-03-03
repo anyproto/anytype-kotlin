@@ -482,5 +482,7 @@
     <string name="bookmark">Bookmark</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
+    <string name="connect_with">Connect with</string>
+    <string name="limit_object_type">Limit object type</string>
 
 </resources>

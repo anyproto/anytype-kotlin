@@ -80,7 +80,8 @@ interface BlockDataStore {
         context: Id,
         target: Id,
         name: String,
-        format: Relation.Format
+        format: Relation.Format,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload>
 
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
@@ -167,7 +168,12 @@ interface BlockDataStore {
     suspend fun relationListAvailable(ctx: Id): List<Relation>
     suspend fun addRelationToObject(ctx: Id, relation: Id) : Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload
-    suspend fun addNewRelationToObject(ctx: Id, name: String, format: RelationFormat) : Pair<Id, Payload>
+    suspend fun addNewRelationToObject(
+        ctx: Id,
+        name: String,
+        format: RelationFormat,
+        limitObjectTypes: List<Id>
+    ) : Pair<Id, Payload>
 
     suspend fun debugSync(): String
     suspend fun debugLocalStore(path: String): String

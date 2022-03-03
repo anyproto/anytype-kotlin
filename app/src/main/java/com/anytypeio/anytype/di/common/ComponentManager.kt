@@ -573,6 +573,48 @@ class ComponentManager(private val main: MainComponent) {
             .build()
     }
 
+    val relationFormatPickerObjectComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForObjectComponent
+            .get(ctx)
+            .relationFormatPickerComponent()
+            .build()
+    }
+
+    val relationFormatPickerBlockComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForObjectBlockComponent
+            .get(ctx)
+            .relationFormatPickerComponent()
+            .build()
+    }
+
+    val relationFormatPickerObjectSetComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForDataViewComponent
+            .get(ctx)
+            .relationFormatPickerComponent()
+            .build()
+    }
+
+    val limitObjectTypeComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForObjectComponent.get(ctx)
+            .limitObjectTypeComponent()
+            .module(LimitObjectTypeModule)
+            .build()
+    }
+
+    val limitObjectTypeBlockComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForObjectBlockComponent.get(ctx)
+            .limitObjectTypeComponent()
+            .module(LimitObjectTypeModule)
+            .build()
+    }
+
+    val limitObjectTypeDataViewComponent = DependentComponentMap { ctx ->
+        relationCreateFromScratchForDataViewComponent.get(ctx)
+            .limitObjectTypeComponent()
+            .module(LimitObjectTypeModule)
+            .build()
+    }
+
     val relationCreateFromScratchForObjectBlockComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)

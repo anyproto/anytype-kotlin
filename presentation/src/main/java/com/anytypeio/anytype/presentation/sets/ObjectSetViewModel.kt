@@ -311,7 +311,8 @@ class ObjectSetViewModel(
                     ctx = context,
                     target = target,
                     name = name,
-                    format = format
+                    format = format,
+                    limitObjectTypes = emptyList()
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding data view relation") },

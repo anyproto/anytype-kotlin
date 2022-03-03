@@ -16,7 +16,8 @@ class AddNewRelationToDataView(
             context = params.ctx,
             target = params.target,
             name = params.name,
-            format = params.format
+            format = params.format,
+            limitObjectTypes = params.limitObjectTypes
         )
     }
 
@@ -30,6 +31,7 @@ class AddNewRelationToDataView(
         val ctx: Id,
         val target: Id,
         val name: String,
-        val format: Relation.Format
+        val format: Relation.Format,
+        val   limitObjectTypes: List<Id>
     )
 }

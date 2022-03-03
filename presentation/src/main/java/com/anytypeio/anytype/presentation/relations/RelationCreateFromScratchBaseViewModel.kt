@@ -14,18 +14,29 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddNewRelationToObject
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
+import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
+import com.anytypeio.anytype.presentation.relations.model.StateHolder
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
+
+    abstract val createFromScratchSession: Flow<CreateFromScratchState>
+
+    val limitObjectTypeValueView : Flow<LimitObjectTypeValueView?> get() = createFromScratchSession.map { session ->
+        if (session.format == RelationFormat.OBJECT)
+            LimitObjectTypeValueView(
+                types = session.limitObjectTypes
+            )
+        else
+            null
+    }
 
     protected val name = MutableStateFlow("")
     private val notAllowedFormats = listOf(
@@ -67,18 +78,23 @@ abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
 class RelationCreateFromScratchForObjectViewModel(
     private val addNewRelationToObject: AddNewRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val createFromScratchState: StateHolder<CreateFromScratchState>
 ) : RelationCreateFromScratchBaseViewModel() {
+
+    override val createFromScratchSession get() = createFromScratchState.state
 
     fun onCreateRelationClicked(ctx: Id) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val format = views.value.first { it.isSelected }.format
+            val state = createFromScratchState.state.value
+            val format = state.format
             addNewRelationToObject(
                 AddNewRelationToObject.Params(
                     ctx = ctx,
                     format = format,
-                    name = name.value
+                    name = name.value,
+                    limitObjectTypes = state.limitObjectTypes.map { it.id }
                 )
             ).process(
                 success = { (_, payload) ->
@@ -101,14 +117,16 @@ class RelationCreateFromScratchForObjectViewModel(
     class Factory(
         private val addNewRelationToObject: AddNewRelationToObject,
         private val dispatcher: Dispatcher<Payload>,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val createFromScratchState: StateHolder<CreateFromScratchState>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForObjectViewModel(
                 dispatcher = dispatcher,
                 addNewRelationToObject = addNewRelationToObject,
-                analytics = analytics
+                analytics = analytics,
+                createFromScratchState = createFromScratchState
             ) as T
         }
     }
@@ -117,20 +135,25 @@ class RelationCreateFromScratchForObjectViewModel(
 class RelationCreateFromScratchForObjectBlockViewModel(
     private val addNewRelationToObject: AddNewRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val createFromScratchState: StateHolder<CreateFromScratchState>
 ) : RelationCreateFromScratchBaseViewModel() {
+
+    override val createFromScratchSession get() = createFromScratchState.state
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     fun onCreateRelationClicked(ctx: Id) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val format = views.value.first { it.isSelected }.format
+            val state = createFromScratchState.state.value
+            val format = state.format
             addNewRelationToObject(
                 AddNewRelationToObject.Params(
                     ctx = ctx,
                     format = format,
-                    name = name.value
+                    name = name.value,
+                    limitObjectTypes = state.limitObjectTypes.map { it.id }
                 )
             ).process(
                 success = { (relation, payload) ->
@@ -154,14 +177,16 @@ class RelationCreateFromScratchForObjectBlockViewModel(
     class Factory(
         private val addNewRelationToObject: AddNewRelationToObject,
         private val dispatcher: Dispatcher<Payload>,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val createFromScratchState: StateHolder<CreateFromScratchState>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForObjectBlockViewModel(
                 dispatcher = dispatcher,
                 addNewRelationToObject = addNewRelationToObject,
-                analytics = analytics
+                analytics = analytics,
+                createFromScratchState = createFromScratchState
             ) as T
         }
     }
@@ -177,19 +202,24 @@ class RelationCreateFromScratchForDataViewViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addNewRelationToDataView: AddNewRelationToDataView,
     private val dispatcher: Dispatcher<Payload>,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val createFromScratchState: StateHolder<CreateFromScratchState>
 ) : RelationCreateFromScratchBaseViewModel() {
+
+    override val createFromScratchSession: Flow<CreateFromScratchState> get() = createFromScratchState.state
 
     fun onCreateRelationClicked(ctx: Id, dv: Id) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val format =  views.value.first { it.isSelected }.format
+            val state = createFromScratchState.state.value
+            val format = state.format
             addNewRelationToDataView(
                 AddNewRelationToDataView.Params(
                     ctx = ctx,
                     format = format,
                     name = name.value,
-                    target = dv
+                    target = dv,
+                    limitObjectTypes = state.limitObjectTypes.map { it.id }
                 )
             ).process(
                 success = { (relation, payload) ->
@@ -243,6 +273,7 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addNewRelationToDataView: AddNewRelationToDataView,
+        private val createFromScratchState: StateHolder<CreateFromScratchState>,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
@@ -254,7 +285,8 @@ class RelationCreateFromScratchForDataViewViewModel(
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 state = state,
-                analytics = analytics
+                analytics = analytics,
+                createFromScratchState = createFromScratchState
             ) as T
         }
     }

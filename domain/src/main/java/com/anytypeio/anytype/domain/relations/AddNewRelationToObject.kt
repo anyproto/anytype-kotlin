@@ -17,7 +17,8 @@ class AddNewRelationToObject(
         repo.addNewRelationToObject(
             ctx = params.ctx,
             name = params.name,
-            format = params.format
+            format = params.format,
+            limitObjectTypes = params.limitObjectTypes
         )
     }
 
@@ -29,6 +30,7 @@ class AddNewRelationToObject(
     class Params(
         val ctx: Id,
         val name: String,
-        val format: RelationFormat
+        val format: RelationFormat,
+        val limitObjectTypes: List<Id>
     )
 }

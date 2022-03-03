@@ -1041,12 +1041,14 @@ class Middleware(
         context: String,
         target: String,
         name: String,
-        format: Relation.Format
+        format: Relation.Format,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> {
 
         val relation = MRelation(
             name = name,
-            format = format.toMiddlewareModel()
+            format = format.toMiddlewareModel(),
+            objectTypes = limitObjectTypes
         )
 
         val request = Rpc.Block.Dataview.RelationAdd.Request(
@@ -1476,12 +1478,18 @@ class Middleware(
         return response.event.toPayload()
     }
 
-    fun addNewRelationToObject(ctx: Id, format: RelationFormat, name: String): Pair<Id, Payload> {
+    fun addNewRelationToObject(
+        ctx: Id,
+        format: RelationFormat,
+        name: String,
+        limitObjectTypes: List<Id>
+    ): Pair<Id, Payload> {
         val request = Rpc.Object.RelationAdd.Request(
             contextId = ctx,
             relation = MRelation(
                 format = format.toMiddlewareModel(),
-                name = name
+                name = name,
+                objectTypes = limitObjectTypes
             )
         )
         if (BuildConfig.DEBUG) logRequest(request)

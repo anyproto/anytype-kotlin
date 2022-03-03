@@ -209,12 +209,14 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         context: Id,
         target: Id,
         name: String,
-        format: Relation.Format
+        format: Relation.Format,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> = remote.addNewRelationToDataView(
         context = context,
         target = target,
         name = name,
-        format = format
+        format = format,
+        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun addRelationToDataView(
@@ -385,11 +387,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
     override suspend fun addNewRelationToObject(
         ctx: Id,
         name: String,
-        format: RelationFormat
+        format: RelationFormat,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> = remote.addNewRelationToObject(
         ctx = ctx,
         format = format,
-        name = name
+        name = name,
+        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun deleteRelationFromObject(

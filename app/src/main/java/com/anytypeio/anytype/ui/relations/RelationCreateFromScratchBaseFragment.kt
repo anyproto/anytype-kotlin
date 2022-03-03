@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.features.relations.LimitObjectTypeAdapter
+import com.anytypeio.anytype.core_ui.features.relations.RelationConnectWithAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationFormatAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationNameInputAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -27,6 +29,10 @@ import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchBas
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectBlockViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_BLOCK
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_DV
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_OBJECT
+import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_TYPE
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.Serializable
@@ -44,11 +50,23 @@ abstract class RelationCreateFromScratchBaseFragment :
         vm.onNameChanged(it)
     }
 
+    private val connectWithAdapter = RelationConnectWithAdapter {
+        onConnectWithClicked()
+    }
+
+    private val limitObjectTypeAdapter = LimitObjectTypeAdapter {
+        onLimitObjectTypeClicked()
+    }
+
     private val relationAdapter = RelationFormatAdapter(
         onItemClick = { relation -> vm.onRelationFormatClicked(relation.format) }
     )
 
-    private val concatAdapter = ConcatAdapter(nameInputAdapter, relationAdapter)
+    private val concatAdapter = ConcatAdapter(
+        nameInputAdapter,
+        connectWithAdapter,
+        limitObjectTypeAdapter
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,11 +114,19 @@ abstract class RelationCreateFromScratchBaseFragment :
                     dismiss()
                 }
             }
+            subscribe(vm.createFromScratchSession) { session ->
+                connectWithAdapter.format = session.format
+            }
+            subscribe(vm.limitObjectTypeValueView) { view ->
+                limitObjectTypeAdapter.limitObjectTypeView = view
+            }
             subscribe(vm.toasts) { toast(it) }
         }
     }
 
     abstract fun onCreateRelationClicked()
+    abstract fun onConnectWithClicked()
+    abstract fun onLimitObjectTypeClicked()
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -124,6 +150,26 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
 
     override fun onCreateRelationClicked() {
         vm.onCreateRelationClicked(ctx)
+    }
+
+    override fun onLimitObjectTypeClicked() {
+        findNavController().navigate(
+            R.id.limitObjectTypeScreen,
+            bundleOf(
+                LimitObjectTypeFragment.CTX_KEY to ctx,
+                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_OBJECT
+            )
+        )
+    }
+
+    override fun onConnectWithClicked() {
+        findNavController().navigate(
+            R.id.relationFormatPickerScreen,
+            bundleOf(
+                RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
+                FLOW_TYPE to FLOW_OBJECT
+            )
+        )
     }
 
     override fun injectDependencies() {
@@ -151,6 +197,26 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
 
     override fun onCreateRelationClicked() {
         vm.onCreateRelationClicked(ctx = ctx, dv = dv)
+    }
+
+    override fun onLimitObjectTypeClicked() {
+        findNavController().navigate(
+            R.id.limitObjectTypeScreen,
+            bundleOf(
+                LimitObjectTypeFragment.CTX_KEY to ctx,
+                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_DV
+            )
+        )
+    }
+
+    override fun onConnectWithClicked() {
+        findNavController().navigate(
+            R.id.relationFormatPickerScreen,
+            bundleOf(
+                RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
+                FLOW_TYPE to FLOW_DV
+            )
+        )
     }
 
     override fun injectDependencies() {
@@ -202,6 +268,26 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
 
     override fun onCreateRelationClicked() {
         vm.onCreateRelationClicked(ctx)
+    }
+
+    override fun onLimitObjectTypeClicked() {
+        findNavController().navigate(
+            R.id.limitObjectTypeScreen,
+            bundleOf(
+                LimitObjectTypeFragment.CTX_KEY to ctx,
+                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_BLOCK
+            )
+        )
+    }
+
+    override fun onConnectWithClicked() {
+        findNavController().navigate(
+            R.id.relationFormatPickerScreen,
+            bundleOf(
+                RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
+                FLOW_TYPE to FLOW_BLOCK
+            )
+        )
     }
 
     override fun injectDependencies() {

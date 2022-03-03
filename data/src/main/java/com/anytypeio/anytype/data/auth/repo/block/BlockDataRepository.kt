@@ -295,12 +295,14 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         name: String,
-        format: Relation.Format
+        format: Relation.Format,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> = factory.remote.addNewRelationToDataView(
         context = context,
         target = target,
         name = name,
-        format = format
+        format = format,
+        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun addRelationToDataView(
@@ -473,11 +475,13 @@ class BlockDataRepository(
     override suspend fun addNewRelationToObject(
         ctx: Id,
         name: String,
-        format: RelationFormat
+        format: RelationFormat,
+        limitObjectTypes: List<Id>
     ): Pair<Id, Payload> = factory.remote.addNewRelationToObject(
         ctx = ctx,
         format = format,
-        name = name
+        name = name,
+        limitObjectTypes = limitObjectTypes
     )
 
     override suspend fun debugSync(): String = factory.remote.debugSync()

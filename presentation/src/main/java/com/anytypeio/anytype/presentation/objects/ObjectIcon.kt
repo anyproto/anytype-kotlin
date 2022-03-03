@@ -41,6 +41,21 @@ sealed class ObjectIcon {
                     }
                 }
             }
+            ObjectType.Layout.OBJECT_TYPE -> {
+                val img = obj.iconImage
+                val emoji = obj.iconEmoji
+                when {
+                    !img.isNullOrBlank() -> {
+                        Basic.Image(hash = builder.thumbnail(img))
+                    }
+                    !emoji.isNullOrBlank() -> {
+                        Basic.Emoji(unicode = emoji)
+                    }
+                    else -> {
+                        Basic.Avatar(obj.name.orEmpty())
+                    }
+                }
+            }
             ObjectType.Layout.PROFILE -> {
                 val img = obj.iconImage
                 if (!img.isNullOrBlank()) {

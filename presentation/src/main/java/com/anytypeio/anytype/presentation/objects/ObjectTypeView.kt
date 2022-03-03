@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.objects
 
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectType.Companion.NOTE_URL
 import com.anytypeio.anytype.core_models.ObjectType.Companion.PAGE_URL
 
@@ -10,11 +9,10 @@ sealed class ObjectTypeView {
         val id: String,
         val name: String,
         val description: String?,
-        val emoji: String?,
-        val layout: ObjectType.Layout
+        val emoji: String?
     ) : ObjectTypeView()
 
-    object Search: ObjectTypeView()
+    object Search : ObjectTypeView()
 }
 
 fun MutableList<ObjectTypeView.Item>.sortByType(

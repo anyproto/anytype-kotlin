@@ -490,4 +490,14 @@
         app:destination="@id/createObjectFragment"
         app:launchSingleTop="true" />
 
+    <dialog
+        android:id="@+id/relationFormatPickerScreen"
+        android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment"
+        android:label="Pick relation screen" />
+
+    <dialog
+        android:id="@+id/limitObjectTypeScreen"
+        android:name="com.anytypeio.anytype.ui.relations.LimitObjectTypeFragment"
+        android:label="Limit object type screen" />
+
 </navigation>

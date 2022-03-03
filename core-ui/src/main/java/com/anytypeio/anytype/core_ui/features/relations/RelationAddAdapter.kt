@@ -6,13 +6,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationCreateFromScratchNameInputBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemRelationFormatCreateFromScratchBinding
+import com.anytypeio.anytype.core_ui.databinding.*
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationFormatViewHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.DefaultRelationViewHolder
+import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 
 class RelationAddAdapter(
@@ -216,5 +215,81 @@ class RelationAddHeaderAdapter(
     companion object {
         const val EMPTY_QUERY = ""
     }
+}
+
+class RelationConnectWithAdapter(
+    private val onClick: () -> Unit
+) : RecyclerView.Adapter<RelationConnectWithAdapter.ViewHolder>() {
+
+    var format: RelationFormat = RelationFormat.LONG_TEXT
+        set(value) {
+            field = value
+            notifyItemChanged(0, format)
+        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
+        ItemRelationCreateFromScratchConnectWithBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+    ).apply {
+        itemView.setOnClickListener { onClick() }
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(format)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        holder.bind(format)
+    }
+
+    override fun getItemCount(): Int = 1
+
+    class ViewHolder(
+        val binding: ItemRelationCreateFromScratchConnectWithBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(format: RelationFormat) {
+            binding.ivRelationFormat.bind(format)
+            binding.tvRelationName.text = format.prettyName
+        }
+    }
+}
+
+class LimitObjectTypeAdapter(
+    private val onClick: () -> Unit
+) : RecyclerView.Adapter<LimitObjectTypeAdapter.ViewHolder>() {
+
+    var limitObjectTypeView : LimitObjectTypeValueView? = null
+    set(value) {
+        field = value
+        notifyDataSetChanged()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
+        ItemRelationCreateFromScratchLimitObjectTypesBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+    ).apply { itemView.setOnClickListener { onClick() } }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = limitObjectTypeView
+        if (item != null) {
+            if (item.types.isNotEmpty()) {
+                holder.binding.limitObjectTypes.text = item.types.joinToString { it.title }
+            } else {
+                holder.binding.limitObjectTypes.text = null
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = if (limitObjectTypeView != null) 1 else 0
+
+    class ViewHolder(
+        val binding: ItemRelationCreateFromScratchLimitObjectTypesBinding
+    ) : RecyclerView.ViewHolder(binding.root)
 }
 

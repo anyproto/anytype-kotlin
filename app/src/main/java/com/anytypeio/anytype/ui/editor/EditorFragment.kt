@@ -1620,27 +1620,31 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun hideSelectButton() {
-        ObjectAnimator.ofFloat(
-            binding.multiSelectTopToolbar,
-            SELECT_BUTTON_ANIMATION_PROPERTY,
-            -requireContext().dimen(R.dimen.dp_48)
-        ).apply {
-            duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
-            interpolator = DecelerateInterpolator()
-            doOnEnd { binding.topToolbar?.visible() }
-            start()
+        if (binding.multiSelectTopToolbar.translationY >= 0) {
+            ObjectAnimator.ofFloat(
+                binding.multiSelectTopToolbar,
+                SELECT_BUTTON_ANIMATION_PROPERTY,
+                -requireContext().dimen(R.dimen.dp_48)
+            ).apply {
+                duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
+                interpolator = DecelerateInterpolator()
+                doOnEnd { binding.topToolbar.visible() }
+                start()
+            }
         }
     }
 
     private fun showSelectButton() {
-        ObjectAnimator.ofFloat(
-            binding.multiSelectTopToolbar,
-            SELECT_BUTTON_ANIMATION_PROPERTY,
-            0f
-        ).apply {
-            duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
-            interpolator = DecelerateInterpolator()
-            start()
+        if (binding.multiSelectTopToolbar.translationY < 0) {
+            ObjectAnimator.ofFloat(
+                binding.multiSelectTopToolbar,
+                SELECT_BUTTON_ANIMATION_PROPERTY,
+                0f
+            ).apply {
+                duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
+                interpolator = DecelerateInterpolator()
+                start()
+            }
         }
     }
 

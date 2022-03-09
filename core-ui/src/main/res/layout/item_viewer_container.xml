@@ -19,7 +19,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHeader"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="42dp"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_grid_column_header" />

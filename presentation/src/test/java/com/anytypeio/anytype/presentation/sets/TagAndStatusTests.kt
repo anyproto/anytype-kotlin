@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.*
@@ -142,11 +141,6 @@ class TagAndStatusTests {
             name = "",
             type = "Type111",
             cells = listOf(
-                CellView.Description(
-                    id = recordId,
-                    key = Relations.NAME,
-                    text = ""
-                ),
                 CellView.Description(
                     id = recordId,
                     key = viewerRelations[0].key,
@@ -290,11 +284,6 @@ class TagAndStatusTests {
             name = "",
             type = "Type111",
             cells = listOf(
-                CellView.Description(
-                    id = recordId,
-                    key = Relations.NAME,
-                    text = ""
-                ),
                 CellView.Description(
                     id = recordId,
                     key = viewerRelations[0].key,

@@ -11,8 +11,7 @@
         style="@style/GridCellDateTextStyle"
         android:layout_gravity="center_vertical"
         android:paddingStart="@dimen/dp_16"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="@dimen/dp_12"
+        android:paddingEnd="@dimen/dp_16"
         tools:text="Cell with really long long long text" />
 
 </FrameLayout>

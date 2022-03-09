@@ -2,6 +2,6 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/divider_dv_grid"
-        android:top="12dp"
-        android:bottom="12dp" />
+        android:top="2dp"
+        android:bottom="2dp" />
 </layer-list>

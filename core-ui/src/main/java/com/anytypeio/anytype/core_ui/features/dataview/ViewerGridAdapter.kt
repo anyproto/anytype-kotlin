@@ -4,11 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -26,13 +29,26 @@ class ViewerGridAdapter(
         parent: ViewGroup,
         viewType: Int
     ): RecordHolder {
+
         val inflater = LayoutInflater.from(parent.context)
+
         val binding = ItemViewerGridRowBinding.inflate(
             inflater, parent, false
         )
+
+        val horizontalDivider = binding.root.context.drawable(R.drawable.divider_dv_horizontal_2)
+
         binding.rowCellRecycler.apply {
             adapter = ViewerGridCellsAdapter(
                 onCellClicked = onCellClicked
+            )
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.HORIZONTAL
+                ).apply {
+                    setDrawable(horizontalDivider)
+                }
             )
         }
         return RecordHolder(binding).apply {

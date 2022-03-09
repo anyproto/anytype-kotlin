@@ -3,16 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/viewer_grid_header_width"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:layout_height="match_parent">
 
     <com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
         android:id="@+id/object0"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
-        android:layout_marginStart="@dimen/dp_16"
         android:visibility="gone"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="@dimen/dp_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

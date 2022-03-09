@@ -596,18 +596,6 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
     filterBy: List<String>
 ): List<ColumnView> {
     val columns = mutableListOf<ColumnView>()
-    // Adding virtual name column, whose rows should not have any content.
-    columns.add(
-        ColumnView(
-            Relations.NAME,
-            format = ColumnView.Format.SHORT_TEXT,
-            isVisible = true,
-            isHidden = false,
-            isReadOnly = false,
-            text = "",
-            width = 0
-        )
-    )
     this.filter { it.key !in filterBy }
         .forEach { viewerRelation ->
             relations

@@ -65,6 +65,8 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="@dimen/dp_10"
         tools:listitem="@layout/item_document_relation_default" />
 

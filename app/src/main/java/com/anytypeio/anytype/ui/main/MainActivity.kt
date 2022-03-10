@@ -7,13 +7,13 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.databinding.ActivityMainBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -22,12 +22,9 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
-
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
-
-    private lateinit var binding: ActivityMainBinding
 
     private val vm by viewModels<MainViewModel> { factory }
 
@@ -39,9 +36,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     @Inject
     lateinit var factory: MainViewModelFactory
 
+    val container : FragmentContainerView get() = findViewById(R.id.fragment)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         inject()
         if (savedInstanceState != null) vm.onRestore()
         with(lifecycleScope) {
@@ -70,27 +68,27 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         when (wallpaper) {
             is Wallpaper.Gradient -> {
                 when (wallpaper.code) {
-                    CoverGradient.YELLOW -> binding.fragment.setBackgroundResource(R.drawable.cover_gradient_yellow)
-                    CoverGradient.RED -> binding.fragment.setBackgroundResource(R.drawable.cover_gradient_red)
-                    CoverGradient.BLUE -> binding.fragment.setBackgroundResource(R.drawable.cover_gradient_blue)
-                    CoverGradient.TEAL -> binding.fragment.setBackgroundResource(R.drawable.cover_gradient_teal)
-                    CoverGradient.PINK_ORANGE -> binding.fragment.setBackgroundResource(R.drawable.wallpaper_gradient_1)
-                    CoverGradient.BLUE_PINK -> binding.fragment.setBackgroundResource(R.drawable.wallpaper_gradient_2)
-                    CoverGradient.GREEN_ORANGE -> binding.fragment.setBackgroundResource(R.drawable.wallpaper_gradient_3)
-                    CoverGradient.SKY -> binding.fragment.setBackgroundResource(R.drawable.wallpaper_gradient_4)
+                    CoverGradient.YELLOW -> container.setBackgroundResource(R.drawable.cover_gradient_yellow)
+                    CoverGradient.RED -> container.setBackgroundResource(R.drawable.cover_gradient_red)
+                    CoverGradient.BLUE -> container.setBackgroundResource(R.drawable.cover_gradient_blue)
+                    CoverGradient.TEAL -> container.setBackgroundResource(R.drawable.cover_gradient_teal)
+                    CoverGradient.PINK_ORANGE -> container.setBackgroundResource(R.drawable.wallpaper_gradient_1)
+                    CoverGradient.BLUE_PINK -> container.setBackgroundResource(R.drawable.wallpaper_gradient_2)
+                    CoverGradient.GREEN_ORANGE -> container.setBackgroundResource(R.drawable.wallpaper_gradient_3)
+                    CoverGradient.SKY -> container.setBackgroundResource(R.drawable.wallpaper_gradient_4)
                 }
             }
             is Wallpaper.Default -> {
-                binding.fragment.setBackgroundResource(R.color.default_dashboard_background_color)
+                container.setBackgroundResource(R.color.default_dashboard_background_color)
             }
             is Wallpaper.Color -> {
                 val color = WallpaperColor.values().find { it.code == wallpaper.code }
                 if (color != null) {
-                    binding.fragment.setBackgroundColor(Color.parseColor(color.hex))
+                    container.setBackgroundColor(Color.parseColor(color.hex))
                 }
             }
             is Wallpaper.Image -> {
-                binding.fragment.setBackgroundResource(R.color.default_dashboard_background_color)
+                container.setBackgroundResource(R.color.default_dashboard_background_color)
             }
         }
     }

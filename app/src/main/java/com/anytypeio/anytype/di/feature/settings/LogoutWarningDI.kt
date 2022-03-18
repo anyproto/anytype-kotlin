@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.settings
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -29,8 +30,9 @@ object LogoutWarningModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        logout: Logout
-    ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(logout = logout)
+        logout: Logout,
+        analytics: Analytics
+    ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(logout, analytics)
 
     @JvmStatic
     @Provides

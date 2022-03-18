@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
@@ -61,9 +62,7 @@ class MainViewModel(
             analytics = analytics,
             startTime = start,
             middleTime = middle,
-            renderTime = middle,
-            eventName = EventsDictionary.ACCOUNT_SELECT,
-            props = Props(mapOf(EventsDictionary.PROP_ACCOUNT_ID to id))
+            eventName = openAccount
         )
     }
 }

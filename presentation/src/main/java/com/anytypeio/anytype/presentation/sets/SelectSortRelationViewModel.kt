@@ -3,11 +3,13 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddSortEvent
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,8 @@ class SelectSortRelationViewModel(
     private val objectSetState: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
-    private val addDataViewViewerSort: AddDataViewViewerSort
+    private val addDataViewViewerSort: AddDataViewViewerSort,
+    private val analytics: Analytics
 ) : SearchRelationViewModel(objectSetState, session) {
 
     fun onRelationClicked(ctx: Id, relation: SimpleRelationView) {
@@ -34,7 +37,12 @@ class SelectSortRelationViewModel(
                     viewer = objectSetState.value.viewerById(session.currentViewerId)
                 )
             ).process(
-                success = { dispatcher.send(it).also { isDismissed.emit(true) } },
+                success = {
+                    dispatcher.send(it).also {
+                        sendAnalyticsAddSortEvent(analytics)
+                        isDismissed.emit(true)
+                    }
+                },
                 failure = {
                     Timber.e(it, "Error while adding a sort").also {
                         _toasts.emit(USE_CASE_ERROR)
@@ -48,7 +56,8 @@ class SelectSortRelationViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
-        private val addDataViewViewerSort: AddDataViewViewerSort
+        private val addDataViewViewerSort: AddDataViewViewerSort,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -56,7 +65,8 @@ class SelectSortRelationViewModel(
                 objectSetState = state,
                 session = session,
                 dispatcher = dispatcher,
-                addDataViewViewerSort = addDataViewViewerSort
+                addDataViewViewerSort = addDataViewViewerSort,
+                analytics = analytics
             ) as T
         }
     }

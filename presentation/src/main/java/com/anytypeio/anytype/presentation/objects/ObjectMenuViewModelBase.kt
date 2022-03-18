@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectLock
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectUnlock
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
@@ -16,6 +18,9 @@ import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +33,8 @@ abstract class ObjectMenuViewModelBase(
     private val setObjectIsArchived: SetObjectIsArchived,
     private val addToFavorite: AddToFavorite,
     private val removeFromFavorite: RemoveFromFavorite,
-    protected val dispatcher: Dispatcher<Payload>
+    protected val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
@@ -72,6 +78,7 @@ abstract class ObjectMenuViewModelBase(
             ).process(
                 failure = { Timber.e(it, "Error while removing from favorite.") },
                 success = {
+                    sendAnalyticsRemoveFromFavoritesEvent(analytics)
                     dispatcher.send(it)
                     _toasts.emit(REMOVE_FROM_FAVORITE_SUCCESS_MSG).also {
                         isDismissed.value = true
@@ -90,6 +97,7 @@ abstract class ObjectMenuViewModelBase(
             ).process(
                 failure = { Timber.e(it, "Error while adding to favorites.") },
                 success = {
+                    sendAnalyticsAddToFavoritesEvent(analytics)
                     dispatcher.send(it)
                     _toasts.emit(ADD_TO_FAVORITE_SUCCESS_MSG).also {
                         isDismissed.value = true
@@ -113,6 +121,7 @@ abstract class ObjectMenuViewModelBase(
                 },
                 success = {
                     if (isArchived) {
+                        sendAnalyticsMoveToBinEvent(analytics)
                         _toasts.emit(ARCHIVE_OBJECT_SUCCESS_MSG)
                     } else {
                         _toasts.emit(RESTORE_OBJECT_SUCCESS_MSG)
@@ -161,7 +170,8 @@ class ObjectMenuViewModel(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    dispatcher = dispatcher
+    dispatcher = dispatcher,
+    analytics = analytics
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -215,10 +225,6 @@ class ObjectMenuViewModel(
                 }
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_OBJ_MENU_ICON
-        )
     }
 
     override fun onCoverClicked(ctx: Id) {
@@ -237,10 +243,6 @@ class ObjectMenuViewModel(
                 }
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_OBJ_MENU_COVER
-        )
     }
 
     override fun onLayoutClicked(ctx: Id) {
@@ -259,10 +261,6 @@ class ObjectMenuViewModel(
                 }
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_OBJ_MENU_LAYOUT
-        )
     }
 
     override fun onRelationsClicked() {
@@ -273,10 +271,6 @@ class ObjectMenuViewModel(
                 commands.emit(Command.OpenObjectRelations)
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_OBJ_MENU_RELATIONS
-        )
     }
 
     override fun onHistoryClicked() {
@@ -287,30 +281,14 @@ class ObjectMenuViewModel(
         when (action) {
             ObjectAction.DELETE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_OBJ_MENU_ARCHIVE
-                )
             }
             ObjectAction.RESTORE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_OBJ_MENU_RESTORE
-                )
             }
             ObjectAction.ADD_TO_FAVOURITE -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_OBJ_MENU_FAVORITE
-                )
                 proceedWithAddingToFavorites(ctx)
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_OBJ_MENU_UNFAVORITE
-                )
                 proceedWithRemovingFromFavorites(ctx)
             }
             ObjectAction.UNLOCK -> {
@@ -347,10 +325,18 @@ class ObjectMenuViewModel(
                     success = {
                         dispatcher.send(it)
                         if (isLocked) {
+                            sendEvent(
+                                analytics = analytics,
+                                eventName = objectLock
+                            )
                             _toasts.emit(OBJECT_IS_LOCKED_MSG).also {
                                 isDismissed.value = true
                             }
                         } else {
+                            sendEvent(
+                                analytics = analytics,
+                                eventName = objectUnlock
+                            )
                             _toasts.emit(OBJECT_IS_UNLOCKED_MSG).also {
                                 isDismissed.value = true
                             }
@@ -406,7 +392,8 @@ class ObjectSetMenuViewModel(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
     removeFromFavorite = removeFromFavorite,
-    dispatcher = dispatcher
+    dispatcher = dispatcher,
+    analytics = analytics
 ) {
 
     private val objectRestrictions = state.value.objectRestrictions
@@ -440,10 +427,6 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetIcons)
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SET_MENU_ICON
-        )
     }
 
     override fun onCoverClicked(ctx: Id) {
@@ -454,10 +437,6 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetCover)
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SET_MENU_COVER
-        )
     }
 
     override fun onLayoutClicked(ctx: Id) {
@@ -468,10 +447,6 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetLayout)
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SET_MENU_LAYOUT
-        )
     }
 
     override fun onRelationsClicked() {
@@ -482,10 +457,6 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetRelations)
             }
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SET_MENU_RELATIONS
-        )
     }
 
     override fun onHistoryClicked() {
@@ -514,31 +485,15 @@ class ObjectSetMenuViewModel(
         when (action) {
             ObjectAction.DELETE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_SET_MENU_ARCHIVE
-                )
             }
             ObjectAction.RESTORE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_SET_MENU_RESTORE
-                )
             }
             ObjectAction.ADD_TO_FAVOURITE -> {
                 proceedWithAddingToFavorites(ctx)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_SET_MENU_FAVORITE
-                )
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
                 proceedWithRemovingFromFavorites(ctx)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_SET_MENU_UNFAVORITE
-                )
             }
             else -> {
                 viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.DialogDashboardKeychainPhraseBinding
@@ -50,6 +51,7 @@ class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<Vi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vm.sendShowEvent(EventsDictionary.Type.screenSettings)
         setBlur()
         binding.keychain.setOnClickListener {
             if (binding.keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
@@ -57,6 +59,7 @@ class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<Vi
             }
         }
         binding.btnCopy.setOnClickListener {
+            vm.onCopyClickedFromScreenSettings()
             copyMnemonicToClipboard()
         }
         binding.root.setOnClickListener {

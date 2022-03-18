@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -37,13 +38,15 @@ object ViewerFilterModule {
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        analytics: Analytics
     ): ViewerFilterViewModel.Factory = ViewerFilterViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        analytics = analytics
     )
 }
 

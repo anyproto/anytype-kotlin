@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -34,9 +35,11 @@ object KeychainPhraseModule {
     @Provides
     @PerScreen
     fun provideKeychainPhraseViewModelFactory(
-        getMnemonic: GetMnemonic
+        getMnemonic: GetMnemonic,
+        analytics: Analytics
     ) = KeychainPhraseViewModelFactory(
-        getMnemonic = getMnemonic
+        getMnemonic = getMnemonic,
+        analytics = analytics
     )
 
     @JvmStatic

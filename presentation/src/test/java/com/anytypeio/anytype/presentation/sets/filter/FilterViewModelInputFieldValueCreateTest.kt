@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets.filter
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.base.Either
@@ -42,6 +43,9 @@ class FilterViewModelInputFieldValueCreateTest {
 
     @Mock
     lateinit var searchObjects: SearchObjects
+
+    @Mock
+    lateinit var analytics: Analytics
 
     private lateinit var viewModel: FilterViewModel
     private lateinit var urlBuilder: UrlBuilder
@@ -160,7 +164,8 @@ class FilterViewModelInputFieldValueCreateTest {
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
             searchObjects = searchObjects,
-            objectTypesProvider = objectTypesProvider
+            objectTypesProvider = objectTypesProvider,
+            analytics = analytics
         )
     }
 

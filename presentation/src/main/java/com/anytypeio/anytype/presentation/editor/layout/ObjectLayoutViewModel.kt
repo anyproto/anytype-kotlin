@@ -3,6 +3,11 @@ package com.anytypeio.anytype.presentation.editor.layout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
@@ -10,6 +15,7 @@ import com.anytypeio.anytype.domain.layout.GetSupportedObjectLayouts
 import com.anytypeio.anytype.domain.layout.SetObjectLayout
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectLayoutChangeEvent
 import com.anytypeio.anytype.presentation.mapper.toObjectLayout
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
@@ -25,7 +31,8 @@ class ObjectLayoutViewModel(
     private val setObjectLayout: SetObjectLayout,
     private val getSupportedObjectLayouts: GetSupportedObjectLayouts,
     private val dispatcher: Dispatcher<Payload>,
-    private val storage: Editor.Storage
+    private val storage: Editor.Storage,
+    private val analytics: Analytics
 ): BaseViewModel() {
 
     private var supportedObjectLayouts = MutableStateFlow<List<ObjectLayoutView>>(emptyList())
@@ -75,9 +82,10 @@ class ObjectLayoutViewModel(
         ctx: Id,
         layoutView: ObjectLayoutView
     ) {
+        val layout = layoutView.toObjectLayout()
         val params = SetObjectLayout.Params(
             ctx = ctx,
-            layout = layoutView.toObjectLayout()
+            layout = layout
         )
         viewModelScope.launch {
             setObjectLayout(params).process(
@@ -85,7 +93,10 @@ class ObjectLayoutViewModel(
                     Timber.e(it, ERROR_MESSAGE)
                     _toasts.emit(ERROR_MESSAGE)
                 },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    analytics.sendAnalyticsObjectLayoutChangeEvent(layout.name)
+                }
             )
         }
     }
@@ -94,7 +105,8 @@ class ObjectLayoutViewModel(
         private val setObjectLayout: SetObjectLayout,
         private val getSupportedObjectLayouts: GetSupportedObjectLayouts,
         private val dispatcher: Dispatcher<Payload>,
-        private val storage: Editor.Storage
+        private val storage: Editor.Storage,
+        private val analytics: Analytics
     ): ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -102,7 +114,8 @@ class ObjectLayoutViewModel(
                 dispatcher = dispatcher,
                 setObjectLayout = setObjectLayout,
                 getSupportedObjectLayouts = getSupportedObjectLayouts,
-                storage = storage
+                storage = storage,
+                analytics = analytics
             ) as T
         }
     }

@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -100,7 +99,7 @@ class SetupNewAccountViewModel(
                 },
                 fnR = { account ->
                     updateUserProps(account.id)
-                    sendAuthEvent(startTime, account.id)
+                    sendAuthEvent(startTime)
                     _state.postValue(SetupNewAccountViewState.Success)
                     proceedWithUpdatingObjectTypesStore()
                 }
@@ -133,15 +132,12 @@ class SetupNewAccountViewModel(
         )
     }
 
-    private fun sendAuthEvent(start: Long, id: String) {
-        val middle = System.currentTimeMillis()
+    private fun sendAuthEvent(start: Long) {
         viewModelScope.sendEvent(
             analytics = analytics,
             startTime = start,
-            middleTime = middle,
-            renderTime = middle,
-            eventName = EventsDictionary.ACCOUNT_CREATE,
-            props = Props(mapOf(EventsDictionary.PROP_ACCOUNT_ID to id))
+            middleTime = System.currentTimeMillis(),
+            eventName = EventsDictionary.createAccount
         )
     }
 }

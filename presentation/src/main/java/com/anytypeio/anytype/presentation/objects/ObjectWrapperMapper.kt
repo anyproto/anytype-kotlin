@@ -33,7 +33,7 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectType>
 ): List<LinkToItemView.Object> =
-    this.map { obj ->
+    this.mapIndexed { index, obj ->
         val typeUrl = obj.getProperType()
         val layout = obj.getProperLayout()
         LinkToItemView.Object(
@@ -46,7 +46,8 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
                 obj = obj,
                 layout = layout,
                 builder = urlBuilder
-            )
+            ),
+            position = index
         )
     }
 

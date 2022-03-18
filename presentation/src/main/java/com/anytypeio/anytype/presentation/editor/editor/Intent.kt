@@ -18,11 +18,6 @@ sealed class Intent {
             val onRedoExhausted: () -> Unit
         ) : Document()
 
-        class UpdateTitle(
-            val context: Id,
-            val title: String
-        ) : Document()
-
         class Move(
             val context: Id,
             val target: Id,
@@ -116,7 +111,8 @@ sealed class Intent {
             val context: Id,
             val block: Block,
             val range: IntRange,
-            val isToggled: Boolean?
+            val isToggled: Boolean?,
+            val style: Block.Content.Text.Style
         ) : Text()
 
         class Merge(
@@ -135,7 +131,8 @@ sealed class Intent {
         class TurnInto(
             val context: Id,
             val targets: List<Id>,
-            val style: Block.Content.Text.Style
+            val style: Block.Content.Text.Style,
+            val analyticsContext: String?
         ) : Text()
 
         class UpdateCheckbox(
@@ -168,14 +165,16 @@ sealed class Intent {
 
         class DownloadFile(
             val url: String,
-            val name: String
+            val name: String,
+            val type: Block.Content.File.Type?
         ) : Media()
 
         class Upload(
             val context: Id,
             val target: Id,
             val url: String,
-            val filePath: String
+            val filePath: String,
+            val mediaType: String
         ) : Media()
     }
 

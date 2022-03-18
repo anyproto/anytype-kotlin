@@ -689,11 +689,6 @@ open class ObjectSetFragment :
         vm.onStart(ctx)
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
-
     override fun onStop() {
         super.onStop()
         vm.onStop()

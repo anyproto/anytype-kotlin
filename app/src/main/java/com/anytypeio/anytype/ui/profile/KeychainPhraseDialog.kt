@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -28,6 +29,7 @@ class KeychainPhraseDialog : BaseBottomSheetFragment<DialogKeychainPhraseBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vm.sendShowEvent(EventsDictionary.Type.firstSession)
         setBlur()
         binding.keychain.setOnClickListener {
             if (binding.keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
@@ -35,6 +37,7 @@ class KeychainPhraseDialog : BaseBottomSheetFragment<DialogKeychainPhraseBinding
             }
         }
         binding.btnCopy.setOnClickListener {
+            vm.onCopyClickedFromLogout()
             copyMnemonicToClipboard()
         }
         binding.root.setOnClickListener {

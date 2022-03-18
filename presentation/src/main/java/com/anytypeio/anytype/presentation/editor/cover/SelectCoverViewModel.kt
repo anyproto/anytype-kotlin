@@ -3,12 +3,15 @@ package com.anytypeio.anytype.presentation.editor.cover
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.cover.*
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveCoverEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetCoverEvent
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -20,7 +23,8 @@ abstract class SelectCoverViewModel(
     private val setCoverGradient: SetDocCoverGradient,
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
-    private val getCoverGradientCollection: GetCoverGradientCollection
+    private val getCoverGradientCollection: GetCoverGradientCollection,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<DocCoverGalleryView>>(emptyList())
@@ -64,6 +68,7 @@ abstract class SelectCoverViewModel(
                     Timber.e(it, "Error while setting doc cover image")
                 },
                 success = {
+                    sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
                     isDismissed.emit(true)
                 }
@@ -84,6 +89,7 @@ abstract class SelectCoverViewModel(
                     Timber.e(it, "Error while setting doc cover image")
                 },
                 success = {
+                    sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
                     isDismissed.emit(true)
                 }
@@ -97,6 +103,7 @@ abstract class SelectCoverViewModel(
                 RemoveDocCover.Params(ctx)
             ).process(
                 success = {
+                    sendAnalyticsRemoveCoverEvent(analytics)
                     dispatcher.send(it)
                     isDismissed.emit(true)
                 },
@@ -124,6 +131,7 @@ abstract class SelectCoverViewModel(
                     Timber.e(it, "Error while updating document's cover color")
                 },
                 success = {
+                    sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
                     onDetailsColor(ctx, color)
                     isDismissed.emit(true)
@@ -145,6 +153,7 @@ abstract class SelectCoverViewModel(
                     Timber.e(it, "Error while updating document's cover gradient")
                 },
                 success = {
+                    sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
                     onDetailsGradient(ctx, gradient)
                     isDismissed.emit(true)
@@ -164,14 +173,16 @@ class SelectCoverObjectViewModel(
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
     private val details: DetailModificationManager,
-    private val getCoverGradientCollection: GetCoverGradientCollection
+    private val getCoverGradientCollection: GetCoverGradientCollection,
+    private val analytics: Analytics
 ) : SelectCoverViewModel(
     setCoverColor = setCoverColor,
     setCoverImage = setCoverImage,
     setCoverGradient = setCoverGradient,
     removeCover = removeCover,
     dispatcher = dispatcher,
-    getCoverGradientCollection = getCoverGradientCollection
+    getCoverGradientCollection = getCoverGradientCollection,
+    analytics = analytics
 ) {
 
     override fun onDetailsColor(ctx: Id, color: CoverColor) {
@@ -199,7 +210,8 @@ class SelectCoverObjectViewModel(
         private val removeCover: RemoveDocCover,
         private val dispatcher: Dispatcher<Payload>,
         private val details: DetailModificationManager,
-        private val getCoverGradientCollection: GetCoverGradientCollection
+        private val getCoverGradientCollection: GetCoverGradientCollection,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -211,7 +223,8 @@ class SelectCoverObjectViewModel(
                 removeCover = removeCover,
                 dispatcher = dispatcher,
                 details = details,
-                getCoverGradientCollection = getCoverGradientCollection
+                getCoverGradientCollection = getCoverGradientCollection,
+                analytics = analytics
             ) as T
         }
     }
@@ -223,14 +236,16 @@ class SelectCoverObjectSetViewModel(
     private val setCoverGradient: SetDocCoverGradient,
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
-    private val getCoverGradientCollection: GetCoverGradientCollection
+    private val getCoverGradientCollection: GetCoverGradientCollection,
+    private val analytics: Analytics
 ) : SelectCoverViewModel(
     setCoverColor = setCoverColor,
     setCoverImage = setCoverImage,
     setCoverGradient = setCoverGradient,
     removeCover = removeCover,
     dispatcher = dispatcher,
-    getCoverGradientCollection = getCoverGradientCollection
+    getCoverGradientCollection = getCoverGradientCollection,
+    analytics = analytics
 ) {
 
     override fun onDetailsColor(ctx: Id, color: CoverColor) {}
@@ -242,7 +257,8 @@ class SelectCoverObjectSetViewModel(
         private val setCoverGradient: SetDocCoverGradient,
         private val removeCover: RemoveDocCover,
         private val dispatcher: Dispatcher<Payload>,
-        private val getCoverGradientCollection: GetCoverGradientCollection
+        private val getCoverGradientCollection: GetCoverGradientCollection,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -253,7 +269,8 @@ class SelectCoverObjectSetViewModel(
                 setCoverGradient = setCoverGradient,
                 removeCover = removeCover,
                 dispatcher = dispatcher,
-                getCoverGradientCollection = getCoverGradientCollection
+                getCoverGradientCollection = getCoverGradientCollection,
+                analytics = analytics
             ) as T
         }
     }

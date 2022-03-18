@@ -11,7 +11,7 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 class MentionAdapter(
     private var data: ArrayList<DefaultObjectView>,
     private var mentionFilter: String = "",
-    private val onClicked: (DefaultObjectView, String) -> Unit,
+    private val onClicked: (DefaultObjectView, String, Int) -> Unit,
     private val newClicked: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -53,7 +53,7 @@ class MentionAdapter(
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            onClicked(data[pos - 1], mentionFilter)
+                            onClicked(data[pos - 1], mentionFilter, pos)
                         }
                     }
                 }

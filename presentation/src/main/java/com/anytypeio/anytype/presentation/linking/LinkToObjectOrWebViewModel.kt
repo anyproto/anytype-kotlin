@@ -3,12 +3,18 @@ package com.anytypeio.anytype.presentation.linking
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toLinkToView
@@ -63,6 +69,7 @@ class LinkToObjectOrWebViewModel(
                     commands.emit(Command.CreateObject(item.title))
                 }
                 is LinkToItemView.Object -> {
+                    onObjectClickEvent(item.position)
                     commands.emit(Command.SetObjectLink(item.id))
                 }
                 is LinkToItemView.WebItem -> {
@@ -71,6 +78,14 @@ class LinkToObjectOrWebViewModel(
                 else -> Unit
             }
         }
+    }
+
+    private fun onObjectClickEvent(pos: Int) {
+        viewModelScope.sendAnalyticsSearchResultEvent(
+            analytics = analytics,
+            pos = pos + 1,
+            length = userInput.value.length
+        )
     }
 
     private fun getObjectTypes() {
@@ -93,6 +108,7 @@ class LinkToObjectOrWebViewModel(
     private fun startProcessingSearchQuery() {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
+                sendSearchQueryEvent(query.length)
                 val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects -> setObjects(objects) },
@@ -172,6 +188,15 @@ class LinkToObjectOrWebViewModel(
         )
     }
 
+    private fun sendSearchQueryEvent(length: Int) {
+        viewModelScope.sendAnalyticsSearchQueryEvent(
+            analytics = analytics,
+            route = EventsDictionary.Routes.searchMenu,
+            length = length
+        )
+    }
+
+
     sealed class Command {
         object Exit : Command()
         data class SetWebLink(val url: String) : Command()
@@ -203,6 +228,7 @@ sealed class LinkToItemView {
         val subtitle: String?,
         val type: String? = null,
         val layout: ObjectType.Layout? = null,
-        val icon: ObjectIcon = ObjectIcon.None
+        val icon: ObjectIcon = ObjectIcon.None,
+        val position: Int = 0
     ) : LinkToItemView()
 }

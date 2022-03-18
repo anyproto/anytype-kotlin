@@ -5,19 +5,17 @@ import com.anytypeio.anytype.analytics.props.Props
 interface EventAnalytics {
 
     val name: String
-    val prettified: String?
     val props: Props
 
     data class Duration(
-        val start: Long?,
-        val middleware: Long?,
-        val render: Long? = null
+        var start: Long?,
+        var middleware: Long?,
+        var render: Long? = null
     )
 
     data class Anytype(
         override val name: String,
-        override val prettified: String? = null,
         override val props: Props = Props.empty(),
-        val duration: Duration?
+        val duration: Duration? = null
     ) : EventAnalytics
 }

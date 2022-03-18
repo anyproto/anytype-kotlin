@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewerSort
@@ -46,6 +47,9 @@ class SearchRelationViewModelTest {
 
     @Mock
     lateinit var addDataViewViewerSort: AddDataViewViewerSort
+
+    @Mock
+    lateinit var analytics: Analytics
 
     private val dispatcher = Dispatcher.Default<Payload>()
 
@@ -249,7 +253,8 @@ class SearchRelationViewModelTest {
             objectSetState = state,
             session = session,
             addDataViewViewerSort = addDataViewViewerSort,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            analytics = analytics
         )
     }
 }

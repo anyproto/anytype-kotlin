@@ -724,7 +724,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun onObjectTypePicked(id: Id?) {
-        vm.onObjectTypeChanged(id)
+        vm.onObjectTypeChanged(id = id)
     }
 
     private fun execute(event: EventWrapper<Command>) {

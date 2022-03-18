@@ -2,13 +2,17 @@ package com.anytypeio.anytype.presentation.auth
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModel
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import kotlin.test.assertNotEquals
 
 class CreateAccountViewModelTest {
@@ -16,13 +20,20 @@ class CreateAccountViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
+
+    @Mock
+    lateinit var analytics: Analytics
+
     private lateinit var vm: CreateAccountViewModel
 
     private val session = Session()
 
     @Before
     fun setup() {
-        vm = CreateAccountViewModel(session)
+        MockitoAnnotations.openMocks(this)
+        vm = CreateAccountViewModel(session, analytics)
     }
 
     @Test

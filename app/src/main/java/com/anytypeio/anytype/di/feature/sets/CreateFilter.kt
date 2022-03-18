@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.sets;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -44,7 +45,8 @@ object CreateFilterModule {
         updateDataViewViewer: UpdateDataViewViewer,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,
-        objectTypesProvider: ObjectTypesProvider
+        objectTypesProvider: ObjectTypesProvider,
+        analytics: Analytics
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectSetState = state,
         session = session,
@@ -52,6 +54,7 @@ object CreateFilterModule {
         updateDataViewViewer = updateDataViewViewer,
         searchObjects = searchObjects,
         urlBuilder = urlBuilder,
-        objectTypesProvider = objectTypesProvider
+        objectTypesProvider = objectTypesProvider,
+        analytics = analytics
     )
 }

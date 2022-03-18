@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
@@ -68,7 +69,8 @@ object SelectCoverObjectModule {
         removeCover: RemoveDocCover,
         dispatcher: Dispatcher<Payload>,
         details: DetailModificationManager,
-        getCoverGradientCollection: GetCoverGradientCollection
+        getCoverGradientCollection: GetCoverGradientCollection,
+        analytics: Analytics
     ): SelectCoverObjectViewModel.Factory = SelectCoverObjectViewModel.Factory(
         setCoverImage = setCoverImage,
         setCoverColor = setCoverColor,
@@ -76,7 +78,8 @@ object SelectCoverObjectModule {
         removeCover = removeCover,
         dispatcher = dispatcher,
         details = details,
-        getCoverGradientCollection = getCoverGradientCollection
+        getCoverGradientCollection = getCoverGradientCollection,
+        analytics = analytics
     )
 
     @JvmStatic
@@ -138,14 +141,16 @@ object SelectCoverObjectSetModule {
         setCoverGradient: SetDocCoverGradient,
         removeCover: RemoveDocCover,
         dispatcher: Dispatcher<Payload>,
-        getCoverGradientCollection: GetCoverGradientCollection
+        getCoverGradientCollection: GetCoverGradientCollection,
+        analytics: Analytics
     ): SelectCoverObjectSetViewModel.Factory = SelectCoverObjectSetViewModel.Factory(
         setCoverImage = setCoverImage,
         setCoverColor = setCoverColor,
         setCoverGradient = setCoverGradient,
         removeCover = removeCover,
         dispatcher = dispatcher,
-        getCoverGradientCollection = getCoverGradientCollection
+        getCoverGradientCollection = getCoverGradientCollection,
+        analytics = analytics
     )
 
     @JvmStatic

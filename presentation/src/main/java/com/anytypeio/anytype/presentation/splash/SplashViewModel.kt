@@ -3,9 +3,7 @@ package com.anytypeio.anytype.presentation.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.ACCOUNT_SELECT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_ACCOUNT_ID
-import com.anytypeio.anytype.analytics.base.EventsDictionary.WALLET_RECOVER
+import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
@@ -119,7 +117,6 @@ class SplashViewModel(
             launchWallet(BaseUseCase.None).either(
                 fnL = { retryLaunchingWallet() },
                 fnR = {
-                    sendEvent(startTime, WALLET_RECOVER, Props.empty())
                     proceedWithLaunchingAccount()
                 }
             )
@@ -135,7 +132,6 @@ class SplashViewModel(
                     commands.emit(Command.Error(e.toString()))
                 },
                 success = {
-                    sendEvent(startTime, WALLET_RECOVER, Props.empty())
                     proceedWithLaunchingAccount()
                 }
             )
@@ -148,8 +144,8 @@ class SplashViewModel(
             launchAccount(BaseUseCase.None).proceed(
                 success = { accountId ->
                     updateUserProps(accountId)
-                    val props = Props(mapOf(PROP_ACCOUNT_ID to accountId))
-                    sendEvent(startTime, ACCOUNT_SELECT, props)
+                    val props = Props.empty()
+                    sendEvent(startTime, openAccount, props)
                     proceedWithUpdatingObjectTypesStore()
                 },
                 failure = { e ->
@@ -236,7 +232,6 @@ class SplashViewModel(
             analytics = analytics,
             startTime = startTime,
             middleTime = middleTime,
-            renderTime = middleTime,
             eventName = event,
             props = props
         )

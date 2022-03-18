@@ -1,6 +1,12 @@
 package com.anytypeio.anytype.presentation.relations
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationFeature
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfeature
+import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -15,6 +21,7 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -30,7 +37,8 @@ class RelationListViewModel(
     private val detailModificationManager: DetailModificationManager,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val deleteRelationFromObject: DeleteRelationFromObject
+    private val deleteRelationFromObject: DeleteRelationFromObject,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val isEditMode = MutableStateFlow(false)
@@ -43,6 +51,10 @@ class RelationListViewModel(
 
     fun onStartListMode(ctx: Id) {
         isInAddMode.value = false
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = relationsScreenShow
+        )
         jobs += viewModelScope.launch {
             stores.relations.stream().combine(stores.details.stream()) { relations, details ->
                 val detail = details.details[ctx]
@@ -102,7 +114,13 @@ class RelationListViewModel(
                         )
                     ).process(
                         failure = { Timber.e(it, "Error while removing from featured relations") },
-                        success = { dispatcher.send(it) }
+                        success = {
+                            dispatcher.send(it)
+                            sendEvent(
+                                analytics = analytics,
+                                eventName = objectRelationUnfeature
+                            )
+                        }
                     )
                 }
             } else {
@@ -114,7 +132,13 @@ class RelationListViewModel(
                         )
                     ).process(
                         failure = { Timber.e(it, "Error while adding to featured relations") },
-                        success = { dispatcher.send(it) }
+                        success = {
+                            dispatcher.send(it)
+                            sendEvent(
+                                analytics = analytics,
+                                eventName = objectRelationFeature
+                            )
+                        }
                     )
                 }
             }
@@ -225,7 +249,10 @@ class RelationListViewModel(
                     value = !view.isChecked
                 )
             ).process(
-                success = { dispatcher.send(it) },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                },
                 failure = { Timber.e(it, "Error while updating checkbox relation") }
             )
         }
@@ -264,6 +291,7 @@ class RelationListViewModel(
                         key = relationId,
                         value = value
                     )
+                    sendAnalyticsRelationValueEvent(analytics)
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
             )

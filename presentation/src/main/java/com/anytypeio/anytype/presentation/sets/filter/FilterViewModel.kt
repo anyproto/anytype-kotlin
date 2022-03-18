@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.filter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.EMPTY_TIMESTAMP
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -35,7 +36,8 @@ open class FilterViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
-    private val objectTypesProvider: ObjectTypesProvider
+    private val objectTypesProvider: ObjectTypesProvider,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -504,6 +506,10 @@ open class FilterViewModel(
                     value = value
                 )
             )
+            sendAnalyticsChangeFilterValueEvent(
+                analytics = analytics,
+                condition = condition.toDomain()
+            )
         }
     }
 
@@ -539,6 +545,10 @@ open class FilterViewModel(
                                 value = value
                             )
                         )
+                        sendAnalyticsChangeFilterValueEvent(
+                            analytics = analytics,
+                            condition = condition.toDomain()
+                        )
                     }
                     ColumnView.Format.STATUS -> {
                         val value = filterValueListState.value.mapNotNull { view ->
@@ -558,6 +568,10 @@ open class FilterViewModel(
                                 value = value
                             )
                         )
+                        sendAnalyticsChangeFilterValueEvent(
+                            analytics = analytics,
+                            condition = condition.toDomain()
+                        )
                     }
                     ColumnView.Format.DATE -> {
                         val value = filterValueListState.value
@@ -575,6 +589,10 @@ open class FilterViewModel(
                                 condition = condition.toDomain(),
                                 value = value
                             )
+                        )
+                        sendAnalyticsChangeFilterValueEvent(
+                            analytics = analytics,
+                            condition = condition.toDomain()
                         )
                     }
                     ColumnView.Format.OBJECT -> {
@@ -595,6 +613,10 @@ open class FilterViewModel(
                                 value = value
                             )
                         )
+                        sendAnalyticsChangeFilterValueEvent(
+                            analytics = analytics,
+                            condition = condition.toDomain()
+                        )
                     }
                     ColumnView.Format.CHECKBOX -> {
                         val filter = filterValueListState.value.checkboxFilter(
@@ -607,6 +629,10 @@ open class FilterViewModel(
                             idx = idx,
                             viewer = viewer,
                             updatedFilter = filter
+                        )
+                        sendAnalyticsChangeFilterValueEvent(
+                            analytics = analytics,
+                            condition = condition.toDomain()
                         )
                     }
                     else -> {
@@ -655,7 +681,15 @@ open class FilterViewModel(
             )
         ).process(
             failure = { Timber.e(it, "Error while creating filter") },
-            success = { dispatcher.send(it).also { isCompleted.emit(true) } }
+            success = {
+                dispatcher.send(it).also {
+                    viewModelScope.sendAnalyticsAddFilterEvent(
+                        analytics = analytics,
+                        condition = filter.condition
+                    )
+                    isCompleted.emit(true)
+                }
+            }
         )
     }
 
@@ -703,7 +737,8 @@ open class FilterViewModel(
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
-        private val objectTypesProvider: ObjectTypesProvider
+        private val objectTypesProvider: ObjectTypesProvider,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -714,7 +749,8 @@ open class FilterViewModel(
                 updateDataViewViewer = updateDataViewViewer,
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
-                objectTypesProvider = objectTypesProvider
+                objectTypesProvider = objectTypesProvider,
+                analytics = analytics
             ) as T
         }
     }

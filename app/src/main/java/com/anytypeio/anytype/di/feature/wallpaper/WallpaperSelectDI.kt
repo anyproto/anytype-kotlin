@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.wallpaper
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
@@ -31,9 +32,11 @@ object WallpaperSelectModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        setWallpaper: SetWallpaper
+        setWallpaper: SetWallpaper,
+        analytics: Analytics
     ): WallpaperSelectViewModel.Factory = WallpaperSelectViewModel.Factory(
-        setWallpaper = setWallpaper
+        setWallpaper = setWallpaper,
+        analytics = analytics
     )
 
     @JvmStatic

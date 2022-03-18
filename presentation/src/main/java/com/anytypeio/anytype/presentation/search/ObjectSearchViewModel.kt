@@ -3,6 +3,10 @@ package com.anytypeio.anytype.presentation.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -11,6 +15,8 @@ import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toView
@@ -38,6 +44,8 @@ open class ObjectSearchViewModel(
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
+    private var eventRoute = ""
+
     init {
         viewModelScope.launch {
             combine(objects, types) { listOfObjects, listOfTypes ->
@@ -54,7 +62,8 @@ open class ObjectSearchViewModel(
         }
     }
 
-    fun onStart() {
+    fun onStart(route: String) {
+        eventRoute = route
         getObjectTypes()
         startProcessingSearchQuery()
     }
@@ -80,6 +89,7 @@ open class ObjectSearchViewModel(
     private fun startProcessingSearchQuery() {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
+                sendSearchQueryEvent(query)
                 val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects -> setObjects(objects) },
@@ -87,6 +97,14 @@ open class ObjectSearchViewModel(
                 )
             }
         }
+    }
+
+    private fun sendSearchQueryEvent(query: String) {
+        viewModelScope.sendAnalyticsSearchQueryEvent(
+            analytics = analytics,
+            route = eventRoute,
+            length = query.length
+        )
     }
 
     open suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
@@ -98,6 +116,7 @@ open class ObjectSearchViewModel(
     }
 
     open fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
+        sendSearchResultEvent(target)
         when (layout) {
             ObjectType.Layout.PROFILE,
             ObjectType.Layout.BASIC,
@@ -112,6 +131,20 @@ open class ObjectSearchViewModel(
             }
             else -> {
                 Timber.e("Unexpected layout: $layout")
+            }
+        }
+    }
+
+    protected fun sendSearchResultEvent(id: String) {
+        val value = state.value
+        if (value is ObjectSearchView.Success) {
+            val index = value.objects.indexOfFirst { it.id == id }
+            if (index != -1) {
+                viewModelScope.sendAnalyticsSearchResultEvent(
+                    analytics = analytics,
+                    pos = index + 1,
+                    length = userInput.value.length
+                )
             }
         }
     }

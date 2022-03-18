@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import androidx.compose.material.ExperimentalMaterialApi
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerFeature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
@@ -17,6 +18,8 @@ import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewM
 import com.anytypeio.anytype.presentation.auth.keychain.KeychainLoginViewModelFactory
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.auth.start.StartLoginViewModelFactory
+import com.anytypeio.anytype.ui.auth.AboutAnalyticsFragment
+import com.anytypeio.anytype.ui.auth.InvitationFragment
 import com.anytypeio.anytype.ui.auth.KeychainLoginFragment
 import com.anytypeio.anytype.ui.auth.StartLoginFragment
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment
@@ -36,6 +39,10 @@ interface AuthSubComponent {
         fun authModule(module: AuthModule): Builder
         fun build(): AuthSubComponent
     }
+
+    fun inject(fragment: InvitationFragment)
+    @ExperimentalMaterialApi
+    fun inject(fragment: AboutAnalyticsFragment)
 
     fun startLoginComponentBuilder(): StartLoginSubComponent.Builder
     fun createAccountComponentBuilder(): CreateAccountSubComponent.Builder
@@ -171,10 +178,12 @@ object CreateAccountModule {
     @PerScreen
     @Provides
     fun provideCreateAccountViewModelFactory(
-        session: Session
+        session: Session,
+        analytics: Analytics
     ): CreateAccountViewModelFactory {
         return CreateAccountViewModelFactory(
-            session = session
+            session = session,
+            analytics = analytics
         )
     }
 }

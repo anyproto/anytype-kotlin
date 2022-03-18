@@ -5,10 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.ACCOUNT_STOP
-import com.anytypeio.anytype.analytics.base.EventsDictionary.BTN_PROFILE_BACK
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_DOCUMENT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_KEYCHAIN
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
@@ -24,10 +20,10 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("legacy")
 open class ProfileViewModel(
     private val getCurrentAccount: GetCurrentAccount,
     private val logout: Logout,
@@ -55,22 +51,6 @@ open class ProfileViewModel(
 
     fun onBackButtonClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = BTN_PROFILE_BACK
-        )
-    }
-
-    fun onProfileCardClicked() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = SCREEN_DOCUMENT
-        )
-        navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
-    }
-
-    fun onDebugSettingsClicked() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenDebugSettingsScreen))
     }
 
     private fun proceedWithGettingAccount() {
@@ -102,10 +82,6 @@ open class ProfileViewModel(
     }
 
     fun onLogoutClicked() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_PROFILE_LOG_OUT
-        )
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             logout(params = BaseUseCase.None).collect { status ->
@@ -115,7 +91,6 @@ open class ProfileViewModel(
                     }
                     is Interactor.Status.Success -> {
                         _isLoggingOut.value = false
-                        sendEvent(startTime)
                         updateUserProperties(
                             analytics = analytics,
                             userProperty = UserProperty.AccountId(null)
@@ -131,38 +106,10 @@ open class ProfileViewModel(
     }
 
     fun onKeyChainPhraseClicked() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = SCREEN_KEYCHAIN
-        )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenKeychainScreen))
-    }
-
-    fun onPinCodeClicked() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_PROFILE_PIN
-        )
-    }
-
-    fun onWallpaperClicked() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_PROFILE_WALLPAPER
-        )
     }
 
     fun onUserSettingsClicked() {
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenUserSettingsScreen))
-    }
-
-    private fun sendEvent(startTime: Long) {
-        val middleTime = System.currentTimeMillis()
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            startTime = startTime,
-            middleTime = middleTime,
-            eventName = ACCOUNT_STOP
-        )
     }
 }

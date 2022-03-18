@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
@@ -17,6 +18,7 @@ class ObjectIconPickerViewModelFactory(
     private val emojiSuggester: EmojiSuggester,
     private val emojiProvider: EmojiProvider,
     private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -28,6 +30,7 @@ class ObjectIconPickerViewModelFactory(
             suggester = emojiSuggester,
             provider = emojiProvider,
             dispatcher = dispatcher,
+            analytics = analytics
         ) as T
     }
 }
@@ -39,6 +42,7 @@ class ObjectSetIconPickerViewModelFactory(
     private val emojiSuggester: EmojiSuggester,
     private val emojiProvider: EmojiProvider,
     private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -50,6 +54,7 @@ class ObjectSetIconPickerViewModelFactory(
             suggester = emojiSuggester,
             provider = emojiProvider,
             dispatcher = dispatcher,
+            analytics = analytics
         ) as T
     }
 }

@@ -3,9 +3,11 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveViewEvent
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +24,8 @@ class EditDataViewViewerViewModel(
     private val setActiveViewer: SetActiveViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val objectSetState: StateFlow<ObjectSet>,
-    private val objectSetSession: ObjectSetSession
+    private val objectSetSession: ObjectSetSession,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
@@ -123,6 +126,9 @@ class EditDataViewViewerViewModel(
                 },
                 success = { firstPayload ->
                     dispatcher.send(firstPayload)
+                    sendAnalyticsRemoveViewEvent(
+                        analytics = analytics
+                    )
                     if (nextViewerId != null) {
                         proceedWithSettingActiveView(ctx, state, nextViewerId)
                     } else {
@@ -230,7 +236,8 @@ class EditDataViewViewerViewModel(
         private val setActiveViewer: SetActiveViewer,
         private val dispatcher: Dispatcher<Payload>,
         private val objectSetState: StateFlow<ObjectSet>,
-        private val objectSetSession: ObjectSetSession
+        private val objectSetSession: ObjectSetSession,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -242,7 +249,8 @@ class EditDataViewViewerViewModel(
                 setActiveViewer = setActiveViewer,
                 dispatcher = dispatcher,
                 objectSetState = objectSetState,
-                objectSetSession = objectSetSession
+                objectSetSession = objectSetSession,
+                analytics = analytics
             ) as T
         }
     }

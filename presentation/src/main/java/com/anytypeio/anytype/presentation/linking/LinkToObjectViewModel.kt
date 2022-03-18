@@ -37,6 +37,7 @@ class LinkToObjectViewModel(
     )
 
     override fun onObjectClicked(target: Id, layout: ObjectType.Layout?) {
+        sendSearchResultEvent(target)
         viewModelScope.launch {
             commands.emit(Command.Link(link = target))
         }

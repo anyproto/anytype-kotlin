@@ -3,12 +3,15 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
@@ -29,7 +32,8 @@ class ViewerRelationsViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val deleteRelationFromDataView: DeleteRelationFromDataView
+    private val deleteRelationFromDataView: DeleteRelationFromDataView,
+    private val analytics: Analytics
 ) : BaseListViewModel<ViewerRelationListView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
@@ -63,7 +67,8 @@ class ViewerRelationsViewModel(
                             }
                             else -> {
                                 val dv = objectSet.dataview.content<DV>()
-                                val preview = dv.relations.find { it.key == viewer.coverRelationKey }
+                                val preview =
+                                    dv.relations.find { it.key == viewer.coverRelationKey }
                                 if (preview != null) {
                                     result.add(
                                         ViewerRelationListView.Setting.ImagePreview.Custom(
@@ -121,7 +126,7 @@ class ViewerRelationsViewModel(
                 val viewer = state.viewerById(session.currentViewerId)
                 val block = state.dataview
 
-                val updated = when(toggle) {
+                val updated = when (toggle) {
                     is ViewerRelationListView.Setting.Toggle.FitImage -> {
                         viewer.copy(
                             coverFit = isChecked
@@ -165,6 +170,7 @@ class ViewerRelationsViewModel(
                         ctx = ctx,
                         relation = item.key
                     )
+                    sendAnalyticsRelationDeleteEvent(analytics)
                 }
             )
         }
@@ -256,7 +262,8 @@ class ViewerRelationsViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val modifyViewerRelationOrder: ModifyDataViewViewerRelationOrder,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val deleteRelationFromDataView: DeleteRelationFromDataView
+        private val deleteRelationFromDataView: DeleteRelationFromDataView,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -266,7 +273,8 @@ class ViewerRelationsViewModel(
                 dispatcher = dispatcher,
                 modifyViewerRelationOrder = modifyViewerRelationOrder,
                 updateDataViewViewer = updateDataViewViewer,
-                deleteRelationFromDataView = deleteRelationFromDataView
+                deleteRelationFromDataView = deleteRelationFromDataView,
+                analytics = analytics
             ) as T
         }
     }

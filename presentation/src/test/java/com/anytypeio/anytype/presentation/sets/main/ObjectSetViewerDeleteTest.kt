@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import MockDataFactory
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.dataview.interactor.*
@@ -62,6 +63,9 @@ class ObjectSetViewerDeleteTest {
 
     @Mock
     lateinit var setActiveViewer: SetActiveViewer
+
+    @Mock
+    lateinit var analytics: Analytics
 
     private val ctx: Id = MockDataFactory.randomUuid()
 
@@ -324,7 +328,8 @@ class ObjectSetViewerDeleteTest {
             objectSetSession = objectSetSession,
             objectSetState = objectSetState,
             dispatcher = dispatcher,
-            updateDataViewViewer = updateDataViewViewer
+            updateDataViewViewer = updateDataViewViewer,
+            analytics = analytics
         )
     }
 

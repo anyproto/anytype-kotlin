@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -34,11 +35,13 @@ object ViewerSortModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
     ): ViewerSortViewModel.Factory = ViewerSortViewModel.Factory(
         state = state,
         session = session,
         updateDataViewViewer = updateDataViewViewer,
-        dispatcher = dispatcher
+        dispatcher = dispatcher,
+        analytics = analytics
     )
 }

@@ -66,6 +66,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
             }
             is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
             OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
+                vm.sendFileOffloadScreenEvent()
                 val dialog = ClearCacheAlertFragment.new()
                 dialog.onClearAccepted = { vm.proceedWithClearCache() }
                 dialog.show(childFragmentManager, null)

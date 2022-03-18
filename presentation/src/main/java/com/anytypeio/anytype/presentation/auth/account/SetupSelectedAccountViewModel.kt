@@ -4,11 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.ACCOUNT_SELECT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_ACCOUNT_ID
+import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -67,7 +65,7 @@ class SetupSelectedAccountViewModel(
                     migrationMessageJob.cancel()
                     isMigrationInProgress.value = false
                     updateUserProps(accountId)
-                    sendEvent(startTime, accountId)
+                    sendEvent(startTime)
                     proceedWithUpdatingObjectTypesStore()
                 }
             )
@@ -103,15 +101,13 @@ class SetupSelectedAccountViewModel(
         )
     }
 
-    private fun sendEvent(startTime: Long, id: String) {
+    private fun sendEvent(startTime: Long) {
         val middleTime = System.currentTimeMillis()
         viewModelScope.sendEvent(
             analytics = analytics,
             startTime = startTime,
             middleTime = middleTime,
-            renderTime = middleTime,
-            eventName = ACCOUNT_SELECT,
-            props = Props(mapOf(PROP_ACCOUNT_ID to id))
+            eventName = openAccount
         )
     }
 

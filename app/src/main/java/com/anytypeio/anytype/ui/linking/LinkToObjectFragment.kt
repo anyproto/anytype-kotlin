@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.*
@@ -89,7 +90,7 @@ class LinkToObjectFragment : BaseBottomSheetFragment<FragmentObjectSearchBinding
             jobs += subscribe(vm.commands) { execute(it) }
         }
         super.onStart()
-        vm.onStart()
+        vm.onStart(EventsDictionary.Routes.searchMenu)
         expand()
     }
 

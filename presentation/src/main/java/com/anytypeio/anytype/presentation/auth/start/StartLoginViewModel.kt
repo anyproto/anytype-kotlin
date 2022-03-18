@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.authScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
@@ -31,7 +31,6 @@ class StartLoginViewModel(
     }
 
     fun onSignUpClicked() {
-        val startTime = System.currentTimeMillis()
         setupWallet.invoke(
             scope = viewModelScope,
             params = SetupWallet.Params(
@@ -43,7 +42,6 @@ class StartLoginViewModel(
                     Timber.e(it, "Error while setting up wallet")
                 },
                 fnR = {
-                    sendWalletEvent(startTime)
                     navigation.postValue(EventWrapper(AppNavigation.Command.AboutAnalyticsScreen))
                 }
             )
@@ -53,18 +51,7 @@ class StartLoginViewModel(
     private fun sendAuthEvent() {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.SCREEN_AUTH
-        )
-    }
-
-    private fun sendWalletEvent(startTime: Long) {
-        val middleTime = System.currentTimeMillis()
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            startTime = startTime,
-            middleTime = middleTime,
-            renderTime = middleTime,
-            eventName = EventsDictionary.WALLET_CREATE
+            eventName = authScreenShow
         )
     }
 }

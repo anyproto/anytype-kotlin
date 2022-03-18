@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -45,7 +46,8 @@ object DocumentRelationModule {
         detailModificationManager: DetailModificationManager,
         addToFeaturedRelations: AddToFeaturedRelations,
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-        deleteRelationFromObject: DeleteRelationFromObject
+        deleteRelationFromObject: DeleteRelationFromObject,
+        analytics: Analytics
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             stores = stores,
@@ -56,7 +58,8 @@ object DocumentRelationModule {
             detailModificationManager = detailModificationManager,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
-            deleteRelationFromObject = deleteRelationFromObject
+            deleteRelationFromObject = deleteRelationFromObject,
+            analytics = analytics
         )
     }
 

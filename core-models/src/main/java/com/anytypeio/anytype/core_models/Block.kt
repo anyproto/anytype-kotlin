@@ -73,6 +73,8 @@ data class Block(
          */
         val iconSize: Double? by default
 
+        val analyticsContext: String? by default
+
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
@@ -357,6 +359,7 @@ data class Block(
         object DividerLine : Prototype()
         object DividerDots : Prototype()
         object Bookmark : Prototype()
+        object Latex : Prototype()
         data class Relation(
             val key: Id
         ) : Prototype()

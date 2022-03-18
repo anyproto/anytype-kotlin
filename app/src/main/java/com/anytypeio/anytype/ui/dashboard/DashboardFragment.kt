@@ -347,7 +347,6 @@ class DashboardFragment : ViewStateFragment<State, FragmentDashboardBinding>(R.l
 
     override fun onResume() {
         super.onResume()
-        vm.onResume()
         binding.tabsLayout.apply {
             addOnTabSelectedListener(onTabSelectedListener)
         }

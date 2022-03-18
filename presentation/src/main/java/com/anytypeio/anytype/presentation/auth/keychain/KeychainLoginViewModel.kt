@@ -4,9 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.event.EventAnalytics
-import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.base.EventsDictionary.loginScreenShow
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
@@ -30,6 +29,13 @@ class KeychainLoginViewModel(
         MutableLiveData()
 
     val state = MutableLiveData<ViewState<Boolean>>()
+
+    init {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = loginScreenShow
+        )
+    }
 
     fun onLoginClicked(chain: String) {
         proceedWithRecoveringWallet(chain.trim())
@@ -71,7 +77,7 @@ class KeychainLoginViewModel(
             result.either(
                 fnR = {
                     state.postValue(ViewState.Success(true))
-                    proceedWithSavingMnemonic(chain, createEvent(startTime, middleTime))
+                    proceedWithSavingMnemonic(chain)
                 },
                 fnL = {
                     state.postValue(ViewState.Error(it.localizedMessage.orEmpty()))
@@ -81,7 +87,7 @@ class KeychainLoginViewModel(
         }
     }
 
-    private fun proceedWithSavingMnemonic(mnemonic: String, event: EventAnalytics.Anytype) {
+    private fun proceedWithSavingMnemonic(mnemonic: String) {
         saveMnemonic.invoke(
             scope = viewModelScope,
             params = SaveMnemonic.Params(
@@ -90,32 +96,9 @@ class KeychainLoginViewModel(
         ) { result ->
             result.either(
                 fnR = {
-                    sendEvent(event)
                     navigation.postValue(EventWrapper(AppNavigation.Command.SelectAccountScreen))
                 },
                 fnL = { Timber.e(it, "Error while saving mnemonic") }
-            )
-        }
-    }
-
-    private fun createEvent(start: Long, middle: Long): EventAnalytics.Anytype =
-        EventAnalytics.Anytype(
-            name = EventsDictionary.ACCOUNT_RECOVER,
-            props = Props.empty(),
-            duration = EventAnalytics.Duration(
-                start = start,
-                middleware = middle
-            )
-        )
-
-    private fun sendEvent(event: EventAnalytics.Anytype) {
-        viewModelScope.launch {
-            analytics.registerEvent(
-                event.copy(
-                    duration = event.duration?.copy(
-                        render = System.currentTimeMillis()
-                    )
-                )
             )
         }
     }

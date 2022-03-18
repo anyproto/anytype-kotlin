@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import android.content.Context
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -141,7 +142,8 @@ object ObjectObjectRelationValueModule {
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
         addFileToObject: AddFileToObject,
-        copyFileToCacheDirectory: CopyFileToCacheDirectory
+        copyFileToCacheDirectory: CopyFileToCacheDirectory,
+        analytics: Analytics
     ): RelationValueViewModel.Factory = RelationValueViewModel.Factory(
         relations = relations,
         values = values,
@@ -151,6 +153,7 @@ object ObjectObjectRelationValueModule {
         dispatcher = dispatcher,
         updateDetail = updateDetail,
         addFileToObject = addFileToObject,
-        copyFileToCache = copyFileToCacheDirectory
+        copyFileToCache = copyFileToCacheDirectory,
+        analytics = analytics
     )
 }

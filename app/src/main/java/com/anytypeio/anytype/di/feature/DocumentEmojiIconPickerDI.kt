@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -79,7 +80,8 @@ object ObjectIconPickerModule {
         setImageIcon: SetDocumentImageIcon,
         removeDocumentIcon: RemoveDocumentIcon,
         emojiSuggester: EmojiSuggester,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
     ): ObjectIconPickerViewModelFactory = ObjectIconPickerViewModelFactory(
         setEmojiIcon = setEmojiIcon,
         setImageIcon = setImageIcon,
@@ -87,6 +89,7 @@ object ObjectIconPickerModule {
         emojiSuggester = emojiSuggester,
         emojiProvider = Emoji,
         dispatcher = dispatcher,
+        analytics = analytics
     )
 }
 
@@ -99,7 +102,8 @@ object ObjectSetIconPickerModule {
         setImageIcon: SetDocumentImageIcon,
         removeDocumentIcon: RemoveDocumentIcon,
         emojiSuggester: EmojiSuggester,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        analytics: Analytics
     ): ObjectSetIconPickerViewModelFactory = ObjectSetIconPickerViewModelFactory(
         setEmojiIcon = setEmojiIcon,
         setImageIcon = setImageIcon,
@@ -107,5 +111,6 @@ object ObjectSetIconPickerModule {
         emojiSuggester = emojiSuggester,
         emojiProvider = Emoji,
         dispatcher = dispatcher,
+        analytics = analytics
     )
 }

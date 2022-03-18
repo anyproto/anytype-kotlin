@@ -4,16 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_RELATION_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_RELATION_FORMAT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_CREATE
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddNewRelationToObject
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateRelationEvent
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -29,14 +26,15 @@ abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
 
     abstract val createFromScratchSession: Flow<CreateFromScratchState>
 
-    val limitObjectTypeValueView : Flow<LimitObjectTypeValueView?> get() = createFromScratchSession.map { session ->
-        if (session.format == RelationFormat.OBJECT)
-            LimitObjectTypeValueView(
-                types = session.limitObjectTypes
-            )
-        else
-            null
-    }
+    val limitObjectTypeValueView: Flow<LimitObjectTypeValueView?>
+        get() = createFromScratchSession.map { session ->
+            if (session.format == RelationFormat.OBJECT)
+                LimitObjectTypeValueView(
+                    types = session.limitObjectTypes
+                )
+            else
+                null
+        }
 
     protected val name = MutableStateFlow("")
     private val notAllowedFormats = listOf(
@@ -85,7 +83,6 @@ class RelationCreateFromScratchForObjectViewModel(
     override val createFromScratchSession get() = createFromScratchState.state
 
     fun onCreateRelationClicked(ctx: Id) {
-        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val state = createFromScratchState.state.value
             val format = state.format
@@ -98,14 +95,14 @@ class RelationCreateFromScratchForObjectViewModel(
                 )
             ).process(
                 success = { (_, payload) ->
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = OBJECT_RELATION_CREATE,
-                        props = Props(mapOf(PROP_RELATION_FORMAT to format.name)),
-                        startTime = startTime,
-                        middleTime = System.currentTimeMillis()
-                    )
-                    dispatcher.send(payload).also { isDismissed.value = true }
+                    dispatcher.send(payload).also {
+                        sendAnalyticsCreateRelationEvent(
+                            analytics = analytics,
+                            type = EventsDictionary.Type.menu,
+                            format = format.name
+                        )
+                        isDismissed.value = true
+                    }
                 },
                 failure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
@@ -144,7 +141,6 @@ class RelationCreateFromScratchForObjectBlockViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     fun onCreateRelationClicked(ctx: Id) {
-        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val state = createFromScratchState.state.value
             val format = state.format
@@ -157,14 +153,12 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                 )
             ).process(
                 success = { (relation, payload) ->
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = OBJECT_RELATION_CREATE,
-                        props = Props(mapOf(PROP_RELATION_FORMAT to format.name)),
-                        startTime = startTime,
-                        middleTime = System.currentTimeMillis()
-                    )
                     dispatcher.send(payload)
+                    sendAnalyticsCreateRelationEvent(
+                        analytics = analytics,
+                        type = EventsDictionary.Type.block,
+                        format = format.name
+                    )
                     commands.emit(Command.OnSuccess(relation))
                 },
                 failure = {
@@ -209,7 +203,6 @@ class RelationCreateFromScratchForDataViewViewModel(
     override val createFromScratchSession: Flow<CreateFromScratchState> get() = createFromScratchState.state
 
     fun onCreateRelationClicked(ctx: Id, dv: Id) {
-        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val state = createFromScratchState.state.value
             val format = state.format
@@ -223,14 +216,12 @@ class RelationCreateFromScratchForDataViewViewModel(
                 )
             ).process(
                 success = { (relation, payload) ->
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = SETS_RELATION_CREATE,
-                        props = Props(mapOf(PROP_RELATION_FORMAT to format.name)),
-                        startTime = startTime,
-                        middleTime = System.currentTimeMillis()
-                    )
                     dispatcher.send(payload).also {
+                        sendAnalyticsCreateRelationEvent(
+                            analytics = analytics,
+                            type = EventsDictionary.Type.dataView,
+                            format = format.name
+                        )
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
                             relation = relation

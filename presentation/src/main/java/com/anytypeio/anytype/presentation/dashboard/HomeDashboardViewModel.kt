@@ -4,16 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_IS_DRAFT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_DASHBOARD
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_PROFILE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_ARCHIVE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_FAVORITES
-import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_INBOX
-import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_RECENT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.TAB_SETS
+import com.anytypeio.anytype.analytics.base.EventsDictionary.Routes.tabFavorites
+import com.anytypeio.anytype.analytics.base.EventsDictionary.deletionWarningShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.reorderObjects
+import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.selectHomeTab
+import com.anytypeio.anytype.analytics.base.EventsDictionary.settingsShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.showHome
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.*
@@ -41,6 +39,8 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveObjects
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRestoreFromBin
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -177,7 +177,18 @@ class HomeDashboardViewModel(
                     move(viewModelScope, param) { result ->
                         result.either(
                             fnL = { Timber.e(it, "Error while DND for: $param") },
-                            fnR = { Timber.d("Successfull DND for: $param") }
+                            fnR = {
+                                sendEvent(
+                                    analytics = analytics,
+                                    eventName = reorderObjects,
+                                    props = Props(
+                                        mapOf(
+                                            EventsPropertiesKey.route to EventsDictionary.Routes.home
+                                        )
+                                    )
+                                )
+                                Timber.d("successful DND for: $param")
+                            }
                         )
                     }
                 }
@@ -191,15 +202,27 @@ class HomeDashboardViewModel(
         Timber.d("Opening home dashboard")
 
         viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            var middleTime = 0L
             openDashboard(params = null).either(
-                fnR = { payload -> processEvents(payload.events) },
+                fnR = { payload ->
+                    middleTime = System.currentTimeMillis()
+                    processEvents(payload.events)
+                },
                 fnL = { Timber.e(it, "Error while opening home dashboard") }
+            )
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = showHome,
+                startTime = startTime,
+                middleTime = middleTime,
+                renderTime = System.currentTimeMillis(),
+                props = Props(mapOf(EventsPropertiesKey.tab to tabFavorites))
             )
         }
     }
 
     fun onViewCreated() {
-        Timber.d("onViewCreated, ")
         proceedWithOpeningHomeDashboard()
     }
 
@@ -300,10 +323,6 @@ class HomeDashboardViewModel(
     }
 
     private fun navigateToPage(id: String, editorSettings: EditorSettings? = null) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_DOCUMENT
-        )
         navigation.postValue(
             EventWrapper(
                 AppNavigation.Command.OpenObject(
@@ -315,10 +334,6 @@ class HomeDashboardViewModel(
     }
 
     private fun navigateToArchive(target: Id) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_ARCHIVE
-        )
         navigation.postValue(
             EventWrapper(
                 AppNavigation.Command.OpenArchive(
@@ -377,10 +392,6 @@ class HomeDashboardViewModel(
         profile.value.let { state ->
             when (state) {
                 is ViewState.Success -> {
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = SCREEN_PROFILE
-                    )
                     proceedWithOpeningDocument(state.data.id)
                 }
                 else -> {
@@ -404,7 +415,7 @@ class HomeDashboardViewModel(
         Timber.d("onSettingsClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.POPUP_SETTINGS
+            eventName = settingsShow
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenSettings))
     }
@@ -413,7 +424,7 @@ class HomeDashboardViewModel(
         Timber.d("onPageSearchClicked, ")
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.SCREEN_SEARCH
+            eventName = searchScreenShow
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
@@ -603,25 +614,13 @@ class HomeDashboardViewModel(
         viewModelScope.launch { toasts.emit(msg) }
     }
 
-    fun onResume() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = SCREEN_DASHBOARD
-        )
-    }
-
     fun sendTabEvent(tab: CharSequence?) {
         Timber.d("sendTabEvent, tab:[$tab]")
-        if (tab != null) {
-            val eventName = listOf(TAB_FAVORITES, TAB_RECENT, TAB_INBOX, TAB_SETS, TAB_ARCHIVE)
-                .firstOrNull { it.startsWith(tab, true) }
-            if (eventName != null) {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = eventName
-                )
-            }
-        }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = selectHomeTab,
+            props = Props(mapOf(EventsPropertiesKey.tab to tab))
+        )
     }
 
     //region BIN SELECTION
@@ -663,9 +662,10 @@ class HomeDashboardViewModel(
     fun onPutBackClicked() {
         viewModelScope.launch {
             mode.value = Mode.DEFAULT
+            val ids = archived.value.filter { it.isSelected }.map { it.id }
             setObjectListIsArchived(
                 SetObjectListIsArchived.Params(
-                    targets = archived.value.filter { it.isSelected }.map { it.id },
+                    targets = ids,
                     isArchived = false
                 )
             ).process(
@@ -673,6 +673,7 @@ class HomeDashboardViewModel(
                     Timber.e(e, "Error while restoring objects from archive")
                 },
                 success = {
+                    analytics.sendAnalyticsRestoreFromBin(count = ids.size)
                     Timber.d("Object successfully archived")
                 }
             )
@@ -681,6 +682,10 @@ class HomeDashboardViewModel(
 
     fun onDeleteObjectsClicked() {
         viewModelScope.launch {
+            sendEvent(
+                analytics = analytics,
+                eventName = deletionWarningShow
+            )
             alerts.emit(
                 Alert.Delete(
                     count = archived.value.count { it.isSelected }
@@ -697,9 +702,10 @@ class HomeDashboardViewModel(
         viewModelScope.launch {
             mode.value = Mode.DEFAULT
             isDeletionInProgress.value = true
+            val ids = archived.value.filter { it.isSelected }.map { it.id }
             deleteObjects(
                 DeleteObjects.Params(
-                    targets = archived.value.filter { it.isSelected }.map { it.id }
+                    targets = ids
                 )
             ).process(
                 failure = { e ->
@@ -707,6 +713,7 @@ class HomeDashboardViewModel(
                     Timber.e(e, "Error while deleting objects")
                 },
                 success = {
+                    analytics.sendAnalyticsRemoveObjects(ids.size)
                     isDeletionInProgress.value = false
                 }
             )
@@ -741,7 +748,6 @@ class HomeDashboardViewModel(
     }
 
     private fun proceedWithCreatePage(type: String?) {
-        val startTime = System.currentTimeMillis()
         val isDraft = true
         val params = CreatePage.Params(
             ctx = null,
@@ -753,16 +759,6 @@ class HomeDashboardViewModel(
             result.either(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },
                 fnR = { id ->
-                    val middle = System.currentTimeMillis()
-                    val props = Props(mapOf(PROP_TYPE to type, PROP_IS_DRAFT to isDraft))
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        startTime = startTime,
-                        middleTime = middle,
-                        renderTime = middle,
-                        eventName = PAGE_CREATE,
-                        props = props
-                    )
                     machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(id)
                 }

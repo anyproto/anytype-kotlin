@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
@@ -22,7 +23,8 @@ class ObjectRelationListViewModelFactory(
     private val detailModificationManager: DetailModificationManager,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val deleteRelationFromObject: DeleteRelationFromObject
+    private val deleteRelationFromObject: DeleteRelationFromObject,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -36,7 +38,8 @@ class ObjectRelationListViewModelFactory(
             detailModificationManager = detailModificationManager,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
-            deleteRelationFromObject = deleteRelationFromObject
+            deleteRelationFromObject = deleteRelationFromObject,
+            analytics = analytics
         ) as T
     }
 }

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddHeaderAdapter
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationAddBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
+import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.Serializable
 import javax.inject.Inject
@@ -46,7 +48,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment<FragmentRelatio
     }
 
     private val relationAdapter = RelationAddAdapter { relation ->
-        onRelationSelected(ctx = ctx, relation = relation.id)
+        onRelationSelected(ctx = ctx, relation = relation)
     }
 
     private val concatAdapter = ConcatAdapter(createFromScratchAdapter, relationAdapter)
@@ -103,7 +105,7 @@ abstract class RelationAddBaseFragment : BaseBottomSheetFragment<FragmentRelatio
         vm.onStart(ctx)
     }
 
-    abstract fun onRelationSelected(ctx: Id, relation: Id)
+    abstract fun onRelationSelected(ctx: Id, relation: RelationView.Existing)
     abstract fun onCreateFromScratchClicked()
 
     override fun inflateBinding(
@@ -126,8 +128,12 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToObjectViewModel.Factory
     override val vm: RelationAddToObjectViewModel by viewModels { factory }
 
-    override fun onRelationSelected(ctx: Id, relation: Id) {
-        vm.onRelationSelected(ctx = ctx, relation = relation)
+    override fun onRelationSelected(ctx: Id, relation: RelationView.Existing) {
+        vm.onRelationSelected(
+            ctx = ctx,
+            relation = relation,
+            screenType = EventsDictionary.Type.menu
+        )
     }
 
     override fun onCreateFromScratchClicked() {
@@ -163,8 +169,13 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToDataViewViewModel.Factory
     override val vm: RelationAddToDataViewViewModel by viewModels { factory }
 
-    override fun onRelationSelected(ctx: Id, relation: Id) {
-        vm.onRelationSelected(ctx = ctx, relation = relation, dv = dv)
+    override fun onRelationSelected(ctx: Id, relation: RelationView.Existing) {
+        vm.onRelationSelected(
+            ctx = ctx,
+            relation = relation,
+            dv = dv,
+            screenType = EventsDictionary.Type.dataView
+        )
     }
 
     override fun onCreateFromScratchClicked() {
@@ -216,8 +227,12 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment() {
         super.onStart()
     }
 
-    override fun onRelationSelected(ctx: Id, relation: Id) {
-        vm.onRelationSelected(ctx, relation)
+    override fun onRelationSelected(ctx: Id, relation: RelationView.Existing) {
+        vm.onRelationSelected(
+            ctx = ctx,
+            relation = relation,
+            screenType = EventsDictionary.Type.block
+        )
     }
 
     private fun execute(command: RelationAddToObjectViewModel.Command) {

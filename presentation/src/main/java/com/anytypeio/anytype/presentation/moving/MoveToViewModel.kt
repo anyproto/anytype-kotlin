@@ -3,6 +3,10 @@ package com.anytypeio.anytype.presentation.moving
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -10,6 +14,8 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -59,6 +65,7 @@ class MoveToViewModel(
     private fun startProcessingSearchQuery(ctx: Id) {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
+                sendSearchQueryEvent()
                 val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects ->
@@ -68,6 +75,28 @@ class MoveToViewModel(
                         )
                     },
                     failure = { Timber.e(it, "Error while searching for objects") }
+                )
+            }
+        }
+    }
+
+    private fun sendSearchQueryEvent() {
+        viewModelScope.sendAnalyticsSearchQueryEvent(
+            analytics = analytics,
+            route = EventsDictionary.Routes.searchMenu,
+            length = userInput.value.length
+        )
+    }
+
+    private fun sendSearchResultEvent(id: String) {
+        val value = _viewState.value
+        if (value is MoveToView.Success) {
+            val index = value.objects.indexOfFirst { it.id == id }
+            if (index != -1) {
+                viewModelScope.sendAnalyticsSearchResultEvent(
+                    analytics = analytics,
+                    pos = index + 1,
+                    length = userInput.value.length
                 )
             }
         }
@@ -105,6 +134,7 @@ class MoveToViewModel(
         viewModelScope.launch {
             commands.emit(Command.Move(target = target))
         }
+        sendSearchResultEvent(target)
     }
 
     fun onDialogCancelled() {

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -40,7 +41,8 @@ object EditDataViewViewerModule {
         setActiveViewer: SetActiveViewer,
         dispatcher: Dispatcher<Payload>,
         objectSetState: StateFlow<ObjectSet>,
-        objectSetSession: ObjectSetSession
+        objectSetSession: ObjectSetSession,
+        analytics: Analytics
     ): EditDataViewViewerViewModel.Factory = EditDataViewViewerViewModel.Factory(
         renameDataViewViewer = renameDataViewViewer,
         deleteDataViewViewer = deleteDataViewViewer,
@@ -49,7 +51,8 @@ object EditDataViewViewerModule {
         setActiveViewer = setActiveViewer,
         dispatcher = dispatcher,
         objectSetState = objectSetState,
-        objectSetSession = objectSetSession
+        objectSetSession = objectSetSession,
+        analytics = analytics
     )
 
     @JvmStatic

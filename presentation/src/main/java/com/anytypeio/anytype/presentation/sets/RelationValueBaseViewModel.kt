@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -80,7 +82,7 @@ abstract class RelationValueBaseViewModel(
             Relation.Format.TAG -> {
                 relationFormat = Relation.Format.TAG
                 val isRemoveable = isEditing.value
-                val optionKeys : List<Id> = when(val value = record[relationId]) {
+                val optionKeys: List<Id> = when (val value = record[relationId]) {
                     is Id -> listOf(value)
                     is List<*> -> value.typeOf()
                     else -> emptyList()
@@ -103,7 +105,7 @@ abstract class RelationValueBaseViewModel(
             }
             Relation.Format.STATUS -> {
                 relationFormat = Relation.Format.STATUS
-                val optionKeys : List<Id> = when(val value = record[relationId]) {
+                val optionKeys: List<Id> = when (val value = record[relationId]) {
                     is Id -> listOf(value)
                     is List<*> -> value.typeOf()
                     else -> emptyList()
@@ -658,6 +660,7 @@ class RelationValueViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val urlBuilder: UrlBuilder,
     private val addFileToObject: AddFileToObject,
+    private val analytics: Analytics,
     copyFileToCache: CopyFileToCacheDirectory
 ) : RelationValueBaseViewModel(
     relations = relations,
@@ -682,7 +685,10 @@ class RelationValueViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while updating object value order") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
             )
         }
     }
@@ -704,7 +710,10 @@ class RelationValueViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while removing object from object") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
             )
         }
     }
@@ -726,7 +735,10 @@ class RelationValueViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while removing file from object") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
             )
         }
     }
@@ -748,7 +760,10 @@ class RelationValueViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while removing tag from object") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
             )
         }
     }
@@ -770,7 +785,10 @@ class RelationValueViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while removing tag from object") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
             )
         }
     }
@@ -792,7 +810,10 @@ class RelationValueViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding objects value to object") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
             )
         }
     }
@@ -836,7 +857,8 @@ class RelationValueViewModel(
         private val updateDetail: UpdateDetail,
         private val urlBuilder: UrlBuilder,
         private val addFileToObject: AddFileToObject,
-        private val copyFileToCache: CopyFileToCacheDirectory
+        private val copyFileToCache: CopyFileToCacheDirectory,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RelationValueViewModel(
@@ -848,7 +870,8 @@ class RelationValueViewModel(
             updateDetail = updateDetail,
             urlBuilder = urlBuilder,
             addFileToObject = addFileToObject,
-            copyFileToCache = copyFileToCache
+            copyFileToCache = copyFileToCache,
+            analytics = analytics
         ) as T
     }
 }

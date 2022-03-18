@@ -76,10 +76,6 @@ class PageNavigationViewModel(
         if (pageId == homeId) {
             navigate(EventWrapper(AppNavigation.Command.ExitToDesktop))
         } else {
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = EventsDictionary.SCREEN_DOCUMENT
-            )
             navigate(EventWrapper(AppNavigation.Command.LaunchDocument(pageId)))
         }
     }

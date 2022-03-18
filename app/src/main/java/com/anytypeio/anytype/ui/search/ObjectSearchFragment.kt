@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
@@ -79,7 +80,7 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
 
     override fun onStart() {
         super.onStart()
-        vm.onStart()
+        vm.onStart(EventsDictionary.Routes.searchScreen)
     }
 
     private fun focusSearchInput() {

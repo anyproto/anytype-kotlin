@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -34,12 +35,14 @@ object ObjectLayoutModule {
         dispatcher: Dispatcher<Payload>,
         setObjectLayout: SetObjectLayout,
         getSupportedObjectLayouts: GetSupportedObjectLayouts,
-        storage: Editor.Storage
+        storage: Editor.Storage,
+        analytics: Analytics
     ): ObjectLayoutViewModel.Factory = ObjectLayoutViewModel.Factory(
         dispatcher = dispatcher,
         setObjectLayout = setObjectLayout,
         storage = storage,
-        getSupportedObjectLayouts = getSupportedObjectLayouts
+        getSupportedObjectLayouts = getSupportedObjectLayouts,
+        analytics = analytics
     )
 
     @JvmStatic

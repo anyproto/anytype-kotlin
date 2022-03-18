@@ -5,6 +5,7 @@ import com.anytypeio.anytype.di.feature.*
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
+import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import dagger.Component
 import javax.inject.Singleton
@@ -55,6 +56,7 @@ interface MainComponent {
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder
     fun logoutWarningComponent() : LogoutWarningSubComponent.Builder
+    fun mainSettingsComponent() : MainSettingsSubComponent.Builder
 
     //endregion
 }

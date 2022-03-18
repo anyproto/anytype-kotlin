@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -35,12 +36,14 @@ object SelectSortRelationModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
-        addDataViewViewerSort: AddDataViewViewerSort
+        addDataViewViewerSort: AddDataViewViewerSort,
+        analytics: Analytics
     ): SelectSortRelationViewModel.Factory = SelectSortRelationViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,
-        addDataViewViewerSort = addDataViewViewerSort
+        addDataViewViewerSort = addDataViewViewerSort,
+        analytics = analytics
     )
 
     @JvmStatic

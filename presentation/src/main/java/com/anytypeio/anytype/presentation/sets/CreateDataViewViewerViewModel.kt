@@ -4,14 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_VIEWER_TYPE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_CREATE
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddViewEvent
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +29,6 @@ class CreateDataViewViewerViewModel(
         target: String,
     ) {
         viewModelScope.launch {
-            val start = System.currentTimeMillis()
             addDataViewViewer(
                 AddDataViewViewer.Params(
                     ctx = ctx,
@@ -47,14 +43,10 @@ class CreateDataViewViewerViewModel(
                     }
                 },
                 success = {
-                    sendEvent(
-                        analytics = analytics,
-                        eventName = SETS_VIEWER_CREATE,
-                        startTime = start,
-                        middleTime = System.currentTimeMillis(),
-                        props = Props(mapOf(PROP_VIEWER_TYPE to dvType.name))
-                    )
-                    dispatcher.send(it).also { state.value = ViewState.Completed }
+                    dispatcher.send(it).also {
+                        sendAnalyticsAddViewEvent(analytics, dvType.name)
+                        state.value = ViewState.Completed
+                    }
                 }
             )
         }

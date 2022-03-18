@@ -16,13 +16,13 @@ class MentionToolbar @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private var mentionClick: ((DefaultObjectView, String) -> Unit)? = null
+    private var mentionClick: ((DefaultObjectView, String, Int) -> Unit)? = null
     private var newPageClick: ((String) -> Unit)? = null
     private val mentionAdapter by lazy {
         MentionAdapter(
             data = arrayListOf(),
-            onClicked = { objectView, filter ->
-                mentionClick?.invoke(objectView, filter)
+            onClicked = { objectView, filter, pos ->
+                mentionClick?.invoke(objectView, filter, pos)
             },
             newClicked = { name ->
                 newPageClick?.invoke(name)
@@ -39,7 +39,7 @@ class MentionToolbar @JvmOverloads constructor(
     }
 
     fun setupClicks(
-        mentionClick: (DefaultObjectView, String) -> Unit,
+        mentionClick: (DefaultObjectView, String, Int) -> Unit,
         newPageClick: (String) -> Unit
     ) {
         this.mentionClick = mentionClick

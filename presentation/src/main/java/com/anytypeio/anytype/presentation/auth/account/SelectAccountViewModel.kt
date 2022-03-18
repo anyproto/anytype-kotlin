@@ -4,8 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
@@ -59,7 +57,6 @@ class SelectAccountViewModel(
     }
 
     private fun startLoadingAccount() {
-        val startTime = System.currentTimeMillis()
         startLoadingAccounts.invoke(
             viewModelScope, StartLoadingAccounts.Params()
         ) { result ->
@@ -70,7 +67,6 @@ class SelectAccountViewModel(
                     navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
                 },
                 fnR = {
-                    sendAuthEvent(startTime)
                     Timber.d("Account loading successfully finished")
                 }
             )
@@ -100,16 +96,5 @@ class SelectAccountViewModel(
     override fun onCleared() {
         super.onCleared()
         accountChannel.close()
-    }
-
-    private fun sendAuthEvent(start: Long) {
-        val middle = System.currentTimeMillis()
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            startTime = start,
-            middleTime = middle,
-            renderTime = middle,
-            eventName = EventsDictionary.ACCOUNT_RECOVER
-        )
     }
 }

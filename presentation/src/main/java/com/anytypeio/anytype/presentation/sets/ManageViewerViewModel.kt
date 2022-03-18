@@ -3,11 +3,14 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
+import com.anytypeio.anytype.presentation.extension.getPropName
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSwitchViewEvent
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.*
@@ -18,7 +21,8 @@ class ManageViewerViewModel(
     private val state: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
-    private val setActiveViewer: SetActiveViewer
+    private val setActiveViewer: SetActiveViewer,
+    private val analytics: Analytics
 ) : BaseListViewModel<ViewerView>() {
 
     val isEditEnabled = MutableStateFlow(false)
@@ -82,7 +86,15 @@ class ManageViewerViewModel(
                     )
                 ).process(
                     failure = { Timber.e(it, "Error while setting active viewer") },
-                    success = { dispatcher.send(it).also { isDismissed.emit(true) } }
+                    success = {
+                        dispatcher.send(it).also {
+                            sendAnalyticsSwitchViewEvent(
+                                analytics = analytics,
+                                type = view.type.getPropName()
+                            )
+                            isDismissed.emit(true)
+                        }
+                    }
                 )
             }
         else
@@ -98,7 +110,8 @@ class ManageViewerViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
-        private val setActiveViewer: SetActiveViewer
+        private val setActiveViewer: SetActiveViewer,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -106,7 +119,8 @@ class ManageViewerViewModel(
                 state = state,
                 session = session,
                 setActiveViewer = setActiveViewer,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                analytics = analytics
             ) as T
         }
     }

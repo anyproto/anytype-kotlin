@@ -31,6 +31,7 @@ class LogoutWarningFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<LogoutWarningViewModel> { factory }
 
     private val onBackupPhraseClicked = {
+        vm.onBackupClicked()
         findNavController().navigate(R.id.keychainDialog)
     }
 

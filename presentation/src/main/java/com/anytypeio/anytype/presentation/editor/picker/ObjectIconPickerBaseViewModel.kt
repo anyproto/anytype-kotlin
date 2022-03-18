@@ -2,6 +2,9 @@ package com.anytypeio.anytype.presentation.editor.picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
@@ -25,7 +28,8 @@ abstract class ObjectIconPickerBaseViewModel(
     private val removeDocumentIcon: RemoveDocumentIcon,
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     /**
@@ -133,6 +137,10 @@ abstract class ObjectIconPickerBaseViewModel(
             ).process(
                 failure = { Timber.e(it, "Error while setting emoji") },
                 success = { payload ->
+                    sendEvent(
+                        analytics = analytics,
+                        eventName = EventsDictionary.objectSetIcon
+                    )
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
                     state.value = ViewState.Exit
                 }
@@ -163,6 +171,10 @@ abstract class ObjectIconPickerBaseViewModel(
             removeDocumentIcon(RemoveDocumentIcon.Params(ctx = ctx)).process(
                 failure = { Timber.e(it, "Error while setting emoji") },
                 success = { payload ->
+                    sendEvent(
+                        analytics = analytics,
+                        eventName = EventsDictionary.objectRemoveIcon
+                    )
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
                     state.value = ViewState.Exit
                 }
@@ -211,14 +223,16 @@ class ObjectIconPickerViewModel(
     removeDocumentIcon: RemoveDocumentIcon,
     provider: EmojiProvider,
     suggester: EmojiSuggester,
-    dispatcher: Dispatcher<Payload>
+    dispatcher: Dispatcher<Payload>,
+    analytics: Analytics
 ) : ObjectIconPickerBaseViewModel(
     setEmojiIcon = setEmojiIcon,
     setImageIcon = setImageIcon,
     removeDocumentIcon = removeDocumentIcon,
     provider = provider,
     suggester = suggester,
-    dispatcher = dispatcher
+    dispatcher = dispatcher,
+    analytics = analytics
 )
 
 class ObjectSetIconPickerViewModel(
@@ -227,14 +241,14 @@ class ObjectSetIconPickerViewModel(
     removeDocumentIcon: RemoveDocumentIcon,
     provider: EmojiProvider,
     suggester: EmojiSuggester,
-    dispatcher: Dispatcher<Payload>
+    dispatcher: Dispatcher<Payload>,
+    analytics: Analytics
 ) : ObjectIconPickerBaseViewModel(
     setEmojiIcon = setEmojiIcon,
     setImageIcon = setImageIcon,
     removeDocumentIcon = removeDocumentIcon,
     provider = provider,
     suggester = suggester,
-    dispatcher = dispatcher
-) {
-
-}
+    dispatcher = dispatcher,
+    analytics = analytics
+)

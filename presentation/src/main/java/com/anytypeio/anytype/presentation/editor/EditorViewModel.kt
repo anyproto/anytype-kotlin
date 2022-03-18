@@ -6,24 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PAGE_MENTION_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_ADD_BLOCK
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_BOOKMARK
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_ICON_MENU
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_DOCUMENT_MENU
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MARKUP_LINK
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_MULTI_SELECT_MENU
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_ICON_MENU
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_PROFILE_MENU
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_SLASH_MENU
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_STYLE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.POPUP_TURN_INTO
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_LAYOUT
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Block.Content
@@ -93,6 +78,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.*
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
@@ -215,11 +201,15 @@ class EditorViewModel(
      * Open gallery and search media files for block with that id
      */
     private var mediaBlockId = ""
+    private var mediaBlockType = ""
+
 
     /**
      * Currently pending text update. If null, it is not present or already dispatched.
      */
     private var pendingTextUpdate: TextUpdate? = null
+
+    private var analyticsContext: String? = null
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
@@ -613,12 +603,13 @@ class EditorViewModel(
                 .filter { it.context == context }
                 .collect { orchestrator.proxies.payloads.send(it) }
         }
-
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             openPage(OpenPage.Params(id)).proceed(
                 success = { result ->
                     when (result) {
                         is Result.Success -> {
+                            val middleTime = System.currentTimeMillis()
                             session.value = Session.OPEN
                             onStartFocusing(result.data)
                             orchestrator.proxies.payloads.send(result.data)
@@ -629,6 +620,16 @@ class EditorViewModel(
                                     if (event.type == SmartBlockType.FILE) {
                                         isSyncStatusVisible.value = false
                                     }
+                                    val block = event.blocks.firstOrNull { it.id == context }
+                                    analyticsContext = block?.fields?.analyticsContext
+                                    sendAnalyticsObjectShowEvent(
+                                        analytics = analytics,
+                                        startTime = startTime,
+                                        middleTime = middleTime,
+                                        type = event.details.details[context]?.type?.firstOrNull(),
+                                        layoutCode = event.details.details[context]?.layout,
+                                        context = analyticsContext
+                                    )
                                 }
                             }
                         }
@@ -733,6 +734,7 @@ class EditorViewModel(
 
     fun onBackButtonPressed() {
         Timber.d("onBackButtonPressed, ")
+        viewModelScope.sendAnalyticsGoBackEvent(analytics, analyticsContext)
         proceedWithExitingBack()
     }
 
@@ -890,7 +892,7 @@ class EditorViewModel(
 
         viewModelScope.launch { store.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        if (isObjectTypesWidgetVisible) hideObjectTypesWidget()
+        if (isObjectTypesWidgetVisible) proceedWithHidingObjectTypeWidget()
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
@@ -1028,7 +1030,8 @@ class EditorViewModel(
                     context = context,
                     block = block,
                     range = range,
-                    isToggled = if (content.isToggle()) renderer.isToggled(target) else null
+                    isToggled = if (content.isToggle()) renderer.isToggled(target) else null,
+                    style = content.style
                 )
             )
         }
@@ -1081,10 +1084,6 @@ class EditorViewModel(
                             isFavorite = details[context]?.isFavorite ?: false
                         )
                     )
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = POPUP_PROFILE_MENU
-                    )
                 }
                 SmartBlockType.PAGE -> {
                     val details = orchestrator.stores.details.current().details
@@ -1095,10 +1094,6 @@ class EditorViewModel(
                             isFavorite = details[context]?.isFavorite ?: false,
                         )
                     )
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = POPUP_DOCUMENT_MENU
-                    )
                 }
                 SmartBlockType.FILE -> {
                     val details = orchestrator.stores.details.current().details
@@ -1108,10 +1103,6 @@ class EditorViewModel(
                             isArchived = details[context]?.isArchived ?: false,
                             isFavorite = details[context]?.isFavorite ?: false,
                         )
-                    )
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = POPUP_DOCUMENT_MENU
                     )
                 }
                 else -> {
@@ -1392,10 +1383,6 @@ class EditorViewModel(
                 details = orchestrator.stores.details.current()
             )
         )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_STYLE
-        )
     }
 
     fun onStylingToolbarEvent(event: StylingEvent) {
@@ -1409,13 +1396,29 @@ class EditorViewModel(
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.TEXT_COLOR, event.color.title)
                 }
+                viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+                    analytics = analytics,
+                    type = Content.Text.Mark.Type.TEXT_COLOR,
+                    context = analyticsContext
+                )
             }
             is StylingEvent.Coloring.Background -> {
                 val currentMode = mode
                 if (currentMode is EditorMode.Styling.Multi) {
                     onBlockBackgroundColorAction(currentMode.targets.toList(), event.color.title)
+                    viewModelScope.sendAnalyticsBlockBackgroundEvent(
+                        analytics = analytics,
+                        count = currentMode.targets.size,
+                        color = event.color.title,
+                        context = analyticsContext
+                    )
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.BACKGROUND_COLOR, event.color.title)
+                    viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+                        analytics = analytics,
+                        type = Content.Text.Mark.Type.BACKGROUND_COLOR,
+                        context = analyticsContext
+                    )
                 }
             }
             is StylingEvent.Markup.Bold -> {
@@ -1425,6 +1428,11 @@ class EditorViewModel(
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.BOLD, null)
                 }
+                viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+                    analytics = analytics,
+                    type = Content.Text.Mark.Type.BOLD,
+                    context = analyticsContext
+                )
             }
             is StylingEvent.Markup.Italic -> {
                 val currentMode = mode
@@ -1433,6 +1441,11 @@ class EditorViewModel(
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.ITALIC, null)
                 }
+                viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+                    analytics = analytics,
+                    type = Content.Text.Mark.Type.ITALIC,
+                    context = analyticsContext
+                )
             }
             is StylingEvent.Markup.StrikeThrough -> {
                 val currentMode = mode
@@ -1529,6 +1542,11 @@ class EditorViewModel(
                 )
             )
         }
+        viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+            analytics = analytics,
+            type = type,
+            context = analyticsContext
+        )
     }
 
     private fun onBlockAlignmentActionClicked(alignment: Alignment) {
@@ -1552,6 +1570,12 @@ class EditorViewModel(
                     targets = targets,
                     alignment = alignment
                 )
+            )
+            sendAnalyticsBlockAlignEvent(
+                analytics = analytics,
+                context = analyticsContext,
+                count = targets.size,
+                align = alignment
             )
         }
     }
@@ -1592,10 +1616,6 @@ class EditorViewModel(
             endInclusive = target.content<Content.Text>().text.length.dec()
         )
         stateData.value = ViewState.OpenLinkScreen(context, target, range)
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_MARKUP_LINK
-        )
     }
 
     private fun onBlockStyleMarkupActionClicked(id: String, action: Markup.Type) {
@@ -1694,10 +1714,6 @@ class EditorViewModel(
                         excludedTypes = excludedTypes
                     )
                 )
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = POPUP_TURN_INTO
-                )
             }
             ActionItemType.Delete -> {
                 proceedWithUnlinking(target = id)
@@ -1787,11 +1803,6 @@ class EditorViewModel(
         )
 
         dispatch(Command.PopBackStack)
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_STYLE
-        )
     }
 
     private fun proceedWithUnlinking(target: String) {
@@ -1911,6 +1922,11 @@ class EditorViewModel(
                 }
                 viewModelScope.launch { orchestrator.stores.views.update(update) }
                 viewModelScope.launch { renderCommand.send(Unit) }
+                viewModelScope.sendAnalyticsSearchWordsEvent(
+                    analytics = analytics,
+                    length = query.length,
+                    context = analyticsContext
+                )
             }
             is SearchInDocEvent.Next -> {
                 val update = views.nextSearchTarget()
@@ -1984,11 +2000,13 @@ class EditorViewModel(
 
     private fun onAddLocalVideoClicked(blockId: String) {
         mediaBlockId = blockId
+        mediaBlockType = MIME_VIDEO_ALL
         dispatch(Command.OpenGallery(mimeType = MIME_VIDEO_ALL))
     }
 
     private fun onAddLocalPictureClicked(blockId: String) {
         mediaBlockId = blockId
+        mediaBlockType = MIME_IMAGE_ALL
         dispatch(Command.OpenGallery(mimeType = MIME_IMAGE_ALL))
     }
 
@@ -2018,6 +2036,7 @@ class EditorViewModel(
 
     private fun onAddLocalFileClicked(blockId: String) {
         mediaBlockId = blockId
+        mediaBlockType = MIME_FILE_ALL
         dispatch(Command.OpenGallery(mimeType = MIME_FILE_ALL))
     }
 
@@ -2207,14 +2226,6 @@ class EditorViewModel(
                     details = orchestrator.stores.details.current()
                 )
             )
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = EventsDictionary.BTN_STYLE_MENU
-            )
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = POPUP_STYLE
-            )
         } else {
             Timber.e("Target block for style menu not found. Target id: $target")
             sendToast("Target block for style menu not found.")
@@ -2332,10 +2343,6 @@ class EditorViewModel(
                 sendToast(CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION)
             }
             else -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_BLOCK_ACTIONS
-                )
                 proceedWithEnteringActionMode(target = target, scrollTarget = false)
             }
         }
@@ -2353,32 +2360,16 @@ class EditorViewModel(
         Timber.d("onAddBlockToolbarClicked, ")
 
         dispatch(Command.OpenAddBlockPanel(ctx = context))
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_ADD_BLOCK_MENU
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_ADD_BLOCK
-        )
     }
 
     fun onEnterScrollAndMoveClicked() {
         Timber.d("onEnterScrollAndMoveClicked, ")
         mode = EditorMode.SAM
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnEnter)
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SCROLL_MOVE
-        )
     }
 
     fun onExitScrollAndMoveClicked() {
         Timber.d("onExitScrollAndMoveClicked, ")
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SCROLL_MOVE_CANCEL
-        )
         if (controlPanelViewState.value?.multiSelect?.isQuickScrollAndMoveMode == true) {
             clearSelections()
             mode = EditorMode.Edit
@@ -2392,10 +2383,6 @@ class EditorViewModel(
 
     fun onApplyScrollAndMoveClicked() {
         Timber.d("onApplyScrollAndMoveClicked, ")
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_SCROLL_MOVE_MOVE
-        )
     }
 
     private fun onExitActionMode() {
@@ -2489,7 +2476,8 @@ class EditorViewModel(
                 Intent.Text.TurnInto(
                     context = context,
                     targets = targets,
-                    style = style
+                    style = style,
+                    analyticsContext = analyticsContext
                 )
             )
         }
@@ -2658,10 +2646,6 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         views.onEach { if (it is Focusable) it.isFocused = false }
         viewModelScope.launch { renderCommand.send(Unit) }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_HIDE_KEYBOARD
-        )
     }
 
     private fun proceedWithClearingFocus() {
@@ -2747,25 +2731,16 @@ class EditorViewModel(
                 failure = { Timber.e(it, "Error while creating new object with params: $params") },
                 success = { result ->
                     val middleTime = System.currentTimeMillis()
-                    val objType = Props.mapType(type)
-
-                    analytics.registerEvent(
-                        EventAnalytics.Anytype(
-                            name = OBJECT_CREATE,
-                            props = Props(
-                                mapOf(
-                                    PROP_TYPE to objType,
-                                    PROP_LAYOUT to layout.code
-                                )
-                            ),
-                            duration = EventAnalytics.Duration(
-                                start = startTime,
-                                middleware = middleTime,
-                                render = middleTime
-                            )
-                        )
-                    )
                     orchestrator.proxies.payloads.send(result.payload)
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = type,
+                        layout = layout.code.toDouble(),
+                        route = EventsDictionary.Routes.objPowerTool,
+                        startTime = startTime,
+                        middleTime = middleTime,
+                        context = analyticsContext
+                    )
                     proceedWithOpeningPage(result.target)
                 }
             )
@@ -2799,26 +2774,12 @@ class EditorViewModel(
             target = target
         )
 
-        val startTime = System.currentTimeMillis()
-
         viewModelScope.launch {
             createDocument(
                 params = params
             ).proceed(
                 failure = { Timber.e(it, "Error while creating new page with params: $params") },
                 success = { result ->
-                    val middleTime = System.currentTimeMillis()
-                    analytics.registerEvent(
-                        EventAnalytics.Anytype(
-                            name = PAGE_CREATE,
-                            props = Props.empty(),
-                            duration = EventAnalytics.Duration(
-                                start = startTime,
-                                middleware = middleTime,
-                                render = middleTime
-                            )
-                        )
-                    )
                     orchestrator.proxies.payloads.send(result.payload)
                     proceedWithOpeningPage(result.target)
                 }
@@ -2854,10 +2815,6 @@ class EditorViewModel(
         Timber.d("onAddCoverClicked, ")
         if (mode != EditorMode.Locked) {
             dispatch(Command.OpenCoverGallery(context))
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = EventsDictionary.POPUP_CHOOSE_COVER
-            )
         } else {
             sendToast("Cannot change cover: your object is locked.")
         }
@@ -2866,10 +2823,6 @@ class EditorViewModel(
     fun onLayoutClicked() {
         Timber.d("onLayoutClicked, ")
         dispatch(Command.OpenObjectLayout(context))
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.POPUP_CHOOSE_LAYOUT
-        )
     }
 
     fun onLayoutDialogDismissed() {
@@ -2944,10 +2897,6 @@ class EditorViewModel(
                 context = context,
                 target = target
             )
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_BOOKMARK
         )
     }
 
@@ -3145,14 +3094,20 @@ class EditorViewModel(
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
 
             viewModelScope.launch {
+                val blocks = (selected - exclude).sortedBy { id -> ordering[id] }
                 orchestrator.proxies.intents.send(
                     Intent.Document.Move(
                         context = context,
                         target = moveTarget,
                         targetContext = targetContext,
-                        blocks = (selected - exclude).sortedBy { id -> ordering[id] },
+                        blocks = blocks,
                         position = position
                     )
+                )
+                sendAnalyticsBlockReorder(
+                    analytics = analytics,
+                    count = blocks.size,
+                    context = analyticsContext
                 )
             }
         } else {
@@ -3526,7 +3481,13 @@ class EditorViewModel(
                                                 value = !view.isChecked
                                             )
                                         ).process(
-                                            success = { dispatcher.send(it) },
+                                            success = {
+                                                dispatcher.send(it)
+                                                sendAnalyticsRelationValueEvent(
+                                                    analytics = analytics,
+                                                    context = analyticsContext
+                                                )
+                                            },
                                             failure = {
                                                 Timber.e(
                                                     it,
@@ -3577,10 +3538,6 @@ class EditorViewModel(
                             smartBlockType = getObjectSmartBlockType()
                         )
                     )
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
-                    )
                 } else {
                     sendToast("Your object is locked. To change its type, simply unlock it.")
                 }
@@ -3618,7 +3575,13 @@ class EditorViewModel(
                     value = !view.isChecked
                 )
             ).process(
-                success = { dispatcher.send(it) },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(
+                        analytics = analytics,
+                        context = analyticsContext
+                    )
+                },
                 failure = { Timber.e(it, "Error while updating relation values") }
             )
         }
@@ -3641,7 +3604,8 @@ class EditorViewModel(
                     context = context,
                     target = mediaBlockId,
                     filePath = filePath,
-                    url = ""
+                    url = "",
+                    mediaType = mediaBlockType
                 )
             )
         }
@@ -3657,10 +3621,6 @@ class EditorViewModel(
         } else {
             sendToast(NOT_ALLOWED_FOR_OBJECT)
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_DOCUMENT_ICON_MENU
-        )
     }
 
     fun onProfileIconClicked() {
@@ -3678,10 +3638,6 @@ class EditorViewModel(
                 },
                 name = details.details[context]?.name
             )
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_PROFILE_ICON_MENU
         )
     }
 
@@ -3716,7 +3672,8 @@ class EditorViewModel(
                             Content.File.Type.IMAGE -> urlBuilder.image(content.hash)
                             else -> urlBuilder.file(content.hash)
                         },
-                        name = content.name.orEmpty()
+                        name = content.name.orEmpty(),
+                        type = content.type
                     )
                 )
             }
@@ -3736,7 +3693,8 @@ class EditorViewModel(
 
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.SCREEN_SEARCH
+            eventName = searchScreenShow,
+            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
@@ -3758,10 +3716,6 @@ class EditorViewModel(
     }
 
     private fun proceedWithOpeningPage(target: Id) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_DOCUMENT
-        )
         viewModelScope.launch {
             closePage(CloseBlock.Params(context)).process(
                 failure = {
@@ -3776,10 +3730,6 @@ class EditorViewModel(
     }
 
     private fun proceedWithOpeningSet(target: Id) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_SET
-        )
         viewModelScope.launch {
             closePage(CloseBlock.Params(context)).process(
                 failure = {
@@ -3852,7 +3802,13 @@ class EditorViewModel(
                     value = value
                 )
             ).process(
-                success = { dispatcher.send(it) },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(
+                        analytics = analytics,
+                        context = analyticsContext
+                    )
+                },
                 failure = { Timber.e(it, "Error while updating relation values") }
             )
         }
@@ -3870,6 +3826,11 @@ class EditorViewModel(
                     context = context,
                     typeId = id
                 )
+            )
+            sendAnalyticsObjectTypeChangeEvent(
+                analytics = analytics,
+                typeId = id,
+                context = analyticsContext
             )
         }
     }
@@ -3966,14 +3927,6 @@ class EditorViewModel(
                     slashFrom = event.slashStart
                 )
                 controlPanelInteractor.onEvent(panelEvent)
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.BTN_SLASH_MENU
-                )
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = POPUP_SLASH_MENU
-                )
             }
             is SlashEvent.Filter -> {
                 slashFilter = event.filter.toString()
@@ -4146,15 +4099,21 @@ class EditorViewModel(
                 viewModelScope.launch {
                     val view = views.find { it.id == targetId }
                     if (view is BlockView.Text) {
+                        val type = item.convertToMarkType()
                         orchestrator.proxies.intents.send(
                             Intent.Text.UpdateMark(
                                 context = context,
                                 targets = listOf(targetId),
                                 mark = Content.Text.Mark(
                                     range = IntRange(0, view.text.length),
-                                    type = item.convertToMarkType()
+                                    type = type
                                 )
                             )
+                        )
+                        sendAnalyticsUpdateTextMarkupEvent(
+                            analytics = analytics,
+                            type = type,
+                            context = analyticsContext
                         )
                     }
                 }
@@ -4369,6 +4328,22 @@ class EditorViewModel(
         }
         viewModelScope.launch {
             orchestrator.proxies.intents.send(intent)
+            when (item) {
+                is SlashItem.Color.Background -> {
+                    sendAnalyticsBlockBackgroundEvent(
+                        analytics = analytics,
+                        color = item.code,
+                        context = analyticsContext
+                    )
+                }
+                is SlashItem.Color.Text -> {
+                    sendAnalyticsUpdateTextMarkupEvent(
+                        analytics = analytics,
+                        type = Content.Text.Mark.Type.TEXT_COLOR,
+                        context = analyticsContext
+                    )
+                }
+            }
         }
     }
 
@@ -4613,11 +4588,6 @@ class EditorViewModel(
         restorePosition: Int?,
         restoreBlock: Id?
     ) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_MOVE_TO
-        )
-
         dispatch(
             Command.OpenMoveToScreen(
                 blocks = blocks,
@@ -4701,10 +4671,6 @@ class EditorViewModel(
 
     //region LINK TO
     private fun proceedWithLinkToButtonClicked(block: Id, position: Int?) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.SCREEN_LINK_TO
-        )
         dispatch(Command.OpenLinkToScreen(target = block, position = position))
     }
 
@@ -4749,12 +4715,13 @@ class EditorViewModel(
         Timber.d("onKeyPressedEvent, event:[$event]")
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
-                if (isObjectTypesWidgetVisible) hideObjectTypesWidget()
+                if (isObjectTypesWidgetVisible) proceedWithHidingObjectTypeWidget()
                 proceedWithTitleEnterClicked(
                     title = event.target,
                     text = event.text,
                     range = event.range
                 )
+                viewModelScope.sendAnalyticsSetTitleEvent(analytics, analyticsContext)
             }
             is KeyPressedEvent.OnDescriptionBlockEnterKeyEvent -> {
                 proceedWithDescriptionEnterClicked(
@@ -4762,6 +4729,7 @@ class EditorViewModel(
                     text = event.text,
                     range = event.range
                 )
+                viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
             }
         }
     }
@@ -4888,11 +4856,6 @@ class EditorViewModel(
             )
         }
 
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_DELETE
-        )
-
         proceedWithExitingMultiSelectMode()
     }
 
@@ -4923,11 +4886,6 @@ class EditorViewModel(
                 )
             )
         }
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_COPY
-        )
     }
 
     fun onMultiSelectStyleButtonClicked() {
@@ -4959,11 +4917,6 @@ class EditorViewModel(
                 sendToast("Cannot turn selected blocks into page")
             }
         }
-
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_TURN_INTO
-        )
     }
 
     fun onExitMultiSelectModeClicked() {
@@ -4979,10 +4932,6 @@ class EditorViewModel(
             orchestrator.stores.focus.update(Editor.Focus.empty())
             refresh()
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_MS_DONE
-        )
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
     }
 
@@ -4995,14 +4944,6 @@ class EditorViewModel(
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
         }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = POPUP_MULTI_SELECT_MENU
-        )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.BTN_ENTER_MS
-        )
     }
 
     fun onTurnIntoMultiSelectBlockClicked(uiBlock: UiBlock) {
@@ -5081,10 +5022,6 @@ class EditorViewModel(
                         .debounce(300)
                         .collect { onMentionFilter(it) }
                 }
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.POPUP_MENTION_MENU
-                )
             }
             MentionEvent.MentionSuggestStop -> {
                 mentionFrom = -1
@@ -5132,29 +5069,34 @@ class EditorViewModel(
                         name = result.name.getMentionName(MENTION_TITLE_EMPTY),
                         mentionTrigger = mentionText
                     )
-                    analytics.registerEvent(
-                        EventAnalytics.Anytype(
-                            name = PAGE_MENTION_CREATE,
-                            props = Props.empty(),
-                            duration = EventAnalytics.Duration(
-                                start = startTime,
-                                middleware = middleTime,
-                                render = middleTime
-                            )
-                        )
+                    val type = objectTypesProvider.get().firstOrNull { it.url == objectType }
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = objectType,
+                        layout = type?.layout?.code?.toDouble(),
+                        route = EventsDictionary.Routes.objCreateMention,
+                        startTime = startTime,
+                        middleTime = middleTime,
+                        context = analyticsContext
                     )
                 }
             )
         }
     }
 
-    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String) {
+    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String, pos: Int) {
         Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
+        viewModelScope.sendAnalyticsSearchResultEvent(
+            analytics = analytics,
+            pos = pos,
+            length = mentionTrigger.length - 1,
+            context = analyticsContext
+        )
         onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }
 
     fun onCreateMentionInText(id: Id, name: String, mentionTrigger: String) {
-        Timber.d("onCreateMentionInText, id:[$id], name:[$name], mentionTrigger:[$mentionFrom]")
+        Timber.d("onCreateMentionInText, id:[$id], name:[$name], mentionTrigger:[$mentionTrigger]")
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
 
@@ -5203,19 +5145,30 @@ class EditorViewModel(
         proceedWithOpeningObjectByLayout(target)
     }
 
+    private fun sendSearchQueryEvent(query: String) {
+        viewModelScope.sendAnalyticsSearchQueryEvent(
+            analytics = analytics,
+            route = EventsDictionary.Routes.mention,
+            length = query.length,
+            context = analyticsContext
+        )
+    }
+
     private suspend fun onMentionFilter(filter: String) {
         controlPanelViewState.value?.let { state ->
             if (!state.mentionToolbar.isVisible) {
                 jobMentionFilter?.cancel()
                 return
             }
+            val fullText = filter.removePrefix(MENTION_PREFIX)
             val params = SearchObjects.Params(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.filterLinkTo,
                 sorts = ObjectSearchConstants.sortLinkTo,
-                fulltext = filter.removePrefix(MENTION_PREFIX),
+                fulltext = fullText,
                 keys = ObjectSearchConstants.defaultKeys
             )
+            sendSearchQueryEvent(fullText)
             viewModelScope.launch {
                 searchObjects(params).process(
                     success = { result ->
@@ -5269,6 +5222,11 @@ class EditorViewModel(
                     position = position
                 )
             )
+            sendAnalyticsBlockReorder(
+                analytics = analytics,
+                count = 1,
+                context = analyticsContext
+            )
         }
     }
     //endregion
@@ -5278,12 +5236,17 @@ class EditorViewModel(
         get() =
             controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
 
-    fun onObjectTypesWidgetItemClicked(id: Id) {
-        Timber.d("onObjectTypesWidgetItemClicked, id:[$id]")
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide
-        )
-        onObjectTypeChanged(id)
+    fun onObjectTypesWidgetItemClicked(typeId: Id) {
+        Timber.d("onObjectTypesWidgetItemClicked, id:[$typeId]")
+        proceedWithHidingObjectTypeWidget(objectType = typeId)
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.SetObjectType(
+                    context = context,
+                    typeId = typeId
+                )
+            )
+        }
     }
 
     fun onObjectTypesWidgetSearchClicked() {
@@ -5294,17 +5257,11 @@ class EditorViewModel(
                 smartBlockType = getObjectSmartBlockType()
             )
         )
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = EventsDictionary.POPUP_OBJECT_TYPE_CHANGE
-        )
     }
 
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide
-        )
+        proceedWithHidingObjectTypeWidget()
     }
 
     private fun proceedWithShowingObjectTypesWidget(objectType: String?, blocks: List<Block>) {
@@ -5364,8 +5321,38 @@ class EditorViewModel(
         )
     }
 
-    private fun hideObjectTypesWidget() {
+    private fun proceedWithHidingObjectTypeWidget(objectType: String? = null) {
+        dispatchObjectCreateEvent(objectType)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide)
+    }
+
+    private fun dispatchObjectCreateEvent(objectType: String? = null) {
+        if (objectType != null) {
+            val type = objectTypesProvider.get().firstOrNull { it.url == objectType }
+            if (type != null) {
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = type.name,
+                    layout = type.layout.code.toDouble(),
+                    route = EventsDictionary.Routes.objCreateHome,
+                    context = analyticsContext
+                )
+            }
+        } else {
+            val details = orchestrator.stores.details.current()
+            val wrapper = ObjectWrapper.Basic(map = details.details[context]?.map ?: emptyMap())
+            val type =
+                objectTypesProvider.get().firstOrNull { it.url == wrapper.type.firstOrNull() }
+            if (type != null) {
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = type.name,
+                    layout = type.layout.code.toDouble(),
+                    route = EventsDictionary.Routes.objCreateHome,
+                    context = analyticsContext
+                )
+            }
+        }
     }
 
     private fun getObjectSmartBlockType(): SmartBlockType {

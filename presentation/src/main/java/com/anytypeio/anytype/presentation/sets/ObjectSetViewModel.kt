@@ -4,15 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SCREEN_SET
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RECORD_CREATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_TEXT_VALUE_UPDATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_ACTIVE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_FILTER_UPDATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_RELATION_UPDATE
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_VIEWER_SORT_UPDATE
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.event.EventAnalytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -29,6 +21,8 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowSetEvent
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -89,18 +83,6 @@ class ObjectSetViewModel(
         reducer.dispatch(payload.events)
     }
 
-    private val defaultPayloadWithEvent: suspend (Pair<Payload, EventAnalytics.Anytype>) -> Unit =
-        { (payload, event) ->
-            reducer.dispatch(payload.events)
-            analytics.registerEvent(
-                event.copy(
-                    duration = event.duration?.copy(
-                        render = System.currentTimeMillis()
-                    )
-                )
-            )
-        }
-
     private val jobs = mutableListOf<Job>()
 
     private val _commands = MutableSharedFlow<ObjectSetCommand>(replay = 0)
@@ -116,6 +98,8 @@ class ObjectSetViewModel(
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
 
     val isLoading = MutableStateFlow(false)
+
+    private var analyticsContext: String? = null
 
     private lateinit var context: Id
 
@@ -230,6 +214,8 @@ class ObjectSetViewModel(
                         is Result.Success -> {
                             defaultPayloadConsumer(result.data)
                             proceedWithStartupPaging()
+                            setAnalyticsContext(result.data.events)
+                            sendAnalyticsShowSetEvent(analytics, analyticsContext)
                         }
                     }
                 },
@@ -241,11 +227,14 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onResume() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = SCREEN_SET
-        )
+    private fun setAnalyticsContext(events: List<Event>) {
+        if (events.isNotEmpty()) {
+            val event = events[0]
+            if (event is Event.Command.ShowObject) {
+                val block = event.blocks.firstOrNull { it.id == event.context }
+                analyticsContext = block?.fields?.analyticsContext
+            }
+        }
     }
 
     fun onStop() {
@@ -332,7 +321,6 @@ class ObjectSetViewModel(
         val viewer = dv.viewers.find {
             it.id == session.currentViewerId
         } ?: dv.viewers.first()
-        val start = System.currentTimeMillis()
         updateDataViewViewer(
             UpdateDataViewViewer.Params(
                 context = context,
@@ -348,14 +336,7 @@ class ObjectSetViewModel(
             )
         ).process(
             success = { payload ->
-                val event = EventAnalytics.Anytype(
-                    name = SETS_VIEWER_RELATION_UPDATE,
-                    duration = EventAnalytics.Duration(
-                        start = start,
-                        middleware = System.currentTimeMillis()
-                    )
-                )
-                defaultPayloadWithEvent(Pair(payload, event))
+                defaultPayloadConsumer(payload)
             },
             failure = { Timber.e(it, "Error while updating data view's viewer") }
         )
@@ -574,7 +555,6 @@ class ObjectSetViewModel(
         if (record != null) {
             val updated = mapOf(relationKey to value)
             viewModelScope.launch {
-                val start = System.currentTimeMillis()
                 updateDataViewRecord(
                     UpdateDataViewRecord.Params(
                         context = ctx,
@@ -585,12 +565,6 @@ class ObjectSetViewModel(
                 ).process(
                     failure = { Timber.e(it, "Error while updating data view record") },
                     success = {
-                        sendEvent(
-                            analytics = analytics,
-                            eventName = SETS_RELATION_TEXT_VALUE_UPDATE,
-                            startTime = start,
-                            middleTime = System.currentTimeMillis()
-                        )
                         Timber.d("Data view record updated successfully")
                     }
                 )
@@ -603,7 +577,6 @@ class ObjectSetViewModel(
     fun onUpdateViewerSorting(sorts: List<SortingExpression>) {
         Timber.d("onUpdateViewerSorting, sorts:[$sorts]")
         viewModelScope.launch {
-            val start = System.currentTimeMillis()
             val block = reducer.state.value.dataview
             val dv = block.content as DV
             val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
@@ -615,14 +588,7 @@ class ObjectSetViewModel(
                 )
             ).process(
                 success = { payload ->
-                    val event = EventAnalytics.Anytype(
-                        name = SETS_VIEWER_SORT_UPDATE,
-                        duration = EventAnalytics.Duration(
-                            start = start,
-                            middleware = System.currentTimeMillis()
-                        )
-                    )
-                    defaultPayloadWithEvent(Pair(payload, event))
+                    defaultPayloadConsumer(payload)
                 },
                 failure = { Timber.e(it, "Error while updating data view's viewer") }
             )
@@ -632,7 +598,6 @@ class ObjectSetViewModel(
     fun onUpdateViewerFilters(filters: List<FilterExpression>) {
         Timber.d("onUpdateViewerFilters, filters:[$filters]")
         viewModelScope.launch {
-            val start = System.currentTimeMillis()
             val block = reducer.state.value.dataview
             val dv = block.content as DV
             val viewer = dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
@@ -644,14 +609,7 @@ class ObjectSetViewModel(
                 )
             ).process(
                 success = { payload ->
-                    val event = EventAnalytics.Anytype(
-                        name = SETS_VIEWER_FILTER_UPDATE,
-                        duration = EventAnalytics.Duration(
-                            start = start,
-                            middleware = System.currentTimeMillis()
-                        )
-                    )
-                    defaultPayloadWithEvent(Pair(payload, event))
+                    defaultPayloadConsumer(payload)
                 },
                 failure = { Timber.e(it, "Error while updating data view's viewer") }
             )
@@ -664,7 +622,7 @@ class ObjectSetViewModel(
             if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
                 toast(NOT_ALLOWED)
             } else {
-                val start = System.currentTimeMillis()
+                val startTime = System.currentTimeMillis()
                 viewModelScope.launch {
                     createDataViewRecord(
                         CreateDataViewRecord.Params(
@@ -674,16 +632,19 @@ class ObjectSetViewModel(
                     ).process(
                         failure = { Timber.e(it, "Error while creating new record") },
                         success = { record ->
+                            val middleTime = System.currentTimeMillis()
                             val wrapper = ObjectWrapper.Basic(record)
-                            val middle = System.currentTimeMillis()
-                            sendEvent(
-                                eventName = SETS_RECORD_CREATE,
-                                startTime = start,
-                                middleTime = middle,
-                                analytics = analytics
-                            )
                             total.value = total.value.inc()
                             proceedWithRefreshingViewerAfterObjectCreation()
+                            sendAnalyticsObjectCreateEvent(
+                                analytics = analytics,
+                                objType = wrapper.type.firstOrNull(),
+                                layout = wrapper.layout?.code?.toDouble(),
+                                route = EventsDictionary.Routes.objCreateSet,
+                                startTime = startTime,
+                                middleTime = middleTime,
+                                context = analyticsContext
+                            )
                             if (wrapper.layout != ObjectType.Layout.NOTE) {
                                 objectSetRecordCache.map[context] = record
                                 dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
@@ -958,7 +919,6 @@ class ObjectSetViewModel(
         set: Block,
         viewer: Id
     ) {
-        val start = System.currentTimeMillis()
         setActiveViewer(
             SetActiveViewer.Params(
                 context = context,
@@ -969,14 +929,7 @@ class ObjectSetViewModel(
             )
         ).process(
             success = { payload ->
-                val event = EventAnalytics.Anytype(
-                    name = SETS_VIEWER_ACTIVE,
-                    duration = EventAnalytics.Duration(
-                        start = start,
-                        middleware = System.currentTimeMillis()
-                    )
-                )
-                defaultPayloadWithEvent(Pair(payload, event))
+                defaultPayloadConsumer(payload)
             },
             failure = { Timber.e(it, "Error while setting view during pagination") }
         )

@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.OBJECT_RELATION_ADD
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SETS_RELATION_ADD
-import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.base.EventsDictionary.Routes.searchMenu
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
@@ -16,6 +14,9 @@ import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.getPropName
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -46,6 +47,8 @@ abstract class RelationAddBaseViewModel(
             views.filter { view -> view.name.contains(query, true) }
     }
 
+    abstract fun sendAnalyticsEvent(length: Int)
+
     fun onStart(ctx: Id) {
         viewModelScope.launch {
             objectRelationList(ObjectRelationList.Params(ctx)).process(
@@ -58,6 +61,7 @@ abstract class RelationAddBaseViewModel(
     }
 
     fun onQueryChanged(input: String) {
+        sendAnalyticsEvent(input.length)
         userInput.value = input
     }
 
@@ -77,24 +81,22 @@ class RelationAddToObjectViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    fun onRelationSelected(ctx: Id, relation: Id) {
-        val startTime = System.currentTimeMillis()
+    fun onRelationSelected(ctx: Id, relation: RelationView.Existing, screenType: String) {
         viewModelScope.launch {
             addRelationToObject(
                 AddRelationToObject.Params(
                     ctx = ctx,
-                    relation = relation
+                    relation = relation.id
                 )
             ).process(
                 success = {
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = OBJECT_RELATION_ADD,
-                        startTime = startTime,
-                        middleTime = System.currentTimeMillis()
-                    )
                     dispatcher.send(it).also {
-                        commands.emit(Command.OnRelationAdd(relation = relation))
+                        commands.emit(Command.OnRelationAdd(relation = relation.id))
+                        sendAnalyticsAddRelationEvent(
+                            analytics = analytics,
+                            type = screenType,
+                            format = relation.format.getPropName()
+                        )
                         isDismissed.value = true
                     }
                 },
@@ -104,6 +106,14 @@ class RelationAddToObjectViewModel(
                 }
             )
         }
+    }
+
+    override fun sendAnalyticsEvent(length: Int) {
+        viewModelScope.sendAnalyticsSearchQueryEvent(
+            analytics = analytics,
+            route = searchMenu,
+            length = length
+        )
     }
 
     class Factory(
@@ -138,26 +148,27 @@ class RelationAddToDataViewViewModel(
     private val analytics: Analytics
 ) : RelationAddBaseViewModel(objectRelationList = objectRelationList) {
 
-    fun onRelationSelected(ctx: Id, relation: Id, dv: Id) {
-        val startTime = System.currentTimeMillis()
+    fun onRelationSelected(ctx: Id, relation: RelationView.Existing, dv: Id, screenType: String) {
         viewModelScope.launch {
             addRelationToDataView(
                 AddRelationToDataView.Params(
                     ctx = ctx,
-                    relation = relation,
+                    relation = relation.id,
                     dv = dv
                 )
             ).process(
                 success = {
-                    viewModelScope.sendEvent(
-                        analytics = analytics,
-                        eventName = SETS_RELATION_ADD,
-                        startTime = startTime,
-                        middleTime = System.currentTimeMillis()
-                    )
                     dispatcher.send(it).also {
-                        proceedWithAddingNewRelationToCurrentViewer(ctx = ctx, relation = relation)
+                        proceedWithAddingNewRelationToCurrentViewer(
+                            ctx = ctx,
+                            relation = relation.id
+                        )
                     }
+                    sendAnalyticsAddRelationEvent(
+                        analytics = analytics,
+                        type = screenType,
+                        format = relation.format.getPropName()
+                    )
                 },
                 failure = {
                     Timber.e(it, ERROR_MESSAGE)
@@ -166,6 +177,8 @@ class RelationAddToDataViewViewModel(
             )
         }
     }
+
+    override fun sendAnalyticsEvent(length: Int) {}
 
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relation: Id) {
         val state = state.value

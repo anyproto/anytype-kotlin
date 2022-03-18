@@ -3,10 +3,12 @@ package com.anytypeio.anytype.presentation.sets.filter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFilterEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.relations.filterExpression
 import com.anytypeio.anytype.presentation.sets.ObjectSet
@@ -25,7 +27,8 @@ class ViewerFilterViewModel(
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val analytics: Analytics
 ) : BaseListViewModel<FilterView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
@@ -183,6 +186,7 @@ class ViewerFilterViewModel(
                 success = { dispatcher.send(it) },
                 failure = { Timber.e("Error while reset all filters") }
             )
+            sendAnalyticsRemoveFilterEvent(analytics)
         }
     }
 
@@ -197,7 +201,8 @@ class ViewerFilterViewModel(
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -206,7 +211,8 @@ class ViewerFilterViewModel(
                 session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                analytics = analytics
             ) as T
         }
     }

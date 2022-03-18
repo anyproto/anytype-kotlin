@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -50,7 +51,8 @@ object AddObjectRelationValueModule {
         addDataViewRelationOption: AddDataViewRelationOption,
         addTagToDataViewRecord: AddTagToDataViewRecord,
         addStatusToDataViewRecord: AddStatusToDataViewRecord,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        analytics: Analytics
     ): RelationOptionValueDVAddViewModel.Factory = RelationOptionValueDVAddViewModel.Factory(
         relations = relations,
         values = values,
@@ -60,7 +62,8 @@ object AddObjectRelationValueModule {
         dispatcher = dispatcher,
         addDataViewRelationOption = addDataViewRelationOption,
         addTagToDataViewRecord = addTagToDataViewRecord,
-        addStatusToDataViewRecord = addStatusToDataViewRecord
+        addStatusToDataViewRecord = addStatusToDataViewRecord,
+        analytics = analytics
     )
 
     @JvmStatic
@@ -74,7 +77,8 @@ object AddObjectRelationValueModule {
         dispatcher: Dispatcher<Payload>,
         addObjectRelationOption: AddObjectRelationOption,
         updateDetail: UpdateDetail,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        analytics: Analytics
     ): RelationOptionValueAddViewModel.Factory = RelationOptionValueAddViewModel.Factory(
         relations = relations,
         values = values,
@@ -83,7 +87,8 @@ object AddObjectRelationValueModule {
         urlBuilder = urlBuilder,
         dispatcher = dispatcher,
         addObjectRelationOption = addObjectRelationOption,
-        updateDetail = updateDetail
+        updateDetail = updateDetail,
+        analytics = analytics
     )
 
     @JvmStatic

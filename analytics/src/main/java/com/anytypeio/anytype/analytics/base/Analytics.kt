@@ -32,12 +32,10 @@ fun CoroutineScope.sendEvent(
     middleTime: Long? = null,
     renderTime: Long? = null,
     eventName: String,
-    prettified: String? = null,
     props: Props = Props.empty()
 ) = this.launch {
     val event = EventAnalytics.Anytype(
         name = eventName,
-        prettified = prettified,
         props = props,
         duration = EventAnalytics.Duration(
             start = startTime,

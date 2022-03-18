@@ -12,18 +12,17 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModu
 import com.anytypeio.anytype.di.feature.settings.AboutAppModule
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataModule
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
+import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.main.MainComponent
 
 class ComponentManager(private val main: MainComponent) {
 
-    val mainComponent = main
-
     val mainEntryComponent = Component {
         main.mainEntryComponentBuilder().module(MainEntryModule).build()
     }
 
-    private val authComponent = Component {
+    val authComponent = Component {
         main.authComponentBuilder().authModule(AuthModule).build()
     }
 
@@ -650,6 +649,10 @@ class ComponentManager(private val main: MainComponent) {
 
     val logoutWarningComponent = Component {
         main.logoutWarningComponent().module(LogoutWarningModule).build()
+    }
+
+    val mainSettingsComponent = Component {
+        main.mainSettingsComponent().module(MainSettingsModule).build()
     }
 
     class Component<T>(private val builder: () -> T) {

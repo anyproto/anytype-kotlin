@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.PROP_TYPE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
+import com.anytypeio.anytype.analytics.base.EventsDictionary.fileOffloadScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.fileOffloadSuccess
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
@@ -18,7 +21,6 @@ import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -68,6 +70,10 @@ class OtherSettingsViewModel(
                         commands.emit(Command.Toast(msg))
                     }
                     Interactor.Status.Success -> {
+                        viewModelScope.sendEvent(
+                            analytics = analytics,
+                            eventName = fileOffloadSuccess
+                        )
                         isClearFileCacheInProgress.value = false
                     }
                 }
@@ -98,14 +104,21 @@ class OtherSettingsViewModel(
                     commands.emit(Command.SetObjectType(name = name))
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
-                            name = EventsDictionary.DEFAULT_TYPE_CHANGED,
-                            props = Props(mapOf(PROP_TYPE to type)),
+                            name = defaultTypeChanged,
+                            props = Props(mapOf(EventsPropertiesKey.objectType to type)),
                             duration = null
                         )
                     )
                 }
             )
         }
+    }
+
+    fun sendFileOffloadScreenEvent() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = fileOffloadScreenShow
+        )
     }
 
     sealed class Command {

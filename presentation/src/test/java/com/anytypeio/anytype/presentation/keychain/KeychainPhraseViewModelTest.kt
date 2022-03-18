@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.keychain
 
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.base.Either
@@ -21,6 +22,9 @@ class KeychainPhraseViewModelTest {
 
     @Mock
     lateinit var getMnemonic: GetMnemonic
+
+    @Mock
+    lateinit var analytics: Analytics
 
     lateinit var vm: KeychainPhraseViewModel
 
@@ -67,5 +71,5 @@ class KeychainPhraseViewModelTest {
         vm.state.test().assertNoValue()
     }
 
-    private fun buildViewModel() = KeychainPhraseViewModel(getMnemonic = getMnemonic)
+    private fun buildViewModel() = KeychainPhraseViewModel(getMnemonic = getMnemonic, analytics = analytics)
 }

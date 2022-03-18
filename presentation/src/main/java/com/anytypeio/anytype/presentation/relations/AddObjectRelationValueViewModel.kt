@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -37,7 +39,8 @@ abstract class AddObjectRelationValueViewModel(
     protected val details: ObjectDetailProvider,
     protected val relations: ObjectRelationProvider,
     protected val types: ObjectTypesProvider,
-    protected val urlBuilder: UrlBuilder
+    protected val urlBuilder: UrlBuilder,
+    analytics: Analytics
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -245,12 +248,14 @@ class RelationOptionValueDVAddViewModel(
     private val addTagToDataViewRecord: AddTagToDataViewRecord,
     private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
     private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : AddObjectRelationValueViewModel(
     details = details,
     values = values,
     types = types,
     urlBuilder = urlBuilder,
-    relations = relations
+    relations = relations,
+    analytics = analytics
 ) {
 
     fun onCreateDataViewRelationOptionClicked(
@@ -402,6 +407,7 @@ class RelationOptionValueDVAddViewModel(
         private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
         private val urlBuilder: UrlBuilder,
         private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -414,7 +420,8 @@ class RelationOptionValueDVAddViewModel(
                 addDataViewRelationOption = addDataViewRelationOption,
                 addTagToDataViewRecord = addTagToDataViewRecord,
                 addStatusToDataViewRecord = addStatusToDataViewRecord,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                analytics = analytics
             ) as T
         }
     }
@@ -429,12 +436,14 @@ class RelationOptionValueAddViewModel(
     private val addObjectRelationOption: AddObjectRelationOption,
     private val updateDetail: UpdateDetail,
     private val dispatcher: Dispatcher<Payload>,
+    private val analytics: Analytics
 ) : AddObjectRelationValueViewModel(
     details = details,
     values = values,
     types = types,
     urlBuilder = urlBuilder,
-    relations = relations
+    relations = relations,
+    analytics = analytics
 ) {
 
     fun onAddObjectStatusClicked(
@@ -461,7 +470,11 @@ class RelationOptionValueAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding tag") },
-                success = { dispatcher.send(it).also { isParentDismissed.value = true } }
+                success = { dispatcher.send(it).also {
+                    sendAnalyticsRelationValueEvent(analytics)
+                    isParentDismissed.value = true
+                }
+                }
             )
         }
     }
@@ -509,7 +522,10 @@ class RelationOptionValueAddViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while adding tag") },
-                success = { dispatcher.send(it).also { isDismissed.value = true } }
+                success = { dispatcher.send(it).also {
+                    sendAnalyticsRelationValueEvent(analytics)
+                    isDismissed.value = true
+                } }
             )
         }
     }
@@ -568,6 +584,7 @@ class RelationOptionValueAddViewModel(
         private val updateDetail: UpdateDetail,
         private val urlBuilder: UrlBuilder,
         private val dispatcher: Dispatcher<Payload>,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -579,7 +596,8 @@ class RelationOptionValueAddViewModel(
                 urlBuilder = urlBuilder,
                 addObjectRelationOption = addObjectRelationOption,
                 updateDetail = updateDetail,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                analytics = analytics
             ) as T
         }
     }

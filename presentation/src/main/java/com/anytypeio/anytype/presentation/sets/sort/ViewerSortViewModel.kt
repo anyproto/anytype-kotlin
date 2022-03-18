@@ -3,10 +3,12 @@ package com.anytypeio.anytype.presentation.sets.sort
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveSortEvent
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -19,7 +21,8 @@ class ViewerSortViewModel(
     private val objectSetState: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
-    private val updateDataViewViewer: UpdateDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer,
+    private val analytics: Analytics
 ) : BaseListViewModel<ViewerSortViewModel.ViewerSortView>() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
@@ -88,6 +91,7 @@ class ViewerSortViewModel(
                 failure = { Timber.e(it, "Error while removing a sort") },
                 success = { dispatcher.send(it) }
             )
+            sendAnalyticsRemoveSortEvent(analytics)
         }
     }
 
@@ -129,7 +133,8 @@ class ViewerSortViewModel(
         private val state: StateFlow<ObjectSet>,
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
-        private val updateDataViewViewer: UpdateDataViewViewer
+        private val updateDataViewViewer: UpdateDataViewViewer,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -137,7 +142,8 @@ class ViewerSortViewModel(
                 objectSetState = state,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                analytics = analytics
             ) as T
         }
     }

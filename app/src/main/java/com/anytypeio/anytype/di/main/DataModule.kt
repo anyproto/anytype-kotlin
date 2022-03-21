@@ -14,6 +14,8 @@ import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemoteDataStore
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
+import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
+import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -26,7 +28,9 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.UnsplashMiddleware
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
 import com.anytypeio.anytype.middleware.block.BlockMiddleware
 import com.anytypeio.anytype.middleware.interactor.Middleware
@@ -278,4 +282,26 @@ object DataModule {
     @Provides
     @Singleton
     fun provideObjectStore() : ObjectStore = DefaultObjectStore()
+
+    //region Unsplash
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideUnsplashRepo(
+        remote: UnsplashRemote
+    ) : UnsplashRepository = UnsplashDataRepository(
+        remote = remote
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideUnsplashRemote(
+        service: MiddlewareService
+    ) : UnsplashRemote = UnsplashMiddleware(
+        service = service
+    )
+
+    //endregion
 }

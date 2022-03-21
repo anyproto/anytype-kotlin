@@ -39,4 +39,5 @@
     <dimen name="default_dashboard_card_height">126dp</dimen>
     <dimen name="dashboard_object_icon_default_size">48dp</dimen>
     <dimen name="default_divider_height">0.5dp</dimen>
+    <dimen name="default_search_toolbar_clip_height">36dp</dimen>
 </resources>

@@ -32,7 +32,7 @@ open class ObjectSearchViewModel(
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    private val userInput = MutableStateFlow(EMPTY_QUERY)
+        private val userInput = MutableStateFlow(EMPTY_QUERY)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {

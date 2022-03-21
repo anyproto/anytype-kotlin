@@ -72,6 +72,14 @@
 
         </FrameLayout>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:theme="@style/WhiteProgressBar"
+            android:visibility="gone"/>
+
     </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget

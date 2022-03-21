@@ -373,6 +373,10 @@
         <item name="colorAccent">@color/text_secondary</item>
     </style>
 
+    <style name="WhiteProgressBar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">@color/white</item>
+    </style>
+
     <style name="GridCellDateTextStyle">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:maxLines">1</item>

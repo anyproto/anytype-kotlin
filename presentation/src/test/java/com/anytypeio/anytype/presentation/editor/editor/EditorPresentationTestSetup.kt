@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
@@ -28,6 +29,10 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -177,6 +182,9 @@ open class EditorPresentationTestSetup {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var unsplashRepo: UnsplashRepository
+
+    @Mock
     lateinit var getCompatibleObjectTypes: GetCompatibleObjectTypes
 
     @Mock
@@ -206,8 +214,12 @@ open class EditorPresentationTestSetup {
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
+    private lateinit var downloadUnsplashImage: DownloadUnsplashImage
+    private lateinit var setDocCoverImage: SetDocCoverImage
 
     open lateinit var orchestrator: Orchestrator
+
+    private val delegator = Delegator.Default<Action>()
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
@@ -217,6 +229,8 @@ open class EditorPresentationTestSetup {
             selections = SelectionStateHolder.Default()
         )
         updateDetail = UpdateDetail(repo)
+        setDocCoverImage = SetDocCoverImage(repo)
+        downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
 
         orchestrator = Orchestrator(
             createBlock = createBlock,
@@ -289,7 +303,10 @@ open class EditorPresentationTestSetup {
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
-            copyFileToCache = copyFileToCacheDirectory
+            copyFileToCache = copyFileToCacheDirectory,
+            delegator = delegator,
+            setDocCoverImage = setDocCoverImage,
+            downloadUnsplashImage = downloadUnsplashImage
         )
     }
 

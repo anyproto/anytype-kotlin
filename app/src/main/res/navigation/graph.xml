@@ -56,6 +56,10 @@
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
             android:label="Object-Cover-Screen"/>
         <dialog
+            android:id="@+id/objectCoverUnsplashScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.ObjectUnsplashFragment"
+            android:label="Object-Cover-Unsplash-Screen"/>
+        <dialog
             android:id="@+id/relationAddToObjectBlockFragment"
             android:name="com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment"
             android:label="RelationAddToObjectBlockFragment" >
@@ -111,6 +115,10 @@
             android:id="@+id/objectSetCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment"
             android:label="Object-Cover-Screen"/>
+        <dialog
+            android:id="@+id/objectCoverUnsplashScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.ObjectSetUnsplashFragment"
+            android:label="Object-Cover-Unsplash-Screen"/>
         <dialog
             android:id="@+id/viewerCardSizeSelectFragment"
             android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment"

@@ -227,4 +227,10 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun fileListOffload(request: FileList.Offload.Request): FileList.Offload.Response
+
+    @Throws(Exception::class)
+    fun unsplashSearch(request: UnsplashSearch.Request) : UnsplashSearch.Response
+
+    @Throws(Exception::class)
+    fun unsplashDownload(request: UnsplashDownload.Request) : UnsplashDownload.Response
 }

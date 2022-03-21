@@ -920,4 +920,30 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun unsplashSearch(request: UnsplashSearch.Request): UnsplashSearch.Response {
+        val encoded = Service.unsplashSearch(
+            UnsplashSearch.Request.ADAPTER.encode(request)
+        )
+        val response = UnsplashSearch.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != UnsplashSearch.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun unsplashDownload(request: UnsplashDownload.Request): UnsplashDownload.Response {
+        val encoded = Service.unsplashDownload(
+            UnsplashDownload.Request.ADAPTER.encode(request)
+        )
+        val response = UnsplashDownload.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != UnsplashDownload.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

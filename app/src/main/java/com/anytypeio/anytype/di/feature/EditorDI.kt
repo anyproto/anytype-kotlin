@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
@@ -40,6 +42,10 @@ import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -89,6 +95,7 @@ interface EditorSubComponent {
     fun editRelationDateComponent(): RelationDataValueSubComponent.Builder
 
     fun objectCoverComponent() : SelectCoverObjectSubComponent.Builder
+    fun objectUnsplashComponent() : UnsplashSubComponent.Builder
     fun objectMenuComponent() : ObjectMenuComponent.Builder
 
     fun objectLayoutComponent() : ObjectLayoutSubComponent.Builder
@@ -142,6 +149,7 @@ object EditorSessionModule {
         orchestrator: Orchestrator,
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>,
+        delegator: Delegator<Action>,
         detailModificationManager: DetailModificationManager,
         updateDetail: UpdateDetail,
         getCompatibleObjectTypes: GetCompatibleObjectTypes,
@@ -149,7 +157,9 @@ object EditorSessionModule {
         searchObjects: SearchObjects,
         getDefaultEditorType: GetDefaultEditorType,
         findObjectSetForType: FindObjectSetForType,
-        copyFileToCacheDirectory: CopyFileToCacheDirectory
+        copyFileToCacheDirectory: CopyFileToCacheDirectory,
+        downloadUnsplashImage: DownloadUnsplashImage,
+        setDocCoverImage: SetDocCoverImage
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -168,6 +178,7 @@ object EditorSessionModule {
         orchestrator = orchestrator,
         analytics = analytics,
         dispatcher = dispatcher,
+        delegator = delegator,
         detailModificationManager = detailModificationManager,
         updateDetail = updateDetail,
         getCompatibleObjectTypes = getCompatibleObjectTypes,
@@ -176,7 +187,9 @@ object EditorSessionModule {
         getDefaultEditorType = getDefaultEditorType,
         findObjectSetForType = findObjectSetForType,
         createObjectSet = createObjectSet,
-        copyFileToCacheDirectory = copyFileToCacheDirectory
+        copyFileToCacheDirectory = copyFileToCacheDirectory,
+        downloadUnsplashImage = downloadUnsplashImage,
+        setDocCoverImage = setDocCoverImage
     )
 
     @JvmStatic
@@ -692,6 +705,11 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideDelegator() : Delegator<Action> = Delegator.Default()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideDetailManager(
         storage: Editor.Storage
     ) : DetailModificationManager = InternalDetailModificationManager(
@@ -771,4 +789,18 @@ object EditorUseCaseModule {
     fun provideCopyFileToCache(
         context: Context
     ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDownload(repo: UnsplashRepository): DownloadUnsplashImage = DownloadUnsplashImage(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDocCoverImageUseCase(
+        repo: BlockRepository
+    ): SetDocCoverImage = SetDocCoverImage(repo)
 }

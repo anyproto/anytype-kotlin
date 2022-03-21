@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
@@ -48,6 +49,9 @@ class DocumentEmojiPickerFragmentTest {
     lateinit var provider: EmojiProvider
 
     @Mock
+    lateinit var analytics: Analytics
+
+    @Mock
     lateinit var repo: BlockRepository
 
     private lateinit var setEmojiIcon: SetDocumentEmojiIcon
@@ -67,7 +71,8 @@ class DocumentEmojiPickerFragmentTest {
                 setEmojiIcon = setEmojiIcon,
                 setImageIcon = setImageIcon,
                 removeDocumentIcon = removeDocumentIcon,
-                dispatcher = Dispatcher.Default()
+                dispatcher = Dispatcher.Default(),
+                analytics = analytics
             )
     }
 

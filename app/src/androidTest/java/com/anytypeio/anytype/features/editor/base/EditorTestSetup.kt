@@ -36,7 +36,9 @@ import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -172,6 +174,8 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
+
+    lateinit var downloadUnsplashImage: DownloadUnsplashImage
 
     val root: String = "rootId123"
 
@@ -310,7 +314,10 @@ open class EditorTestSetup {
             getDefaultEditorType = getDefaultEditorType,
             createObjectSet = createObjectSet,
             findObjectSetForType = findObjectSetForType,
-            copyFileToCacheDirectory = copyFileToCacheDirectory
+            copyFileToCacheDirectory = copyFileToCacheDirectory,
+            downloadUnsplashImage = downloadUnsplashImage,
+            delegator = Delegator.Default(),
+            setDocCoverImage = setDocCoverImage
         )
     }
 

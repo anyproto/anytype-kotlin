@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -20,6 +21,9 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
@@ -46,6 +50,7 @@ open class EditorViewModelFactory(
     private val orchestrator: Orchestrator,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
+    private val delegator: Delegator<Action>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
@@ -53,7 +58,9 @@ open class EditorViewModelFactory(
     private val searchObjects: SearchObjects,
     private val getDefaultEditorType: GetDefaultEditorType,
     private val findObjectSetForType: FindObjectSetForType,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val downloadUnsplashImage: DownloadUnsplashImage,
+    private val setDocCoverImage: SetDocCoverImage
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -76,6 +83,7 @@ open class EditorViewModelFactory(
             orchestrator = orchestrator,
             analytics = analytics,
             dispatcher = dispatcher,
+            delegator = delegator,
             detailModificationManager = detailModificationManager,
             updateDetail = updateDetail,
             getCompatibleObjectTypes = getCompatibleObjectTypes,
@@ -84,7 +92,9 @@ open class EditorViewModelFactory(
             getDefaultEditorType = getDefaultEditorType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
-            copyFileToCache = copyFileToCacheDirectory
+            copyFileToCache = copyFileToCacheDirectory,
+            downloadUnsplashImage = downloadUnsplashImage,
+            setDocCoverImage = setDocCoverImage
         ) as T
     }
 }

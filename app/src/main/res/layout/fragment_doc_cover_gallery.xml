@@ -46,11 +46,11 @@
         android:id="@+id/docCoverGalleryRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="@dimen/dp_8"
-        android:paddingEnd="@dimen/dp_8"
         android:layout_weight="1"
         android:clipToPadding="false"
         android:minHeight="300dp"
+        android:paddingStart="@dimen/dp_8"
+        android:paddingEnd="@dimen/dp_8"
         android:paddingBottom="@dimen/dp_16" />
 
     <LinearLayout
@@ -60,23 +60,16 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/btnGallery"
+            android:id="@+id/btnUnsplash"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:fontFamily="@font/inter_regular"
-            android:gravity="center"
-            android:text=""
-            android:textColor="#ACA996"
+            android:text="@string/unsplash"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:textColor="@color/glyph_active"
             android:textSize="17sp" />
 
         <TextView
@@ -85,9 +78,11 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:fontFamily="@font/inter_regular"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
             android:gravity="center"
             android:text="@string/btn_upload"
-            android:textColor="#ACA996"
+            android:textColor="@color/glyph_active"
             android:textSize="17sp" />
 
     </LinearLayout>

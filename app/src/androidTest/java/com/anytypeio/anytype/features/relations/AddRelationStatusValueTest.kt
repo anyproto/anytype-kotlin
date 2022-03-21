@@ -7,6 +7,7 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -53,6 +54,9 @@ class AddRelationStatusValueTest {
     @Mock
     lateinit var dispatcher: Dispatcher<Payload>
 
+    @Mock
+    lateinit var analytics: Analytics
+
     private lateinit var addRelationOption: AddDataViewRelationOption
     private lateinit var addObjectRelationOption: AddObjectRelationOption
     private lateinit var removeTagFromDataViewRecord: RemoveTagFromDataViewRecord
@@ -96,6 +100,7 @@ class AddRelationStatusValueTest {
             addStatusToDataViewRecord = addStatusToDataViewRecord,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
+            analytics = analytics
         )
     }
 

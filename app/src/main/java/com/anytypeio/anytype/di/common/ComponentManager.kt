@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.relations.*
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
@@ -519,6 +520,22 @@ class ComponentManager(private val main: MainComponent) {
             .get(ctx)
             .objectCoverComponent()
             .module(SelectCoverObjectModule)
+            .build()
+    }
+
+    val objectUnsplashComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .objectUnsplashComponent()
+            .module(UnsplashModule)
+            .build()
+    }
+
+    val objectSetUnsplashComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectUnsplashComponent()
+            .module(UnsplashModule)
             .build()
     }
 

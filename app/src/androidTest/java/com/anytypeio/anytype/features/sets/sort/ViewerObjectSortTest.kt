@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Payload
@@ -47,6 +48,9 @@ class ViewerObjectSortTest {
     @Mock
     lateinit var repo: BlockRepository
 
+    @Mock
+    lateinit var analytics: Analytics
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     private val root = MockDataFactory.randomUuid()
@@ -62,7 +66,8 @@ class ViewerObjectSortTest {
             state = state,
             session = session,
             updateDataViewViewer = updateDataViewViewer,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            analytics = analytics
         )
     }
 

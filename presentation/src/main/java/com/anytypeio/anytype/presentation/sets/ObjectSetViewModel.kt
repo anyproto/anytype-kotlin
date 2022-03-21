@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -18,6 +19,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
@@ -48,10 +52,13 @@ class ObjectSetViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val createDataViewRecord: CreateDataViewRecord,
+    private val downloadUnsplashImage: DownloadUnsplashImage,
+    private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
+    private val delegator: Delegator<Action>,
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
@@ -177,6 +184,43 @@ class ObjectSetViewModel(
                 }
                 .collect()
         }
+
+        viewModelScope.launch {
+            delegator.receive().collect { action ->
+                when (action) {
+                    is Action.SetUnsplashImage -> {
+                        proceedWithSettingUnsplashImage(action)
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun proceedWithSettingUnsplashImage(
+        action: Action.SetUnsplashImage
+    ) {
+        downloadUnsplashImage(
+            DownloadUnsplashImage.Params(
+                picture = action.img
+            )
+        ).process(
+            failure = {
+                Timber.e(it, "Error while download unsplash image")
+            },
+            success = { hash ->
+                setDocCoverImage(
+                    SetDocCoverImage.Params.FromHash(
+                        context = context,
+                        hash = hash
+                    )
+                ).process(
+                    failure = {
+                        Timber.e(it, "Error while setting unsplash image")
+                    },
+                    success = { payload -> dispatcher.send(payload) }
+                )
+            }
+        )
     }
 
     fun onStart(ctx: Id) {

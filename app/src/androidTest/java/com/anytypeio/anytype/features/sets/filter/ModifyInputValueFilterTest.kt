@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -57,6 +58,9 @@ class ModifyInputValueFilterTest {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var analytics: Analytics
+
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
     lateinit var urlBuilder: UrlBuilder
@@ -79,7 +83,8 @@ class ModifyInputValueFilterTest {
             dispatcher = dispatcher,
             searchObjects = searchObjects,
             urlBuilder = urlBuilder,
-            objectTypesProvider = objectTypesProvider
+            objectTypesProvider = objectTypesProvider,
+            analytics = analytics
         )
     }
 

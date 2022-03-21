@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewSubComponent
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -28,6 +30,10 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.relations.providers.*
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -76,6 +82,7 @@ interface ObjectSetSubComponent {
     fun objectSetMenuComponent() : ObjectSetMenuComponent.Builder
     fun objectSetIconPickerComponent() : ObjectSetIconPickerComponent.Builder
     fun objectSetCoverComponent() : SelectCoverObjectSetSubComponent.Builder
+    fun objectUnsplashComponent() : UnsplashSubComponent.Builder
 }
 
 @Module
@@ -97,10 +104,13 @@ object ObjectSetModule {
         createDataViewRecord: CreateDataViewRecord,
         reducer: ObjectSetReducer,
         dispatcher: Dispatcher<Payload>,
+        delegator: Delegator<Action>,
         objectSetRecordCache: ObjectSetRecordCache,
         urlBuilder: UrlBuilder,
         session: ObjectSetSession,
-        analytics: Analytics
+        analytics: Analytics,
+        downloadUnsplashImage: DownloadUnsplashImage,
+        setDocCoverImage: SetDocCoverImage
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -114,10 +124,13 @@ object ObjectSetModule {
         interceptThreadStatus = interceptThreadStatus,
         reducer = reducer,
         dispatcher = dispatcher,
+        delegator = delegator,
         objectSetRecordCache = objectSetRecordCache,
         urlBuilder = urlBuilder,
         session = session,
-        analytics = analytics
+        analytics = analytics,
+        downloadUnsplashImage = downloadUnsplashImage,
+        setDocCoverImage = setDocCoverImage
     )
 
     @JvmStatic
@@ -221,6 +234,11 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideDelegator() : Delegator<Action> = Delegator.Default()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideObjectSetRecordCache(): ObjectSetRecordCache = ObjectSetRecordCache()
 
     @JvmStatic
@@ -292,4 +310,18 @@ object ObjectSetModule {
     fun provideDeleteRelationFromDataViewUseCase(
         repo: BlockRepository
     ): DeleteRelationFromDataView = DeleteRelationFromDataView(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDocCoverImageUseCase(
+        repo: BlockRepository
+    ): SetDocCoverImage = SetDocCoverImage(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDownload(repo: UnsplashRepository): DownloadUnsplashImage = DownloadUnsplashImage(
+        repo = repo
+    )
 }

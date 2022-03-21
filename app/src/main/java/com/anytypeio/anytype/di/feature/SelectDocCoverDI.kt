@@ -48,13 +48,6 @@ object SelectCoverObjectModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideSetDocCoverImageUseCase(
-        repo: BlockRepository
-    ): SetDocCoverImage = SetDocCoverImage(repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideRemoveDocCoverUseCase(
         repo: BlockRepository
     ): RemoveDocCover = RemoveDocCover(repo)
@@ -117,13 +110,6 @@ object SelectCoverObjectSetModule {
     fun provideSetDocCoverGradientUseCase(
         repo: BlockRepository
     ): SetDocCoverGradient = SetDocCoverGradient(repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSetDocCoverImageUseCase(
-        repo: BlockRepository
-    ): SetDocCoverImage = SetDocCoverImage(repo)
 
     @JvmStatic
     @Provides

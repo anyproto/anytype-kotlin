@@ -8,12 +8,16 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -67,7 +71,14 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var downloadUnsplashImage: DownloadUnsplashImage
+
+    @Mock
+    lateinit var setDocCoverImage: SetDocCoverImage
+
     val dispatcher = Dispatcher.Default<Payload>()
+    val delegator = Delegator.Default<Action>()
     val reducer = ObjectSetReducer()
     val cache = ObjectSetRecordCache()
     val session = ObjectSetSession()
@@ -87,11 +98,14 @@ open class ObjectSetViewModelTestSetup {
         createDataViewRecord = createDataViewRecord,
         setActiveViewer = setActiveViewer,
         dispatcher = dispatcher,
+        delegator = delegator,
         reducer = reducer,
         objectSetRecordCache = cache,
         urlBuilder = urlBuilder,
         session = session,
-        analytics = analytics
+        analytics = analytics,
+        downloadUnsplashImage = downloadUnsplashImage,
+        setDocCoverImage = setDocCoverImage
     )
 
     fun stubInterceptEvents(

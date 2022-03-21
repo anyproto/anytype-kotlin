@@ -8,6 +8,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -50,6 +51,9 @@ class FilterListTest {
     @Mock
     lateinit var gateway: Gateway
 
+    @Mock
+    lateinit var analytics: Analytics
+
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
     lateinit var urlBuilder: UrlBuilder
@@ -70,7 +74,8 @@ class FilterListTest {
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
-            state = state
+            state = state,
+            analytics = analytics
         )
     }
 

@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
@@ -65,6 +66,9 @@ class ObjectRelationListTest {
     @Mock
     lateinit var detailModificationManager: DetailModificationManager
 
+    @Mock
+    lateinit var analytics: Analytics
+
     private lateinit var objectRelationList: ObjectRelationList
     private lateinit var updateDetail: UpdateDetail
     private lateinit var addToFeaturedRelations: AddToFeaturedRelations
@@ -94,7 +98,8 @@ class ObjectRelationListTest {
             updateDetail = updateDetail,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
-            deleteRelationFromObject = deleteRelationFromObject
+            deleteRelationFromObject = deleteRelationFromObject,
+            analytics = analytics
         )
     }
 

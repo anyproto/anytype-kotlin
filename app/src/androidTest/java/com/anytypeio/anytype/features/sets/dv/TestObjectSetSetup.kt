@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -18,8 +19,12 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -43,11 +48,16 @@ abstract class TestObjectSetSetup {
     private lateinit var closeBlock: CloseBlock
     private lateinit var setActiveViewer: SetActiveViewer
     private lateinit var interceptThreadStatus: InterceptThreadStatus
+    private lateinit var setDocCoverImage: SetDocCoverImage
+    private lateinit var downloadUnsplashImage: DownloadUnsplashImage
 
     lateinit var urlBuilder: UrlBuilder
 
     @Mock
     lateinit var repo: BlockRepository
+
+    @Mock
+    lateinit var unsplashRepo: UnsplashRepository
 
     @Mock
     lateinit var auth: AuthRepository
@@ -89,6 +99,8 @@ abstract class TestObjectSetSetup {
         )
     )
 
+    val delegator = Delegator.Default<Action>()
+
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
@@ -102,6 +114,8 @@ abstract class TestObjectSetSetup {
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         closeBlock = CloseBlock(repo)
         urlBuilder = UrlBuilder(gateway)
+        downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
+        setDocCoverImage = SetDocCoverImage(repo)
 
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,
@@ -119,7 +133,10 @@ abstract class TestObjectSetSetup {
             dispatcher = dispatcher,
             reducer = reducer,
             objectSetRecordCache = objectSetRecordCache,
-            analytics = analytics
+            analytics = analytics,
+            downloadUnsplashImage = downloadUnsplashImage,
+            setDocCoverImage = setDocCoverImage,
+            delegator = delegator
         )
     }
 

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.editor.Editor
@@ -36,7 +37,10 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.*
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
@@ -123,6 +127,7 @@ class EditorViewModel(
     private val orchestrator: Orchestrator,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<Payload>,
+    private val delegator: Delegator<Action>,
     private val detailModificationManager: DetailModificationManager,
     private val updateDetail: UpdateDetail,
     private val getCompatibleObjectTypes: GetCompatibleObjectTypes,
@@ -131,7 +136,9 @@ class EditorViewModel(
     private val getDefaultEditorType: GetDefaultEditorType,
     private val findObjectSetForType: FindObjectSetForType,
     private val createObjectSet: CreateObjectSet,
-    private val copyFileToCache: CopyFileToCacheDirectory
+    private val copyFileToCache: CopyFileToCacheDirectory,
+    private val downloadUnsplashImage: DownloadUnsplashImage,
+    private val setDocCoverImage: SetDocCoverImage
 ) : ViewStateViewModel<ViewState>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
@@ -224,6 +231,43 @@ class EditorViewModel(
         processRendering()
         processMarkupChanges()
         viewModelScope.launch { orchestrator.start() }
+
+        viewModelScope.launch {
+            delegator.receive().collect { action ->
+                when (action) {
+                    is Action.SetUnsplashImage -> {
+                        proceedWithSettingUnsplashImage(action)
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun proceedWithSettingUnsplashImage(
+        action: Action.SetUnsplashImage
+    ) {
+        downloadUnsplashImage(
+            DownloadUnsplashImage.Params(
+                picture = action.img
+            )
+        ).process(
+            failure = {
+                Timber.e(it, "Error while download unsplash image")
+            },
+            success = { hash ->
+                setDocCoverImage(
+                    SetDocCoverImage.Params.FromHash(
+                        context = context,
+                        hash = hash
+                    )
+                ).process(
+                    failure = {
+                        Timber.e(it, "Error while setting unsplash image")
+                    },
+                    success = { payload -> dispatcher.send(payload) }
+                )
+            }
+        )
     }
 
     private fun startProcessingInternalDetailModifications() {

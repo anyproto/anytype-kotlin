@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
@@ -29,7 +30,11 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
+import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.MockBlockFactory
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.*
 import com.anytypeio.anytype.presentation.editor.editor.Command
@@ -213,6 +218,9 @@ open class EditorViewModelTest {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var unsplashRepo: UnsplashRepository
+
+    @Mock
     lateinit var setObjectType: SetObjectType
 
     @Mock
@@ -238,8 +246,12 @@ open class EditorViewModelTest {
     lateinit var vm: EditorViewModel
 
     private lateinit var builder: UrlBuilder
+    private lateinit var downloadUnsplashImage: DownloadUnsplashImage
+    private lateinit var setDocCoverImage: SetDocCoverImage
 
     val root = MockDataFactory.randomUuid()
+
+    val delegator = Delegator.Default<Action>()
 
     val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -3918,6 +3930,8 @@ open class EditorViewModelTest {
             selections = SelectionStateHolder.Default()
         )
         updateDetail = UpdateDetail(repo)
+        setDocCoverImage = SetDocCoverImage(repo)
+        downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
 
         vm = EditorViewModel(
             openPage = openPage,
@@ -3988,7 +4002,10 @@ open class EditorViewModelTest {
             searchObjects = searchObjects,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
-            copyFileToCache = copyFileToCacheDirectory
+            copyFileToCache = copyFileToCacheDirectory,
+            downloadUnsplashImage = downloadUnsplashImage,
+            setDocCoverImage = setDocCoverImage,
+            delegator = delegator
         )
     }
 

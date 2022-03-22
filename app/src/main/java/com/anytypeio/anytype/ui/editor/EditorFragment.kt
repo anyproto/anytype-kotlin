@@ -95,8 +95,8 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.*
+import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
-import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
@@ -829,22 +829,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
-                    val fr = ObjectMenuFragment.new(
-                        ctx = ctx,
-                        isArchived = command.isArchived,
-                        isFavorite = command.isFavorite
+                    findNavController().navigate(
+                        R.id.objectMainMenuScreen,
+                        bundleOf(
+                            ObjectMenuBaseFragment.CTX_KEY to ctx,
+                            ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
+                            ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
+                            ObjectMenuBaseFragment.IS_PROFILE_KEY to false
+                        )
                     )
-                    fr.show(childFragmentManager, null)
                 }
                 is Command.OpenProfileMenu -> {
                     hideKeyboard()
-                    val fr = ObjectMenuFragment.new(
-                        ctx = ctx,
-                        isProfile = true,
-                        isArchived = false,
-                        isFavorite = command.isFavorite
+                    findNavController().navigate(
+                        R.id.objectMainMenuScreen,
+                        bundleOf(
+                            ObjectMenuBaseFragment.CTX_KEY to ctx,
+                            ObjectMenuBaseFragment.IS_ARCHIVED_KEY to false,
+                            ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
+                            ObjectMenuBaseFragment.IS_PROFILE_KEY to true
+                        )
                     )
-                    fr.show(childFragmentManager, null)
                 }
                 is Command.OpenCoverGallery -> {
                     try {

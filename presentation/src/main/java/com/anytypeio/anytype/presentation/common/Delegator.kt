@@ -19,4 +19,6 @@ interface Delegator<T> {
 
 sealed class Action {
     data class SetUnsplashImage(val img: Id) : Action()
+    object SearchOnPage: Action()
+    object UndoRedo : Action()
 }

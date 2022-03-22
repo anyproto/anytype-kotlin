@@ -8,6 +8,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.presentation.common.Action
+import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectSetMenuViewModel
@@ -76,7 +78,8 @@ object ObjectMenuModule {
         storage: Editor.Storage,
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>,
-        updateFields: UpdateFields
+        updateFields: UpdateFields,
+        delegator: Delegator<Action>
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -84,7 +87,8 @@ object ObjectMenuModule {
         storage = storage,
         analytics = analytics,
         dispatcher = dispatcher,
-        updateFields = updateFields
+        updateFields = updateFields,
+        delegator = delegator
     )
 }
 

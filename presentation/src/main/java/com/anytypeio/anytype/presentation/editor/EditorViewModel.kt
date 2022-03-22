@@ -238,6 +238,8 @@ class EditorViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
+                    Action.SearchOnPage -> onEnterSearchModeClicked()
+                    Action.UndoRedo -> onUndoRedoActionClicked()
                 }
             }
         }

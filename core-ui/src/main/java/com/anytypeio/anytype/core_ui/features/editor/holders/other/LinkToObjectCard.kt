@@ -8,7 +8,10 @@ import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
 import com.anytypeio.anytype.core_ui.features.editor.*
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.removeSpans
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -66,12 +69,12 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
             name.isBlank() -> {
                 title.visible()
                 val sb = SpannableString(untitled)
-                title.text = sb
+                title.setText(sb, TextView.BufferType.SPANNABLE)
             }
             else -> {
                 title.visible()
                 val sb = SpannableString(name)
-                title.text = sb
+                title.setText(sb, TextView.BufferType.SPANNABLE)
             }
         }
     }
@@ -113,10 +116,11 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     }
 
     private fun applySearchHighlight(field: BlockView.Searchable.Field, input: TextView) {
-        input.editableText.removeSpans<SearchHighlightSpan>()
-        input.editableText.removeSpans<SearchTargetHighlightSpan>()
+        val content = input.text as Spannable
+        content.removeSpans<SearchHighlightSpan>()
+        content.removeSpans<SearchTargetHighlightSpan>()
         field.highlights.forEach { highlight ->
-            input.editableText.setSpan(
+            content.setSpan(
                 SearchHighlightSpan(),
                 highlight.first,
                 highlight.last,
@@ -124,7 +128,7 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
             )
         }
         if (field.isTargeted) {
-            input.editableText.setSpan(
+           content.setSpan(
                 SearchTargetHighlightSpan(),
                 field.target.first,
                 field.target.last,

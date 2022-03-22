@@ -16,6 +16,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputType
+import android.text.Spannable
 import android.text.Spanned
 import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
@@ -155,6 +156,10 @@ fun <T> hasSpan(spanned: Spanned, clazz: Class<T>): Boolean {
 }
 
 inline fun <reified T> Editable.removeSpans() {
+    getSpans(0, length, T::class.java).forEach { removeSpan(it) }
+}
+
+inline fun <reified T> Spannable.removeSpans() {
     getSpans(0, length, T::class.java).forEach { removeSpan(it) }
 }
 

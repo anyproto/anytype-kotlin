@@ -1,20 +1,20 @@
 package com.anytypeio.anytype.ui.editor.modals
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseView
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseViewModel.ViewState
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -127,54 +128,48 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment<FragmentPa
     }
 
     private fun proceedWithImagePick() {
-        if (!hasExternalStoragePermission())
-            requestExternalStoragePermission()
-        else
+        if (!hasExternalStoragePermission()) {
+            permissionReadStorage.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+        } else {
             openGallery()
-    }
-
-    private fun requestExternalStoragePermission() {
-        requestPermissions(
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            REQUEST_PERMISSION_CODE
-        )
+        }
     }
 
     private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
         requireActivity(),
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.READ_EXTERNAL_STORAGE
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == SELECT_IMAGE_CODE) {
-            data?.data?.let { uri ->
-                try {
-                    val path = uri.parsePath(requireContext())
-                    vm.onPickedFromDevice(
-                        ctx = context,
-                        path = path
-                    )
-                } catch (e: Exception) {
-                    Timber.e(COULD_NOT_PARSE_PATH_ERROR)
-                    toast(COULD_NOT_PARSE_PATH_ERROR)
-                }
+    private val permissionReadStorage =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+            val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
+            if (readResult == true) {
+                openGallery()
+            } else {
+                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
             }
+        }
+
+    val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                vm.onPickedFromDevice(
+                    ctx = context,
+                    path = path
+                )
+            } catch (e: Exception) {
+                toast("Error while parsing path for cover image")
+                Timber.d(e, "Error while parsing path for cover image")
+            }
+        } else {
+            toast("Error while upload cover image, URI is null")
+            Timber.e("Error while upload cover image, URI is null")
         }
     }
 
     private fun openGallery() {
-        try {
-            Intent(
-                Intent.ACTION_PICK,
-                MediaStore.Images.Media.INTERNAL_CONTENT_URI
-            ).let { intent ->
-                startActivityForResult(intent, SELECT_IMAGE_CODE)
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to open gallery")
-            toast("Failed to open gallery. Please, try again later.")
-        }
+        getContent.launch(SELECT_IMAGE_CODE)
     }
 
     override fun inflateBinding(

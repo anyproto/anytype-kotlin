@@ -1,18 +1,14 @@
 package com.anytypeio.anytype.ui.editor.cover
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -31,12 +27,14 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
-abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocCoverGalleryBinding>() {
+abstract class SelectCoverGalleryFragment :
+    BaseBottomSheetFragment<FragmentDocCoverGalleryBinding>() {
 
     abstract val ctx: String
     abstract val vm: SelectCoverViewModel
@@ -52,7 +50,7 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocC
     val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
         if (uri != null) {
             try {
-                val path = uri.parsePath(requireContext())
+                val path = uri.parseImagePath(requireContext())
                 vm.onImagePicked(ctx, path)
             } catch (e: Exception) {
                 toast("Error while parsing path for cover image")
@@ -63,6 +61,16 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocC
             Timber.e("Error while upload cover image, URI is null")
         }
     }
+
+    private val permissionReadStorage =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+            val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
+            if (readResult == true) {
+                openGallery()
+            } else {
+                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -102,7 +110,12 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocC
             }
             addItemDecoration(
                 object : RecyclerView.ItemDecoration() {
-                    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
                         val position = parent.getChildAdapterPosition(view)
                         val holder = parent.findViewHolderForLayoutPosition(position)
                         if (holder !is DocCoverGalleryAdapter.ViewHolder.Header) {
@@ -122,33 +135,31 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocC
             jobs += subscribe(vm.views) { docCoverGalleryAdapter.views = it }
             jobs += subscribe(vm.isDismissed) { if (it) findNavController().popBackStack() }
             jobs += subscribe(vm.toasts) { toast(it) }
+            jobs += subscribe(vm.isLoading) { isLoading ->
+                //todo Add progress bar
+            }
         }
         super.onStart()
         expand()
     }
 
     private fun proceedWithImagePick() {
-        if (!hasExternalStoragePermission())
-            requestExternalStoragePermission()
+        if (!hasReadStoragePermission())
+            permissionReadStorage.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
         else
             openGallery()
-    }
-
-    private fun requestExternalStoragePermission() {
-        requestPermissions(
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            REQUEST_PERMISSION_CODE
-        )
     }
 
     private fun openGallery() {
         getContent.launch(SELECT_IMAGE_CODE)
     }
 
-    private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
+    private fun hasReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
         requireActivity(),
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    ).let { result -> result == PackageManager.PERMISSION_GRANTED }
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    ).let { result ->
+        result == PackageManager.PERMISSION_GRANTED
+    }
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -162,22 +173,6 @@ abstract class SelectCoverGalleryFragment : BaseBottomSheetFragment<FragmentDocC
     companion object {
         private const val SELECT_IMAGE_CODE = 1
         private const val REQUEST_PERMISSION_CODE = 2
-    }
-}
-
-class GetImageContract : ActivityResultContract<Int, Uri?>() {
-    override fun createIntent(context: Context, input: Int?): Intent {
-        return Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.INTERNAL_CONTENT_URI
-        )
-    }
-
-    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-        if (resultCode == Activity.RESULT_OK) {
-            return intent?.data
-        }
-        return null
     }
 }
 

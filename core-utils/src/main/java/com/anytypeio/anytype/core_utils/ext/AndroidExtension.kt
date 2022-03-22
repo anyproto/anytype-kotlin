@@ -23,6 +23,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
@@ -87,6 +88,21 @@ fun Uri.parsePath(context: Context): String {
     }
 
     return result ?: throw IllegalStateException("Cold not get real path")
+}
+
+fun Uri.parseImagePath(context: Context): String {
+    context.contentResolver.query(
+        this,
+        arrayOf(MediaStore.Images.Media.DATA),
+        null,
+        null,
+        null
+    )?.use { cursor ->
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        return cursor.getString(idx)
+    } ?: this.path ?: throw IllegalStateException("Cold not get real path")
+    throw IllegalStateException("Cold not get real path")
 }
 
 fun Throwable.timber() = Timber.e("Get error : ${this.message}")
@@ -154,9 +170,10 @@ fun Int.addDot(): String = "$this."
 fun EditText.multilineIme(action: Int) {
     imeOptions = action
     inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
-    setRawInputType(InputType.TYPE_CLASS_TEXT
-            or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-            or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
+    setRawInputType(
+        InputType.TYPE_CLASS_TEXT
+                or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
     )
     setHorizontallyScrolling(false)
     maxLines = Integer.MAX_VALUE
@@ -288,5 +305,24 @@ fun Fragment.startFilePicker(mime: String) {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         startActivityForResult(intent, REQUEST_MEDIA_CODE)
+    }
+}
+
+/**
+ * Use this class for picking images from external storage
+ */
+class GetImageContract : ActivityResultContract<Int, Uri?>() {
+    override fun createIntent(context: Context, input: Int?): Intent {
+        return Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+    }
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+        if (resultCode == Activity.RESULT_OK) {
+            return intent?.data
+        }
+        return null
     }
 }

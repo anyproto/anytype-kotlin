@@ -29,6 +29,7 @@ abstract class SelectCoverViewModel(
 
     val views = MutableStateFlow<List<DocCoverGalleryView>>(emptyList())
     val isDismissed = MutableStateFlow(false)
+    val isLoading = MutableStateFlow(false)
 
     init {
         render()
@@ -53,10 +54,11 @@ abstract class SelectCoverViewModel(
 
     fun onImagePicked(ctx: Id, path: String) {
         if (path.endsWith(EditorViewModel.FORMAT_WEBP, true)) {
-            Timber.d("onDocCoverImagePicked, not allowed to add WEBP1 format")
+            Timber.d("onDocCoverImagePicked, not allowed to add WEBP format")
             return
         }
         viewModelScope.launch {
+            isLoading.emit(true)
             setCoverImage(
                 SetDocCoverImage.Params.FromPath(
                     context = ctx,
@@ -64,10 +66,12 @@ abstract class SelectCoverViewModel(
                 )
             ).proceed(
                 failure = {
+                    isLoading.emit(false)
                     sendToast("Error while setting doc cover image, ${it.message}")
                     Timber.e(it, "Error while setting doc cover image")
                 },
                 success = {
+                    isLoading.emit(false)
                     sendAnalyticsSetCoverEvent(analytics)
                     dispatcher.send(it)
                     isDismissed.emit(true)

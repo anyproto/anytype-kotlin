@@ -1,31 +1,30 @@
 package com.anytypeio.anytype.ui.auth.account
 
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.toast
-import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.parsePath
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.databinding.FragmentCreateAccountBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -114,32 +113,54 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
     }
 
     private fun openGallery() {
-        Intent(
-            Intent.ACTION_PICK,
-            INTERNAL_CONTENT_URI
-        ).let { intent ->
-            startActivityForResult(intent, SELECT_IMAGE_CODE)
-        }
+        getContent.launch(SELECT_IMAGE_CODE)
     }
 
     private fun proceedWithImagePick() {
         if (!hasExternalStoragePermission())
-            requestExternalStoragePermission()
+            permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
         else
             openGallery()
     }
 
-    private fun requestExternalStoragePermission() {
-        requestPermissions(
-            arrayOf(WRITE_EXTERNAL_STORAGE),
-            REQUEST_PERMISSION_CODE
-        )
-    }
-
     private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
         requireActivity(),
-        WRITE_EXTERNAL_STORAGE
+        READ_EXTERNAL_STORAGE
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
+
+    private val permissionReadStorage =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+            val readResult = grantResults[READ_EXTERNAL_STORAGE]
+            if (readResult == true) {
+                openGallery()
+            } else {
+                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
+            }
+        }
+
+    val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                binding.profileIcon.apply {
+                    visible()
+                    Glide
+                        .with(this)
+                        .load(uri)
+                        .circleCrop()
+                        .into(this)
+                }
+                binding.profileIconPlaceholder.invisible()
+                vm.onAvatarSet(path = path)
+            } catch (e: Exception) {
+                toast("Error while parsing path for cover image")
+                Timber.d(e, "Error while parsing path for cover image")
+            }
+        } else {
+            toast("Error while upload cover image, URI is null")
+            Timber.e("Error while upload cover image, URI is null")
+        }
+    }
 
     override fun injectDependencies() {
         componentManager().createAccountComponent.get().inject(this)

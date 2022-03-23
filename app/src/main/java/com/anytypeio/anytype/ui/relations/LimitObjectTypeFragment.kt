@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.ObjectTypeAddAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -40,6 +41,7 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
             adapter = objectTypeAdapter
             layoutManager = LinearLayoutManager(context)
         }
+        binding.bottomButton.visible()
         binding.btnBottomAction.setOnClickListener {
             vm.onAddClicked()
         }

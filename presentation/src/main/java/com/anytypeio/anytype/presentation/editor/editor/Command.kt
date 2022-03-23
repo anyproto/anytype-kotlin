@@ -112,8 +112,10 @@ sealed class Command {
     object AddSlashWidgetTriggerToFocusedBlock : Command()
     object AddMentionWidgetTriggerToFocusedBlock : Command()
 
-    data class OpenChangeObjectTypeScreen(val ctx: Id, val smartBlockType: SmartBlockType) :
-        Command()
+    data class OpenChangeObjectTypeScreen(
+        val ctx: Id,
+        val smartBlockType: SmartBlockType
+    ) : Command()
 
     data class OpenMoveToScreen(
         val ctx: Id,

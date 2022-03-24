@@ -1,5 +1,29 @@
 # Change log for Android @Anytype app.
 
+## Version 0.6.0
+
+### New features & enhancements 🚀
+
+* Editor | Link appearance: customize how your links look on the canvas: choose from a simple text line, or a card, with optional icons. (#2087)
+* Editor | Lock your objects to prevent accidental editing or enable read-only mode. (#2084)
+* Editor | Create a bookmark from pasted URLs. (#2074)
+* Editor | New logic for pressing the backspace key. (#2091)
+* Dashboard | Changes in tabs are synchronized between peers, no longer requiring you to open/close an object to “refresh” the dashboard. (#2052)
+
+### Fixes & tech 🚒
+
+* Editor | Issues related to drag & drop sensitivity. (#2068)
+* Editor | Incorrect numbers in numbered lists when sections group nested lists or blocks. (#2072)
+* Editor | Progress bar and text should not overlap when a link-to-object block is in loading state (#2098)
+* Editor | Title in the top toolbar is missing when your object has TODO layout (#2103)
+* Sets | Enabled auto-correct when setting name for a new object. (#2067)
+* Dashboard | An issue where removing objects from your favorites would not sync. (#2075)
+* Search | Optimized object search. (#2095)
+
+### Design & UX 🔳
+
+* Editor | Image blocks in fullscreen mode are now optimized for light and dark mode. (#2094)
+
 ## Version 0.5.3
 
 ### New features & enhancements 🚀

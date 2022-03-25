@@ -26,7 +26,7 @@
             android:screenOrientation="portrait"
             android:exported="true"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="filter">
                 <action android:name="android.intent.action.VIEW" />
 

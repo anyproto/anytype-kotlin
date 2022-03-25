@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.6.1 (WIP)
+
+### Fixes & tech 🚒
+
+* Editor | Should close keyboard when closing a dialog screen with focused text input (#2152)
+
 ## Version 0.6.0
 
 ### New features & enhancements 🚀

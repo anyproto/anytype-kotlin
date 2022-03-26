@@ -902,6 +902,10 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        if (isObjectTypesWidgetVisible) {
+            dispatchObjectCreateEvent()
+            proceedWithHidingObjectTypeWidget()
+        }
     }
 
     fun onDescriptionBlockTextChanged(view: BlockView.Description) {
@@ -916,6 +920,10 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        if (isObjectTypesWidgetVisible) {
+            dispatchObjectCreateEvent()
+            proceedWithHidingObjectTypeWidget()
+        }
     }
 
     fun onTextBlockTextChanged(view: BlockView.Text) {
@@ -938,7 +946,10 @@ class EditorViewModel(
 
         viewModelScope.launch { store.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        if (isObjectTypesWidgetVisible) proceedWithHidingObjectTypeWidget()
+        if (isObjectTypesWidgetVisible) {
+            dispatchObjectCreateEvent()
+            proceedWithHidingObjectTypeWidget()
+        }
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
@@ -4761,7 +4772,10 @@ class EditorViewModel(
         Timber.d("onKeyPressedEvent, event:[$event]")
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
-                if (isObjectTypesWidgetVisible) proceedWithHidingObjectTypeWidget()
+                if (isObjectTypesWidgetVisible) {
+                    dispatchObjectCreateEvent()
+                    proceedWithHidingObjectTypeWidget()
+                }
                 proceedWithTitleEnterClicked(
                     title = event.target,
                     text = event.text,
@@ -5284,7 +5298,8 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetItemClicked(typeId: Id) {
         Timber.d("onObjectTypesWidgetItemClicked, id:[$typeId]")
-        proceedWithHidingObjectTypeWidget(objectType = typeId)
+        dispatchObjectCreateEvent(typeId)
+        proceedWithHidingObjectTypeWidget()
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.SetObjectType(
@@ -5367,12 +5382,14 @@ class EditorViewModel(
         )
     }
 
-    private fun proceedWithHidingObjectTypeWidget(objectType: String? = null) {
-        dispatchObjectCreateEvent(objectType)
+    private fun proceedWithHidingObjectTypeWidget() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide)
     }
 
     private fun dispatchObjectCreateEvent(objectType: String? = null) {
+        val details = orchestrator.stores.details.current()
+        val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        if (wrapper.isDraft != true) return
         if (objectType != null) {
             val type = objectTypesProvider.get().firstOrNull { it.url == objectType }
             if (type != null) {
@@ -5385,8 +5402,6 @@ class EditorViewModel(
                 )
             }
         } else {
-            val details = orchestrator.stores.details.current()
-            val wrapper = ObjectWrapper.Basic(map = details.details[context]?.map ?: emptyMap())
             val type =
                 objectTypesProvider.get().firstOrNull { it.url == wrapper.type.firstOrNull() }
             if (type != null) {

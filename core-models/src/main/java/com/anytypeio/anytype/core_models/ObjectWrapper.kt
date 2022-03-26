@@ -74,6 +74,8 @@ sealed class ObjectWrapper {
 
         val description: String? by default
 
+        val isDraft: Boolean? by default
+
         fun isEmpty(): Boolean = map.isEmpty()
     }
 }

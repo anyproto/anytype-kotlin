@@ -47,12 +47,6 @@ class EnterPinCodeFragment : BaseFragment<FragmentEnterPinCodeBinding>(R.layout.
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_enter_pin_code, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupNumPad()

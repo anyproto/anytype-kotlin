@@ -16,7 +16,7 @@ fun List<Block>.asMap(): Map<Id, List<Block>> {
     return map
 }
 
-fun List<Block>.graph() : Map<Id, List<Id>> {
+fun List<Block>.graph(): Map<Id, List<Id>> {
     val map: MutableMap<Id, List<Id>> = mutableMapOf()
     forEach { block ->
         map[block.id] = block.children.mapNotNull { child -> find { it.id == child }?.id }
@@ -38,7 +38,7 @@ fun Map<Id, List<Block>>.descendants(parent: Id): List<Id> {
 /**
  * @return ids of only parent blocks from given selection, excluding all children (nested blocks)
  */
-fun List<Block>.parents(selection: Iterable<Id>) : List<Id> {
+fun List<Block>.parents(selection: Iterable<Id>): List<Id> {
     val excluded = mutableListOf<Id>()
     forEach { block ->
         if (selection.contains(block.id)) {
@@ -171,7 +171,12 @@ fun List<Block>.numbers(): Map<Id, Int> {
  * @param mentionTrigger char @ + some entered text, will be removed from text
  * @return block with updated marks and text
  */
-fun Block.addMention(mentionText: String, mentionId: String, from: Int, mentionTrigger: String): Block {
+fun Block.addMention(
+    mentionText: String,
+    mentionId: String,
+    from: Int,
+    mentionTrigger: String
+): Block {
 
     val content = this.content.asText()
     val marks = content.marks
@@ -198,11 +203,15 @@ fun Block.addMention(mentionText: String, mentionId: String, from: Int, mentionT
         content = Content.Text(
             marks = updateMarks,
             style = this.textStyle(),
-            text = content.text.replaceRangeWithWord(
-                replace = newText,
-                from = from,
-                to = from + mentionTrigger.length
-            ),
+            text = try {
+                content.text.replaceRangeWithWord(
+                    replace = newText,
+                    from = from,
+                    to = from + mentionTrigger.length
+                )
+            } catch (e: Exception) {
+                content.text
+            },
             color = content.color,
             backgroundColor = content.backgroundColor,
             isChecked = content.isChecked,

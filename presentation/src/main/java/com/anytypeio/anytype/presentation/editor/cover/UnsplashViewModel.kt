@@ -24,7 +24,7 @@ class UnsplashViewModel(
 
     private val query = input.take(1).onCompletion {
         emitAll(
-            input.debounce(DEBOUNCE_DURATION).distinctUntilChanged()
+            input.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged()
         )
     }
 

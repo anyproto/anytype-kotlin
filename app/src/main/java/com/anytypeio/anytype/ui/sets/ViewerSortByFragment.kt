@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.dataview.modals.SortByAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -38,12 +37,6 @@ class ViewerSortByFragment : BaseBottomSheetFragment<FragmentSortingBinding>() {
     @Inject
     lateinit var factory: ViewerSortByViewModel.Factory
     private val vm: ViewerSortByViewModel by viewModels { factory }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_sorting, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

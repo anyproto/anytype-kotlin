@@ -704,20 +704,27 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithRefreshingViewerAfterObjectCreation() {
         val set = reducer.state.value
-        val viewer = set.viewerById(session.currentViewerId).id
-
-        setActiveViewer(
-            SetActiveViewer.Params(
-                context = context,
-                block = set.dataview.id,
-                view = viewer,
-                limit = ObjectSetConfig.DEFAULT_LIMIT,
-                offset = offset.value
-            )
-        ).process(
-            success = { payload -> defaultPayloadConsumer(payload) },
-            failure = { Timber.e(it, "Error while refreshing viewer") }
-        )
+        if (set.isInitialized) {
+            val viewer = try { set.viewerById(session.currentViewerId).id } catch (e: Exception) {
+                null
+            }
+            if (viewer != null) {
+                setActiveViewer(
+                    SetActiveViewer.Params(
+                        context = context,
+                        block = set.dataview.id,
+                        view = viewer,
+                        limit = ObjectSetConfig.DEFAULT_LIMIT,
+                        offset = offset.value
+                    )
+                ).process(
+                    success = { payload -> defaultPayloadConsumer(payload) },
+                    failure = { Timber.e(it, "Error while refreshing viewer") }
+                )
+            } else {
+                toast("Target view was missing on refresh")
+            }
+        }
     }
 
     fun onViewerCustomizeButtonClicked() {

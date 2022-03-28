@@ -235,17 +235,25 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun parseUrlFromPastedText(): Url? {
-        val mng = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = mng.primaryClip
-        return if (clip != null && clip.itemCount > 0) {
-            val txt = clip.getItemAt(0).text
-            val matcher = Patterns.WEB_URL.matcher(txt)
-            if (matcher.matches()) {
-                txt.toString()
+        return try {
+            val mng = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = mng.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val txt = clip.getItemAt(0).text
+                if (txt.isNullOrEmpty())
+                    null
+                else {
+                    val matcher = Patterns.WEB_URL.matcher(txt)
+                    if (matcher.matches()) {
+                        txt.toString()
+                    } else {
+                        null
+                    }
+                }
             } else {
                 null
             }
-        } else {
+        } catch (e: Exception) {
             null
         }
     }

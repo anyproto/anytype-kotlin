@@ -3,10 +3,6 @@ package com.anytypeio.anytype.presentation.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -32,11 +28,11 @@ open class ObjectSearchViewModel(
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-        private val userInput = MutableStateFlow(EMPTY_QUERY)
+    private val userInput = MutableStateFlow(EMPTY_QUERY)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
-            emitAll(userInput.debounce(DEBOUNCE_DURATION).distinctUntilChanged())
+            emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
     protected val types = MutableStateFlow(emptyList<ObjectType>())

@@ -34,7 +34,7 @@ abstract class RelationAddBaseViewModel(
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
     private val searchQuery = userInput.take(1).onCompletion {
-        emitAll(userInput.debounce(DEBOUNCE_DURATION).distinctUntilChanged())
+        emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
     val views = MutableStateFlow<List<RelationView.Existing>>(emptyList())

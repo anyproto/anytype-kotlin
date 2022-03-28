@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -154,7 +155,10 @@ class RelationListViewModel(
                 )
             ).process(
                 failure = { Timber.e(it, "Error while deleting relation") },
-                success = { dispatcher.send(it) }
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationDeleteEvent(analytics)
+                }
             )
         }
     }

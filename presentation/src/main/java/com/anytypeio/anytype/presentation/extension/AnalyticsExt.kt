@@ -551,6 +551,13 @@ fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
     )
 }
 
+suspend fun Analytics.sendAnalyticsWritingEvent() {
+    val event = EventAnalytics.Anytype(
+        name = EventsDictionary.blockWriting
+    )
+    registerEvent(event)
+}
+
 suspend fun Analytics.sendAnalyticsObjectLayoutChangeEvent(name: String) {
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.objectLayoutChange,

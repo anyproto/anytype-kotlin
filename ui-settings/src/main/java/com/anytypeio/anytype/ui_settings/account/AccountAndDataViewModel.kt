@@ -3,6 +3,9 @@ package com.anytypeio.anytype.ui_settings.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.device.ClearFileCache
@@ -10,7 +13,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class AccountAndDataViewModel(private val clearFileCache: ClearFileCache) : ViewModel() {
+class AccountAndDataViewModel(
+    private val clearFileCache: ClearFileCache,
+    private val analytics: Analytics
+) : ViewModel() {
 
     val isClearFileCacheInProgress = MutableStateFlow(false)
     val isLoggingOut = MutableStateFlow(false)
@@ -29,6 +35,10 @@ class AccountAndDataViewModel(private val clearFileCache: ClearFileCache) : View
                         // TODO send toast
                     }
                     Interactor.Status.Success -> {
+                        viewModelScope.sendEvent(
+                            analytics = analytics,
+                            eventName = EventsDictionary.fileOffloadSuccess
+                        )
                         isClearFileCacheInProgress.value = false
                     }
                 }
@@ -36,11 +46,20 @@ class AccountAndDataViewModel(private val clearFileCache: ClearFileCache) : View
         }
     }
 
-    class Factory(private val clearFileCache: ClearFileCache) : ViewModelProvider.Factory {
+    fun onClearCacheButtonClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.fileOffloadScreenShow
+        )
+    }
+
+    class Factory(private val clearFileCache: ClearFileCache, private val analytics: Analytics) :
+        ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AccountAndDataViewModel(
-                clearFileCache = clearFileCache
+                clearFileCache = clearFileCache,
+                analytics = analytics
             ) as T
         }
     }

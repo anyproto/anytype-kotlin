@@ -8,13 +8,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
+import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataViewModel
 import javax.inject.Inject
@@ -27,7 +30,8 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<AccountAndDataViewModel> { factory }
 
     private val onKeychainPhraseClicked = {
-        findNavController().navigate(R.id.keychainDialog)
+        val bundle = bundleOf(KeychainPhraseDialog.ARG_SCREEN_TYPE to EventsDictionary.Type.screenSettings)
+        findNavController().navigate(R.id.keychainDialog, bundle)
     }
 
     private val onLogoutClicked = {
@@ -59,6 +63,7 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun proceedWithClearFileCacheWarning() {
+        vm.onClearCacheButtonClicked()
         val dialog = ClearCacheAlertFragment.new()
         dialog.onClearAccepted = { vm.onClearFileCacheAccepted() }
         dialog.show(childFragmentManager, null)

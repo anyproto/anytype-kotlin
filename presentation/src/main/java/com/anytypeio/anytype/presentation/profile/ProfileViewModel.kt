@@ -104,12 +104,4 @@ open class ProfileViewModel(
             }
         }
     }
-
-    fun onKeyChainPhraseClicked() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenKeychainScreen))
-    }
-
-    fun onUserSettingsClicked() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenUserSettingsScreen))
-    }
 }

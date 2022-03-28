@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -27,9 +27,11 @@ class KeychainPhraseDialog : BaseBottomSheetFragment<DialogKeychainPhraseBinding
     @Inject
     lateinit var factory: KeychainPhraseViewModelFactory
 
+    private val screenType get() = arg<String>(ARG_SCREEN_TYPE)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.sendShowEvent(EventsDictionary.Type.firstSession)
+        vm.sendShowEvent(screenType)
         setBlur()
         binding.keychain.setOnClickListener {
             if (binding.keychain.layerType == View.LAYER_TYPE_SOFTWARE) {
@@ -109,5 +111,6 @@ class KeychainPhraseDialog : BaseBottomSheetFragment<DialogKeychainPhraseBinding
 
     companion object {
         const val MNEMONIC_LABEL = "Your Anytype mnemonic phrase"
+        const val ARG_SCREEN_TYPE = "arg.keychain.screen.type"
     }
 }

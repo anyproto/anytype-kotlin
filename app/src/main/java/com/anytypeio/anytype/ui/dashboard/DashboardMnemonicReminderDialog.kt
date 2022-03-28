@@ -51,7 +51,7 @@ class DashboardMnemonicReminderDialog : BottomSheetDialogFragment(), Observer<Vi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.sendShowEvent(EventsDictionary.Type.screenSettings)
+        vm.sendShowEvent(EventsDictionary.Type.firstSession)
         setBlur()
         binding.keychain.setOnClickListener {
             if (binding.keychain.layerType == View.LAYER_TYPE_SOFTWARE) {

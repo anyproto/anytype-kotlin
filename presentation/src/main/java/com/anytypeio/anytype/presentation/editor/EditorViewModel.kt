@@ -608,7 +608,10 @@ class EditorViewModel(
                     marks = update.markup.filter { it.range.first != it.range.last }
                 )
             }
-            .onEach { params -> proceedWithUpdatingText(params) }
+            .onEach { params ->
+                proceedWithUpdatingText(params)
+                analytics.sendAnalyticsWritingEvent()
+            }
             .launchIn(viewModelScope)
     }
 
@@ -1471,9 +1474,10 @@ class EditorViewModel(
                     )
                 } else {
                     proceedWithStylingEvent(state, Markup.Type.BACKGROUND_COLOR, event.color.title)
-                    viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+                    viewModelScope.sendAnalyticsBlockBackgroundEvent(
                         analytics = analytics,
-                        type = Content.Text.Mark.Type.BACKGROUND_COLOR,
+                        count = 1,
+                        color = event.color.title,
                         context = analyticsContext
                     )
                 }
@@ -5506,10 +5510,24 @@ class EditorViewModel(
     }
 
     private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {
+        val startTime = System.currentTimeMillis()
         val params = CreateNewDocument.Params(name, type)
         createNewDocument.invoke(params).process(
             failure = { Timber.e(it, "Error while creating new page with params: $params") },
-            success = { result -> proceedToAddObjectToTextAsLink(id = result.id) }
+            success = { result ->
+                val middleTime = System.currentTimeMillis()
+                proceedToAddObjectToTextAsLink(id = result.id)
+                val objType = objectTypesProvider.get().firstOrNull { it.url == type }
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = type,
+                    layout = objType?.layout?.code?.toDouble(),
+                    route = EventsDictionary.Routes.objTurnInto,
+                    context = analyticsContext,
+                    startTime = startTime,
+                    middleTime = middleTime
+                )
+            }
         )
     }
 

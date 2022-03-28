@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.blockWriting
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.block.UpdateDivider
@@ -312,9 +311,7 @@ class Orchestrator(
                         )
                     ).proceed(
                         failure = defaultOnError,
-                        success = {
-                            sendEvent(EventAnalytics.Anytype(blockWriting))
-                        }
+                        success = {}
                     )
                 }
                 is Intent.Text.Align -> {

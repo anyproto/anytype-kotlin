@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
-import com.anytypeio.anytype.analytics.base.EventsDictionary.fileOffloadScreenShow
-import com.anytypeio.anytype.analytics.base.EventsDictionary.fileOffloadSuccess
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
@@ -70,10 +67,6 @@ class OtherSettingsViewModel(
                         commands.emit(Command.Toast(msg))
                     }
                     Interactor.Status.Success -> {
-                        viewModelScope.sendEvent(
-                            analytics = analytics,
-                            eventName = fileOffloadSuccess
-                        )
                         isClearFileCacheInProgress.value = false
                     }
                 }
@@ -112,13 +105,6 @@ class OtherSettingsViewModel(
                 }
             )
         }
-    }
-
-    fun sendFileOffloadScreenEvent() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = fileOffloadScreenShow
-        )
     }
 
     sealed class Command {

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.settings
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -30,9 +31,11 @@ object AccountAndDataModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        clearFileCache: ClearFileCache
+        clearFileCache: ClearFileCache,
+        analytics: Analytics
     ): AccountAndDataViewModel.Factory = AccountAndDataViewModel.Factory(
-        clearFileCache = clearFileCache
+        clearFileCache = clearFileCache,
+        analytics = analytics
     )
 
     @JvmStatic

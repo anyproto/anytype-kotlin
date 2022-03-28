@@ -9,15 +9,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.LogoutWarningViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
@@ -32,7 +35,8 @@ class LogoutWarningFragment : BaseBottomSheetComposeFragment() {
 
     private val onBackupPhraseClicked = {
         vm.onBackupClicked()
-        findNavController().navigate(R.id.keychainDialog)
+        val bundle = bundleOf(KeychainPhraseDialog.ARG_SCREEN_TYPE to EventsDictionary.Type.beforeLogout)
+        findNavController().navigate(R.id.keychainDialog, bundle)
     }
 
     override fun onCreateView(

@@ -114,6 +114,7 @@ object EventsDictionary {
         const val objCreateHome = "Home"
         const val objCreateMention = "Mention"
         const val objPowerTool = "Powertool"
+        const val objTurnInto = "TurnInto"
         const val tabFavorites = "Favorites"
     }
 

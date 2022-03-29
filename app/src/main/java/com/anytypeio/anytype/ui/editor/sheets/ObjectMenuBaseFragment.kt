@@ -17,11 +17,9 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
@@ -44,25 +42,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
-            when (action) {
-                ObjectAction.SEARCH_ON_PAGE -> {
-                    // TODO Temp. workaround. Action should be dispatched via vm dispatcher.
-                    withParent<DocumentMenuActionReceiver> {
-                        onSearchOnPageClicked()
-                        dismiss()
-                    }
-                }
-                ObjectAction.UNDO_REDO -> {
-                    // TODO Temp. workaround. Action should be dispatched via vm dispatcher.
-                    withParent<DocumentMenuActionReceiver> {
-                        onUndoRedoClicked()
-                        dismiss()
-                    }
-                }
-                else -> {
-                    vm.onActionClicked(ctx, action)
-                }
-            }
+            vm.onActionClicked(ctx, action)
         }
     }
 

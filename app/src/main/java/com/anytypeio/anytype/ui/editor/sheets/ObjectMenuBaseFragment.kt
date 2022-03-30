@@ -89,10 +89,10 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
 
     override fun onStart() {
         with(lifecycleScope) {
-            subscribe(vm.actions) { actionAdapter.submitList(it) }
-            subscribe(vm.toasts) { toast(it) }
-            subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
-            subscribe(vm.commands) { command -> execute(command) }
+            jobs += subscribe(vm.actions) { actionAdapter.submitList(it) }
+            jobs += subscribe(vm.toasts) { toast(it) }
+            jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
+            jobs += subscribe(vm.commands) { command -> execute(command) }
         }
         super.onStart()
         vm.onStart(

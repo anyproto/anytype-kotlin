@@ -1,10 +1,27 @@
 # Change log for Android @Anytype app.
 
-## Version 0.6.1 (WIP)
+## Version 0.6.1
+
+### New features & enhancements 🚀
+
+* Editor | Set cover for your object from Unsplash (#2141)
+* Relations | Set target types for relations, whose values contain objects (#2127)
+* App | Added logout warning (#2121)
+* App | New app menu (#2119)
+* Auth | Show screen about analytics during sign-up (#2122)
+* Auth | Add logic for retry when failed to start account (#2124)
 
 ### Fixes & tech 🚒
 
+* Editor | Fix app permission issues preventing users from uploading pictures and other media (#2143)
 * Editor | Should close keyboard when closing a dialog screen with focused text input (#2152)
+* Editor | Toggle block should expand / collapse in locked mode (#2116)
+
+### Design & UX 🔳
+
+* Sets | Do not draw offset column without content in grid views (#2129)
+* Editor | Add-bookmark bottom sheet screen in dark mode (#2137)
+* Editor | Style-color toolbar in light mode has incorrect background in selected tab (#2148)
 
 ## Version 0.6.0
 

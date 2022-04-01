@@ -6,14 +6,14 @@
 
 - Download `anytype/anytype-android` (private) repository from Github
   
-- Create `apikeys.properties` file in root project folder:
+- Create `github.properties` file in root project folder:
 
 ```
 gpr.usr=GITHUB_USER_ID
 gpr.key=GITHUB_TOKEN
 ```
 
-- Create `github.properties` file in root project folder:
+- Create `apikeys.properties` file in root project folder:
 
 ```
 amplitude.debug="AMPLITUDE_DEBUG_KEY"

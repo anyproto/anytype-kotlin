@@ -56,10 +56,10 @@ fun EditText.cursorYBottomCoordinate(): Int {
         val pos = selectionStart
         val line = getLineForOffset(pos)
         val baseLine = getLineBaseline(line)
-        val ascent = getLineAscent(line)
+        val descent = getLineDescent(line)
         val rect = calculateRectInWindow(this@cursorYBottomCoordinate)
 
-        return baseLine + ascent + rect.bottom - scrollY
+        return rect.top + baseLine + descent - this.topPadding
     }
 }
 

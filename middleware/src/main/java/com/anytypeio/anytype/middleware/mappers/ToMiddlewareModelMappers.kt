@@ -9,7 +9,7 @@ fun Block.toMiddlewareModel(): MBlock = when (val content = content) {
     is Block.Content.Text -> {
         MBlock(
             text = content.toMiddlewareModel(),
-            backgroundColor = content.backgroundColor.orEmpty(),
+            backgroundColor = backgroundColor.orEmpty(),
             align = content.align.toMiddlewareModel()
         )
     }

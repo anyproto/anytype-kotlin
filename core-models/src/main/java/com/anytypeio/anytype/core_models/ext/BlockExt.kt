@@ -213,7 +213,6 @@ fun Block.addMention(
                 content.text
             },
             color = content.color,
-            backgroundColor = content.backgroundColor,
             isChecked = content.isChecked,
             align = content.align
         )

@@ -69,12 +69,11 @@ fun Block.style(selection: IntRange): MarkupStyleDescriptor {
     var markupHighlightColor: String? = null
 
     var blockTextColor: String? = null
-    var blockBackgroundColor: String? = null
+    val blockBackgroundColor: String? = backgroundColor
 
     val data = content
     if (data is Block.Content.Text) {
         blockTextColor = data.color
-        blockBackgroundColor = data.backgroundColor
         data.marks.forEach { mark ->
             when (mark.type) {
                 Block.Content.Text.Mark.Type.BOLD -> {

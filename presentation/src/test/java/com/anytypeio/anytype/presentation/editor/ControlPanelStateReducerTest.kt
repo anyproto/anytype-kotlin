@@ -851,10 +851,10 @@ class ControlPanelStateReducerTest {
                     )
                 ),
                 color = "yellow",
-                backgroundColor = "red",
                 align = Block.Align.AlignLeft
             ),
-            fields = Block.Fields.empty()
+            fields = Block.Fields.empty(),
+            backgroundColor = "red"
         )
 
         runBlocking {
@@ -981,10 +981,10 @@ class ControlPanelStateReducerTest {
                     )
                 ),
                 color = "yellow",
-                backgroundColor = "red",
                 align = Block.Align.AlignCenter
             ),
-            fields = Block.Fields.empty()
+            fields = Block.Fields.empty(),
+            backgroundColor = "red"
         )
 
         runBlocking {
@@ -1115,10 +1115,10 @@ class ControlPanelStateReducerTest {
                     )
                 ),
                 color = "yellow",
-                backgroundColor = "red",
                 align = Block.Align.AlignLeft
             ),
-            fields = Block.Fields.empty()
+            fields = Block.Fields.empty(),
+            backgroundColor = "red"
         )
 
         //Focus block
@@ -1321,10 +1321,10 @@ class ControlPanelStateReducerTest {
                 style = Block.Content.Text.Style.P,
                 marks = listOf(),
                 color = "yellow",
-                backgroundColor = "red",
                 align = Block.Align.AlignLeft
             ),
-            fields = Block.Fields.empty()
+            fields = Block.Fields.empty(),
+            backgroundColor = "red"
         )
 
         //Focus block

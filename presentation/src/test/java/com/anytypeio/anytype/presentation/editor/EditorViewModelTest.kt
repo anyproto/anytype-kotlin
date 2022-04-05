@@ -353,7 +353,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    backgroundColor = paragraph.backgroundColor
                 )
             )
         )
@@ -572,12 +572,12 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = paragraph.backgroundColor
                     ),
                     BlockView.Text.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
-                        backgroundColor = added.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = added.backgroundColor
                     )
                 )
             )
@@ -708,7 +708,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    backgroundColor = paragraph.backgroundColor
                 )
             )
         )
@@ -751,10 +751,10 @@ open class EditorViewModelTest {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P,
-                color = "red",
-                backgroundColor = "yellow"
+                color = "red"
             ),
-            children = emptyList()
+            children = emptyList(),
+            backgroundColor = "yellow"
         )
 
         val page = Block(
@@ -827,7 +827,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    backgroundColor = paragraph.backgroundColor,
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = firstTimeRange.first(),
@@ -865,7 +865,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    backgroundColor = paragraph.backgroundColor,
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = firstTimeRange.first(),
@@ -899,9 +899,9 @@ open class EditorViewModelTest {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P,
-                color = "red",
-                backgroundColor = "yellow"
+                color = "red"
             ),
+            backgroundColor = "yellow",
             children = emptyList()
         )
 
@@ -971,7 +971,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    backgroundColor = paragraph.backgroundColor,
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = firstTimeRange.first(),
@@ -1023,7 +1023,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                    backgroundColor = paragraph.backgroundColor,
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = secondTimeRange.first(),
@@ -1053,10 +1053,10 @@ open class EditorViewModelTest {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P,
-                color = "red",
-                backgroundColor = "yellow"
+                color = "red"
             ),
-            children = emptyList()
+            children = emptyList(),
+            backgroundColor = "yellow"
         )
 
         val page = Block(
@@ -1202,7 +1202,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                    backgroundColor = paragraph.backgroundColor
                 )
             )
         )
@@ -1571,7 +1571,7 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = paragraph.backgroundColor
                     )
                 )
             )
@@ -1590,12 +1590,12 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = paragraph.backgroundColor
                     ),
                     BlockView.Text.Header.One(
                         id = new.id,
                         text = new.content<Block.Content.Text>().text,
-                        backgroundColor = new.content<Block.Content.Text>().backgroundColor,
+                        backgroundColor = new.backgroundColor,
                         indent = 0
                     )
                 )
@@ -1799,12 +1799,12 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = firstChild.id,
                         text = firstChild.content<Block.Content.Text>().text,
-                        backgroundColor = firstChild.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = firstChild.backgroundColor
                     ),
                     BlockView.Text.Paragraph(
                         id = secondChild.id,
                         text = secondChild.content<Block.Content.Text>().text,
-                        backgroundColor = secondChild.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = secondChild.backgroundColor
                     )
                 )
             )
@@ -1831,7 +1831,7 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = secondChild.id,
                         text = secondChild.content<Block.Content.Text>().text,
-                        backgroundColor = secondChild.content<Block.Content.Text>().backgroundColor
+                        backgroundColor = secondChild.backgroundColor
                     )
                 )
             )

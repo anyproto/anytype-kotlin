@@ -10,12 +10,14 @@ import com.anytypeio.anytype.core_models.ext.typeOf
  * @property children block's children ids
  * @property fields block's fields
  * @property content block's content
+ * @property backgroundColor background color for the whole block
  */
 data class Block(
     val id: String,
     val children: List<String>,
     val content: Content,
-    val fields: Fields
+    val fields: Fields,
+    val backgroundColor: String? = null
 ) {
 
     /**
@@ -114,7 +116,6 @@ data class Block(
          * @property marks markup related to [text],
          * @property isChecked whether this block is checked or not (see [Style.CHECKBOX])
          * @property color text color, which should be applied to the whole block (as opposed to [Mark.Type.TEXT_COLOR])
-         * @property backgroundColor background color for the whole block, as opposed to [Mark.Type.BACKGROUND_COLOR]
          */
         data class Text(
             val text: String,
@@ -122,7 +123,6 @@ data class Block(
             val marks: List<Mark>,
             val isChecked: Boolean? = null,
             val color: String? = null,
-            val backgroundColor: String? = null,
             val align: Align? = null
         ) : Content() {
 
@@ -258,7 +258,7 @@ data class Block(
 
         object FeaturedRelations : Content()
 
-        data class RelationBlock(val key: Id?, val background: String? = null) : Content()
+        data class RelationBlock(val key: Id?) : Content()
 
         data class DataView(
             val sources: List<String>,
@@ -327,7 +327,7 @@ data class Block(
             }
         }
 
-        data class Latex(val latex: String, val background: String?) : Content()
+        data class Latex(val latex: String) : Content()
         object Unsupported : Content()
     }
 

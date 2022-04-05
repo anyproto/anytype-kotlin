@@ -57,8 +57,7 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Latex(
-                latex = MockDataFactory.randomString(),
-                background = null
+                latex = MockDataFactory.randomString()
             )
         )
 
@@ -113,8 +112,7 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
             fields = Block.Fields.empty(),
             children = emptyList(),
             content = Block.Content.Latex(
-                latex = MockDataFactory.randomString(),
-                background = null
+                latex = MockDataFactory.randomString()
             )
         )
 

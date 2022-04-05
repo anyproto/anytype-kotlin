@@ -344,9 +344,9 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
+            backgroundColor = background1.title,
             content = Block.Content.RelationBlock(
                 key = relation1.key,
-                background = background1.title
             )
         )
 
@@ -354,9 +354,9 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
+            backgroundColor = background2.title,
             content = Block.Content.RelationBlock(
-                key = relation2.key,
-                background = background2.title
+                key = relation2.key
             )
         )
 
@@ -364,9 +364,9 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
+            backgroundColor = background2.title,
             content = Block.Content.RelationBlock(
-                key = relation3.key,
-                background = background3.title
+                key = relation3.key
             )
         )
 
@@ -374,9 +374,9 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
+            backgroundColor = background2.title,
             content = Block.Content.RelationBlock(
-                key = relation4.key,
-                background = background4.title
+                key = relation4.key
             )
         )
 

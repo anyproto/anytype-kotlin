@@ -190,7 +190,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = paragraph.backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.START
@@ -201,7 +201,7 @@ class DefaultBlockViewRendererTest {
                 toggled = false,
                 id = toggle.id,
                 marks = emptyList(),
-                backgroundColor = toggle.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = toggle.backgroundColor,
                 color = toggle.content<Block.Content.Text>().color,
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0
@@ -309,7 +309,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = paragraph.backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.END
@@ -320,7 +320,7 @@ class DefaultBlockViewRendererTest {
                 toggled = true,
                 id = toggle.id,
                 marks = emptyList(),
-                backgroundColor = toggle.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = toggle.backgroundColor,
                 color = toggle.content<Block.Content.Text>().color,
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0
@@ -329,7 +329,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = checkbox.id,
                 marks = emptyList(),
-                backgroundColor = checkbox.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = checkbox.backgroundColor,
                 color = checkbox.content<Block.Content.Text>().color,
                 text = checkbox.content<Block.Content.Text>().text,
                 indent = 1
@@ -411,7 +411,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = paragraph.backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = null
@@ -493,7 +493,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = paragraph.backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -586,7 +586,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = paragraph.backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -679,7 +679,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = paragraph.id,
                 marks = emptyList(),
-                backgroundColor = paragraph.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = paragraph.backgroundColor,
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -865,7 +865,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = a.id,
                 marks = emptyList(),
-                backgroundColor = a.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a.backgroundColor,
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -875,7 +875,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b.id,
                 marks = emptyList(),
-                backgroundColor = b.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b.backgroundColor,
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -885,7 +885,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c.id,
                 marks = emptyList(),
-                backgroundColor = c.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c.backgroundColor,
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -996,7 +996,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = a.id,
                 marks = emptyList(),
-                backgroundColor = a.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a.backgroundColor,
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text
             ),
@@ -1005,7 +1005,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b.id,
                 marks = emptyList(),
-                backgroundColor = b.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b.backgroundColor,
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text
             ),
@@ -1014,7 +1014,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c.id,
                 marks = emptyList(),
-                backgroundColor = c.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c.backgroundColor,
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text
             )
@@ -1124,7 +1124,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = a.id,
                 marks = emptyList(),
-                backgroundColor = a.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a.backgroundColor,
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text
             ),
@@ -1133,7 +1133,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b.id,
                 marks = emptyList(),
-                backgroundColor = b.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b.backgroundColor,
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text
             ),
@@ -1142,7 +1142,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c.id,
                 marks = emptyList(),
-                backgroundColor = c.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c.backgroundColor,
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text
             )
@@ -2531,7 +2531,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 id = a.id,
                 marks = emptyList(),
-                backgroundColor = a.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a.backgroundColor,
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text,
                 number = 1
@@ -2541,7 +2541,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b.id,
                 marks = emptyList(),
-                backgroundColor = b.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b.backgroundColor,
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text,
                 number = 1
@@ -2551,7 +2551,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c.id,
                 marks = emptyList(),
-                backgroundColor = c.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c.backgroundColor,
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text,
                 number = 1
@@ -2561,7 +2561,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = d.id,
                 marks = emptyList(),
-                backgroundColor = d.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = d.backgroundColor,
                 color = d.content<Block.Content.Text>().color,
                 text = d.content<Block.Content.Text>().text,
                 number = 2
@@ -2718,7 +2718,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a1.id,
                 marks = emptyList(),
-                backgroundColor = a1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a1.backgroundColor,
                 color = a1.content<Block.Content.Text>().color,
                 text = a1.content<Block.Content.Text>().text,
                 number = 1
@@ -2728,7 +2728,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a2.id,
                 marks = emptyList(),
-                backgroundColor = a2.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a2.backgroundColor,
                 color = a2.content<Block.Content.Text>().color,
                 text = a2.content<Block.Content.Text>().text,
                 number = 2
@@ -2738,7 +2738,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b1.id,
                 marks = emptyList(),
-                backgroundColor = b1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b1.backgroundColor,
                 color = b1.content<Block.Content.Text>().color,
                 text = b1.content<Block.Content.Text>().text,
                 number = 1
@@ -2748,7 +2748,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b2.id,
                 marks = emptyList(),
-                backgroundColor = b2.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b2.backgroundColor,
                 color = b2.content<Block.Content.Text>().color,
                 text = b2.content<Block.Content.Text>().text,
                 number = 2
@@ -2758,7 +2758,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b3.id,
                 marks = emptyList(),
-                backgroundColor = b3.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b3.backgroundColor,
                 color = b3.content<Block.Content.Text>().color,
                 text = b3.content<Block.Content.Text>().text,
                 number = 3
@@ -2768,7 +2768,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a3.id,
                 marks = emptyList(),
-                backgroundColor = a3.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a3.backgroundColor,
                 color = a3.content<Block.Content.Text>().color,
                 text = a3.content<Block.Content.Text>().text,
                 number = 3
@@ -2778,7 +2778,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a4.id,
                 marks = emptyList(),
-                backgroundColor = a4.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a4.backgroundColor,
                 color = a4.content<Block.Content.Text>().color,
                 text = a4.content<Block.Content.Text>().text,
                 number = 4
@@ -2911,7 +2911,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a1.id,
                 marks = emptyList(),
-                backgroundColor = a1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a1.backgroundColor,
                 color = a1.content<Block.Content.Text>().color,
                 text = a1.content<Block.Content.Text>().text,
                 number = 1
@@ -2921,7 +2921,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a2.id,
                 marks = emptyList(),
-                backgroundColor = a2.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a2.backgroundColor,
                 color = a2.content<Block.Content.Text>().color,
                 text = a2.content<Block.Content.Text>().text,
                 number = 2
@@ -2931,7 +2931,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b1.id,
                 marks = emptyList(),
-                backgroundColor = b1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b1.backgroundColor,
                 color = b1.content<Block.Content.Text>().color,
                 text = b1.content<Block.Content.Text>().text,
                 number = 1
@@ -2941,7 +2941,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a3.id,
                 marks = emptyList(),
-                backgroundColor = a3.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a3.backgroundColor,
                 color = a3.content<Block.Content.Text>().color,
                 text = a3.content<Block.Content.Text>().text,
                 number = 3
@@ -2951,7 +2951,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a4.id,
                 marks = emptyList(),
-                backgroundColor = a4.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a4.backgroundColor,
                 color = a4.content<Block.Content.Text>().color,
                 text = a4.content<Block.Content.Text>().text,
                 number = 4
@@ -3623,7 +3623,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a1.id,
                 marks = emptyList(),
-                backgroundColor = a1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a1.backgroundColor,
                 color = a1.content<Block.Content.Text>().color,
                 text = a1.content<Block.Content.Text>().text,
                 number = 1
@@ -3633,7 +3633,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a2.id,
                 marks = emptyList(),
-                backgroundColor = a2.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a2.backgroundColor,
                 color = a2.content<Block.Content.Text>().color,
                 text = a2.content<Block.Content.Text>().text,
                 number = 2
@@ -3643,7 +3643,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = b1.id,
                 marks = emptyList(),
-                backgroundColor = b1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = b1.backgroundColor,
                 color = b1.content<Block.Content.Text>().color,
                 text = b1.content<Block.Content.Text>().text,
                 number = 1
@@ -3653,7 +3653,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c1.id,
                 marks = emptyList(),
-                backgroundColor = c1.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c1.backgroundColor,
                 color = c1.content<Block.Content.Text>().color,
                 text = c1.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER
@@ -3663,7 +3663,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c2.id,
                 marks = emptyList(),
-                backgroundColor = c2.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c2.backgroundColor,
                 color = c2.content<Block.Content.Text>().color,
                 text = c2.content<Block.Content.Text>().text,
                 number = 1
@@ -3673,7 +3673,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c3.id,
                 marks = emptyList(),
-                backgroundColor = c3.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c3.backgroundColor,
                 color = c3.content<Block.Content.Text>().color,
                 text = c3.content<Block.Content.Text>().text,
                 number = 2
@@ -3683,7 +3683,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = c4.id,
                 marks = emptyList(),
-                backgroundColor = c4.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = c4.backgroundColor,
                 color = c4.content<Block.Content.Text>().color,
                 text = c4.content<Block.Content.Text>().text,
                 number = 3
@@ -3693,7 +3693,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a3.id,
                 marks = emptyList(),
-                backgroundColor = a3.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a3.backgroundColor,
                 color = a3.content<Block.Content.Text>().color,
                 text = a3.content<Block.Content.Text>().text,
                 number = 3
@@ -3703,7 +3703,7 @@ class DefaultBlockViewRendererTest {
                 isFocused = false,
                 id = a4.id,
                 marks = emptyList(),
-                backgroundColor = a4.content<Block.Content.Text>().backgroundColor,
+                backgroundColor = a4.backgroundColor,
                 color = a4.content<Block.Content.Text>().color,
                 text = a4.content<Block.Content.Text>().text,
                 number = 4

@@ -358,10 +358,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -395,10 +395,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -426,10 +426,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -463,10 +463,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -500,10 +500,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -537,10 +537,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -574,10 +574,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -611,10 +611,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -647,10 +647,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -683,10 +683,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -719,10 +719,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -756,10 +756,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -793,10 +793,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -830,10 +830,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -861,10 +861,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -891,10 +891,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -922,10 +922,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -963,10 +963,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -1003,10 +1003,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -1044,10 +1044,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -1075,10 +1075,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 
@@ -1105,10 +1105,10 @@ class StyleConfigKtTest {
                 marks = listOf(),
                 text = "test",
                 isChecked = null,
-                backgroundColor = null,
                 color = null,
                 align = null
             ),
+            backgroundColor = null,
             children = emptyList()
         )
 

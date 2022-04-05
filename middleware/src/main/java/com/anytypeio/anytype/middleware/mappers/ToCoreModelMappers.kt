@@ -33,7 +33,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = block.toCoreModelsText()
+                content = block.toCoreModelsText(),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.layout != null -> {
@@ -49,7 +50,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = block.toCoreModelsLink()
+                content = block.toCoreModelsLink(),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.div != null -> {
@@ -57,7 +59,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = block.toCoreModelsDivider()
+                content = block.toCoreModelsDivider(),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.file_ != null -> {
@@ -65,7 +68,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = block.toCoreModelsFile()
+                content = block.toCoreModelsFile(),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.icon != null -> {
@@ -81,7 +85,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = block.toCoreModelsBookmark()
+                content = block.toCoreModelsBookmark(),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.smartblock != null -> {
@@ -107,7 +112,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = block.toCoreModelsRelationBlock()
+                content = block.toCoreModelsRelationBlock(),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.featuredRelations != null -> {
@@ -115,7 +121,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = Block.Content.FeaturedRelations
+                content = Block.Content.FeaturedRelations,
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.latex != null -> {
@@ -124,9 +131,9 @@ fun List<MBlock>.toCoreModels(
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
                 content = Block.Content.Latex(
-                    latex = block.latex?.text.orEmpty(),
-                    background = block.backgroundColor.ifEmpty { null }
-                )
+                    latex = block.latex?.text.orEmpty()
+                ),
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         else -> {
@@ -134,7 +141,8 @@ fun List<MBlock>.toCoreModels(
                 id = block.id,
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
-                content = Block.Content.Unsupported
+                content = Block.Content.Unsupported,
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
     }
@@ -150,7 +158,6 @@ fun MBlock.toCoreModelsText(): Block.Content.Text {
         marks = content.marks?.marks?.map { it.toCoreModels() }.orEmpty(),
         isChecked = content.checked,
         color = content.color.ifEmpty { null },
-        backgroundColor = backgroundColor.ifEmpty { null },
         align = align.toCoreModelsAlign()
     )
 }
@@ -220,8 +227,7 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
 fun MBlock.toCoreModelsRelationBlock(): Block.Content.RelationBlock {
     val content = checkNotNull(relation)
     return Block.Content.RelationBlock(
-        key = content.key.ifEmpty { null },
-        background = backgroundColor
+        key = content.key.ifEmpty { null }
     )
 }
 

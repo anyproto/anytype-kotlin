@@ -4137,7 +4137,7 @@ class EditorViewModel(
             }
             is SlashItem.Main.Background -> {
                 val block = blocks.first { it.id == targetId }
-                val blockBackground = block.content.asText().backgroundColor
+                val blockBackground = block.backgroundColor
                 val background = blockBackground ?: ThemeColor.DEFAULT.title
                 val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
                         SlashExtensions.getSlashWidgetBackgroundItems(

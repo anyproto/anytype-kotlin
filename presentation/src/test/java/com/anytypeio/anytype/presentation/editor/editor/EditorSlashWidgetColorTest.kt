@@ -441,9 +441,9 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
+            backgroundColor = code,
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
-                backgroundColor = code,
                 marks = listOf(),
                 style = Block.Content.Text.Style.NUMBERED
             )
@@ -528,9 +528,9 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
+            backgroundColor = code,
             content = Block.Content.Text(
                 text = MockDataFactory.randomString(),
-                backgroundColor = code,
                 marks = listOf(),
                 style = Block.Content.Text.Style.NUMBERED
             )

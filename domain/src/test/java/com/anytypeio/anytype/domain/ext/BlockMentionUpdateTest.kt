@@ -49,11 +49,11 @@ class BlockMentionUpdateTest {
                 style = Block.Content.Text.Style.CHECKBOX,
                 text = givenText,
                 color = "red",
-                backgroundColor = "lime",
                 align = Block.Align.AlignCenter,
                 isChecked = true
             ),
-            children = emptyList()
+            children = emptyList(),
+            backgroundColor = "lime"
         )
 
         val result = block.addMention(
@@ -80,11 +80,11 @@ class BlockMentionUpdateTest {
                 style = Block.Content.Text.Style.CHECKBOX,
                 text = "NewPage ",
                 color = "red",
-                backgroundColor = "lime",
                 align = Block.Align.AlignCenter,
                 isChecked = true
             ),
-            children = emptyList()
+            children = emptyList(),
+            backgroundColor = "lime"
         )
 
         assertEquals(

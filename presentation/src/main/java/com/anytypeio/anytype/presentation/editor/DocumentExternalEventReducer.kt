@@ -37,9 +37,8 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                 when (val content = block.content) {
                     is Block.Content.RelationBlock -> {
                         block.copy(
-                            content = content.copy(
-                                background = event.backgroundColor ?: content.background
-                            )
+                            content = content.copy(),
+                            backgroundColor = event.backgroundColor ?: block.backgroundColor,
                         )
                     }
                     is Block.Content.Text -> {
@@ -47,15 +46,17 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                             content = content.copy(
                                 style = event.style ?: content.style,
                                 color = event.color ?: content.color,
-                                backgroundColor = event.backgroundColor ?: content.backgroundColor,
                                 text = event.text ?: content.text,
                                 marks = event.marks ?: content.marks,
                                 isChecked = event.checked ?: content.isChecked,
                                 align = event.alignment ?: content.align
-                            )
+                            ),
+                            backgroundColor = event.backgroundColor ?: block.backgroundColor,
                         )
                     }
-                    else -> block.copy()
+                    else -> block.copy(
+                        backgroundColor = event.backgroundColor ?: block.backgroundColor,
+                    )
                 }
             },
             target = { block -> block.id == event.id }

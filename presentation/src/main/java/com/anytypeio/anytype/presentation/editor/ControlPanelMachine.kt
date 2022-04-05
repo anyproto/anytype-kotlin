@@ -1065,7 +1065,7 @@ sealed class ControlPanelMachine {
                         id = block.id,
                         text = "",
                         color = null,
-                        background = content.background,
+                        background = block.backgroundColor,
                         alignment = null,
                         marks = listOf()
                     )
@@ -1075,7 +1075,7 @@ sealed class ControlPanelMachine {
                         id = block.id,
                         text = content.text,
                         color = content.color,
-                        background = content.backgroundColor,
+                        background = block.backgroundColor,
                         alignment = content.align?.let { alignment ->
                             when (alignment) {
                                 Block.Align.AlignCenter -> Alignment.CENTER

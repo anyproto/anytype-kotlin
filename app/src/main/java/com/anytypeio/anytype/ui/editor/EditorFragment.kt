@@ -4,6 +4,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Intent
@@ -1000,24 +1001,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.ShowKeyboard -> {
                     binding.recycler.findFocus()?.focusAndShowKeyboard()
                 }
-                is Command.OpenFileByDefaultApp -> {
-                    try {
-                        val uri = Uri.parse(command.uri)
-                        val intent = Intent().apply {
-                            action = Intent.ACTION_VIEW
-                            if (command.mime.isNotEmpty()) {
-                                setDataAndTypeAndNormalize(uri, command.mime)
-                            } else {
-                                data = uri
-                            }
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        startActivity(intent)
-                    } catch (e: Exception) {
-                        toast("Could not open file: ${e.message}")
-                        Timber.e(e, "Error while opening file")
-                    }
-                }
+                is Command.OpenFileByDefaultApp -> openFileByDefaultApp(command)
                 Command.ShowTextLinkMenu -> {
                     val urlButton = binding.markupToolbar.findViewById<View>(R.id.url)
                     val popup = TextLinkPopupMenu(
@@ -1043,6 +1027,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
     }
+
+    private fun openFileByDefaultApp(command: Command.OpenFileByDefaultApp) {
+        try {
+            val uri = Uri.parse(command.uri)
+            val intent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                if (command.mime.isNotEmpty()) {
+                    setDataAndTypeAndNormalize(uri, command.mime)
+                } else {
+                    data = uri
+                }
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            if (e is ActivityNotFoundException) {
+                toast("No Application found to open the selected file")
+            } else {
+                toast("Could not open file: ${e.message}")
+            }
+            Timber.e(e, "Error while opening file")
+        }
+    }
+
 
     private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu): Unit {
         val lastSelected =

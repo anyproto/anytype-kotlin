@@ -413,6 +413,43 @@ class BlockViewDiffUtilTest {
     }
 
     @Test
+    fun `should detect toggle state change`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+
+        val text = MockDataFactory.randomString()
+
+        val oldBlock = BlockView.Text.Toggle(
+            id = id,
+            text = text,
+            toggled = false
+        )
+
+        val newBlock: BlockView = oldBlock.copy(
+            toggled = true
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        val expected = Payload(
+            changes = listOf(BlockViewDiffUtil.TOGGLE_STATE_CHANGED)
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = payload
+        )
+    }
+
+    @Test
     fun `should detect focus change for title block`() {
 
         val index = 0

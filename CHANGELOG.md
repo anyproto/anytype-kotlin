@@ -1,5 +1,11 @@
 # Change log for Android @Anytype app.
 
+## Version 0.6.2 (WIP)
+
+### Fixes & tech 🚒
+
+* Editor | Fix inconsistent toggle icon state (#2164)
+
 ## Version 0.6.1
 
 ### New features & enhancements 🚀

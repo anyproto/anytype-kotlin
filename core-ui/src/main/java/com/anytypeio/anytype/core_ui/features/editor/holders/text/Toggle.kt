@@ -139,6 +139,9 @@ class Toggle(
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED))
                 placeholder.isVisible = item.isEmpty
+            if (payload.isToggleStateChanged) {
+                toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
+            }
         }
     }
 

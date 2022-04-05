@@ -116,6 +116,8 @@ class BlockViewDiffUtil(
         if (newBlock is BlockView.Text.Toggle && oldBlock is BlockView.Text.Toggle) {
             if (newBlock.isEmpty != oldBlock.isEmpty)
                 changes.add(TOGGLE_EMPTY_STATE_CHANGED)
+            if (newBlock.toggled != oldBlock.toggled)
+                changes.add(TOGGLE_STATE_CHANGED)
         }
 
         if (newBlock is BlockView.Selectable && oldBlock is BlockView.Selectable) {
@@ -257,6 +259,8 @@ class BlockViewDiffUtil(
 
         val isLatexChanged: Boolean get() = changes.contains(LATEX_CHANGED)
 
+        val isToggleStateChanged: Boolean get() = changes.contains(TOGGLE_STATE_CHANGED)
+
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
@@ -276,6 +280,7 @@ class BlockViewDiffUtil(
         const val BACKGROUND_COLOR_CHANGED = 6
         const val INDENT_CHANGED = 7
         const val TOGGLE_EMPTY_STATE_CHANGED = 8
+        const val TOGGLE_STATE_CHANGED = 26
         const val READ_WRITE_MODE_CHANGED = 9
         const val SELECTION_CHANGED = 10
         const val ALIGNMENT_CHANGED = 11

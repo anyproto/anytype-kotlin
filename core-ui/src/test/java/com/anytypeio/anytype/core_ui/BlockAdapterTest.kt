@@ -10,6 +10,8 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.marginLeft
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -52,6 +54,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -68,7 +72,7 @@ class BlockAdapterTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    private val clipboardInterceptor : ClipboardInterceptor = object: ClipboardInterceptor {
+    private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
         override fun onUrlPasted(url: Url) {}
     }
@@ -1068,15 +1072,7 @@ class BlockAdapterTest {
     @Test
     fun `should apply indent to video view`() {
 
-        val view = BlockView.Media.Video(
-            id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt(),
-            hash = MockDataFactory.randomString(),
-            url = MockDataFactory.randomString(),
-            mime = MockDataFactory.randomString(),
-            name = MockDataFactory.randomString(),
-            size = MockDataFactory.randomLong()
-        )
+        val view = givenVideo()
 
         val views = listOf(view)
 
@@ -3307,12 +3303,134 @@ class BlockAdapterTest {
         assertTrue { holder.itemView.isSelected }
     }
 
+    @Test
+    fun `should subscribe video block to lifecycle - when bind`() {
+
+        // Given
+
+        val recycler = givenRecycler()
+
+        val lifecycle = TestLifecycle()
+
+        val adapter = buildAdapter(listOf(givenVideo()), lifecycle = lifecycle)
+
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
+
+        check(holder is Video)
+
+        // When
+
+        adapter.bindViewHolder(holder, 0)
+
+        // Then
+
+        assertTrue { lifecycle.observers[0] == holder }
+    }
+
+    @Test
+    fun `should stop player - when on lifecycle pause`() {
+
+        // Given
+
+        val recycler = givenRecycler()
+
+        val adapter = buildAdapter(listOf(givenVideo()))
+
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is Video)
+
+        val player = holder.binding.playerView.player!!
+        player.playWhenReady = true
+
+        // When
+
+        holder.onStateChanged({ TODO("Stub") }, Lifecycle.Event.ON_PAUSE)
+
+        // Then
+
+        assertTrue { !player.playWhenReady }
+    }
+
+    @Test
+    fun `should stop player - when detached`() {
+
+        // Given
+
+        val recycler = givenRecycler()
+
+        val adapter = buildAdapter(listOf(givenVideo()))
+
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is Video)
+
+        val player = holder.binding.playerView.player!!
+        player.playWhenReady = true
+
+        // When
+
+        adapter.onViewDetachedFromWindow(holder)
+
+        // Then
+
+        assertTrue { !player.playWhenReady }
+    }
+
+    @Test
+    fun `should release player - when recycled`() {
+
+        // Given
+
+        val recycler = givenRecycler()
+
+        val adapter = buildAdapter(listOf(givenVideo()))
+
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_VIDEO)
+
+        adapter.bindViewHolder(holder, 0)
+
+        check(holder is Video)
+
+
+        val player = spy(holder.binding.playerView.player!!)
+        holder.binding.playerView.player = player
+
+
+        // When
+
+        adapter.onViewRecycled(holder)
+
+        // Then
+
+        verify(player).release()
+    }
+
+    private fun givenRecycler() = RecyclerView(context).apply {
+        layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun givenVideo() = BlockView.Media.Video(
+        id = MockDataFactory.randomUuid(),
+        indent = MockDataFactory.randomInt(),
+        hash = MockDataFactory.randomString(),
+        url = MockDataFactory.randomString(),
+        mime = MockDataFactory.randomString(),
+        name = MockDataFactory.randomString(),
+        size = MockDataFactory.randomLong()
+    )
+
     private fun buildAdapter(
         views: List<BlockView>,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit = { _, _, _ -> },
         onFocusChanged: (String, Boolean) -> Unit = { _, _ -> },
-        onTitleBlockTextChanged: (Id, String) -> Unit = {_, _ -> },
-        onTextChanged: (String, Editable) -> Unit = { _, _ -> }
+        onTitleBlockTextChanged: (Id, String) -> Unit = { _, _ -> },
+        onTextChanged: (String, Editable) -> Unit = { _, _ -> },
+        lifecycle: Lifecycle = TestLifecycle()
     ): BlockAdapter {
         return BlockAdapter(
             restore = LinkedList(),
@@ -3344,10 +3462,21 @@ class BlockAdapterTest {
             onDragListener = EditorDragAndDropListener(
                 onDragEnded = {},
                 onDragExited = {},
-                onDragLocation = { _,_ -> },
-                onDrop = { _,_ -> }
+                onDragLocation = { _, _ -> },
+                onDrop = { _, _ -> }
             ),
-            onDragAndDropTrigger = { true }
+            onDragAndDropTrigger = { true },
+            lifecycle = lifecycle
         )
+    }
+
+    class TestLifecycle (
+        val observers: MutableList<LifecycleObserver> = mutableListOf()
+    ): Lifecycle() {
+        override fun addObserver(observer: LifecycleObserver) {
+            observers.add(observer)
+        }
+        override fun removeObserver(observer: LifecycleObserver) {}
+        override fun getCurrentState() = State.DESTROYED
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Build
 import android.text.Editable
 import android.text.Spannable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -402,7 +404,12 @@ class HeaderBlockTest {
                 onDragLocation = { _,_ -> },
                 onDrop = { _,_ -> }
             ),
-            onDragAndDropTrigger = { true }
+            onDragAndDropTrigger = { true },
+            lifecycle = object : Lifecycle() {
+                override fun addObserver(observer: LifecycleObserver) {}
+                override fun removeObserver(observer: LifecycleObserver) {}
+                override fun getCurrentState() = State.DESTROYED
+            }
         )
     }
 }

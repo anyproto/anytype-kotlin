@@ -26,7 +26,7 @@ ext {
     navigation_version = '2.3.5'
 
     // Third party libraries
-    exoplayer_version = '2.14.1'
+    exoplayer_version = '2.17.1'
     glide_version = '4.12.0'
     shimmer_layout_version = "0.5.0"
     photo_view_version = '2.3.0'
@@ -122,7 +122,8 @@ ext {
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
             timber:                     "com.jakewharton.timber:timber:$timber_version",
             tableView:                  "com.evrencoskun.library:tableview:$table_view_version",
-            exoPlayer:                  "com.google.android.exoplayer:exoplayer:$exoplayer_version",
+            exoPlayerCore:              "com.google.android.exoplayer:exoplayer-core:$exoplayer_version",
+            exoPlayerUi:                "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version",
             pickT:                      "com.github.HBiSoft:PickiT:$pickt_version",
             zxing:                      "com.journeyapps:zxing-android-embedded:$zxing_version",
             urlcleaner:                 "com.shekhargulati.urlcleaner:urlcleaner:$urlcleaner_version",

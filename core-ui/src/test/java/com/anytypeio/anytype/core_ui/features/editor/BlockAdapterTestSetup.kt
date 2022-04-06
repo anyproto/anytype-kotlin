@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_ui.features.editor
 
 import android.content.Context
 import android.text.Editable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
@@ -63,7 +65,12 @@ open class BlockAdapterTestSetup {
                 onDragLocation = { _,_ -> },
                 onDrop = { _,_ -> }
             ),
-            onDragAndDropTrigger = { true }
+            onDragAndDropTrigger = { true },
+            lifecycle = object : Lifecycle() {
+                override fun addObserver(observer: LifecycleObserver) {}
+                override fun removeObserver(observer: LifecycleObserver) {}
+                override fun getCurrentState() = State.DESTROYED
+            }
         )
     }
 }

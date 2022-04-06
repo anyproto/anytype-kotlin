@@ -3,6 +3,8 @@ package com.anytypeio.anytype.core_ui.features.editor
 import android.content.Context
 import android.os.Build
 import android.text.Editable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -402,7 +404,12 @@ class BlockAdapterCursorBindingTest {
                 onDragExited = {},
                 onDragLocation = { _,_ -> },
                 onDrop = { _,_ -> }
-            )
+            ),
+            lifecycle = object : Lifecycle() {
+                override fun addObserver(observer: LifecycleObserver) {}
+                override fun removeObserver(observer: LifecycleObserver) {}
+                override fun getCurrentState() = State.DESTROYED
+            }
         )
     }
 }

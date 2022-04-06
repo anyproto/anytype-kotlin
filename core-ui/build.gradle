@@ -64,7 +64,8 @@ dependencies {
     implementation applicationDependencies.shimmerLayout
     implementation applicationDependencies.timber
     implementation applicationDependencies.betterLinkMovement
-    implementation applicationDependencies.exoPlayer
+    implementation applicationDependencies.exoPlayerCore
+    implementation applicationDependencies.exoPlayerUi
     implementation applicationDependencies.urlcleaner
     implementation applicationDependencies.katex
 

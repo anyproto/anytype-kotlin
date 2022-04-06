@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
@@ -136,10 +137,27 @@ class BlockAdapter(
     private val onBackPressedCallback: () -> Boolean,
     private val onKeyPressedEvent: (KeyPressedEvent) -> Unit,
     private val onDragAndDropTrigger: (RecyclerView.ViewHolder) -> Boolean,
-    private val onDragListener: View.OnDragListener
+    private val onDragListener: View.OnDragListener,
+    private val lifecycle: Lifecycle,
 ) : RecyclerView.Adapter<BlockViewHolder>() {
 
     val views: List<BlockView> get() = blocks
+
+    override fun onViewDetachedFromWindow(holder: BlockViewHolder) {
+        when (holder) {
+            is Video -> {
+                holder.pause()
+            }
+        }
+    }
+
+    override fun onViewRecycled(holder: BlockViewHolder) {
+        when (holder) {
+            is Video -> {
+                holder.recycle()
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
 
@@ -702,7 +720,7 @@ class BlockAdapter(
                             },
                             onDragAndDropTrigger = { onDragAndDropTrigger(holder) }
                         )
-                        holder.itemView.setOnTouchListener { v, e -> processor.process(v,e) }
+                        holder.itemView.setOnTouchListener { v, e -> processor.process(v, e) }
                     }
                     is Code -> {
                         holder.editorTouchProcessor.onLongClick = {
@@ -1265,7 +1283,8 @@ class BlockAdapter(
             is Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Media.Video,
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    lifecycle = lifecycle
                 )
             }
             is VideoUpload -> {

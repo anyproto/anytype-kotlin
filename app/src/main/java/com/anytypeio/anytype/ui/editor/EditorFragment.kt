@@ -272,7 +272,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onBackPressedCallback = { vm.onBackPressedCallback() },
             onKeyPressedEvent = vm::onKeyPressedEvent,
             onDragAndDropTrigger = { vh: RecyclerView.ViewHolder -> handleDragAndDropTrigger(vh) },
-            onDragListener = dndListener
+            onDragListener = dndListener,
+            lifecycle = lifecycle
         )
     }
 
@@ -2272,10 +2273,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.dndTargetLine.invisible()
         val vh = binding.recycler.findContainingViewHolder(target)
 
-        blockAdapter.notifyItemChanged(dndTargetPos)
-
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
+                blockAdapter.notifyItemMoved(dndTargetPos, vh.bindingAdapterPosition)
                 if (vh is SupportNesting) {
                     when (ratio) {
                         in DragAndDropConfig.topRange -> {

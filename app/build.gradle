@@ -200,7 +200,8 @@ dependencies {
 
     implementation applicationDependencies.crashlytics
 
-    implementation applicationDependencies.exoPlayer
+    implementation applicationDependencies.exoPlayerCore
+    implementation applicationDependencies.exoPlayerUi
 
     implementation analyticsDependencies.amplitude
     implementation analyticsDependencies.okhttp

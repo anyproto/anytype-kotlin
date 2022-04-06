@@ -326,8 +326,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private val titleVisibilityDetector by lazy {
-        FirstItemInvisibilityDetector { isVisible ->
-            if (isVisible) {
+        EditorHeaderOverlayDetector(
+            threshold = dimen(R.dimen.default_toolbar_height),
+            thresholdPadding = dimen(R.dimen.dp_8)
+        ) { isHeaderOverlaid ->
+            if (isHeaderOverlaid) {
                 binding.topToolbar.setBackgroundColor(0)
                 binding.topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()

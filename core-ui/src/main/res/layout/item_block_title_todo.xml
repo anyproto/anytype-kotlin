@@ -7,14 +7,14 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:minHeight="12dp"
+        android:minHeight="@dimen/todoToolbarHeaderMinHeight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="176dp"
+            android:layout_height="@dimen/default_cover_height_todo"
             android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_document_cover"
             android:scaleType="fitXY"
@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="@dimen/space_between_header_container_and_title"
         android:layout_marginEnd="20dp"
         android:orientation="horizontal">
 

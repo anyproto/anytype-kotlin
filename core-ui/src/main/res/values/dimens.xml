@@ -203,9 +203,12 @@
     <dimen name="list_item_object_half_text_margin_start">72dp</dimen>
     <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
     <dimen name="default_cover_height">200dp</dimen>
+    <dimen name="default_cover_height_todo">188dp</dimen>
     <dimen name="dp_14">14dp</dimen>
     <dimen name="defaultGalleryViewTextSize">12sp</dimen>
     <dimen name="defaultGalleryViewAvatarTextSize">11sp</dimen>
     <dimen name="default_wallpaper_select_item_height">208dp</dimen>
+    <dimen name="todoToolbarHeaderMinHeight">80dp</dimen>
+    <dimen name="space_between_header_container_and_title">32dp</dimen>
 
 </resources>

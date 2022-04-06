@@ -29,19 +29,18 @@ class LocalNetworkAddressHandler(
     class DefaultAddressProvider : InterfaceAddrsGetter {
 
         private var mLastUpdateTime: Long = 0
-        private var addresses = mutableListOf<InterfaceAddress>()
+        private var addresses = listOf<InterfaceAddress>()
 
         override fun interfaceAddrs(): InterfaceAddrIterator {
-            Timber.d("Getting addresses")
             if (!isNeedToUpdateNetworkAddresses()) {
                 return DefaultAddressIterator(addresses.iterator())
             }
             return try {
-                addresses.clear()
-                val interfaces = NetworkInterface.getNetworkInterfaces().toList()
-                addresses.addAll(interfaces.flatMap { it.interfaceAddresses })
+                val update = fetchAddresses()
                 mLastUpdateTime = System.currentTimeMillis()
-                DefaultAddressIterator(addresses.iterator())
+                DefaultAddressIterator(update.iterator()).also {
+                    addresses = update
+                }
             } catch (e: Exception) {
                 Timber.e(e, "Error getting local net address")
                 mLastUpdateTime = System.currentTimeMillis()
@@ -49,13 +48,21 @@ class LocalNetworkAddressHandler(
             }
         }
 
+        private fun fetchAddresses(): List<InterfaceAddress> {
+            return NetworkInterface.getNetworkInterfaces()
+                .asSequence()
+                .flatMap { it.interfaceAddresses }
+                .toList()
+        }
+
         private fun isNeedToUpdateNetworkAddresses(): Boolean {
             return System.currentTimeMillis() - mLastUpdateTime >= UPDATE_INTERVAL_MILLI_SECONDS
         }
     }
 
-    class DefaultAddressIterator(private val ia: Iterator<InterfaceAddress>) :
-        InterfaceAddrIterator {
+    class DefaultAddressIterator(
+        private val ia: Iterator<InterfaceAddress>
+    ) : InterfaceAddrIterator {
         override fun next(): LocalInterfaceAddr? {
             if (ia.hasNext()) {
                 return LocalInterfaceAddr(ia.next())

@@ -2326,6 +2326,7 @@ message Rpc {
      * Namespace, that agregates subtopics and actions, that relates to account.
     */
     message Account {
+        // TODO: use model from models.proto
         message Config {
             bool enableDataview = 1;
             bool enableDebug = 2;
@@ -2334,7 +2335,6 @@ message Rpc {
 
             google.protobuf.Struct extra = 100;
         }
-
         message Create {
             /**
             * Front end to middleware request-to-create-an account
@@ -2355,7 +2355,8 @@ message Rpc {
             message Response {
                 Error error = 1; // Error while trying to create an account
                 anytype.model.Account account = 2; // A newly created account; In case of a failure, i.e. error is non-NULL, the account model should contain empty/default-value fields
-                Config config = 3;
+                Config config = 3; // deprecated, use account
+
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -2410,6 +2411,32 @@ message Rpc {
                         WALLET_RECOVER_NOT_PERFORMED = 106;
                         FAILED_TO_STOP_RUNNING_NODE = 107;
                         ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
+                        ACCOUNT_IS_DELETED = 109;
+                    }
+                }
+            }
+        }
+
+        message Delete {
+            message Request {
+                bool revert = 1;
+            }
+
+            message Response {
+                Error error = 1; // Error while trying to recover an account
+                anytype.model.Account.Status status = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error;
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2;
+
+                        ACCOUNT_IS_ALREADY_DELETED = 101;
+                        ACCOUNT_IS_ACTIVE = 102;
                     }
                 }
             }
@@ -2431,7 +2458,8 @@ message Rpc {
             message Response {
                 Error error = 1; // Error while trying to launch/select an account
                 anytype.model.Account account = 2; // Selected account
-                Config config = 3;
+                Config config = 3; // deprecated, use account
+
                 message Error {
                     Code code = 1;
                     string description = 2;

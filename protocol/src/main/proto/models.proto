@@ -390,6 +390,8 @@ message Account {
     string id = 1; // User's thread id
     string name = 2; // User name, that associated with this account
     Avatar avatar = 3; // Avatar of a user's account
+    Config config = 4;
+    Status status = 5;
 
     /**
     * Avatar of a user's account. It could be an image or color
@@ -400,6 +402,7 @@ message Account {
             string color = 2; // Color of the avatar, used if image not set.
         }
     }
+
     message Config {
         bool enableDataview = 1;
         bool enableDebug = 2;
@@ -407,6 +410,18 @@ message Account {
         bool enableSpaces = 4;
 
         google.protobuf.Struct extra = 100;
+    }
+
+    message Status {
+        StatusType statusType = 1;
+        int64 deletionDate = 2;
+    }
+
+    enum StatusType {
+        Active = 0;
+        PendingDeletion = 1;
+        StartedDeletion = 2;
+        Deleted = 3;
     }
 }
 

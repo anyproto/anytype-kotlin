@@ -15,14 +15,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.sets.SearchRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.SelectSortRelationViewModel
 import javax.inject.Inject
 
-class SelectSortRelationFragment :
-    BaseBottomSheetFragment<FragmentSelectSortOrFilterRelationBinding>() {
+class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
 
@@ -39,6 +38,8 @@ class SelectSortRelationFragment :
     lateinit var factory: SelectSortRelationViewModel.Factory
 
     private val vm: SelectSortRelationViewModel by viewModels { factory }
+
+    override val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

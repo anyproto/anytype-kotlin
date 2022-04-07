@@ -31,6 +31,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -125,6 +126,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.ranges.IntRange
+import kotlin.ranges.contains
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
@@ -425,6 +428,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupWindowInsetAnimation()
+
         binding.recycler.addOnItemTouchListener(
             OutsideClickDetector(vm::onOutsideClicked)
         )
@@ -627,6 +632,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.styleToolbarBackground).state = BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
+    }
+
+    private fun setupWindowInsetAnimation() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.objectTypesToolbar.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+            binding.toolbar.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+        }
     }
 
     private fun onApplyScrollAndMoveClicked() {

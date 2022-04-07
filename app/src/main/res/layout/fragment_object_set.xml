@@ -5,9 +5,9 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_primary"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@color/background_primary"
     app:layoutDescription="@xml/fragment_object_set_scene">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator

@@ -1,14 +1,18 @@
 package com.anytypeio.anytype.ui.auth
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.DoneActionListener
 import com.anytypeio.anytype.databinding.FragmentKeychainLoginBinding
@@ -20,7 +24,8 @@ import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
 
-class KeychainLoginFragment : NavigationFragment<FragmentKeychainLoginBinding>(R.layout.fragment_keychain_login) {
+class KeychainLoginFragment :
+    NavigationFragment<FragmentKeychainLoginBinding>(R.layout.fragment_keychain_login) {
 
     @Inject
     lateinit var factory: KeychainLoginViewModelFactory
@@ -30,6 +35,14 @@ class KeychainLoginFragment : NavigationFragment<FragmentKeychainLoginBinding>(R
         super.onViewCreated(view, savedInstanceState)
         setupButtons()
         setupEditTextListener()
+        setupWindowInsetAnimation()
+    }
+
+    private fun setupWindowInsetAnimation() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.container.syncTranslationWithImeVisibility()
+            binding.keychainInputField.syncFocusWithImeVisibility()
+        }
     }
 
     private fun setupEditTextListener() {

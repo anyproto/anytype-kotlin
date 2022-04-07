@@ -58,7 +58,6 @@ fun EditText.cursorYBottomCoordinate(): Int {
         val baseLine = getLineBaseline(line)
         val descent = getLineDescent(line)
         val rect = calculateRectInWindow(this@cursorYBottomCoordinate)
-
         return rect.top + baseLine + descent - this.topPadding
     }
 }

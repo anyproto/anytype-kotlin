@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.children
 import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
@@ -26,6 +28,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SyncStatus
@@ -80,13 +83,13 @@ open class ObjectSetFragment :
     private val topToolbarTitle: TextView
         get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
 
-    private val topToolbarThreeDotsButton : ViewGroup
+    private val topToolbarThreeDotsButton: ViewGroup
         get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
     private val topToolbarStatusContainer: ViewGroup
         get() = binding.topToolbar.root.findViewById(R.id.statusContainer)
 
-    private val topToolbarThreeDotsIcon : ImageView
+    private val topToolbarThreeDotsIcon: ImageView
         get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
 
     private val topToolbarStatusText: TextView
@@ -151,6 +154,9 @@ open class ObjectSetFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupWindowInsetAnimation()
+
         setupGridAdapters(view)
         title.clearFocus()
         topToolbarTitle.alpha = 0f
@@ -169,10 +175,13 @@ open class ObjectSetFragment :
             subscribe(customizeViewButton.clicks()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(tvCurrentViewerName.clicks()) { vm.onExpandViewerMenuClicked() }
             subscribe(binding.unsupportedViewError.clicks()) { vm.onUnsupportedViewErrorClicked() }
+
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnFilter).clicks()) {
                 vm.onViewerFiltersClicked()
             }
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnRelations).clicks()) {
+            subscribe(
+                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnRelations).clicks()
+            ) {
                 vm.onViewerRelationsClicked()
             }
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()) {
@@ -211,6 +220,15 @@ open class ObjectSetFragment :
 
         binding.listView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
+        }
+    }
+
+    private fun setupWindowInsetAnimation() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.bottomToolbar.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+            title.syncFocusWithImeVisibility()
         }
     }
 
@@ -253,10 +271,11 @@ open class ObjectSetFragment :
     }
 
     private fun showBottomPanel() {
-        val animation = binding.bottomPanel.root.animate().translationY(-bottomPanelTranslationDelta).apply {
-            duration = BOTTOM_PANEL_ANIM_DURATION
-            interpolator = AccelerateDecelerateInterpolator()
-        }
+        val animation =
+            binding.bottomPanel.root.animate().translationY(-bottomPanelTranslationDelta).apply {
+                duration = BOTTOM_PANEL_ANIM_DURATION
+                interpolator = AccelerateDecelerateInterpolator()
+            }
         animation.start()
     }
 
@@ -304,7 +323,8 @@ open class ObjectSetFragment :
     }
 
     private fun observeGrid(viewer: Viewer) {
-        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text = viewer.title
+        binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text =
+            viewer.title
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -374,7 +394,8 @@ open class ObjectSetFragment :
             setOnClickListener { vm.onIconClicked() }
         }
 
-        binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon).setEmojiOrNull(title.emoji)
+        binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
+            .setEmojiOrNull(title.emoji)
 
         if (title.image != null) {
             binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
@@ -401,7 +422,8 @@ open class ObjectSetFragment :
         coverGradient: String?
     ) {
         val ivCover = binding.objectHeader.root.findViewById<ImageView>(R.id.cover)
-        val container = binding.objectHeader.root.findViewById<FrameLayout>(R.id.coverAndIconContainer)
+        val container =
+            binding.objectHeader.root.findViewById<FrameLayout>(R.id.coverAndIconContainer)
         ivCover.setOnClickListener { vm.onCoverClicked() }
         when {
             coverColor != null -> {
@@ -623,7 +645,14 @@ open class ObjectSetFragment :
 
     private val transitionListener = object : MotionLayout.TransitionListener {
         override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {}
-        override fun onTransitionChange(view: MotionLayout?, start: Int, end: Int, progress: Float) {}
+        override fun onTransitionChange(
+            view: MotionLayout?,
+            start: Int,
+            end: Int,
+            progress: Float
+        ) {
+        }
+
         override fun onTransitionTrigger(view: MotionLayout?, id: Int, pos: Boolean, prog: Float) {}
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {

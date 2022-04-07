@@ -16,13 +16,13 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.presentation.sets.SearchRelationViewModel
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 abstract class SearchRelationFragment :
-    BaseBottomSheetFragment<FragmentSelectSortOrFilterRelationBinding>() {
+    BaseBottomSheetTextInputFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     abstract val ctx: String
     abstract val vm: SearchRelationViewModel
@@ -30,6 +30,8 @@ abstract class SearchRelationFragment :
     private val searchRelationAdapter by lazy {
         SearchRelationAdapter { relation -> onRelationClicked(ctx = ctx, relation = relation) }
     }
+
+    override val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
 
     lateinit var searchRelationInput: EditText
     lateinit var clearSearchText: View

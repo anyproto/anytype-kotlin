@@ -22,7 +22,7 @@ import com.anytypeio.anytype.core_ui.features.relations.RelationAddHeaderAdapter
 import com.anytypeio.anytype.core_ui.reactive.focusChanges
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentRelationAddBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationAddBaseViewModel
@@ -34,9 +34,11 @@ import java.io.Serializable
 import javax.inject.Inject
 
 
-abstract class RelationAddBaseFragment : BaseBottomSheetFragment<FragmentRelationAddBinding>() {
+abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<FragmentRelationAddBinding>() {
 
     abstract val vm: RelationAddBaseViewModel
+
+    override val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
 
     abstract val ctx: String
 

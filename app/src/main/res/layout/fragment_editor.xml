@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -106,8 +106,8 @@
             android:id="@+id/mentionSuggesterToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             android:background="@color/background_primary"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -190,76 +190,83 @@
 
     </FrameLayout>
 
-    <com.anytypeio.anytype.core_ui.widgets.BlockActionWidget
-        android:id="@+id/blockActionToolbar"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/panels"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="false"
-        app:cardBackgroundColor="@color/background_secondary"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        android:layout_height="match_parent">
 
-    <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
-        android:id="@+id/styleToolbarMain"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="true"
-        app:cardBackgroundColor="@color/background_secondary"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        <com.anytypeio.anytype.core_ui.widgets.BlockActionWidget
+            android:id="@+id/blockActionToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="false"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarExtraWidget
-        android:id="@+id/styleToolbarOther"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="true"
-        app:cardBackgroundColor="@color/background_secondary"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
+            android:id="@+id/styleToolbarMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleColorToolbarWidget
-        android:id="@+id/styleToolbarColors"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="true"
-        app:cardBackgroundColor="@color/background_secondary"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarExtraWidget
+            android:id="@+id/styleToolbarOther"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleBackgroundToolbarWidget
-        android:id="@+id/styleToolbarBackground"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="true"
-        app:cardBackgroundColor="@color/background_secondary"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleColorToolbarWidget
+            android:id="@+id/styleToolbarColors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.UndoRedoToolbarWidget
-        android:id="@+id/undoRedoToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="true"
-        app:behavior_skipCollapsed="true"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleBackgroundToolbarWidget
+            android:id="@+id/styleToolbarBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.UndoRedoToolbarWidget
+            android:id="@+id/undoRedoToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <View
         android:id="@+id/dndTargetLine"
@@ -277,4 +284,4 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

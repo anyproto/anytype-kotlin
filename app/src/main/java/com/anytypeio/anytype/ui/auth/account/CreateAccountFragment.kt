@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_utils.ext.*
@@ -48,6 +50,15 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
         binding.backButton.setOnClickListener { vm.onBackButtonClicked() }
         setupNavigation()
         vm.error.observe(viewLifecycleOwner, Observer(this::showError))
+
+        setupWindowInsetAnimation()
+    }
+
+    private fun setupWindowInsetAnimation() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.container.syncTranslationWithImeVisibility()
+            binding.nameInputField.syncFocusWithImeVisibility()
+        }
     }
 
     private fun getCode() = requireArguments().getString(ARGS_CODE, EMPTY_CODE)

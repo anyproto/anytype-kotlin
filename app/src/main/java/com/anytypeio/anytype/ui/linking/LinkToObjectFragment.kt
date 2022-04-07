@@ -21,7 +21,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModel
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class LinkToObjectFragment : BaseBottomSheetFragment<FragmentObjectSearchBinding>() {
+class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>() {
 
     private val vm by viewModels<LinkToObjectViewModel> { factory }
 
@@ -42,6 +42,8 @@ class LinkToObjectFragment : BaseBottomSheetFragment<FragmentObjectSearchBinding
 
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText
+
+    override val textInput: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
 
     private val target get() = arg<Id>(ARG_TARGET)
     private val position get() = argOrNull<Int>(ARG_POSITION)

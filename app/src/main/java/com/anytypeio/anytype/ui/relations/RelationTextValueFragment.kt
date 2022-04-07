@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
@@ -24,7 +24,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
-open class RelationTextValueFragment : BaseBottomSheetFragment<FragmentRelationTextValueBinding>() {
+open class RelationTextValueFragment :
+    BaseBottomSheetImeOffsetFragment<FragmentRelationTextValueBinding>() {
 
     @Inject
     lateinit var factory: RelationTextValueViewModel.Factory

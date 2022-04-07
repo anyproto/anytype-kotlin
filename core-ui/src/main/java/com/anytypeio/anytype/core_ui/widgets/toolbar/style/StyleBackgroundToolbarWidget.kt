@@ -8,7 +8,9 @@ import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleToolbarBackgrou
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 class StyleBackgroundToolbarWidget @JvmOverloads constructor(
     context: Context,

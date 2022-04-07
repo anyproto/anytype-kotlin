@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -16,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
@@ -30,7 +31,7 @@ import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
-abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment<FragmentPageIconPickerBinding>() {
+abstract class ObjectIconPickerBaseFragment : BaseBottomSheetTextInputFragment<FragmentPageIconPickerBinding>() {
 
     protected val target: String
         get() = requireArguments()
@@ -56,6 +57,8 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetFragment<FragmentPa
             }
         )
     }
+
+    override val textInput: EditText get() = binding.filterInputField
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,11 +1,15 @@
 package com.anytypeio.anytype.core_ui.features.relations
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectRelationTextBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.*
+import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
@@ -18,7 +22,6 @@ class RelationTextValueAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelationBaseHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_object_relation_text, parent, false)
         return when (viewType) {
             TYPE_TEXT -> RelationTextHolder(
                 binding = ItemObjectRelationTextBinding.inflate(
@@ -31,6 +34,7 @@ class RelationTextValueAdapter(
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
+                setWindowFocusController(binding.textInputField)
             }
             TYPE_TEXT_SHORT -> RelationTextShortHolder(
                 binding = ItemObjectRelationTextBinding.inflate(
@@ -43,6 +47,7 @@ class RelationTextValueAdapter(
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
+                setWindowFocusController(binding.textInputField)
             }
             TYPE_URL -> RelationUrlHolder(
                 binding = ItemObjectRelationTextBinding.inflate(
@@ -55,6 +60,7 @@ class RelationTextValueAdapter(
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
+                setWindowFocusController(binding.textInputField)
             }
             TYPE_PHONE -> RelationPhoneHolder(
                 binding = ItemObjectRelationTextBinding.inflate(
@@ -67,6 +73,7 @@ class RelationTextValueAdapter(
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
+                setWindowFocusController(binding.textInputField)
             }
             TYPE_EMAIL -> RelationEmailHolder(
                 binding = ItemObjectRelationTextBinding.inflate(
@@ -79,6 +86,7 @@ class RelationTextValueAdapter(
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
+                setWindowFocusController(binding.textInputField)
             }
             TYPE_NUMBER -> RelationNumberHolder(
                 binding = ItemObjectRelationTextBinding.inflate(
@@ -91,8 +99,15 @@ class RelationTextValueAdapter(
                         onEditCompleted(items[bindingAdapterPosition], txt)
                     }
                 )
+                setWindowFocusController(binding.textInputField)
             }
-            else -> throw IllegalArgumentException("Wrong relation type:$view")
+            else -> throw IllegalArgumentException("Unexpected view type: $viewType")
+        }
+    }
+
+    private fun setWindowFocusController(view: EditText) {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            view.syncFocusWithImeVisibility()
         }
     }
 

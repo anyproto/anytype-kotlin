@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.search
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,18 +8,19 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
-import com.anytypeio.anytype.core_utils.ext.hideSoftInput
-import com.anytypeio.anytype.core_utils.ext.imm
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
@@ -76,6 +78,21 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
             true
         }
         initialize()
+    }
+
+    override fun onApplyWindowRootInsets() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val deferringInsetsListener = RootViewDeferringInsetsCallback(
+                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
+                deferredInsetTypes = 0
+            )
+            ViewCompat.setWindowInsetsAnimationCallback(binding.root, deferringInsetsListener)
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root, deferringInsetsListener)
+
+            binding.searchView.root
+                .findViewById<EditText>(R.id.filterInputField)
+                .syncFocusWithImeVisibility()
+        }
     }
 
     override fun onStart() {

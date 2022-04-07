@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.auth
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -7,12 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.invitationScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.databinding.FragmentInvitationBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -49,6 +53,14 @@ class InvitationFragment : NavigationFragment<FragmentInvitationBinding>(R.layou
         }
         binding.btnBack.setOnClickListener {
             navObserver.onChanged(EventWrapper(AppNavigation.Command.Exit))
+        }
+        setupWindowInsetAnimation()
+    }
+
+    private fun setupWindowInsetAnimation() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.container.syncTranslationWithImeVisibility()
+            binding.edtCode.syncFocusWithImeVisibility()
         }
     }
 

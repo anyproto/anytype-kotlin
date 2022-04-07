@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.editor.modals
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +10,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.DialogCreateBookmarkBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.bookmark.CreateBookmarkViewModel
@@ -24,8 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-class CreateBookmarkFragment : BaseBottomSheetFragment<DialogCreateBookmarkBinding>(),
-    Observer<ViewState> {
+class CreateBookmarkFragment : BaseBottomSheetImeOffsetFragment<DialogCreateBookmarkBinding>(), Observer<ViewState> {
 
     private val target: String
         get() = requireArguments()
@@ -71,6 +73,14 @@ class CreateBookmarkFragment : BaseBottomSheetFragment<DialogCreateBookmarkBindi
                 )
             }
             .launchIn(lifecycleScope)
+
+        setupWindowInsetAnimation()
+    }
+
+    private fun setupWindowInsetAnimation() {
+        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.urlInput.syncFocusWithImeVisibility()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

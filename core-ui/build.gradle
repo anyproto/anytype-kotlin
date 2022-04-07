@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion config["min_sdk"]
         targetSdkVersion config["target_sdk"]
-
         testInstrumentationRunner config["test_runner"]
+        buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
     }
 
     testOptions {

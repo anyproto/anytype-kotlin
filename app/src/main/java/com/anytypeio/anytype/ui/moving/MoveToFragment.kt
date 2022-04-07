@@ -20,7 +20,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.*
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.moving.MoveToView
@@ -31,12 +31,14 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class MoveToFragment : BaseBottomSheetFragment<FragmentObjectSearchBinding>() {
+class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>() {
 
     private val vm by viewModels<MoveToViewModel> { factory }
 
     @Inject
     lateinit var factory: MoveToViewModelFactory
+
+    override val textInput: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
 
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText

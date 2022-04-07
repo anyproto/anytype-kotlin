@@ -142,6 +142,8 @@ sealed class ControlPanelMachine {
 
         object OnMultiSelectStyleClicked : Event()
 
+        data class OnBackgroundStyleClicked(val selectedBackground: String?) : Event()
+
         sealed class SearchToolbar : Event() {
             object OnEnterSearchMode : SearchToolbar()
             object OnExitSearchMode : SearchToolbar()
@@ -393,7 +395,9 @@ sealed class ControlPanelMachine {
             }
             is Event.OnMarkupTextColorSelected -> state.copy()
             is Event.OnBlockTextColorSelected -> state.copy()
-            is Event.OnBlockBackgroundColorSelected -> state.copy()
+            is Event.OnBlockBackgroundColorSelected -> state.copy(
+                styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+            )
             is Event.OnBlockStyleSelected -> state.copy()
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy()
@@ -421,7 +425,8 @@ sealed class ControlPanelMachine {
                         mode = StylingMode.MARKUP,
                         target = target,
                         props = props
-                    )
+                    ),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.OnClearFocusClicked -> init()
@@ -434,7 +439,8 @@ sealed class ControlPanelMachine {
                             isVisible = false
                         ),
                         slashWidget = Toolbar.SlashWidget.reset(),
-                        objectTypesToolbar = Toolbar.ObjectTypes.reset()
+                        objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                     )
                 } else {
                     state.copy(
@@ -467,7 +473,8 @@ sealed class ControlPanelMachine {
                     ),
                     navigationToolbar = state.navigationToolbar.copy(
                         isVisible = false
-                    )
+                    ),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             // TODO move it somewhere in appropriate group
@@ -487,7 +494,29 @@ sealed class ControlPanelMachine {
                     navigationToolbar = state.navigationToolbar.copy(
                         isVisible = false
                     ),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset()
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                )
+            }
+            is Event.OnBackgroundStyleClicked -> {
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    stylingToolbar = state.stylingToolbar.copy(
+                        isVisible = false
+                    ),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = false
+                    ),
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                    styleColorToolbar = Toolbar.Styling.Color(
+                        isVisible = false
+                    ),
+                    styleBackgroundToolbar = Toolbar.Styling.Background(
+                        isVisible = true,
+                        selectedBackground = event.selectedBackground
+                    )
                 )
             }
             is Event.OnRefresh.StyleToolbar -> {
@@ -517,7 +546,8 @@ sealed class ControlPanelMachine {
                 ),
                 stylingToolbar = Toolbar.Styling.reset(),
                 navigationToolbar = Toolbar.Navigation(isVisible = false),
-                objectTypesToolbar = Toolbar.ObjectTypes.reset()
+                objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                styleBackgroundToolbar = Toolbar.Styling.Background.reset()
             )
             is Event.SearchToolbar.OnExitSearchMode -> state.copy(
                 searchToolbar = state.searchToolbar.copy(isVisible = false),
@@ -551,7 +581,8 @@ sealed class ControlPanelMachine {
                         markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
                         navigationToolbar = Toolbar.Navigation(
                             isVisible = false
-                        )
+                        ),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                     )
                     else -> {
                         state.copy(
@@ -560,7 +591,8 @@ sealed class ControlPanelMachine {
                             ),
                             mentionToolbar = Toolbar.MentionToolbar.reset(),
                             slashWidget = Toolbar.SlashWidget.reset(),
-                            objectTypesToolbar = Toolbar.ObjectTypes.reset()
+                            objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                            styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                         )
                     }
                 }
@@ -744,7 +776,8 @@ sealed class ControlPanelMachine {
                         navigationToolbar = state.navigationToolbar.copy(
                             isVisible = false
                         ),
-                        stylingToolbar = Toolbar.Styling.reset()
+                        stylingToolbar = Toolbar.Styling.reset(),
+                        styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                     )
                 } else {
                     init()
@@ -753,8 +786,9 @@ sealed class ControlPanelMachine {
             is Event.StylingToolbar.OnCloseMulti -> {
                 state.copy(
                     stylingToolbar = Toolbar.Styling.reset(),
-                    styleColorToolbar = Toolbar.Styling.Color(),
-                    styleExtraToolbar = Toolbar.Styling.Other()
+                    styleColorToolbar = Toolbar.Styling.Color.reset(),
+                    styleExtraToolbar = Toolbar.Styling.Other.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.StylingToolbar.OnExit -> {
@@ -766,8 +800,9 @@ sealed class ControlPanelMachine {
                         isVisible = false
                     ),
                     stylingToolbar = Toolbar.Styling.reset(),
-                    styleColorToolbar = Toolbar.Styling.Color(),
-                    styleExtraToolbar = Toolbar.Styling.Other()
+                    styleColorToolbar = Toolbar.Styling.Color.reset(),
+                    styleExtraToolbar = Toolbar.Styling.Other.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.StylingToolbar.OnExtraClicked -> {
@@ -775,7 +810,8 @@ sealed class ControlPanelMachine {
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = false
                     ),
-                    styleExtraToolbar = Toolbar.Styling.Other(true)
+                    styleExtraToolbar = Toolbar.Styling.Other(true),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.StylingToolbar.OnColorClicked -> {
@@ -783,7 +819,8 @@ sealed class ControlPanelMachine {
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = false
                     ),
-                    styleColorToolbar = Toolbar.Styling.Color(true)
+                    styleColorToolbar = Toolbar.Styling.Color(true),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.StylingToolbar.OnExtraClosed -> {
@@ -791,7 +828,8 @@ sealed class ControlPanelMachine {
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = true
                     ),
-                    styleExtraToolbar = Toolbar.Styling.Other(false)
+                    styleExtraToolbar = Toolbar.Styling.Other(false),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.StylingToolbar.OnColorClosed -> {
@@ -799,7 +837,8 @@ sealed class ControlPanelMachine {
                     stylingToolbar = state.stylingToolbar.copy(
                         isVisible = true
                     ),
-                    styleColorToolbar = Toolbar.Styling.Color(false)
+                    styleColorToolbar = Toolbar.Styling.Color(false),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
         }
@@ -927,9 +966,10 @@ sealed class ControlPanelMachine {
                 navigationToolbar = state.navigationToolbar.copy(
                     isVisible = true
                 ),
-                styleColorToolbar = Toolbar.Styling.Color(),
-                styleExtraToolbar = Toolbar.Styling.Other(),
-                stylingToolbar = Toolbar.Styling.reset()
+                styleColorToolbar = Toolbar.Styling.Color.reset(),
+                styleExtraToolbar = Toolbar.Styling.Other.reset(),
+                stylingToolbar = Toolbar.Styling.reset(),
+                styleBackgroundToolbar = Toolbar.Styling.Background.reset()
             )
             is Event.MultiSelect.OnDelete -> state.copy(
                 multiSelect = state.multiSelect.copy(
@@ -962,7 +1002,8 @@ sealed class ControlPanelMachine {
                     ),
                     stylingToolbar = Toolbar.Styling.reset(),
                     mentionToolbar = Toolbar.MentionToolbar.reset(),
-                    slashWidget = Toolbar.SlashWidget.reset()
+                    slashWidget = Toolbar.SlashWidget.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             Event.ReadMode.OnExit -> state.copy()

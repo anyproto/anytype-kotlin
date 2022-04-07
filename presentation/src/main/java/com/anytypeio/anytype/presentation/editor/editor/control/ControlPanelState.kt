@@ -17,18 +17,19 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
  * @property stylingToolbar styling toolbar state
  */
 data class ControlPanelState(
-    val navigationToolbar: Toolbar.Navigation,
-    val mainToolbar: Toolbar.Main,
-    val stylingToolbar: Toolbar.Styling,
-    val styleExtraToolbar: Toolbar.Styling.Other = Toolbar.Styling.Other(),
-    val styleColorToolbar: Toolbar.Styling.Color = Toolbar.Styling.Color(),
+    val navigationToolbar: Toolbar.Navigation = Toolbar.Navigation.reset(),
+    val mainToolbar: Toolbar.Main = Toolbar.Main.reset(),
+    val stylingToolbar: Toolbar.Styling = Toolbar.Styling.reset(),
+    val styleExtraToolbar: Toolbar.Styling.Other = Toolbar.Styling.Other.reset(),
+    val styleColorToolbar: Toolbar.Styling.Color = Toolbar.Styling.Color.reset(),
+    val styleBackgroundToolbar: Toolbar.Styling.Background = Toolbar.Styling.Background.reset(),
     val markupMainToolbar: Toolbar.MarkupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
-    val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar(),
-    val multiSelect: Toolbar.MultiSelect,
-    val mentionToolbar: Toolbar.MentionToolbar,
-    val slashWidget: Toolbar.SlashWidget,
-    val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar(isVisible = false),
-    val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes(isVisible = false)
+    val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar.reset(),
+    val multiSelect: Toolbar.MultiSelect = Toolbar.MultiSelect.reset(),
+    val mentionToolbar: Toolbar.MentionToolbar = Toolbar.MentionToolbar.reset(),
+    val slashWidget: Toolbar.SlashWidget = Toolbar.SlashWidget.reset(),
+    val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar.reset(),
+    val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes.reset()
 ) {
 
     sealed class Toolbar {
@@ -46,7 +47,11 @@ data class ControlPanelState(
          */
         data class Navigation(
             override val isVisible: Boolean
-        ) : Toolbar()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): Navigation = Navigation(false)
+            }
+        }
 
         /**
          * Main toolbar allowing user-interface for CRUD-operations on block/page content.
@@ -54,7 +59,11 @@ data class ControlPanelState(
          */
         data class Main(
             override val isVisible: Boolean = false
-        ) : Toolbar()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): Main = Main(false)
+            }
+        }
 
         /**
          * Main toolbar allowing user-interface for markup operations.
@@ -83,7 +92,11 @@ data class ControlPanelState(
          */
         data class MarkupColorToolbar(
             override val isVisible: Boolean = false
-        ) : Toolbar()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): MarkupColorToolbar = MarkupColorToolbar(false)
+            }
+        }
 
         /**
          * Basic color toolbar state.
@@ -108,8 +121,26 @@ data class ControlPanelState(
                 )
             }
 
-            data class Other(override val isVisible: Boolean = false) : Toolbar()
-            data class Color(override val isVisible: Boolean = false) : Toolbar()
+            data class Other(override val isVisible: Boolean) : Toolbar() {
+                companion object {
+                    fun reset() = Other(false)
+                }
+            }
+
+            data class Color(override val isVisible: Boolean = false) : Toolbar() {
+                companion object {
+                    fun reset() = Color(false)
+                }
+            }
+
+            data class Background(
+                override val isVisible: Boolean,
+                val selectedBackground: String?
+            ) : Toolbar() {
+                companion object {
+                    fun reset() = Background(isVisible = false, selectedBackground = null)
+                }
+            }
 
             /**
              * Target's properties corresponding to current selection or styling mode.
@@ -169,7 +200,13 @@ data class ControlPanelState(
             val isScrollAndMoveEnabled: Boolean = false,
             val isQuickScrollAndMoveMode: Boolean = false,
             val count: Int = 0
-        ) : Toolbar()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): MultiSelect = MultiSelect(
+                    isVisible = false
+                )
+            }
+        }
 
         /**
          * Toolbar with list of mentions and add new page item.
@@ -204,7 +241,11 @@ data class ControlPanelState(
          */
         data class SearchToolbar(
             override val isVisible: Boolean
-        ) : Toolbar()
+        ) : Toolbar() {
+            companion object {
+                fun reset(): SearchToolbar = SearchToolbar(false)
+            }
+        }
 
         data class SlashWidget(
             override val isVisible: Boolean,

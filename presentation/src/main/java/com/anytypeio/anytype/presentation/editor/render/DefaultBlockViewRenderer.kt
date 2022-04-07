@@ -1294,7 +1294,8 @@ class DefaultBlockViewRenderer(
                 ),
                 coverColor = coverColor,
                 coverImage = coverImage,
-                coverGradient = coverGradient
+                coverGradient = coverGradient,
+                backgroundColor = block.backgroundColor
             )
         } else {
             BlockView.LinkToObject.Default.Text(
@@ -1306,7 +1307,8 @@ class DefaultBlockViewRenderer(
                     mode = mode,
                     block = block,
                     selection = selection
-                )
+                ),
+                backgroundColor = block.backgroundColor
             )
         }
     }

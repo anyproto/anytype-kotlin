@@ -211,4 +211,11 @@
     <dimen name="todoToolbarHeaderMinHeight">80dp</dimen>
     <dimen name="space_between_header_container_and_title">32dp</dimen>
 
+    <!-- Editor, graphic + text block container -->
+    <dimen name="default_graphic_text_container_padding_start">@dimen/default_document_item_padding_start</dimen>
+    <dimen name="default_graphic_text_container_padding_end">@dimen/default_document_item_padding_end</dimen>
+    <dimen name="default_graphic_text_container_margin_top">0dp</dimen>
+    <dimen name="default_graphic_text_container_margin_bottom">2dp</dimen>
+
+
 </resources>

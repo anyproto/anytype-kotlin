@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
+import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -23,8 +24,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.*
+import kotlin.test.assertEquals
 
 class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
@@ -320,7 +321,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             children = listOf(header.id, a.id)
         )
 
-        val document = listOf(page,header, title, a)
+        val document = listOf(page, header, title, a)
 
         stubOpenDocument(document)
         stubInterceptEvents()
@@ -1261,6 +1262,331 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 )
             )
         )
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should start main style toolbar when all blocks are texted`() {
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.H2
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(a.id, b.id, c.id)
+        )
+
+        val document = listOf(page, a, b, c)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onClickListener(ListenerType.LongClick(target = a.id))
+            onTextInputClicked(target = b.id)
+            onTextInputClicked(target = c.id)
+            onMultiSelectAction(ActionItemType.Style)
+        }
+
+        val expectedState = ControlPanelState(
+            stylingToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                mode = null,
+                style = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                isScrollAndMoveEnabled = false,
+                count = 3
+            )
+        )
+
+        vm.controlPanelViewState.test().apply {
+            assertEquals(expected = expectedState, actual = this.value())
+        }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should start background style toolbar with null color when all blocks are not texted`() {
+        val targetA = MockDataFactory.randomUuid()
+        val backgroundA = "red"
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetA,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val targetB = MockDataFactory.randomUuid()
+        val backgroundB = "teal"
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetB,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundB
+        )
+
+        val backgroundC = null
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File(
+                state = Block.Content.File.State.EMPTY
+            ),
+            backgroundColor = backgroundC
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(a.id, b.id, c.id)
+        )
+
+        val document = listOf(page, a, b, c)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onClickListener(ListenerType.LongClick(target = a.id))
+            onTextInputClicked(target = b.id)
+            onTextInputClicked(target = c.id)
+            onMultiSelectAction(ActionItemType.Style)
+        }
+
+        val expectedState = ControlPanelState(
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                isScrollAndMoveEnabled = false,
+                count = 3
+            ),
+            styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
+                isVisible = true,
+                selectedBackground = null
+            )
+        )
+
+        vm.controlPanelViewState.test().apply {
+            assertEquals(expected = expectedState, actual = this.value())
+        }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should start background style toolbar with red color when all blocks are not texted`() {
+        val targetA = MockDataFactory.randomUuid()
+        val backgroundA = "red"
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetA,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val targetB = MockDataFactory.randomUuid()
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetB,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File(
+                state = Block.Content.File.State.EMPTY
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(a.id, b.id, c.id)
+        )
+
+        val document = listOf(page, a, b, c)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onClickListener(ListenerType.LongClick(target = a.id))
+            onTextInputClicked(target = b.id)
+            onTextInputClicked(target = c.id)
+            onMultiSelectAction(ActionItemType.Style)
+        }
+
+        val expectedState = ControlPanelState(
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                isScrollAndMoveEnabled = false,
+                count = 3
+            ),
+            styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
+                isVisible = true,
+                selectedBackground = backgroundA
+            )
+        )
+
+        vm.controlPanelViewState.test().apply {
+            assertEquals(expected = expectedState, actual = this.value())
+        }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should start background style toolbar with red color when blocks are mixed`() {
+        val targetA = MockDataFactory.randomUuid()
+        val backgroundA = "red"
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetA,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val targetB = MockDataFactory.randomUuid()
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetB,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetA,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = backgroundA
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(a.id, b.id, c.id)
+        )
+
+        val document = listOf(page, a, b, c)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onClickListener(ListenerType.LongClick(target = a.id))
+            onTextInputClicked(target = b.id)
+            onTextInputClicked(target = c.id)
+            onMultiSelectAction(ActionItemType.Style)
+        }
+
+        val expectedState = ControlPanelState(
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                isScrollAndMoveEnabled = false,
+                count = 3
+            ),
+            styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
+                isVisible = true,
+                selectedBackground = backgroundA
+            )
+        )
+
+        vm.controlPanelViewState.test().apply {
+            assertEquals(expected = expectedState, actual = this.value())
+        }
 
         clearPendingCoroutines()
     }

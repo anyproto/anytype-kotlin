@@ -26,6 +26,7 @@
         app:strokeWidth="0.5dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerWithBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="96dp">

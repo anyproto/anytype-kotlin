@@ -157,6 +157,8 @@ class BlockViewDiffUtil(
                 changes.add(OBJECT_ICON_CHANGED)
             if (newBlock.description != oldBlock.description)
                 changes.add(OBJECT_DESCRIPTION_CHANGED)
+            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+                changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
         if (newBlock is BlockView.LinkToObject.Default.Card && oldBlock is BlockView.LinkToObject.Default.Card) {
@@ -164,6 +166,8 @@ class BlockViewDiffUtil(
                 newBlock.coverColor != oldBlock.coverColor
             )
                 changes.add(OBJECT_COVER_CHANGED)
+            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+                changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
         if (newBlock is BlockView.Latex && oldBlock is BlockView.Latex) {

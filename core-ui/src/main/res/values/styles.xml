@@ -8,6 +8,13 @@
         <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
     </style>
 
+    <style name="DefaultGraphicTextBlock">
+        <item name="android:layout_marginTop">@dimen/default_graphic_text_container_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/default_graphic_text_container_margin_bottom</item>
+        <item name="android:paddingStart">@dimen/default_graphic_text_container_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_graphic_text_container_padding_end</item>
+    </style>
+
     <style name="DefaultEditorTextStyle">
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/text_primary</item>

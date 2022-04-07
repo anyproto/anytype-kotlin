@@ -590,6 +590,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             vm.onStylingToolbarEvent(it)
         }
 
+        lifecycleScope.subscribe(binding.styleToolbarBackground.actions) {
+            vm.onStylingToolbarEvent(it)
+        }
+
         binding.mentionSuggesterToolbar.setupClicks(
             mentionClick = vm::onMentionSuggestClick,
             newPageClick = vm::onAddMentionNewPageClicked
@@ -620,6 +624,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.styleToolbarBackground).state = BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
     }
@@ -1346,6 +1351,25 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 BottomSheetBehavior.from(binding.styleToolbarColors).apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
+                }
+            }
+        }
+
+        state.styleBackgroundToolbar.apply {
+            if (isVisible) {
+                state.styleBackgroundToolbar.selectedBackground.let {
+                    binding.styleToolbarBackground.update(it)
+                }
+                lifecycleScope.launch {
+                    BottomSheetBehavior.from(binding.styleToolbarBackground).apply {
+                        setState(BottomSheetBehavior.STATE_EXPANDED)
+                        addBottomSheetCallback(onHideBottomSheetCallback)
+                    }
+                }
+            } else {
+                BottomSheetBehavior.from(binding.styleToolbarBackground).apply {
+                    setState(BottomSheetBehavior.STATE_HIDDEN)
+                    addBottomSheetCallback(onHideBottomSheetCallback)
                 }
             }
         }

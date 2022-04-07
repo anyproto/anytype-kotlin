@@ -1386,32 +1386,25 @@ class EditorViewModel(
             if (currentSelection().contains(block.id)) {
                 when (block.content) {
                     is Content.Bookmark -> {
-                        excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.Divider -> {
-                        excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.File -> {
-                        excludedActions.add(ActionItemType.Style)
                         targetActions.add(ActionItemType.Download)
                     }
                     is Content.Link -> {
-                        excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                         if (!isMultiMode) targetActions.add(ActionItemType.Preview)
                     }
                     is Content.Page -> {
-                        excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.RelationBlock -> {
-                        excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.Latex -> {
-                        excludedActions.add(ActionItemType.Style)
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.Text -> {
@@ -2294,16 +2287,24 @@ class EditorViewModel(
     }
 
     private fun proceedWithMultiStyleToolbarEvent() {
+        val selected = blocks.filter { currentSelection().contains(it.id) }
+        val backgrounds = selected.map { it.backgroundColor }
+        val isAllSelectedText = selected.all { it.content is Content.Text }
         mode = EditorMode.Styling.Multi(currentSelection())
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectStyleClicked)
-//        viewModelScope.sendEvent(
-//            analytics = analytics,
-//            eventName = EventsDictionary.BTN_STYLE_MENU
-//        )
-//        viewModelScope.sendEvent(
-//            analytics = analytics,
-//            eventName = POPUP_STYLE
-//        )
+        if (isAllSelectedText) {
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectStyleClicked)
+        } else {
+            val distinctColors = backgrounds.distinct()
+            if (distinctColors.size == 1) {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBackgroundStyleClicked(distinctColors[0])
+                )
+            } else {
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnBackgroundStyleClicked(null)
+                )
+            }
+        }
     }
 
     fun onCloseBlockStyleToolbarClicked() {

@@ -857,6 +857,7 @@ sealed class BlockView : ViewType {
             abstract val text: String?
             abstract val description: String?
             abstract val icon: ObjectIcon
+            abstract val backgroundColor: String?
 
             data class Text(
                 override val id: String,
@@ -866,6 +867,7 @@ sealed class BlockView : ViewType {
                 override val text: String? = null,
                 override val description: String? = null,
                 override val icon: ObjectIcon,
+                override val backgroundColor: String?
             ) : Default(), Searchable {
                 override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
             }
@@ -878,6 +880,7 @@ sealed class BlockView : ViewType {
                 override val text: String? = null,
                 override val description: String? = null,
                 override val icon: ObjectIcon,
+                override val backgroundColor: String?,
                 val coverColor: CoverColor? = null,
                 val coverImage: Url? = null,
                 val coverGradient: String? = null

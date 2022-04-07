@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
+import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.*
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -14,10 +15,12 @@ import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
+import timber.log.Timber
 
 class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     BlockViewHolder(binding.root),
@@ -26,6 +29,7 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     SupportCustomTouchProcessor,
     SupportNesting {
 
+    private val container = binding.containerWithBackground
     private val cover = binding.cover
     private val untitled = itemView.resources.getString(R.string.untitled)
     private val objectIcon = binding.cardIcon
@@ -54,6 +58,8 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
         applyDescription(item)
 
         applyCover(item)
+
+        applyBackground(item.backgroundColor)
 
         applySearchHighlight(item)
 
@@ -164,6 +170,8 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
                 applyDescription(item)
             if (payload.isObjectCoverChanged)
                 applyCover(item)
+            if (payload.isBackgroundColorChanged)
+                applyBackground(item.backgroundColor)
         }
     }
 
@@ -215,6 +223,24 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
                     gone()
                 }
             }
+        }
+    }
+
+    private fun applyBackground(
+        background: String?
+    ) {
+        Timber.d("Setting background color: $background")
+        if (!background.isNullOrEmpty()) {
+            val value = ThemeColor.values().find { value -> value.title == background }
+            if (value != null && value != ThemeColor.DEFAULT) {
+                container.setBackgroundColor(itemView.resources.lighter(value, 0))
+            } else {
+                Timber.e("Could not find value for background color: $background, setting background to null")
+                container.setBackgroundColor(0)
+            }
+        } else {
+            Timber.d("Background color is null, setting background to null")
+            container.setBackgroundColor(0)
         }
     }
 }

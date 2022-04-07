@@ -30,7 +30,7 @@ class EditorBlockActionsTest  : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `style action should not be in actions for divider block when entering multi-select mode`() {
+    fun `style action should be in actions for divider block when entering multi-select mode`() {
 
         // SETUP
 
@@ -64,7 +64,7 @@ class EditorBlockActionsTest  : EditorPresentationTestSetup() {
             )
         )
 
-        assertFalse {
+        assertTrue {
             vm.actions.value.contains(ActionItemType.Style)
         }
     }

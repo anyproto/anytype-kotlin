@@ -1192,7 +1192,8 @@ class BlockAdapterTest {
         val view = BlockView.LinkToObject.Default.Text(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt(),
-            icon = ObjectIcon.None
+            icon = ObjectIcon.None,
+            backgroundColor = null
         )
 
         val views = listOf(view)
@@ -3266,7 +3267,8 @@ class BlockAdapterTest {
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            icon = ObjectIcon.None
+            icon = ObjectIcon.None,
+            backgroundColor = null
         )
 
         val updated = file.copy(isSelected = true)
@@ -3288,7 +3290,7 @@ class BlockAdapterTest {
 
         // Testing
 
-        assertTrue { !holder.itemView.isSelected }
+        assertTrue { !holder.binding.container.isSelected }
 
         adapter.updateWithDiffUtil(
             items = listOf(updated)
@@ -3300,7 +3302,7 @@ class BlockAdapterTest {
 
         adapter.onBindViewHolder(holder, 0, changes)
 
-        assertTrue { holder.itemView.isSelected }
+        assertTrue { holder.binding.container.isSelected }
     }
 
     @Test

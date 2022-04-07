@@ -8,15 +8,18 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkBinding
+import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.*
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import timber.log.Timber
 
 class LinkToObject(
     val binding: ItemBlockObjectLinkBinding
@@ -26,6 +29,8 @@ class LinkToObject(
     SupportCustomTouchProcessor,
     SupportNesting {
 
+    private val root = binding.root
+    private val container = binding.container
     private val untitled = itemView.resources.getString(R.string.untitled)
     private val objectIcon = binding.objectIconWidget
     private val objectIconContainer = binding.iconObjectContainer
@@ -46,13 +51,15 @@ class LinkToObject(
     ) {
         indentize(item)
 
-        itemView.isSelected = item.isSelected
+        container.isSelected = item.isSelected
 
         applyText(item)
 
         applySearchHighlight(item)
 
         applyImageOrEmoji(item)
+
+        applyBackground(item.backgroundColor)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
@@ -131,8 +138,7 @@ class LinkToObject(
         check(item is BlockView.LinkToObject.Default.Text) { "Expected a link to object block, but was: $item" }
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
-                itemView.isSelected = item.isSelected
-                applyImageOrEmoji(item)
+                container.isSelected = item.isSelected
             }
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
@@ -141,6 +147,26 @@ class LinkToObject(
                 applyText(item)
             if (payload.isObjectIconChanged)
                 applyImageOrEmoji(item)
+            if (payload.isBackgroundColorChanged)
+                applyBackground(item.backgroundColor)
+        }
+    }
+
+    private fun applyBackground(
+        background: String?
+    ) {
+        Timber.d("Setting background color: $background")
+        if (!background.isNullOrEmpty()) {
+            val value = ThemeColor.values().find { value -> value.title == background }
+            if (value != null && value != ThemeColor.DEFAULT) {
+                root.setBackgroundColor(itemView.resources.lighter(value, 0))
+            } else {
+                Timber.e("Could not find value for background color: $background, setting background to null")
+                root.setBackgroundColor(0)
+            }
+        } else {
+            Timber.d("Background color is null, setting background to null")
+            root.setBackgroundColor(0)
         }
     }
 }

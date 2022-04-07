@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
@@ -2044,6 +2045,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (vm.mode is Editor.Mode.Edit) {
             if (vh is BlockViewHolder.DragAndDropHolder && binding.recycler.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 dndTargetPos = vh.bindingAdapterPosition
+                if (vh is Video) {
+                    vh.pause()
+                }
 
                 val item = ClipData.Item(EMPTY_TEXT)
 
@@ -2278,7 +2282,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
-                blockAdapter.notifyItemMoved(dndTargetPos, vh.bindingAdapterPosition)
                 if (vh is SupportNesting) {
                     when (ratio) {
                         in DragAndDropConfig.topRange -> {

@@ -19,7 +19,6 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
-import timber.log.Timber
 
 class Video(val binding: ItemBlockVideoBinding) : Media(binding.root), LifecycleEventObserver {
 

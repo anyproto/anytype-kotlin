@@ -1,14 +1,15 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 /** Use case for getting currently selected user account.
  */
+@Deprecated("Incorrect use-case. Will be deleted.")
 class GetCurrentAccount(
     private val repo: BlockRepository,
     private val builder: UrlBuilder

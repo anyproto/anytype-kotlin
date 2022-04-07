@@ -3,14 +3,14 @@ package com.anytypeio.anytype.ui_settings.about
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.domain.auth.interactor.GetCurrentAccount
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class AboutAppViewModel(
-    private val getCurrentAccount: GetCurrentAccount,
+    private val getAccount: GetAccount,
     private val getLibraryVersion: GetLibraryVersion
 ) : ViewModel() {
 
@@ -19,7 +19,7 @@ class AboutAppViewModel(
 
     init {
         viewModelScope.launch {
-            getCurrentAccount(BaseUseCase.None).process(
+            getAccount(BaseUseCase.None).process(
                 failure = {},
                 success = { acc ->
                     userId.value = acc.id
@@ -37,14 +37,14 @@ class AboutAppViewModel(
     }
 
     class Factory(
-        private val getCurrentAccount: GetCurrentAccount,
+        private val getAccount: GetAccount,
         private val getLibraryVersion: GetLibraryVersion
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AboutAppViewModel(
-                getCurrentAccount = getCurrentAccount,
+                getAccount = getAccount,
                 getLibraryVersion = getLibraryVersion
             ) as T
         }

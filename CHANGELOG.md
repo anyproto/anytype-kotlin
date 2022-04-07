@@ -5,6 +5,7 @@
 ### Fixes & tech 🚒
 
 * Editor | Fix inconsistent toggle icon state (#2164)
+* App | Fix | About-app screen should display Anytype user ID instead of profile object ID (#2172)
 
 ## Version 0.6.1
 

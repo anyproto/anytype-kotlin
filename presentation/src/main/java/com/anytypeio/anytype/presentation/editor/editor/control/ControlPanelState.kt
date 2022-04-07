@@ -14,14 +14,14 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
  * Control panels are UI-elements that allow user to interact with blocks on a page.
  * Each panel is currently represented as a toolbar.
  * @property mainToolbar block-toolbar state (main toolbar state)
- * @property stylingToolbar styling toolbar state
+ * @property styleTextToolbar styling toolbar state
  */
 data class ControlPanelState(
     val navigationToolbar: Toolbar.Navigation = Toolbar.Navigation.reset(),
     val mainToolbar: Toolbar.Main = Toolbar.Main.reset(),
-    val stylingToolbar: Toolbar.Styling = Toolbar.Styling.reset(),
-    val styleExtraToolbar: Toolbar.Styling.Other = Toolbar.Styling.Other.reset(),
-    val styleColorToolbar: Toolbar.Styling.Color = Toolbar.Styling.Color.reset(),
+    val styleTextToolbar: Toolbar.Styling = Toolbar.Styling.reset(),
+    val styleExtraToolbar: Toolbar.Styling.Extra = Toolbar.Styling.Extra.reset(),
+    val styleColorBackgroundToolbar: Toolbar.Styling.ColorBackground = Toolbar.Styling.ColorBackground.reset(),
     val styleBackgroundToolbar: Toolbar.Styling.Background = Toolbar.Styling.Background.reset(),
     val markupMainToolbar: Toolbar.MarkupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
     val markupColorToolbar: Toolbar.MarkupColorToolbar = Toolbar.MarkupColorToolbar.reset(),
@@ -121,15 +121,15 @@ data class ControlPanelState(
                 )
             }
 
-            data class Other(override val isVisible: Boolean) : Toolbar() {
+            data class Extra(override val isVisible: Boolean) : Toolbar() {
                 companion object {
-                    fun reset() = Other(false)
+                    fun reset() = Extra(false)
                 }
             }
 
-            data class Color(override val isVisible: Boolean = false) : Toolbar() {
+            data class ColorBackground(override val isVisible: Boolean = false) : Toolbar() {
                 companion object {
-                    fun reset() = Color(false)
+                    fun reset() = ColorBackground(false)
                 }
             }
 
@@ -315,7 +315,7 @@ data class ControlPanelState(
                 isVisible = false,
                 count = 0
             ),
-            stylingToolbar = Toolbar.Styling(
+            styleTextToolbar = Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),

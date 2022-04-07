@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -166,7 +165,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = true
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = false,
                         isScrollAndMoveEnabled = false

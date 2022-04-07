@@ -146,7 +146,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),
@@ -247,7 +247,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),
@@ -364,7 +364,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),
@@ -418,7 +418,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = true
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = false,
                         isScrollAndMoveEnabled = false,
@@ -1136,7 +1136,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
-                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = true,
                     count = 1
@@ -1154,7 +1154,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = true),
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
-                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false,
                     count = 0
@@ -1225,7 +1225,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
-                stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = true,
                     count = 3
@@ -1325,7 +1325,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         }
 
         val expectedState = ControlPanelState(
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 mode = null,
                 style = null

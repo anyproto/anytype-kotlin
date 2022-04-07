@@ -1279,7 +1279,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 exitScrollAndMove()
         }
 
-        state.stylingToolbar.apply {
+        state.styleTextToolbar.apply {
             val behavior = BottomSheetBehavior.from(binding.styleToolbarMain)
             if (isVisible) {
                 binding.styleToolbarMain.setSelectedStyle(style)
@@ -1303,7 +1303,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
             } else {
-                if (!state.styleColorToolbar.isVisible && !state.styleExtraToolbar.isVisible) {
+                if (!state.styleColorBackgroundToolbar.isVisible && !state.styleExtraToolbar.isVisible) {
                     binding.recycler.removeItemDecoration(styleToolbarFooter)
                 }
                 behavior.apply {
@@ -1316,14 +1316,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         state.styleExtraToolbar.apply {
             if (isVisible) {
                 binding.styleToolbarOther.setProperties(
-                    props = state.stylingToolbar.props,
-                    config = state.stylingToolbar.config
+                    props = state.styleTextToolbar.props,
+                    config = state.styleTextToolbar.config
                 )
-                lifecycleScope.launch {
-                    BottomSheetBehavior.from(binding.styleToolbarOther).apply {
-                        setState(BottomSheetBehavior.STATE_EXPANDED)
-                        addBottomSheetCallback(onHideBottomSheetCallback)
-                    }
+                BottomSheetBehavior.from(binding.styleToolbarOther).apply {
+                    setState(BottomSheetBehavior.STATE_EXPANDED)
+                    addBottomSheetCallback(onHideBottomSheetCallback)
                 }
             } else {
                 BottomSheetBehavior.from(binding.styleToolbarOther).apply {
@@ -1333,19 +1331,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        state.styleColorToolbar.apply {
+        state.styleColorBackgroundToolbar.apply {
             if (isVisible) {
-                state.stylingToolbar.config?.let { config ->
+                state.styleTextToolbar.config?.let { config ->
                     binding.styleToolbarColors.update(
                         config,
-                        state.stylingToolbar.props
+                        state.styleTextToolbar.props
                     )
                 }
-                lifecycleScope.launch {
-                    BottomSheetBehavior.from(binding.styleToolbarColors).apply {
-                        setState(BottomSheetBehavior.STATE_EXPANDED)
-                        addBottomSheetCallback(onHideBottomSheetCallback)
-                    }
+                BottomSheetBehavior.from(binding.styleToolbarColors).apply {
+                    setState(BottomSheetBehavior.STATE_EXPANDED)
+                    addBottomSheetCallback(onHideBottomSheetCallback)
                 }
             } else {
                 BottomSheetBehavior.from(binding.styleToolbarColors).apply {
@@ -1360,11 +1356,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 state.styleBackgroundToolbar.selectedBackground.let {
                     binding.styleToolbarBackground.update(it)
                 }
-                lifecycleScope.launch {
-                    BottomSheetBehavior.from(binding.styleToolbarBackground).apply {
-                        setState(BottomSheetBehavior.STATE_EXPANDED)
-                        addBottomSheetCallback(onHideBottomSheetCallback)
-                    }
+                BottomSheetBehavior.from(binding.styleToolbarBackground).apply {
+                    setState(BottomSheetBehavior.STATE_EXPANDED)
+                    addBottomSheetCallback(onHideBottomSheetCallback)
                 }
             } else {
                 BottomSheetBehavior.from(binding.styleToolbarBackground).apply {

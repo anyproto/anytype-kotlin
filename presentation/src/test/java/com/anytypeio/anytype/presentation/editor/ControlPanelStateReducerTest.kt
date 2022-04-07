@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor
 
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_utils.tools.Counter
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -11,7 +10,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
-import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -92,7 +90,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -150,7 +148,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -205,7 +203,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -262,7 +260,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false,
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -329,7 +327,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -377,7 +375,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -424,7 +422,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -450,7 +448,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -494,7 +492,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -520,7 +518,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = false,
                 mode = null
             ),
@@ -565,7 +563,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = paragraph.id,
@@ -636,7 +634,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = paragraph.id,
@@ -709,7 +707,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = id,
@@ -777,7 +775,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = id,
@@ -874,7 +872,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
@@ -914,7 +912,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = id,
@@ -1014,7 +1012,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
@@ -1042,7 +1040,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = id,
@@ -1150,7 +1148,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
@@ -1190,7 +1188,7 @@ class ControlPanelStateReducerTest {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = true,
                         target = ControlPanelState.Toolbar.Styling.Target(
                             id = id,
@@ -1253,7 +1251,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = id,
@@ -1345,7 +1343,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
@@ -1376,7 +1374,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),
@@ -1410,7 +1408,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling(
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
                 target = ControlPanelState.Toolbar.Styling.Target(
                     id = id,
@@ -1481,7 +1479,7 @@ class ControlPanelStateReducerTest {
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = false
             ),
-            stylingToolbar = ControlPanelState.Toolbar.Styling.reset(),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
             ),

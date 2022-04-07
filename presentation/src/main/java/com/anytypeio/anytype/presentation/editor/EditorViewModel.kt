@@ -541,8 +541,8 @@ class EditorViewModel(
 
     private fun refreshStyleToolbar(document: Document) {
         controlPanelViewState.value?.let { state ->
-            if (state.stylingToolbar.isVisible || state.styleColorToolbar.isVisible || state.styleExtraToolbar.isVisible) {
-                state.stylingToolbar.target?.id?.let { targetId ->
+            if (state.styleTextToolbar.isVisible || state.styleColorBackgroundToolbar.isVisible || state.styleExtraToolbar.isVisible) {
+                state.styleTextToolbar.target?.id?.let { targetId ->
                     controlPanelInteractor.onEvent(
                         event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(
                             target = document.find { it.id == targetId },
@@ -756,10 +756,10 @@ class EditorViewModel(
             val state = controlPanelViewState.value
             checkNotNull(state) { "Control panel state is null" }
             when {
-                state.stylingToolbar.isVisible -> {
+                state.styleTextToolbar.isVisible -> {
                     onCloseBlockStyleToolbarClicked()
                 }
-                state.styleColorToolbar.isVisible -> {
+                state.styleColorBackgroundToolbar.isVisible -> {
                     onCloseBlockStyleColorToolbarClicked()
                 }
                 state.styleExtraToolbar.isVisible -> {
@@ -1567,10 +1567,10 @@ class EditorViewModel(
         type: Markup.Type,
         param: String?
     ) {
-        if (state.stylingToolbar.mode == StylingMode.MARKUP) {
+        if (state.styleTextToolbar.mode == StylingMode.MARKUP) {
             onStyleToolbarMarkupAction(type, param)
         } else {
-            state.stylingToolbar.target?.id?.let { id ->
+            state.styleTextToolbar.target?.id?.let { id ->
                 when (type) {
                     Markup.Type.ITALIC -> onBlockStyleMarkupActionClicked(id, type)
                     Markup.Type.BOLD -> onBlockStyleMarkupActionClicked(id, type)
@@ -1604,7 +1604,7 @@ class EditorViewModel(
     }
 
     private fun onBlockAlignmentActionClicked(alignment: Alignment) {
-        controlPanelViewState.value?.stylingToolbar?.target?.id?.let { id ->
+        controlPanelViewState.value?.styleTextToolbar?.target?.id?.let { id ->
             proceedWithAlignmentUpdate(
                 targets = listOf(id),
                 alignment = when (alignment) {
@@ -2292,16 +2292,16 @@ class EditorViewModel(
         val isAllSelectedText = selected.all { it.content is Content.Text }
         mode = EditorMode.Styling.Multi(currentSelection())
         if (isAllSelectedText) {
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectStyleClicked)
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectTextStyleClicked)
         } else {
             val distinctColors = backgrounds.distinct()
             if (distinctColors.size == 1) {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBackgroundStyleClicked(distinctColors[0])
+                    ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(distinctColors[0])
                 )
             } else {
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnBackgroundStyleClicked(null)
+                    ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(null)
                 )
             }
         }
@@ -2389,7 +2389,7 @@ class EditorViewModel(
     fun onCloseBlockStyleColorToolbarClicked() {
         Timber.d("onCloseBlockStyleColorToolbarClicked, ")
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnColorClosed
+            ControlPanelMachine.Event.StylingToolbar.OnColorBackgroundClosed
         )
     }
 
@@ -2490,7 +2490,7 @@ class EditorViewModel(
 
     fun onBlockStyleToolbarColorClicked() {
         Timber.d("onBlockStyleToolbarColorClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorClicked)
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorBackgroundClicked)
     }
 
     private fun proceedUpdateBlockStyle(

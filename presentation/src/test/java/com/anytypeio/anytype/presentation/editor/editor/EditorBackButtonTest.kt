@@ -43,13 +43,13 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
         val stateBefore = vm.controlPanelViewState.value
 
         assertNotNull(stateBefore)
-        assertFalse(stateBefore.stylingToolbar.isVisible)
+        assertFalse(stateBefore.styleTextToolbar.isVisible)
 
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
         val stateBackPressed = vm.controlPanelViewState.value
 
-        assertTrue(stateBackPressed?.stylingToolbar?.isVisible == false)
+        assertTrue(stateBackPressed?.styleTextToolbar?.isVisible == false)
 
         val params = CloseBlock.Params(id = root)
         verifyBlocking(closePage, times(1)) { invoke(params) }

@@ -4450,7 +4450,7 @@ open class EditorViewModelTest {
         assertNotNull(stateBefore)
 
         assertTrue(stateBefore.navigationToolbar.isVisible)
-        assertFalse(stateBefore.stylingToolbar.isVisible)
+        assertFalse(stateBefore.styleTextToolbar.isVisible)
 
         vm.onActionMenuItemClicked(blocks[0].id, ActionItemType.Style)
 
@@ -4462,7 +4462,7 @@ open class EditorViewModelTest {
                 mainToolbar = ControlPanelState.Toolbar.Main(
                     isVisible = false
                 ),
-                stylingToolbar = ControlPanelState.Toolbar.Styling(
+                styleTextToolbar = ControlPanelState.Toolbar.Styling(
                     isVisible = true,
                     mode = StylingMode.BLOCK,
                     target = ControlPanelState.Toolbar.Styling.Target(
@@ -4523,7 +4523,7 @@ open class EditorViewModelTest {
                 mainToolbar = ControlPanelState.Toolbar.Main(
                     isVisible = false
                 ),
-                stylingToolbar = ControlPanelState.Toolbar.Styling(
+                styleTextToolbar = ControlPanelState.Toolbar.Styling(
                     isVisible = true,
                     mode = StylingMode.BLOCK,
                     target = ControlPanelState.Toolbar.Styling.Target(

@@ -102,6 +102,6 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
         assertFalse(state.mentionToolbar.isVisible)
         assertFalse(state.multiSelect.isVisible)
         assertFalse(state.searchToolbar.isVisible)
-        assertFalse(state.stylingToolbar.isVisible)
+        assertFalse(state.styleTextToolbar.isVisible)
     }
 }

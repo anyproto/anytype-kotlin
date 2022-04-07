@@ -14,7 +14,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -131,7 +130,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),
@@ -226,7 +225,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),
@@ -301,7 +300,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),
@@ -420,7 +419,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     mainToolbar = ControlPanelState.Toolbar.Main(
                         isVisible = false
                     ),
-                    stylingToolbar = ControlPanelState.Toolbar.Styling(
+                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
                         isVisible = false,
                         mode = null
                     ),

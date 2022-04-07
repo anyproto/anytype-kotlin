@@ -123,7 +123,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                     isScrollAndMoveEnabled = false,
                     isQuickScrollAndMoveMode = false,
                 ),
-                stylingToolbar = Toolbar.Styling(isVisible = false),
+                styleTextToolbar = Toolbar.Styling(isVisible = false),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )
@@ -227,7 +227,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                     isScrollAndMoveEnabled = false,
                     isQuickScrollAndMoveMode = false,
                 ),
-                stylingToolbar = Toolbar.Styling(isVisible = false),
+                styleTextToolbar = Toolbar.Styling(isVisible = false),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
             )
         )

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.base.BaseUseCase.None
 import com.anytypeio.anytype.domain.base.Interactor
 
 /**
@@ -9,8 +8,13 @@ import com.anytypeio.anytype.domain.base.Interactor
  */
 class Logout(
     private val repo: AuthRepository
-) : Interactor<None>() {
-    override suspend fun run(params: None) {
-        repo.logout()
+) : Interactor<Logout.Params>() {
+
+    override suspend fun run(params: Params) {
+        repo.logout(params.clearLocalRepositoryData)
     }
+
+    class Params(
+        val clearLocalRepositoryData: Boolean = false
+    )
 }

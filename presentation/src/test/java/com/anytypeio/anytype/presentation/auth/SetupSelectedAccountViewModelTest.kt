@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.auth
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.FlavourConfig
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
@@ -119,14 +120,15 @@ class SetupSelectedAccountViewModelTest {
                     id = any(),
                     path = any()
                 )
-            } doReturn Pair(
+            } doReturn Triple(
                 Account(
                     id = MockDataFactory.randomUuid(),
                     name = MockDataFactory.randomString(),
                     avatar = null,
                     color = null
                 ),
-                FlavourConfig()
+                FlavourConfig(),
+                AccountStatus.Active
             )
         }
 

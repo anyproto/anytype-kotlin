@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.ui.archive.ArchiveFragment
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
+import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.dashboard.DashboardFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
@@ -237,5 +238,19 @@ class Navigator : AppNavigation {
 
     override fun openUpdateAppScreen() {
         navController?.navigate(R.id.alertUpdateAppFragment)
+    }
+
+    override fun deletedAccountScreen(deadline: Long) {
+        navController?.navigate(
+            R.id.deletedAccountNavigation,
+            bundleOf(DeletedAccountFragment.DEADLINE_KEY to deadline),
+                navOptions {
+                    popUpTo = R.id.main_navigation
+                }
+        )
+    }
+
+    override fun logout() {
+        navController?.navigate(R.id.actionLogout)
     }
 }

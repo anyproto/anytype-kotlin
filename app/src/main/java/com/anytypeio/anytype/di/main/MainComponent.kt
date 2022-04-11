@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
@@ -28,7 +29,6 @@ import javax.inject.Singleton
 interface MainComponent {
     fun inject(app: AndroidApplication)
 
-    fun authComponentBuilder(): AuthSubComponent.Builder
     fun splashComponentBuilder(): SplashSubComponent.Builder
     fun homeDashboardComponentBuilder(): HomeDashboardSubComponent.Builder
     fun editorComponentBuilder(): EditorSubComponent.Builder
@@ -47,6 +47,13 @@ interface MainComponent {
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
     fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
     fun createObjectComponent(): CreateObjectSubComponent.Builder
+
+    //region Auth
+
+    fun authComponentBuilder(): AuthSubComponent.Builder
+    fun deletedAccountBuilder() : DeletedAccountSubcomponent.Builder
+
+    //endregion
 
     //region Settings
 

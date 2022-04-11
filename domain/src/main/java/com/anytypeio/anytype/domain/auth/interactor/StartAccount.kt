@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 
 /**
@@ -12,10 +12,10 @@ import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 class StartAccount(
     private val repository: AuthRepository,
     private val flavourConfigProvider: FlavourConfigProvider
-) : BaseUseCase<Id, StartAccount.Params>() {
+) : BaseUseCase<Pair<Id, AccountStatus>, StartAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        val (account, config) = repository.startAccount(
+        val (account, config, status) = repository.startAccount(
             id = params.id,
             path = params.path
         )
@@ -29,7 +29,7 @@ class StartAccount(
                 enableSpaces = config.enableSpaces ?: false
             )
         }
-        account.id
+        Pair(account.id, status)
     }
 
     /**

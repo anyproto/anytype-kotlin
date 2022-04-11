@@ -53,7 +53,7 @@ class MiddlewareTest {
 
         // TESTING
 
-        middleware.logout()
+        middleware.logout(false)
 
         verify(service, times(1)).accountStop(request)
         verifyNoMoreInteractions(service)

@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.middleware.mappers
 
+typealias MAccount = anytype.model.Account
+typealias MAccountStatus = anytype.model.Account.Status
+typealias MAccountStatusType = anytype.model.Account.StatusType
 typealias MBlock = anytype.model.Block
 typealias MBText = anytype.model.Block.Content.Text
 typealias MBTextStyle = anytype.model.Block.Content.Text.Style

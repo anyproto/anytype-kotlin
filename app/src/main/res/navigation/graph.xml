@@ -186,11 +186,6 @@
     <dialog
         android:id="@+id/accountAndDataScreen"
         android:name="com.anytypeio.anytype.ui.settings.AccountAndDataFragment">
-        <action
-            android:id="@+id/actionLogout"
-            app:destination="@+id/main_navigation"
-            app:popUpTo="@+id/main_navigation"
-            app:popUpToInclusive="true" />
     </dialog>
 
     <dialog
@@ -200,11 +195,11 @@
     <dialog
         android:id="@+id/logoutWarningScreen"
         android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment" >
-        <action
-            android:id="@+id/actionLogout"
-            app:destination="@+id/main_navigation"
-            app:popUpTo="@+id/main_navigation"
-            app:popUpToInclusive="true" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/deleteAccountWarningScreen"
+        android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning" >
     </dialog>
 
     <fragment
@@ -507,5 +502,22 @@
         android:id="@+id/limitObjectTypeScreen"
         android:name="com.anytypeio.anytype.ui.relations.LimitObjectTypeFragment"
         android:label="Limit object type screen" />
+
+    <navigation
+        android:id="@+id/deletedAccountNavigation"
+        app:startDestination="@id/deletedAccountScreen">
+
+    <fragment
+        android:id="@+id/deletedAccountScreen"
+        android:name="com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment"
+        android:label="DeletedAccountScreen" />
+
+    </navigation>
+
+    <action
+        android:id="@+id/actionLogout"
+        app:destination="@+id/main_navigation"
+        app:popUpTo="@+id/main_navigation"
+        app:popUpToInclusive="true" />
 
 </navigation>

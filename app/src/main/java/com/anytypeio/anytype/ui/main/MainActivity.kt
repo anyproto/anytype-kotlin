@@ -9,21 +9,24 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.main.MainViewModel
+import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
@@ -45,8 +48,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         setupWindowInsets()
         inject()
         if (savedInstanceState != null) vm.onRestore()
-        with(lifecycleScope) {
-            subscribe(vm.wallpaper) { wallpaper -> setWallpaper(wallpaper) }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    vm.wallpaper.collect { setWallpaper(it) }
+                }
+                launch {
+                    vm.commands.collect { command ->
+                        when(command) {
+                            is Command.ShowDeletedAccountScreen -> {
+                                navigator.deletedAccountScreen(
+                                    deadline = command.deadline
+                                )
+                            }
+                            is Command.LogoutDueToAccountDeletion -> {
+                                navigator.logout()
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

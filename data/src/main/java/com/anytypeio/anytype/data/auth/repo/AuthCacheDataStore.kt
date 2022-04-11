@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -12,11 +12,19 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun startAccount(
         id: String,
         path: String
-    ): Pair<AccountEntity, FlavourConfigEntity> {
+    ): Triple<AccountEntity, FlavourConfigEntity, AccountStatus> {
         throw UnsupportedOperationException()
     }
 
     override suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): AccountEntity {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun deleteAccount(): AccountStatus {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun restoreAccount(): AccountStatus {
         throw UnsupportedOperationException()
     }
 
@@ -54,7 +62,7 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
 
     override suspend fun getMnemonic() = cache.getMnemonic()
 
-    override suspend fun logout() {
+    override suspend fun logout(clearLocalRepositoryData: Boolean) {
         cache.logout()
     }
 

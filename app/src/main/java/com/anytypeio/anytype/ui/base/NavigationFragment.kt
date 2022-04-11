@@ -61,6 +61,7 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
             is Command.OpenPageSearch -> navigation.openPageSearch()
             is Command.OpenCreateSetScreen -> navigation.openCreateSetScreen(command.ctx)
             is Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
+            is Command.DeletedAccountScreen -> navigation.deletedAccountScreen(command.deadline)
             else -> Timber.d("Nav command ignored: $command")
         }
     }

@@ -11,11 +11,13 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.AccountAndDataScreen
@@ -50,8 +52,7 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                     AccountAndDataScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
                         onClearFileCachedClicked = { proceedWithClearFileCacheWarning() },
-                        onDeleteAccountClicked = { toast(resources.getString(R.string.coming_soon)) },
-                        onResetAccountClicked = { toast(resources.getString(R.string.coming_soon)) },
+                        onDeleteAccountClicked = { proceedWithAccountDeletion() },
                         onLogoutClicked = onLogoutClicked,
                         onPinCodeClicked = { toast(resources.getString(R.string.coming_soon)) },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
@@ -67,6 +68,20 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
         val dialog = ClearCacheAlertFragment.new()
         dialog.onClearAccepted = { vm.onClearFileCacheAccepted() }
         dialog.show(childFragmentManager, null)
+    }
+
+    private fun proceedWithAccountDeletion() {
+        // TODO release this feature when it's ready on all our platforms!
+        if (BuildConfig.DEBUG) {
+            val dialog = DeleteAccountWarning()
+            dialog.onDeletionAccepted = {
+                dialog.dismiss()
+                vm.onDeleteAccountClicked()
+            }
+            dialog.show(childFragmentManager, null)
+        } else {
+            toast(resources.getString(R.string.coming_soon))
+        }
     }
 
     override fun injectDependencies() {

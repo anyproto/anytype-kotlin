@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.relations.*
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
@@ -25,6 +26,10 @@ class ComponentManager(private val main: MainComponent) {
 
     val authComponent = Component {
         main.authComponentBuilder().authModule(AuthModule).build()
+    }
+
+    val deletedAccountComponent = Component {
+        main.deletedAccountBuilder().module(DeletedAccountModule).build()
     }
 
     val startLoginComponent = Component {

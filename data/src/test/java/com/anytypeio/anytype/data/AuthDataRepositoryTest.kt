@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -58,7 +59,9 @@ class AuthDataRepositoryTest {
         val config = FlavourConfigEntity()
 
         authRemote.stub {
-            onBlocking { startAccount(id = id, path = path) } doReturn Pair(account, config)
+            onBlocking { startAccount(id = id, path = path) } doReturn Triple(
+                account, config, AccountStatus.Active
+            )
         }
 
         repo.startAccount(
@@ -224,11 +227,11 @@ class AuthDataRepositoryTest {
             onBlocking { logout() } doReturn Unit
         }
 
-        repo.logout()
+        repo.logout(false)
 
         verify(authCache, times(1)).logout()
         verifyNoMoreInteractions(authCache)
-        verify(authRemote, times(1)).logout()
+        verify(authRemote, times(1)).logout(false)
         verifyNoMoreInteractions(authRemote)
         verify(configurator, times(1)).release()
         verifyZeroInteractions(configurator)
@@ -238,14 +241,14 @@ class AuthDataRepositoryTest {
     fun `should not call logout on cache if remote logout is not succeeded`() {
 
         authRemote.stub {
-            onBlocking { logout() } doThrow IllegalStateException()
+            onBlocking { logout(false) } doThrow IllegalStateException()
         }
 
         runBlocking {
             try {
-                repo.logout()
+                repo.logout(false)
             } catch (e: Exception) {
-                verify(authRemote, times(1)).logout()
+                verify(authRemote, times(1)).logout(false)
                 verifyZeroInteractions(authCache)
             }
         }

@@ -1,12 +1,13 @@
 package com.anytypeio.anytype.domain.auth
 
+import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.FlavourConfig
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.domain.common.MockDataFactory
-import com.anytypeio.anytype.core_models.FlavourConfig
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,7 +69,7 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Pair(account, config)
+            } doReturn Triple(account, config, AccountStatus.Active)
         }
 
         startAccount.run(params)
@@ -115,12 +116,12 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Pair(account, config)
+            } doReturn Triple(account, config, AccountStatus.Active)
         }
 
         val result = startAccount.run(params)
 
-        assertTrue { result == Either.Right(account.id) }
+        assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
     }
 
     @Test
@@ -153,7 +154,7 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Pair(account, config)
+            } doReturn Triple(account, config, AccountStatus.Active)
         }
 
         val result = startAccount.run(params)
@@ -165,7 +166,7 @@ class StartAccountTest {
             enableSpaces = false
         )
 
-        assertTrue { result == Either.Right(account.id) }
+        assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
     }
 
     @Test
@@ -198,7 +199,7 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Pair(account, config)
+            } doReturn Triple(account, config, AccountStatus.Active)
         }
 
         val result = startAccount.run(params)
@@ -210,6 +211,6 @@ class StartAccountTest {
             enableSpaces = false
         )
 
-        assertTrue { result == Either.Right(account.id) }
+        assertTrue { result == Either.Right(Pair(account.id, AccountStatus.Active)) }
     }
 }

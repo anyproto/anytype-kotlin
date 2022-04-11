@@ -269,4 +269,12 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="retry">Retry</string>
     <string name="limit_object_types">Limit object types</string>
     <string name="unsplash">Unsplash</string>
+    <string name="cancel_deletion">Cancel deletion</string>
+    <string name="logout_and_clear_local_data">Logout and clear local data</string>
+    <string name="planned_for_deletion_in_n_days">This account is planned for deletion in %1$d days</string>
+    <string name="planned_for_deletion_tomorrow">This account is planned for deletion tomorrow</string>
+    <string name="planned_for_deletion_today">This account is planned for deletion today</string>
+    <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
+    <string name="are_you_sure_to_delete_account">Are you sure to delete account?</string>
+    <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
 </resources>

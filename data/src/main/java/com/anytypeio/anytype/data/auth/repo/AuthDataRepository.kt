@@ -1,14 +1,14 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.core_models.FlavourConfig
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import kotlinx.coroutines.flow.map
 
 class AuthDataRepository(
@@ -18,10 +18,11 @@ class AuthDataRepository(
 
     override suspend fun startAccount(
         id: String, path: String
-    ): Pair<Account, FlavourConfig> = factory.remote.startAccount(id, path).let { pair ->
-        Pair(
-            first = pair.first.toDomain(),
-            second = pair.second.toDomain()
+    ): Triple<Account, FlavourConfig, AccountStatus> = factory.remote.startAccount(id, path).let { triple ->
+        Triple(
+            first = triple.first.toDomain(),
+            second = triple.second.toDomain(),
+            third = triple.third
         )
     }
 
@@ -30,6 +31,9 @@ class AuthDataRepository(
         avatarPath: String?,
         invitationCode: String
     ): Account = factory.remote.createAccount(name, avatarPath, invitationCode).toDomain()
+
+    override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()
+    override suspend fun restoreAccount(): AccountStatus = factory.remote.restoreAccount()
 
     override suspend fun startLoadingAccounts() {
         factory.remote.recoverAccount()
@@ -66,10 +70,10 @@ class AuthDataRepository(
 
     override suspend fun getMnemonic() = factory.cache.getMnemonic()
 
-    override suspend fun logout() {
+    override suspend fun logout(clearLocalRepositoryData: Boolean) {
         configurator.release()
-        factory.remote.logout()
-        factory.cache.logout()
+        factory.remote.logout(clearLocalRepositoryData)
+        factory.cache.logout(clearLocalRepositoryData)
     }
 
     override suspend fun getAccounts() = factory.cache.getAccounts().map { it.toDomain() }

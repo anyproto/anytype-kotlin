@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.auth.repo
 
-import com.anytypeio.anytype.domain.auth.model.Account
-import com.anytypeio.anytype.domain.auth.model.Wallet
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.FlavourConfig
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.domain.auth.model.Account
+import com.anytypeio.anytype.domain.auth.model.Wallet
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -14,9 +14,12 @@ interface AuthRepository {
      * @param id user account id
      * @param path wallet repository path
      */
-    suspend fun startAccount(id: String, path: String): Pair<Account, FlavourConfig>
+    suspend fun startAccount(id: String, path: String): Triple<Account, FlavourConfig, AccountStatus>
 
     suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): Account
+
+    suspend fun deleteAccount() : AccountStatus
+    suspend fun restoreAccount() : AccountStatus
 
     suspend fun startLoadingAccounts()
 
@@ -40,7 +43,7 @@ interface AuthRepository {
 
     suspend fun getMnemonic(): String
 
-    suspend fun logout()
+    suspend fun logout(clearLocalRepositoryData: Boolean)
 
     suspend fun getAccounts(): List<Account>
 

@@ -558,3 +558,12 @@ fun MDVRestriction.toCoreModel(): DataViewRestriction? = when (this) {
     Restrictions.DataviewRestriction.DVCreateObject -> DataViewRestriction.CREATE_OBJECT
     Restrictions.DataviewRestriction.DVNone -> null
 }
+
+fun MAccountStatus.core(): AccountStatus = when (statusType) {
+    MAccountStatusType.Active -> AccountStatus.Active
+    MAccountStatusType.PendingDeletion -> AccountStatus.PendingDeletion(
+        deadline = deletionDate
+    )
+    MAccountStatusType.StartedDeletion -> AccountStatus.Deleted
+    MAccountStatusType.Deleted -> AccountStatus.Deleted
+}

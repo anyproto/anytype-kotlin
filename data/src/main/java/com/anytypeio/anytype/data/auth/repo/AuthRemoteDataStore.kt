@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 
@@ -18,6 +18,10 @@ class AuthRemoteDataStore(
         avatarPath: String?,
         invitationCode: String
     ) = authRemote.createAccount(name, avatarPath, invitationCode)
+
+    override suspend fun deleteAccount(): AccountStatus = authRemote.deleteAccount()
+
+    override suspend fun restoreAccount(): AccountStatus = authRemote.restoreAccount()
 
     override suspend fun recoverAccount() {
         authRemote.recoverAccount()
@@ -48,8 +52,8 @@ class AuthRemoteDataStore(
         throw UnsupportedOperationException()
     }
 
-    override suspend fun logout() {
-        authRemote.logout()
+    override suspend fun logout(clearLocalRepositoryData: Boolean) {
+        authRemote.logout(clearLocalRepositoryData)
     }
 
     override suspend fun getAccounts(): List<AccountEntity> {

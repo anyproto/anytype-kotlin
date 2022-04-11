@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.settings
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -32,9 +33,11 @@ object AccountAndDataModule {
     @PerScreen
     fun provideViewModelFactory(
         clearFileCache: ClearFileCache,
+        deleteAccount: DeleteAccount,
         analytics: Analytics
     ): AccountAndDataViewModel.Factory = AccountAndDataViewModel.Factory(
         clearFileCache = clearFileCache,
+        deleteAccount = deleteAccount,
         analytics = analytics
     )
 
@@ -47,4 +50,9 @@ object AccountAndDataModule {
     @Provides
     @PerScreen
     fun logout(repo: AuthRepository): Logout = Logout(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun deleteAccount(repo: AuthRepository): DeleteAccount = DeleteAccount(repo)
 }

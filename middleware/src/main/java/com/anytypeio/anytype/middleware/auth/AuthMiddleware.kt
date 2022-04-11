@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.auth
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -22,7 +23,7 @@ class AuthMiddleware(
     override suspend fun startAccount(
         id: String,
         path: String
-    ): Pair<AccountEntity, FlavourConfigEntity> {
+    ): Triple<AccountEntity, FlavourConfigEntity, AccountStatus> {
         val response = middleware.selectAccount(id, path)
         val account = AccountEntity(
             id = response.id,
@@ -35,7 +36,7 @@ class AuthMiddleware(
             enableChannelSwitch = response.enableChannelSwitch,
             enableSpaces = response.enableSpaces
         )
-        return Pair(account, flavourConfig)
+        return Triple(account, flavourConfig, response.accountStatus ?: AccountStatus.Unknown)
     }
 
     override suspend fun createAccount(
@@ -51,6 +52,9 @@ class AuthMiddleware(
             )
         }
     }
+
+    override suspend fun deleteAccount(): AccountStatus = middleware.deleteAccount()
+    override suspend fun restoreAccount(): AccountStatus = middleware.restoreAccount()
 
     override suspend fun recoverAccount() = withContext(Dispatchers.IO) {
         middleware.recoverAccount()
@@ -85,8 +89,8 @@ class AuthMiddleware(
 
     override suspend fun convertWallet(entropy: String): String = middleware.convertWallet(entropy)
 
-    override suspend fun logout() {
-        middleware.logout()
+    override suspend fun logout(clearLocalRepositoryData: Boolean) {
+        middleware.logout(clearLocalRepositoryData)
     }
 
     override suspend fun getVersion(): String {

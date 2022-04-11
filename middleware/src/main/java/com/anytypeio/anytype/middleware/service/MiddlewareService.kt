@@ -22,6 +22,9 @@ interface MiddlewareService {
     fun accountCreate(request: Account.Create.Request): Account.Create.Response
 
     @Throws(Exception::class)
+    fun accountDelete(request: Account.Delete.Request) : Account.Delete.Response
+
+    @Throws(Exception::class)
     fun accountSelect(request: Account.Select.Request): Account.Select.Response
 
     @Throws(Exception::class)

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.device.ClearFileCache
@@ -15,7 +16,8 @@ import timber.log.Timber
 
 class AccountAndDataViewModel(
     private val clearFileCache: ClearFileCache,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val deleteAccount: DeleteAccount
 ) : ViewModel() {
 
     val isClearFileCacheInProgress = MutableStateFlow(false)
@@ -53,12 +55,29 @@ class AccountAndDataViewModel(
         )
     }
 
-    class Factory(private val clearFileCache: ClearFileCache, private val analytics: Analytics) :
-        ViewModelProvider.Factory {
+    fun onDeleteAccountClicked() {
+        viewModelScope.launch {
+            deleteAccount(BaseUseCase.None).process(
+                success = {
+                    Timber.d("Successfully deleted account, status")
+                },
+                failure = {
+                    Timber.e(it, "Error while deleting account")
+                }
+            )
+        }
+    }
+
+    class Factory(
+        private val clearFileCache: ClearFileCache,
+        private val deleteAccount: DeleteAccount,
+        private val analytics: Analytics
+    ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AccountAndDataViewModel(
                 clearFileCache = clearFileCache,
+                deleteAccount = deleteAccount,
                 analytics = analytics
             ) as T
         }

@@ -93,6 +93,32 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun deleteAccount() : AccountStatus {
+        val request = Rpc.Account.Delete.Request(
+            revert = false
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.accountDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        val status = response.status
+        checkNotNull(status) { "Account status was null" }
+        return status.core()
+    }
+
+    @Throws(Exception::class)
+    fun restoreAccount() : AccountStatus {
+        val request = Rpc.Account.Delete.Request(
+            revert = true
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.accountDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        val status = response.status
+        checkNotNull(status) { "Account status was null" }
+        return status.core()
+    }
+
+    @Throws(Exception::class)
     fun recoverWallet(path: String, mnemonic: String) {
         val request = Rpc.Wallet.Recover.Request(
             mnemonic = mnemonic,
@@ -114,8 +140,10 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun logout() {
-        val request: Rpc.Account.Stop.Request = Rpc.Account.Stop.Request()
+    fun logout(clearLocalRepositoryData: Boolean) {
+        val request: Rpc.Account.Stop.Request = Rpc.Account.Stop.Request(
+            removeData = clearLocalRepositoryData
+        )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountStop(request)
         if (BuildConfig.DEBUG) logResponse(response)
@@ -155,7 +183,8 @@ class Middleware(
             enableDataView = config?.enableDataview,
             enableDebug = config?.enableDebug,
             enableChannelSwitch = config?.enableReleaseChannelSwitch,
-            enableSpaces = config?.enableSpaces
+            enableSpaces = config?.enableSpaces,
+            accountStatus = acc.status?.core()
         )
     }
 

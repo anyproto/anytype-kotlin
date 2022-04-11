@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.*
+import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -75,6 +76,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun accountDelete(request: Account.Delete.Request): Account.Delete.Response {
+        val encoded = Service.accountDelete(Account.Delete.Request.ADAPTER.encode(request))
+        val response = Account.Delete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Account.Delete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun accountSelect(request: Account.Select.Request): Account.Select.Response {
         val encoded = Service.accountSelect(Account.Select.Request.ADAPTER.encode(request))
         val response = Account.Select.Response.ADAPTER.decode(encoded)
@@ -91,7 +103,14 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = Account.Recover.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Account.Recover.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Account.Recover.Response.Error.Code.ACCOUNT_IS_DELETED -> {
+                    throw AccountIsDeletedException()
+                }
+                else -> {
+                    throw Exception(error.description)
+                }
+            }
         } else {
             return response
         }

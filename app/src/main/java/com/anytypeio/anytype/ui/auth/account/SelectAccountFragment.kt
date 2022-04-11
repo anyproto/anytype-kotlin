@@ -45,12 +45,8 @@ class SelectAccountFragment : NavigationFragment<FragmentSelectAccountBinding>(R
         }
 
         vm.state.observe(viewLifecycleOwner) { state -> profileAdapter.update(state) }
-        vm.error.observe(viewLifecycleOwner) { observeError(it) }
+        vm.error.observe(viewLifecycleOwner) { toast(it) }
         vm.observeNavigation().observe(viewLifecycleOwner, navObserver)
-    }
-
-    private fun observeError(msg: String) {
-        requireActivity().toast(msg)
     }
 
     override fun injectDependencies() {

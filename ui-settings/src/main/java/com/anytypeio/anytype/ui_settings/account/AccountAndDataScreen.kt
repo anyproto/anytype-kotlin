@@ -21,7 +21,6 @@ import com.anytypeio.anytype.ui_settings.R
 fun AccountAndDataScreen(
     onKeychainPhraseClicked: () -> Unit,
     onClearFileCachedClicked: () -> Unit,
-    onResetAccountClicked: () -> Unit,
     onDeleteAccountClicked: () -> Unit,
     onPinCodeClicked: () -> Unit,
     onLogoutClicked: () -> Unit,

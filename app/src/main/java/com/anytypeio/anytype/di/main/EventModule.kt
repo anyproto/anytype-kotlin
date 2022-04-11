@@ -1,19 +1,19 @@
 package com.anytypeio.anytype.di.main
 
+import com.anytypeio.anytype.data.auth.account.AccountStatusDataChannel
+import com.anytypeio.anytype.data.auth.account.AccountStatusRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventDataChannel
 import com.anytypeio.anytype.data.auth.event.EventRemoteChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.data.auth.status.ThreadStatusDataChannel
 import com.anytypeio.anytype.data.auth.status.ThreadStatusRemoteChannel
+import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.middleware.EventProxy
-import com.anytypeio.anytype.middleware.interactor.EventHandler
-import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
-import com.anytypeio.anytype.middleware.interactor.MiddlewareSubscriptionEventChannel
-import com.anytypeio.anytype.middleware.interactor.ThreadStatusMiddlewareChannel
+import com.anytypeio.anytype.middleware.interactor.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -62,6 +62,31 @@ object EventModule {
     fun provideThreadStatusRemoteChannel(
         proxy: EventProxy
     ): ThreadStatusRemoteChannel = ThreadStatusMiddlewareChannel(events = proxy)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAccountStatusChannel(
+        channel: AccountStatusDataChannel
+    ) : AccountStatusChannel = channel
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAccountStatusDataChannel(
+        channel: AccountStatusRemoteChannel
+    ) = AccountStatusDataChannel(
+        remote = channel
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAccountStatusRemoteChannel(
+        proxy: EventProxy
+    ) : AccountStatusRemoteChannel = AccountStatusMiddlewareChannel(
+        events = proxy
+    )
 
     @JvmStatic
     @Provides

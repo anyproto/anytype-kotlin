@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.Logout
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +26,7 @@ class LogoutWarningViewModel(
     fun onLogoutClicked() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            logout(params = BaseUseCase.None).collect { status ->
+            logout(params = Logout.Params()).collect { status ->
                 when (status) {
                     is Interactor.Status.Started -> {
                         isLoggingOut.value = true

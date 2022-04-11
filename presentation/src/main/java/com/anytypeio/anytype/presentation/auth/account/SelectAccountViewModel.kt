@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
@@ -62,8 +63,12 @@ class SelectAccountViewModel(
         ) { result ->
             result.either(
                 fnL = { e ->
+                    if (e is AccountIsDeletedException) {
+                        error.postValue("This account is deleted. Try using another account or create a new one.")
+                    } else {
+                        error.postValue("Error while account loading \n ${e.localizedMessage}")
+                    }
                     Timber.e(e, "Error while account loading")
-                    error.postValue("Error while account loading \n ${e.localizedMessage}")
                     navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
                 },
                 fnR = {

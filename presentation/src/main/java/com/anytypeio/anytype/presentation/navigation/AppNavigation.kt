@@ -48,6 +48,10 @@ interface AppNavigation {
     fun openCreateSetScreen(ctx: Id)
     fun openUpdateAppScreen()
 
+    fun deletedAccountScreen(deadline: Long)
+
+    fun logout()
+
     sealed class Command {
 
         object Exit : Command()
@@ -98,6 +102,8 @@ interface AppNavigation {
         data class OpenCreateSetScreen(val ctx: Id) : Command()
 
         object OpenUpdateAppScreen : Command()
+
+        data class DeletedAccountScreen(val deadline: Long) : Command()
     }
 
     interface Provider {

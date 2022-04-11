@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
@@ -61,12 +62,22 @@ class SetupSelectedAccountViewModel(
                     error.postValue("$ERROR_MESSAGE: $msg")
                     Timber.e(it, "Error while selecting account with id: $id")
                 },
-                success = { accountId ->
+                success = { (accountId, status) ->
                     migrationMessageJob.cancel()
                     isMigrationInProgress.value = false
                     updateUserProps(accountId)
                     sendEvent(startTime)
-                    proceedWithUpdatingObjectTypesStore()
+                    if (status is AccountStatus.PendingDeletion) {
+                        navigation.postValue(
+                            EventWrapper(
+                                AppNavigation.Command.DeletedAccountScreen(
+                                    deadline = status.deadline
+                                )
+                            )
+                        )
+                    } else {
+                        proceedWithUpdatingObjectTypesStore()
+                    }
                 }
             )
         }

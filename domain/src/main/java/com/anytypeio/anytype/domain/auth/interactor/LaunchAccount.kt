@@ -23,7 +23,7 @@ class LaunchAccount(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath()
         ).let { pair ->
-            val (account, config) = pair
+            val (account, config, status) = pair
             repository.updateAccount(account)
             flavourConfigProvider.set(
                 enableDataView = config.enableDataView ?: false,

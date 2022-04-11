@@ -1,15 +1,18 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRemote {
-    suspend fun startAccount(id: String, path: String): Pair<AccountEntity, FlavourConfigEntity>
+    suspend fun startAccount(id: String, path: String): Triple<AccountEntity, FlavourConfigEntity, AccountStatus>
     suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): AccountEntity
+    suspend fun deleteAccount() : AccountStatus
+    suspend fun restoreAccount() : AccountStatus
     suspend fun recoverAccount()
-    suspend fun logout()
+    suspend fun logout(clearLocalRepositoryData: Boolean)
     fun observeAccounts(): Flow<AccountEntity>
 
     suspend fun createWallet(path: String): WalletEntity

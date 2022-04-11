@@ -51,24 +51,17 @@ fun AccountAndDataScreen(
         )
         Divider()
         Section(stringResource(R.string.account))
-        Action(
-            name = stringResource(R.string.reset_account),
-            color = colorResource(R.color.anytype_text_red),
-            onClick = onResetAccountClicked
+        ActionWithProgressBar(
+            name = stringResource(R.string.log_out),
+            color = colorResource(R.color.text_primary),
+            onClick = onLogoutClicked,
+            isInProgress = isLogoutInProgress
         )
         Divider()
         Action(
             name = stringResource(R.string.delete_account),
             color = colorResource(R.color.anytype_text_red),
             onClick = onDeleteAccountClicked
-        )
-        Divider()
-        Box(Modifier.height(20.dp))
-        ActionWithProgressBar(
-            name = stringResource(R.string.log_out),
-            color = colorResource(R.color.text_primary),
-            onClick = onLogoutClicked,
-            isInProgress = isLogoutInProgress
         )
         Divider()
         Box(Modifier.height(54.dp))

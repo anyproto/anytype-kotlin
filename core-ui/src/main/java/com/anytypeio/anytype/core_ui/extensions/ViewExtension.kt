@@ -16,6 +16,8 @@ import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindo
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.ShapeAppearanceModel
 
 fun Context.toast(
     msg: CharSequence,
@@ -86,7 +88,8 @@ fun EditText.setInputTypeBaseOnFormat(format: ColumnView.Format) = when (format)
         isSingleLine = false
     }
     ColumnView.Format.NUMBER -> {
-        inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
+        inputType =
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
     }
     ColumnView.Format.URL -> {
         inputType = InputType.TYPE_TEXT_VARIATION_URI
@@ -119,4 +122,21 @@ fun RecyclerView.addTextFromSelectedStart(text: String) {
             }
         }
     }
+}
+
+fun ShapeableImageView.setCircularShape() {
+    val shapeModel = ShapeAppearanceModel.builder(
+        context,
+        R.style.ShapeAppearance_MaterialComponents_Circle,
+        0
+    ).build()
+    shapeAppearanceModel = shapeModel
+}
+
+fun ShapeableImageView.setCorneredShape(cornerRadius: Float) {
+    val shapeModel = shapeAppearanceModel
+        .toBuilder()
+        .setAllCornerSizes(cornerRadius)
+        .build()
+    shapeAppearanceModel = shapeModel
 }

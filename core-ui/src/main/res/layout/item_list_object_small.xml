@@ -18,6 +18,7 @@
         app:hasInitialRounded8Background="true"
         app:emojiSize="@dimen/list_item_object_half_emoji_size"
         app:imageSize="@dimen/list_item_object_half_icon_height"
+        app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
         app:initialTextSize="@dimen/list_item_object_half_initials_size" />
 
     <TextView

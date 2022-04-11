@@ -246,6 +246,7 @@
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
     <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
     <string name="content_desc_object_icon">Object image or emoji</string>
+    <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
     <string name="move">Move</string>
     <string name="move_to">Move to</string>

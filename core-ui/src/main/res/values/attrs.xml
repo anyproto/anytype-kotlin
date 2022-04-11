@@ -12,6 +12,7 @@
         <attr name="hasEmojiRounded8Background" format="boolean" />
         <attr name="hasInitialRounded8Background" format="boolean" />
         <attr name="initialTextSize" format="dimension" />
+        <attr name="imageCornerRadius" format="dimension" />
     </declare-styleable>
     <declare-styleable name="ObjectIconTextWidget">
         <attr name="nameTextSize" format="dimension" />

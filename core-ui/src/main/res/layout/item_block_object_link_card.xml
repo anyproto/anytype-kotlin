@@ -62,6 +62,7 @@
                 app:emojiSize="36dp"
                 app:imageSize="64dp"
                 app:initialTextSize="28sp"
+                app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
                 app:hasEmojiRounded12Background="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

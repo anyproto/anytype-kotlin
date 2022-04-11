@@ -14,7 +14,7 @@
             android:layout_gravity="center" />
     </FrameLayout>
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -43,22 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:contentDescription="@string/content_desc_checkbox_icon"
         android:src="@drawable/ic_data_view_grid_checkbox_selector"
         android:visibility="invisible" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/rectangularIconContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="0dp"
-        android:visibility="gone"
-        app:cardCornerRadius="1dp">
-
-        <ImageView
-            android:id="@+id/ivImageRectangular"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </androidx.cardview.widget.CardView>
 
 </merge>

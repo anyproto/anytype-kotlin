@@ -14,6 +14,7 @@
         app:emojiSize="16dp"
         app:imageSize="16dp"
         app:initialTextSize="11sp"
+        app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
         tools:background="@drawable/circle_solid_default" />
 
     <TextView

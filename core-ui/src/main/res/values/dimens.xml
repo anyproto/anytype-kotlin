@@ -184,6 +184,8 @@
     <dimen name="list_item_object_emoji_size">28dp</dimen>
     <dimen name="list_item_object_checkbox_size">24dp</dimen>
     <dimen name="list_item_object_initials_size">28sp</dimen>
+    <dimen name="list_item_object_image_corner_radius">2dp</dimen>
+    <dimen name="list_item_object_image_corner_radius_small">1dp</dimen>
 
     <!-- Object items is half screen lists -->
     <dimen name="list_item_object_half_icon_width">40dp</dimen>

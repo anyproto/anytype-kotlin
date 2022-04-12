@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DefaultDividerBlockRootStyle"
     android:layout_width="match_parent"
-    style="@style/DefaultDocumentContainerStyle"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:background="@drawable/item_block_multi_select_mode_selector"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/divider"
+    <FrameLayout
+        android:id="@+id/container"
+        style="@style/DefaultDividerBlockContainerStyle"
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_three_dots" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector">
+
+        <ImageView
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:scaleType="center"
+            android:src="@drawable/ic_three_dots" />
+    </FrameLayout>
 
 </FrameLayout>

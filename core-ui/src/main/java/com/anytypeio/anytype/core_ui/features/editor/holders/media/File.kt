@@ -23,10 +23,12 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
 
+    override val container = binding.root
     override val root: View = itemView
-    override val clickContainer: View = binding.filename
-    private val icon = binding.fileIcon
-    private val name = binding.filename
+    override val clickContainer: View = binding.text
+    private val icon = binding.graphic
+    private val name = binding.text
+    private val guideline = binding.guideline
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
@@ -47,7 +49,7 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             spannable.setSpan(
-                ForegroundColorSpan(itemView.context.color(R.color.block_file_size_text_color)),
+                ForegroundColorSpan(itemView.context.color(R.color.text_secondary)),
                 start,
                 end,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -61,6 +63,8 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
 
         val mimeIcon = item.mime.getMimeIcon(item.name)
         icon.setImageResource(mimeIcon)
+
+        applyBackground(item.backgroundColor)
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {
@@ -101,11 +105,7 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        itemView.indentize(
-            indent = item.indent,
-            defIndent = dimen(R.dimen.indent),
-            margin = dimen(R.dimen.file_default_margin_start)
-        )
+        guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
     }
 
     override fun select(isSelected: Boolean) {
@@ -118,6 +118,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
         payloads.forEach { payload ->
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
+            }
+            if (payload.isBackgroundColorChanged) {
+                applyBackground(item.backgroundColor)
             }
         }
     }

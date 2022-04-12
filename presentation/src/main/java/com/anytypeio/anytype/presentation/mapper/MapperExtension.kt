@@ -24,19 +24,24 @@ fun Block.Content.File.toPictureView(
     urlBuilder: UrlBuilder,
     indent: Int,
     mode: BlockView.Mode,
-    isSelected: Boolean = false
+    isSelected: Boolean = false,
+    backgroundColor: String?,
+    isPreviousBlockMedia: Boolean
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor,
+        isPreviousBlockMedia = isPreviousBlockMedia
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.Picture(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     Block.Content.File.State.DONE -> BlockView.Media.Picture(
         id = id,
@@ -47,13 +52,15 @@ fun Block.Content.File.toPictureView(
         url = urlBuilder.image(hash),
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     Block.Content.File.State.ERROR -> BlockView.Error.Picture(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
@@ -63,19 +70,24 @@ fun Block.Content.File.toVideoView(
     urlBuilder: UrlBuilder,
     indent: Int,
     mode: BlockView.Mode,
-    isSelected: Boolean = false
+    isSelected: Boolean = false,
+    backgroundColor: String?,
+    isPrevBlockMedia: Boolean
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Video(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor,
+        isPreviousBlockMedia = isPrevBlockMedia
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.Video(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     Block.Content.File.State.DONE -> BlockView.Media.Video(
         id = id,
@@ -86,13 +98,15 @@ fun Block.Content.File.toVideoView(
         url = urlBuilder.video(hash),
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     Block.Content.File.State.ERROR -> BlockView.Error.Video(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
@@ -102,19 +116,24 @@ fun Block.Content.File.toFileView(
     urlBuilder: UrlBuilder,
     indent: Int,
     mode: BlockView.Mode,
-    isSelected: Boolean = false
+    isSelected: Boolean = false,
+    backgroundColor: String?,
+    isPrevBlockMedia: Boolean
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor,
+        isPreviousBlockMedia = isPrevBlockMedia
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.File(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     Block.Content.File.State.DONE -> BlockView.Media.File(
         id = id,
@@ -125,13 +144,15 @@ fun Block.Content.File.toFileView(
         url = urlBuilder.video(hash),
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     Block.Content.File.State.ERROR -> BlockView.Error.File(
         id = id,
         indent = indent,
         mode = mode,
-        isSelected = isSelected
+        isSelected = isSelected,
+        backgroundColor = backgroundColor
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }

@@ -15,7 +15,8 @@ class BlockViewTest {
     fun `should return video block with view type Empty`() {
         val block = BlockView.MediaPlaceholder.Video(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            isPreviousBlockMedia = false
         )
         assertEquals(HOLDER_VIDEO_PLACEHOLDER, block.getViewType())
     }

@@ -1,48 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    style="@style/DefaultGraphicTextBlockRootStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="1dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="1dp"
-    android:background="@drawable/item_block_multi_select_mode_selector"
-    android:paddingStart="12dp"
-    android:paddingEnd="12dp">
+    tools:background="@color/anytype_background_green"
+    tools:context="com.anytypeio.anytype.core_ui.features.editor.holders.media.File">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/fileGuideline"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        style="@style/DefaultGraphicTextBlockContainerStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="0dp" />
+        tools:background="@drawable/item_block_multi_select_selected">
 
-    <ImageView
-        android:id="@+id/fileIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
-        android:contentDescription="@string/content_description_file_icon"
-        app:layout_constraintStart_toEndOf="@id/fileGuideline"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="@drawable/ic_mime_image" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="0dp" />
 
-    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-        android:id="@+id/filename"
-        style="@style/BlockFileFilenameContentStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
-        android:background="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fileIcon"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="W. J. T. Mitchell — There Are No Visual Media.pdf" />
+        <ImageView
+            android:id="@+id/graphic"
+            style="@style/DefaultGraphicTextBlockGraphicStyle"
+            android:contentDescription="@string/content_description_file_icon"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@drawable/ic_mime_image" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/text"
+            style="@style/DefaultGraphicTextBlockTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/graphic"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="W. J. T. Mitchell — There Are No Visual Media.pdf" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

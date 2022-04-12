@@ -1,17 +1,18 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="25dp"
-    android:height="24dp"
-    android:viewportWidth="25"
-    android:viewportHeight="24">
+    android:width="24dp"
+    android:height="25dp"
+    android:viewportWidth="24"
+    android:viewportHeight="25">
   <group>
     <clip-path
-        android:pathData="M0.5,0h24v24h-24z"/>
+        android:pathData="M0,0.2837h24v24h-24z"/>
     <path
-        android:pathData="M17.4996,11.9998L10.0039,7.5V16.5L17.4996,11.9998Z"
-        android:fillColor="@color/glyph_active"/>
+        android:pathData="M12,1.0337L12,1.0337A11.25,11.25 0,0 1,23.25 12.2837L23.25,12.2837A11.25,11.25 0,0 1,12 23.5337L12,23.5337A11.25,11.25 0,0 1,0.75 12.2837L0.75,12.2837A11.25,11.25 0,0 1,12 1.0337z"
+        android:strokeWidth="1.5"
+        android:fillColor="#00000000"
+        android:strokeColor="#ABA99B"/>
     <path
-        android:pathData="M19.5,3.5H5.5C4.6716,3.5 4,4.1716 4,5V19C4,19.8284 4.6716,20.5 5.5,20.5H19.5C20.3284,20.5 21,19.8284 21,19V5C21,4.1716 20.3284,3.5 19.5,3.5ZM5.5,2C3.8431,2 2.5,3.3431 2.5,5V19C2.5,20.6569 3.8431,22 5.5,22H19.5C21.1569,22 22.5,20.6569 22.5,19V5C22.5,3.3431 21.1569,2 19.5,2H5.5Z"
-        android:fillColor="@color/glyph_active"
-        android:fillType="evenOdd"/>
+        android:pathData="M17.7526,12.7162C18.0852,12.5236 18.0852,12.0434 17.7526,11.8508L9.7505,7.2182C9.4172,7.0252 9,7.2657 9,7.6509V16.9165C9,17.3016 9.4172,17.5422 9.7505,17.3492L17.7526,12.7162Z"
+        android:fillColor="#ABA99B"/>
   </group>
 </vector>

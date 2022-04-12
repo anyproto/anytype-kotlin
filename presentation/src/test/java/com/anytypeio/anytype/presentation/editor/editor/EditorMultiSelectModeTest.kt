@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import MockDataFactory
+import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
@@ -23,10 +24,16 @@ import com.jraska.livedata.test
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 
+@Config(sdk = [Build.VERSION_CODES.P])
+@RunWith(RobolectricTestRunner::class)
 class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
     @get:Rule
@@ -1581,6 +1588,87 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
                 isVisible = true,
                 selectedBackground = backgroundA
+            )
+        )
+
+        vm.controlPanelViewState.test().apply {
+            assertEquals(expected = expectedState, actual = this.value())
+        }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should start background style toolbar with default color when all blocks has nullable backgrounds`() {
+        val targetA = MockDataFactory.randomUuid()
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetA,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = null
+        )
+
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            ),
+            backgroundColor = null
+        )
+
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = targetA,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = null
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(a.id, b.id, c.id)
+        )
+
+        val document = listOf(page, a, b, c)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onClickListener(ListenerType.LongClick(target = a.id))
+            onTextInputClicked(target = b.id)
+            onTextInputClicked(target = c.id)
+            onMultiSelectAction(ActionItemType.Style)
+        }
+
+        val expectedState = ControlPanelState(
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                isScrollAndMoveEnabled = false,
+                count = 3
+            ),
+            styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
+                isVisible = true,
+                selectedBackground = ThemeColor.DEFAULT.title
             )
         )
 

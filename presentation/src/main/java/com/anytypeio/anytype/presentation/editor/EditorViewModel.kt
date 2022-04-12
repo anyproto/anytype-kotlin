@@ -2288,7 +2288,7 @@ class EditorViewModel(
 
     private fun proceedWithMultiStyleToolbarEvent() {
         val selected = blocks.filter { currentSelection().contains(it.id) }
-        val backgrounds = selected.map { it.backgroundColor }
+        val backgrounds = selected.map { it.backgroundColor ?: ThemeColor.DEFAULT.title }
         val isAllSelectedText = selected.all { it.content is Content.Text }
         mode = EditorMode.Styling.Multi(currentSelection())
         if (isAllSelectedText) {

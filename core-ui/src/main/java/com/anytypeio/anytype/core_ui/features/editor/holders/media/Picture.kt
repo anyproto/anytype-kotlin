@@ -20,6 +20,7 @@ import timber.log.Timber
 class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root) {
 
     override val root: View = itemView
+    override val container: View = root
     override val clickContainer: View = root
     private val image = binding.image
     private val error = binding.error

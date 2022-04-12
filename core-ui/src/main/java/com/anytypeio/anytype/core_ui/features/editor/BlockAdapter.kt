@@ -419,11 +419,7 @@ class BlockAdapter(
             }
             HOLDER_FILE_PLACEHOLDER -> {
                 FilePlaceholder(
-                    view = inflater.inflate(
-                        R.layout.item_block_file_placeholder,
-                        parent,
-                        false
-                    )
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_FILE_UPLOAD -> {
@@ -451,11 +447,7 @@ class BlockAdapter(
             }
             HOLDER_VIDEO_PLACEHOLDER -> {
                 VideoPlaceholder(
-                    view = inflater.inflate(
-                        R.layout.item_block_video_placeholder,
-                        parent,
-                        false
-                    )
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO_UPLOAD -> {
@@ -516,11 +508,7 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK_PLACEHOLDER -> {
                 BookmarkPlaceholder(
-                    view = inflater.inflate(
-                        R.layout.item_block_bookmark_placeholder,
-                        parent,
-                        false
-                    )
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_BOOKMARK_ERROR -> {
@@ -535,11 +523,7 @@ class BlockAdapter(
             }
             HOLDER_PICTURE_PLACEHOLDER -> {
                 PicturePlaceholder(
-                    view = inflater.inflate(
-                        R.layout.item_block_picture_placeholder,
-                        parent,
-                        false
-                    )
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE_UPLOAD -> {
@@ -562,19 +546,15 @@ class BlockAdapter(
             }
             HOLDER_DIVIDER_LINE -> {
                 DividerLine(
-                    view = inflater.inflate(
-                        R.layout.item_block_divider_line,
-                        parent,
-                        false
+                    ItemBlockDividerLineBinding.inflate(
+                        inflater, parent, false
                     )
                 )
             }
             HOLDER_DIVIDER_DOTS -> {
                 DividerDots(
-                    view = inflater.inflate(
-                        R.layout.item_block_divider_dots,
-                        parent,
-                        false
+                    ItemBlockDividerDotsBinding.inflate(
+                        inflater, parent, false
                     )
                 )
             }

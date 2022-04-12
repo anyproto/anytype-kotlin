@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    style="@style/DefaultMediaPlaceholderBlockRootStyle"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_media_placeholder_root_height">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        style="@style/DefaultMediaPlaceholderBlockCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/DefaultTextButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/default_media_placeholder_title_margin_start"
+            android:drawablePadding="@dimen/default_media_placeholder_title_icon_padding"
+            android:gravity="center_vertical"
+            tools:drawableStart="@drawable/ic_picture"
+            tools:text="Add a web bookmark" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
+</FrameLayout>

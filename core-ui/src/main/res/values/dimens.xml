@@ -213,11 +213,27 @@
     <dimen name="todoToolbarHeaderMinHeight">80dp</dimen>
     <dimen name="space_between_header_container_and_title">32dp</dimen>
 
-    <!-- Editor, graphic + text block container -->
-    <dimen name="default_graphic_text_container_padding_start">@dimen/default_document_item_padding_start</dimen>
-    <dimen name="default_graphic_text_container_padding_end">@dimen/default_document_item_padding_end</dimen>
-    <dimen name="default_graphic_text_container_margin_top">0dp</dimen>
-    <dimen name="default_graphic_text_container_margin_bottom">2dp</dimen>
+    <!-- Editor, block: graphic + text -->
+    <dimen name="default_graphic_text_container_padding_start">@dimen/default_document_content_padding_start</dimen>
+    <dimen name="default_graphic_text_container_padding_end">@dimen/default_document_content_padding_end</dimen>
+    <dimen name="default_graphic_text_root_margin_top">0dp</dimen>
+    <dimen name="default_graphic_text_root_margin_bottom">2dp</dimen>
+    <dimen name="default_graphic_text_text_margin_start">4dp</dimen>
+    <dimen name="default_graphic_text_text_padding_top">4dp</dimen>
+    <dimen name="default_graphic_text_text_padding_bottom">4dp</dimen>
+    <dimen name="default_graphic_text_graphic_margin_top">5dp</dimen>
+    <dimen name="default_graphic_text_graphic_width">24dp</dimen>
 
+    <!-- Editor, block: media placeholder -->
+    <dimen name="default_media_placeholder_root_margin_top">10dp</dimen>
+    <dimen name="default_media_placeholder_root_margin_bottom">10dp</dimen>
+    <dimen name="default_media_placeholder_root_height">52dp</dimen>
+    <dimen name="default_media_placeholder_root_margin_start">8dp</dimen>
+    <dimen name="default_media_placeholder_card_padding_end">12dp</dimen>
+    <dimen name="default_media_placeholder_card_padding_start">12dp</dimen>
+    <dimen name="default_media_placeholder_card_margin_start">12dp</dimen>
+    <dimen name="default_media_placeholder_card_margin_end">12dp</dimen>
+    <dimen name="default_media_placeholder_title_margin_start">12dp</dimen>
+    <dimen name="default_media_placeholder_title_icon_padding">8dp</dimen>
 
 </resources>

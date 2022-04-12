@@ -30,6 +30,7 @@ import timber.log.Timber
 class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
 
     override val root: View = itemView
+    override val container = binding.containerWithBackground
     private val title = binding.bookmarkTitle
     private val description = binding.bookmarkDescription
     private val url = binding.bookmarkUrl
@@ -92,6 +93,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
         } else {
             logo.gone()
         }
+        applyBackground(item.backgroundColor)
     }
 
     private fun applySearchHighlight(item: BlockView.Media.Bookmark) {
@@ -152,6 +154,9 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
         payloads.forEach { payload ->
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
+            }
+            if (payload.isBackgroundColorChanged) {
+                applyBackground(item.backgroundColor)
             }
         }
     }

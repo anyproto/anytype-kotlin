@@ -8,13 +8,6 @@
         <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
     </style>
 
-    <style name="DefaultGraphicTextBlock">
-        <item name="android:layout_marginTop">@dimen/default_graphic_text_container_margin_top</item>
-        <item name="android:layout_marginBottom">@dimen/default_graphic_text_container_margin_bottom</item>
-        <item name="android:paddingStart">@dimen/default_graphic_text_container_padding_start</item>
-        <item name="android:paddingEnd">@dimen/default_graphic_text_container_padding_end</item>
-    </style>
-
     <style name="DefaultEditorTextStyle">
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/text_primary</item>
@@ -170,14 +163,6 @@
         <item name="android:drawableEnd">@drawable/ic_turn_into_arrow</item>
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">15sp</item>
-    </style>
-
-    <style name="BlockDividerLineStyle">
-        <item name="android:layout_marginTop">7dp</item>
-        <item name="android:layout_marginBottom">6dp</item>
-        <item name="android:background">@color/shape_primary</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0.5dp</item>
     </style>
 
     <style name="BlockBookmarkTitleStyle">
@@ -892,7 +877,7 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
-    
+
     <style name="ObjectIcon15Style">
         <item name="imageSize">18dp</item>
         <item name="emojiSize">18dp</item>
@@ -908,6 +893,87 @@
     <style name="ShapeAppearance.MaterialComponents.Circle">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Editor, Graphic + Text block styles, {root {container {guideline + graphic + text}}}-->
+    <!-- root -->
+    <style name="DefaultGraphicTextBlockRootStyle">
+        <item name="android:layout_marginTop">@dimen/default_graphic_text_root_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/default_graphic_text_root_margin_bottom</item>
+        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
+    </style>
+
+    <!-- container -->
+    <style name="DefaultGraphicTextBlockContainerStyle">
+        <item name="android:background">@drawable/item_block_multi_select_mode_selector</item>
+        <item name="android:paddingStart">@dimen/default_graphic_text_container_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_graphic_text_container_padding_end</item>
+    </style>
+
+    <!-- graphic -->
+    <style name="DefaultGraphicTextBlockGraphicStyle">
+        <item name="android:layout_width">@dimen/default_graphic_text_graphic_width</item>
+        <item name="android:layout_height">@dimen/default_graphic_text_graphic_width</item>
+        <item name="android:layout_marginTop">@dimen/default_graphic_text_graphic_margin_top</item>
+    </style>
+
+    <!-- text -->
+    <style name="DefaultGraphicTextBlockTextStyle">
+        <item name="android:layout_width">@dimen/default_graphic_text_graphic_width</item>
+        <item name="android:layout_height">@dimen/default_graphic_text_graphic_width</item>
+        <item name="android:layout_marginStart">@dimen/default_graphic_text_text_margin_start</item>
+        <item name="android:paddingTop">@dimen/default_graphic_text_text_padding_top</item>
+        <item name="android:paddingBottom">@dimen/default_graphic_text_text_padding_bottom</item>
+        <item name="android:background">@null</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <!-- Media placeholder {root {card {title}} selected}-->
+    <!-- root -->
+    <style name="DefaultMediaPlaceholderBlockRootStyle">
+        <item name="android:layout_marginBottom">@dimen/default_media_placeholder_root_margin_bottom</item>
+        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
+    </style>
+
+    <!-- card -->
+    <style name="DefaultMediaPlaceholderBlockCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">2dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/shape_primary</item>
+        <item name="strokeWidth">0.5dp</item>
+        <item name="android:layout_marginEnd">@dimen/default_media_placeholder_card_margin_end</item>
+        <item name="android:layout_marginStart">@dimen/default_media_placeholder_card_margin_start</item>
+        <item name="android:paddingStart">@dimen/default_media_placeholder_card_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_media_placeholder_card_padding_end</item>
+    </style>
+
+    <!-- Editor, divider block style, {root {line, dots}}-->
+    <!-- root -->
+    <style name="DefaultDividerBlockRootStyle">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
+    </style>
+
+    <!-- container -->
+    <style name="DefaultDividerBlockContainerStyle">
+        <item name="android:background">@drawable/item_block_multi_select_mode_selector</item>
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
+    </style>
+
+    <!-- line -->
+    <style name="DefaultDividerBlockLineStyle">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@color/shape_primary</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
     </style>
 
 </resources>

@@ -64,9 +64,11 @@ class DefaultBlockViewRenderer(
 
         var mCounter = count
 
+        var isPreviousBlockMedia = false
         children.forEach { block ->
             when (val content = block.content) {
                 is Content.Text -> {
+                    isPreviousBlockMedia = false
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
                             mCounter = 0
@@ -405,11 +407,14 @@ class DefaultBlockViewRenderer(
                             content = content,
                             block = block,
                             indent = indent,
-                            selection = selection
+                            selection = selection,
+                            isPreviousBlockMedia = isPreviousBlockMedia
                         )
                     )
+                    isPreviousBlockMedia = true
                 }
                 is Content.Divider -> {
+                    isPreviousBlockMedia = false
                     mCounter = 0
                     result.add(
                         divider(
@@ -422,6 +427,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Link -> {
+                    isPreviousBlockMedia = false
                     mCounter = 0
                     val obj = ObjectWrapper.Basic(
                         map = details.details[content.target]?.map ?: emptyMap()
@@ -444,11 +450,14 @@ class DefaultBlockViewRenderer(
                             content = content,
                             block = block,
                             indent = indent,
-                            selection = selection
+                            selection = selection,
+                            isPreviousBlockMedia = isPreviousBlockMedia
                         )
                     )
+                    isPreviousBlockMedia = true
                 }
                 is Content.Layout -> {
+                    isPreviousBlockMedia = false
                     if (content.type != Content.Layout.Type.DIV) {
                         mCounter = 0
                     } else {
@@ -473,6 +482,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.RelationBlock -> {
+                    isPreviousBlockMedia = false
                     mCounter = 0
                     result.add(
                         relation(
@@ -487,6 +497,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.FeaturedRelations -> {
+                    isPreviousBlockMedia = false
                     mCounter = 0
                     val featured = featured(
                         ctx = root.id,
@@ -500,6 +511,7 @@ class DefaultBlockViewRenderer(
                     }
                 }
                 is Content.Latex -> {
+                    isPreviousBlockMedia = false
                     mCounter = 0
                     result.add(
                         latex(
@@ -512,6 +524,7 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Unsupported -> {
+                    isPreviousBlockMedia = false
                     mCounter = 0
                     result.add(
                         unsupported(
@@ -874,7 +887,8 @@ class DefaultBlockViewRenderer(
         content: Content.Bookmark,
         block: Block,
         indent: Int,
-        selection: Set<Id>
+        selection: Set<Id>,
+        isPreviousBlockMedia: Boolean
     ): BlockView = content.url?.let { url ->
         if (content.title != null && content.description != null) {
             BlockView.Media.Bookmark(
@@ -890,7 +904,8 @@ class DefaultBlockViewRenderer(
                     mode = mode,
                     block = block,
                     selection = selection
-                )
+                ),
+                backgroundColor = block.backgroundColor
             )
         } else {
             // TODO maybe refact: if title is null, it does not mean that we have an error state.
@@ -914,7 +929,9 @@ class DefaultBlockViewRenderer(
             mode = mode,
             block = block,
             selection = selection
-        )
+        ),
+        backgroundColor = block.backgroundColor,
+        isPreviousBlockMedia = isPreviousBlockMedia
     )
 
     private fun divider(
@@ -931,7 +948,8 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor
         )
         Content.Divider.Style.DOTS -> BlockView.DividerDots(
             id = block.id,
@@ -940,7 +958,8 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor
         )
     }
 
@@ -949,7 +968,8 @@ class DefaultBlockViewRenderer(
         content: Content.File,
         block: Block,
         indent: Int,
-        selection: Set<Id>
+        selection: Set<Id>,
+        isPreviousBlockMedia: Boolean
     ): BlockView = when (content.type) {
         Content.File.Type.IMAGE -> content.toPictureView(
             id = block.id,
@@ -960,7 +980,9 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor,
+            isPreviousBlockMedia = isPreviousBlockMedia
         )
         Content.File.Type.FILE -> content.toFileView(
             id = block.id,
@@ -971,7 +993,9 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor,
+            isPrevBlockMedia = isPreviousBlockMedia
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,
@@ -982,7 +1006,9 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor,
+            isPrevBlockMedia = isPreviousBlockMedia
         )
         Content.File.Type.AUDIO -> content.toFileView(
             id = block.id,
@@ -993,7 +1019,9 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor,
+            isPrevBlockMedia = isPreviousBlockMedia
         )
         Content.File.Type.PDF -> content.toFileView(
             id = block.id,
@@ -1004,7 +1032,9 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor,
+            isPrevBlockMedia = isPreviousBlockMedia
         )
         Content.File.Type.NONE -> content.toFileView(
             id = block.id,
@@ -1015,7 +1045,9 @@ class DefaultBlockViewRenderer(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            backgroundColor = block.backgroundColor,
+            isPrevBlockMedia = isPreviousBlockMedia
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }

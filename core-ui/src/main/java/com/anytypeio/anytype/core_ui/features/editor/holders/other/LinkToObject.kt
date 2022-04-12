@@ -34,8 +34,8 @@ class LinkToObject(
     private val untitled = itemView.resources.getString(R.string.untitled)
     private val objectIcon = binding.objectIconWidget
     private val objectIconContainer = binding.iconObjectContainer
-    private val title = binding.pageTitle
-    private val guideline = binding.pageGuideline
+    private val title = binding.text
+    private val guideline = binding.guideline
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }

@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.spy
@@ -75,6 +76,11 @@ class BlockAdapterTest {
     private val clipboardInterceptor: ClipboardInterceptor = object : ClipboardInterceptor {
         override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
         override fun onUrlPasted(url: Url) {}
+    }
+
+    @Before
+    fun before() {
+        context.setTheme(R.style.Theme_MaterialComponents)
     }
 
     @Test
@@ -984,7 +990,8 @@ class BlockAdapterTest {
 
         val view = BlockView.MediaPlaceholder.File(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(view)
@@ -1001,10 +1008,10 @@ class BlockAdapterTest {
 
         check(holder is FilePlaceholder)
 
-        val actual = holder.itemView.marginLeft
+        val actual = holder.itemView.paddingLeft
 
         val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1101,7 +1108,8 @@ class BlockAdapterTest {
 
         val view = BlockView.MediaPlaceholder.Video(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(view)
@@ -1118,10 +1126,10 @@ class BlockAdapterTest {
 
         check(holder is VideoPlaceholder)
 
-        val actual = holder.itemView.marginLeft
+        val actual = holder.itemView.paddingLeft
 
         val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1211,7 +1219,7 @@ class BlockAdapterTest {
         check(holder is LinkToObject)
 
         val actual =
-            (holder.itemView.findViewById<Guideline>(R.id.pageGuideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
+            (holder.itemView.findViewById<Guideline>(R.id.guideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
 
         val expected = view.indent * holder.dimen(R.dimen.indent)
 
@@ -1258,7 +1266,8 @@ class BlockAdapterTest {
 
         val view = BlockView.MediaPlaceholder.Bookmark(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(view)
@@ -1276,9 +1285,9 @@ class BlockAdapterTest {
 
         check(holder is BookmarkPlaceholder)
 
-        val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).marginLeft
+        val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)+ holder.dimen(R.dimen.bookmark_default_margin_start)
+        val expected = view.indent * holder.dimen(R.dimen.indent)+ holder.dimen(R.dimen.default_document_item_padding_start)
 
         assertEquals(expected, actual)
     }
@@ -1323,7 +1332,8 @@ class BlockAdapterTest {
 
         val view = BlockView.MediaPlaceholder.Picture(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(view)
@@ -1341,10 +1351,10 @@ class BlockAdapterTest {
 
         check(holder is PicturePlaceholder)
 
-        val actual = holder.itemView.marginLeft
+        val actual = holder.itemView.paddingLeft
 
         val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+            holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }

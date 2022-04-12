@@ -23,7 +23,7 @@ import com.google.android.exoplayer2.util.Util
 class Video(val binding: ItemBlockVideoBinding) : Media(binding.root), LifecycleEventObserver {
 
     override val root: View = itemView
-
+    override val container: View = root
     override val clickContainer: View =
         binding.playerView.findViewById<FrameLayout>(R.id.exo_controller)
 

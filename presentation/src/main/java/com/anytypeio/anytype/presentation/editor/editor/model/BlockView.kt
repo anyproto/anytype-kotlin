@@ -591,6 +591,7 @@ sealed class BlockView : ViewType {
         abstract override val indent: Int
         abstract override val mode: Mode
         abstract override val isSelected: Boolean
+        abstract val backgroundColor: String?
 
         /**
          * UI-model for block containing video, with state ERROR.
@@ -600,7 +601,8 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null
         ) : Error() {
             override fun getViewType() = HOLDER_FILE_ERROR
         }
@@ -613,7 +615,8 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null
         ) : Error() {
             override fun getViewType() = HOLDER_VIDEO_ERROR
         }
@@ -625,7 +628,8 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null
         ) : Error() {
             override fun getViewType() = HOLDER_PICTURE_ERROR
         }
@@ -639,7 +643,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            val url: String
+            val url: String,
+            override val backgroundColor: String? = null
         ) : Error() {
             override fun getViewType(): Int = HOLDER_BOOKMARK_ERROR
         }
@@ -651,6 +656,7 @@ sealed class BlockView : ViewType {
         abstract override val indent: Int
         abstract override val mode: Mode
         abstract override val isSelected: Boolean
+        abstract val backgroundColor: String?
 
         /**
          * UI-model for block containing file, with state UPLOADING.
@@ -660,7 +666,8 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null
         ) : Upload() {
             override fun getViewType() = HOLDER_FILE_UPLOAD
         }
@@ -673,7 +680,8 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null
         ) : Upload() {
             override fun getViewType() = HOLDER_VIDEO_UPLOAD
         }
@@ -685,7 +693,8 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null
         ) : Upload() {
             override fun getViewType() = HOLDER_PICTURE_UPLOAD
         }
@@ -697,6 +706,8 @@ sealed class BlockView : ViewType {
         abstract override val indent: Int
         abstract override val mode: Mode
         abstract override val isSelected: Boolean
+        abstract val backgroundColor: String?
+        abstract val isPreviousBlockMedia: Boolean
 
         /**
          * UI-model for block containing file, with state EMPTY.
@@ -706,7 +717,9 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null,
+            override val isPreviousBlockMedia: Boolean
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_FILE_PLACEHOLDER
         }
@@ -719,7 +732,9 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null,
+            override val isPreviousBlockMedia: Boolean
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
         }
@@ -731,7 +746,9 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null,
+            override val isPreviousBlockMedia: Boolean
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
         }
@@ -743,7 +760,9 @@ sealed class BlockView : ViewType {
             override val id: String,
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null,
+            override val isPreviousBlockMedia: Boolean
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
         }
@@ -756,6 +775,7 @@ sealed class BlockView : ViewType {
         abstract override val indent: Int
         abstract override val mode: Mode
         abstract override val isSelected: Boolean
+        abstract val backgroundColor: String?
 
         /**
          * UI-model for block containing file, with state DONE.
@@ -767,6 +787,7 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
+            override val backgroundColor: String? = null,
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -784,6 +805,7 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null,
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -807,6 +829,7 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
+            override val backgroundColor: String? = null,
             val url: String,
             val title: String?,
             val description: String?,
@@ -830,6 +853,7 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
+            override val backgroundColor: String? = null,
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -933,7 +957,8 @@ sealed class BlockView : ViewType {
     data class DividerLine(
         override val id: String,
         override val isSelected: Boolean = false,
-        override val indent: Int = 0
+        override val indent: Int = 0,
+        val backgroundColor: String? = null
     ) : BlockView(), Selectable, Indentable {
         override fun getViewType() = HOLDER_DIVIDER_LINE
     }
@@ -945,7 +970,8 @@ sealed class BlockView : ViewType {
     data class DividerDots(
         override val id: String,
         override val isSelected: Boolean = false,
-        override val indent: Int = 0
+        override val indent: Int = 0,
+        val backgroundColor: String? = null
     ) : BlockView(), Selectable, Indentable {
         override fun getViewType() = HOLDER_DIVIDER_DOTS
     }

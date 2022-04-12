@@ -11,10 +11,13 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
+import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
+import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -79,6 +82,18 @@ object MainEntryModule {
     fun provideRestoreWallpaperUseCase(
         repo: UserSettingsRepository
     ): RestoreWallpaper = RestoreWallpaper(repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideSetupThemeUseCase(
+        repo: UserSettingsRepository
+    ): GetTheme = GetTheme(repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideThemeApplicator(): ThemeApplicator = ThemeApplicatorImpl()
 
     @JvmStatic
     @PerScreen

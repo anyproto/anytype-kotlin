@@ -56,7 +56,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    private fun getVersionText() : String {
+    private fun getVersionText(): String {
         val version = BuildConfig.VERSION_NAME
         return if (version.isNotEmpty()) {
             if (BuildConfig.DEBUG)
@@ -117,5 +117,15 @@ val typography = Typography(
         fontFamily = fonts,
         fontWeight = FontWeight.SemiBold,
         fontSize = 17.sp
+    ),
+    body2 = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp,
+    ),
+    caption = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp
     )
 )

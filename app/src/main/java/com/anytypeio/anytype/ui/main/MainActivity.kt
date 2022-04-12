@@ -16,8 +16,11 @@ import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.main.MainViewModel
@@ -26,7 +29,10 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
@@ -41,12 +47,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     @Inject
     lateinit var factory: MainViewModelFactory
 
-    val container : FragmentContainerView get() = findViewById(R.id.fragment)
+    @Inject
+    lateinit var getTheme: GetTheme
+
+    @Inject
+    lateinit var themeApplicator: ThemeApplicator
+
+    val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setupWindowInsets()
         inject()
+        setupTheme()
+        super.onCreate(savedInstanceState)
         if (savedInstanceState != null) vm.onRestore()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -77,6 +90,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    private fun setupTheme() {
+        runBlocking {
+            getTheme(BaseUseCase.None).proceed(
+                success = {
+                    setTheme(it)
+                },
+                failure = {
+                    Timber.e(it, "Error while setting current app theme")
+                },
+            )
+        }
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent != null && intent.action == Intent.ACTION_VIEW) {
@@ -92,6 +118,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
             }
         }
+    }
+
+    private fun setTheme(themeMode: ThemeMode) {
+        themeApplicator.apply(themeMode)
     }
 
     private fun setWallpaper(wallpaper: Wallpaper) {

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.di.feature.*
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
+import com.anytypeio.anytype.di.feature.settings.AppearanceSubComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
@@ -59,6 +60,7 @@ interface MainComponent {
 
     fun aboutAppComponent() : AboutAppSubComponent.Builder
     fun accountAndDataComponent() : AccountAndDataSubComponent.Builder
+    fun appearanceComponent() : AppearanceSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder

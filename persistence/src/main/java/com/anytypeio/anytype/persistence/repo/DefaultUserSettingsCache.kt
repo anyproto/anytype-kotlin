@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.persistence.repo
 
 import android.content.SharedPreferences
+import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 
@@ -78,6 +79,48 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         }
     }
 
+    override suspend fun setThemeMode(mode: ThemeMode) {
+        prefs
+            .edit()
+            .putInt(THEME_KEY, mode.toInt())
+            .apply()
+    }
+
+    override suspend fun getThemeMode(): ThemeMode {
+        return if (prefs.contains(THEME_KEY)) {
+            prefs.getInt(THEME_KEY, -1).toTheme()
+        } else {
+            ThemeMode.System
+        }
+    }
+
+    private fun ThemeMode.toInt() = when (this) {
+        ThemeMode.Light -> {
+            THEME_TYPE_LIGHT
+        }
+        ThemeMode.Night -> {
+            THEME_TYPE_NIGHT
+        }
+        ThemeMode.System -> {
+            THEME_TYPE_SYSTEM
+        }
+    }
+
+    private fun Int.toTheme() = when (this) {
+        THEME_TYPE_LIGHT -> {
+            ThemeMode.Light
+        }
+        THEME_TYPE_NIGHT -> {
+            ThemeMode.Night
+        }
+        THEME_TYPE_SYSTEM -> {
+            ThemeMode.System
+        }
+        else -> {
+            throw IllegalStateException("Illegal theme key!")
+        }
+    }
+
     companion object {
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
@@ -88,5 +131,10 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
 
         const val WALLPAPER_TYPE_KEY = "prefs.user_settings.wallpaper_type"
         const val WALLPAPER_VALUE_KEY = "prefs.user_settings.wallpaper_value"
+
+        const val THEME_KEY = "prefs.user_settings.theme_mode"
+        const val THEME_TYPE_SYSTEM = 1
+        const val THEME_TYPE_LIGHT = 2
+        const val THEME_TYPE_NIGHT = 3
     }
 }

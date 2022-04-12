@@ -105,6 +105,7 @@
     <color name="default_tag_background">#FEF3C5</color>
 
     <color name="dark_amber">#E89D00</color>
+    <color name="amber25">#FFEE94</color>
 
     <color name="default_filter_tag_background_color">#F3F2EC</color>
     <color name="default_filter_tag_text_color">#6C6A5F</color>

@@ -427,20 +427,20 @@ class DefaultBlockViewRenderer(
                     )
                 }
                 is Content.Link -> {
-                    isPreviousBlockMedia = false
                     mCounter = 0
                     val obj = ObjectWrapper.Basic(
                         map = details.details[content.target]?.map ?: emptyMap()
                     )
-                    result.add(
-                        toLinks(
-                            block = block,
-                            indent = indent,
-                            obj = obj,
-                            mode = mode,
-                            selection = selection
-                        )
+                    val link = toLinks(
+                        block = block,
+                        indent = indent,
+                        obj = obj,
+                        mode = mode,
+                        selection = selection,
+                        isPreviousBlockMedia = isPreviousBlockMedia
                     )
+                    result.add(link)
+                    isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
                 }
                 is Content.File -> {
                     mCounter = 0
@@ -905,7 +905,8 @@ class DefaultBlockViewRenderer(
                     block = block,
                     selection = selection
                 ),
-                backgroundColor = block.backgroundColor
+                backgroundColor = block.backgroundColor,
+                isPreviousBlockMedia = isPreviousBlockMedia
             )
         } else {
             // TODO maybe refact: if title is null, it does not mean that we have an error state.
@@ -1216,7 +1217,8 @@ class DefaultBlockViewRenderer(
         indent: Int,
         obj: ObjectWrapper.Basic,
         mode: EditorMode,
-        selection: Set<Id>
+        selection: Set<Id>,
+        isPreviousBlockMedia: Boolean
     ): BlockView.LinkToObject {
         if (obj.isEmpty()) {
             return BlockView.LinkToObject.Loading(
@@ -1248,7 +1250,8 @@ class DefaultBlockViewRenderer(
                     indent = indent,
                     obj = obj,
                     mode = mode,
-                    selection = selection
+                    selection = selection,
+                    isPreviousBlockMedia = isPreviousBlockMedia
                 )
             }
         }
@@ -1259,7 +1262,8 @@ class DefaultBlockViewRenderer(
         block: Block,
         indent: Int,
         obj: ObjectWrapper.Basic,
-        selection: Set<Id>
+        selection: Set<Id>,
+        isPreviousBlockMedia: Boolean
     ): BlockView.LinkToObject.Default {
         val appearanceParams = block.fields.getLinkToObjectAppearanceParams(obj.layout)
         val isCard = appearanceParams.getObjectAppearancePreviewLayoutState() == CARD
@@ -1327,7 +1331,8 @@ class DefaultBlockViewRenderer(
                 coverColor = coverColor,
                 coverImage = coverImage,
                 coverGradient = coverGradient,
-                backgroundColor = block.backgroundColor
+                backgroundColor = block.backgroundColor,
+                isPreviousBlockMedia = isPreviousBlockMedia
             )
         } else {
             BlockView.LinkToObject.Default.Text(

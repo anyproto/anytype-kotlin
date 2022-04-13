@@ -5,6 +5,9 @@ import android.text.Spannable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -32,6 +35,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
     override val root: View = itemView
     override val container = binding.containerWithBackground
     private val title = binding.bookmarkTitle
+    private val selected = binding.selected
     private val description = binding.bookmarkDescription
     private val url = binding.bookmarkUrl
     private val image = binding.bookmarkImage
@@ -94,6 +98,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
             logo.gone()
         }
         applyBackground(item.backgroundColor)
+        applyRootMargins(item)
     }
 
     private fun applySearchHighlight(item: BlockView.Media.Bookmark) {
@@ -162,14 +167,27 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        (root.layoutParams as ViewGroup.MarginLayoutParams).apply {
-            val default = dimen(R.dimen.bookmark_default_margin_start)
-            val extra = item.indent * dimen(R.dimen.indent)
-            leftMargin = default + extra
-        }
+        val leftPadding =
+            dimen(R.dimen.default_document_item_padding_start) + item.indent * dimen(R.dimen.indent)
+        root.updatePadding(left = leftPadding)
     }
 
     override fun select(isSelected: Boolean) {
-        itemView.isSelected = isSelected
+        selected.isSelected = isSelected
+    }
+
+    private fun applyRootMargins(item: BlockView.Media.Bookmark) {
+        if (item.isPreviousBlockMedia) {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                apply { topMargin = 0 }
+            }
+        } else {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                apply {
+                    topMargin =
+                        root.resources.getDimension(R.dimen.default_link_card_root_margin_top).toInt()
+                }
+            }
+        }
     }
 }

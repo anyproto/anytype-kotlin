@@ -493,7 +493,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 imageUrl = null,
                 description = bookmarkDescription,
                 title = bookmarkTitle,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                isPreviousBlockMedia = false
             )
         )
 

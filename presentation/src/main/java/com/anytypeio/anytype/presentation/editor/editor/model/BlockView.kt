@@ -835,6 +835,7 @@ sealed class BlockView : ViewType {
             val description: String?,
             val faviconUrl: String? = null,
             val imageUrl: String? = null,
+            val isPreviousBlockMedia: Boolean
         ) : Media(), Searchable {
             override fun getViewType() = HOLDER_BOOKMARK
 
@@ -907,7 +908,8 @@ sealed class BlockView : ViewType {
                 override val backgroundColor: String?,
                 val coverColor: CoverColor? = null,
                 val coverImage: Url? = null,
-                val coverGradient: String? = null
+                val coverGradient: String? = null,
+                val isPreviousBlockMedia: Boolean
             ) : Default(), Searchable {
                 override fun getViewType() = HOLDER_OBJECT_LINK_CARD
             }

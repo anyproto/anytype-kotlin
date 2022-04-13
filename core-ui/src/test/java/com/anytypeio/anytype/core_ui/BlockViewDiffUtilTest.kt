@@ -727,7 +727,8 @@ class BlockViewDiffUtilTest {
             indent = MockDataFactory.randomInt(),
             title = MockDataFactory.randomString(),
             url = MockDataFactory.randomString(),
-            isSelected = false
+            isSelected = false,
+            isPreviousBlockMedia = false
         )
 
         val newBlock: BlockView = oldBlock.copy(

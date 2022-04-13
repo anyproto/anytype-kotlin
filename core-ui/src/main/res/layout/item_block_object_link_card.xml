@@ -3,27 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    style="@style/DefaultLinkCardBlockRootStyle"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="1dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="1dp"
-    android:background="@drawable/item_block_multi_select_mode_selector"
-    android:paddingStart="12dp"
-    android:paddingTop="6dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="@dimen/dp_6">
+    android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardContainer"
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:rippleColor="@android:color/transparent"
-        app:strokeColor="@color/shape_primary"
-        app:strokeWidth="0.5dp">
+        style="@style/DefaultLinkCardBlockCardStyle">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/containerWithBackground"
@@ -60,10 +48,10 @@
                 android:layout_marginBottom="@dimen/dp_16"
                 app:checkboxSize="28dp"
                 app:emojiSize="36dp"
+                app:hasEmojiRounded12Background="true"
+                app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
                 app:imageSize="64dp"
                 app:initialTextSize="28sp"
-                app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
-                app:hasEmojiRounded12Background="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -109,5 +97,12 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

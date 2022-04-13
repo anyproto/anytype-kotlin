@@ -3,6 +3,8 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Spannable
 import android.text.SpannableString
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -29,6 +31,7 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     SupportCustomTouchProcessor,
     SupportNesting {
 
+    private val root = binding.root
     private val container = binding.containerWithBackground
     private val cover = binding.cover
     private val untitled = itemView.resources.getString(R.string.untitled)
@@ -36,6 +39,7 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     private val title = binding.cardName
     private val description = binding.cardDescription
     private val guideline = binding.pageGuideline
+    private val selected = binding.selected
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -51,7 +55,9 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     ) {
         indentize(item)
 
-        itemView.isSelected = item.isSelected
+        selected.isSelected = item.isSelected
+
+        applyRootMargins(item)
 
         applyName(item)
 
@@ -156,7 +162,7 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
         check(item is BlockView.LinkToObject.Default.Card) { "Expected a link to object block card, but was: $item" }
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
-                itemView.isSelected = item.isSelected
+                selected.isSelected = item.isSelected
                 applyImageOrEmoji(item)
             }
             if (payload.isSearchHighlightChanged) {
@@ -241,6 +247,21 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
         } else {
             Timber.d("Background color is null, setting background to null")
             container.setBackgroundColor(0)
+        }
+    }
+
+    private fun applyRootMargins(item: BlockView.LinkToObject.Default.Card) {
+        if (item.isPreviousBlockMedia) {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                apply { topMargin = 0 }
+            }
+        } else {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                apply {
+                    topMargin =
+                        root.resources.getDimension(R.dimen.default_link_card_root_margin_top).toInt()
+                }
+            }
         }
     }
 }

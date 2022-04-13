@@ -5,25 +5,19 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="1dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="1dp"
-    android:background="@drawable/item_block_multi_select_mode_selector"
-    android:clipToPadding="false"
-    android:paddingStart="12dp"
-    android:paddingTop="6dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="6dp">
+    android:layout_marginBottom="10dp"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bookmarkRoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="0dp"
+        android:layout_marginStart="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_12"
         app:cardCornerRadius="8dp"
-        app:strokeColor="@color/shape_primary"
+        app:cardElevation="0dp"
         app:rippleColor="@android:color/transparent"
+        app:strokeColor="@color/shape_primary"
         app:strokeWidth="1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -120,5 +114,12 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

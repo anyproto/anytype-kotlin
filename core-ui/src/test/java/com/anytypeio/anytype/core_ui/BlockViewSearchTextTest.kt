@@ -75,7 +75,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(bookmark)
@@ -215,7 +216,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString().take(2),
             description = MockDataFactory.randomString().take(2),
             searchFields = listOf(field1),
-            url = MockDataFactory.randomString().take(2)
+            url = MockDataFactory.randomString().take(2),
+            isPreviousBlockMedia = false
         )
 
         val paragraph = BlockView.Text.Paragraph(
@@ -256,7 +258,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(bookmark)
@@ -295,7 +298,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(bookmark)
@@ -340,7 +344,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2, field3),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(bookmark)
@@ -378,7 +383,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2, field3),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(title)
@@ -780,7 +786,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val views = listOf(bookmark)
@@ -829,7 +836,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val p1 = BlockView.Text.Paragraph(
@@ -898,7 +906,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val p1 = BlockView.Text.Paragraph(
@@ -972,7 +981,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val p1 = BlockView.Text.Paragraph(
@@ -1037,7 +1047,8 @@ class BlockViewSearchTextTest {
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(bField1, bField2),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            isPreviousBlockMedia = false
         )
 
         val paragraph = BlockView.Text.Paragraph(

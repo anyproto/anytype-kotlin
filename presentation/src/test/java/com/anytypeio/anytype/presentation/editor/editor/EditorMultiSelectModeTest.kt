@@ -154,8 +154,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         isVisible = false
                     ),
                     styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false,
-                        mode = null
+                        isVisible = false
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
@@ -255,8 +254,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         isVisible = false
                     ),
                     styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false,
-                        mode = null
+                        isVisible = false
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
@@ -372,8 +370,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         isVisible = false
                     ),
                     styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false,
-                        mode = null
+                        isVisible = false
                     ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
@@ -1334,7 +1331,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val expectedState = ControlPanelState(
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
-                mode = null,
                 style = null
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(

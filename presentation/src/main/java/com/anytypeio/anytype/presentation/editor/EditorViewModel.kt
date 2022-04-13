@@ -45,11 +45,6 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeCategoriesForDivider
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeTypesForDotsDivider
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeTypesForLineDivider
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludeTypesForText
-import com.anytypeio.anytype.presentation.editor.TurnIntoConstants.excludedCategoriesForText
 import com.anytypeio.anytype.presentation.editor.editor.*
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -74,7 +69,6 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.SL
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetAlignmentItems
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetStyleItems
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -1422,22 +1416,6 @@ class EditorViewModel(
         actions.value = targetActions.toList()
     }
 
-    @Deprecated("Legacy")
-    fun onEditorContextMenuStyleClicked(selection: IntRange) {
-
-        Timber.d("onEditorContextMenuStyleClicked, selection:[$selection]")
-
-        val target = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnEditorContextMenuStyleClicked(
-                target = target,
-                selection = selection,
-                urlBuilder = urlBuilder,
-                details = orchestrator.stores.details.current()
-            )
-        )
-    }
-
     fun onStylingToolbarEvent(event: StylingEvent) {
         Timber.d("onStylingToolbarEvent, event:[$event]")
         val state = controlPanelViewState.value!!
@@ -1567,23 +1545,19 @@ class EditorViewModel(
         type: Markup.Type,
         param: String?
     ) {
-        if (state.styleTextToolbar.mode == StylingMode.MARKUP) {
-            onStyleToolbarMarkupAction(type, param)
-        } else {
-            state.styleTextToolbar.target?.id?.let { id ->
-                when (type) {
-                    Markup.Type.ITALIC -> onBlockStyleMarkupActionClicked(id, type)
-                    Markup.Type.BOLD -> onBlockStyleMarkupActionClicked(id, type)
-                    Markup.Type.STRIKETHROUGH -> onBlockStyleMarkupActionClicked(id, type)
-                    Markup.Type.TEXT_COLOR -> onToolbarTextColorAction(listOf(id), param)
-                    Markup.Type.BACKGROUND_COLOR -> onBlockBackgroundColorAction(listOf(id), param)
-                    Markup.Type.LINK -> onBlockStyleLinkClicked(id)
-                    Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
-                    Markup.Type.MENTION -> Unit
-                    Markup.Type.OBJECT -> Unit
-                }
-            } ?: run { Timber.e("Target id was missing for markup styling event: $type") }
-        }
+        state.styleTextToolbar.target?.id?.let { id ->
+            when (type) {
+                Markup.Type.ITALIC -> onBlockStyleMarkupActionClicked(id, type)
+                Markup.Type.BOLD -> onBlockStyleMarkupActionClicked(id, type)
+                Markup.Type.STRIKETHROUGH -> onBlockStyleMarkupActionClicked(id, type)
+                Markup.Type.TEXT_COLOR -> onToolbarTextColorAction(listOf(id), param)
+                Markup.Type.BACKGROUND_COLOR -> onBlockBackgroundColorAction(listOf(id), param)
+                Markup.Type.LINK -> onBlockStyleLinkClicked(id)
+                Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
+                Markup.Type.MENTION -> Unit
+                Markup.Type.OBJECT -> Unit
+            }
+        } ?: run { Timber.e("Target id was missing for markup styling event: $type") }
     }
 
     fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
@@ -1724,139 +1698,6 @@ class EditorViewModel(
                 )
             )
         }
-    }
-
-    @Deprecated("To be deleted")
-    fun onActionMenuItemClicked(id: String, action: ActionItemType) {
-        Timber.d("onActionMenuItemClicked, id:[$id] action:[$action]")
-        when (action) {
-            ActionItemType.AddBelow -> {
-                onExitActionMode()
-                dispatch(Command.PopBackStack)
-                proceedWithCreatingNewTextBlock(
-                    id = id,
-                    style = Content.Text.Style.P
-                )
-            }
-            ActionItemType.TurnInto -> {
-                val excludedTypes = mutableListOf<String>()
-                val excludedCategories = mutableListOf<String>()
-                val target = blocks.first { it.id == id }
-                when (val content = target.content) {
-                    is Content.Text -> {
-                        val categories = excludedCategoriesForText()
-                        excludedCategories.addAll(categories)
-                        excludedTypes.addAll(excludeTypesForText())
-                    }
-                    is Content.Divider -> {
-                        excludedCategories.addAll(excludeCategoriesForDivider())
-                        when (content.style) {
-                            Content.Divider.Style.LINE -> excludedTypes.addAll(
-                                excludeTypesForLineDivider()
-                            )
-                            Content.Divider.Style.DOTS -> excludedTypes.addAll(
-                                excludeTypesForDotsDivider()
-                            )
-                        }
-                    }
-                }
-                onExitActionMode()
-                dispatch(
-                    Command.OpenTurnIntoPanel(
-                        target = id,
-                        excludedCategories = excludedCategories,
-                        excludedTypes = excludedTypes
-                    )
-                )
-            }
-            ActionItemType.Delete -> {
-                proceedWithUnlinking(target = id)
-                onExitActionMode()
-                dispatch(Command.PopBackStack)
-            }
-            ActionItemType.Duplicate -> {
-                duplicateBlock(
-                    blocks = listOf(id),
-                    target = id
-                )
-                onExitActionMode()
-                dispatch(Command.PopBackStack)
-            }
-            ActionItemType.Rename -> {
-                sendToast("Rename not implemented")
-            }
-            ActionItemType.MoveTo -> {
-                onExitActionMode()
-                dispatch(Command.PopBackStack)
-                proceedWithMoveToButtonClicked(
-                    blocks = listOf(id),
-                    restorePosition = null,
-                    restoreBlock = null
-                )
-            }
-            ActionItemType.Style -> {
-                viewModelScope.launch { proceedWithOpeningStyleToolbarFromActionMenu(id) }
-            }
-            ActionItemType.Download -> {}
-            ActionItemType.SAM -> {
-                mode = EditorMode.SAM
-                viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
-                viewModelScope.launch { refresh() }
-                proceedWithSAMQuickStartSelection(id)
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(1))
-                dispatch(Command.PopBackStack)
-            }
-            ActionItemType.Replace -> {
-                sendToast("Replace not implemented")
-            }
-            ActionItemType.AddCaption -> {
-                sendToast("Add caption not implemented")
-            }
-            ActionItemType.Divider -> {
-                sendToast("not implemented")
-            }
-            ActionItemType.TurnIntoPage -> {
-                proceedWithTurningIntoDocument(targets = listOf(id))
-                onExitActionMode()
-                dispatch(Command.PopBackStack)
-            }
-            else -> Timber.d("Action ignored: $action")
-        }
-    }
-
-    private fun proceedWithOpeningStyleToolbarFromActionMenu(id: String) {
-        val target = id
-
-        val lastKnownSelection = orchestrator.stores.textSelection.current().takeIf { value ->
-            value.id == target
-        }
-
-        val lastKnownCursor = lastKnownSelection?.selection
-
-        val isFocused = lastKnownSelection?.isNotEmpty ?: false
-
-        mode = EditorMode.Styling.Single(
-            target = target,
-            cursor = lastKnownCursor?.first
-        )
-
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(Editor.Focus.empty())
-            orchestrator.stores.views.update(views.singleStylingMode(target))
-            renderCommand.send(Unit)
-        }
-
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                target = blocks.first { it.id == target },
-                focused = isFocused,
-                selection = lastKnownCursor,
-                urlBuilder = urlBuilder,
-                details = orchestrator.stores.details.current()
-            )
-        )
-
-        dispatch(Command.PopBackStack)
     }
 
     private fun proceedWithUnlinking(target: String) {
@@ -3035,40 +2876,6 @@ class EditorViewModel(
             } else {
                 proceedWithExitingMultiSelectMode()
             }
-        }
-    }
-
-    private fun proceedWithSAMQuickStartSelection(target: Id) {
-        (stateData.value as? ViewState.Success)?.let { state ->
-
-            var allow = true
-
-            val parent = blocks.find { it.children.contains(target) }
-
-            if (parent != null && parent.id != context) {
-                if (isSelected(parent.id)) allow = false
-            }
-
-            if (!allow) return
-
-            toggleSelection(target)
-
-            val descendants = blocks.asMap().descendants(parent = target)
-
-            if (isSelected(target)) {
-                descendants.forEach { child -> select(child) }
-            } else {
-                descendants.forEach { child -> unselect(child) }
-            }
-
-            val update = state.blocks.map { view ->
-                if (view.id == target || descendants.contains(view.id))
-                    view.updateSelection(newSelection = isSelected(target))
-                else
-                    view
-            }
-
-            stateData.postValue(ViewState.Success(update))
         }
     }
 

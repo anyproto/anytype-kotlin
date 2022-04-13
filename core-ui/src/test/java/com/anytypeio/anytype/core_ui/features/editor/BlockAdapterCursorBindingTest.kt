@@ -387,7 +387,6 @@ class BlockAdapterCursorBindingTest {
             onToggleClicked = {},
             onTextBlockTextChanged = {},
             onTitleBlockTextChanged = {_, _ -> },
-            onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor,

@@ -18,8 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Highlight(
-    val binding: ItemBlockHighlightBinding,
-    onContextMenuStyleClick: (IntRange) -> Unit
+    val binding: ItemBlockHighlightBinding
 ) : Text(binding.root), BlockViewHolder.IndentableHolder {
 
     override val content: TextInputWidget = binding.highlightContent
@@ -35,7 +34,7 @@ class Highlight(
 
     init {
         content.setSpannableFactory(DefaultSpannableFactory())
-        setup(onContextMenuStyleClick)
+        setup()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)

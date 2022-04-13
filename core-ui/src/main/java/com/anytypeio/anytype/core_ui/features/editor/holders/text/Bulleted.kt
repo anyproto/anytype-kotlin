@@ -20,8 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Bulleted(
-    val binding: ItemBlockBulletedBinding,
-    onContextMenuStyleClick: (IntRange) -> Unit
+    val binding: ItemBlockBulletedBinding
 ) : Text(binding.root), SupportNesting {
 
     val indent: View = binding.bulletIndent
@@ -37,7 +36,7 @@ class Bulleted(
     private val mentionInitialsSize: Float
 
     init {
-        setup(onContextMenuStyleClick)
+        setup()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)

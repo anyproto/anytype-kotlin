@@ -10,12 +10,13 @@ import android.view.MenuItem
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.*
-import com.anytypeio.anytype.core_ui.extensions.*
+import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
+import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
-import com.anytypeio.anytype.core_ui.menu.EditorContextMenu
 import com.anytypeio.anytype.core_ui.tools.*
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
-import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -34,12 +35,9 @@ interface TextBlockHolder : TextHolder {
 
     fun getDefaultTextColor(): Int
 
-    fun setup(
-        onContextMenuStyleClick: (IntRange) -> Unit
-    ) {
+    fun setup() {
         with(content) {
             setSpannableFactory(DefaultSpannableFactory())
-            //setupSelectionActionMode(onContextMenuStyleClick)
             setupCustomInsertionActionMode()
         }
     }
@@ -393,22 +391,6 @@ interface TextBlockHolder : TextHolder {
     }
 
     //region CONTEXT MENU
-
-    private fun setupSelectionActionMode(
-        onContextMenuStyleClick: (IntRange) -> Unit
-    ) {
-        with(content) {
-            customSelectionActionModeCallback = EditorContextMenu(
-                onStyleClick = {
-                    preserveSelection {
-                        content.hideKeyboard()
-                        onContextMenuStyleClick.invoke(content.range())
-                        //todo maybe add mode.finish
-                    }
-                }
-            )
-        }
-    }
 
     private fun setupCustomInsertionActionMode() {
         val bookmarkMenuItemTitle = content.resources.getString(R.string.bookmark)

@@ -3462,7 +3462,6 @@ class BlockAdapterTest {
             onToggleClicked = {},
             onTextBlockTextChanged = {},
             onTitleBlockTextChanged = onTitleBlockTextChanged,
-            onContextMenuStyleClick = {},
             onTitleTextInputClicked = {},
             onClickListener = {},
             clipboardInterceptor = clipboardInterceptor,

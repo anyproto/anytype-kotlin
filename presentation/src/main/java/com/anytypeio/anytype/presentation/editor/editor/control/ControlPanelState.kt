@@ -5,7 +5,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
-import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -107,7 +106,6 @@ data class ControlPanelState(
             val target: Target? = null,
             val config: StyleConfig? = null,
             val props: Props? = null,
-            val mode: StylingMode? = null,
             val style: TextStyle? = TextStyle.P
         ) : Toolbar() {
 
@@ -115,9 +113,7 @@ data class ControlPanelState(
                 fun reset() = Styling(
                     isVisible = false,
                     target = null,
-                    config = null,
                     props = null,
-                    mode = null
                 )
             }
 
@@ -316,8 +312,7 @@ data class ControlPanelState(
                 count = 0
             ),
             styleTextToolbar = Toolbar.Styling(
-                isVisible = false,
-                mode = null
+                isVisible = false
             ),
             mentionToolbar = Toolbar.MentionToolbar(
                 isVisible = false,

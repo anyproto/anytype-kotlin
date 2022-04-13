@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor
 
 import MockDataFactory
+import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
@@ -16,7 +17,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import kotlin.test.assertEquals
 
+@Config(sdk = [Build.VERSION_CODES.P])
+@RunWith(RobolectricTestRunner::class)
 class BlockReadModeTest : EditorViewModelTest() {
 
     val blocks = listOf(
@@ -66,6 +73,26 @@ class BlockReadModeTest : EditorViewModelTest() {
                 marks = emptyList(),
                 text = p.content<Block.Content.Text>().text,
                 mode = BlockView.Mode.READ
+            )
+        }
+    )
+
+    private val blockViewsReadModeSelected = listOf<BlockView>(
+        blocks[0].let { p ->
+            BlockView.Text.Paragraph(
+                id = p.id,
+                marks = emptyList(),
+                text = p.content<Block.Content.Text>().text,
+                mode = BlockView.Mode.READ
+            )
+        },
+        blocks[1].let { p ->
+            BlockView.Text.Paragraph(
+                id = p.id,
+                marks = emptyList(),
+                text = p.content<Block.Content.Text>().text,
+                mode = BlockView.Mode.READ,
+                isSelected = true
             )
         }
     )
@@ -219,7 +246,7 @@ class BlockReadModeTest : EditorViewModelTest() {
             )
         )
 
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.Style)
+        vm.onMultiSelectStyleButtonClicked()
 
         val testObserver = vm.state.test()
 
@@ -249,40 +276,6 @@ class BlockReadModeTest : EditorViewModelTest() {
     }
 
     @Test
-    fun `should enter edit mode after action menu is closed by action item turn into`() {
-
-        val paragraphs = blocks
-        stubObserveEvents(flow)
-        stubOpenPage()
-        buildViewModel()
-
-        vm.onStart(root)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.onClickListener(
-            clicked = ListenerType.LongClick(
-                target = paragraphs[1].id,
-                dimensions = BlockDimensions(0, 0, 0, 0, 0, 0)
-            )
-        )
-
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.TurnInto)
-
-        val testObserver = vm.state.test()
-
-        val initial = blockViewsEditMode
-
-        testObserver.assertValue(
-            ViewState.Success(
-                blocks = listOf(titleEditModeView) + initial
-            )
-        )
-    }
-
-    @Test
     fun `should enter edit mode after action menu is closed by action item delete`() {
 
         val paragraphs = blocks
@@ -303,21 +296,24 @@ class BlockReadModeTest : EditorViewModelTest() {
             )
         )
 
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.Delete)
+        vm.onMultiSelectAction(ActionItemType.Delete)
 
         val testObserver = vm.state.test()
 
         val initial = blockViewsEditMode
 
-        testObserver.assertValue(
-            ViewState.Success(
+        coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE)
+
+        assertEquals(
+            expected = ViewState.Success(
                 blocks = listOf(titleEditModeView) + initial
-            )
+            ),
+            actual = testObserver.value()
         )
     }
 
     @Test
-    fun `should enter edit mode after action menu is closed by action item duplicate`() {
+    fun `should be in read mode and selected after action item duplicate`() {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
@@ -337,16 +333,17 @@ class BlockReadModeTest : EditorViewModelTest() {
             )
         )
 
-        vm.onActionMenuItemClicked(id = paragraphs[1].id, action = ActionItemType.Duplicate)
+        vm.onMultiSelectAction(ActionItemType.Duplicate)
 
         val testObserver = vm.state.test()
 
-        val initial = blockViewsEditMode
+        val initial = blockViewsReadModeSelected
 
-        testObserver.assertValue(
+        assertEquals(
             ViewState.Success(
-                blocks = listOf(titleEditModeView) + initial
-            )
+                blocks = listOf(titleReadModeView) + initial
+            ),
+            testObserver.value()
         )
     }
 }

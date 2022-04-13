@@ -22,8 +22,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Numbered(
-    val binding: ItemBlockNumberedBinding,
-    onContextMenuStyleClick: (IntRange) -> Unit
+    val binding: ItemBlockNumberedBinding
 ) : Text(binding.root), SupportNesting {
 
     private val container = binding.numberedBlockContentContainer
@@ -38,7 +37,7 @@ class Numbered(
     private val mentionInitialsSize: Float
 
     init {
-        setup(onContextMenuStyleClick)
+        setup()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)

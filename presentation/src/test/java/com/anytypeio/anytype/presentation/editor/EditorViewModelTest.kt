@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor
 
 import MockDataFactory
+import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
@@ -47,7 +48,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import com.anytypeio.anytype.presentation.editor.editor.styling.StylingMode
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
@@ -60,22 +60,25 @@ import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.*
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@Config(sdk = [Build.VERSION_CODES.P])
+@RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
 open class EditorViewModelTest {
 
@@ -809,11 +812,7 @@ open class EditorViewModelTest {
             selection = firstTimeRange
         )
 
-        vm.onEditorContextMenuStyleClicked(
-            selection = firstTimeRange
-        )
-
-        vm.onStylingToolbarEvent(event = firstTimeMarkup)
+        vm.onStyleToolbarMarkupAction(type = Markup.Type.BOLD)
 
         val firstTimeExpected = ViewState.Success(
             listOf(
@@ -851,7 +850,7 @@ open class EditorViewModelTest {
             selection = secondTimeRange
         )
 
-        vm.onStylingToolbarEvent(event = secondTimeMarkup)
+        vm.onStyleToolbarMarkupAction(type = Markup.Type.ITALIC)
 
         val secondTimeExpected = ViewState.Success(
             listOf(
@@ -953,11 +952,7 @@ open class EditorViewModelTest {
             selection = firstTimeRange
         )
 
-        vm.onEditorContextMenuStyleClicked(
-            selection = firstTimeRange
-        )
-
-        vm.onStylingToolbarEvent(event = firstTimeMarkup)
+        vm.onStyleToolbarMarkupAction(type = Markup.Type.BOLD)
 
         val firstTimeExpected = ViewState.Success(
             listOf(
@@ -982,10 +977,7 @@ open class EditorViewModelTest {
             )
         )
 
-        vm.state.test().apply {
-            assertHasValue()
-            assertValue(firstTimeExpected)
-        }
+        assertEquals(firstTimeExpected, vm.state.value)
 
         vm.onSelectionChanged(
             id = paragraph.id,
@@ -1005,11 +997,7 @@ open class EditorViewModelTest {
             selection = secondTimeRange
         )
 
-        vm.onEditorContextMenuStyleClicked(
-            selection = secondTimeRange
-        )
-
-        vm.onStylingToolbarEvent(event = secondTimeMarkup)
+        vm.onStyleToolbarMarkupAction(type = Markup.Type.BOLD)
 
         val secondTimeExpected = ViewState.Success(
             listOf(
@@ -1108,11 +1096,7 @@ open class EditorViewModelTest {
             selection = range
         )
 
-        vm.onEditorContextMenuStyleClicked(
-            selection = range
-        )
-
-        vm.onStylingToolbarEvent(markup)
+        vm.onStyleToolbarMarkupAction(type = Markup.Type.BOLD)
 
         val marks = listOf(
             Block.Content.Text.Mark(
@@ -1638,7 +1622,11 @@ open class EditorViewModelTest {
 
         vm.onBlockFocusChanged(id = child, hasFocus = true)
 
-        vm.onActionMenuItemClicked(id = child, action = ActionItemType.Duplicate)
+        vm.onBlockToolbarBlockActionsClicked()
+
+        vm.onBlockFocusChanged(id = child, hasFocus = false)
+
+        vm.onMultiSelectAction(ActionItemType.Duplicate)
 
         runBlockingTest {
             verify(duplicateBlock, times(1)).invoke(
@@ -1678,7 +1666,6 @@ open class EditorViewModelTest {
         val doc = listOf(page, header, title, child)
 
         val events: Flow<List<Event.Command>> = flow {
-            delay(1000)
             emit(
                 listOf(
                     Event.Command.ShowObject(
@@ -1699,10 +1686,16 @@ open class EditorViewModelTest {
 
         vm.onStart(root)
 
-        coroutineTestRule.advanceTime(1001)
+        coroutineTestRule.advanceTime(100)
 
+        vm.onSelectionChanged(id = child.id, selection = IntRange(0, 0))
         vm.onBlockFocusChanged(id = child.id, hasFocus = true)
-        vm.onActionMenuItemClicked(id = child.id, action = ActionItemType.Delete)
+        vm.onBlockToolbarBlockActionsClicked()
+        vm.onBlockFocusChanged(id = child.id, hasFocus = false)
+        vm.onMultiSelectModeDeleteClicked()
+        vm.onExitMultiSelectModeClicked()
+
+        coroutineTestRule.advanceTime(300)
 
         runBlockingTest {
             verify(unlinkBlocks, times(1)).invoke(
@@ -1811,7 +1804,10 @@ open class EditorViewModelTest {
         )
 
         vm.onBlockFocusChanged(id = firstChild.id, hasFocus = true)
-        vm.onActionMenuItemClicked(id = firstChild.id, action = ActionItemType.Delete)
+        vm.onBlockToolbarBlockActionsClicked()
+        vm.onBlockFocusChanged(id = firstChild.id, hasFocus = false)
+        vm.onMultiSelectModeDeleteClicked()
+        vm.onExitMultiSelectModeClicked()
 
         assertEquals(expected = 5, actual = vm.blocks.size)
 
@@ -1819,23 +1815,25 @@ open class EditorViewModelTest {
 
         assertEquals(expected = 4, actual = vm.blocks.size)
 
-        testObserver.assertValue(
-            ViewState.Success(
-                blocks = listOf(
-                    BlockView.Title.Basic(
-                        isFocused = true,
-                        id = title.id,
-                        text = title.content<TXT>().text,
-                        cursor = title.content<TXT>().text.length
-                    ),
-                    BlockView.Text.Paragraph(
-                        id = secondChild.id,
-                        text = secondChild.content<Block.Content.Text>().text,
-                        backgroundColor = secondChild.backgroundColor
-                    )
+        val expected = ViewState.Success(
+            blocks = listOf(
+                BlockView.Title.Basic(
+                    isFocused = false,
+                    id = title.id,
+                    text = title.content<TXT>().text,
+                    cursor = null
+                ),
+                BlockView.Text.Paragraph(
+                    id = secondChild.id,
+                    text = secondChild.content<Block.Content.Text>().text,
+                    backgroundColor = secondChild.backgroundColor
                 )
             )
         )
+
+        assertEquals(expected, testObserver.value())
+
+        coroutineTestRule.advanceTime(300L)
     }
 
     @Test
@@ -2121,7 +2119,7 @@ open class EditorViewModelTest {
 
         val color = MockDataFactory.randomString()
 
-        vm.onToolbarTextColorAction(color = color, targets= listOf(child))
+        vm.onToolbarTextColorAction(color = color, targets = listOf(child))
 
         runBlockingTest {
             verify(updateTextColor, times(1)).invoke(
@@ -3081,7 +3079,7 @@ open class EditorViewModelTest {
                 params = eq(
                     SetObjectIsArchived.Params(
                         context = root,
-                            isArchived = true
+                        isArchived = true
                     )
                 )
             )
@@ -3451,7 +3449,9 @@ open class EditorViewModelTest {
 
         focus.assertValue { id -> id == paragraph.id }
 
-        vm.onActionMenuItemClicked(id = paragraph.id, action = ActionItemType.Duplicate)
+        vm.onBlockToolbarBlockActionsClicked()
+        vm.onBlockFocusChanged(id = paragraph.id, hasFocus = false)
+        vm.onMultiSelectAction(ActionItemType.Duplicate)
 
         runBlockingTest {
             verify(duplicateBlock, times(1)).invoke(
@@ -3468,6 +3468,8 @@ open class EditorViewModelTest {
         verifyNoMoreInteractions(duplicateBlock)
 
         focus.assertValue { id -> id == newBlockId }
+
+        coroutineTestRule.advanceTime(200)
     }
 
     private fun stubDuplicateBlock(newBlockId: String, root: String) {
@@ -3863,9 +3865,9 @@ open class EditorViewModelTest {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Pair(
                     MockDataFactory.randomString(), Payload(
-                    context = root,
-                    events = listOf()
-                )
+                        context = root,
+                        events = listOf()
+                    )
                 )
             )
         }
@@ -3918,7 +3920,12 @@ open class EditorViewModelTest {
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type, null))
+            onBlocking { invoke(Unit) } doReturn Either.Right(
+                GetDefaultEditorType.Response(
+                    type,
+                    null
+                )
+            )
         }
     }
 
@@ -4380,7 +4387,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should update style toolbar when no blocks in focus`() {
+    fun `should not update text style in multi select mode`() {
 
         val id1 = MockDataFactory.randomUuid()
         val id2 = MockDataFactory.randomUuid()
@@ -4452,127 +4459,35 @@ open class EditorViewModelTest {
         assertTrue(stateBefore.navigationToolbar.isVisible)
         assertFalse(stateBefore.styleTextToolbar.isVisible)
 
-        vm.onActionMenuItemClicked(blocks[0].id, ActionItemType.Style)
+        vm.onClickListener(ListenerType.LongClick(target = blocks[0].id))
+        vm.onMultiSelectStyleButtonClicked()
 
-        vm.controlPanelViewState.test().assertValue(
-            ControlPanelState(
-                navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                    isVisible = false
-                ),
-                mainToolbar = ControlPanelState.Toolbar.Main(
-                    isVisible = false
-                ),
-                styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                    isVisible = true,
-                    mode = StylingMode.BLOCK,
-                    target = ControlPanelState.Toolbar.Styling.Target(
-                        id = blocks[0].id,
-                        text = blocks[0].content.asText().text,
-                        color = null,
-                        background = null,
-                        alignment = Alignment.CENTER,
-                        marks = listOf(
-                            Markup.Mark.Bold(0, 7)
-                        )
-                    ),
-                    config = StyleConfig(
-                        visibleTypes = listOf(
-                            StylingType.STYLE,
-                            StylingType.TEXT_COLOR,
-                            StylingType.BACKGROUND
-                        ),
-                        enabledAlignment = listOf(
-                            Alignment.START,
-                            Alignment.CENTER,
-                            Alignment.END
-                        ),
-                        enabledMarkup = listOf(
-                            Markup.Type.BOLD,
-                            Markup.Type.ITALIC,
-                            Markup.Type.STRIKETHROUGH,
-                            Markup.Type.KEYBOARD,
-                            Markup.Type.LINK
-                        )
-                    ),
-                    props = ControlPanelState.Toolbar.Styling.Props(
-                        isBold = true,
-                        isItalic = false,
-                        isStrikethrough = false,
-                        isCode = false,
-                        isLinked = false,
-                        alignment = Alignment.CENTER,
-                        color = null,
-                        background = null
-                    )
-                ),
-                multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                    isVisible = false
-                ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
-            )
+        val actual = vm.controlPanelViewState.test().value()
+        val expected = ControlPanelState(
+            navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                isVisible = false
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(
+                isVisible = false
+            ),
+            styleTextToolbar = ControlPanelState.Toolbar.Styling(
+                isVisible = true,
+                style = null
+            ),
+            multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isVisible = true,
+                count = 1
+            ),
+            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
         )
+
+        assertEquals(expected, actual)
 
         vm.onStylingToolbarEvent(event = StylingEvent.Markup.Italic)
 
-        vm.controlPanelViewState.test().assertValue(
-            ControlPanelState(
-                navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                    isVisible = false
-                ),
-                mainToolbar = ControlPanelState.Toolbar.Main(
-                    isVisible = false
-                ),
-                styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                    isVisible = true,
-                    mode = StylingMode.BLOCK,
-                    target = ControlPanelState.Toolbar.Styling.Target(
-                        id = blocks[0].id,
-                        text = blocks[0].content.asText().text,
-                        color = null,
-                        background = null,
-                        alignment = Alignment.CENTER,
-                        marks = listOf(
-                            Markup.Mark.Bold(0, 7),
-                            Markup.Mark.Italic(0, 7)
-                        )
-                    ),
-                    config = StyleConfig(
-                        visibleTypes = listOf(
-                            StylingType.STYLE,
-                            StylingType.TEXT_COLOR,
-                            StylingType.BACKGROUND
-                        ),
-                        enabledAlignment = listOf(
-                            Alignment.START,
-                            Alignment.CENTER,
-                            Alignment.END
-                        ),
-                        enabledMarkup = listOf(
-                            Markup.Type.BOLD,
-                            Markup.Type.ITALIC,
-                            Markup.Type.STRIKETHROUGH,
-                            Markup.Type.KEYBOARD,
-                            Markup.Type.LINK
-                        )
-                    ),
-                    props = ControlPanelState.Toolbar.Styling.Props(
-                        isBold = true,
-                        isItalic = true,
-                        isStrikethrough = false,
-                        isCode = false,
-                        isLinked = false,
-                        alignment = Alignment.CENTER,
-                        color = null,
-                        background = null
-                    )
-                ),
-                multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                    isVisible = false
-                ),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
-            )
-        )
+        verifyNoMoreInteractions(updateText)
+
+        coroutineTestRule.advanceTime(200)
     }
 }

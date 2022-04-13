@@ -15,8 +15,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Paragraph(
-    view: View,
-    onContextMenuStyleClick: (IntRange) -> Unit
+    view: View
 ) : Text(view), SupportNesting {
 
     override val root: View = itemView
@@ -29,7 +28,7 @@ class Paragraph(
     private val mentionInitialsSize: Float
 
     init {
-        setup(onContextMenuStyleClick)
+        setup()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)

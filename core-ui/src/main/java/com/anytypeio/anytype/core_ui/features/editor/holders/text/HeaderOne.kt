@@ -8,8 +8,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 
 class HeaderOne(
-    val binding: ItemBlockHeaderOneBinding,
-    onContextMenuStyleClick: (IntRange) -> Unit
+    val binding: ItemBlockHeaderOneBinding
 ) : Header(binding.root) {
 
     override val header: TextInputWidget = binding.headerOne
@@ -23,7 +22,7 @@ class HeaderOne(
     private val mentionInitialsSize: Float
 
     init {
-        setup(onContextMenuStyleClick)
+        setup()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_one)

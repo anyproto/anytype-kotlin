@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
 
 class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
 
@@ -51,7 +52,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
     )
 
     @Test
-    fun `should exit to editing-mode when exiting from quick SAM`() {
+    fun `should be in selected mode when exiting from quick SAM`() {
 
         // SETUP
 
@@ -101,57 +102,58 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
         vm.apply {
             onBlockFocusChanged(id = b.id, hasFocus = true)
             onBlockToolbarBlockActionsClicked()
-            onActionMenuItemClicked(id = b.id, action = ActionItemType.SAM)
+            onBlockFocusChanged(id = b.id, hasFocus = false)
+            onEnterScrollAndMoveClicked()
             onExitScrollAndMoveClicked()
         }
 
         // VERIFYING
 
-        controlPanelTestObserver.assertValue(
+        val actual = controlPanelTestObserver.value()
+
+        val expected =
             ControlPanelState(
-                navigationToolbar = Toolbar.Navigation(isVisible = true),
-                mainToolbar = Toolbar.Main(isVisible = false),
-                mentionToolbar = Toolbar.MentionToolbar(
-                    isVisible = false,
-                    cursorCoordinate = null,
-                    mentionFilter = null,
-                    mentionFrom = null
-                ),
+                navigationToolbar = Toolbar.Navigation.reset(),
+                mainToolbar = Toolbar.Main.reset(),
+                mentionToolbar = Toolbar.MentionToolbar.reset(),
                 multiSelect = Toolbar.MultiSelect(
-                    isVisible = false,
-                    count = 0,
+                    isVisible = true,
+                    count = 1,
                     isScrollAndMoveEnabled = false,
                     isQuickScrollAndMoveMode = false,
                 ),
-                styleTextToolbar = Toolbar.Styling(isVisible = false),
-                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                styleTextToolbar = Toolbar.Styling.reset(),
+                slashWidget = Toolbar.SlashWidget.reset()
             )
-        )
 
-        viewStateTestObserver.assertValue(
-            ViewState.Success(
-                listOf(
-                    BlockView.Title.Basic(
-                        id = title.id,
-                        text = title.content<TXT>().text,
-                        mode = BlockView.Mode.EDIT,
-                    ),
-                    BlockView.Text.Numbered(
-                        id = a.id,
-                        text = a.content<TXT>().text,
-                        number = 1,
-                        mode = BlockView.Mode.EDIT,
-                        isSelected = false
-                    ),
-                    BlockView.Text.Paragraph(
-                        id = b.id,
-                        text = b.content<TXT>().text,
-                        mode = BlockView.Mode.EDIT,
-                        isSelected = false
-                    )
+        assertEquals(expected, actual)
+
+        val actualViewState = viewStateTestObserver.value()
+
+        val expectedViewState = ViewState.Success(
+            listOf(
+                BlockView.Title.Basic(
+                    id = title.id,
+                    text = title.content<TXT>().text,
+                    mode = BlockView.Mode.READ,
+                ),
+                BlockView.Text.Numbered(
+                    id = a.id,
+                    text = a.content<TXT>().text,
+                    number = 1,
+                    mode = BlockView.Mode.READ,
+                    isSelected = false
+                ),
+                BlockView.Text.Paragraph(
+                    id = b.id,
+                    text = b.content<TXT>().text,
+                    mode = BlockView.Mode.READ,
+                    isSelected = true
                 )
             )
         )
+
+        assertEquals(expectedViewState, actualViewState)
     }
 
     @Test
@@ -205,7 +207,8 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
         vm.apply {
             onBlockFocusChanged(id = b.id, hasFocus = true)
             onBlockToolbarBlockActionsClicked()
-            onActionMenuItemClicked(id = b.id, action = ActionItemType.SAM)
+            onBlockFocusChanged(id = b.id, hasFocus = false)
+            onEnterScrollAndMoveClicked()
             onSystemBackPressed(false)
         }
 
@@ -214,21 +217,11 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
         controlPanelTestObserver.assertValue(
             ControlPanelState(
                 navigationToolbar = Toolbar.Navigation(isVisible = true),
-                mainToolbar = Toolbar.Main(isVisible = false),
-                mentionToolbar = Toolbar.MentionToolbar(
-                    isVisible = false,
-                    cursorCoordinate = null,
-                    mentionFilter = null,
-                    mentionFrom = null
-                ),
-                multiSelect = Toolbar.MultiSelect(
-                    isVisible = false,
-                    count = 0,
-                    isScrollAndMoveEnabled = false,
-                    isQuickScrollAndMoveMode = false,
-                ),
-                styleTextToolbar = Toolbar.Styling(isVisible = false),
-                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                mainToolbar = Toolbar.Main.reset(),
+                mentionToolbar = Toolbar.MentionToolbar.reset(),
+                multiSelect = Toolbar.MultiSelect.reset(),
+                styleTextToolbar = Toolbar.Styling.reset(),
+                slashWidget = Toolbar.SlashWidget.reset()
             )
         )
 

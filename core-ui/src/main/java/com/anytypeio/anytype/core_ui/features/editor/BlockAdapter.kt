@@ -130,7 +130,6 @@ class BlockAdapter(
     private val onCoverClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
-    private val onContextMenuStyleClick: (IntRange) -> Unit,
     private val clipboardInterceptor: ClipboardInterceptor,
     private val onMentionEvent: (MentionEvent) -> Unit,
     private val onSlashEvent: (SlashEvent) -> Unit,
@@ -170,8 +169,7 @@ class BlockAdapter(
                         R.layout.item_block_text,
                         parent,
                         false
-                    ),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    )
                 )
             }
             HOLDER_TITLE -> {
@@ -300,20 +298,17 @@ class BlockAdapter(
             }
             HOLDER_HEADER_ONE -> {
                 HeaderOne(
-                    binding = ItemBlockHeaderOneBinding.inflate(inflater, parent, false),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    binding = ItemBlockHeaderOneBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_HEADER_TWO -> {
                 HeaderTwo(
-                    binding = ItemBlockHeaderTwoBinding.inflate(inflater, parent, false),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    binding = ItemBlockHeaderTwoBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_HEADER_THREE -> {
                 HeaderThree(
-                    binding = ItemBlockHeaderThreeBinding.inflate(inflater, parent, false),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    binding = ItemBlockHeaderThreeBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_CODE_SNIPPET -> {
@@ -325,32 +320,28 @@ class BlockAdapter(
                 Checkbox(
                     binding = ItemBlockCheckboxBinding.inflate(
                         inflater, parent, false
-                    ),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    )
                 )
             }
             HOLDER_BULLET -> {
                 Bulleted(
                     binding = ItemBlockBulletedBinding.inflate(
                         inflater, parent, false
-                    ),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    )
                 )
             }
             HOLDER_NUMBERED -> {
                 Numbered(
                     binding = ItemBlockNumberedBinding.inflate(
                         inflater, parent, false
-                    ),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    )
                 )
             }
             HOLDER_TOGGLE -> {
                 Toggle(
                     binding = ItemBlockToggleBinding.inflate(
                         inflater, parent, false
-                    ),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    )
                 )
             }
             HOLDER_DESCRIPTION -> {
@@ -562,8 +553,7 @@ class BlockAdapter(
                 Highlight(
                     binding = ItemBlockHighlightBinding.inflate(
                         inflater, parent, false
-                    ),
-                    onContextMenuStyleClick = onContextMenuStyleClick
+                    )
                 )
             }
             HOLDER_RELATION_DEFAULT -> {

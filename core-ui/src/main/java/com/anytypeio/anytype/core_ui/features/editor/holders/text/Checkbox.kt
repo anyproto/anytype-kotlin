@@ -18,8 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Checkbox(
-    val binding: ItemBlockCheckboxBinding,
-    onContextMenuStyleClick: (IntRange) -> Unit
+    val binding: ItemBlockCheckboxBinding
 ) : Text(binding.root), SupportNesting {
 
     var mode = BlockView.Mode.EDIT
@@ -36,7 +35,7 @@ class Checkbox(
     private val mentionInitialsSize: Float
 
     init {
-        setup(onContextMenuStyleClick)
+        setup()
         with(itemView.context) {
             mentionIconSize =
                 resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)

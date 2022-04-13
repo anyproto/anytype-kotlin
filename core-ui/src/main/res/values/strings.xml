@@ -272,6 +272,12 @@
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Not synced</string>
 
+    <string name="sync_status_toast_unknown">Initializing sync</string>
+    <string name="sync_status_toast_offline">Anytype node is not connected</string>
+    <string name="sync_status_toast_syncing">Downloading or uploading data to some node</string>
+    <string name="sync_status_toast_synced">Backed up on one node at least</string>
+    <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
+
     <string name="relation_format_description">Description</string>
     <string name="relation_format_title">Title</string>
     <string name="relation_format_number">Number</string>

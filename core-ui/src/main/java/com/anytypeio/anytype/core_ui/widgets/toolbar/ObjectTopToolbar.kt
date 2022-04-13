@@ -25,6 +25,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
 
     val status: StatusBadgeWidget get() = binding.statusBadge
     val statusText: TextView get() = binding.tvStatus
+    val statusContainer: ViewGroup get() = binding.statusContainer
     val menu: View get() = binding.threeDotsButton
     val container: ViewGroup get() = binding.titleContainer
     val title: TextView get() = binding.tvTopToolbarTitle

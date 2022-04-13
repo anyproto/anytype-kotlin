@@ -723,6 +723,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             binding.topToolbar.showStatusContainer()
         }
         val tvStatus = binding.topToolbar.statusText
+        binding.topToolbar.statusContainer.setOnLongClickListener {
+            when (status) {
+                SyncStatus.UNKNOWN ->  toast(getString(R.string.sync_status_toast_unknown))
+                SyncStatus.FAILED -> toast(getString(R.string.sync_status_toast_failed))
+                SyncStatus.OFFLINE -> toast(getString(R.string.sync_status_toast_offline))
+                SyncStatus.SYNCING -> toast(getString(R.string.sync_status_toast_syncing))
+                SyncStatus.SYNCED -> toast(getString(R.string.sync_status_toast_synced))
+                else -> {
+                    Timber.i("Missed sync status")
+                }
+            }
+            true
+        }
         when (status) {
             SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
             SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)

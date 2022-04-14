@@ -1,11 +1,12 @@
+.idea/*
+!.idea/codeStyles
+!.idea/copyright
 *.iml
 .gradle
 /local.properties
 /configuration.properties
 /github.properties
 /apikeys.properties
-.idea/*
-!.idea/copyright
 .DS_Store
 /build
 /libs

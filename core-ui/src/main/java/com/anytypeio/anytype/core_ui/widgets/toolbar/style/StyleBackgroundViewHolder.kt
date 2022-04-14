@@ -26,7 +26,7 @@ class StyleBackgroundViewHolder(
         background: String?
     ) {
 
-        default.isSelected = background == ThemeColor.DEFAULT.title || background == null
+        default.isSelected = background == ThemeColor.DEFAULT.title
         grey.isSelected = background == ThemeColor.GREY.title
         yellow.isSelected = background == ThemeColor.YELLOW.title
         orange.isSelected = background == ThemeColor.ORANGE.title

@@ -4472,7 +4472,12 @@ open class EditorViewModelTest {
             ),
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
-                style = null
+                style = Block.Content.Text.Style.P,
+                config = StyleConfig.emptyState(),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    color = ThemeColor.DEFAULT.title,
+                    background = ThemeColor.DEFAULT.title
+                )
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,

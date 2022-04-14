@@ -176,6 +176,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     binding.undoRedoToolbar.id -> {
                         vm.onUndoRedoToolbarIsHidden()
                     }
+                    binding.styleToolbarBackground.id -> {
+                        vm.onCloseBlockStyleBackgroundToolbarClicked()
+                    }
                 }
             }
         }

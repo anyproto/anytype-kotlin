@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
@@ -1271,7 +1272,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should start main style toolbar when all blocks are texted`() {
+    fun `should start main style toolbar when all blocks are texted with default background`() {
         val a = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
@@ -1280,7 +1281,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.NUMBERED
-            )
+            ),
+            backgroundColor = null
         )
 
         val b = Block(
@@ -1291,7 +1293,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
-            )
+            ),
+            backgroundColor = ThemeColor.DEFAULT.title
         )
 
         val c = Block(
@@ -1302,7 +1305,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.H2
-            )
+            ),
+            backgroundColor = null
         )
 
         val page = Block(
@@ -1331,7 +1335,12 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val expectedState = ControlPanelState(
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
-                style = null
+                style = null,
+                config = StyleConfig.emptyState(),
+                props = ControlPanelState.Toolbar.Styling.Props(
+                    color = ThemeColor.DEFAULT.title,
+                    background = ThemeColor.DEFAULT.title
+                )
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.getSupportedMarkupTypes
 import com.anytypeio.anytype.presentation.extension.*
@@ -129,7 +130,12 @@ sealed class ControlPanelMachine {
             val details: Block.Details
         ) : Event()
 
-        object OnMultiSelectTextStyleClicked : Event()
+        data class OnMultiSelectTextStyleClicked(
+            val target: Toolbar.Styling.Target?,
+            val config: StyleConfig?,
+            val props: Toolbar.Styling.Props?,
+            val style: TextStyle?
+        ) : Event()
 
         data class OnMultiSelectBackgroundStyleClicked(val selectedBackground: String?) : Event()
 
@@ -156,6 +162,7 @@ sealed class ControlPanelMachine {
             data class OnClose(val focused: Boolean) : StylingToolbar()
             object OnCloseMulti : StylingToolbar()
             object OnExit : StylingToolbar()
+            object OnBackgroundClosed : StylingToolbar()
         }
 
         /**
@@ -222,6 +229,12 @@ sealed class ControlPanelMachine {
                 val details: Block.Details
             ) : OnRefresh()
             data class Markup(val target: Block?, val selection: IntRange?) : OnRefresh()
+            data class StyleToolbarMulti(
+                val target: Toolbar.Styling.Target?,
+                val config: StyleConfig?,
+                val props: Toolbar.Styling.Props?,
+                val style: TextStyle?
+            ) : OnRefresh()
         }
 
         object OnDocumentMenuClicked : Event()
@@ -381,9 +394,7 @@ sealed class ControlPanelMachine {
             }
             is Event.OnMarkupTextColorSelected -> state.copy()
             is Event.OnBlockTextColorSelected -> state.copy()
-            is Event.OnBlockBackgroundColorSelected -> state.copy(
-                styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-            )
+            is Event.OnBlockBackgroundColorSelected -> state.copy()
             is Event.OnBlockStyleSelected -> state.copy()
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy()
@@ -442,10 +453,10 @@ sealed class ControlPanelMachine {
                     ),
                     styleTextToolbar = state.styleTextToolbar.copy(
                         isVisible = true,
-                        target = null,
-                        style = null,
-                        config = null,
-                        props = null
+                        target = event.target,
+                        style = event.style,
+                        props = event.props,
+                        config = event.config
                     ),
                     navigationToolbar = state.navigationToolbar.copy(
                         isVisible = false
@@ -488,6 +499,16 @@ sealed class ControlPanelMachine {
                 } else {
                     state.copy()
                 }
+            }
+            is Event.OnRefresh.StyleToolbarMulti -> {
+                state.copy(
+                    styleTextToolbar = state.styleTextToolbar.copy(
+                        props = event.props,
+                        style = event.style,
+                        target = event.target,
+                        config = event.config
+                    )
+                )
             }
             is Event.MultiSelect -> {
                 handleMultiSelectEvent(event, state)
@@ -768,6 +789,11 @@ sealed class ControlPanelMachine {
                         isVisible = true
                     ),
                     styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(false),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                )
+            }
+            is Event.StylingToolbar.OnBackgroundClosed -> {
+                state.copy(
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }

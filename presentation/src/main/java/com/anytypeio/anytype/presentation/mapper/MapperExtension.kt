@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.ext.textColor
+import com.anytypeio.anytype.core_models.ext.textStyle
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -20,139 +24,139 @@ import com.anytypeio.anytype.presentation.sets.model.*
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 
 fun Block.Content.File.toPictureView(
-    id: String,
-    urlBuilder: UrlBuilder,
-    indent: Int,
-    mode: BlockView.Mode,
-    isSelected: Boolean = false,
-    backgroundColor: String?,
-    isPreviousBlockMedia: Boolean
+        id: String,
+        urlBuilder: UrlBuilder,
+        indent: Int,
+        mode: BlockView.Mode,
+        isSelected: Boolean = false,
+        backgroundColor: String?,
+        isPreviousBlockMedia: Boolean
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor,
-        isPreviousBlockMedia = isPreviousBlockMedia
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor,
+            isPreviousBlockMedia = isPreviousBlockMedia
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.Picture(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     Block.Content.File.State.DONE -> BlockView.Media.Picture(
-        id = id,
-        size = size,
-        name = name,
-        mime = mime,
-        hash = hash,
-        url = urlBuilder.image(hash),
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            size = size,
+            name = name,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.image(hash),
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     Block.Content.File.State.ERROR -> BlockView.Error.Picture(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Content.File.toVideoView(
-    id: String,
-    urlBuilder: UrlBuilder,
-    indent: Int,
-    mode: BlockView.Mode,
-    isSelected: Boolean = false,
-    backgroundColor: String?,
-    isPrevBlockMedia: Boolean
+        id: String,
+        urlBuilder: UrlBuilder,
+        indent: Int,
+        mode: BlockView.Mode,
+        isSelected: Boolean = false,
+        backgroundColor: String?,
+        isPrevBlockMedia: Boolean
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Video(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor,
-        isPreviousBlockMedia = isPrevBlockMedia
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor,
+            isPreviousBlockMedia = isPrevBlockMedia
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.Video(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     Block.Content.File.State.DONE -> BlockView.Media.Video(
-        id = id,
-        size = size,
-        name = name,
-        mime = mime,
-        hash = hash,
-        url = urlBuilder.video(hash),
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            size = size,
+            name = name,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.video(hash),
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     Block.Content.File.State.ERROR -> BlockView.Error.Video(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Content.File.toFileView(
-    id: String,
-    urlBuilder: UrlBuilder,
-    indent: Int,
-    mode: BlockView.Mode,
-    isSelected: Boolean = false,
-    backgroundColor: String?,
-    isPrevBlockMedia: Boolean
+        id: String,
+        urlBuilder: UrlBuilder,
+        indent: Int,
+        mode: BlockView.Mode,
+        isSelected: Boolean = false,
+        backgroundColor: String?,
+        isPrevBlockMedia: Boolean
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor,
-        isPreviousBlockMedia = isPrevBlockMedia
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor,
+            isPreviousBlockMedia = isPrevBlockMedia
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.File(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     Block.Content.File.State.DONE -> BlockView.Media.File(
-        id = id,
-        size = size,
-        name = name,
-        mime = mime,
-        hash = hash,
-        url = urlBuilder.video(hash),
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            size = size,
+            name = name,
+            mime = mime,
+            hash = hash,
+            url = urlBuilder.video(hash),
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     Block.Content.File.State.ERROR -> BlockView.Error.File(
-        id = id,
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        backgroundColor = backgroundColor
+            id = id,
+            indent = indent,
+            mode = mode,
+            isSelected = isSelected,
+            backgroundColor = backgroundColor
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
@@ -165,88 +169,88 @@ fun Block.Align.toView(): Alignment = when (this) {
 }
 
 fun Block.Content.Text.marks(
-    urlBuilder: UrlBuilder,
-    details: Block.Details
+        urlBuilder: UrlBuilder,
+        details: Block.Details
 ): List<Markup.Mark> = marks
-    .filterByRange(text.length)
-    .mapNotNull { mark ->
-        when (mark.type) {
-            Block.Content.Text.Mark.Type.ITALIC -> {
-                Markup.Mark.Italic(
-                    from = mark.range.first,
-                    to = mark.range.last
-                )
-            }
-            Block.Content.Text.Mark.Type.BOLD -> {
-                Markup.Mark.Bold(
-                    from = mark.range.first,
-                    to = mark.range.last
-                )
-            }
-            Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
-                Markup.Mark.Strikethrough(
-                    from = mark.range.first,
-                    to = mark.range.last
-                )
-            }
-            Block.Content.Text.Mark.Type.TEXT_COLOR -> {
-                val color = mark.param
-                if (color.isNullOrBlank()) null
-                else Markup.Mark.TextColor(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    color = color
-                )
-            }
-            Block.Content.Text.Mark.Type.LINK -> {
-                val param = mark.param
-                if (param.isNullOrBlank()) null
-                else Markup.Mark.Link(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    param = param
-                )
-            }
-            Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
-                val background = mark.param
-                if (background.isNullOrBlank()) null
-                else Markup.Mark.BackgroundColor(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    background = background
-                )
-            }
-            Block.Content.Text.Mark.Type.KEYBOARD -> {
-                Markup.Mark.Keyboard(
-                    from = mark.range.first,
-                    to = mark.range.last
-                )
-            }
-            Block.Content.Text.Mark.Type.MENTION -> {
-
-                val wrapper = if (!details.details.containsKey(mark.param)) {
-                    null
-                } else {
-                    ObjectWrapper.Basic(map = details.details[mark.param]?.map ?: emptyMap())
+        .filterByRange(text.length)
+        .mapNotNull { mark ->
+            when (mark.type) {
+                Block.Content.Text.Mark.Type.ITALIC -> {
+                    Markup.Mark.Italic(
+                            from = mark.range.first,
+                            to = mark.range.last
+                    )
                 }
+                Block.Content.Text.Mark.Type.BOLD -> {
+                    Markup.Mark.Bold(
+                            from = mark.range.first,
+                            to = mark.range.last
+                    )
+                }
+                Block.Content.Text.Mark.Type.STRIKETHROUGH -> {
+                    Markup.Mark.Strikethrough(
+                            from = mark.range.first,
+                            to = mark.range.last
+                    )
+                }
+                Block.Content.Text.Mark.Type.TEXT_COLOR -> {
+                    val color = mark.param
+                    if (color.isNullOrBlank()) null
+                    else Markup.Mark.TextColor(
+                            from = mark.range.first,
+                            to = mark.range.last,
+                            color = color
+                    )
+                }
+                Block.Content.Text.Mark.Type.LINK -> {
+                    val param = mark.param
+                    if (param.isNullOrBlank()) null
+                    else Markup.Mark.Link(
+                            from = mark.range.first,
+                            to = mark.range.last,
+                            param = param
+                    )
+                }
+                Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> {
+                    val background = mark.param
+                    if (background.isNullOrBlank()) null
+                    else Markup.Mark.BackgroundColor(
+                            from = mark.range.first,
+                            to = mark.range.last,
+                            background = background
+                    )
+                }
+                Block.Content.Text.Mark.Type.KEYBOARD -> {
+                    Markup.Mark.Keyboard(
+                            from = mark.range.first,
+                            to = mark.range.last
+                    )
+                }
+                Block.Content.Text.Mark.Type.MENTION -> {
 
-                mark.createMentionMarkup(
-                    obj = wrapper,
-                    urlBuilder = urlBuilder
-                )
+                    val wrapper = if (!details.details.containsKey(mark.param)) {
+                        null
+                    } else {
+                        ObjectWrapper.Basic(map = details.details[mark.param]?.map ?: emptyMap())
+                    }
+
+                    mark.createMentionMarkup(
+                            obj = wrapper,
+                            urlBuilder = urlBuilder
+                    )
+                }
+                Block.Content.Text.Mark.Type.OBJECT -> {
+                    val param = mark.param
+                    if (param.isNullOrBlank()) null
+                    else Markup.Mark.Object(
+                            from = mark.range.first,
+                            to = mark.range.last,
+                            param = param
+                    )
+                }
+                else -> null
             }
-            Block.Content.Text.Mark.Type.OBJECT -> {
-                val param = mark.param
-                if (param.isNullOrBlank()) null
-                else Markup.Mark.Object(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    param = param
-                )
-            }
-            else -> null
         }
-    }
 
 fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Content.Text.Mark> {
     return this.mapNotNull { mark ->
@@ -274,9 +278,9 @@ fun List<Block.Content.Text.Mark>.filterByRange(textLength: Int): List<Block.Con
 }
 
 fun List<Block>.toDashboardViews(
-    details: Block.Details = Block.Details(),
-    builder: UrlBuilder,
-    objectTypes: List<ObjectType> = emptyList()
+        details: Block.Details = Block.Details(),
+        builder: UrlBuilder,
+        objectTypes: List<ObjectType> = emptyList()
 ): List<DashboardView> = this.mapNotNull { block ->
     when (val content = block.content) {
         is Block.Content.Link -> {
@@ -291,28 +295,28 @@ fun List<Block>.toDashboardViews(
             }
             when (layout) {
                 ObjectType.Layout.BASIC -> content.toPageView(
-                    id = block.id,
-                    details = details,
-                    builder = builder,
-                    type = type?.url,
-                    typeName = type?.name,
-                    layout = layout
+                        id = block.id,
+                        details = details,
+                        builder = builder,
+                        type = type?.url,
+                        typeName = type?.name,
+                        layout = layout
                 )
                 ObjectType.Layout.SET -> content.toSetView(block.id, details, builder)
                 else -> {
                     when (content.type) {
                         Block.Content.Link.Type.PAGE -> content.toPageView(
-                            id = block.id,
-                            details = details,
-                            builder = builder,
-                            type = type?.url,
-                            typeName = type?.name,
-                            layout = layout
+                                id = block.id,
+                                details = details,
+                                builder = builder,
+                                type = type?.url,
+                                typeName = type?.name,
+                                layout = layout
                         )
                         Block.Content.Link.Type.DATA_VIEW -> content.toSetView(
-                            block.id,
-                            details,
-                            builder
+                                block.id,
+                                details,
+                                builder
                         )
                         Block.Content.Link.Type.ARCHIVE -> content.toArchiveView(block.id, details)
                         else -> null
@@ -325,67 +329,67 @@ fun List<Block>.toDashboardViews(
 }
 
 fun Block.Content.Link.toArchiveView(
-    id: String,
-    details: Block.Details
+        id: String,
+        details: Block.Details
 ): DashboardView.Archive {
     return DashboardView.Archive(
-        id = id,
-        target = target,
-        title = details.details[target]?.name.orEmpty()
+            id = id,
+            target = target,
+            title = details.details[target]?.name.orEmpty()
     )
 }
 
 fun Block.Content.Link.toPageView(
-    id: String,
-    details: Block.Details,
-    builder: UrlBuilder,
-    layout: ObjectType.Layout?,
-    typeName: String?,
-    type: String?
+        id: String,
+        details: Block.Details,
+        builder: UrlBuilder,
+        layout: ObjectType.Layout?,
+        typeName: String?,
+        type: String?
 ): DashboardView.Document {
 
     val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
 
     return DashboardView.Document(
-        id = id,
-        target = target,
-        title = obj.getProperName(),
-        emoji = details.details[target]?.iconEmoji?.let { unicode ->
-            if (unicode.isNotEmpty()) unicode else null
-        },
-        image = details.details[target]?.iconImage?.let { hash ->
-            if (hash.isNotEmpty()) builder.image(hash) else null
-        },
-        isArchived = details.details[target]?.isArchived ?: false,
-        isLoading = !details.details.containsKey(target),
-        typeName = typeName,
-        type = type,
-        layout = layout,
-        done = details.details[target]?.done,
-        icon = ObjectIcon.from(
-            obj = obj,
+            id = id,
+            target = target,
+            title = obj.getProperName(),
+            emoji = details.details[target]?.iconEmoji?.let { unicode ->
+                if (unicode.isNotEmpty()) unicode else null
+            },
+            image = details.details[target]?.iconImage?.let { hash ->
+                if (hash.isNotEmpty()) builder.image(hash) else null
+            },
+            isArchived = details.details[target]?.isArchived ?: false,
+            isLoading = !details.details.containsKey(target),
+            typeName = typeName,
+            type = type,
             layout = layout,
-            builder = builder
-        )
+            done = details.details[target]?.done,
+            icon = ObjectIcon.from(
+                    obj = obj,
+                    layout = layout,
+                    builder = builder
+            )
     )
 }
 
 fun Block.Content.Link.toSetView(
-    id: String,
-    details: Block.Details,
-    urlBuilder: UrlBuilder
+        id: String,
+        details: Block.Details,
+        urlBuilder: UrlBuilder
 ): DashboardView.ObjectSet {
     val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
     return DashboardView.ObjectSet(
-        id = id,
-        target = target,
-        title = details.details[target]?.name,
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        ),
-        isArchived = details.details[target]?.isArchived ?: false
+            id = id,
+            target = target,
+            title = details.details[target]?.name,
+            icon = ObjectIcon.from(
+                    obj = obj,
+                    layout = obj.layout,
+                    builder = urlBuilder
+            ),
+            isArchived = details.details[target]?.isArchived ?: false
     )
 }
 
@@ -404,72 +408,72 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
 }
 
 fun DebugSettings.toView(): EditorSettings =
-    EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
+        EditorSettings(customContextMenu = this.isAnytypeContextMenuEnabled)
 
 fun DocumentInfo.toView(
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectType>
+        urlBuilder: UrlBuilder,
+        objectTypes: List<ObjectType>
 ): ObjectView {
     val typeId = obj.type.firstOrNull()
     val type = objectTypes.find { it.url == typeId }
     return ObjectView(
-        id = id,
-        title = obj.name.orEmpty(),
-        subtitle = type?.name.orEmpty(),
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        )
+            id = id,
+            title = obj.name.orEmpty(),
+            subtitle = type?.name.orEmpty(),
+            icon = ObjectIcon.from(
+                    obj = obj,
+                    layout = obj.layout,
+                    builder = urlBuilder
+            )
     )
 }
 
 fun Block.Fields.getName(): String =
-    this.name.let { name ->
-        if (name.isNullOrBlank()) Relations.RELATION_NAME_EMPTY else name
-    }
+        this.name.let { name ->
+            if (name.isNullOrBlank()) Relations.RELATION_NAME_EMPTY else name
+        }
 
 fun Markup.Mark.mark(): Block.Content.Text.Mark = when (this) {
     is Markup.Mark.Bold -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.BOLD
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.BOLD
     )
     is Markup.Mark.Italic -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.ITALIC
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.ITALIC
     )
     is Markup.Mark.Strikethrough -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.STRIKETHROUGH
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.STRIKETHROUGH
     )
     is Markup.Mark.TextColor -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.TEXT_COLOR,
-        param = color
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.TEXT_COLOR,
+            param = color
     )
     is Markup.Mark.BackgroundColor -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR,
-        param = background
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.BACKGROUND_COLOR,
+            param = background
     )
     is Markup.Mark.Link -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.LINK,
-        param = param
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.LINK,
+            param = param
     )
     is Markup.Mark.Keyboard -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.KEYBOARD
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.KEYBOARD
     )
     is Markup.Mark.Mention -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.MENTION,
-        param = param
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.MENTION,
+            param = param
     )
     is Markup.Mark.Object -> Block.Content.Text.Mark(
-        range = from..to,
-        type = Block.Content.Text.Mark.Type.OBJECT,
-        param = param
+            range = from..to,
+            type = Block.Content.Text.Mark.Type.OBJECT,
+            param = param
     )
 }
 
@@ -526,31 +530,31 @@ fun DVFilterCondition.toCheckboxView(): Viewer.Filter.Condition.Checkbox = when 
 }
 
 fun SortingExpression.toDomain(): DVSort = DVSort(
-    relationKey = key,
-    type = when (type) {
-        Viewer.SortType.ASC -> Block.Content.DataView.Sort.Type.ASC
-        Viewer.SortType.DESC -> Block.Content.DataView.Sort.Type.DESC
-    }
+        relationKey = key,
+        type = when (type) {
+            Viewer.SortType.ASC -> Block.Content.DataView.Sort.Type.ASC
+            Viewer.SortType.DESC -> Block.Content.DataView.Sort.Type.DESC
+        }
 )
 
 fun FilterExpression.toDomain(): DVFilter = DVFilter(
-    relationKey = key,
-    operator = operator.toDomain(),
-    condition = condition.toDomain(),
-    value = when (value) {
-        is FilterValue.Number -> value.value
-        is FilterValue.Status -> value.value
-        is FilterValue.Tag -> value.value
-        is FilterValue.Text -> value.value
-        is FilterValue.Url -> value.value
-        is FilterValue.Email -> value.value
-        is FilterValue.Phone -> value.value
-        is FilterValue.Date -> value.value
-        is FilterValue.TextShort -> value.value
-        is FilterValue.Check -> value.value
-        is FilterValue.Object -> value.value
-        null -> null
-    }
+        relationKey = key,
+        operator = operator.toDomain(),
+        condition = condition.toDomain(),
+        value = when (value) {
+            is FilterValue.Number -> value.value
+            is FilterValue.Status -> value.value
+            is FilterValue.Tag -> value.value
+            is FilterValue.Text -> value.value
+            is FilterValue.Url -> value.value
+            is FilterValue.Email -> value.value
+            is FilterValue.Phone -> value.value
+            is FilterValue.Date -> value.value
+            is FilterValue.TextShort -> value.value
+            is FilterValue.Check -> value.value
+            is FilterValue.Object -> value.value
+            null -> null
+        }
 )
 
 fun Viewer.FilterOperator.toDomain(): DVFilterOperator = when (this) {
@@ -588,23 +592,23 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
 }
 
 fun List<Map<String, Any?>>.filterRecordsBy(filterBy: String): List<Map<String, Any?>> =
-    filter { it.containsKey(filterBy) }
+        filter { it.containsKey(filterBy) }
 
 fun List<Map<String, Any?>>.toGridRecordRows(
-    columns: List<ColumnView>,
-    relations: List<Relation>,
-    types: List<ObjectType>,
-    details: Map<Id, Block.Fields>,
-    builder: UrlBuilder
+        columns: List<ColumnView>,
+        relations: List<Relation>,
+        types: List<ObjectType>,
+        details: Map<Id, Block.Fields>,
+        builder: UrlBuilder
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { record ->
         val row = columns.buildGridRow(
-            record = record,
-            relations = relations,
-            details = details,
-            builder = builder,
-            objectTypes = types
+                record = record,
+                relations = relations,
+                details = details,
+                builder = builder,
+                objectTypes = types
         )
         rows.add(row)
     }
@@ -613,54 +617,54 @@ fun List<Map<String, Any?>>.toGridRecordRows(
 
 // TODO maybe rename toViewerHeaders
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
-    relations: List<Relation>,
-    filterBy: List<String>
+        relations: List<Relation>,
+        filterBy: List<String>
 ): List<ColumnView> {
     val columns = mutableListOf<ColumnView>()
     this.filter { it.key !in filterBy }
-        .forEach { viewerRelation ->
-            relations
-                .firstOrNull { it.key == viewerRelation.key }
-                ?.let { relation ->
-                    columns.add(
-                        ColumnView(
-                            key = relation.key,
-                            text = relation.name,
-                            format = relation.format.toView(),
-                            width = viewerRelation.width ?: 0,
-                            isVisible = viewerRelation.isVisible,
-                            isHidden = relation.isHidden,
-                            isReadOnly = relation.isReadOnly,
-                            isDateIncludeTime = viewerRelation.isDateIncludeTime,
-                            dateFormat = viewerRelation.dateFormat,
-                            timeFormat = viewerRelation.timeFormat
-                        )
-                    )
-                }
-        }
+            .forEach { viewerRelation ->
+                relations
+                        .firstOrNull { it.key == viewerRelation.key }
+                        ?.let { relation ->
+                            columns.add(
+                                    ColumnView(
+                                            key = relation.key,
+                                            text = relation.name,
+                                            format = relation.format.toView(),
+                                            width = viewerRelation.width ?: 0,
+                                            isVisible = viewerRelation.isVisible,
+                                            isHidden = relation.isHidden,
+                                            isReadOnly = relation.isReadOnly,
+                                            isDateIncludeTime = viewerRelation.isDateIncludeTime,
+                                            dateFormat = viewerRelation.dateFormat,
+                                            timeFormat = viewerRelation.timeFormat
+                                    )
+                            )
+                        }
+            }
     return columns
 }
 
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelations(
-    relations: List<Relation>
+        relations: List<Relation>
 ): ArrayList<SimpleRelationView> {
     val result = arrayListOf<SimpleRelationView>()
     this.forEach { viewerRelation ->
         relations
-            .firstOrNull { it.key == viewerRelation.key }
-            ?.let { relation ->
-                result.add(
-                    SimpleRelationView(
-                        key = relation.key,
-                        title = relation.name,
-                        format = relation.format.toView(),
-                        isVisible = viewerRelation.isVisible,
-                        isHidden = relation.isHidden,
-                        isReadonly = relation.isReadOnly,
-                        isDefault = Relations.defaultRelations.contains(relation.key)
+                .firstOrNull { it.key == viewerRelation.key }
+                ?.let { relation ->
+                    result.add(
+                            SimpleRelationView(
+                                    key = relation.key,
+                                    title = relation.name,
+                                    format = relation.format.toView(),
+                                    isVisible = viewerRelation.isVisible,
+                                    isHidden = relation.isHidden,
+                                    isReadonly = relation.isReadOnly,
+                                    isDefault = Relations.defaultRelations.contains(relation.key)
+                            )
                     )
-                )
-            }
+                }
     }
     return result
 }
@@ -684,10 +688,10 @@ fun Relation.Format.toView() = when (this) {
 
 fun List<ObjectType>.toObjectTypeView(): List<ObjectTypeView.Item> = map { oType ->
     ObjectTypeView.Item(
-        id = oType.url,
-        name = oType.name,
-        emoji = oType.emoji,
-        description = oType.description
+            id = oType.url,
+            name = oType.name,
+            emoji = oType.emoji,
+            description = oType.description
     )
 }
 
@@ -721,4 +725,23 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Set -> ObjectType.Layout.SET
     is ObjectLayoutView.Space -> ObjectType.Layout.SPACE
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
+}
+
+fun List<Block>.getPropsForSelectedTextBlocks(): ControlPanelState.Toolbar.Styling.Props {
+    val colors = map { it.textColor() ?: ThemeColor.DEFAULT.title }.distinct()
+    val selectedColor = if (colors.size == 1) colors[0] else null
+    return ControlPanelState.Toolbar.Styling.Props(
+            color = selectedColor,
+            background = this.getSelectedBackgroundForSelectedBlocks()
+    )
+}
+
+fun List<Block>.getSelectedBackgroundForSelectedBlocks(): String? {
+    val backgrounds = map { it.backgroundColor ?: ThemeColor.DEFAULT.title }.distinct()
+    return if (backgrounds.size == 1) backgrounds[0] else null
+}
+
+fun List<Block>.getTextStyleForSelectedTextBlocks(): Block.Content.Text.Style? {
+    val styles = map { it.textStyle() }.distinct()
+    return if (styles.size == 1) styles[0] else null
 }

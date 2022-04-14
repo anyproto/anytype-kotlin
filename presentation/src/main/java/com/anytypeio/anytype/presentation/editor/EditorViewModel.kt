@@ -68,6 +68,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.SL
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.SLASH_EMPTY_SEARCH_MAX
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetAlignmentItems
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetStyleItems
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
@@ -77,9 +78,7 @@ import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.*
-import com.anytypeio.anytype.presentation.mapper.mark
-import com.anytypeio.anytype.presentation.mapper.style
-import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
+import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -535,14 +534,44 @@ class EditorViewModel(
 
     private fun refreshStyleToolbar(document: Document) {
         controlPanelViewState.value?.let { state ->
-            if (state.styleTextToolbar.isVisible || state.styleColorBackgroundToolbar.isVisible || state.styleExtraToolbar.isVisible) {
-                state.styleTextToolbar.target?.id?.let { targetId ->
+            if (state.styleTextToolbar.isVisible || state.styleColorBackgroundToolbar.isVisible) {
+                when (mode) {
+                    is EditorMode.Styling.Multi -> {
+                        val ids = (mode as EditorMode.Styling.Multi).targets
+                        val selected = blocks.filter { ids.contains(it.id) }
+                        controlPanelInteractor.onEvent(
+                            event = ControlPanelMachine.Event.OnRefresh.StyleToolbarMulti(
+                                target = null,
+                                config = StyleConfig.emptyState(),
+                                props = selected.getPropsForSelectedTextBlocks(),
+                                style = selected.getTextStyleForSelectedTextBlocks()
+                            )
+                        )
+                    }
+                    is EditorMode.Styling.Single -> {
+                        state.styleTextToolbar.target?.id?.let { targetId ->
+                            controlPanelInteractor.onEvent(
+                                event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(
+                                    target = document.find { it.id == targetId },
+                                    selection = orchestrator.stores.textSelection.current().selection,
+                                    urlBuilder = urlBuilder,
+                                    details = orchestrator.stores.details.current()
+                                )
+                            )
+                        }
+                    }
+                    else -> {
+                        Timber.e("refreshStyleToolbar, wrong mode:$mode, skip refresh")
+                    }
+                }
+            }
+            if (state.styleBackgroundToolbar.isVisible) {
+                if (mode is EditorMode.Styling.Multi) {
+                    val ids = (mode as EditorMode.Styling.Multi).targets
+                    val selected = blocks.filter { ids.contains(it.id) }
                     controlPanelInteractor.onEvent(
-                        event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(
-                            target = document.find { it.id == targetId },
-                            selection = orchestrator.stores.textSelection.current().selection,
-                            urlBuilder = urlBuilder,
-                            details = orchestrator.stores.details.current()
+                        ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(
+                            selectedBackground = selected.getSelectedBackgroundForSelectedBlocks()
                         )
                     )
                 }
@@ -761,6 +790,9 @@ class EditorViewModel(
                 }
                 state.multiSelect.isVisible -> {
                     onExitMultiSelectModeClicked()
+                }
+                state.styleBackgroundToolbar.isVisible -> {
+                    onCloseBlockStyleBackgroundToolbarClicked()
                 }
                 else -> {
                     proceedWithExitingBack()
@@ -2129,22 +2161,23 @@ class EditorViewModel(
 
     private fun proceedWithMultiStyleToolbarEvent() {
         val selected = blocks.filter { currentSelection().contains(it.id) }
-        val backgrounds = selected.map { it.backgroundColor ?: ThemeColor.DEFAULT.title }
         val isAllSelectedText = selected.all { it.content is Content.Text }
         mode = EditorMode.Styling.Multi(currentSelection())
         if (isAllSelectedText) {
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnMultiSelectTextStyleClicked)
+            controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnMultiSelectTextStyleClicked(
+                            target = null,
+                            config = StyleConfig.emptyState(),
+                            props = selected.getPropsForSelectedTextBlocks(),
+                            style = selected.getTextStyleForSelectedTextBlocks()
+                    )
+            )
         } else {
-            val distinctColors = backgrounds.distinct()
-            if (distinctColors.size == 1) {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(distinctColors[0])
-                )
-            } else {
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(null)
-                )
-            }
+            controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(
+                            selectedBackground = selected.getSelectedBackgroundForSelectedBlocks()
+                    )
+            )
         }
     }
 
@@ -2231,6 +2264,13 @@ class EditorViewModel(
         Timber.d("onCloseBlockStyleColorToolbarClicked, ")
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.StylingToolbar.OnColorBackgroundClosed
+        )
+    }
+
+    fun onCloseBlockStyleBackgroundToolbarClicked() {
+        Timber.d("onCloseBlockStyleColorToolbarClicked, ")
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.StylingToolbar.OnBackgroundClosed
         )
     }
 
@@ -4655,6 +4695,7 @@ class EditorViewModel(
     }
 
     fun onMultiSelectAction(action: ActionItemType) {
+        Timber.d("onMultiSelectAction, action:[$action]")
         when (action) {
             ActionItemType.AddBelow -> {
                 onMultiSelectAddBelow()
@@ -4761,6 +4802,7 @@ class EditorViewModel(
     }
 
     fun onMultiSelectStyleButtonClicked() {
+        Timber.d("onMultiSelectStyleButtonClicked, ")
         proceedWithMultiStyleToolbarEvent()
     }
 

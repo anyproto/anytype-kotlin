@@ -22,7 +22,6 @@ fun AccountAndDataScreen(
     onKeychainPhraseClicked: () -> Unit,
     onClearFileCachedClicked: () -> Unit,
     onDeleteAccountClicked: () -> Unit,
-    onPinCodeClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
     isLogoutInProgress: Boolean,
     isClearCacheInProgress: Boolean
@@ -39,8 +38,6 @@ fun AccountAndDataScreen(
             onClick = onKeychainPhraseClicked
         )
         Divider(paddingStart = 60.dp)
-        Pincode(onPinCodeClicked)
-        Divider(paddingStart = 60.dp)
         Section(stringResource(R.string.data))
         ActionWithProgressBar(
             name = stringResource(R.string.clear_file_cache),
@@ -50,17 +47,17 @@ fun AccountAndDataScreen(
         )
         Divider()
         Section(stringResource(R.string.account))
-        ActionWithProgressBar(
-            name = stringResource(R.string.log_out),
-            color = colorResource(R.color.text_primary),
-            onClick = onLogoutClicked,
-            isInProgress = isLogoutInProgress
+        Action(
+                name = stringResource(R.string.delete_account),
+                color = colorResource(R.color.text_primary),
+                onClick = onDeleteAccountClicked
         )
         Divider()
-        Action(
-            name = stringResource(R.string.delete_account),
-            color = colorResource(R.color.anytype_text_red),
-            onClick = onDeleteAccountClicked
+        ActionWithProgressBar(
+                name = stringResource(R.string.log_out),
+                color = colorResource(R.color.anytype_text_red),
+                onClick = onLogoutClicked,
+                isInProgress = isLogoutInProgress
         )
         Divider()
         Box(Modifier.height(54.dp))

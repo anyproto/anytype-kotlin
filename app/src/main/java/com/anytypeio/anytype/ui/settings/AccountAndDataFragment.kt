@@ -54,7 +54,6 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
                         onClearFileCachedClicked = { proceedWithClearFileCacheWarning() },
                         onDeleteAccountClicked = { proceedWithAccountDeletion() },
                         onLogoutClicked = onLogoutClicked,
-                        onPinCodeClicked = { toast(resources.getString(R.string.coming_soon)) },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         isClearCacheInProgress = vm.isClearFileCacheInProgress.collectAsState().value
                     )

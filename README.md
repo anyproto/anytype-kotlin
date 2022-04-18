@@ -22,6 +22,14 @@ amplitude.release="AMPLITUDE_RELEASE_KEY"
 
 Then build project.
 
+### IDE setup (optional) 
+
+Based on your IDE setup, you might experience problems while accessing/importing auto-generated Kotlin classes from `protocol` module. These classes are currently declared in very large files, which IDE might not process as expected. If this is your case, go to your Android Studio _Help_ section, select _Edit Custom Properties_ option. There you should set `idea.max.intellisense.filesize` property as follows:
+
+```
+idea.max.intellisense.filesize=3500
+```
+
 ### Setup your Firebase account for Anytype
 
 We're using *Firebase App Distribution* + *Firebase Crashlytics*. We have two separate projects: one for `debug` builds (which we distribute mostly for our Q&A team), another one for `release` builds.

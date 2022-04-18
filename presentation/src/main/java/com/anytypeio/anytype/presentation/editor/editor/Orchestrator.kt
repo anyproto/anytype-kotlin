@@ -462,7 +462,8 @@ class Orchestrator(
                         params = Paste.Params(
                             context = intent.context,
                             focus = intent.focus,
-                            range = intent.range
+                            range = intent.range,
+                            selected = intent.selected
                         )
                     ).proceed(
                         failure = defaultOnError,

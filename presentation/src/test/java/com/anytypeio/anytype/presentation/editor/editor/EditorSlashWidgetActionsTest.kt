@@ -399,7 +399,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         val params = Paste.Params(
             context = root,
             range = IntRange(3, 3),
-            focus = focus
+            focus = focus,
+            selected = listOf()
         )
 
         verifyBlocking(paste, times(1)) { invoke(params) }

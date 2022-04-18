@@ -29,7 +29,7 @@ class Paste(
                 command = Command.Paste(
                     context = params.context,
                     focus = params.focus,
-                    selected = emptyList(),
+                    selected = params.selected,
                     range = params.range,
                     text = clip.text,
                     html = clip.html,
@@ -50,7 +50,8 @@ class Paste(
     data class Params(
         val context: Id,
         val focus: Id,
-        val range: IntRange
+        val range: IntRange,
+        val selected: List<Id>
     )
 
     companion object {

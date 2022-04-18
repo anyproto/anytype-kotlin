@@ -230,6 +230,7 @@
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
     <string name="copy">Copy</string>
+    <string name="paste">Paste</string>
     <string name="select">Select</string>
     <string name="search">Search</string>
     <string name="relations">Relations</string>

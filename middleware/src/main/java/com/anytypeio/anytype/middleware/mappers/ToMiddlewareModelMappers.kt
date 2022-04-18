@@ -8,34 +8,45 @@ import com.anytypeio.anytype.core_models.*
 fun Block.toMiddlewareModel(): MBlock = when (val content = content) {
     is Block.Content.Text -> {
         MBlock(
+            id = id,
             text = content.toMiddlewareModel(),
             backgroundColor = backgroundColor.orEmpty(),
-            align = content.align.toMiddlewareModel()
+            align = content.align.toMiddlewareModel(),
+            childrenIds = children
         )
     }
     is Block.Content.Bookmark -> {
         MBlock(
-            bookmark = content.toMiddlewareModel()
+            id = id,
+            bookmark = content.toMiddlewareModel(),
+            backgroundColor = backgroundColor.orEmpty()
         )
     }
     is Block.Content.File -> {
         MBlock(
-            file_ = content.toMiddlewareModel()
+            id = id,
+            file_ = content.toMiddlewareModel(),
+            backgroundColor = backgroundColor.orEmpty()
         )
     }
     is Block.Content.Link -> {
         MBlock(
-            link = content.toMiddlewareModel()
+            id = id,
+            link = content.toMiddlewareModel(),
+            backgroundColor = backgroundColor.orEmpty()
         )
     }
     is Block.Content.Layout -> {
         MBlock(
+            id = id,
             layout = content.toMiddlewareModel()
         )
     }
     is Block.Content.Divider -> {
         MBlock(
-            div = content.toMiddlewareModel()
+            id = id,
+            div = content.toMiddlewareModel(),
+            backgroundColor = backgroundColor.orEmpty()
         )
     }
     else -> MBlock()

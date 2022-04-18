@@ -16,15 +16,19 @@ sealed class ActionItemType {
     object Divider : ActionItemType()
     object DividerExtended : ActionItemType()
     object Preview : ActionItemType()
+    object Copy : ActionItemType()
+    object Paste : ActionItemType()
 
     companion object {
         val default = listOf(
-            AddBelow,
-            Delete,
-            Style,
-            Duplicate,
-            SAM,
-            MoveTo
+                AddBelow,
+                Delete,
+                Copy,
+                Paste,
+                Style,
+                Duplicate,
+                SAM,
+                MoveTo
         )
     }
 }

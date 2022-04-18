@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
@@ -1680,6 +1681,81 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertEquals(expected = expectedState, actual = this.value())
         }
+
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `should send selected blocks on copy click`() {
+
+        // SETUP
+
+        val block1 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val block2 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val block3 = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = listOf(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, block1.id, block2.id, block3.id)
+        )
+
+        val document = listOf(page, header, title, block1, block2, block3)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.apply {
+            onEnterMultiSelectModeClicked()
+            onTextInputClicked(block1.id)
+            onTextInputClicked(block2.id)
+            onTextInputClicked(block3.id)
+            onMultiSelectAction(ActionItemType.Copy)
+        }
+
+        val params = Copy.Params(
+            context = root,
+            range = null,
+            blocks = listOf(block1, block2, block3)
+        )
+
+        verifyBlocking(copy, times(1)) { invoke(params) }
 
         clearPendingCoroutines()
     }

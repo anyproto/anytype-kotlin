@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -4726,6 +4727,12 @@ class EditorViewModel(
             ActionItemType.Preview -> {
                 proceedWithObjectAppearanceSettingClicked()
             }
+            ActionItemType.Copy -> {
+                onMultiSelectCopyClicked()
+            }
+            ActionItemType.Paste -> {
+                onMultiSelectPasteClicked()
+            }
             else -> {
                 sendToast("TODO")
             }
@@ -4797,6 +4804,20 @@ class EditorViewModel(
                     },
                     range = null
                 )
+            )
+        }
+    }
+
+    private fun onMultiSelectPasteClicked() {
+        Timber.d("onMultiSelectPasteClicked, ")
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                    Intent.Clipboard.Paste(
+                            context = context,
+                            focus = Editor.Focus.EMPTY_FOCUS,
+                            selected = currentSelection().toList(),
+                            range = DEFAULT_RANGE
+                    )
             )
         }
     }

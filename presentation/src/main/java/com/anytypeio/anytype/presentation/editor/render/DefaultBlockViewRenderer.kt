@@ -1282,7 +1282,7 @@ class DefaultBlockViewRenderer(
             obj.getProperObjectName()
         }
         val description = if (isCard && appearanceParams.withDescription == true) {
-            obj.description
+            if (obj.description.isNullOrBlank()) obj.snippet else obj.description
         } else {
             null
         }

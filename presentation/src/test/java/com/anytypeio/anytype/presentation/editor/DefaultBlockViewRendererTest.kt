@@ -2,10 +2,7 @@ package com.anytypeio.anytype.presentation.editor
 
 import MockDataFactory
 import android.util.Log
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -23,6 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -2414,6 +2412,101 @@ class DefaultBlockViewRendererTest {
         )
 
         assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render linkToObjectCard with proper params`() {
+        val title = MockTypicalDocumentFactory.title
+        val header = MockTypicalDocumentFactory.header
+        val target = MockDataFactory.randomUuid()
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(),
+            content = Block.Content.Link(
+                target = target,
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            fields = Block.Fields(
+                mapOf(
+                    "withIcon" to false,
+                    "withCover" to true,
+                    "withDescription" to true,
+                    "withName" to true,
+                    "iconSize" to 1.0,
+                    "style" to 1.0
+                )
+            ),
+            backgroundColor = "red"
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id, a.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart()
+        )
+
+        val blocks = listOf(page, header, title, a)
+
+        val map = blocks.asMap()
+
+        val snippet = MockDataFactory.randomString()
+        val name = MockDataFactory.randomString()
+
+        val details = Block.Details(
+            mapOf(
+                target to Block.Fields(
+                    mapOf(
+                        "name" to name,
+                        "description" to "",
+                        "snippet" to snippet,
+                        "layout" to ObjectType.Layout.BASIC.code.toDouble()
+                    )
+                )
+            )
+        )
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = details
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.LinkToObject.Default.Card(
+                id = a.id,
+                icon = ObjectIcon.None,
+                text = name,
+                description = snippet,
+                indent = 0,
+                isSelected = false,
+                coverColor = null,
+                coverImage = null,
+                coverGradient = null,
+                backgroundColor = a.backgroundColor,
+                isPreviousBlockMedia = false
+            )
+        )
+
+        assertEquals(expected, result)
     }
 
     //region NUMBERED

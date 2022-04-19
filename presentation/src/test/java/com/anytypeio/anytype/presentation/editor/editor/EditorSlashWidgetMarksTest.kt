@@ -60,9 +60,9 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
      * 2.1 Click on ITALIC -> should hide slash widget
      * 2.2 Click on ITALIC -> save in Store.Focus, targetId and selection
      * 2.3 Click on ITALIC -> invoke updateBlocksMark useCase with proper mark
-     * 3.1 Click on BREAKTHROUGH -> should hide slash widget
-     * 3.2 Click on BREAKTHROUGH -> save in Store.Focus, targetId and selection
-     * 3.3 Click on BREAKTHROUGH -> invoke updateBlocksMark useCase with proper mark
+     * 3.1 Click on STRIKETHROUGH -> should hide slash widget
+     * 3.2 Click on STRIKETHROUGH -> save in Store.Focus, targetId and selection
+     * 3.3 Click on STRIKETHROUGH -> invoke updateBlocksMark useCase with proper mark
      * 4.1 Click on CODE -> should hide slash widget
      * 4.2 Click on CODE -> save in Store.Focus, targetId and selection
      * 4.3 Click on CODE -> invoke updateBlocksMark useCase with proper mark
@@ -691,7 +691,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     //region {3}
     @Test
-    fun `should hide slash widget event when clicked on BREAKTHROUGH `() {
+    fun `should hide slash widget event when clicked on STRIKETHROUGH `() {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -724,7 +724,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onSlashItemClicked(SlashItem.Style.Markup.Breakthrough)
+        vm.onSlashItemClicked(SlashItem.Style.Markup.Strikethrough)
 
         val state = vm.controlPanelViewState.value
 
@@ -733,7 +733,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when clicked on BREAKTHROUGH`() {
+    fun `should save selection and focus when clicked on STRIKETHROUGH`() {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -815,7 +815,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         //TESTING
 
-        vm.onSlashItemClicked(SlashItem.Style.Markup.Breakthrough)
+        vm.onSlashItemClicked(SlashItem.Style.Markup.Strikethrough)
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -825,7 +825,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke updateBlocksMark when clicked on BREAKTHROUGH`() {
+    fun `should invoke updateBlocksMark when clicked on STRIKETHROUGH`() {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -907,7 +907,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         //TESTING
 
-        vm.onSlashItemClicked(SlashItem.Style.Markup.Breakthrough)
+        vm.onSlashItemClicked(SlashItem.Style.Markup.Strikethrough)
 
         val params = UpdateBlocksMark.Params(
             context = root,

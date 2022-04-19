@@ -31,7 +31,7 @@ fun SlashItem.Style.Type.convertToUiBlock() = when (this) {
 
 fun SlashItem.Style.Markup.convertToMarkType() = when (this) {
     SlashItem.Style.Markup.Bold -> Block.Content.Text.Mark.Type.BOLD
-    SlashItem.Style.Markup.Breakthrough -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+    SlashItem.Style.Markup.Strikethrough -> Block.Content.Text.Mark.Type.STRIKETHROUGH
     SlashItem.Style.Markup.Code -> Block.Content.Text.Mark.Type.KEYBOARD
     SlashItem.Style.Markup.Italic -> Block.Content.Text.Mark.Type.ITALIC
 }
@@ -73,13 +73,13 @@ object SlashExtensions {
             Types.HOLDER_HEADER_ONE,
             Types.HOLDER_HEADER_TWO,
             Types.HOLDER_HEADER_THREE -> listOf(
-                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Strikethrough,
                 SlashItem.Style.Markup.Code
             )
             else -> listOf(
                 SlashItem.Style.Markup.Bold,
                 SlashItem.Style.Markup.Italic,
-                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Strikethrough,
                 SlashItem.Style.Markup.Code
             )
         }

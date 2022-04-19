@@ -106,7 +106,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 SlashItem.Style.Type.Toggle,
                 SlashItem.Style.Markup.Bold,
                 SlashItem.Style.Markup.Italic,
-                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Strikethrough,
                 SlashItem.Style.Markup.Code
             ),
             mediaItems = emptyList(),
@@ -174,7 +174,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 SlashItem.Style.Type.Bulleted,
                 SlashItem.Style.Type.Numbered,
                 SlashItem.Style.Type.Toggle,
-                SlashItem.Style.Markup.Breakthrough,
+                SlashItem.Style.Markup.Strikethrough,
                 SlashItem.Style.Markup.Code
             ),
             mediaItems = emptyList(),

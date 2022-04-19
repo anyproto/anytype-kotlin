@@ -18,9 +18,9 @@ class StyleMenuHolder(
                 ivIcon.setImageResource(R.drawable.ic_slash_style_bold)
                 tvSubtitle.gone()
             }
-            is SlashItem.Style.Markup.Breakthrough -> {
-                tvTitle.setText(R.string.slash_widget_style_breakthrough)
-                ivIcon.setImageResource(R.drawable.ic_slash_style_breakthrough)
+            is SlashItem.Style.Markup.Strikethrough -> {
+                tvTitle.setText(R.string.slash_widget_style_strikethrough)
+                ivIcon.setImageResource(R.drawable.ic_slash_style_strikethrough)
                 tvSubtitle.gone()
             }
             is SlashItem.Style.Markup.Code -> {

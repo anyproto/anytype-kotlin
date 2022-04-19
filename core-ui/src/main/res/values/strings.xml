@@ -362,7 +362,7 @@
     <string name="slash_widget_style_toggle_subtitle">Hide and show content inside</string>
     <string name="slash_widget_style_bold">Bold</string>
     <string name="slash_widget_style_italic">Italic</string>
-    <string name="slash_widget_style_breakthrough">Breakthrough</string>
+    <string name="slash_widget_style_strikethrough">Strikethrough</string>
     <string name="slash_widget_style_code">Code</string>
     <string name="slash_widget_style_link">Link</string>
 

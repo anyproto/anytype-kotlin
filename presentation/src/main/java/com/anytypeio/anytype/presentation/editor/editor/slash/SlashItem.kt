@@ -205,8 +205,8 @@ sealed class SlashItem {
                 override fun getSearchName(): String = SlashConst.SLASH_STYLE_ITALIC
             }
 
-            object Breakthrough : Markup() {
-                override fun getSearchName(): String = SlashConst.SLASH_STYLE_BREAKTHROUGH
+            object Strikethrough : Markup() {
+                override fun getSearchName(): String = SlashConst.SLASH_STYLE_STRIKETHROUGH
             }
 
             object Code : Markup() {

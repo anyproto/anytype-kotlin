@@ -113,7 +113,6 @@ class HighlightingBlockTest {
             onSelectionChanged = { _, _ -> },
             onTextInputClicked = {},
             onPageIconClicked = {},
-            onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onTextBlockTextChanged = {},

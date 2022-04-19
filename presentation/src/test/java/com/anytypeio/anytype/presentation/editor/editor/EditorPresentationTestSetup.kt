@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -216,6 +217,7 @@ open class EditorPresentationTestSetup {
     private lateinit var updateDetail: UpdateDetail
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDocCoverImage: SetDocCoverImage
+    private lateinit var setDocImageIcon: SetDocumentImageIcon
 
     open lateinit var orchestrator: Orchestrator
 
@@ -230,6 +232,7 @@ open class EditorPresentationTestSetup {
         )
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)
+        setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
 
         orchestrator = Orchestrator(
@@ -306,6 +309,7 @@ open class EditorPresentationTestSetup {
             copyFileToCache = copyFileToCacheDirectory,
             delegator = delegator,
             setDocCoverImage = setDocCoverImage,
+            setDocImageIcon = setDocImageIcon,
             downloadUnsplashImage = downloadUnsplashImage
         )
     }

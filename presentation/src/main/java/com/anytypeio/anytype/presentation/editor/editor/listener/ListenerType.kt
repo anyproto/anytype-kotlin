@@ -43,6 +43,7 @@ sealed class ListenerType {
     data class EditableBlock(val target: String) : ListenerType()
 
     object TitleBlock : ListenerType()
+    object ProfileImageIcon : ListenerType()
 
     data class LinkToObject(val target: String) : ListenerType()
     data class LinkToObjectArchived(val target: String) : ListenerType()

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -87,6 +88,13 @@ interface ObjectSetSubComponent {
 
 @Module
 object ObjectSetModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDocumentImageIconUseCase(
+        repo: BlockRepository
+    ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
 
     @JvmStatic
     @Provides

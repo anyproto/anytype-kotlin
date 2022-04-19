@@ -56,14 +56,6 @@ object ObjectIconPickerBaseModule {
 
     @Provides
     @PerModal
-    fun provideSetDocumentImageIconUseCase(
-        repo: BlockRepository
-    ): SetDocumentImageIcon = SetDocumentImageIcon(
-        repo = repo
-    )
-
-    @Provides
-    @PerModal
     fun provideRemoveDocumentIconUseCase(
         repo: BlockRepository
     ): RemoveDocumentIcon = RemoveDocumentIcon(

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -127,6 +128,7 @@ open class EditorTestSetup {
     lateinit var interceptThreadStatus: InterceptThreadStatus
 
     lateinit var setDocCoverImage: SetDocCoverImage
+    lateinit var setDocImageIcon: SetDocumentImageIcon
     lateinit var removeDocCover: RemoveDocCover
 
     lateinit var updateFields: UpdateFields
@@ -175,6 +177,7 @@ open class EditorTestSetup {
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
+    @Mock
     lateinit var downloadUnsplashImage: DownloadUnsplashImage
 
     val root: String = "rootId123"
@@ -234,6 +237,7 @@ open class EditorTestSetup {
         updateBackgroundColor = UpdateBackgroundColor(repo)
 
         setDocCoverImage = SetDocCoverImage(repo)
+        setDocImageIcon = SetDocumentImageIcon(repo)
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
@@ -317,7 +321,8 @@ open class EditorTestSetup {
             copyFileToCacheDirectory = copyFileToCacheDirectory,
             downloadUnsplashImage = downloadUnsplashImage,
             delegator = Delegator.Default(),
-            setDocCoverImage = setDocCoverImage
+            setDocCoverImage = setDocCoverImage,
+            setDocImageIcon = setDocImageIcon
         )
     }
 

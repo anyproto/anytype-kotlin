@@ -6,12 +6,7 @@ import com.anytypeio.anytype.core_models.Url
 
 sealed class Command {
 
-    @Deprecated("Obsolete screen. To be deleted.")
-    data class OpenProfileIconActionMenu(
-        val target: String,
-        val image: String?,
-        val name: String?
-    ) : Command()
+    data class OpenDocumentImagePicker(val mimeType: String): Command()
 
     data class OpenDocumentEmojiIconPicker(
         val target: String

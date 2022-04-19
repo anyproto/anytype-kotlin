@@ -7,6 +7,7 @@ import androidx.navigation.testing.TestNavHostController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import org.mockito.kotlin.mock
 
 class TestEditorFragment : EditorFragment() {
 
@@ -14,6 +15,7 @@ class TestEditorFragment : EditorFragment() {
 
     init {
         factory = testViewModelFactory
+        pickerDelegate = mock()
     }
 
     override fun injectDependencies() {}

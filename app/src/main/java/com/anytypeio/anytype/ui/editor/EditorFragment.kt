@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.ui.editor
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipDescription
@@ -19,12 +17,8 @@ import android.view.ViewPropertyAnimator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
-import android.widget.Button
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.addCallback
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
@@ -37,7 +31,11 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +44,7 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
+import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -57,7 +56,14 @@ import com.anytypeio.anytype.core_models.ext.getSubstring
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
-import com.anytypeio.anytype.core_ui.features.editor.*
+import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.DefaultEditorDragShadow
+import com.anytypeio.anytype.core_ui.features.editor.DragAndDropConfig
+import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
+import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.TextInputDragShadow
+import com.anytypeio.anytype.core_ui.features.editor.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
@@ -68,13 +74,36 @@ import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMove
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.menu.TextLinkPopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_ui.tools.*
+import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
+import com.anytypeio.anytype.core_ui.tools.MarkupColorToolbarFooter
+import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
+import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
+import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
+import com.anytypeio.anytype.core_ui.tools.SlashWidgetFooterItemDecorator
+import com.anytypeio.anytype.core_ui.tools.StyleToolbarItemDecorator
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
-import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_PROFILE_IMAGE_CODE
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.clipboard
+import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.hide
+import com.anytypeio.anytype.core_utils.ext.hideSoftInput
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.screen
+import com.anytypeio.anytype.core_utils.ext.show
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.extractMarks
@@ -82,7 +111,11 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.Snack
-import com.anytypeio.anytype.presentation.editor.editor.*
+import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
+import com.anytypeio.anytype.presentation.editor.editor.Command
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -91,13 +124,16 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
-import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
-import com.anytypeio.anytype.ui.editor.modals.*
+import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
+import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
+import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
+import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
+import com.anytypeio.anytype.ui.editor.modals.SetLinkFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
@@ -109,24 +145,32 @@ import com.anytypeio.anytype.ui.objects.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_REQUEST_KEY
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_URL_KEY
-import com.anytypeio.anytype.ui.relations.*
 import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
+import com.anytypeio.anytype.ui.relations.RelationAddResult
+import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment.Companion.RELATION_ADD_RESULT_KEY
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment.Companion.RELATION_NEW_RESULT_KEY
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationListFragment
+import com.anytypeio.anytype.ui.relations.RelationNewResult
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
+import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
-import com.hbisoft.pickit.PickiT
-import com.hbisoft.pickit.PickiTCallbacks
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
-import kotlin.ranges.IntRange
 import kotlin.ranges.contains
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
@@ -138,8 +182,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
     OnMoveToAction,
-    OnLinkToAction,
-    PickiTCallbacks {
+    OnLinkToAction{
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
@@ -221,8 +264,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val vm by viewModels<EditorViewModel> { factory }
 
-    private lateinit var pickiT: PickiT
-
     private val blockAdapter by lazy {
         BlockAdapter(
             restore = vm.restore,
@@ -266,7 +307,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             },
             onTextInputClicked = vm::onTextInputClicked,
             onPageIconClicked = vm::onPageIconClicked,
-            onProfileIconClicked = vm::onProfileIconClicked,
             onCoverClicked = vm::onAddCoverClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
@@ -338,9 +378,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ) { isHeaderOverlaid ->
             if (isHeaderOverlaid) {
                 binding.topToolbar.setBackgroundColor(0)
-                binding.topToolbar.statusText.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.statusText.animate().alpha(1f)
+                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
-                binding.topToolbar.container.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.container.animate().alpha(0f)
+                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
                 if (blockAdapter.views.isNotEmpty()) {
                     val firstView = blockAdapter.views.first()
@@ -352,14 +394,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             } else {
                 binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
-                binding.topToolbar.statusText.animate().alpha(0f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.statusText.animate().alpha(0f)
+                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
-                binding.topToolbar.container.animate().alpha(1f).setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
+                binding.topToolbar.container.animate().alpha(1f)
+                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
                 binding.topToolbar.setStyle(overCover = false)
             }
         }
     }
+
+    @Inject
+    lateinit var pickerDelegate: PickerDelegate
 
     @Inject
     lateinit var factory: EditorViewModelFactory
@@ -370,7 +417,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             val id = bundle.getString(OBJECT_TYPE_URL_KEY)
             onObjectTypePicked(id = id)
         }
-        pickiT = PickiT(requireContext(), this, requireActivity())
+        pickerDelegate.initPicker(this as BaseFragment<ViewBinding>, vm, ctx)
         setupOnBackPressedDispatcher()
         getEditorSettings()
     }
@@ -408,7 +455,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
             jobs += subscribe(vm.copyFileStatus) { command ->
-                onCopyFileCommand(command)
+                pickerDelegate.onCopyFileCommand(command)
             }
         }
         vm.onStart(id = extractDocumentId())
@@ -628,10 +675,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarColors).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.blockActionToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.styleToolbarColors).state =
+            BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.blockActionToolbar).state =
+            BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarBackground).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.styleToolbarBackground).state =
+            BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
     }
@@ -727,7 +777,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         val tvStatus = binding.topToolbar.statusText
         binding.topToolbar.statusContainer.setOnLongClickListener {
             when (status) {
-                SyncStatus.UNKNOWN ->  toast(getString(R.string.sync_status_toast_unknown))
+                SyncStatus.UNKNOWN -> toast(getString(R.string.sync_status_toast_unknown))
                 SyncStatus.FAILED -> toast(getString(R.string.sync_status_toast_failed))
                 SyncStatus.OFFLINE -> toast(getString(R.string.sync_status_toast_offline))
                 SyncStatus.SYNCING -> toast(getString(R.string.sync_status_toast_syncing))
@@ -751,13 +801,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onDestroyView() {
-        clearPickit()
+        pickerDelegate.clearPickit()
         super.onDestroyView()
     }
 
     override fun onDestroy() {
-        pickiT.deleteTemporaryFile(requireContext())
-        clearOnCopyFile()
+        pickerDelegate.deleteTemporaryFile()
+        pickerDelegate.clearOnCopyFile()
         super.onDestroy()
     }
 
@@ -772,27 +822,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private fun execute(event: EventWrapper<Command>) {
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
-                is Command.OpenProfileIconActionMenu -> {
-//                    hideSoftInput()
-//                    recycler.smoothScrollToPosition(0)
-//                    val title = recycler.getChildAt(0)
-//                    val shared = title.findViewById<FrameLayout>(R.id.documentIconContainer)
-//                    val fr = ProfileIconActionMenuFragment.new(
-//                        y = shared.y + dimen(R.dimen.dp_48),
-//                        target = command.target,
-//                        ctx = ctx,
-//                        image = command.image,
-//                        name = command.name
-//                    ).apply {
-//                        enterTransition = Fade()
-//                        exitTransition = Fade()
-//                        sharedElementEnterTransition = ChangeBounds()
-//                    }
-//                    childFragmentManager.beginTransaction()
-//                        .add(R.id.root, fr)
-//                        .addToBackStack(null)
-//                        .apply { addSharedElement(shared, getString(R.string.logo_transition)) }
-//                        .commit()
+                is Command.OpenDocumentImagePicker -> {
+                    pickerDelegate.openFilePicker(command.mimeType, REQUEST_PROFILE_IMAGE_CODE)
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
@@ -820,7 +851,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     ).show(childFragmentManager, null)
                 }
                 is Command.OpenGallery -> {
-                    openFilePicker(command.mimeType)
+                    pickerDelegate.openFilePicker(command.mimeType, null)
                 }
                 is Command.PopBackStack -> {
                     childFragmentManager.popBackStack()
@@ -1774,126 +1805,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private fun getEditorSettings() {
     }
 
-    //region PICK IT
-
-    private var pickitProgressDialog: ProgressDialog? = null
-    private var pickitProgressBar: ProgressBar? = null
-    private var pickitAlertDialog: AlertDialog? = null
-
-    /**
-     *  When selecting a file from Google Drive, for example, the Uri will be returned before
-     *  the file is available (if it has not yet been cached/downloaded).
-     *  Google Drive will first have to download the file before we have access to it.
-     *  This can be used to let the user know that we(the application),
-     *  are waiting for the file to be returned.
-     */
-    override fun PickiTonUriReturned() {
-        Timber.d("PickiTonUriReturned")
-        if (pickitProgressDialog == null || pickitProgressDialog?.isShowing == false) {
-            pickitProgressDialog = ProgressDialog(requireContext()).apply {
-                setMessage(getString(R.string.pickit_waiting))
-                setCancelable(false)
-            }
-            pickitProgressDialog?.show()
-        }
-    }
-
-    /**
-     *  This will return the progress of the file creation (in percentage)
-     *  and will only be called if the selected file is not local
-     */
-    override fun PickiTonProgressUpdate(progress: Int) {
-        Timber.d("PickiTonProgressUpdate progress:$progress")
-        pickitProgressBar?.progress = progress
-    }
-
-    /**
-     *  This will be call once the file creations starts and will only be called
-     *  if the selected file is not local
-     */
-    override fun PickiTonStartListener() {
-        Timber.d("PickiTonStartListener")
-        if (pickitProgressDialog?.isShowing == true) {
-            pickitProgressDialog?.cancel()
-        }
-        pickitAlertDialog =
-            AlertDialog.Builder(requireContext(), R.style.SyncFromCloudDialog).apply {
-                val view =
-                    LayoutInflater.from(requireContext()).inflate(R.layout.dialog_layout, null)
-                setView(view)
-                view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
-                    pickiT.cancelTask()
-                    if (pickitAlertDialog?.isShowing == true) {
-                        pickitAlertDialog?.cancel()
-                    }
-                }
-                pickitProgressBar = view.findViewById(R.id.mProgressBar)
-            }.create()
-        pickitAlertDialog?.show()
-        Timber.d("PickiTonStartListener")
-    }
-
-    /**
-     *  If the selected file was from Dropbox/Google Drive or OnDrive, then this will
-     *  be called after the file was created. If the selected file was a local file then this will
-     *  be called directly, returning the path as a String.
-     *  Additionally, a boolean will be returned letting you know if the file selected was
-     *  from Dropbox/Google Drive or OnDrive.
-     */
-    override fun PickiTonCompleteListener(
-        path: String?,
-        wasDriveFile: Boolean,
-        wasUnknownProvider: Boolean,
-        wasSuccessful: Boolean,
-        Reason: String?
-    ) {
-        Timber.d("PickiTonCompleteListener path:$path, wasDriveFile:$wasDriveFile, wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason")
-        if (pickitAlertDialog?.isShowing == true) {
-            pickitAlertDialog?.cancel()
-        }
-        if (pickitProgressDialog?.isShowing == true) {
-            pickitProgressDialog?.dismiss()
-        }
-        if (BuildConfig.DEBUG) {
-            when {
-                wasDriveFile -> toast(getString(R.string.pickit_drive))
-                wasUnknownProvider -> toast(getString(R.string.pickit_file_selected))
-                else -> toast(getString(R.string.pickit_local_file))
-            }
-        }
-        when {
-            wasSuccessful -> onFilePathReady(path)
-            else -> toast("Error: $Reason")
-        }
-    }
-
-    override fun PickiTonMultipleCompleteListener(
-        paths: ArrayList<String>?,
-        wasSuccessful: Boolean,
-        Reason: String?
-    ) {
-        toast("Not implemented yet")
-    }
-
-    /**
-     * Called when a file was picked from file picker.
-     */
-    private fun onFilePathReady(filePath: String?) {
-        if (filePath != null) {
-            vm.onProceedWithFilePath(filePath = filePath)
-        } else {
-            Timber.e("onFilePathReady, filePath is null")
-        }
-    }
-
-    private fun clearPickit() {
-        pickiT.cancelTask()
-        pickitAlertDialog?.dismiss()
-        pickitProgressDialog?.dismiss()
-    }
-
-    //endregion
-
     override fun onExitToDesktopClicked() {
         vm.navigateToDesktop()
     }
@@ -2387,101 +2298,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         scrollUpJob = null
     }
 
-    //endregion
-
-    //region READ PERMISSION
-    private fun takeReadStoragePermission() {
-        if (requireActivity().shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)) {
-            binding.root.showSnackbar(
-                R.string.permission_read_rationale,
-                Snackbar.LENGTH_INDEFINITE,
-                R.string.button_ok
-            ) {
-                permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
-            }
-        } else {
-            permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
-        }
-    }
-
-    private val permissionReadStorage =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[READ_EXTERNAL_STORAGE]
-            if (readResult == true) {
-                startFilePicker(mMimeType)
-            } else {
-                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
-            }
-        }
-    //endregion
-
-    //region UPLOAD FILE LOGIC
-    private var mMimeType = ""
-    private var mSnackbar: Snackbar? = null
-
-    private fun openFilePicker(mimeType: String) {
-        mMimeType = mimeType
-        if (requireContext().isPermissionGranted(mimeType)) {
-            startFilePicker(mimeType)
-        } else {
-            takeReadStoragePermission()
-        }
-    }
-
-    private fun onCopyFileCommand(command: CopyFileStatus) {
-        when (command) {
-            is CopyFileStatus.Error -> {
-                mSnackbar?.dismiss()
-                activity?.toast("Error while loading file:${command.msg}")
-            }
-            is CopyFileStatus.Completed -> {
-                mSnackbar?.dismiss()
-                onFilePathReady(command.result)
-            }
-            CopyFileStatus.Started -> {
-                mSnackbar = binding.root.showSnackbar(
-                    R.string.loading_file,
-                    Snackbar.LENGTH_INDEFINITE,
-                    R.string.cancel
-                ) {
-                    vm.onCancelCopyFileToCacheDir()
-                }
-            }
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_MEDIA_CODE -> {
-                    data?.data?.let { uri ->
-                        pickiT.getPath(uri, Build.VERSION.SDK_INT)
-                    }
-                }
-                REQUEST_FILE_SAF_CODE -> {
-                    data?.data?.let { uri ->
-                        vm.onStartCopyFileToCacheDir(uri)
-                    } ?: run {
-                        Timber.e("onActivityResult error, data is null")
-                        toast("Error while getting file")
-                    }
-                }
-                else -> {
-                    Timber.e("onActivityResult error, Unknown Request Code:$requestCode")
-                    toast("Unknown Request Code:$requestCode")
-                }
-            }
+            pickerDelegate.resolveActivityResult(requestCode, resultCode, data)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
-
-    private fun clearOnCopyFile() {
-        vm.onCancelCopyFileToCacheDir()
-        mSnackbar?.dismiss()
-        mSnackbar = null
-    }
-    //endregion
 
     //------------ End of Anytype Custom Context Menu ------------
 

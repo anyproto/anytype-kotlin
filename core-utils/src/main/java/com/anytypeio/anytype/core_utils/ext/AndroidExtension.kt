@@ -284,7 +284,12 @@ fun Context.isPermissionGranted(mimeType: String): Boolean {
 fun Activity.shouldShowRequestPermissionRationaleCompat(permission: String) =
     ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
 
-fun Fragment.startFilePicker(mime: String) {
+/**
+ * [requestCode] is used only for picking media.
+ * Should be refactored here:
+ * https://app.clickup.com/t/2cbqneb
+ */
+fun Fragment.startFilePicker(mime: String, requestCode: Int? = null) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
@@ -295,7 +300,7 @@ fun Fragment.startFilePicker(mime: String) {
         } else {
             REQUEST_MEDIA_CODE
         }
-        startActivityForResult(intent, code)
+        startActivityForResult(intent, requestCode ?: code)
     } else {
         val intent =
             if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
@@ -309,7 +314,7 @@ fun Fragment.startFilePicker(mime: String) {
             putExtra("return-data", true)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        startActivityForResult(intent, REQUEST_MEDIA_CODE)
+        startActivityForResult(intent, requestCode ?: REQUEST_MEDIA_CODE)
     }
 }
 

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -64,6 +65,7 @@ import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.PickerDelegate
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -130,6 +132,11 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
+    @PerScreen
+    fun providePickerDelegate(): PickerDelegate = PickerDelegate.Impl()
+
+    @JvmStatic
+    @Provides
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: CloseBlock,
@@ -159,7 +166,8 @@ object EditorSessionModule {
         findObjectSetForType: FindObjectSetForType,
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         downloadUnsplashImage: DownloadUnsplashImage,
-        setDocCoverImage: SetDocCoverImage
+        setDocCoverImage: SetDocCoverImage,
+        setDocImageIcon: SetDocumentImageIcon
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -189,7 +197,8 @@ object EditorSessionModule {
         createObjectSet = createObjectSet,
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         downloadUnsplashImage = downloadUnsplashImage,
-        setDocCoverImage = setDocCoverImage
+        setDocCoverImage = setDocCoverImage,
+        setDocImageIcon = setDocImageIcon
     )
 
     @JvmStatic
@@ -803,4 +812,11 @@ object EditorUseCaseModule {
     fun provideSetDocCoverImageUseCase(
         repo: BlockRepository
     ): SetDocCoverImage = SetDocCoverImage(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDocumentImageIconUseCase(
+        repo: BlockRepository
+    ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
 }

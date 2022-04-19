@@ -28,6 +28,7 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -385,7 +386,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         fun bind(
             item: BlockView.Title.Profile,
             onFocusChanged: (String, Boolean) -> Unit,
-            onProfileIconClicked: () -> Unit,
+            onProfileIconClicked: (ListenerType) -> Unit,
             onCoverClicked: () -> Unit
         ) {
             super.bind(
@@ -395,7 +396,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             )
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
-                icon.setOnClickListener { onProfileIconClicked() }
+                icon.setOnClickListener { onProfileIconClicked(ListenerType.ProfileImageIcon) }
             }
         }
 

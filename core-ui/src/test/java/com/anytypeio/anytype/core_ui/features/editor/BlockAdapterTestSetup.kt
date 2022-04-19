@@ -45,7 +45,6 @@ open class BlockAdapterTestSetup {
             onSelectionChanged = { _, _ -> },
             onTextInputClicked = onTextInputClicked,
             onPageIconClicked = {},
-            onProfileIconClicked = {},
             onTogglePlaceholderClicked = {},
             onToggleClicked = onToggleClicked,
             onTextBlockTextChanged = onTextBlockTextChanged,

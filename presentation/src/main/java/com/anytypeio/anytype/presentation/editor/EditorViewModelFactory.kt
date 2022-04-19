@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -60,7 +61,8 @@ open class EditorViewModelFactory(
     private val findObjectSetForType: FindObjectSetForType,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val downloadUnsplashImage: DownloadUnsplashImage,
-    private val setDocCoverImage: SetDocCoverImage
+    private val setDocCoverImage: SetDocCoverImage,
+    private val setDocImageIcon: SetDocumentImageIcon,
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -94,7 +96,8 @@ open class EditorViewModelFactory(
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,
             downloadUnsplashImage = downloadUnsplashImage,
-            setDocCoverImage = setDocCoverImage
+            setDocCoverImage = setDocCoverImage,
+            setDocImageIcon = setDocImageIcon,
         ) as T
     }
 }

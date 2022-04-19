@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -73,6 +74,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
+import com.anytypeio.anytype.presentation.editor.picker.PickerListener
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
@@ -132,8 +134,10 @@ class EditorViewModel(
     private val createObjectSet: CreateObjectSet,
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val downloadUnsplashImage: DownloadUnsplashImage,
-    private val setDocCoverImage: SetDocCoverImage
+    private val setDocCoverImage: SetDocCoverImage,
+    private val setDocImageIcon: SetDocumentImageIcon
 ) : ViewStateViewModel<ViewState>(),
+    PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     SupportCommand<Command>,
     BlockViewRenderer by renderer,
@@ -236,6 +240,25 @@ class EditorViewModel(
                     Action.UndoRedo -> onUndoRedoActionClicked()
                 }
             }
+        }
+    }
+
+    override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
+        viewModelScope.launch {
+            setDocImageIcon(
+                SetDocumentImageIcon.Params(
+                    context = ctx,
+                    path = path
+                )
+            ).process(
+                failure = {
+                    sendToast("Can't update object icon image")
+                    Timber.e(it, "Error while setting image icon")
+                },
+                success = { (payload, _) ->
+                    dispatcher.send(payload)
+                }
+            )
         }
     }
 
@@ -3213,6 +3236,10 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.ProfileImageIcon -> {
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
+                dispatch(Command.OpenDocumentImagePicker(MIME_IMAGE_ALL))
+            }
             is ListenerType.LongClick -> {
                 when (mode) {
                     EditorMode.Edit -> proceedWithEnteringActionMode(clicked.target)
@@ -3497,7 +3524,7 @@ class EditorViewModel(
         }
     }
 
-    fun onProceedWithFilePath(filePath: String?) {
+    override fun onProceedWithFilePath(filePath: String?) {
         Timber.d("onProceedWithFilePath, filePath:[$filePath]")
         if (filePath == null) {
             Timber.d("Error while getting filePath")
@@ -3531,24 +3558,6 @@ class EditorViewModel(
         } else {
             sendToast(NOT_ALLOWED_FOR_OBJECT)
         }
-    }
-
-    fun onProfileIconClicked() {
-        Timber.d("onProfileIconClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-        val details = orchestrator.stores.details.current()
-        dispatch(
-            Command.OpenProfileIconActionMenu(
-                target = context,
-                image = details.details[context]?.iconImage?.let { name ->
-                    if (name.isNotEmpty() && name.isNotBlank())
-                        urlBuilder.image(name)
-                    else
-                        null
-                },
-                name = details.details[context]?.name
-            )
-        )
     }
 
     private fun onFileClicked(id: String) {
@@ -5455,7 +5464,7 @@ class EditorViewModel(
     //region COPY FILE TO CACHE
     val copyFileStatus = MutableSharedFlow<CopyFileStatus>(replay = 0)
 
-    fun onStartCopyFileToCacheDir(uri: Uri) {
+    override fun onStartCopyFileToCacheDir(uri: Uri) {
         copyFileToCache.execute(
             uri = uri,
             scope = viewModelScope,
@@ -5463,7 +5472,7 @@ class EditorViewModel(
         )
     }
 
-    fun onCancelCopyFileToCacheDir() {
+    override fun onCancelCopyFileToCacheDir() {
         copyFileToCache.cancel()
     }
 

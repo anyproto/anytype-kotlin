@@ -126,7 +126,6 @@ class BlockAdapter(
     private val onTextInputClicked: (String) -> Unit,
     val onClickListener: (ListenerType) -> Unit,
     private val onPageIconClicked: () -> Unit,
-    private val onProfileIconClicked: () -> Unit,
     private val onCoverClicked: () -> Unit,
     private val onTogglePlaceholderClicked: (String) -> Unit,
     private val onToggleClicked: (String) -> Unit,
@@ -1200,7 +1199,7 @@ class BlockAdapter(
                     bind(
                         item = blocks[position] as BlockView.Title.Profile,
                         onFocusChanged = onFocusChanged,
-                        onProfileIconClicked = onProfileIconClicked,
+                        onProfileIconClicked = onClickListener,
                         onCoverClicked = onCoverClicked
                     )
                     setTextInputClickListener {

@@ -17,7 +17,8 @@ class CreatePage(
             ctx = params.ctx,
             emoji = null,
             isDraft = params.isDraft,
-            type = params.type
+            type = params.type,
+            template = params.template
         )
     }
 
@@ -25,11 +26,13 @@ class CreatePage(
      * @property [ctx] context (parent) for this new page.
      * @property [type] type of created object
      * @property [isDraft] should this object be in Draft state
+     * @property [template] id of the template for this object (optional)
      */
     data class Params(
         val ctx: Id?,
         val type: String?,
         val emoji: String?,
-        val isDraft: Boolean?
+        val isDraft: Boolean?,
+        val template: Id? = null
     )
 }

@@ -26,7 +26,7 @@ class BlockDataRepository(
         Result.Success(factory.remote.openPage(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
-    } catch (e : NotFoundObjectException) {
+    } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
@@ -37,7 +37,7 @@ class BlockDataRepository(
         Result.Success(factory.remote.openObjectSet(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
-    } catch (e : NotFoundObjectException) {
+    } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
@@ -49,11 +49,18 @@ class BlockDataRepository(
         command: Command.UpdateAlignment
     ): Payload = factory.remote.updateAlignment(command)
 
-    override suspend fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?, type: String?) = factory.remote.createPage(
+    override suspend fun createPage(
+        ctx: Id?,
+        emoji: String?,
+        isDraft: Boolean?,
+        type: String?,
+        template: Id?
+    ) = factory.remote.createPage(
         ctx = ctx,
         emoji = emoji,
         isDraft = isDraft,
-        type = type
+        type = type,
+        template = template
     )
 
     override suspend fun closePage(id: String) {
@@ -485,7 +492,8 @@ class BlockDataRepository(
     )
 
     override suspend fun debugSync(): String = factory.remote.debugSync()
-    override suspend fun debugLocalStore(path: String): String = factory.remote.debugLocalStore(path)
+    override suspend fun debugLocalStore(path: String): String =
+        factory.remote.debugLocalStore(path)
 
     override suspend fun updateDetail(
         ctx: Id,
@@ -534,7 +542,8 @@ class BlockDataRepository(
         isArchived = isArchived
     )
 
-    override suspend fun deleteObjects(targets: List<Id>) = factory.remote.deleteObjects(targets = targets)
+    override suspend fun deleteObjects(targets: List<Id>) =
+        factory.remote.deleteObjects(targets = targets)
 
     override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
         factory.remote.setObjectLayout(ctx, layout)

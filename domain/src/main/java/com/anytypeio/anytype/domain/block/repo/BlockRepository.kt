@@ -69,7 +69,13 @@ interface BlockRepository {
 
     suspend fun getConfig(): Config
 
-    suspend fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?, type: String?): Id
+    suspend fun createPage(
+            ctx: Id?,
+            emoji: String?,
+            isDraft: Boolean?,
+            type: String?,
+            template: Id?
+    ): Id
 
     suspend fun openPage(id: String): Result<Payload>
 

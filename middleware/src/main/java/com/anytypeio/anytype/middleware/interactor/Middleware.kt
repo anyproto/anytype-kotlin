@@ -212,7 +212,13 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createPage(ctx: Id?, emoji: String?, isDraft: Boolean?, type: String?): Id {
+    fun createPage(
+        ctx: Id?,
+        emoji: String?,
+        isDraft: Boolean?,
+        type: String?,
+        template: Id?
+    ): Id {
 
         val details: MutableMap<String, Any> = mutableMapOf()
         emoji?.let { details[iconEmojiKey] = it }
@@ -222,7 +228,8 @@ class Middleware(
         val request = Rpc.Block.CreatePage.Request(
             contextId = ctx.orEmpty(),
             details = details,
-            position = Block.Position.Inner
+            position = Block.Position.Inner,
+            templateId = template.orEmpty()
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -450,7 +457,8 @@ class Middleware(
             contextId = command.context,
             targetId = command.target,
             position = position,
-            details = details
+            details = details,
+            templateId = command.template.orEmpty()
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -467,7 +475,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createPage(command: Command.CreateNewDocument): String {
+    fun createPage(command: Command.CreateNewDocument): Id {
 
         val details: MutableMap<String, Any> = mutableMapOf()
 
@@ -475,7 +483,9 @@ class Middleware(
         command.name.let { details[nameKey] = it }
         command.type?.let { details[typeKey] = it }
 
-        val request = Rpc.Page.Create.Request(details = details.toMap())
+        val request = Rpc.Page.Create.Request(
+                details = details.toMap()
+        )
 
         if (BuildConfig.DEBUG) logRequest(request)
 

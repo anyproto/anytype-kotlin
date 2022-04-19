@@ -139,6 +139,7 @@ sealed class Command {
      * @property emoji random emoji for new page
      * @property type object type
      * @property layout object layout
+     * @property [template] id of the template for this object (optional)
      */
     class CreateDocument(
         val context: Id,
@@ -146,7 +147,8 @@ sealed class Command {
         val position: Position,
         val emoji: String?,
         val type: String?,
-        val layout: ObjectType.Layout?
+        val layout: ObjectType.Layout?,
+        val template: Id? = null
     )
 
     /**

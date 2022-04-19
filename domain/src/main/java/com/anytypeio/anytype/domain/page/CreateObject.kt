@@ -19,7 +19,8 @@ class CreateObject(
                 position = params.position,
                 emoji = null,
                 type = params.type,
-                layout = params.layout
+                layout = params.layout,
+                template = params.template
             )
         ).let { (id, target, payload) ->
             Either.Right(
@@ -39,13 +40,15 @@ class CreateObject(
      * @property context id of the context of the block (i.e. page, dashboard or something else)
      * @property target id of the block associated with the block we need to create
      * @property position position of the block that we need to create in relation with the target block
+     * @property [template] id of the template for this object (optional)
      */
     data class Params(
         val context: Id,
         val target: Id,
         val position: Position,
         val type: String,
-        val layout: ObjectType.Layout
+        val layout: ObjectType.Layout,
+        val template: Id? = null
     )
 
     /**
@@ -55,8 +58,8 @@ class CreateObject(
      * @property payload payload of events
      */
     data class Result(
-        val id: String,
-        val target: String,
+        val id: Id,
+        val target: Id,
         val payload: Payload
     )
 }

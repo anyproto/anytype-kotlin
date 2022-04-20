@@ -19,7 +19,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.hideSoftInput
+import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -98,6 +102,11 @@ class ObjectSearchFragment : ViewStateFragment<ObjectSearchView, FragmentObjectS
     override fun onStart() {
         super.onStart()
         vm.onStart(EventsDictionary.Routes.searchScreen)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     private fun focusSearchInput() {

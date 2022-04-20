@@ -50,9 +50,11 @@ class LinkToObjectViewModel(
     }
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
-        objects.value = data.filter {
-            SupportedLayouts.layouts.contains(it.layout)
-        }
+        objects.emit(
+            data.filter {
+                SupportedLayouts.layouts.contains(it.layout)
+            }
+        )
     }
 
     sealed class Command {

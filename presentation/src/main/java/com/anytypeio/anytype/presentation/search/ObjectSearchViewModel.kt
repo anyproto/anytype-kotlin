@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -16,7 +17,17 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEve
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toView
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,6 +39,8 @@ open class ObjectSearchViewModel(
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
+    private val jobs = mutableListOf<Job>()
+
     private val userInput = MutableStateFlow(EMPTY_QUERY)
     private val searchQuery = userInput
         .take(1)
@@ -35,8 +48,8 @@ open class ObjectSearchViewModel(
             emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
-    protected val types = MutableStateFlow(emptyList<ObjectType>())
-    protected val objects = MutableStateFlow(emptyList<ObjectWrapper.Basic>())
+    protected val types = MutableSharedFlow<List<ObjectType>>(replay = 0)
+    protected val objects = MutableSharedFlow<List<ObjectWrapper.Basic>>(replay = 0)
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -64,26 +77,22 @@ open class ObjectSearchViewModel(
         startProcessingSearchQuery()
     }
 
+    fun onStop() {
+        jobs.cancel()
+    }
+
     private fun getObjectTypes() {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(filterArchivedObjects = true)
             getObjectTypes.invoke(params).process(
                 failure = { Timber.e(it, "Error while getting object types") },
-                success = { types.value = it }
+                success = { types.emit(it) }
             )
         }
     }
 
-    open fun getSearchObjectsParams() = SearchObjects.Params(
-        limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterSearchObjects,
-        sorts = ObjectSearchConstants.sortsSearchObjects,
-        fulltext = EMPTY_QUERY,
-        keys = ObjectSearchConstants.defaultKeys
-    )
-
     private fun startProcessingSearchQuery() {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 sendSearchQueryEvent(query)
                 val params = getSearchObjectsParams().copy(fulltext = query)
@@ -104,7 +113,7 @@ open class ObjectSearchViewModel(
     }
 
     open suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
-        objects.value = data
+        objects.emit(data)
     }
 
     fun onSearchTextChanged(searchText: String) {
@@ -144,6 +153,14 @@ open class ObjectSearchViewModel(
             }
         }
     }
+
+    open fun getSearchObjectsParams() = SearchObjects.Params(
+        limit = SEARCH_LIMIT,
+        filters = ObjectSearchConstants.filterSearchObjects,
+        sorts = ObjectSearchConstants.sortsSearchObjects,
+        fulltext = EMPTY_QUERY,
+        keys = ObjectSearchConstants.defaultKeys
+    )
 
     open fun onDialogCancelled() {
         navigateToDesktop()

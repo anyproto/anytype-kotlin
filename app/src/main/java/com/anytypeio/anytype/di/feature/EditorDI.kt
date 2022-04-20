@@ -65,7 +65,6 @@ import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.editor.PickerDelegate
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -129,11 +128,6 @@ object EditorSessionModule {
     @Provides
     @PerScreen
     fun provideStorage(): Editor.Storage = Editor.Storage()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun providePickerDelegate(): PickerDelegate = PickerDelegate.Impl()
 
     @JvmStatic
     @Provides

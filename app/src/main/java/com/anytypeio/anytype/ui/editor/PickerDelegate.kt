@@ -29,7 +29,7 @@ import timber.log.Timber
 
 interface PickerDelegate : PickiTCallbacks {
 
-    fun initPicker(fragment: BaseFragment<ViewBinding>, vm: EditorViewModel, ctx: Id)
+    fun initPicker(vm: EditorViewModel, ctx: Id)
 
     fun resolveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
 
@@ -43,9 +43,10 @@ interface PickerDelegate : PickiTCallbacks {
 
     fun clearOnCopyFile()
 
-    class Impl : PickerDelegate {
+    class Impl(
+        private val fragment: BaseFragment<ViewBinding>
+    ) : PickerDelegate {
 
-        private lateinit var fragment: BaseFragment<ViewBinding>
         private lateinit var vm: EditorViewModel
         private lateinit var ctx: Id
         private lateinit var pickiT: PickiT
@@ -96,8 +97,7 @@ interface PickerDelegate : PickiTCallbacks {
             }
         }
 
-        override fun initPicker(fragment: BaseFragment<ViewBinding>, vm: EditorViewModel, ctx: Id) {
-            this.fragment = fragment
+        override fun initPicker(vm: EditorViewModel, ctx: Id) {
             this.vm = vm
             this.ctx = ctx
             pickiT = PickiT(fragment.requireContext(), this, fragment.requireActivity())
@@ -162,8 +162,9 @@ interface PickerDelegate : PickiTCallbacks {
             }
         }
 
-        private val permissionReadStorage by lazy {
-            fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+        private val permissionReadStorage =
+            fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+            { grantResults ->
                 val readResult = grantResults[READ_EXTERNAL_STORAGE]
                 if (readResult == true) {
                     fragment.startFilePicker(mimeType, requestCode)
@@ -174,7 +175,6 @@ interface PickerDelegate : PickiTCallbacks {
                     )
                 }
             }
-        }
 
         override fun PickiTonUriReturned() {
             Timber.d("PickiTonUriReturned")

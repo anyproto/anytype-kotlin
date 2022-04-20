@@ -15,7 +15,6 @@ class TestEditorFragment : EditorFragment() {
 
     init {
         factory = testViewModelFactory
-        pickerDelegate = mock()
     }
 
     override fun injectDependencies() {}

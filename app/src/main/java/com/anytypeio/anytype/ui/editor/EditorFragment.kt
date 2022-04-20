@@ -405,19 +405,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    @Inject
-    lateinit var pickerDelegate: PickerDelegate
+    private val pickerDelegate = PickerDelegate.Impl(this as BaseFragment<ViewBinding>)
 
     @Inject
     lateinit var factory: EditorViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pickerDelegate.initPicker(vm, ctx)
         setFragmentResultListener(OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val id = bundle.getString(OBJECT_TYPE_URL_KEY)
             onObjectTypePicked(id = id)
         }
-        pickerDelegate.initPicker(this as BaseFragment<ViewBinding>, vm, ctx)
         setupOnBackPressedDispatcher()
         getEditorSettings()
     }

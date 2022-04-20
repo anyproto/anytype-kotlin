@@ -15,7 +15,10 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.checkHasText
+import com.anytypeio.anytype.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.utils.onItemView
+import com.anytypeio.anytype.utils.rVMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -28,9 +31,6 @@ class DescriptionTesting : EditorTestSetup() {
 
     @get:Rule
     val animationsRule = DisableAnimationsRule()
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
 
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
@@ -87,6 +87,7 @@ class DescriptionTesting : EditorTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenDocument(document)
+        stubAnalytics()
 
         launchFragment(args)
 
@@ -148,23 +149,25 @@ class DescriptionTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
         stubOpenDocument(
             document = document,
             details = details
         )
+        stubAnalytics()
 
         launchFragment(args)
 
         // TESTING
 
         R.id.recycler.rVMatcher().apply {
+            checkIsRecyclerSize(2)
             onItemView(0, R.id.title).checkHasText(
                 title.content<Block.Content.Text>().text
             )
             onItemView(1, R.id.tvBlockDescription).checkHasText(
                 description.content<Block.Content.Text>().text
             )
-            checkIsRecyclerSize(2)
         }
     }
 
@@ -173,12 +176,5 @@ class DescriptionTesting : EditorTestSetup() {
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )
-    }
-
-    /**
-     * Moves coroutines clock time.
-     */
-    private fun advance(millis: Long) {
-        coroutineTestRule.advanceTime(millis)
     }
 }

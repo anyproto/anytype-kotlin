@@ -9,7 +9,12 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.domain.base.Either
@@ -20,7 +25,6 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -37,8 +41,8 @@ class ListBlockTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+//    @get:Rule
+//    val coroutineTestRule = CoroutinesTestRule()
 
     val args = bundleOf(EditorFragment.ID_KEY to root)
 
@@ -142,6 +146,7 @@ class ListBlockTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
+        stubAnalytics()
         stubSplitBlocks(
             command = command,
             new = new.id,
@@ -404,6 +409,6 @@ class ListBlockTesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-        coroutineTestRule.advanceTime(millis)
+//        coroutineTestRule.advanceTime(millis)
     }
 }

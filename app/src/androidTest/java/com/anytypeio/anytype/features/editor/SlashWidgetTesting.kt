@@ -12,7 +12,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MainMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MediaMenuHolder
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -23,8 +27,15 @@ import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.CoroutinesTestRule
+import com.anytypeio.anytype.utils.checkHasText
+import com.anytypeio.anytype.utils.checkIsDisplayed
+import com.anytypeio.anytype.utils.checkIsNotDisplayed
+import com.anytypeio.anytype.utils.checkIsRecyclerSize
 import com.anytypeio.anytype.utils.espresso.SetEditTextSelectionAction
+import com.anytypeio.anytype.utils.onItemView
+import com.anytypeio.anytype.utils.performClick
+import com.anytypeio.anytype.utils.rVMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -489,19 +500,23 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         onView(withId(R.id.rvSlash)).perform(RecyclerViewActions.scrollToPosition<MainMenuHolder>(3))
 
+        Thread.sleep(3000)
+
         with(R.id.rvSlash.rVMatcher()) {
             onItemView(3, R.id.textMain).performClick()
 
-            onItemView(1, R.id.tvRelationTitle).checkHasText(relation1.name)
-            onItemView(1, R.id.tvRelationValue).checkHasText(relation1Value)
-            onItemView(2, R.id.tvRelationTitle).checkHasText(relation2.name)
+            Thread.sleep(3000)
+
+            onItemView(2, R.id.tvRelationTitle).checkHasText(relation1.name)
+            onItemView(2, R.id.tvRelationValue).checkHasText(relation1Value)
+            onItemView(3, R.id.tvRelationTitle).checkHasText(relation2.name)
 
             val numValue = NumberParser.parse(relation2Value)
             checkNotNull(numValue)
 
-            onItemView(2, R.id.tvRelationValue).checkHasText(numValue)
+            onItemView(3, R.id.tvRelationValue).checkHasText(numValue)
 
-            checkIsRecyclerSize(3)
+            checkIsRecyclerSize(4)
         }
 
         advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -590,6 +605,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 9}
     @Test
     fun shouldCreateFileBlockBelowSlash() {
+
         val paragraph = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),

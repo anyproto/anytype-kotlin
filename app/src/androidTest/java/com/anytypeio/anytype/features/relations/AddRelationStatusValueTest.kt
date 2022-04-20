@@ -8,7 +8,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -30,7 +34,16 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationOptionValueBaseAddFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.CoroutinesTestRule
+import com.anytypeio.anytype.utils.checkHasText
+import com.anytypeio.anytype.utils.checkHasTextColor
+import com.anytypeio.anytype.utils.checkIsNotDisplayed
+import com.anytypeio.anytype.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.utils.matchView
+import com.anytypeio.anytype.utils.onItemView
+import com.anytypeio.anytype.utils.performClick
+import com.anytypeio.anytype.utils.rVMatcher
+import com.anytypeio.anytype.utils.type
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
@@ -39,7 +52,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -194,6 +211,8 @@ class AddRelationStatusValueTest {
         // Creating name for a new option
 
         R.id.filterInputField.type("In progress")
+
+        Thread.sleep(1000)
 
         val btn = R.id.recycler.rVMatcher().onItemView(0, R.id.tvCreateOptionValue)
 

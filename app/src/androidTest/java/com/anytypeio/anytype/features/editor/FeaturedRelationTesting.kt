@@ -15,7 +15,6 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.checkHasViewGroupChildWithText
 import com.anytypeio.anytype.utils.matchView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -31,8 +30,8 @@ class FeaturedRelationTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+//    @get:Rule
+//    val coroutineTestRule = CoroutinesTestRule()
 
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
@@ -154,6 +153,8 @@ class FeaturedRelationTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubAnalytics()
+        stubUpdateText()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -264,6 +265,8 @@ class FeaturedRelationTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubAnalytics()
+        stubUpdateText()
         stubOpenDocument(
             document = document,
             details = customDetails,

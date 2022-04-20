@@ -14,7 +14,12 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.checkHasText
+import com.anytypeio.anytype.utils.checkIsDisplayed
+import com.anytypeio.anytype.utils.checkIsNotDisplayed
+import com.anytypeio.anytype.utils.checkIsSelected
+import com.anytypeio.anytype.utils.onItemView
+import com.anytypeio.anytype.utils.rVMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -28,8 +33,8 @@ class LayoutTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+//    @get:Rule
+//    val coroutineTestRule = CoroutinesTestRule()
 
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
@@ -96,7 +101,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details
@@ -146,7 +152,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details
@@ -193,7 +200,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details
@@ -237,7 +245,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details
@@ -283,7 +292,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details
@@ -327,7 +337,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details
@@ -373,7 +384,8 @@ class LayoutTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
-
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = details

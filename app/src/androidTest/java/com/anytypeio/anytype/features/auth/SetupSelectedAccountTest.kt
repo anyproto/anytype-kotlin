@@ -111,9 +111,9 @@ class SetupSelectedAccountTest {
 
         coroutineTestRule.advanceTime(SetupSelectedAccountViewModel.TIMEOUT_DURATION)
 
-        val expected = SetupSelectedAccountViewModel.ERROR_MESSAGE
+        val expected = "${SetupSelectedAccountViewModel.ERROR_MESSAGE}: Unknown error"
 
-        R.id.error.matchView().checkHasText(expected)
+        R.id.tvError.matchView().checkHasText(expected)
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestSetupSelectedAccountFragment> {

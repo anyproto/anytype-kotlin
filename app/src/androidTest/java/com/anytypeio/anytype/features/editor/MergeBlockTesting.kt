@@ -30,7 +30,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
@@ -241,6 +245,7 @@ class MergeBlockTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
+        stubAnalytics()
         stubMergelocks(
             params = params,
             events = events
@@ -278,6 +283,8 @@ class MergeBlockTesting : EditorTestSetup() {
 
         verifyBlocking(updateText, times(1)) { invoke(any()) }
         verifyBlocking(mergeBlocks, times(1)) { invoke(params) }
+
+        Thread.sleep(100)
 
         Espresso.onView(
             withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)

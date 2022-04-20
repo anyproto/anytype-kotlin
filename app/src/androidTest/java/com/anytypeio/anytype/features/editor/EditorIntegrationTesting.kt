@@ -5,9 +5,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.pressImeActionButton
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasFocus
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -35,7 +41,6 @@ import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_TOGGLE
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -44,7 +49,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 import kotlin.test.assertEquals
 
 /**
@@ -58,8 +67,8 @@ class EditorIntegrationTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+//    @get:Rule
+//    val coroutineTestRule = CoroutinesTestRule()
 
     @Before
     override fun setup() {
@@ -692,6 +701,6 @@ class EditorIntegrationTesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-        coroutineTestRule.advanceTime(millis)
+//        coroutineTestRule.advanceTime(millis)
     }
 }

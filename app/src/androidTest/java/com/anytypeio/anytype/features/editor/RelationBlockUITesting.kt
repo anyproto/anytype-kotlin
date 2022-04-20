@@ -20,7 +20,18 @@ import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.checkHasBackgroundColor
+import com.anytypeio.anytype.utils.checkHasMarginStart
+import com.anytypeio.anytype.utils.checkHasNoBackground
+import com.anytypeio.anytype.utils.checkHasPaddingLeft
+import com.anytypeio.anytype.utils.checkHasText
+import com.anytypeio.anytype.utils.checkIsDisplayed
+import com.anytypeio.anytype.utils.checkIsNotSelected
+import com.anytypeio.anytype.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.utils.checkIsSelected
+import com.anytypeio.anytype.utils.onItem
+import com.anytypeio.anytype.utils.onItemView
+import com.anytypeio.anytype.utils.rVMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -34,8 +45,8 @@ class RelationBlockUITesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+//    @get:Rule
+//    val coroutineTestRule = CoroutinesTestRule()
 
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
@@ -108,6 +119,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(document, defaultDetails)
 
         // TESTING
@@ -120,6 +133,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(2, R.id.tvPlaceholder).checkHasText(R.string.set_new_relation)
             checkIsRecyclerSize(3)
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -238,6 +253,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -263,6 +280,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(6, R.id.tvRelationTitle).checkHasText(relation5.name)
             onItemView(6, R.id.tvRelationValue).checkHasText(value5)
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -398,6 +417,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -416,6 +437,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItem(5).checkHasBackgroundColor(background4.background)
             onItem(6).checkHasNoBackground()
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -475,6 +498,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -562,6 +587,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -580,6 +607,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(2, R.id.file0).checkIsDisplayed()
             onItemView(2, R.id.file1).checkIsDisplayed()
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -614,6 +643,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(document, defaultDetails)
 
         // TESTING
@@ -675,6 +706,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(document, defaultDetails)
 
         // TESTING
@@ -684,6 +717,8 @@ class RelationBlockUITesting : EditorTestSetup() {
         val rvMatcher = R.id.recycler.rVMatcher()
 
         rvMatcher.onItemView(2, R.id.relationIcon).checkHasMarginStart(dimen = R.dimen.indent, coefficient = 1)
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -802,6 +837,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -820,6 +857,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(5, R.id.tvRelationTitle).checkHasPaddingLeft(R.dimen.indent, 1)
             onItemView(6, R.id.tvRelationTitle).checkHasPaddingLeft(R.dimen.indent, 1)
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -879,6 +918,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -893,6 +934,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             checkIsRecyclerSize(3)
             onItemView(2, R.id.tvRelationTitle).checkHasPaddingLeft(R.dimen.indent, 1)
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     @Test
@@ -1011,6 +1054,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document,
             details = customDetails,
@@ -1062,6 +1107,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             onItemView(5, R.id.content).checkIsSelected()
             onItemView(6, R.id.content).checkIsSelected()
         }
+
+        advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     // STUBBING & SETUP
@@ -1077,6 +1124,6 @@ class RelationBlockUITesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-        coroutineTestRule.advanceTime(millis)
+//        coroutineTestRule.advanceTime(millis)
     }
 }

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
@@ -31,8 +30,8 @@ class ScrollAndMoveTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+//    @get:Rule
+//    val coroutineTestRule = CoroutinesTestRule()
 
     val args = bundleOf(EditorFragment.ID_KEY to root)
 
@@ -100,6 +99,8 @@ class ScrollAndMoveTesting : EditorTestSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubUpdateText()
+        stubAnalytics()
         stubOpenDocument(
             document = document
         )
@@ -114,7 +115,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        onView(withId(R.id.multiSelectModeButton)).apply {
+        onView(withId(R.id.btnBlockActions)).apply {
             perform(click())
         }
 
@@ -138,6 +139,6 @@ class ScrollAndMoveTesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-        coroutineTestRule.advanceTime(millis)
+//        coroutineTestRule.advanceTime(millis)
     }
 }

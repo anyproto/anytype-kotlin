@@ -10,13 +10,41 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
-import com.anytypeio.anytype.core_models.ext.*
+import com.anytypeio.anytype.core_models.Document
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.ext.addMention
+import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ext.descendants
+import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
+import com.anytypeio.anytype.core_models.ext.parents
+import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.ext.sortByType
+import com.anytypeio.anytype.core_models.ext.supportNesting
+import com.anytypeio.anytype.core_models.ext.textStyle
+import com.anytypeio.anytype.core_models.ext.title
+import com.anytypeio.anytype.core_models.ext.updateTextContent
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.MIME_FILE_ALL
+import com.anytypeio.anytype.core_utils.ext.MIME_IMAGE_ALL
+import com.anytypeio.anytype.core_utils.ext.MIME_VIDEO_ALL
+import com.anytypeio.anytype.core_utils.ext.isEndLineClick
+import com.anytypeio.anytype.core_utils.ext.replace
+import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
+import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -36,7 +64,12 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
-import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateDocument
+import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
@@ -47,12 +80,33 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
-import com.anytypeio.anytype.presentation.editor.editor.*
+import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
+import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
+import com.anytypeio.anytype.presentation.editor.editor.Intent
+import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.editor.Proxy
+import com.anytypeio.anytype.presentation.editor.editor.SideEffect
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.ext.*
+import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
+import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
+import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
+import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
+import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
+import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
+import com.anytypeio.anytype.presentation.editor.editor.ext.singleStylingMode
+import com.anytypeio.anytype.presentation.editor.editor.ext.toEditMode
+import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
+import com.anytypeio.anytype.presentation.editor.editor.ext.update
+import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
+import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -65,13 +119,21 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor.Companion.INNER_RANGE
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor.Companion.START_RANGE
 import com.anytypeio.anytype.presentation.editor.editor.search.SearchInDocEvent
-import com.anytypeio.anytype.presentation.editor.editor.slash.*
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.SLASH_CHAR
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.SLASH_EMPTY_SEARCH_MAX
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetAlignmentItems
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetStyleItems
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
+import com.anytypeio.anytype.presentation.editor.editor.slash.convertToMarkType
+import com.anytypeio.anytype.presentation.editor.editor.slash.convertToUiBlock
+import com.anytypeio.anytype.presentation.editor.editor.slash.toSlashItemView
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.updateText
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
@@ -80,8 +142,27 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.extension.*
-import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchQueryEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsWritingEvent
+import com.anytypeio.anytype.presentation.mapper.getPropsForSelectedTextBlocks
+import com.anytypeio.anytype.presentation.mapper.getSelectedBackgroundForSelectedBlocks
+import com.anytypeio.anytype.presentation.mapper.getTextStyleForSelectedTextBlocks
+import com.anytypeio.anytype.presentation.mapper.mark
+import com.anytypeio.anytype.presentation.mapper.style
+import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -98,7 +179,18 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -1993,19 +2085,23 @@ class EditorViewModel(
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
         Timber.d("onAddFileBlockClicked, type:[$type]")
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
-        val content = focused.content
-        if (content is Content.Text && content.text.isEmpty()) {
-            proceedWithReplacingByEmptyFileBlock(
-                id = focused.id,
-                type = type
-            )
+        val focused = blocks.find { it.id == orchestrator.stores.focus.current().id }
+        if (focused != null) {
+            val content = focused.content
+            if (content is Content.Text && content.text.isEmpty()) {
+                proceedWithReplacingByEmptyFileBlock(
+                    id = focused.id,
+                    type = type
+                )
+            } else {
+                proceedWithCreatingEmptyFileBlock(
+                    id = focused.id,
+                    type = type,
+                    position = Position.BOTTOM
+                )
+            }
         } else {
-            proceedWithCreatingEmptyFileBlock(
-                id = focused.id,
-                type = type,
-                position = Position.BOTTOM
-            )
+            Timber.e("Missing focus while onAddFileBlockClicked")
         }
     }
 
@@ -2800,7 +2896,7 @@ class EditorViewModel(
     fun onAddBookmarkBlockClicked() {
         Timber.d("onAddBookmarkBlockClicked, ")
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val focused = blocks.find { it.id == orchestrator.stores.focus.current().id } ?: return
 
         val content = focused.content
 

@@ -44,7 +44,7 @@ abstract class RelationCreateFromScratchBaseViewModel : BaseViewModel() {
     )
 
     val views = MutableStateFlow(
-        Relation.Format.values()
+        Relation.orderedFormatList()
             .filterNot { notAllowedFormats.contains(it) }
             .map { format ->
                 RelationView.CreateFromScratch(

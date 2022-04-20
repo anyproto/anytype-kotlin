@@ -21,8 +21,8 @@ data class Relation(
 ) {
 
     enum class Format(val prettyName: String) {
-        SHORT_TEXT("Short text"),
         LONG_TEXT("Text"),
+        SHORT_TEXT("Short text"),
         NUMBER("Number"),
         STATUS("Status"),
         TAG("Tag"),
@@ -50,5 +50,13 @@ data class Relation(
 
     enum class OptionScope {
         LOCAL, RELATION, FORMAT
+    }
+
+    companion object {
+        fun orderedFormatList(): List<Format> = listOf(
+            Format.OBJECT, Format.LONG_TEXT, Format.SHORT_TEXT, Format.STATUS,
+            Format.TAG, Format.DATE, Format.FILE, Format.CHECKBOX,
+            Format.URL, Format.EMAIL, Format.PHONE, Format.EMOJI, Format.RELATIONS
+        )
     }
 }

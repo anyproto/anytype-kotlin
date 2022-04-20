@@ -261,11 +261,11 @@ class LimitObjectTypeAdapter(
     private val onClick: () -> Unit
 ) : RecyclerView.Adapter<LimitObjectTypeAdapter.ViewHolder>() {
 
-    var limitObjectTypeView : LimitObjectTypeValueView? = null
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+    var limitObjectTypeView: LimitObjectTypeValueView? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         ItemRelationCreateFromScratchLimitObjectTypesBinding.inflate(

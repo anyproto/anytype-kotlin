@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.features.relations.RelationFormatAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationCreateFromScratchFormatPickerBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -41,9 +44,14 @@ class RelationCreateFromScratchFormatPickerFragment :
         binding.connectWithRecycler.apply {
             adapter = relationAdapter
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(drawable(R.drawable.divider_relations))
+                }
+            )
         }
         relationAdapter.submitList(
-            Relation.Format.values()
+            Relation.orderedFormatList()
                 .filter { !excludedFormats.contains(it) }
                 .map { format ->
                     RelationView.CreateFromScratch(

@@ -72,7 +72,7 @@ object RelationCreateFromScratchForObjectModule {
     @CreateFromScratch
     fun provideState(): StateHolder<CreateFromScratchState> = StateHolder(
         initial = CreateFromScratchState(
-            format = RelationFormat.SHORT_TEXT,
+            format = RelationFormat.OBJECT,
             limitObjectTypes = emptyList()
         )
     )
@@ -122,7 +122,7 @@ object RelationCreateFromScratchForDataViewModule {
     @CreateFromScratch
     fun provideState(): StateHolder<CreateFromScratchState> = StateHolder(
         initial = CreateFromScratchState(
-            format = RelationFormat.SHORT_TEXT,
+            format = RelationFormat.OBJECT,
             limitObjectTypes = emptyList()
         )
     )
@@ -173,7 +173,7 @@ object RelationCreateFromScratchForObjectBlockModule {
     @CreateFromScratch
     fun provideState(): StateHolder<CreateFromScratchState> = StateHolder(
         initial = CreateFromScratchState(
-            format = RelationFormat.SHORT_TEXT,
+            format = RelationFormat.OBJECT,
             limitObjectTypes = emptyList()
         )
     )

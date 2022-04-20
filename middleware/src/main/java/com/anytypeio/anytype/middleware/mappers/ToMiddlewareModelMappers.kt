@@ -12,45 +12,53 @@ fun Block.toMiddlewareModel(): MBlock = when (val content = content) {
             text = content.toMiddlewareModel(),
             backgroundColor = backgroundColor.orEmpty(),
             align = content.align.toMiddlewareModel(),
-            childrenIds = children
+            childrenIds = children,
+            fields = fields.toMiddlewareModel()
         )
     }
     is Block.Content.Bookmark -> {
         MBlock(
             id = id,
             bookmark = content.toMiddlewareModel(),
-            backgroundColor = backgroundColor.orEmpty()
+            backgroundColor = backgroundColor.orEmpty(),
+            fields = fields.toMiddlewareModel()
         )
     }
     is Block.Content.File -> {
         MBlock(
             id = id,
             file_ = content.toMiddlewareModel(),
-            backgroundColor = backgroundColor.orEmpty()
+            backgroundColor = backgroundColor.orEmpty(),
+            fields = fields.toMiddlewareModel()
         )
     }
     is Block.Content.Link -> {
         MBlock(
             id = id,
             link = content.toMiddlewareModel(),
-            backgroundColor = backgroundColor.orEmpty()
+            backgroundColor = backgroundColor.orEmpty(),
+            fields = fields.toMiddlewareModel()
         )
     }
     is Block.Content.Layout -> {
         MBlock(
             id = id,
-            layout = content.toMiddlewareModel()
+            layout = content.toMiddlewareModel(),
+            fields = fields.toMiddlewareModel()
         )
     }
     is Block.Content.Divider -> {
         MBlock(
             id = id,
             div = content.toMiddlewareModel(),
-            backgroundColor = backgroundColor.orEmpty()
+            backgroundColor = backgroundColor.orEmpty(),
+            fields = fields.toMiddlewareModel()
         )
     }
     else -> MBlock()
 }
+
+fun Block.Fields.toMiddlewareModel(): Map<String, *> = this.map
 
 fun Block.Content.Divider.toMiddlewareModel(): MBDiv = when (style) {
     Block.Content.Divider.Style.LINE -> MBDiv(style = MBDivStyle.Line)

@@ -55,10 +55,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         )
         if (item.mode == BlockView.Mode.READ) {
             enableReadMode()
-            content.setText(item.text, TextView.BufferType.EDITABLE)
+            content.pauseTextWatchers {
+                content.setText(item.text, TextView.BufferType.EDITABLE)
+            }
         } else {
             enableEditMode()
-            content.setText(item.text, TextView.BufferType.EDITABLE)
+            content.pauseTextWatchers {
+                content.setText(item.text, TextView.BufferType.EDITABLE)
+            }
             if (item.isFocused) setCursor(item)
             focus(item.isFocused)
             content.setOnFocusChangeListener { _, hasFocus ->
@@ -83,7 +87,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     setImageDrawable(null)
                     setBackgroundColor(coverColor.color)
                 }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = 0)
+                itemView.findViewById<View>(R.id.title)
+                    .updateLayoutParams<LinearLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_8)
+                    }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
+                    ?.updatePadding(top = 0)
             }
             coverImage != null -> {
                 ivCover?.apply {
@@ -95,7 +104,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         .centerCrop()
                         .into(this)
                 }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = 0)
+                itemView.findViewById<View>(R.id.title)
+                    .updateLayoutParams<LinearLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_8)
+                    }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
+                    ?.updatePadding(top = 0)
             }
             coverGradient != null -> {
                 ivCover?.apply {
@@ -113,7 +127,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                     visible()
                 }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = 0)
+                itemView.findViewById<View>(R.id.title)
+                    .updateLayoutParams<LinearLayout.LayoutParams> {
+                        topMargin = dimen(R.dimen.dp_8)
+                    }
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
+                    ?.updatePadding(top = 0)
             }
             else -> {
                 ivCover?.apply {
@@ -121,7 +140,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     setBackgroundColor(0)
                     gone()
                 }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)?.updatePadding(top = dimen(R.dimen.dp_48))
+                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
+                    ?.updatePadding(top = dimen(R.dimen.dp_48))
             }
         }
     }

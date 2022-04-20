@@ -4845,6 +4845,7 @@ class EditorViewModel(
             }
             ActionItemType.Paste -> {
                 onMultiSelectPasteClicked()
+                proceedWithExitingMultiSelectMode()
             }
             else -> {
                 sendToast("TODO")

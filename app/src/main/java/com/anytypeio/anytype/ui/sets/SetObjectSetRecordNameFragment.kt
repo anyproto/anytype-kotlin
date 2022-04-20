@@ -8,16 +8,21 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.core_models.Id
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
-import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentSetObjectSetRecordNameBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
+import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel.Command
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SetObjectSetRecordNameFragment : BaseBottomSheetFragment<FragmentSetObjectSetRecordNameBinding>() {
@@ -37,16 +42,44 @@ class SetObjectSetRecordNameFragment : BaseBottomSheetFragment<FragmentSetObject
         binding.textInputField.apply {
             setRawInputType(TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_SENTENCES or TYPE_TEXT_FLAG_AUTO_CORRECT)
         }
-        lifecycleScope.subscribe(binding.textInputField.editorActionEvents(handler)) {
+        binding.icExpand.setOnClickListener {
+            vm.onExpandButtonClicked(
+                ctx = ctx,
+                input = binding.textInputField.text.toString()
+            )
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { subscribeCommands() }
+                launch { subscribeTextInputActions() }
+                launch { subscribeIsCompleted() }
+            }
+        }
+    }
+
+    private suspend fun subscribeTextInputActions() {
+        binding.textInputField.editorActionEvents(handler).collect {
             binding.textInputField.clearFocus()
             binding.textInputField.hideKeyboard()
             vm.onComplete(ctx, binding.textInputField.text.toString())
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        lifecycleScope.subscribe(vm.isCompleted) { isCompleted -> if (isCompleted) dismiss() }
+    private suspend fun subscribeCommands() {
+        vm.commands.collect { command ->
+            when (command) {
+                is Command.OpenObject -> {
+                    findNavController().navigate(
+                        R.id.objectNavigation,
+                        bundleOf(EditorFragment.ID_KEY to command.ctx)
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun subscribeIsCompleted() {
+        vm.isCompleted.collect { isCompleted -> if (isCompleted) dismiss() }
     }
 
     override fun injectDependencies() {
@@ -66,9 +99,5 @@ class SetObjectSetRecordNameFragment : BaseBottomSheetFragment<FragmentSetObject
 
     companion object {
         const val CONTEXT_KEY = "arg.object-set-record.context"
-
-        fun new(ctx: Id) = SetObjectSetRecordNameFragment().apply {
-            arguments = bundleOf(CONTEXT_KEY to ctx)
-        }
     }
 }

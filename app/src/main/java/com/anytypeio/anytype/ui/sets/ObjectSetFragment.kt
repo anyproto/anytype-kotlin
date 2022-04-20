@@ -579,8 +579,10 @@ open class ObjectSetFragment :
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.SetNameForCreatedRecord -> {
-                val dialog = SetObjectSetRecordNameFragment.new(command.ctx)
-                dialog.show(childFragmentManager, EMPTY_TAG)
+                findNavController().navigate(
+                        R.id.setNameForNewRecordScreen,
+                        bundleOf(SetObjectSetRecordNameFragment.CONTEXT_KEY to command.ctx)
+                )
             }
             is ObjectSetCommand.Intent.MailTo -> {
                 try {

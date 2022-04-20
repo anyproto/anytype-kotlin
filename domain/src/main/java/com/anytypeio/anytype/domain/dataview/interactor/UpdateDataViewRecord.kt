@@ -27,7 +27,7 @@ class UpdateDataViewRecord(
      * @property [record] id of the specific record, which we need to update
      * @property [values] values, or raw data of this specific [record].
      */
-    class Params(
+    data class Params(
         val context: Id,
         val target: Id,
         val record: Id,

@@ -127,6 +127,9 @@
             android:id="@+id/viewerImagePreviewSelectFragment"
             android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment"
             android:label="ViewerCoverSelectFragment" />
+        <dialog
+            android:id="@+id/setNameForNewRecordScreen"
+            android:name="com.anytypeio.anytype.ui.sets.SetObjectSetRecordNameFragment" />
     </navigation>
 
     <fragment

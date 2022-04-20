@@ -17,9 +17,9 @@ import com.anytypeio.anytype.presentation.mapper.*
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState.NONE
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutState.CARD
+import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
 import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearanceIconState
 import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearancePreviewLayoutState
-import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
@@ -1208,7 +1208,7 @@ class DefaultBlockViewRenderer(
                     coverGradient = coverGradient
                 )
             }
-            else -> throw IllegalStateException("Unexpected layout")
+            else -> throw IllegalStateException("Unexpected layout: $layout")
         }
     }
 

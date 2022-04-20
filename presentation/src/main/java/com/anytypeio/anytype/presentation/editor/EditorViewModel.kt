@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.setChangeSortValue
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
@@ -1524,6 +1525,8 @@ class EditorViewModel(
             excludedActions.add(ActionItemType.DividerExtended)
         }
 
+        var needSortByDownloads = false
+
         blocks.forEach { block ->
             if (currentSelection().contains(block.id)) {
                 when (block.content) {
@@ -1534,6 +1537,7 @@ class EditorViewModel(
                         excludedActions.add(ActionItemType.Download)
                     }
                     is Content.File -> {
+                        needSortByDownloads = true
                         targetActions.add(ActionItemType.Download)
                     }
                     is Content.Link -> {
@@ -1561,7 +1565,11 @@ class EditorViewModel(
 
         targetActions.removeAll(excludedActions)
 
-        actions.value = targetActions.toList()
+        actions.value = if (needSortByDownloads) {
+            targetActions.toList().sortedBy { it !is ActionItemType.Download }
+        } else {
+            targetActions.toList()
+        }
     }
 
     fun onStylingToolbarEvent(event: StylingEvent) {

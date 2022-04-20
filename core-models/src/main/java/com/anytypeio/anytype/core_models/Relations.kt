@@ -14,12 +14,14 @@ object Relations {
     const val ICON_IMAGE = "iconImage"
     const val RELATION_FORMAT = "relationFormat"
     const val IS_ARCHIVED = "isArchived"
+    const val IS_DELETED = "isDeleted"
     const val IS_FAVORITE = "isFavorite"
     const val IS_READ_ONLY = "isReadonly"
     const val IS_HIDDEN = "isHidden"
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val LAST_MODIFIED_DATE = "lastModifiedDate"
     const val TYPE = "type"
+    const val TARGET_OBJECT_TYPE = "targetObjectType"
     const val DONE = "done"
     const val FEATURED_RELATIONS = "featuredRelations"
     const val FILE_EXT = "fileExt"
@@ -29,7 +31,6 @@ object Relations {
     const val WORKSPACE_ID = "workspaceId"
     const val SET_OF = "setOf"
     const val IS_HIGHLIGHTED = "isHighlighted"
-    const val IS_DELETED = "isDeleted"
 
     const val PAGE_COVER = "pageCover"
 

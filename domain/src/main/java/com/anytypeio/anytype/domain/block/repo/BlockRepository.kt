@@ -1,6 +1,24 @@
 package com.anytypeio.anytype.domain.block.repo
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVRecord
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
@@ -70,12 +88,14 @@ interface BlockRepository {
     suspend fun getConfig(): Config
 
     suspend fun createPage(
-            ctx: Id?,
-            emoji: String?,
-            isDraft: Boolean?,
-            type: String?,
-            template: Id?
+        ctx: Id?,
+        emoji: String?,
+        isDraft: Boolean?,
+        type: Id?,
+        template: Id?
     ): Id
+
+    suspend fun openObjectPreview(id: Id) : Result<Payload>
 
     suspend fun openPage(id: String): Result<Payload>
 
@@ -158,7 +178,11 @@ interface BlockRepository {
         viewer: DVViewer
     ): Payload
 
-    suspend fun createDataViewRecord(context: Id, target: Id): DVRecord
+    suspend fun createDataViewRecord(
+        context: Id,
+        target: Id,
+        template: Id?
+    ): DVRecord
 
     suspend fun updateDataViewRecord(
         context: Id,

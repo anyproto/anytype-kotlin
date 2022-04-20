@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for creating a new record inside data view's database.
@@ -15,7 +15,8 @@ class CreateDataViewRecord(
     override suspend fun run(params: Params) = safe {
         repo.createDataViewRecord(
             context = params.context,
-            target = params.target
+            target = params.target,
+            template = params.template
         )
     }
 
@@ -26,5 +27,6 @@ class CreateDataViewRecord(
     class Params(
         val context: Id,
         val target: Id,
+        val template: Id?
     )
 }

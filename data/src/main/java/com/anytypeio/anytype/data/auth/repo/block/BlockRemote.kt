@@ -1,6 +1,22 @@
 package com.anytypeio.anytype.data.auth.repo.block
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.SearchResult
 
 interface BlockRemote {
 
@@ -34,6 +50,7 @@ interface BlockRemote {
     suspend fun openPage(id: String): Payload
     suspend fun openProfile(id: String): Payload
     suspend fun openObjectSet(id: String): Payload
+    suspend fun openObjectPreview(id: Id) : Payload
     suspend fun closePage(id: String)
     suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)
@@ -111,7 +128,9 @@ interface BlockRemote {
         viewer: DVViewer
     ): Payload
 
-    suspend fun createDataViewRecord(context: String, target: String): Map<String, Any?>
+    suspend fun createDataViewRecord(
+        context: Id, target: Id, template: Id?
+    ): Map<String, Any?>
 
     suspend fun updateDataViewRecord(
         context: Id,

@@ -1,6 +1,22 @@
 package com.anytypeio.anytype.data.auth.repo.block
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectInfoWithLinks
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -21,6 +37,14 @@ class BlockDataRepository(
         contextId: String,
         id: String
     ) = factory.remote.openDashboard(id = id, contextId = contextId)
+
+    override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
+        Result.Success(factory.remote.openObjectPreview(id))
+    } catch (e: BackwardCompatilityNotSupportedException) {
+        Result.Failure(Error.BackwardCompatibility)
+    } catch (e : NotFoundObjectException) {
+        Result.Failure(Error.NotFoundObject)
+    }
 
     override suspend fun openPage(id: String): Result<Payload> = try {
         Result.Success(factory.remote.openPage(id))
@@ -388,8 +412,13 @@ class BlockDataRepository(
 
     override suspend fun createDataViewRecord(
         context: Id,
-        target: Id
-    ): Map<String, Any?> = factory.remote.createDataViewRecord(context = context, target = target)
+        target: Id,
+        template: Id?
+    ): Map<String, Any?> = factory.remote.createDataViewRecord(
+        context = context,
+        target = target,
+        template = template
+    )
 
     override suspend fun addDataViewRelationOption(
         ctx: Id,

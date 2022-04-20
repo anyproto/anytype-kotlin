@@ -1,6 +1,22 @@
 package com.anytypeio.anytype.middleware.service
 
-import anytype.Rpc.*
+import anytype.Rpc.Account
+import anytype.Rpc.Block
+import anytype.Rpc.BlockList
+import anytype.Rpc.Config
+import anytype.Rpc.Debug
+import anytype.Rpc.ExportLocalstore
+import anytype.Rpc.FileList
+import anytype.Rpc.Navigation
+import anytype.Rpc.Object
+import anytype.Rpc.ObjectList
+import anytype.Rpc.ObjectType
+import anytype.Rpc.Page
+import anytype.Rpc.UnsplashDownload
+import anytype.Rpc.UnsplashSearch
+import anytype.Rpc.UploadFile
+import anytype.Rpc.Version
+import anytype.Rpc.Wallet
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
@@ -135,6 +151,22 @@ class MiddlewareServiceImplementation : MiddlewareService {
             when (error.code) {
                 Block.Open.Response.Error.Code.NOT_FOUND -> throw NotFoundObjectException()
                 Block.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE ->
+                    throw BackwardCompatilityNotSupportedException()
+                else -> throw Exception(error.description)
+            }
+        } else {
+            return response
+        }
+    }
+
+    override fun blockShow(request: Block.Show.Request): Block.Show.Response {
+        val encoded = Service.blockShow(Block.Show.Request.ADAPTER.encode(request))
+        val response = Block.Show.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Block.Show.Response.Error.Code.NULL) {
+            when (error.code) {
+                Block.Show.Response.Error.Code.NOT_FOUND -> throw NotFoundObjectException()
+                Block.Show.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE ->
                     throw BackwardCompatilityNotSupportedException()
                 else -> throw Exception(error.description)
             }

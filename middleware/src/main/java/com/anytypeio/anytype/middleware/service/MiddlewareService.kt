@@ -1,6 +1,22 @@
 package com.anytypeio.anytype.middleware.service
 
-import anytype.Rpc.*
+import anytype.Rpc.Account
+import anytype.Rpc.Block
+import anytype.Rpc.BlockList
+import anytype.Rpc.Config
+import anytype.Rpc.Debug
+import anytype.Rpc.ExportLocalstore
+import anytype.Rpc.FileList
+import anytype.Rpc.Navigation
+import anytype.Rpc.Object
+import anytype.Rpc.ObjectList
+import anytype.Rpc.ObjectType
+import anytype.Rpc.Page
+import anytype.Rpc.UnsplashDownload
+import anytype.Rpc.UnsplashSearch
+import anytype.Rpc.UploadFile
+import anytype.Rpc.Version
+import anytype.Rpc.Wallet
 
 /**
  * Service for interacting with the backend.
@@ -35,6 +51,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockOpen(request: Block.Open.Request): Block.Open.Response
+
+    @Throws(Exception::class)
+    fun blockShow(request: Block.Show.Request): Block.Show.Response
 
     @Throws(Exception::class)
     fun blockClose(request: Block.Close.Request): Block.Close.Response

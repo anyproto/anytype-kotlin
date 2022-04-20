@@ -7,10 +7,32 @@ import anytype.model.Block
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.CBTextStyle
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.const.Constants
-import com.anytypeio.anytype.middleware.mappers.*
+import com.anytypeio.anytype.middleware.mappers.MObjectType
+import com.anytypeio.anytype.middleware.mappers.MRelation
+import com.anytypeio.anytype.middleware.mappers.MRelationOption
+import com.anytypeio.anytype.middleware.mappers.core
+import com.anytypeio.anytype.middleware.mappers.toCoreModels
+import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
+import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateAccountResponse
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.model.SelectAccountResponse
@@ -206,6 +228,16 @@ class Middleware(
         val request = Rpc.Block.Open.Request(blockId = id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockOpen(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun showBlock(id: String): Payload {
+        val request = Rpc.Block.Show.Request(blockId = id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockShow(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
         return response.event.toPayload()
@@ -1167,10 +1199,15 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createDataViewRecord(context: String, target: String): Map<String, Any?> {
+    fun createDataViewRecord(
+        context: String,
+        target: String,
+        template: Id?
+    ): Map<String, Any?> {
         val request = Rpc.Block.Dataview.RecordCreate.Request(
             contextId = context,
-            blockId = target
+            blockId = target,
+            templateId = template.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewRecordCreate(request)

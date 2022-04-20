@@ -47,3 +47,8 @@ abstract class Interactor<in P>(private val context: CoroutineContext = Dispatch
         data class Error(val throwable: Throwable) : Status()
     }
 }
+
+abstract class ResultInteractor<in P, R> {
+    operator fun invoke(params: P): Flow<R> = flow { emit(doWork(params)) }
+    protected abstract suspend fun doWork(params: P): R
+}

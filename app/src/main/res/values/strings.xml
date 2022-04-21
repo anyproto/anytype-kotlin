@@ -277,4 +277,5 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
     <string name="are_you_sure_to_delete_account">Are you sure to delete account?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
+    <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
 </resources>

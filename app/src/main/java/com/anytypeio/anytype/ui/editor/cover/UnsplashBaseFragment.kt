@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_ui.features.cover.UnsplashImageAdapter
 import com.anytypeio.anytype.core_ui.features.editor.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
@@ -81,6 +82,11 @@ abstract class UnsplashBaseFragment : BaseBottomSheetTextInputFragment<FragmentU
                 launch {
                     vm.isCompleted.collect { isCompleted ->
                         if (isCompleted) onCompleted()
+                    }
+                }
+                launch {
+                    vm.isFailed.collect { isFailed ->
+                        if (isFailed) binding.tvError.visible() else binding.tvError.gone()
                     }
                 }
                 launch {

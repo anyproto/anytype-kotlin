@@ -241,8 +241,10 @@ class BlockAdapter(
                                 if (pos != RecyclerView.NO_POSITION) {
                                     val view = views[pos]
                                     check(view is BlockView.Title.Profile)
-                                    view.text = editable.toString()
-                                    onTitleBlockTextChanged(view.id, editable.toString())
+                                    val text = editable.toString()
+                                    view.text = text
+                                    onTitleBlockTextChanged(view.id, text)
+                                    onTitleTextChanged(text)
                                 }
                             }
                         )

@@ -398,6 +398,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = binding.title
 
         private val iconText = binding.imageText
+        private var hasImage = false
 
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
@@ -423,6 +424,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override fun setImage(item: BlockView.Title) {
             item.image?.let { url ->
                 iconText.text = ""
+                hasImage = true
                 image.visible()
                 Glide
                     .with(image)
@@ -431,7 +433,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     .circleCrop()
                     .into(image)
             } ?: apply {
-                val pos = item.text?.firstDigitByHash() ?: 0
+                hasImage = false
                 setIconText(item.text)
                 image.setImageDrawable(null)
             }
@@ -439,9 +441,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         private fun setIconText(name: String?) {
             if (name.isNullOrEmpty()) {
-                iconText.text = ""
+                iconText.text = "U"
             } else {
-                iconText.text = name.first().toUpperCase().toString()
+                iconText.text = name.first().uppercaseChar().toString()
+            }
+        }
+
+        fun onTitleTextChanged(text: String) {
+            if (!hasImage) {
+                setIconText(text)
             }
         }
 

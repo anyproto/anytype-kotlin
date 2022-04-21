@@ -281,6 +281,10 @@ class DashboardAdapter(
             if (payload.imageChanged()) {
                 bindIcon(item.icon)
             }
+
+            if (payload.avatarLetterChanged()) {
+                bindIcon(item.icon)
+            }
             if (payload.isLoadingChanged) {
                 bindLoading(item.isLoading)
             }

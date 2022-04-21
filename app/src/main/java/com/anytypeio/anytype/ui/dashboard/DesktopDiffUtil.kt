@@ -41,6 +41,9 @@ class DesktopDiffUtil(
             if (oldDoc.image != newDoc.image) {
                 changes.add(IMAGE_CHANGED)
             }
+            if (!newDoc.hasIcon && oldDoc.title != newDoc.title) {
+                changes.add(AVATAR_LETTER_CHANGED)
+            }
             if (oldDoc.isLoading != newDoc.isLoading) {
                 changes.add(LOADING_STATE_CHANGED)
             }
@@ -81,6 +84,7 @@ class DesktopDiffUtil(
         fun titleChanged() = changes.contains(TITLE_CHANGED)
         fun emojiChanged() = changes.contains(EMOJI_CHANGED)
         fun imageChanged() = changes.contains(IMAGE_CHANGED)
+        fun avatarLetterChanged() = changes.contains(AVATAR_LETTER_CHANGED)
     }
 
     companion object {
@@ -91,5 +95,6 @@ class DesktopDiffUtil(
         const val LOADING_STATE_CHANGED = 6
         const val SELECTION_CHANGED = 7
         const val DONE_CHANGED = 8
+        const val AVATAR_LETTER_CHANGED = 9
     }
 }

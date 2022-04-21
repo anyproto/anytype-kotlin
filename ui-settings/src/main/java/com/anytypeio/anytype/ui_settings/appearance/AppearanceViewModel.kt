@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.theme.SetTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class AppearanceViewModel(
     private val getTheme: GetTheme,
@@ -65,7 +66,7 @@ class AppearanceViewModel(
         selectedTheme.value = themeMode
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val getTheme: GetTheme,
         private val setTheme: SetTheme,
         private val themeApplicator: ThemeApplicator,

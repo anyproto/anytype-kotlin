@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui_settings.appearance
 
 import androidx.appcompat.app.AppCompatDelegate
 import com.anytypeio.anytype.core_models.ThemeMode
+import javax.inject.Inject
 
 interface ThemeApplicator {
 
@@ -9,7 +10,7 @@ interface ThemeApplicator {
 
 }
 
-class ThemeApplicatorImpl: ThemeApplicator {
+class ThemeApplicatorImpl @Inject constructor(): ThemeApplicator {
     override fun apply(theme: ThemeMode) {
         when(theme) {
             ThemeMode.Light -> apply(AppCompatDelegate.MODE_NIGHT_NO)

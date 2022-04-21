@@ -37,6 +37,8 @@ dependencies {
     def applicationDependencies = rootProject.ext.mainApplication
     def unitTestDependencies = rootProject.ext.unitTesting
 
+    compileOnly applicationDependencies.javaxInject
+
     implementation applicationDependencies.lifecycleViewModel
     implementation applicationDependencies.lifecycleRuntime
 

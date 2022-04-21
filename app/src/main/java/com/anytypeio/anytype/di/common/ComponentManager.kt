@@ -13,13 +13,16 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
 import com.anytypeio.anytype.di.feature.settings.AboutAppModule
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataModule
-import com.anytypeio.anytype.di.feature.settings.AppearanceModule
+import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.main.MainComponent
 
-class ComponentManager(private val main: MainComponent) {
+class ComponentManager(
+    private val main: MainComponent,
+    private val provider: HasComponentDependencies
+) {
 
     val mainEntryComponent = Component {
         main.mainEntryComponentBuilder().module(MainEntryModule).build()
@@ -670,16 +673,18 @@ class ComponentManager(private val main: MainComponent) {
         main.accountAndDataComponent().module(AccountAndDataModule).build()
     }
 
-    val appearanceComponent = Component {
-        main.appearanceComponent().module(AppearanceModule).build()
-    }
-
     val logoutWarningComponent = Component {
         main.logoutWarningComponent().module(LogoutWarningModule).build()
     }
 
     val mainSettingsComponent = Component {
         main.mainSettingsComponent().module(MainSettingsModule).build()
+    }
+
+    val appearanceComponent = Component {
+        DaggerAppearanceComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {
@@ -719,5 +724,9 @@ class ComponentManager(private val main: MainComponent) {
         fun release(id: Id) {
             map.remove(id)
         }
+    }
+
+    private inline fun <reified T : ComponentDependencies> findComponentDependencies(): T {
+        return provider.dependencies[T::class.java] as T
     }
 }

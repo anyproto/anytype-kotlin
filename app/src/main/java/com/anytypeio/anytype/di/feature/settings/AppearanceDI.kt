@@ -1,25 +1,33 @@
 package com.anytypeio.anytype.di.feature.settings
 
+import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.theme.SetTheme
 import com.anytypeio.anytype.ui.settings.AppearanceFragment
 import com.anytypeio.anytype.ui_settings.appearance.AppearanceViewModel
+import dagger.Component
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Subcomponent
 
-@Subcomponent(modules = [AppearanceModule::class])
+@Component(
+    dependencies = [AppearanceDependencies::class],
+    modules = [
+        AppearanceModule::class,
+        AppearanceModule.Declarations::class
+    ]
+)
 @PerScreen
-interface AppearanceSubComponent {
+interface AppearanceComponent {
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun module(module: AppearanceModule): Builder
-        fun build(): AppearanceSubComponent
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: AppearanceDependencies): AppearanceComponent
     }
 
     fun inject(fragment: AppearanceFragment)
@@ -27,23 +35,6 @@ interface AppearanceSubComponent {
 
 @Module
 object AppearanceModule {
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideViewModelFactory(
-        getTheme: GetTheme,
-        setTheme: SetTheme,
-        themeApplicator: ThemeApplicator
-    ): AppearanceViewModel.Factory = AppearanceViewModel.Factory(
-        getTheme,
-        setTheme,
-        themeApplicator
-    )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideThemeApplicator(): ThemeApplicator = ThemeApplicatorImpl()
 
     @JvmStatic
     @Provides
@@ -54,4 +45,22 @@ object AppearanceModule {
     @Provides
     @PerScreen
     fun provideSetThemeUseCase(repo: UserSettingsRepository): SetTheme = SetTheme(repo)
+
+    @Module
+    interface Declarations {
+
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: AppearanceViewModel.Factory
+        ): ViewModelProvider.Factory
+
+        @PerScreen
+        @Binds
+        fun bindThemeApplicator(applicator: ThemeApplicatorImpl): ThemeApplicator
+    }
+}
+
+interface AppearanceDependencies : ComponentDependencies {
+    fun userUserSettingsRepository(): UserSettingsRepository
 }

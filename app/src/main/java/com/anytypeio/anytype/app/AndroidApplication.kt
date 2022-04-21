@@ -9,7 +9,9 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
 import com.anytypeio.anytype.core_utils.tools.CrashlyticsTree
+import com.anytypeio.anytype.di.common.ComponentDependenciesProvider
 import com.anytypeio.anytype.di.common.ComponentManager
+import com.anytypeio.anytype.di.common.HasComponentDependencies
 import com.anytypeio.anytype.di.main.ContextModule
 import com.anytypeio.anytype.di.main.DaggerMainComponent
 import com.anytypeio.anytype.di.main.MainComponent
@@ -17,13 +19,17 @@ import com.anytypeio.anytype.middleware.interactor.LocalNetworkAddressHandler
 import timber.log.Timber
 import javax.inject.Inject
 
-class AndroidApplication : Application() {
+class AndroidApplication : Application(), HasComponentDependencies {
 
     @Inject
     lateinit var amplitudeTracker: AmplitudeTracker
 
     @Inject
     lateinit var localNetworkAddressHandler: LocalNetworkAddressHandler
+
+    @Inject
+    override lateinit var dependencies: ComponentDependenciesProvider
+        protected set
 
     private val main: MainComponent by lazy {
         DaggerMainComponent
@@ -33,7 +39,7 @@ class AndroidApplication : Application() {
     }
 
     val componentManager by lazy {
-        ComponentManager(main)
+        ComponentManager(main, this)
     }
 
     override fun onCreate() {

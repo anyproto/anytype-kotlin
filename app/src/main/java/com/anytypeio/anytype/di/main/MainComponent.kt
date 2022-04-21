@@ -1,20 +1,26 @@
 package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.app.AndroidApplication
+import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.common.ComponentDependenciesKey
 import com.anytypeio.anytype.di.feature.*
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountSubcomponent
 import com.anytypeio.anytype.di.feature.settings.AboutAppSubComponent
 import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
-import com.anytypeio.anytype.di.feature.settings.AppearanceSubComponent
+import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
+import dagger.Binds
 import dagger.Component
+import dagger.Module
+import dagger.multibindings.IntoMap
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
+        ComponentDependenciesModule::class,
         ContextModule::class,
         DataModule::class,
         EventModule::class,
@@ -27,7 +33,7 @@ import javax.inject.Singleton
         LocalNetworkAddressModule::class
     ]
 )
-interface MainComponent {
+interface MainComponent : AppearanceDependencies {
     fun inject(app: AndroidApplication)
 
     fun splashComponentBuilder(): SplashSubComponent.Builder
@@ -60,7 +66,6 @@ interface MainComponent {
 
     fun aboutAppComponent() : AboutAppSubComponent.Builder
     fun accountAndDataComponent() : AccountAndDataSubComponent.Builder
-    fun appearanceComponent() : AppearanceSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder
@@ -68,4 +73,13 @@ interface MainComponent {
     fun mainSettingsComponent() : MainSettingsSubComponent.Builder
 
     //endregion
+}
+
+@Module
+private abstract class ComponentDependenciesModule private constructor() {
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(AppearanceDependencies::class)
+    abstract fun provideAppearanceDependencies  (component: MainComponent): ComponentDependencies
 }

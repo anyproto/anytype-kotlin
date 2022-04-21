@@ -1,10 +1,74 @@
 package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.di.feature.*
+import com.anytypeio.anytype.di.feature.AddObjectRelationObjectValueModule
+import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
+import com.anytypeio.anytype.di.feature.ArchiveModule
+import com.anytypeio.anytype.di.feature.AuthModule
+import com.anytypeio.anytype.di.feature.CreateAccountModule
+import com.anytypeio.anytype.di.feature.CreateBookmarkModule
+import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
+import com.anytypeio.anytype.di.feature.CreateObjectModule
+import com.anytypeio.anytype.di.feature.CreateObjectTypeModule
+import com.anytypeio.anytype.di.feature.CreateSetModule
+import com.anytypeio.anytype.di.feature.DataViewViewerActionModule
+import com.anytypeio.anytype.di.feature.DebugSettingsModule
+import com.anytypeio.anytype.di.feature.DocumentRelationModule
+import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
+import com.anytypeio.anytype.di.feature.EditorSessionModule
+import com.anytypeio.anytype.di.feature.EditorUseCaseModule
+import com.anytypeio.anytype.di.feature.HomeDashboardModule
+import com.anytypeio.anytype.di.feature.KeychainLoginModule
+import com.anytypeio.anytype.di.feature.KeychainPhraseModule
+import com.anytypeio.anytype.di.feature.LinkModule
+import com.anytypeio.anytype.di.feature.LinkToObjectModule
+import com.anytypeio.anytype.di.feature.LinkToObjectOrWebModule
+import com.anytypeio.anytype.di.feature.MainEntryModule
+import com.anytypeio.anytype.di.feature.ManageViewerModule
+import com.anytypeio.anytype.di.feature.ModifyViewerSortModule
+import com.anytypeio.anytype.di.feature.MoveToModule
+import com.anytypeio.anytype.di.feature.ObjectAppearanceCoverModule
+import com.anytypeio.anytype.di.feature.ObjectAppearanceIconModule
+import com.anytypeio.anytype.di.feature.ObjectAppearancePreviewLayoutModule
+import com.anytypeio.anytype.di.feature.ObjectAppearanceSettingModule
+import com.anytypeio.anytype.di.feature.ObjectIconPickerBaseModule
+import com.anytypeio.anytype.di.feature.ObjectIconPickerModule
+import com.anytypeio.anytype.di.feature.ObjectLayoutModule
+import com.anytypeio.anytype.di.feature.ObjectMenuModule
+import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
+import com.anytypeio.anytype.di.feature.ObjectRelationValueModule
+import com.anytypeio.anytype.di.feature.ObjectSearchModule
+import com.anytypeio.anytype.di.feature.ObjectSetIconPickerModule
+import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
+import com.anytypeio.anytype.di.feature.ObjectSetModule
+import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
+import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
+import com.anytypeio.anytype.di.feature.OtherSettingsModule
+import com.anytypeio.anytype.di.feature.PageNavigationModule
+import com.anytypeio.anytype.di.feature.RelationDateValueModule
+import com.anytypeio.anytype.di.feature.RelationFileValueAddModule
+import com.anytypeio.anytype.di.feature.RelationTextValueModule
+import com.anytypeio.anytype.di.feature.SelectAccountModule
+import com.anytypeio.anytype.di.feature.SelectCoverObjectModule
+import com.anytypeio.anytype.di.feature.SelectCoverObjectSetModule
+import com.anytypeio.anytype.di.feature.SelectSortRelationModule
+import com.anytypeio.anytype.di.feature.SetupNewAccountModule
+import com.anytypeio.anytype.di.feature.SetupSelectedAccountModule
+import com.anytypeio.anytype.di.feature.SplashModule
+import com.anytypeio.anytype.di.feature.StartLoginModule
+import com.anytypeio.anytype.di.feature.ViewerCustomizeModule
+import com.anytypeio.anytype.di.feature.ViewerFilterModule
+import com.anytypeio.anytype.di.feature.ViewerRelationsModule
+import com.anytypeio.anytype.di.feature.ViewerSortByModule
+import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
-import com.anytypeio.anytype.di.feature.relations.*
+import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
+import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
+import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewModule
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockModule
+import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectModule
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
@@ -124,6 +188,14 @@ class ComponentManager(
             .createObjectComponent()
             .module(CreateObjectModule)
             .build()
+    }
+
+    val templateComponent = Component {
+        main.templateComponentFactory().create()
+    }
+
+    val templateSelectComponent = Component {
+        main.templateSelectComponentFactory().create()
     }
 
     val editorComponent = ComponentMap {

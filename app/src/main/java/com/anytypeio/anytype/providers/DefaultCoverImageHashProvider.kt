@@ -3,8 +3,9 @@ package com.anytypeio.anytype.providers
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import javax.inject.Inject
 
-class DefaultCoverImageHashProvider : CoverImageHashProvider {
+class DefaultCoverImageHashProvider @Inject constructor() : CoverImageHashProvider {
 
     override fun provide(id: Id): Hash? = data[id]
 

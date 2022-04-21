@@ -15,6 +15,7 @@ interface Editor {
 
     sealed class Mode {
         object Edit : Mode()
+        object Read : Mode()
         object Select : Mode()
         object SAM : Mode()
         object Action: Mode()

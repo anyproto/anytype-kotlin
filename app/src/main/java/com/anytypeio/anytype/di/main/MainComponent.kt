@@ -10,6 +10,8 @@ import com.anytypeio.anytype.di.feature.settings.AccountAndDataSubComponent
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
+import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
+import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import dagger.Binds
 import dagger.Component
@@ -44,7 +46,7 @@ interface MainComponent : AppearanceDependencies {
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun navigationComponentBuilder(): PageNavigationSubComponent.Builder
     fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
-    fun linkToObjectOrWebBuilder() : LinkToObjectOrWebSubComponent.Builder
+    fun linkToObjectOrWebBuilder(): LinkToObjectOrWebSubComponent.Builder
     fun moveToBuilder(): MoveToSubComponent.Builder
     fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
@@ -54,23 +56,25 @@ interface MainComponent : AppearanceDependencies {
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
     fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
     fun createObjectComponent(): CreateObjectSubComponent.Builder
+    fun templateComponentFactory(): TemplateSubComponent.Factory
+    fun templateSelectComponentFactory(): TemplateSelectSubComponent.Factory
 
     //region Auth
 
     fun authComponentBuilder(): AuthSubComponent.Builder
-    fun deletedAccountBuilder() : DeletedAccountSubcomponent.Builder
+    fun deletedAccountBuilder(): DeletedAccountSubcomponent.Builder
 
     //endregion
 
     //region Settings
 
-    fun aboutAppComponent() : AboutAppSubComponent.Builder
-    fun accountAndDataComponent() : AccountAndDataSubComponent.Builder
+    fun aboutAppComponent(): AboutAppSubComponent.Builder
+    fun accountAndDataComponent(): AccountAndDataSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder
-    fun logoutWarningComponent() : LogoutWarningSubComponent.Builder
-    fun mainSettingsComponent() : MainSettingsSubComponent.Builder
+    fun logoutWarningComponent(): LogoutWarningSubComponent.Builder
+    fun mainSettingsComponent(): MainSettingsSubComponent.Builder
 
     //endregion
 }
@@ -81,5 +85,5 @@ private abstract class ComponentDependenciesModule private constructor() {
     @Binds
     @IntoMap
     @ComponentDependenciesKey(AppearanceDependencies::class)
-    abstract fun provideAppearanceDependencies  (component: MainComponent): ComponentDependencies
+    abstract fun provideAppearanceDependencies(component: MainComponent): ComponentDependencies
 }

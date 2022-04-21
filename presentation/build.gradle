@@ -43,6 +43,8 @@ dependencies {
 
     implementation analyticsDependencies.amplitude
 
+    compileOnly applicationDependencies.javaxInject
+
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin

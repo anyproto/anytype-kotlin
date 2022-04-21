@@ -1,7 +1,15 @@
 package com.anytypeio.anytype.presentation.editor.render
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
+import com.anytypeio.anytype.core_models.CoverType
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -13,7 +21,11 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
-import com.anytypeio.anytype.presentation.mapper.*
+import com.anytypeio.anytype.presentation.mapper.marks
+import com.anytypeio.anytype.presentation.mapper.toFileView
+import com.anytypeio.anytype.presentation.mapper.toPictureView
+import com.anytypeio.anytype.presentation.mapper.toVideoView
+import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState.NONE
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutState.CARD
@@ -23,9 +35,10 @@ import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearance
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
+import javax.inject.Inject
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
-class DefaultBlockViewRenderer(
+class DefaultBlockViewRenderer @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val toggleStateHolder: ToggleStateHolder,
     private val coverImageHashProvider: CoverImageHashProvider

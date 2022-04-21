@@ -15,7 +15,39 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.*
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkErrorBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockFeaturedRelationsBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockLatexBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -27,14 +59,34 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
-import com.anytypeio.anytype.core_ui.features.editor.holders.other.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.DividerDots
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.DividerLine
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.Latex
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObject
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectArchive
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCard
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectDelete
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectLoading
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.Unsupported
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Description
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderOne
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderThree
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderTwo
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Highlight
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
@@ -1446,10 +1498,6 @@ class BlockAdapter(
         }
     }
 
-    @Deprecated(
-        level = DeprecationLevel.WARNING,
-        message = "Consider RecyclerView's AsyncListDiffer instead. Or implement it with Kotlin coroutines."
-    )
     fun updateWithDiffUtil(items: List<BlockView>) {
         if (BuildConfig.DEBUG) {
             Timber.d("----------Blocks dispatched to adapter---------------------")

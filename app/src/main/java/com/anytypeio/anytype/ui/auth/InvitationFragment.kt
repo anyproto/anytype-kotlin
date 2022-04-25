@@ -15,6 +15,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.invitationScreenSho
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.databinding.FragmentInvitationBinding
@@ -23,7 +24,9 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import javax.inject.Inject
 
-class InvitationFragment : NavigationFragment<FragmentInvitationBinding>(R.layout.fragment_invitation) {
+
+class InvitationFragment :
+    NavigationFragment<FragmentInvitationBinding>(R.layout.fragment_invitation) {
 
     @Inject
     lateinit var analytics: Analytics
@@ -55,6 +58,7 @@ class InvitationFragment : NavigationFragment<FragmentInvitationBinding>(R.layou
             navObserver.onChanged(EventWrapper(AppNavigation.Command.Exit))
         }
         setupWindowInsetAnimation()
+        binding.edtCode.focusAndShowKeyboard()
     }
 
     private fun setupWindowInsetAnimation() {

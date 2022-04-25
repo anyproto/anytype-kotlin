@@ -52,6 +52,7 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
         vm.error.observe(viewLifecycleOwner, Observer(this::showError))
 
         setupWindowInsetAnimation()
+        binding.nameInputField.focusAndShowKeyboard()
     }
 
     private fun setupWindowInsetAnimation() {
@@ -62,11 +63,6 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
     }
 
     private fun getCode() = requireArguments().getString(ARGS_CODE, EMPTY_CODE)
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        activity?.currentFocus?.hideKeyboard()
-    }
 
     private fun showError(error: String) {
         requireActivity().toast(

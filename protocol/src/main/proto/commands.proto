@@ -3720,6 +3720,28 @@ message Rpc {
     }
 
     message ObjectList {
+        message Duplicate {
+            message Request {
+                repeated string objectIds = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated string ids = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
         message Delete {
             // Deletes the object, keys from the local store and unsubscribe from remote changes. Also offloads all orphan files
             message Request {
@@ -3991,13 +4013,11 @@ message Rpc {
 
     message ObjectDuplicate {
         message Request {
-            // id of template block for cloning
             string contextId = 1;
         }
 
         message Response {
             Error error = 1;
-            // created template id
             string id = 2;
 
             message Error {

@@ -97,7 +97,7 @@ abstract class Text(
                 text = item.text,
                 markup = item,
                 clicked = clicked,
-                textColor = getBlockTextColor(item.color)
+                textColor = resolveTextBlockThemedColor(item.color)
             )
         }
         if (item is BlockView.Searchable) {

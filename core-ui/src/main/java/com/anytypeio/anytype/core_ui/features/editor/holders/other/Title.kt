@@ -477,6 +477,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val image: ImageView = binding.imageIcon
 
         val checkbox = binding.todoTitleCheckbox
+        var isLocked: Boolean = false
 
         override val root: View = itemView
         override val content: TextInputWidget = binding.title
@@ -496,11 +497,16 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 onFocusChanged = onFocusChanged,
                 onCoverClicked = onCoverClicked
             )
+            setLocked(item.mode)
             checkbox.isSelected = item.isChecked
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
+        }
+
+        private fun setLocked(mode: BlockView.Mode) {
+            isLocked = mode == BlockView.Mode.READ
         }
 
         override fun setImage(item: BlockView.Title) {}
@@ -511,6 +517,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         ) {
             super.processPayloads(payloads, item)
             if (item is BlockView.Title.Todo) {
+                setLocked(item.mode)
                 payloads.forEach { payload ->
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)

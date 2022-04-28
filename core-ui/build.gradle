@@ -75,6 +75,9 @@ dependencies {
     implementation applicationDependencies.composeToolingPreview
     debugImplementation applicationDependencies.composeTooling
 
+    testImplementation acceptanceTesting.fragmentTesting
+    testImplementation project(':test-utils')
+    testImplementation acceptanceTesting.espressoCore
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.robolectricLatest

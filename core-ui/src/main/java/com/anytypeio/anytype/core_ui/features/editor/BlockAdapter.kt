@@ -308,11 +308,13 @@ class BlockAdapter(
                     ItemBlockTitleTodoBinding.inflate(inflater, parent, false)
                 ).apply {
                     checkbox.setOnClickListener {
-                        val view = views[bindingAdapterPosition]
-                        check(view is BlockView.Title.Todo)
-                        view.isChecked = !view.isChecked
-                        checkbox.isSelected = view.isChecked
-                        onTitleCheckboxClicked(view)
+                        if (!isLocked) {
+                            val view = views[bindingAdapterPosition]
+                            check(view is BlockView.Title.Todo)
+                            view.isChecked = !view.isChecked
+                            checkbox.isSelected = view.isChecked
+                            onTitleCheckboxClicked(view)
+                        }
                     }
                     with(content) {
                         enableEnterKeyDetector(

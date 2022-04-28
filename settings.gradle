@@ -14,5 +14,6 @@ include ':app',
         ':clipboard',
         ':analytics',
         ':protocol',
-        ':core-models'
+        ':core-models',
+        ':test-utils'
 include ':ui-settings'

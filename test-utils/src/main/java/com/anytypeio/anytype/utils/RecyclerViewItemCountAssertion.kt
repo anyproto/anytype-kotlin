@@ -4,9 +4,8 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.ViewAssertion
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
-import org.hamcrest.CoreMatchers.`is`
-
+import androidx.test.espresso.matcher.ViewMatchers
+import org.hamcrest.CoreMatchers
 
 class RecyclerViewItemCountAssertion(val expected: Int) : ViewAssertion {
     override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
@@ -14,6 +13,6 @@ class RecyclerViewItemCountAssertion(val expected: Int) : ViewAssertion {
         val recycler = view as RecyclerView
         val adapter = recycler.adapter
         checkNotNull(adapter) { "Adapter wasn't set" }
-        assertThat(adapter.itemCount, `is`(expected))
+        ViewMatchers.assertThat(adapter.itemCount, CoreMatchers.`is`(expected))
     }
 }

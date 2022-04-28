@@ -2,11 +2,9 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.`interface`
 
 import android.view.Gravity
 import android.view.View
-import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.setTextColor
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
@@ -48,13 +46,7 @@ interface TextHolder {
     }
 
     fun setTextColor(color: String) {
-        val value = ThemeColor.values().find { value -> value.title == color }
-        val default = content.context.getColor(R.color.text_primary)
-        if (value != null && value != ThemeColor.DEFAULT) {
-            content.setTextColor(content.resources.dark(value, default))
-        } else {
-            content.setTextColor(default)
-        }
+        content.setTextColor(color)
     }
 
     fun setTextColor(color: Int) {

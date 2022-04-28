@@ -9,13 +9,22 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.*
+import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
+import com.anytypeio.anytype.core_ui.common.GhostEditorSelectionSpan
+import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
+import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
+import com.anytypeio.anytype.core_ui.common.setMarkup
+import com.anytypeio.anytype.core_ui.common.toSpannable
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
-import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.lighter
+import com.anytypeio.anytype.core_ui.extensions.resolveThemedColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
-import com.anytypeio.anytype.core_ui.tools.*
+import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
+import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
+import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
+import com.anytypeio.anytype.core_ui.tools.SlashTextWatcherState
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -79,9 +88,10 @@ interface TextBlockHolder : TextHolder {
     fun getMentionUncheckedIcon(): Drawable?
     fun getMentionInitialsSize(): Float
 
-    private fun setSpannableWithMention(markup: Markup,
-                                        clicked: (ListenerType) -> Unit,
-                                        textColor: Int
+    private fun setSpannableWithMention(
+        markup: Markup,
+        clicked: (ListenerType) -> Unit,
+        textColor: Int
     ) {
         content.dismissMentionWatchers()
         with(content) {
@@ -290,7 +300,7 @@ interface TextBlockHolder : TextHolder {
                         text = item.text,
                         markup = item,
                         clicked = clicked,
-                        textColor = getBlockTextColor(item.color)
+                        textColor = resolveTextBlockThemedColor(item.color)
                     )
                 }
             }
@@ -299,7 +309,7 @@ interface TextBlockHolder : TextHolder {
             }
         } else if (payload.markupChanged()) {
             content.pauseTextWatchers {
-                setMarkup(item, clicked, getBlockTextColor(item.color))
+                setMarkup(item, clicked, resolveTextBlockThemedColor(item.color))
                 if (item is Checkable) {
                     applyCheckedCheckboxColorSpan(item.isChecked)
                 }
@@ -316,8 +326,8 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.textColorChanged()) {
             val color = item.color ?: ThemeColor.DEFAULT.title
-            setTextColor(getBlockTextColor(color))
-            setMarkup(item, clicked, getBlockTextColor(item.color))
+            setTextColor(resolveTextBlockThemedColor(color))
+            setMarkup(item, clicked, resolveTextBlockThemedColor(item.color))
         }
 
         if (payload.backgroundColorChanged()) {
@@ -380,14 +390,8 @@ interface TextBlockHolder : TextHolder {
         content.clearTextWatchers()
     }
 
-    fun getBlockTextColor(color: String?): Int {
-        val value = ThemeColor.values().find { value -> value.title == color }
-        val default = getDefaultTextColor()
-        return if (value != null && value != ThemeColor.DEFAULT) {
-            content.resources.dark(value, default)
-        } else {
-            default
-        }
+    fun resolveTextBlockThemedColor(color: String?): Int {
+        return content.context.resolveThemedColor(color, getDefaultTextColor())
     }
 
     //region CONTEXT MENU

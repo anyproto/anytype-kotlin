@@ -122,6 +122,8 @@ class BlockMiddleware(
         command: Command.Duplicate
     ): Pair<List<Id>, Payload> = middleware.duplicate(command)
 
+    override suspend fun duplicateObject(id: Id) = middleware.objectDuplicate(id)
+
     override suspend fun move(command: Command.Move): Payload {
         return middleware.move(command)
     }

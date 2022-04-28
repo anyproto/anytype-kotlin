@@ -9,6 +9,7 @@ enum class ObjectAction {
     SEARCH_ON_PAGE,
     USE_AS_TEMPLATE,
     UNDO_REDO,
+    DUPLICATE,
     LOCK,
     UNLOCK
 }

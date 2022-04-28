@@ -1689,4 +1689,18 @@ class Middleware(
         val response = service.fileListOffload(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
+
+    @Throws(Exception::class)
+    fun objectDuplicate(id: Id): Id {
+
+        val request = Rpc.ObjectDuplicate.Request(contextId = id)
+
+        if (BuildConfig.DEBUG) logRequest(request)
+
+        val response = service.objectDuplicate(request)
+
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.id
+    }
 }

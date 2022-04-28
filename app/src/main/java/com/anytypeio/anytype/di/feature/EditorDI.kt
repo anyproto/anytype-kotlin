@@ -11,6 +11,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -563,6 +564,15 @@ object EditorUseCaseModule {
     ): CreateNewDocument = CreateNewDocument(
         repo = repo,
         documentEmojiProvider = documentEmojiIconProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDuplicateObject(
+        repo: BlockRepository
+    ): DuplicateObject = DuplicateObject(
+        repo = repo
     )
 
     @JvmStatic

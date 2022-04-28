@@ -9,6 +9,7 @@ import anytype.Rpc.ExportLocalstore
 import anytype.Rpc.FileList
 import anytype.Rpc.Navigation
 import anytype.Rpc.Object
+import anytype.Rpc.ObjectDuplicate
 import anytype.Rpc.ObjectList
 import anytype.Rpc.ObjectType
 import anytype.Rpc.Page
@@ -992,6 +993,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = UnsplashDownload.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != UnsplashDownload.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectDuplicate(request: ObjectDuplicate.Request): ObjectDuplicate.Response {
+        val encoded = Service.objectDuplicate(
+            ObjectDuplicate.Request.ADAPTER.encode(request)
+        )
+        val response = ObjectDuplicate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ObjectDuplicate.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

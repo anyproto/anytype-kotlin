@@ -329,6 +329,7 @@ class EditorViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
+                    is Action.Duplicate -> proceedWithOpeningPage(action.id)
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
                 }

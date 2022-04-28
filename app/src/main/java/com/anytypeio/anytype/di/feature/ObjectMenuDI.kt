@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
@@ -73,6 +74,7 @@ object ObjectMenuModule {
     @PerDialog
     fun provideViewModelFactory(
         setObjectIsArchived: SetObjectIsArchived,
+        duplicateObject: DuplicateObject,
         addToFavorite: AddToFavorite,
         removeFromFavorite: RemoveFromFavorite,
         storage: Editor.Storage,
@@ -82,6 +84,7 @@ object ObjectMenuModule {
         delegator: Delegator<Action>
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
+        duplicateObject = duplicateObject,
         addToFavorite = addToFavorite,
         removeFromFavorite = removeFromFavorite,
         storage = storage,

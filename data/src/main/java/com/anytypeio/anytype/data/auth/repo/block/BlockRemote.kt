@@ -233,4 +233,6 @@ interface BlockRemote {
     suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
 
     suspend fun clearFileCache()
+
+    suspend fun duplicateObject(id: Id): Id
 }

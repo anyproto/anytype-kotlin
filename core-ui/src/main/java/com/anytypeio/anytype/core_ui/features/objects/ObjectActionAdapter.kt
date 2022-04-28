@@ -36,6 +36,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
                     tvActionTitle.setText(R.string.move_to_bin)
                 }
+                ObjectAction.DUPLICATE -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_duplicate)
+                    tvActionTitle.setText(R.string.object_action_duplicate)
+                }
                 ObjectAction.UNDO_REDO -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_undoredo)
                     tvActionTitle.setText(R.string.undoredo)

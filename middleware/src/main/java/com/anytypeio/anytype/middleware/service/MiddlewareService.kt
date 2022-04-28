@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.service
 
+import anytype.Rpc.ObjectDuplicate
 import anytype.Rpc.Account
 import anytype.Rpc.Block
 import anytype.Rpc.BlockList
@@ -255,4 +256,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun unsplashDownload(request: UnsplashDownload.Request) : UnsplashDownload.Response
+
+    @Throws(Exception::class)
+    fun objectDuplicate(request: ObjectDuplicate.Request) : ObjectDuplicate.Response
 }

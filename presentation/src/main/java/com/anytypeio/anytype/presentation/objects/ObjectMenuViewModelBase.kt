@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
@@ -164,6 +165,7 @@ class ObjectMenuViewModel(
     addToFavorite: AddToFavorite,
     removeFromFavorite: RemoveFromFavorite,
     dispatcher: Dispatcher<Payload>,
+    private val duplicateObject: DuplicateObject,
     private val storage: Editor.Storage,
     private val analytics: Analytics,
     private val updateFields: UpdateFields,
@@ -206,6 +208,10 @@ class ObjectMenuViewModel(
             } else {
                 add(ObjectAction.LOCK)
             }
+        }
+
+        if (!isProfile) {
+            add(ObjectAction.DUPLICATE)
         }
 
         add(ObjectAction.USE_AS_TEMPLATE)
@@ -284,6 +290,9 @@ class ObjectMenuViewModel(
             ObjectAction.DELETE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
             }
+            ObjectAction.DUPLICATE -> {
+                proceedWithDuplication(ctx = ctx)
+            }
             ObjectAction.RESTORE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)
             }
@@ -314,6 +323,21 @@ class ObjectMenuViewModel(
             else -> {
                 viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
             }
+        }
+    }
+
+    private fun proceedWithDuplication(ctx: Id) {
+        viewModelScope.launch {
+            duplicateObject(ctx).process(
+                failure = {
+                    Timber.e(it, "Duplication error")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                },
+                success = {
+                    _toasts.emit("Your object is duplicated")
+                    delegator.delegate(Action.Duplicate(it))
+                }
+            )
         }
     }
 
@@ -374,6 +398,7 @@ class ObjectMenuViewModel(
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val setObjectIsArchived: SetObjectIsArchived,
+        private val duplicateObject: DuplicateObject,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
         private val storage: Editor.Storage,
@@ -385,6 +410,7 @@ class ObjectMenuViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
                 setObjectIsArchived = setObjectIsArchived,
+                duplicateObject = duplicateObject,
                 addToFavorite = addToFavorite,
                 removeFromFavorite = removeFromFavorite,
                 storage = storage,

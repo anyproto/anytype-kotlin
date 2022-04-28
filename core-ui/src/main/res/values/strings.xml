@@ -379,6 +379,7 @@
 
     <string name="slash_widget_other_line">Line divider</string>
     <string name="slash_widget_other_dots">Dots divider</string>
+    <string name="slash_widget_other_toc">Table of contents</string>
 
     <string name="slash_widget_actions_delete">Delete</string>
     <string name="slash_widget_actions_duplicate">Duplicate</string>

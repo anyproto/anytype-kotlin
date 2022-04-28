@@ -136,6 +136,15 @@ fun List<MBlock>.toCoreModels(
                 backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
+        block.tableOfContents != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = Block.Content.TableOfContents,
+                backgroundColor = block.backgroundColor.ifEmpty { null }
+            )
+        }
         else -> {
             Block(
                 id = block.id,

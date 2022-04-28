@@ -42,6 +42,10 @@ class MiddlewareFactory {
                 )
                 MBlock(relation = relation)
             }
+            is Block.Prototype.TableOfContents -> {
+                val toc = MBTableOfContents()
+                MBlock(tableOfContents = toc)
+            }
             else -> throw IllegalStateException("Unexpected prototype: $prototype")
         }
     }

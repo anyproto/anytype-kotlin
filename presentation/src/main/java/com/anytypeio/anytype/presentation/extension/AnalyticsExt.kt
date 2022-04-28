@@ -74,6 +74,9 @@ fun Block.Prototype.getAnalyticsEvent(
         Block.Prototype.Latex -> {
             Props(mapOf(EventsPropertiesKey.type to "latex"))
         }
+        Block.Prototype.TableOfContents -> {
+            Props(mapOf(EventsPropertiesKey.type to "table_of_contents"))
+        }
     }
 
     return EventAnalytics.Anytype(

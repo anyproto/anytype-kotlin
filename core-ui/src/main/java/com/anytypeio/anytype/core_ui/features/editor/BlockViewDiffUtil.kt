@@ -177,6 +177,11 @@ class BlockViewDiffUtil(
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
+        if (newBlock is BlockView.TableOfContents && oldBlock is BlockView.TableOfContents) {
+            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+                changes.add(BACKGROUND_COLOR_CHANGED)
+        }
+
         if (newBlock is BlockView.Relation.Related && oldBlock is BlockView.Relation.Related) {
             if (newBlock.background != oldBlock.background) {
                 changes.add(BACKGROUND_COLOR_CHANGED)

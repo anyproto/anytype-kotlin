@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor.model
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
@@ -45,6 +46,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOC
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
@@ -1030,6 +1032,21 @@ sealed class BlockView : ViewType {
     ) : BlockView(), Indentable, Selectable {
         override fun getViewType(): Int = HOLDER_LATEX
     }
+
+    data class TableOfContents(
+        override val id: String,
+        override val isSelected: Boolean,
+        val items: List<TableOfContentsItem>,
+        val backgroundColor: String? = null
+    ) : BlockView(), Selectable {
+        override fun getViewType(): Int = HOLDER_TOC
+    }
+
+    data class TableOfContentsItem(
+        val id: Id,
+        val name: String,
+        val depth : Int
+    )
 
     enum class Mode { READ, EDIT }
 }

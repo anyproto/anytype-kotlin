@@ -23,6 +23,7 @@ typealias MBRelation = anytype.model.Block.Content.Relation
 typealias MBAlign = anytype.model.Block.Align
 typealias MBPosition = anytype.model.Block.Position
 typealias MBSplitMode = anytype.Rpc.Block.Split.Request.Mode
+typealias MBTableOfContents = anytype.model.Block.Content.TableOfContents
 
 typealias MDV = anytype.model.Block.Content.Dataview
 typealias MDVView = anytype.model.Block.Content.Dataview.View

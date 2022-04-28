@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
@@ -68,6 +69,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectA
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectCard
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectDelete
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObjectLoading
+import com.anytypeio.anytype.core_ui.features.editor.holders.other.TableOfContents
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Unsupported
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
@@ -140,6 +142,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOC
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
@@ -680,6 +683,11 @@ class BlockAdapter(
                     }
                 }
             }
+            HOLDER_TOC -> {
+                TableOfContents(
+                    ItemBlockTocBinding.inflate(inflater, parent, false)
+                )
+            }
             HOLDER_UNSUPPORTED -> Unsupported(
                 ItemBlockUnsupportedBinding.inflate(inflater, parent, false)
             )
@@ -754,6 +762,11 @@ class BlockAdapter(
                                 onClickListener(ListenerType.LongClick(target = blocks[pos].id))
                             }
                         }
+                        holder.editorTouchProcessor.onDragAndDropTrigger = {
+                            onDragAndDropTrigger(holder)
+                        }
+                    }
+                    is TableOfContents -> {
                         holder.editorTouchProcessor.onDragAndDropTrigger = {
                             onDragAndDropTrigger(holder)
                         }
@@ -1054,6 +1067,12 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position] as BlockView.Latex
+                        )
+                    }
+                    is TableOfContents -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.TableOfContents
                         )
                     }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
@@ -1470,6 +1489,9 @@ class BlockAdapter(
             }
             is Latex -> {
                 holder.bind(item = blocks[position] as BlockView.Latex)
+            }
+            is TableOfContents -> {
+                holder.bind(item = blocks[position] as BlockView.TableOfContents, clicked = onClickListener)
             }
             is Unsupported -> {
                 holder.bind(item = blocks[position] as BlockView.Unsupported)

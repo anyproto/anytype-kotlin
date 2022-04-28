@@ -150,6 +150,10 @@ data class Block(
                 return style == Style.BULLET || style == Style.CHECKBOX || style == Style.NUMBERED
             }
 
+            fun isHeader(): Boolean {
+                return style == Style.H1 || style == Style.H2 || style == Style.H3 || style == Style.H4
+            }
+
             /**
              * Mark as a part of markup.
              * @property type markup type
@@ -179,6 +183,9 @@ data class Block(
                     type == Type.LINK || type == Type.MENTION || type == Type.OBJECT
             }
 
+            /**
+             * Style H4 is depricated
+             */
             enum class Style {
                 P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX, DESCRIPTION, CALLOUT
             }
@@ -328,6 +335,7 @@ data class Block(
         }
 
         data class Latex(val latex: String) : Content()
+        object TableOfContents : Content()
         object Unsupported : Content()
     }
 
@@ -363,6 +371,7 @@ data class Block(
         data class Relation(
             val key: Id
         ) : Prototype()
+        object TableOfContents : Prototype()
     }
 
     /**

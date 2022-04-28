@@ -22,6 +22,11 @@ class OtherMenuHolder(
                 ivIcon.setImageResource(R.drawable.ic_slash_other_dots)
                 tvSubtitle.gone()
             }
+            SlashItem.Other.TOC -> {
+                tvTitle.setText(R.string.slash_widget_other_toc)
+                ivIcon.setImageResource(R.drawable.ic_slash_toc)
+                tvSubtitle.gone()
+            }
         }
     }
 }

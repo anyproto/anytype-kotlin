@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
-import com.anytypeio.anytype.analytics.base.EventsDictionary.setChangeSortValue
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
@@ -106,6 +105,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
+import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
@@ -1091,7 +1091,15 @@ class EditorViewModel(
         val old = store.current()
         val new = old.map { if (it.id == view.id) view else it }
 
-        viewModelScope.launch { store.update(new) }
+        viewModelScope.launch {
+            if (view is BlockView.Text.Header && new.any { it is BlockView.TableOfContents }) {
+                store.update(new.updateTableOfContentsViews(view))
+                renderCommand.send(Unit)
+            } else {
+                store.update(new)
+            }
+        }
+
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
             dispatchObjectCreateEvent()
@@ -2643,6 +2651,52 @@ class EditorViewModel(
 
     }
 
+    private fun addTableOfContentsBlock() {
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = focused.content
+        val prototype = Prototype.TableOfContents
+
+        if (content is Content.Text && content.text.isEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Replace(
+                        context = context,
+                        target = focused.id,
+                        prototype = prototype
+                    )
+                )
+            }
+        } else {
+
+            val position: Position
+
+            var target: Id = focused.id
+
+            if (focused.id == context) {
+                if (focused.children.isEmpty()) {
+                    position = Position.INNER
+                } else {
+                    position = Position.TOP
+                    target = focused.children.first()
+                }
+            } else {
+                position = Position.BOTTOM
+            }
+
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        target = target,
+                        position = position,
+                        prototype = prototype
+                    )
+                )
+            }
+        }
+    }
+
     fun onAddDividerBlockClicked(style: Content.Divider.Style) {
         Timber.d("onAddDividerBlockClicked, style:[$style]")
         addDividerBlock(style)
@@ -3601,6 +3655,17 @@ class EditorViewModel(
                     )
                 }
             }
+            is ListenerType.TableOfContentsItem -> {
+                when (mode) {
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.Edit, EditorMode.Locked -> {
+                        val block = views.find { it.id == clicked.item }
+                        val pos = views.indexOf(block)
+                        searchResultScrollPosition.value = pos
+                    }
+                    else -> Unit
+                }
+            }
         }
     }
 
@@ -4174,6 +4239,12 @@ class EditorViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onHideKeyboardClicked()
                 addDividerBlock(style = Content.Divider.Style.DOTS)
+            }
+            is SlashItem.Other.TOC -> {
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onHideKeyboardClicked()
+                addTableOfContentsBlock()
             }
             is SlashItem.Actions -> {
                 cutSlashFilter(targetId = targetId)

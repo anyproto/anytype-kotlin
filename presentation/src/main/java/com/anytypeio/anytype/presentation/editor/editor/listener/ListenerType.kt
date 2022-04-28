@@ -62,4 +62,6 @@ sealed class ListenerType {
         data class ObjectTypeOpenSet(val type: String) : Relation()
         data class Featured(val relation: DocumentRelationView) : Relation()
     }
+
+    data class TableOfContentsItem(val target: Id, val item: Id) : ListenerType()
 }

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -533,6 +534,19 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             selection = selection,
                             mode = mode
+                        )
+                    )
+                }
+                is Content.TableOfContents -> {
+                    isPreviousBlockMedia = false
+                    mCounter = 0
+                    result.add(
+                        toc(
+                            block = block,
+                            indent = indent,
+                            mode = mode,
+                            selection = selection,
+                            blocks = children
                         )
                     )
                 }
@@ -1437,6 +1451,60 @@ class DefaultBlockViewRenderer @Inject constructor(
             selection = selection
         )
     )
+
+    private fun toc(
+        block: Block,
+        blocks: List<Block>,
+        indent: Int,
+        mode: EditorMode,
+        selection: Set<Id>
+    ): BlockView.TableOfContents {
+        val headers = blocks.filter { (it.content as? Content.Text)?.isHeader() ?: false }
+        var depth = 0
+        val items = mutableListOf<BlockView.TableOfContentsItem>()
+        headers.forEachIndexed { index, b ->
+            val content = b.content<Content.Text>()
+            if (content.style == Content.Text.Style.H1) {
+                depth = 0
+            }
+            val item = BlockView.TableOfContentsItem(
+                id = b.id,
+                name = content.text,
+                depth = depth
+            )
+            items.add(item)
+            val next = if (index + 1 < headers.size) {
+                headers[index + 1]
+            } else {
+                null
+            }
+            if (next != null) {
+                val contentNext = next.content<Content.Text>()
+                if (content.style == Content.Text.Style.H1 && (
+                            contentNext.style == Content.Text.Style.H2
+                                    || contentNext.style == Content.Text.Style.H3
+                            )
+                ) {
+                    depth += 1
+                }
+                if (content.style == Content.Text.Style.H2 && contentNext.style == Content.Text.Style.H3) {
+                    depth += 1
+                }
+            }
+        }
+
+        val toc = BlockView.TableOfContents(
+            id = block.id,
+            items = items,
+            backgroundColor = block.backgroundColor,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            )
+        )
+        return toc
+    }
 
     private fun relation(
         ctx: Id,

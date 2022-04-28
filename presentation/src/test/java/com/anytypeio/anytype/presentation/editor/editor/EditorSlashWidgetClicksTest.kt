@@ -600,7 +600,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val expectedOtherItems = listOf(
             SlashItem.Subheader.OtherWithBack,
             SlashItem.Other.Line,
-            SlashItem.Other.Dots
+            SlashItem.Other.Dots,
+            SlashItem.Other.TOC
         )
 
         val expected = SlashWidgetState.UpdateItems(

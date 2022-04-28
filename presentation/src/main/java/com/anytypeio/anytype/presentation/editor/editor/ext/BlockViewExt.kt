@@ -320,6 +320,9 @@ fun List<BlockView>.enterSAM(
         is BlockView.Latex -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.TableOfContents -> view.copy(
+            isSelected = isSelected
+        )
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }
@@ -855,6 +858,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Relation.Related -> copy(isSelected = newSelection)
     is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
     is BlockView.Latex -> copy(isSelected = newSelection)
+    is BlockView.TableOfContents -> copy(isSelected = newSelection)
     else -> this.also {
         if (this is BlockView.Selectable)
             Timber.e("Error when change selection for Selectable BlockView $this")
@@ -947,4 +951,22 @@ fun Document.getAppearanceParamsOfBlockLink(blockId: Id, details: Block.Details)
         return block.fields.getLinkToObjectAppearanceParams(layout = obj.layout)
     }
     return null
+}
+
+fun List<BlockView>.updateTableOfContentsViews(header: BlockView.Text.Header): List<BlockView> {
+    val updated = this.map { view ->
+        if (view is BlockView.TableOfContents) {
+            val items = view.items.map { item ->
+                if (item.id == header.id) {
+                    item.copy(name = header.text)
+                } else {
+                    item
+                }
+            }
+            view.copy(items = items)
+        } else {
+            view
+        }
+    }
+    return updated
 }

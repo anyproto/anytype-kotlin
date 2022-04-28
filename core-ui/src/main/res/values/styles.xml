@@ -996,4 +996,22 @@
         <item name="android:layout_marginStart">12dp</item>
     </style>
 
+    <!-- Editor, Table of Contents block -->
+    <!-- root -->
+    <style name="DefaultTableOfContentsBlockRootStyle">
+        <item name="android:layout_marginTop">@dimen/dp_12</item>
+        <item name="android:layout_marginBottom">@dimen/dp_12</item>
+        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
+    </style>
+
+    <!-- item -->
+    <style name="DefaultTableOfContentsBlockItemStyle">
+        <item name="android:layout_marginTop">@dimen/dp_6</item>
+        <item name="android:layout_marginBottom">@dimen/dp_6</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
 </resources>

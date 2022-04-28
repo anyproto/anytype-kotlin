@@ -239,5 +239,8 @@
     <!-- Editor, block: link to object as card -->
     <dimen name="default_link_card_root_margin_top">10dp</dimen>
 
+    <!-- Editor, block: table of contents -->
+    <dimen name="def_toc_item_padding_start">20dp</dimen>
+
 
 </resources>

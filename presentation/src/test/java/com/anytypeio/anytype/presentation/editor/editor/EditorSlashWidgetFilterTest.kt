@@ -1242,7 +1242,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashItem.Subheader.Other,
             SlashItem.Other.Line,
-            SlashItem.Other.Dots
+            SlashItem.Other.Dots,
+            SlashItem.Other.TOC
         )
         assertEquals(expected = expectedItems, actual = command.otherItems)
     }
@@ -1510,5 +1511,79 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.Color.Background(ThemeColor.GREEN.title, false)
         )
         assertEquals(expected = expectedItems, actual = command.backgroundItems)
+    }
+
+    @Test
+    fun `should return table of contents on toc filter`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val type1 = MockTypicalDocumentFactory.objectType("Hd")
+        val type2 = MockTypicalDocumentFactory.objectType("Df")
+        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf(type1, type2, type3))
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/toc", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.TOC
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `should return table of contents on table filter`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val type1 = MockTypicalDocumentFactory.objectType("Hd")
+        val type2 = MockTypicalDocumentFactory.objectType("Df")
+        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf(type1, type2, type3))
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/table", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.TOC
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
     }
 }

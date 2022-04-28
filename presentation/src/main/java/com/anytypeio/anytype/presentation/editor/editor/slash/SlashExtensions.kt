@@ -94,7 +94,8 @@ object SlashExtensions {
 
     fun getSlashWidgetOtherItems() = listOf(
         SlashItem.Other.Line,
-        SlashItem.Other.Dots
+        SlashItem.Other.Dots,
+        SlashItem.Other.TOC
     )
 
     fun getSlashWidgetActionItems() = listOf(
@@ -284,7 +285,8 @@ object SlashExtensions {
             searchBySubheadingOrName(
                 filter = filter,
                 subheading = subheading,
-                name = item.getSearchName()
+                name = item.getSearchName(),
+                abbreviation = item.getAbbreviation()
             )
         }
         return updateWithSubheader(items = filtered)
@@ -293,8 +295,10 @@ object SlashExtensions {
     private fun searchBySubheadingOrName(
         filter: String,
         subheading: String,
-        name: String
-    ): Boolean = subheading.startsWith(filter, true) || name.contains(filter, true)
+        name: String,
+        abbreviation: List<String>? = null
+    ): Boolean = subheading.startsWith(filter, true) || name.contains(filter, true) ||
+            abbreviation?.any { it.contains(filter, true) } ?: false
 
     private fun updateWithSubheader(items: List<SlashItem>): List<SlashItem> =
         if (items.isNotEmpty()) {

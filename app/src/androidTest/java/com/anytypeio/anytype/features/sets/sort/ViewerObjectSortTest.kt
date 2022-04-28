@@ -23,9 +23,9 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before

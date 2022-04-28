@@ -7,7 +7,10 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withInputType
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -20,9 +23,9 @@ import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValu
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
+import com.anytypeio.anytype.test_utils.utils.espresso.TextLineCountMatcher
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.espresso.TextLineCountMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.hamcrest.CoreMatchers.not

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.utils.espresso
+package com.anytypeio.anytype.test_utils.utils.espresso
 
 import android.graphics.drawable.ColorDrawable
 import android.view.View

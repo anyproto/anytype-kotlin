@@ -1,22 +1,9 @@
 package com.anytypeio.anytype.utils.espresso
 
-import android.graphics.drawable.ColorDrawable
 import android.view.View
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
-import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import com.anytypeio.anytype.core_utils.ext.dimen
-import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
 

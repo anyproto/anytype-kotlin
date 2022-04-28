@@ -12,9 +12,15 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
+import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
+import com.anytypeio.anytype.test_utils.utils.checkIsNotDisplayed
+import com.anytypeio.anytype.test_utils.utils.espresso.SetEditTextSelectionAction
+import com.anytypeio.anytype.test_utils.utils.matchView
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.*
-import com.anytypeio.anytype.utils.espresso.SetEditTextSelectionAction
+import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule

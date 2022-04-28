@@ -27,7 +27,7 @@ package com.anytypeio.anytype.features.editor
 //import com.anytypeio.anytype.presentation.editor.EditorViewModel
 //import com.anytypeio.anytype.ui.editor.EditorFragment
 //import com.anytypeio.anytype.utils.CoroutinesTestRule
-//import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
+//import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 //import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 //import org.hamcrest.CoreMatchers.anyOf
 //import org.junit.Before

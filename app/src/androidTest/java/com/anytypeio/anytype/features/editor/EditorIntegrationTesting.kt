@@ -40,8 +40,8 @@ import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_TOGGLE
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.hamcrest.CoreMatchers.not

@@ -9,7 +9,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -22,10 +26,10 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.utils.TestUtils
+import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.ui.sets.ViewerFilterFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.TestUtils
-import com.anytypeio.anytype.utils.checkHasText
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before

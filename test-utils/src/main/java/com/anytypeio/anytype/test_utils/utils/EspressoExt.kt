@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.utils
+package com.anytypeio.anytype.test_utils.utils
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
@@ -9,13 +9,13 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import com.anytypeio.anytype.utils.TestUtils.withRecyclerView
-import com.anytypeio.anytype.utils.espresso.HasChildViewWithText
-import com.anytypeio.anytype.utils.espresso.HasViewGroupChildViewWithText
-import com.anytypeio.anytype.utils.espresso.WithBackgroundColor
-import com.anytypeio.anytype.utils.espresso.WithChildViewCount
-import com.anytypeio.anytype.utils.espresso.WithTextColor
-import com.anytypeio.anytype.utils.espresso.WithoutBackgroundColor
+import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
+import com.anytypeio.anytype.test_utils.utils.espresso.HasChildViewWithText
+import com.anytypeio.anytype.test_utils.utils.espresso.HasViewGroupChildViewWithText
+import com.anytypeio.anytype.test_utils.utils.espresso.WithBackgroundColor
+import com.anytypeio.anytype.test_utils.utils.espresso.WithChildViewCount
+import com.anytypeio.anytype.test_utils.utils.espresso.WithTextColor
+import com.anytypeio.anytype.test_utils.utils.espresso.WithoutBackgroundColor
 import org.hamcrest.Matchers.not
 
 fun Int.findItemAt(position: Int, layoutId: Int): ViewInteraction {

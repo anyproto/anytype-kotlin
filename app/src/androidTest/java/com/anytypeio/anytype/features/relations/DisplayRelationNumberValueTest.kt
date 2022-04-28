@@ -23,10 +23,10 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.utils.TestUtils
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.Companion.FLOW_DATAVIEW
 import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.TestUtils
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before

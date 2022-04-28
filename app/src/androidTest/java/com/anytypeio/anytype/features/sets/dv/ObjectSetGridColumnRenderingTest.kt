@@ -4,13 +4,17 @@ import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.utils.checkHasText
-import com.anytypeio.anytype.utils.checkIsRecyclerSize
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.rVMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -162,13 +166,12 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
         launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
 
         with(R.id.rvHeader.rVMatcher()) {
-            checkIsRecyclerSize(6)
-            onItemView(0, R.id.cellText).checkHasText("")
-            onItemView(1, R.id.cellText).checkHasText(relation1.name)
-            onItemView(2, R.id.cellText).checkHasText(relation2.name)
-            onItemView(3, R.id.cellText).checkHasText(relation3.name)
-            onItemView(4, R.id.cellText).checkHasText(relation4.name)
-            onItemView(5, R.id.cellText).checkHasText(relation5.name)
+            checkIsRecyclerSize(5)
+            onItemView(0, R.id.cellText).checkHasText(relation1.name)
+            onItemView(1, R.id.cellText).checkHasText(relation2.name)
+            onItemView(2, R.id.cellText).checkHasText(relation3.name)
+            onItemView(3, R.id.cellText).checkHasText(relation4.name)
+            onItemView(4, R.id.cellText).checkHasText(relation5.name)
         }
     }
 }

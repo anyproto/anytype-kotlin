@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.utils;
+package com.anytypeio.anytype.test_utils.utils;
 
 import android.content.res.Resources;
 import android.view.View;

@@ -31,8 +31,13 @@ import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManage
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
+import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.relations.RelationListFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

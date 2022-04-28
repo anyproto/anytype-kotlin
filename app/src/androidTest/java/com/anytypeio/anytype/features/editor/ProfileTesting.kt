@@ -14,11 +14,11 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.utils.checkHasText
-import com.anytypeio.anytype.utils.checkIsDisplayed
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.rVMatcher
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule

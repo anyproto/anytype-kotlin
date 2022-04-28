@@ -4,12 +4,20 @@ import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.test_utils.utils.checkHasChildViewCount
+import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -134,14 +142,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(2)
+                .checkHasChildViewCount(1)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    target = R.id.tvText,
-                    text = ""
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     target = R.id.tvText,
                     text = ""
                 )
@@ -243,14 +246,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(2)
+                .checkHasChildViewCount(1)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    target = R.id.tvText,
-                    text = ""
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     target = R.id.tvText,
                     text = ""
                 )
@@ -352,14 +350,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(2)
+                .checkHasChildViewCount(1)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    target = R.id.tvText,
-                    text = ""
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     target = R.id.tvText,
                     text = "1234.012"
                 )
@@ -461,14 +454,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(2)
+                .checkHasChildViewCount(1)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    target = R.id.tvText,
-                    text = ""
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     target = R.id.tvText,
                     text = "1234"
                 )
@@ -570,14 +558,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(2)
+                .checkHasChildViewCount(1)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    target = R.id.tvText,
-                    text = ""
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     target = R.id.tvText,
                     text = "1234.0564321"
                 )
@@ -679,14 +662,9 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         with(R.id.rvRows.rVMatcher()) {
             onItemView(0, R.id.tvTitle).checkHasText("The Great Dictator")
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(2)
+                .checkHasChildViewCount(1)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    target = R.id.tvText,
-                    text = ""
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     target = R.id.tvText,
                     text = "-1234"
                 )

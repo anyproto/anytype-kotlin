@@ -4,12 +4,21 @@ import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.test_utils.utils.checkHasChildViewCount
+import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.utils.*
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -198,36 +207,35 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
 
         with(R.id.rvRows.rVMatcher()) {
             checkIsRecyclerSize(2)
-
             onItemView(0, R.id.rowCellRecycler)
-                .checkHasChildViewCount(6)
+                .checkHasChildViewCount(5)
+//                .checkHasChildViewWithText(
+//                    pos = 0,
+//                    text = "",
+//                    target = R.id.tvText
+//                )
                 .checkHasChildViewWithText(
                     pos = 0,
-                    text = "",
-                    target = R.id.tvText
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     text = object1value1,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 2,
+                    pos = 1,
                     text = object1value2,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 3,
+                    pos = 2,
                     text = object1value3,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 4,
+                    pos = 3,
                     text = object1value4,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 5,
+                    pos = 4,
                     text = object1value5,
                     target = R.id.tvText
                 )
@@ -235,34 +243,29 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
             onItemView(0, R.id.tvTitle).checkHasText("Anytype")
 
             onItemView(1, R.id.rowCellRecycler)
-                .checkHasChildViewCount(6)
+                .checkHasChildViewCount(5)
                 .checkHasChildViewWithText(
                     pos = 0,
-                    text = "",
-                    target = R.id.tvText
-                )
-                .checkHasChildViewWithText(
-                    pos = 1,
                     text = object2value1,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 2,
+                    pos = 1,
                     text = object2value2,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 3,
+                    pos = 2,
                     text = object2value3,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 4,
+                    pos = 3,
                     text = object2value4,
                     target = R.id.tvText
                 )
                 .checkHasChildViewWithText(
-                    pos = 5,
+                    pos = 4,
                     text = object2value5,
                     target = R.id.tvText
                 )

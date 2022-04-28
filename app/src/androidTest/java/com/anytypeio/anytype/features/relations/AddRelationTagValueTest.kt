@@ -8,7 +8,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -29,8 +33,16 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvid
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
+import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
+import com.anytypeio.anytype.test_utils.utils.matchView
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.type
 import com.anytypeio.anytype.ui.relations.RelationOptionValueBaseAddFragment
-import com.anytypeio.anytype.utils.*
+import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
@@ -39,7 +51,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest

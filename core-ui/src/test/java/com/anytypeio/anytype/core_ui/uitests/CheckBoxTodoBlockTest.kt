@@ -2,44 +2,28 @@ package com.anytypeio.anytype.core_ui.uitests
 
 import android.content.Context
 import android.os.Build
-import android.text.Editable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
-import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
-import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
-import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.test_utils.TestFragment
-import com.anytypeio.anytype.utils.checkHasTextColor
-import com.anytypeio.anytype.utils.checkIsDisplayed
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.performClick
-import com.anytypeio.anytype.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.verifyZeroInteractions
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.*
 import com.anytypeio.anytype.test_utils.R as R_test
 
 

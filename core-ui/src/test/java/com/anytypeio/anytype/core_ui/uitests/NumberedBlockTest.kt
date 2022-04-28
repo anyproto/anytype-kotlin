@@ -14,10 +14,10 @@ import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.TestFragment
-import com.anytypeio.anytype.utils.checkHasTextColor
-import com.anytypeio.anytype.utils.checkIsDisplayed
-import com.anytypeio.anytype.utils.onItemView
-import com.anytypeio.anytype.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
+import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

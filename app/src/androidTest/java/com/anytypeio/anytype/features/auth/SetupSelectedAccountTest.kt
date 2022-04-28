@@ -19,10 +19,10 @@ import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFra
 import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModelFactory
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.matchView
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.utils.CoroutinesTestRule
-import com.anytypeio.anytype.utils.checkHasText
-import com.anytypeio.anytype.utils.matchView
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule

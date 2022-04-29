@@ -2,14 +2,39 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import MockDataFactory
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
-import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
+import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
+import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.SetObjectType
+import com.anytypeio.anytype.domain.block.interactor.SplitBlock
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
+import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateAlignment
+import com.anytypeio.anytype.domain.block.interactor.UpdateBackgroundColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateBlocksMark
+import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -25,7 +50,15 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
-import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateDocument
+import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.page.Redo
+import com.anytypeio.anytype.domain.page.Undo
+import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -41,6 +74,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -212,6 +246,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
+    @Mock
+    lateinit var editorTemplateDelegate: EditorTemplateDelegate
+
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -310,7 +347,8 @@ open class EditorPresentationTestSetup {
             delegator = delegator,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            downloadUnsplashImage = downloadUnsplashImage
+            downloadUnsplashImage = downloadUnsplashImage,
+            templateDelegate = editorTemplateDelegate
         )
     }
 

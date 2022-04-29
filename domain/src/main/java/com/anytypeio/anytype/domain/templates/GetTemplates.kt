@@ -58,5 +58,5 @@ class GetTemplates(
     /**
      * @property [type] id of the object type, whose templates we are interested in.
      */
-    class Params(val type: Id)
+    data class Params(val type: Id)
 }

@@ -15,8 +15,29 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
-import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
+import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
+import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.SetObjectType
+import com.anytypeio.anytype.domain.block.interactor.SplitBlock
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
+import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateAlignment
+import com.anytypeio.anytype.domain.block.interactor.UpdateBackgroundColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateBlocksMark
+import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -37,13 +58,23 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
-import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateDocument
+import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.page.Redo
+import com.anytypeio.anytype.domain.page.Undo
+import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
@@ -59,8 +90,15 @@ import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.relations.providers.*
+import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -162,7 +200,8 @@ object EditorSessionModule {
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
-        setDocImageIcon: SetDocumentImageIcon
+        setDocImageIcon: SetDocumentImageIcon,
+        editorTemplateDelegate: EditorTemplateDelegate
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -193,7 +232,19 @@ object EditorSessionModule {
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        setDocImageIcon = setDocImageIcon
+        setDocImageIcon = setDocImageIcon,
+        editorTemplateDelegate = editorTemplateDelegate
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTemplateDelegate(
+        getTemplates: GetTemplates,
+        applyTemplate: ApplyTemplate
+    ) : EditorTemplateDelegate = DefaultEditorTemplateDelegate(
+        getTemplates = getTemplates,
+        applyTemplate = applyTemplate
     )
 
     @JvmStatic
@@ -823,4 +874,28 @@ object EditorUseCaseModule {
     fun provideSetDocumentImageIconUseCase(
         repo: BlockRepository
     ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getTemplates(repo: BlockRepository) : GetTemplates = GetTemplates(
+        repo = repo,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun applyTemplates(repo: BlockRepository) : ApplyTemplate = ApplyTemplate(
+        repo = repo,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
+    )
 }

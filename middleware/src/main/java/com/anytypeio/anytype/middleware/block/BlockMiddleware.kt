@@ -533,4 +533,9 @@ class BlockMiddleware(
         middleware.setObjectLayout(ctx, layout)
 
     override suspend fun clearFileCache() = middleware.fileListOffload()
+
+    override suspend fun applyTemplate(ctx: Id, template: Id) = middleware.applyTemplate(
+        ctx = ctx,
+        template = template
+    )
 }

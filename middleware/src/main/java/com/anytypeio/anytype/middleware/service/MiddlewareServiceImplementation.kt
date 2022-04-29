@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.Account
+import anytype.Rpc.ApplyTemplate
 import anytype.Rpc.Block
 import anytype.Rpc.BlockList
 import anytype.Rpc.Config
@@ -1006,6 +1007,19 @@ class MiddlewareServiceImplementation : MiddlewareService {
         val response = ObjectDuplicate.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != ObjectDuplicate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun applyTemplate(request: ApplyTemplate.Request): ApplyTemplate.Response {
+        val encoded = Service.applyTemplate(
+            ApplyTemplate.Request.ADAPTER.encode(request)
+        )
+        val response = ApplyTemplate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != ApplyTemplate.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

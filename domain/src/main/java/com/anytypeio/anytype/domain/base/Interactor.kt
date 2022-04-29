@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlin.Result
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -50,5 +51,11 @@ abstract class Interactor<in P>(private val context: CoroutineContext = Dispatch
 
 abstract class ResultInteractor<in P, R> {
     operator fun invoke(params: P): Flow<R> = flow { emit(doWork(params)) }
+    suspend fun run(params: P) = doWork(params)
+    suspend fun execute(params: P) : Result<R> = try {
+        Result.success(doWork(params))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
     protected abstract suspend fun doWork(params: P): R
 }

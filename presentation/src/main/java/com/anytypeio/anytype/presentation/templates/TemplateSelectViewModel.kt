@@ -3,37 +3,48 @@ package com.anytypeio.anytype.presentation.templates
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TemplateSelectViewModel(
-    private val createPage: CreatePage
+    private val applyTemplate: ApplyTemplate
 ) : BaseViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
-        MutableLiveData()
+    val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
-    fun onCancel(type: Id) {
-        // TODO
-    }
+    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> = MutableLiveData()
 
-    fun onUseTemplate(type: Id, template: Id) {
-        // TODO
+    fun onUseTemplate(ctx: Id, template: Id) {
+        viewModelScope.launch {
+            val result = applyTemplate.execute(
+                ApplyTemplate.Params(
+                    ctx = ctx,
+                    template = template
+                )
+            )
+            if (result.isFailure) {
+                sendToast("Something went wrong. Please, try again later.")
+            }
+            isDismissed.emit(true)
+        }
     }
 
     class Factory @Inject constructor(
-        private val createPage: CreatePage
+        private val applyTemplate: ApplyTemplate
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return TemplateSelectViewModel(
-                createPage = createPage
+                applyTemplate = applyTemplate
             ) as T
         }
     }

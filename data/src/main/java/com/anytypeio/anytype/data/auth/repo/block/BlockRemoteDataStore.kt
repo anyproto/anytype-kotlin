@@ -497,4 +497,9 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         remote.setObjectLayout(ctx, layout)
 
     override suspend fun clearFileCache() = remote.clearFileCache()
+
+    override suspend fun applyTemplate(ctx: Id, template: Id) = remote.applyTemplate(
+        ctx = ctx,
+        template = template
+    )
 }

@@ -14,7 +14,12 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.showHome
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -36,6 +41,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
@@ -52,7 +58,14 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine as Machine
@@ -76,7 +89,8 @@ class HomeDashboardViewModel(
     private val flavourConfigProvider: FlavourConfigProvider,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
-    private val objectStore: ObjectStore
+    private val objectStore: ObjectStore,
+    private val getTemplates: GetTemplates
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -741,20 +755,44 @@ class HomeDashboardViewModel(
     private fun proceedWithGettingDefaultPageType() {
         viewModelScope.launch {
             getDefaultEditorType.invoke(Unit).proceed(
-                failure = { Timber.e(it, "Error while getting default page type") },
-                success = { response -> proceedWithCreatePage(type = response.type) }
+                failure = {
+                    Timber.e(it, "Error while getting default page type")
+                    proceedWithCreatingNewObject(type = null)
+                },
+                success = { response -> proceedWithCreatingNewObject(type = response.type) }
             )
         }
     }
 
-    private fun proceedWithCreatePage(type: String?) {
-        val isDraft = true
-        val params = CreatePage.Params(
-            ctx = null,
-            isDraft = isDraft,
-            type = type,
-            emoji = null
-        )
+    private fun proceedWithCreatingNewObject(type: String?) {
+        if (type != null) {
+            viewModelScope.launch {
+                val templates = try {
+                    getTemplates.run(GetTemplates.Params(type))
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                val params = CreatePage.Params(
+                    ctx = null,
+                    isDraft = false,
+                    type = type,
+                    emoji = null,
+                    template = if (templates.size == 1) templates.first().id else null
+                )
+                createNewObject(params)
+            }
+        } else {
+            val params = CreatePage.Params(
+                ctx = null,
+                isDraft = true,
+                type = type,
+                emoji = null
+            )
+            createNewObject(params)
+        }
+    }
+
+    private fun createNewObject(params: CreatePage.Params) {
         createPage.invoke(viewModelScope, params) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while creating a new page") },

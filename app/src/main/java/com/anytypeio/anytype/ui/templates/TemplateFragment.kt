@@ -98,7 +98,9 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): FragmentTemplateBinding = inflateBinding(inflater, container)
+    ): FragmentTemplateBinding = FragmentTemplateBinding.inflate(
+        inflater, container, false
+    )
 
     override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
     override fun onUrlPasted(url: Url) {}

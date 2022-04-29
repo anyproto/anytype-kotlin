@@ -2,19 +2,31 @@ package com.anytypeio.anytype.presentation.sets.main
 
 import MockDataFactory
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -77,6 +89,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var setDocCoverImage: SetDocCoverImage
 
+    @Mock
+    lateinit var getTemplates: GetTemplates
+
     val dispatcher = Dispatcher.Default<Payload>()
     val delegator = Delegator.Default<Action>()
     val reducer = ObjectSetReducer()
@@ -105,7 +120,8 @@ open class ObjectSetViewModelTestSetup {
         session = session,
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
-        setDocCoverImage = setDocCoverImage
+        setDocCoverImage = setDocCoverImage,
+        getTemplates = getTemplates
     )
 
     fun stubInterceptEvents(
@@ -186,6 +202,35 @@ open class ObjectSetViewModelTestSetup {
     fun stubCloseBlock() {
         closeBlock.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    fun stubCreateDataViewRecord(
+        record: Map<String, Any?> = emptyMap()
+    ) {
+        createDataViewRecord.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(record)
+        }
+    }
+
+    fun stubGetTemplates(
+        type: String,
+        templates : List<Id> = emptyList()
+    ) {
+        getTemplates.stub {
+            onBlocking {
+                run(
+                    GetTemplates.Params(type)
+                )
+            } doReturn templates.map {
+                ObjectWrapper.Basic(
+                    map = mapOf(
+                        Relations.ID to it
+                    )
+                )
+            }
         }
     }
 }

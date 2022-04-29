@@ -18,3 +18,6 @@ jobs:
         run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest -Dpre-dex=false
+      - name: Android test report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }} # IMPORTANT: run Android Test Report regardless

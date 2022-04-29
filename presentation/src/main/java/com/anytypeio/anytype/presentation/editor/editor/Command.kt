@@ -103,7 +103,8 @@ sealed class Command {
 
     data class OpenChangeObjectTypeScreen(
         val ctx: Id,
-        val smartBlockType: SmartBlockType
+        val smartBlockType: SmartBlockType,
+        val isDraft: Boolean = false
     ) : Command()
 
     data class OpenMoveToScreen(

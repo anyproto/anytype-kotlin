@@ -497,5 +497,9 @@
     <string name="limit_object_type">Limit object type</string>
 
     <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="swipe_down_to_skip">Swipe down to skip</string>
+    <string name="show">Show</string>
+
+    <string name="this_type_has_templates">This type has %1$d templates</string>
 
 </resources>

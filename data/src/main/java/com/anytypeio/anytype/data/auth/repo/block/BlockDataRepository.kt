@@ -579,6 +579,11 @@ class BlockDataRepository(
 
     override suspend fun clearFileCache() = factory.remote.clearFileCache()
 
+    override suspend fun applyTemplate(ctx: Id, template: Id) = factory.remote.applyTemplate(
+        ctx = ctx,
+        template = template
+    )
+
     override suspend fun duplicateObject(id: Id): Id {
         return factory.remote.duplicateObject(id)
     }

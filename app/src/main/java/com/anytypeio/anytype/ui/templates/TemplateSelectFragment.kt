@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -31,9 +32,9 @@ class TemplateSelectFragment :
     @Inject
     lateinit var factory: TemplateSelectViewModel.Factory
 
-    private val ids: List<String> get() = arg(TEMPLATE_IDS_KEY)
+    private val ids: List<Id> get() = arg(TEMPLATE_IDS_KEY)
     private val type: Id get() = arg(OBJECT_TYPE_KEY)
-    private val typeName: String? get() = arg(OBJECT_TYPE_NAME_KEY)
+    private val ctx: Id get() = arg(CTX_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,6 +47,7 @@ class TemplateSelectFragment :
                 launch { setupTemplateHeaderMessage() }
                 launch { setupCancelClicks() }
                 launch { setupUseTemplateClicks() }
+                launch { setupDismissStatusObserver() }
             }
         }
     }
@@ -53,24 +55,26 @@ class TemplateSelectFragment :
     private suspend fun setupUseTemplateClicks() {
         binding.btnUseTemplate.clicks().collect {
             vm.onUseTemplate(
-                type = type,
-                template = ids[binding.templateViewPager.currentItem]
+                template = ids[binding.templateViewPager.currentItem],
+                ctx = ctx
             )
         }
     }
 
     private suspend fun setupCancelClicks() {
-        binding.btnCancel.clicks().collect { vm.onCancel(type) }
+        binding.btnCancel.clicks().collect { exit() }
+    }
+
+    private suspend fun setupDismissStatusObserver() {
+        vm.isDismissed.collect { isDismissed -> if (isDismissed) exit() }
+    }
+
+    private fun exit() {
+        findNavController().popBackStack()
     }
 
     private suspend fun setupTemplateHeaderMessage() {
-        val name = typeName
-        if (name != null)
-            binding.tvTemplateCountOrTutorial.text = getString(
-                R.string.type_has_templates, name, ids.size
-            )
-        else
-            binding.tvTemplateCountOrTutorial.text = getString(
+        binding.tvTemplateCountOrTutorial.text = getString(
                 R.string.this_type_has_templates, ids.size
             )
         delay(USE_SWIPE_TO_CHOOSE_MSG_DELAY)
@@ -88,14 +92,14 @@ class TemplateSelectFragment :
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): FragmentTemplateSelectBinding = inflateBinding(
-        inflater, container
+    ): FragmentTemplateSelectBinding = FragmentTemplateSelectBinding.inflate(
+        inflater, container, false
     )
 
     companion object {
         const val TEMPLATE_IDS_KEY = "arg.template.ids"
         const val OBJECT_TYPE_KEY = "arg.template.object_type"
-        const val OBJECT_TYPE_NAME_KEY = "arg.template.object_type.name"
+        const val CTX_KEY = "arg.template.ctx"
 
         private const val USE_SWIPE_TO_CHOOSE_MSG_DELAY = 2000L
     }

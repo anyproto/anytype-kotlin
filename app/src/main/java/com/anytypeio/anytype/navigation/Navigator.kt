@@ -17,6 +17,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.navigation.PageNavigationFragment
 import com.anytypeio.anytype.ui.sets.CreateObjectSetFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 
 class Navigator : AppNavigation {
 
@@ -252,5 +253,20 @@ class Navigator : AppNavigation {
 
     override fun logout() {
         navController?.navigate(R.id.actionLogout)
+    }
+
+    override fun openTemplates(
+        ctx: Id,
+        type: String,
+        templates: List<Id>
+    ) {
+        navController?.navigate(
+            R.id.templateSelectScreen,
+            bundleOf(
+                TemplateSelectFragment.CTX_KEY to ctx,
+                TemplateSelectFragment.TEMPLATE_IDS_KEY to templates,
+                TemplateSelectFragment.OBJECT_TYPE_KEY to type
+            )
+        )
     }
 }

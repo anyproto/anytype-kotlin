@@ -53,7 +53,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should not start creating new record if dv is not initialized yet`() {
 
-        // SETIP
+        // SETUP
 
         stubInterceptEvents()
         stubOpenObjectSet(

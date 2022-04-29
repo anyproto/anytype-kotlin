@@ -14,7 +14,11 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.*
+import com.anytypeio.anytype.domain.config.DebugSettings
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -29,6 +33,7 @@ import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -104,6 +109,9 @@ open class DashboardTestSetup {
     @Mock
     lateinit var subscriptionEventChannel: SubscriptionEventChannel
 
+    @Mock
+    lateinit var getTemplates: GetTemplates
+
     lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
 
     lateinit var objectStore: ObjectStore
@@ -151,7 +159,8 @@ open class DashboardTestSetup {
                     computation = coroutineTestRule.testDispatcher,
                     main = coroutineTestRule.testDispatcher
                 )
-            )
+            ),
+            getTemplates = getTemplates
         )
     }
 

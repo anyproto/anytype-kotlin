@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
@@ -72,6 +73,8 @@ import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -87,11 +90,14 @@ import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
@@ -159,6 +165,10 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var mergeBlocks: MergeBlocks
+
+    lateinit var editorTemplateDelegate: EditorTemplateDelegate
+    lateinit var getTemplates: GetTemplates
+    lateinit var applyTemplate: ApplyTemplate
 
     lateinit var createNewDocument: CreateNewDocument
     lateinit var interceptThreadStatus: InterceptThreadStatus
@@ -237,6 +247,12 @@ open class EditorTestSetup {
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
+        val dispatchers = AppCoroutineDispatchers(
+            io = StandardTestDispatcher(),
+            main = StandardTestDispatcher(),
+            computation = StandardTestDispatcher()
+        )
+
         splitBlock = SplitBlock(repo)
         createPage = CreatePage(repo)
         setObjectIsArchived = SetObjectIsArchived(repo)
@@ -285,6 +301,19 @@ open class EditorTestSetup {
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
         createBookmark = CreateBookmark(repo)
+        applyTemplate = ApplyTemplate(
+            repo = repo,
+            dispatchers = dispatchers
+        )
+        getTemplates = GetTemplates(
+            repo = repo,
+            dispatchers = dispatchers
+        )
+
+        editorTemplateDelegate = DefaultEditorTemplateDelegate(
+            getTemplates = getTemplates,
+            applyTemplate = applyTemplate
+        )
 
         TestEditorFragment.testViewModelFactory = EditorViewModelFactory(
             openPage = openPage,
@@ -361,7 +390,8 @@ open class EditorTestSetup {
             downloadUnsplashImage = downloadUnsplashImage,
             delegator = Delegator.Default(),
             setDocCoverImage = setDocCoverImage,
-            setDocImageIcon = setDocImageIcon
+            setDocImageIcon = setDocImageIcon,
+            editorTemplateDelegate = editorTemplateDelegate
         )
     }
 

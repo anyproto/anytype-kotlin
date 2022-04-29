@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc.ObjectDuplicate
 import anytype.Rpc.Account
+import anytype.Rpc.ApplyTemplate
 import anytype.Rpc.Block
 import anytype.Rpc.BlockList
 import anytype.Rpc.Config
@@ -259,4 +260,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectDuplicate(request: ObjectDuplicate.Request) : ObjectDuplicate.Response
+
+    @Throws(Exception::class)
+    fun applyTemplate(request: ApplyTemplate.Request): ApplyTemplate.Response
 }

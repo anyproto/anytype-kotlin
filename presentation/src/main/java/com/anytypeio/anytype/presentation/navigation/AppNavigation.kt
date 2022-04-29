@@ -50,6 +50,12 @@ interface AppNavigation {
 
     fun deletedAccountScreen(deadline: Long)
 
+    fun openTemplates(
+        ctx: Id,
+        type: String,
+        templates: List<Id>
+    )
+
     fun logout()
 
     sealed class Command {
@@ -104,6 +110,12 @@ interface AppNavigation {
         object OpenUpdateAppScreen : Command()
 
         data class DeletedAccountScreen(val deadline: Long) : Command()
+
+        data class OpenTemplates(
+            val ctx: Id,
+            val type: String,
+            val templates: List<Id>
+        ) : Command()
     }
 
     interface Provider {

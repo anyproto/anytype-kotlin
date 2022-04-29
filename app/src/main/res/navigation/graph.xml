@@ -523,4 +523,10 @@
         app:popUpTo="@+id/main_navigation"
         app:popUpToInclusive="true" />
 
+    <fragment
+        android:id="@+id/templateSelectScreen"
+        android:name="com.anytypeio.anytype.ui.templates.TemplateSelectFragment"
+        android:label="TemplateSelectScreen"
+        tools:layout="@layout/fragment_template_select"/>
+
 </navigation>

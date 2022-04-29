@@ -3,13 +3,21 @@ package com.anytypeio.anytype.presentation.dashboard
 import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.*
+import com.anytypeio.anytype.domain.config.DebugSettings
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -22,6 +30,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.jraska.livedata.test
@@ -34,7 +43,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyZeroInteractions
 
 class HomeDashboardViewModelTest {
 
@@ -101,6 +117,9 @@ class HomeDashboardViewModelTest {
     @Mock
     lateinit var objectStore: ObjectStore
 
+    @Mock
+    lateinit var getTemplates: GetTemplates
+
     private lateinit var vm: HomeDashboardViewModel
 
     private val config = Config(
@@ -139,7 +158,8 @@ class HomeDashboardViewModelTest {
             flavourConfigProvider = flavourConfigProvider,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
-            objectSearchSubscriptionContainer = objectSearchSubscriptionContainer
+            objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
+            getTemplates = getTemplates
         )
     }
 

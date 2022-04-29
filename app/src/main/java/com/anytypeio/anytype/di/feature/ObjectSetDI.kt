@@ -16,10 +16,16 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcompo
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
+import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
@@ -31,12 +37,22 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.presentation.relations.providers.*
-import com.anytypeio.anytype.presentation.sets.*
+import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectTypeProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import com.anytypeio.anytype.presentation.sets.ObjectSet
+import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
+import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
+import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Module
@@ -118,7 +134,8 @@ object ObjectSetModule {
         session: ObjectSetSession,
         analytics: Analytics,
         downloadUnsplashImage: DownloadUnsplashImage,
-        setDocCoverImage: SetDocCoverImage
+        setDocCoverImage: SetDocCoverImage,
+        getTemplates: GetTemplates
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -138,7 +155,8 @@ object ObjectSetModule {
         session = session,
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
-        setDocCoverImage = setDocCoverImage
+        setDocCoverImage = setDocCoverImage,
+        getTemplates = getTemplates
     )
 
     @JvmStatic
@@ -331,5 +349,17 @@ object ObjectSetModule {
     @PerScreen
     fun provideDownload(repo: UnsplashRepository): DownloadUnsplashImage = DownloadUnsplashImage(
         repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetTemplates(repo: BlockRepository): GetTemplates = GetTemplates(
+        repo = repo,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
     )
 }

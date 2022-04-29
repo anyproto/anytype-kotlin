@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -92,7 +93,8 @@ class ObjectSetViewModel(
     private val objectSetRecordCache: ObjectSetRecordCache,
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val getTemplates: GetTemplates
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -698,11 +700,12 @@ class ObjectSetViewModel(
             } else {
                 val startTime = System.currentTimeMillis()
                 viewModelScope.launch {
+                    val template = resolveTemplateForNewRecord()
                     createDataViewRecord(
                         CreateDataViewRecord.Params(
                             context = context,
                             target = reducer.state.value.dataview.id,
-                            template = null
+                            template = template
                         )
                     ).process(
                         failure = { Timber.e(it, "Error while creating new record") },
@@ -730,6 +733,24 @@ class ObjectSetViewModel(
             }
         } else {
             toast("Data view is not initialized yet.")
+        }
+    }
+
+    private suspend fun resolveTemplateForNewRecord() : Id? {
+        val obj = ObjectWrapper.Basic(reducer.state.value.details[context]?.map ?: emptyMap())
+        val type = if (obj.setOf.size == 1) obj.setOf.first() else null
+        return if (type != null) {
+            val templates  = try {
+                getTemplates.run(GetTemplates.Params(type))
+            } catch (e: Exception) {
+                emptyList()
+            }
+            if (templates.size == 1)
+                templates.first().id
+            else
+                null
+        } else {
+            null
         }
     }
 

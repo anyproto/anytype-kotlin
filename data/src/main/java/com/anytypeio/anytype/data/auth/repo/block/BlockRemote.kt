@@ -235,4 +235,6 @@ interface BlockRemote {
     suspend fun clearFileCache()
 
     suspend fun duplicateObject(id: Id): Id
+
+    suspend fun applyTemplate(ctx: Id, template: Id)
 }

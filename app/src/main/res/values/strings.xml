@@ -279,7 +279,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
     <string name="use_template">Use template</string>
     <string name="type_has_templates">Type \"%1$s\" has %2$d templates</string>
-    <string name="this_type_has_templates">This type has %1$d templates</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>

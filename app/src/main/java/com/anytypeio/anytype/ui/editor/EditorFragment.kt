@@ -124,6 +124,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
+import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
@@ -143,6 +144,7 @@ import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
+import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_IS_DRAFT_KEY
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_REQUEST_KEY
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_URL_KEY
 import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
@@ -221,6 +223,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                     binding.styleToolbarBackground.id -> {
                         vm.onCloseBlockStyleBackgroundToolbarClicked()
+                    }
+                    binding.typeHasTemplateToolbar.id -> {
+                        vm.onTypeHasTemplateToolbarHidden()
                     }
                 }
             }
@@ -415,7 +420,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         pickerDelegate.initPicker(vm, ctx)
         setFragmentResultListener(OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val id = bundle.getString(OBJECT_TYPE_URL_KEY)
-            onObjectTypePicked(id = id)
+            val isDraft = bundle.getBoolean(OBJECT_IS_DRAFT_KEY, false)
+            onObjectTypePicked(id = id, isDraft = isDraft)
         }
         setupOnBackPressedDispatcher()
         getEditorSettings()
@@ -455,6 +461,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
             jobs += subscribe(vm.copyFileStatus) { command ->
                 pickerDelegate.onCopyFileCommand(command)
+            }
+            jobs += subscribe(vm.selectTemplateViewState) { state ->
+                val behavior = BottomSheetBehavior.from(binding.typeHasTemplateToolbar)
+                when (state) {
+                    is SelectTemplateViewState.Active -> {
+                        binding.typeHasTemplateToolbar.count = state.count
+                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                    }
+                    SelectTemplateViewState.Idle -> {
+                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
+                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
+                }
             }
         }
         vm.onStart(id = extractDocumentId())
@@ -664,6 +684,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
+        binding.typeHasTemplateToolbar.binding.btnShow.setOnClickListener {
+            vm.onShowTemplateClicked()
+        }
+
         lifecycleScope.launch {
             binding.searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
         }
@@ -681,6 +705,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarBackground).state =
             BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.typeHasTemplateToolbar).state = BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
     }
@@ -814,7 +839,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onSetRelationKeyClicked(blockId = blockId, key = key)
     }
 
-    private fun onObjectTypePicked(id: Id?) {
+    private fun onObjectTypePicked(id: Id?, isDraft: Boolean = false) {
         vm.onObjectTypeChanged(id = id)
     }
 

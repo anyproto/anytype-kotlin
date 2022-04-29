@@ -4,14 +4,40 @@ import MockDataFactory
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.UpdateDivider
-import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
+import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
+import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.SetObjectType
+import com.anytypeio.anytype.domain.block.interactor.SplitBlock
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
+import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateAlignment
+import com.anytypeio.anytype.domain.block.interactor.UpdateBackgroundColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateBlocksMark
+import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -27,7 +53,15 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
-import com.anytypeio.anytype.domain.page.*
+import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateDocument
+import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.page.Redo
+import com.anytypeio.anytype.domain.page.Undo
+import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -38,20 +72,25 @@ import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.editor.*
+import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
+import com.anytypeio.anytype.presentation.editor.editor.Interactor
+import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
+import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -61,8 +100,10 @@ import com.anytypeio.anytype.presentation.util.TXT
 import com.jraska.livedata.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -70,7 +111,17 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.verifyZeroInteractions
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
@@ -244,6 +295,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
+
+    @Mock
+    lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -4016,7 +4070,8 @@ open class EditorViewModelTest {
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            delegator = delegator
+            delegator = delegator,
+            templateDelegate = editorTemplateDelegate
         )
     }
 

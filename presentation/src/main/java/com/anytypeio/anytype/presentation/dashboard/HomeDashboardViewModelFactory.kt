@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
+import com.anytypeio.anytype.domain.templates.GetTemplates
 
 class HomeDashboardViewModelFactory(
     private val getProfile: GetProfile,
@@ -40,7 +41,8 @@ class HomeDashboardViewModelFactory(
     private val flavourConfigProvider: FlavourConfigProvider,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
-    private val objectStore: ObjectStore
+    private val objectStore: ObjectStore,
+    private val getTemplates: GetTemplates
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -64,7 +66,8 @@ class HomeDashboardViewModelFactory(
             flavourConfigProvider = flavourConfigProvider,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
-            objectStore = objectStore
+            objectStore = objectStore,
+            getTemplates = getTemplates
         ) as T
     }
 }

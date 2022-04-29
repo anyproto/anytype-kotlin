@@ -8,7 +8,11 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.*
+import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.GetConfig
+import com.anytypeio.anytype.domain.config.GetDebugSettings
+import com.anytypeio.anytype.domain.config.InfrastructureRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
@@ -23,6 +27,7 @@ import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.dashboard.DashboardFragment
@@ -72,7 +77,8 @@ object HomeDashboardModule {
         flavourConfigProvider: FlavourConfigProvider,
         objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
-        objectStore: ObjectStore
+        objectStore: ObjectStore,
+        getTemplates: GetTemplates
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
@@ -92,7 +98,8 @@ object HomeDashboardModule {
         flavourConfigProvider = flavourConfigProvider,
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
-        objectStore = objectStore
+        objectStore = objectStore,
+        getTemplates = getTemplates
     )
 
     @JvmStatic
@@ -245,5 +252,19 @@ object HomeDashboardModule {
     ): CancelSearchSubscription = CancelSearchSubscription(
         repo = repo,
         store = store
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getTemplates(
+        repo: BlockRepository
+    ) : GetTemplates = GetTemplates(
+        repo = repo,
+        dispatchers = AppCoroutineDispatchers(
+            io = Dispatchers.IO,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
     )
 }

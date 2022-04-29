@@ -24,7 +24,7 @@ class CreateDataViewRecord(
      * @property [context] operation's context
      * @property [target] data-view's block id
      */
-    class Params(
+    data class Params(
         val context: Id,
         val target: Id,
         val template: Id?

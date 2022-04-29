@@ -142,6 +142,10 @@ import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.search.search
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
+import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
+import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
@@ -228,7 +232,8 @@ class EditorViewModel(
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
-    private val setDocImageIcon: SetDocumentImageIcon
+    private val setDocImageIcon: SetDocumentImageIcon,
+    private val templateDelegate: EditorTemplateDelegate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -236,6 +241,7 @@ class EditorViewModel(
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
+    EditorTemplateDelegate by templateDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
     val actions = MutableStateFlow(ActionItemType.default)
@@ -246,6 +252,17 @@ class EditorViewModel(
     val isUndoEnabled = MutableStateFlow(false)
     val isRedoEnabled = MutableStateFlow(false)
     val isUndoRedoToolbarIsVisible = MutableStateFlow(false)
+
+    val selectTemplateViewState = templateDelegateState.map { state ->
+        when(state) {
+            is SelectTemplateState.Available -> {
+                SelectTemplateViewState.Active(
+                    count = state.templates.size
+                )
+            }
+            else -> SelectTemplateViewState.Idle
+        }
+    }
 
     val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
 
@@ -332,6 +349,26 @@ class EditorViewModel(
                     is Action.Duplicate -> proceedWithOpeningPage(action.id)
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            templateDelegateState.collect { state ->
+                Timber.d("Template delegate state: $state")
+                when(state) {
+                    is SelectTemplateState.Accepted -> {
+                        commands.postValue(EventWrapper(Command.CloseKeyboard))
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenTemplates(
+                                    type = state.type,
+                                    templates = state.templates,
+                                    ctx = context
+                                )
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -3905,7 +3942,7 @@ class EditorViewModel(
         }
     }
 
-    fun onObjectTypeChanged(id: Id?) {
+    fun onObjectTypeChanged(id: Id?, isDraft: Boolean = false) {
         Timber.d("onObjectTypeChanged, typeId:[$id]")
         if (id == null) {
             sendToast(CANNOT_CHANGE_NULL_OBJECT_TYPE)
@@ -3923,6 +3960,9 @@ class EditorViewModel(
                 typeId = id,
                 context = analyticsContext
             )
+        }
+        if (isDraft) {
+            proceedWithTemplateSelection(id)
         }
     }
 
@@ -5372,6 +5412,7 @@ class EditorViewModel(
                 )
             )
         }
+        proceedWithTemplateSelection(typeId)
     }
 
     fun onObjectTypesWidgetSearchClicked() {
@@ -5675,5 +5716,28 @@ class EditorViewModel(
             }
         }
     }
+    //endregion
+
+    //region TEMPLATING
+
+   fun onShowTemplateClicked() {
+       viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
+   }
+
+    fun onTypeHasTemplateToolbarHidden() {
+        viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
+    }
+
+    private fun proceedWithTemplateSelection(typeId: Id) {
+        viewModelScope.launch {
+            onEvent(
+                SelectTemplateEvent.OnStart(
+                    ctx = context,
+                    type = typeId
+                )
+            )
+        }
+    }
+
     //endregion
 }

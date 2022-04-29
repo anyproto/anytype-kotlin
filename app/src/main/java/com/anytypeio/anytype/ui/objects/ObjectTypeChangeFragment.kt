@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
@@ -29,6 +30,8 @@ class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObject
     private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
 
     private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
+
+    private val isDraft : Boolean get() = argOrNull<Boolean>(OBJECT_IS_DRAFT_KEY) ?: false
 
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory
@@ -55,7 +58,11 @@ class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObject
     }
 
     private fun onItemClicked(id: String, name: String) {
-        val bundle = bundleOf(OBJECT_TYPE_URL_KEY to id, OBJECT_TYPE_NAME_KEY to name)
+        val bundle = bundleOf(
+            OBJECT_TYPE_URL_KEY to id,
+            OBJECT_TYPE_NAME_KEY to name,
+            OBJECT_IS_DRAFT_KEY to isDraft
+        )
         setFragmentResult(OBJECT_TYPE_REQUEST_KEY, bundle)
         view?.rootView?.hideKeyboard()
         dismiss()
@@ -92,5 +99,6 @@ class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObject
         const val OBJECT_TYPE_URL_KEY = "object-type-url.key"
         const val OBJECT_TYPE_NAME_KEY = "object-type-name.key"
         const val OBJECT_TYPE_REQUEST_KEY = "object-type.request"
+        const val OBJECT_IS_DRAFT_KEY = "arg.object-type-change.isDraft"
     }
 }

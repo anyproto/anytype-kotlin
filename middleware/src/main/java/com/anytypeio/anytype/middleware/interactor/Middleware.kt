@@ -1703,4 +1703,17 @@ class Middleware(
 
         return response.id
     }
+
+    fun applyTemplate(
+        ctx: Id,
+        template: Id
+    ) {
+        val request = Rpc.ApplyTemplate.Request(
+            contextId = ctx,
+            templateId = template
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.applyTemplate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
 }

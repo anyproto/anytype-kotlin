@@ -5,20 +5,32 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVRecord
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
-import com.anytypeio.anytype.domain.dataview.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.SetActiveViewer
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
@@ -31,6 +43,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
@@ -70,6 +83,8 @@ abstract class TestObjectSetSetup {
     lateinit var threadStatusChannel: ThreadStatusChannel
     @Mock
     lateinit var analytics: Analytics
+
+    lateinit var getTemplates: GetTemplates
 
     private val session = ObjectSetSession()
     private val reducer = ObjectSetReducer()
@@ -116,6 +131,14 @@ abstract class TestObjectSetSetup {
         urlBuilder = UrlBuilder(gateway)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         setDocCoverImage = SetDocCoverImage(repo)
+        getTemplates = GetTemplates(
+            repo = repo,
+            dispatchers = AppCoroutineDispatchers(
+                io = StandardTestDispatcher(),
+                main = StandardTestDispatcher(),
+                computation = StandardTestDispatcher()
+            )
+        )
 
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,
@@ -136,7 +159,8 @@ abstract class TestObjectSetSetup {
             analytics = analytics,
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
-            delegator = delegator
+            delegator = delegator,
+            getTemplates = getTemplates
         )
     }
 

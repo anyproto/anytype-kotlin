@@ -4,6 +4,8 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -35,7 +37,6 @@ class LinkToObject(
     private val objectIcon = binding.objectIconWidget
     private val objectIconContainer = binding.iconObjectContainer
     private val title = binding.text
-    private val guideline = binding.guideline
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -131,7 +132,9 @@ class LinkToObject(
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        root.updateLayoutParams<RecyclerView.LayoutParams> {
+            marginStart = item.indent * dimen(R.dimen.indent)
+        }
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {

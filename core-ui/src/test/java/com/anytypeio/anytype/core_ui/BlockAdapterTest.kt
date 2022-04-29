@@ -1218,8 +1218,7 @@ class BlockAdapterTest {
 
         check(holder is LinkToObject)
 
-        val actual =
-            (holder.itemView.findViewById<Guideline>(R.id.guideline).layoutParams as ConstraintLayout.LayoutParams).guideBegin
+        val actual = holder.itemView.marginLeft
 
         val expected = view.indent * holder.dimen(R.dimen.indent)
 

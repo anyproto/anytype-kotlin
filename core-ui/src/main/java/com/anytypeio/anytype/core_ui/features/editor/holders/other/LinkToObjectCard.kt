@@ -38,7 +38,6 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     private val objectIcon = binding.cardIcon
     private val title = binding.cardName
     private val description = binding.cardDescription
-    private val guideline = binding.pageGuideline
     private val selected = binding.selected
 
     override val editorTouchProcessor = EditorTouchProcessor(
@@ -155,7 +154,9 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        root.updateLayoutParams<RecyclerView.LayoutParams> {
+            marginStart = item.indent * dimen(R.dimen.indent)
+        }
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {

@@ -32,13 +32,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/pageGuideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_begin="0dp" />
-
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/cardIcon"
                 android:layout_width="64dp"

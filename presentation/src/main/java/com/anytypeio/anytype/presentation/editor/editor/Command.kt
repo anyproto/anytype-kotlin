@@ -134,4 +134,6 @@ sealed class Command {
         val ctx: Id,
         val block: Id
     ) : Command()
+
+    data class ScrollToPosition(val pos: Int) : Command()
 }

@@ -1087,6 +1087,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     )
                     fr.show(childFragmentManager, null)
                 }
+                is Command.ScrollToPosition -> {
+                    binding.recycler.smoothScrollToPosition(command.pos)
+                }
             }
         }
     }

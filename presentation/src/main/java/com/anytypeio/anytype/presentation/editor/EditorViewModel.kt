@@ -3661,7 +3661,9 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked -> {
                         val block = views.find { it.id == clicked.item }
                         val pos = views.indexOf(block)
-                        searchResultScrollPosition.value = pos
+                        if (pos != NO_SCROLL_POSITION) {
+                            commands.value = EventWrapper(Command.ScrollToPosition(pos))
+                        }
                     }
                     else -> Unit
                 }
@@ -3926,6 +3928,7 @@ class EditorViewModel(
 
     companion object {
         const val NO_SEARCH_RESULT_POSITION = -1
+        const val NO_SCROLL_POSITION = -1
         const val EMPTY_TEXT = ""
         const val EMPTY_CONTEXT = ""
         const val EMPTY_FOCUS_ID = ""

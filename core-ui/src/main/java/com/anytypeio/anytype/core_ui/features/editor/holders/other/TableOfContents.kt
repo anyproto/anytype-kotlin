@@ -70,10 +70,10 @@ class TableOfContents(
         if (!background.isNullOrEmpty()) {
             val value = ThemeColor.values().find { value -> value.title == background }
             if (value != null && value != ThemeColor.DEFAULT) {
-                container.setBackgroundColor(itemView.resources.lighter(value, 0))
+                root.setBackgroundColor(itemView.resources.lighter(value, 0))
             } else {
                 Timber.e("Could not find value for background color: $background, setting background to null")
-                container.setBackgroundColor(0)
+                root.setBackgroundColor(0)
             }
         } else {
             Timber.d("Background color is null, setting background to null")

@@ -40,7 +40,9 @@ abstract class Text(
             setStyle(item)
         } else {
 
-            enableEditMode()
+            content.pauseTextWatchers {
+                enableEditMode()
+            }
 
             content.applyMovementMethod(item)
 

@@ -1575,7 +1575,7 @@ class EditorViewModel(
 
         blocks.forEach { block ->
             if (currentSelection().contains(block.id)) {
-                when (block.content) {
+                when (val content = block.content) {
                     is Content.Bookmark -> {
                         excludedActions.add(ActionItemType.Download)
                     }
@@ -1584,7 +1584,11 @@ class EditorViewModel(
                     }
                     is Content.File -> {
                         needSortByDownloads = true
-                        targetActions.add(ActionItemType.Download)
+                        if (content.state == Content.File.State.DONE) {
+                            targetActions.add(ActionItemType.Download)
+                        } else {
+                            excludedActions.add(ActionItemType.Download)
+                        }
                     }
                     is Content.Link -> {
                         excludedActions.add(ActionItemType.Download)

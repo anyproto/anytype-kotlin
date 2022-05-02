@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
             }
             is Wallpaper.Default -> {
-                container.setBackgroundResource(R.color.default_dashboard_background_color)
+                container.setBackgroundResource(R.drawable.cover_gradient_default)
             }
             is Wallpaper.Color -> {
                 val color = WallpaperColor.values().find { it.code == wallpaper.code }

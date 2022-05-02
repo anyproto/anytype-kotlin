@@ -140,17 +140,19 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
         }
 
         if (payload.readWriteModeChanged()) {
-            if (item.mode == BlockView.Mode.EDIT) {
-                content.apply {
-                    clearTextWatchers()
-                    addTextChangedListener(
-                        DefaultTextWatcher { text -> onTextChanged(item.id, text) }
-                    )
-                    selectionWatcher = { onSelectionChanged(item.id, it) }
+            content.pauseTextWatchers {
+                if (item.mode == BlockView.Mode.EDIT) {
+                    content.apply {
+                        clearTextWatchers()
+                        addTextChangedListener(
+                            DefaultTextWatcher { text -> onTextChanged(item.id, text) }
+                        )
+                        selectionWatcher = { onSelectionChanged(item.id, it) }
+                    }
+                    content.enableEditMode()
+                } else {
+                    content.enableReadMode()
                 }
-                content.enableEditMode()
-            } else {
-                content.enableReadMode()
             }
         }
 

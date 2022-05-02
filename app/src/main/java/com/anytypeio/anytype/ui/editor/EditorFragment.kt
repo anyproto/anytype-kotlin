@@ -1315,19 +1315,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         binding.multiSelectTopToolbar.selectText.text = null
                     }
                 }
+
                 binding.bottomMenu.update(count)
-                if (!binding.bottomMenu.isShowing) {
-                    binding.recycler.apply { itemAnimator = DefaultItemAnimator() }
+                binding.recycler.apply {
+                    if (itemAnimator == null) itemAnimator = DefaultItemAnimator()
+                }
 
-                    proceedWithHidingSoftInput()
+                proceedWithHidingSoftInput()
 
-                    binding.topToolbar.invisible()
+                binding.topToolbar.invisible()
 
-                    if (!state.multiSelect.isScrollAndMoveEnabled) {
-                        if (!binding.recycler.containsItemDecoration(actionToolbarFooter)) {
-                            binding.recycler.addItemDecoration(actionToolbarFooter)
-                        }
+                if (!state.multiSelect.isScrollAndMoveEnabled) {
+                    if (!binding.recycler.containsItemDecoration(actionToolbarFooter)) {
+                        binding.recycler.addItemDecoration(actionToolbarFooter)
+                    }
+                    if (behavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                         keyboardDelayJobs += lifecycleScope.launch {
+                            binding.blockActionToolbar.scrollToPosition(0)
                             if (insets != null) {
                                 if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
                                     delay(DELAY_HIDE_KEYBOARD)
@@ -1341,11 +1345,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             }
                             showSelectButton()
                         }
-                    } else {
-                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     }
+                } else {
+                    behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                 }
-                binding.blockActionToolbar.scrollToPosition(0)
             } else {
                 binding.recycler.apply { itemAnimator = null }
                 behavior.apply {

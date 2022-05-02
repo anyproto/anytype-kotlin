@@ -81,7 +81,7 @@
         <item name="android:textSize">28sp</item>
     </style>
 
-    <style name="BlockCheckboxContentStyle">
+    <style name="BlockCheckboxContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:background">@null</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:paddingTop">4dp</item>
@@ -115,7 +115,7 @@
         <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="BlockBulletContentStyle">
+    <style name="BlockBulletContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:background">@null</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
@@ -126,7 +126,7 @@
         <item name="android:layout_marginStart">13dp</item>
     </style>
 
-    <style name="ToggleContentStyle">
+    <style name="ToggleContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:background">@null</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
@@ -137,7 +137,7 @@
         <item name="android:paddingBottom">3dp</item>
     </style>
 
-    <style name="BlockNumberedContentStyle">
+    <style name="BlockNumberedContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:background">@null</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:layout_width">match_parent</item>
@@ -225,11 +225,10 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="BlockHighlightContentStyle">
+    <style name="BlockHighlightContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:background">@null</item>
         <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">17sp</item>
         <item name="android:lineSpacingExtra">3sp</item>
         <item name="android:layout_marginStart">15dp</item>
         <item name="android:layout_width">match_parent</item>

@@ -15,7 +15,7 @@
         android:fontFamily="@font/inter_bold"
         android:textColor="@color/text_primary"
         android:textSize="22sp"
-        android:text="Don’t forget to take and save your keychain phrase from settings" />
+        android:text="@string/do_not_forget_to_save_recovery_phrase_msg" />
 
     <LinearLayout
         android:layout_width="match_parent"

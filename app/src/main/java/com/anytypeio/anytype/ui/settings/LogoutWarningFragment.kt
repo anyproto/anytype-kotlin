@@ -51,7 +51,7 @@ class LogoutWarningFragment : BaseBottomSheetComposeFragment() {
                     Warning(
                         actionButtonText = stringResource(R.string.log_out),
                         cancelButtonText = stringResource(R.string.back_up_your_phrase),
-                        title = stringResource(R.string.have_you_back_up_your_keychain),
+                        title = stringResource(R.string.have_you_back_up_your_recovery_phrase),
                         subtitle = stringResource(R.string.you_will_need_to_sign_in),
                         onNegativeClick = onBackupPhraseClicked,
                         onPositiveClick = { vm.onLogoutClicked() },

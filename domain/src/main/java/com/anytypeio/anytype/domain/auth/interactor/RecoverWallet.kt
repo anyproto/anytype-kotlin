@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 
 /**
- * Use case for recovering wallet via keychain phrase (mnemonic).
+ * Use case for recovering wallet via recovery (aka keychain) phrase (mnemonic).
  */
 class RecoverWallet(
     private val repository: AuthRepository

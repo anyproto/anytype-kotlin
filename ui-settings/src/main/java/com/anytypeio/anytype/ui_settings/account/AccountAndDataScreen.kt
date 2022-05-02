@@ -2,7 +2,13 @@ package com.anytypeio.anytype.ui_settings.account
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_ui.foundation.*
+import com.anytypeio.anytype.core_ui.foundation.Arrow
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.Option
+import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.ui_settings.R
 
 @Composable
@@ -34,7 +44,7 @@ fun AccountAndDataScreen(
         Section(stringResource(R.string.access))
         Option(
             image = R.drawable.ic_keychain_phrase,
-            text = stringResource(R.string.keychain_phrase),
+            text = stringResource(R.string.recovery_phrase),
             onClick = onKeychainPhraseClicked
         )
         Divider(paddingStart = 60.dp)

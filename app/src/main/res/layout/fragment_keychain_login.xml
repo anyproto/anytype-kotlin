@@ -76,7 +76,7 @@
                 android:gravity="top"
                 android:background="@null"
                 android:fontFamily="@font/inconsolata"
-                android:hint="@string/type_your_keychain"
+                android:hint="@string/type_your_recovery_phrase"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine|text"
                 android:textColorHint="@color/keychain_hint_color"

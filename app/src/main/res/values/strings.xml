@@ -53,7 +53,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign up</string>
-    <string name="type_your_keychain">or Type your keychain phrase</string>
+    <string name="type_your_recovery_phrase">or Type your recovery phrase</string>
     <string name="login_with_keychain">Login with keychain</string>
     <string name="or_scan_qr_code">Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>
@@ -79,14 +79,14 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="switch_profile">Switch profile</string>
     <string name="description_profile_picture">Profile picture</string>
     <string name="description_arrow_icon">Arrow icon</string>
-    <string name="keychain_phrase">Keychain phrase</string>
+    <string name="recovery_phrase">Recovery phrase</string>
     <string name="pin_code">Pin code</string>
     <string name="user_settings">User settings</string>
     <string name="other_settings">Other settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
     <string name="log_out">Log out</string>
-    <string name="keychain_phrase_text">Your Keychain phrase protects your account. You need it to sign in if you don\'t have access to your devices. Keep it in a safe place.</string>
+    <string name="recovery_phrase_text">Your recovery phrase protects your account. You need it to sign in if you don\'t have access to your devices. Keep it in a safe place.</string>
     <string name="back_up_your_keychain_phrase">Back up your keychain \nphrase</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -211,7 +211,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Upload</string>
 
-    <string name="alert_qr_camera">Open "Settings" and then "Keychain phrase" in Anytype Desktop.</string>
+    <string name="alert_qr_camera">Open "Settings" and then "Recovery phrase" in Anytype Desktop.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
@@ -255,7 +255,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="shortcut_create_new">Create a new %1$s</string>
     <string name="close">Close</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your keychain phrase</string>
+    <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your recovery phrase</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
     <string name="if_you_lose_passphrase_warning">If you lose the passphrase and get logged out you will not be able to ever access your data again. Save this passphrase outside of Anytype for data recovery.</string>
     <string name="card_size">Card size</string>
@@ -282,4 +282,5 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Don’t forget to take and save your recovery phrase from settings</string>
 </resources>

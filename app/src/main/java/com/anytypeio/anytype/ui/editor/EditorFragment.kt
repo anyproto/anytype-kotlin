@@ -1345,6 +1345,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     }
                 }
+                binding.blockActionToolbar.scrollToPosition(0)
             } else {
                 binding.recycler.apply { itemAnimator = null }
                 behavior.apply {

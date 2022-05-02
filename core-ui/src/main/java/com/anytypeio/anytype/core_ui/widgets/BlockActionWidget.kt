@@ -44,7 +44,10 @@ class BlockActionWidget @JvmOverloads constructor(
 
     fun bind(actions: List<ActionItemType>) {
         blockActionAdapter.submitList(actions)
-        binding.blockActionRecycler.smoothScrollToPosition(0)
+    }
+
+    fun scrollToPosition(pos: Int) {
+        binding.blockActionRecycler.scrollToPosition(pos)
     }
 
     class Adapter(

@@ -53,8 +53,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign up</string>
-    <string name="type_your_recovery_phrase">or Type your recovery phrase</string>
-    <string name="login_with_keychain">Login with keychain</string>
+    <string name="type_your_recovery_phrase">or type your recovery phrase</string>
+    <string name="login_with_recovery_phrase">Login with recovery phrase</string>
     <string name="or_scan_qr_code">Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>
     <string name="congratulations">Congratulations!</string>
@@ -87,7 +87,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="updates">Updates</string>
     <string name="log_out">Log out</string>
     <string name="recovery_phrase_text">Your recovery phrase protects your account. You need it to sign in if you don\'t have access to your devices. Keep it in a safe place.</string>
-    <string name="back_up_your_keychain_phrase">Back up your keychain \nphrase</string>
+    <string name="back_up_your_recovery_phrase">Back up your recovery \nphrase</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
 

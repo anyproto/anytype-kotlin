@@ -24,7 +24,7 @@
         android:textAlignment="center"
         android:layout_height="wrap_content"
         android:layout_marginTop="54dp"
-        android:text="@string/back_up_your_keychain_phrase"
+        android:text="@string/back_up_your_recovery_phrase"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/drag" />
 

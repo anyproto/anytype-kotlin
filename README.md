@@ -56,6 +56,20 @@ Or [download](https://download.anytype.io/) an apk for your device architecture 
 
 [Anytype Android app dependencies](https://github.com/anytypeio/android-anytype/blob/develop/dependencies.gradle).
 
+### Conventions
+
+##### PR naming: 
+```
+{APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
+```
+App area can be `Editor`, `Sets`, `Relations`, `Auth`, `Analytics`, `Tech` (CI, DI, scripting, etc.), etc.
+
+Example: *Editor | Fix | Show meaningful message when failed to open file by an existing application*
+
+##### Git branch naming
+```
+{TASK_ID or TASK_NUMBER}-ConciseDescription
+```
 
 
 

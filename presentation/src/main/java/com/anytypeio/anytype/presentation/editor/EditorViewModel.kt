@@ -5432,6 +5432,12 @@ class EditorViewModel(
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
         proceedWithHidingObjectTypeWidget()
+        val details = orchestrator.stores.details.current()
+        val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        if (wrapper.type.isNotEmpty())
+            proceedWithTemplateSelection(
+                typeId = wrapper.type.first()
+            )
     }
 
     private fun proceedWithShowingObjectTypesWidget(objectType: String?, blocks: List<Block>) {

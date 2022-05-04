@@ -52,7 +52,7 @@ class KeychainPhraseDialog : BaseBottomSheetFragment<DialogKeychainPhraseBinding
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText(MNEMONIC_LABEL, binding.keychain.text.toString())
             clipboard.setPrimaryClip(clip)
-            toast("Mnemonic copied to clipboard.")
+            toast("Recovery phrase copied to clipboard.")
         } catch (e: Exception) {
             toast("Could not copy your mnemonic. Please try again later, or copy it manually.")
         }

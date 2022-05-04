@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderOne
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderThree
@@ -402,7 +403,8 @@ class HeaderBlockTest {
                 onDragLocation = { _,_ -> },
                 onDrop = { _,_ -> }
             ),
-            onDragAndDropTrigger = { true },
+            onDragAndDropTrigger = { _, _ -> false },
+            dragAndDropSelector = DragAndDropAdapterDelegate(),
             lifecycle = object : Lifecycle() {
                 override fun addObserver(observer: LifecycleObserver) {}
                 override fun removeObserver(observer: LifecycleObserver) {}

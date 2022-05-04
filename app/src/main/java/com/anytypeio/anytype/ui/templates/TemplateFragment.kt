@@ -13,6 +13,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -61,9 +62,10 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
             onSlashEvent = {},
             onBackPressedCallback = { false },
             onKeyPressedEvent = {},
-            onDragAndDropTrigger = { false },
+            onDragAndDropTrigger = { _, _ -> false },
             onDragListener = this,
-            lifecycle = lifecycle
+            lifecycle = lifecycle,
+            dragAndDropSelector = DragAndDropAdapterDelegate()
         )
     }
 

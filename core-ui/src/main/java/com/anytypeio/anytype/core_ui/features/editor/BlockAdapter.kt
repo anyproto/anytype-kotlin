@@ -189,12 +189,25 @@ class BlockAdapter(
     private val onSlashEvent: (SlashEvent) -> Unit,
     private val onBackPressedCallback: () -> Boolean,
     private val onKeyPressedEvent: (KeyPressedEvent) -> Unit,
-    private val onDragAndDropTrigger: (RecyclerView.ViewHolder) -> Boolean,
+    private val onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean,
     private val onDragListener: View.OnDragListener,
     private val lifecycle: Lifecycle,
-) : RecyclerView.Adapter<BlockViewHolder>() {
+    private val dragAndDropSelector: DragAndDropSelector,
+) : RecyclerView.Adapter<BlockViewHolder>(), DragAndDropSelector by dragAndDropSelector {
 
     val views: List<BlockView> get() = blocks
+
+    private var isInDragAndDropMode = false
+
+    override fun selectDraggedViewHolder(position: Int) {
+        isInDragAndDropMode = true
+        dragAndDropSelector.selectDraggedViewHolder(position)
+    }
+
+    override fun unSelectDraggedViewHolder() {
+        dragAndDropSelector.unSelectDraggedViewHolder()
+        isInDragAndDropMode = false
+    }
 
     override fun onViewDetachedFromWindow(holder: BlockViewHolder) {
         when (holder) {
@@ -703,7 +716,7 @@ class BlockAdapter(
                 }
             }
             holder.content.editorTouchProcessor.onDragAndDropTrigger = {
-                onDragAndDropTrigger(holder)
+                onDragAndDropTrigger(holder, it)
             }
             holder.content.setOnClickListener { view ->
                 val pos = holder.bindingAdapterPosition
@@ -751,7 +764,7 @@ class BlockAdapter(
                                     onClickListener(ListenerType.LongClick(target = blocks[pos].id))
                                 }
                             },
-                            onDragAndDropTrigger = { onDragAndDropTrigger(holder) }
+                            onDragAndDropTrigger = { onDragAndDropTrigger(holder, it) }
                         )
                         holder.itemView.setOnTouchListener { v, e -> processor.process(v, e) }
                     }
@@ -763,12 +776,12 @@ class BlockAdapter(
                             }
                         }
                         holder.editorTouchProcessor.onDragAndDropTrigger = {
-                            onDragAndDropTrigger(holder)
+                            onDragAndDropTrigger(holder, it)
                         }
                     }
                     is TableOfContents -> {
                         holder.editorTouchProcessor.onDragAndDropTrigger = {
-                            onDragAndDropTrigger(holder)
+                            onDragAndDropTrigger(holder, it)
                         }
                     }
                     else -> {
@@ -789,7 +802,7 @@ class BlockAdapter(
                     }
                 }
                 holder.editorTouchProcessor.onDragAndDropTrigger = {
-                    onDragAndDropTrigger(holder)
+                    onDragAndDropTrigger(holder, it)
                 }
             }
             holder.itemView.setOnDragListener(onDragListener)
@@ -807,6 +820,7 @@ class BlockAdapter(
         position: Int,
         payloads: MutableList<Any>
     ) {
+        if (isInDragAndDropMode) trySetDesiredAppearanceForDraggedItem(holder, position)
         when {
             payloads.isEmpty() -> onBindViewHolder(holder, position)
             else -> {
@@ -1096,6 +1110,7 @@ class BlockAdapter(
     }
 
     override fun onBindViewHolder(holder: BlockViewHolder, position: Int) {
+        if (isInDragAndDropMode) trySetDesiredAppearanceForDraggedItem(holder, position)
         when (holder) {
             is Paragraph -> {
                 holder.bind(
@@ -1491,7 +1506,10 @@ class BlockAdapter(
                 holder.bind(item = blocks[position] as BlockView.Latex)
             }
             is TableOfContents -> {
-                holder.bind(item = blocks[position] as BlockView.TableOfContents, clicked = onClickListener)
+                holder.bind(
+                    item = blocks[position] as BlockView.TableOfContents,
+                    clicked = onClickListener
+                )
             }
             is Unsupported -> {
                 holder.bind(item = blocks[position] as BlockView.Unsupported)

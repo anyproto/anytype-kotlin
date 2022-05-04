@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
@@ -59,6 +60,7 @@ import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.DefaultEditorDragShadow
+import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropConfig
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
@@ -184,7 +186,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     DocumentMenuActionReceiver,
     ClipboardInterceptor,
     OnMoveToAction,
-    OnLinkToAction{
+    OnLinkToAction {
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
@@ -322,9 +324,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onSlashEvent = vm::onSlashTextWatcherEvent,
             onBackPressedCallback = { vm.onBackPressedCallback() },
             onKeyPressedEvent = vm::onKeyPressedEvent,
-            onDragAndDropTrigger = { vh: RecyclerView.ViewHolder -> handleDragAndDropTrigger(vh) },
+            onDragAndDropTrigger = { vh: RecyclerView.ViewHolder, event: MotionEvent? ->
+                handleDragAndDropTrigger(
+                    vh,
+                    event
+                )
+            },
             onDragListener = dndListener,
-            lifecycle = lifecycle
+            lifecycle = lifecycle,
+            dragAndDropSelector = DragAndDropAdapterDelegate()
         )
     }
 
@@ -2004,27 +2012,36 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private var scrollDownJob: Job? = null
     private var scrollUpJob: Job? = null
 
-    private val dndListener by lazy {
+    private val dndListener: EditorDragAndDropListener by lazy {
         EditorDragAndDropListener(
             onDragLocation = { target, ratio ->
                 handleDragging(target, ratio)
             },
             onDrop = { target, ratio ->
+                binding.recycler.itemAnimator = DefaultItemAnimator()
                 proceedWithDropping(target, ratio)
+                binding.recycler.postDelayed({
+                    binding.recycler.itemAnimator = null
+                }, RECYCLER_DND_ANIMATION_RELAXATION_TIME)
             },
             onDragExited = {
-                if (binding.dndTargetLine != null) {
-                    binding.dndTargetLine.invisible()
-                }
+                it.isSelected = false
             },
             onDragEnded = {
+                binding.dndTargetLine.invisible()
+                blockAdapter.unSelectDraggedViewHolder()
+                blockAdapter.notifyItemChanged(dndTargetPos)
                 stopScrollDownJob()
                 stopScrollUpJob()
+
             }
         )
     }
 
-    private fun handleDragAndDropTrigger(vh: RecyclerView.ViewHolder): Boolean {
+    private fun handleDragAndDropTrigger(
+        vh: RecyclerView.ViewHolder,
+        event: MotionEvent?
+    ): Boolean {
         if (vm.mode is Editor.Mode.Edit) {
             if (vh is BlockViewHolder.DragAndDropHolder && binding.recycler.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 dndTargetPos = vh.bindingAdapterPosition
@@ -2041,17 +2058,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 )
 
                 val shadow = when (vh) {
-                    is Text -> TextInputDragShadow(vh.content.id, vh.itemView)
-                    is Code -> TextInputDragShadow(vh.content.id, vh.itemView)
-                    else -> DefaultEditorDragShadow(vh.itemView)
+                    is Text -> TextInputDragShadow(vh.content.id, vh.itemView, event)
+                    is Code -> TextInputDragShadow(vh.content.id, vh.itemView, event)
+                    else -> DefaultEditorDragShadow(vh.itemView, event)
                 }
-
                 vh.itemView.startDragAndDrop(
                     dragData,
                     shadow,
                     null,
                     0
                 )
+                blockAdapter.selectDraggedViewHolder(dndTargetPos)
+                blockAdapter.notifyItemChanged(dndTargetPos)
             }
         } else {
             val pos = vh.bindingAdapterPosition
@@ -2068,17 +2086,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         val vh = binding.recycler.findContainingViewHolder(target)
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
-                binding.dndTargetLine.visible()
                 if (vh is SupportNesting) {
                     when (ratio) {
                         in DragAndDropConfig.topRange -> {
+                            target.isSelected = false
                             if (handleDragAbove(vh, ratio))
                                 return
                         }
                         in DragAndDropConfig.middleRange -> {
+                            target.isSelected = true
                             handleDragInside(vh)
                         }
                         in DragAndDropConfig.bottomRange -> {
+                            target.isSelected = false
                             if (handleDragBelow(vh, ratio))
                                 return
                         }
@@ -2091,7 +2111,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             } else if (vh is Title) {
                                 binding.dndTargetLine.invisible()
                             } else {
-                                binding.dndTargetLine.visible()
                                 if (handleDragAbove(vh, ratio))
                                     return
                             }
@@ -2194,25 +2213,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             indent = block.indent * dimen(R.dimen.indent)
         }
 
-        binding.dndTargetLine.translationY = vh.itemView.bottom.toFloat()
-        //                                    dndTargetLineAnimator?.cancel()
-        //                                    dndTargetLineAnimator = dndTargetLine
-        //                                        .animate()
-        //                                        .translationY(vh.itemView.bottom.toFloat())
-        //                                        .setDuration(100)
-        //                                    dndTargetLineAnimator?.start()
-        binding.dndTargetLine.translationX = indent.toFloat()
+        if (binding.dndTargetLine.isVisible) {
+            dndTargetLineAnimator?.cancel()
+            dndTargetLineAnimator = binding.dndTargetLine
+                .animate()
+                .setInterpolator(DecelerateInterpolator())
+                .translationY(vh.itemView.bottom.toFloat())
+                .translationX(indent.toFloat())
+                .setDuration(75)
+            dndTargetLineAnimator?.start()
+        } else {
+            binding.dndTargetLine.translationY = vh.itemView.bottom.toFloat()
+            binding.dndTargetLine.translationX = indent.toFloat()
+            binding.dndTargetLine.visible()
+        }
 
         return false
     }
 
     private fun handleDragInside(vh: RecyclerView.ViewHolder) {
-        //dndTargetLineAnimator?.cancel()
-        if (vh !is SupportNesting) {
-            binding.dndTargetLine.invisible()
-        }
-        binding.dndTargetLine.translationY = vh.itemView.top.toFloat() + vh.itemView.height / 2
-        binding.dndTargetLine.translationX = -(vh.itemView.width.toFloat() - 100)
+        dndTargetLineAnimator?.cancel()
+        binding.dndTargetLine.invisible()
     }
 
     private fun handleDragAbove(
@@ -2248,23 +2269,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             indent = block.indent * dimen(R.dimen.indent)
         }
 
-        binding.dndTargetLine.translationY = vh.itemView.top.toFloat()
-        //                                    dndTargetLineAnimator?.cancel()
-        //                                    dndTargetLineAnimator = dndTargetLine
-        //                                        .animate()
-        //                                        .translationY(vh.itemView.top.toFloat())
-        //                                        .setDuration(100)
-        //dndTargetLineAnimator?.start()
-        binding.dndTargetLine.translationX = indent.toFloat()
+        if (binding.dndTargetLine.isVisible) {
+            dndTargetLineAnimator?.cancel()
+            dndTargetLineAnimator = binding.dndTargetLine
+                .animate()
+                .setInterpolator(DecelerateInterpolator())
+                .translationY(vh.itemView.top.toFloat())
+                .translationX(indent.toFloat())
+                .setDuration(75)
+            dndTargetLineAnimator?.start()
+        } else {
+            binding.dndTargetLine.translationY = vh.itemView.top.toFloat()
+            binding.dndTargetLine.translationX = indent.toFloat()
+            binding.dndTargetLine.visible()
+        }
+
         return false
     }
 
     private fun proceedWithDropping(target: View, ratio: Float) {
         binding.dndTargetLine.invisible()
         val vh = binding.recycler.findContainingViewHolder(target)
-
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
+                target.isSelected = false
                 if (vh is SupportNesting) {
                     when (ratio) {
                         in DragAndDropConfig.topRange -> {
@@ -2380,3 +2408,5 @@ interface OnFragmentInteractionListener {
     fun onSetWebLink(uri: String)
     fun onCreateObject(name: String)
 }
+
+private const val RECYCLER_DND_ANIMATION_RELAXATION_TIME = 500L

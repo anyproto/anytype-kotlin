@@ -242,5 +242,14 @@
     <!-- Editor, block: table of contents -->
     <dimen name="def_toc_item_padding_start">20dp</dimen>
 
+    <!-- Editor, drag shadow -->
+    <dimen name="drag_shadow_corner_radius">6dp</dimen>
+    <dimen name="drag_shadow_elevation">12dp</dimen>
+    <dimen name="drag_shadow_padding_height_text">23dp</dimen>
+    <dimen name="drag_shadow_padding_width_text">4dp</dimen>
+    <dimen name="drag_shadow_padding_height_other">28dp</dimen>
+    <dimen name="drag_shadow_padding_width_other">10dp</dimen>
+    <dimen name="drag_shadow_max_size">150dp</dimen>
+
 
 </resources>

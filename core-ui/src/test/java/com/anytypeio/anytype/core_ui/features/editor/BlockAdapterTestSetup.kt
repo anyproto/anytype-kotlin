@@ -63,7 +63,8 @@ open class BlockAdapterTestSetup {
                 onDragLocation = { _,_ -> },
                 onDrop = { _,_ -> }
             ),
-            onDragAndDropTrigger = { true },
+            onDragAndDropTrigger = { _, _ -> false },
+            dragAndDropSelector = DragAndDropAdapterDelegate(),
             lifecycle = object : Lifecycle() {
                 override fun addObserver(observer: LifecycleObserver) {}
                 override fun removeObserver(observer: LifecycleObserver) {}

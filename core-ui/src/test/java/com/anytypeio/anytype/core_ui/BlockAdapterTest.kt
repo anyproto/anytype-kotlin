@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.SELECTION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
+import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
@@ -3474,7 +3475,8 @@ class BlockAdapterTest {
                 onDragLocation = { _, _ -> },
                 onDrop = { _, _ -> }
             ),
-            onDragAndDropTrigger = { true },
+            onDragAndDropTrigger = { _, _ -> false },
+            dragAndDropSelector = DragAndDropAdapterDelegate(),
             lifecycle = lifecycle
         )
     }

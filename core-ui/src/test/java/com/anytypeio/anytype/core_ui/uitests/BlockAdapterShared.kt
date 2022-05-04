@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.BlockAdapterTest
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -58,7 +59,8 @@ fun givenAdapter(
             onDragLocation = { _, _ -> },
             onDrop = { _, _ -> }
         ),
-        onDragAndDropTrigger = { true },
+        onDragAndDropTrigger = { _, _ -> false },
+        dragAndDropSelector = DragAndDropAdapterDelegate(),
         lifecycle = lifecycle
     )
 }

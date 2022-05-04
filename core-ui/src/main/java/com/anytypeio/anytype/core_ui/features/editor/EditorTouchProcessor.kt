@@ -16,7 +16,7 @@ import kotlin.math.abs
 class EditorTouchProcessor(
     val fallback: (event: MotionEvent?) -> Boolean,
     var onLongClick: () -> Unit = {},
-    var onDragAndDropTrigger: () -> Unit = {}
+    var onDragAndDropTrigger: (event: MotionEvent?) -> Unit = { }
 ) {
 
     val moves = mutableListOf<Float>()
@@ -31,21 +31,24 @@ class EditorTouchProcessor(
             val delta = abs(first - last)
             if (delta == 0f) {
                 Timber.d("Runnable dispatched 1")
-                onDragAndDropTrigger()
+                onDragAndDropTrigger(lastEvent)
             } else {
                 Timber.d("Runnable ignored 1")
             }
         } else {
             Timber.d("Runnable dispatched 2")
-            onDragAndDropTrigger()
+            onDragAndDropTrigger(lastEvent)
         }
         moves.clear()
     }
 
     private var actionUpStartInMillis: Long = 0
 
+    private var lastEvent: MotionEvent? = null
+
     fun process(v: View, event: MotionEvent?): Boolean {
         if (event != null) {
+            lastEvent = event
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     Timber.d("ACTION DOWN")
@@ -62,7 +65,7 @@ class EditorTouchProcessor(
                     if (moves.size > 1) {
                         val first = moves.first()
                         val last = moves.last()
-                        Timber.d("ACTION MOVE DELTA: ${abs(last-first)}")
+                        Timber.d("ACTION MOVE DELTA: ${abs(last - first)}")
                     }
                 }
                 MotionEvent.ACTION_CANCEL -> {
@@ -94,7 +97,7 @@ class EditorTouchProcessor(
     }
 
     companion object {
-        const val DND_TIMEOUT : Long = 800
+        const val DND_TIMEOUT: Long = 800
         val LONG_PRESS_TIMEOUT = ViewConfiguration.getLongPressTimeout()
     }
 }

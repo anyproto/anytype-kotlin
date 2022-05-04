@@ -394,7 +394,7 @@ class BlockAdapterCursorBindingTest {
             onCoverClicked = {},
             onSlashEvent = {},
             onKeyPressedEvent = {},
-            onDragAndDropTrigger = { true },
+            onDragAndDropTrigger = { _, _ -> false },
             onDescriptionChanged = {},
             onTitleCheckboxClicked = {},
             onDragListener = EditorDragAndDropListener(
@@ -403,6 +403,7 @@ class BlockAdapterCursorBindingTest {
                 onDragLocation = { _,_ -> },
                 onDrop = { _,_ -> }
             ),
+            dragAndDropSelector = DragAndDropAdapterDelegate(),
             lifecycle = object : Lifecycle() {
                 override fun addObserver(observer: LifecycleObserver) {}
                 override fun removeObserver(observer: LifecycleObserver) {}

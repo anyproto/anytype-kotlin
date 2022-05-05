@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.TvTableOfContentsBinding
 
 class TableOfContentsItemWidget @JvmOverloads constructor(
@@ -23,6 +24,6 @@ class TableOfContentsItemWidget @JvmOverloads constructor(
     }
 
     fun setName(name: String) {
-        textView.text = name
+        textView.text = name.ifBlank { resources.getString(R.string.untitled) }
     }
 }

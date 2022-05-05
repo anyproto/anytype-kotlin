@@ -33,10 +33,6 @@ class TableOfContents(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 
-    init {
-        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
-    }
-
     fun bind(item: BlockView.TableOfContents, clicked: (ListenerType) -> Unit) {
         cleanup()
         selected.isSelected = item.isSelected
@@ -45,6 +41,7 @@ class TableOfContents(
                 id = generateViewId()
                 setPadding(getPadding(header.depth), 0, 0, 0)
                 setName(header.name)
+                setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
                 setOnClickListener {
                     clicked.invoke(
                         ListenerType.TableOfContentsItem(
@@ -52,10 +49,6 @@ class TableOfContents(
                             target = item.id
                         )
                     )
-                }
-                setOnLongClickListener {
-                    clicked.invoke(ListenerType.LongClick(item.id))
-                    true
                 }
             }
             container.addView(textview)

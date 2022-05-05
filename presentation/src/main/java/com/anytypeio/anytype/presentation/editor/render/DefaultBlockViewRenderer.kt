@@ -543,7 +543,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                     result.add(
                         toc(
                             block = block,
-                            indent = indent,
                             mode = mode,
                             selection = selection,
                             blocks = children
@@ -1455,17 +1454,30 @@ class DefaultBlockViewRenderer @Inject constructor(
     private fun toc(
         block: Block,
         blocks: List<Block>,
-        indent: Int,
         mode: EditorMode,
         selection: Set<Id>
     ): BlockView.TableOfContents {
         val headers = blocks.filter { (it.content as? Content.Text)?.isHeader() ?: false }
-        var depth = 0
+        var isH1Present = false
+        var isH2Present = false
         val items = mutableListOf<BlockView.TableOfContentsItem>()
         headers.forEachIndexed { index, b ->
             val content = b.content<Content.Text>()
-            if (content.style == Content.Text.Style.H1) {
-                depth = 0
+            var depth = 0
+            when (content.style) {
+                Content.Text.Style.H1 -> {
+                    isH1Present = true
+                    isH2Present = false
+                }
+                Content.Text.Style.H2 -> {
+                    isH2Present = true
+                    if (isH1Present) depth += 1
+                }
+                Content.Text.Style.H3 -> {
+                    if (isH1Present) depth += 1
+                    if (isH2Present) depth += 1
+                }
+                else -> {}
             }
             val item = BlockView.TableOfContentsItem(
                 id = b.id,
@@ -1473,24 +1485,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                 depth = depth
             )
             items.add(item)
-            val next = if (index + 1 < headers.size) {
-                headers[index + 1]
-            } else {
-                null
-            }
-            if (next != null) {
-                val contentNext = next.content<Content.Text>()
-                if (content.style == Content.Text.Style.H1 && (
-                            contentNext.style == Content.Text.Style.H2
-                                    || contentNext.style == Content.Text.Style.H3
-                            )
-                ) {
-                    depth += 1
-                }
-                if (content.style == Content.Text.Style.H2 && contentNext.style == Content.Text.Style.H3) {
-                    depth += 1
-                }
-            }
         }
 
         val toc = BlockView.TableOfContents(

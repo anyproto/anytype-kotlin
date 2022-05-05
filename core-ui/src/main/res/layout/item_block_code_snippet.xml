@@ -1,58 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    style="@style/DefaultCodeBlockRootStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="1dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="1dp"
-    android:background="@drawable/item_block_code_multi_select_mode_selector"
-    android:paddingStart="12dp"
-    android:paddingTop="6dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="6dp">
+    android:background="@color/shape_tertiary">
 
     <LinearLayout
-        android:id="@+id/snippetContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="1dp"
-        android:background="@drawable/item_block_code_multi_select_unselected"
-        android:orientation="vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/code_menu"
-            style="@style/BlockCodeLanguageMenuStyle"
+            android:id="@+id/codeMenu"
+            style="@style/DefaultCodeBlockLanguageMenuStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_12"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="13dp"
             android:text="@string/block_code_menu_title" />
 
         <HorizontalScrollView
-            android:fillViewport="true"
-            android:scrollbars="none"
-            android:overScrollMode="never"
-            android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
                 android:id="@+id/snippet"
-                style="@style/BlockCodeContentStyle"
+                style="@style/DefaultCodeBlockContentStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:paddingTop="23dp"
-                android:paddingBottom="30dp"
+                android:layout_marginStart="20dp"
                 android:focusable="true"
+                android:paddingTop="18dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="21dp"
                 android:textIsSelectable="true"
                 tools:text="@string/default_text_placeholder" />
-        </HorizontalScrollView>
 
+        </HorizontalScrollView>
     </LinearLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginEnd="@dimen/dp_8"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 </FrameLayout>

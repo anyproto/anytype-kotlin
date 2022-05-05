@@ -1,16 +1,15 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
-import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Build.VERSION_CODES.N
 import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
+import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
 import com.anytypeio.anytype.core_ui.extensions.lighter
@@ -38,15 +37,13 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
         get() = itemView
     val content: CodeTextInputWidget
         get() = binding.snippet
-    val container: LinearLayout
-        get() = binding.snippetContainer
 
     val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 
     init {
-        itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        content.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
     fun bind(
@@ -97,7 +94,7 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
             content.selectionWatcher = { onSelectionChanged(item.id, it) }
         }
 
-        itemView.setOnClickListener {
+        content.setOnClickListener {
             onTextInputClicked(item.id)
             if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
                 content.context.imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
@@ -118,11 +115,8 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     }
 
     fun indentize(item: BlockView.Indentable) {
-        binding.snippetContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-            apply {
-                val extra = item.indent * dimen(R.dimen.indent)
-                leftMargin = 0 + extra
-            }
+        root.updateLayoutParams<RecyclerView.LayoutParams> {
+            leftMargin = item.indent * dimen(R.dimen.indent)
         }
     }
 
@@ -174,7 +168,7 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     }
 
     fun select(item: BlockView.Selectable) {
-        root.isSelected = item.isSelected
+        binding.selected.isSelected = item.isSelected
     }
 
     fun setFocus(item: Focusable) {
@@ -206,11 +200,11 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
         Timber.d("Setting background color: $color")
         val value = ThemeColor.values().find { value -> value.title == color }
         if (value != null && value != ThemeColor.DEFAULT) {
-            (container.background as? GradientDrawable)?.setColor(root.resources.lighter(value, 0))
+            (root.background as? ColorDrawable)?.color = root.resources.lighter(value, 0)
         } else {
             val defaultBackgroundColor =
                 content.context.resources.getColor(R.color.shape_tertiary, null)
-            (container.background as? GradientDrawable)?.setColor(defaultBackgroundColor)
+            (root.background as? ColorDrawable)?.color = defaultBackgroundColor
         }
     }
 

@@ -272,3 +272,8 @@ fun List<Block>.getChildrenIdsList(parent: Id): List<String> {
     val root = this.firstOrNull { it.id == parent }
     return root?.children ?: emptyList()
 }
+
+fun List<Block>.isAllTextAndNoneCodeBlocks(): Boolean =
+    all { block ->
+        block.content is Content.Text && block.content.style != Content.Text.Style.CODE_SNIPPET
+    }

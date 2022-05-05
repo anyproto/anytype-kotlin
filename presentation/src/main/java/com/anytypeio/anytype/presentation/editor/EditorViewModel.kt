@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
+import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
@@ -2339,7 +2340,7 @@ class EditorViewModel(
 
     private fun proceedWithMultiStyleToolbarEvent() {
         val selected = blocks.filter { currentSelection().contains(it.id) }
-        val isAllSelectedText = selected.all { it.content is Content.Text }
+        val isAllSelectedText = selected.isAllTextAndNoneCodeBlocks()
         mode = EditorMode.Styling.Multi(currentSelection())
         if (isAllSelectedText) {
             controlPanelInteractor.onEvent(

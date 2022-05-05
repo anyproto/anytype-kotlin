@@ -5,7 +5,9 @@ import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.core_models.ext.*
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class BlockExtensionTest {
 
@@ -1014,5 +1016,110 @@ class BlockExtensionTest {
         val result = document.title()
 
         assertNull(result)
+    }
+
+    @Test
+    fun `should return true on all non code and texted blocks`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = (Block.Content.Text.Style.P)
+            )
+        )
+
+        val document = listOf(a, b)
+
+        val result = document.isAllTextAndNoneCodeBlocks()
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should return false on texted blocks and code block`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = Block.Content.Text.Style.NUMBERED
+            )
+        )
+
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = (Block.Content.Text.Style.P)
+            )
+        )
+
+        val c = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                marks = emptyList(),
+                style = (Block.Content.Text.Style.CODE_SNIPPET)
+            )
+        )
+
+        val document = listOf(a, b, c)
+
+        val result = document.isAllTextAndNoneCodeBlocks()
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should return false on media blocks`() {
+
+        val root = MockDataFactory.randomUuid()
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File()
+        )
+
+        val b = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.File()
+        )
+
+        val document = listOf(a, b)
+
+        val result = document.isAllTextAndNoneCodeBlocks()
+
+        assertFalse(result)
     }
 }

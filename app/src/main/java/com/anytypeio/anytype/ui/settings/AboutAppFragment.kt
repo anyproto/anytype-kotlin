@@ -23,7 +23,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.about.AboutAppScreen
 import com.anytypeio.anytype.ui_settings.about.AboutAppViewModel
 import javax.inject.Inject
@@ -73,7 +72,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
             val clipboard =
                 requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip =
-                ClipData.newPlainText(KeychainPhraseDialog.MNEMONIC_LABEL, id)
+                ClipData.newPlainText("Your Anytype ID", id)
             clipboard.setPrimaryClip(clip)
             toast("Your Anytype ID is copied to clipboard.")
         } catch (e: Exception) {

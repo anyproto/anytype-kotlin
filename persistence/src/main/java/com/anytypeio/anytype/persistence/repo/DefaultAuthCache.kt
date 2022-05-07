@@ -60,7 +60,7 @@ class DefaultAuthCache(
             nonEncryptedMnemonic
         } else {
             val encryptedMnemonic = encryptedPrefs.getString(MNEMONIC_KEY, null)
-            encryptedMnemonic ?: throw IllegalStateException("Mnemonic is missing")
+            encryptedMnemonic ?: throw IllegalStateException("Recovery phrase is missing")
         }
     }
 

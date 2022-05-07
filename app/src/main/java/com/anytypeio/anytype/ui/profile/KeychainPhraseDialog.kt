@@ -110,7 +110,7 @@ class KeychainPhraseDialog : BaseBottomSheetFragment<DialogKeychainPhraseBinding
     )
 
     companion object {
-        const val MNEMONIC_LABEL = "Your Anytype mnemonic phrase"
+        const val MNEMONIC_LABEL = "Your Anytype recovery phrase"
         const val ARG_SCREEN_TYPE = "arg.keychain.screen.type"
     }
 }

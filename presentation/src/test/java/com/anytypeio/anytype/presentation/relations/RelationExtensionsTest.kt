@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.relations
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.presentation.relations.model.RelationView
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

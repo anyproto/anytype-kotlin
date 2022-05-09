@@ -9,7 +9,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.mocking.MockDataFactory
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule

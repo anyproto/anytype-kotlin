@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.sets
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.presentation.extension.checkboxFilter
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Assert
 import org.junit.Test
 

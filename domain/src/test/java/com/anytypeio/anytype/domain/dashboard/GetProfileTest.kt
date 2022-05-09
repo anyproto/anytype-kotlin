@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub

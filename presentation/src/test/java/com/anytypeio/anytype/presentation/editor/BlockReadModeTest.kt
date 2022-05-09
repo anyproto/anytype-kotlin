@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor
 
-import MockDataFactory
 import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
@@ -11,11 +10,11 @@ import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

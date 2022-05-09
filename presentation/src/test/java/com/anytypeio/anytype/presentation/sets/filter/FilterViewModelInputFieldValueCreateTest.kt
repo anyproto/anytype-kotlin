@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
-import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
@@ -16,6 +15,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule

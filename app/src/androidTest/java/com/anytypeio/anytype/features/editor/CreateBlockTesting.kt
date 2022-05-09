@@ -21,8 +21,8 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
@@ -245,17 +245,6 @@ class CreateBlockTesting : EditorTestSetup() {
                 text = "",
                 marks = emptyList(),
                 style = targetStyle
-            )
-        )
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
             )
         )
 

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After

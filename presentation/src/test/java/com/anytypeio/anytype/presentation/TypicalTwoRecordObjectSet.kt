@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.presentation
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.test_utils.MockDataFactory
 
 class TypicalTwoRecordObjectSet {
 

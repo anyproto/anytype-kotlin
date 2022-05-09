@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.keychain
 
-import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import org.junit.Before
 import org.junit.Rule

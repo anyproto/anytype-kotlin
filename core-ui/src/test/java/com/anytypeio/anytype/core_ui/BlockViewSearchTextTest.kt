@@ -4,6 +4,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 

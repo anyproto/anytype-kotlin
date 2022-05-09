@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

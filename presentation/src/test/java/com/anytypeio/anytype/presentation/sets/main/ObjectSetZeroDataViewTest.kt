@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

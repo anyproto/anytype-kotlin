@@ -195,13 +195,13 @@ dependencies {
     androidTestImplementation project(':test:android-utils')
     androidTestImplementation acceptanceTesting.mockitoAndroid
     androidTestImplementation unitTestDependencies.mockitoKotlin
-    androidTestImplementation acceptanceTesting.espressoCore
     androidTestImplementation acceptanceTesting.espressoContrib
     androidTestImplementation acceptanceTesting.androidJUnit
     androidTestImplementation unitTestDependencies.kotlinTest
     androidTestImplementation acceptanceTesting.testRules
     androidTestImplementation acceptanceTesting.disableAnimation
     androidTestImplementation acceptanceTesting.navigationTesting
+    androidTestImplementation project(":test:utils")
 
     androidTestImplementation(unitTestDependencies.coroutineTesting) {
         exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"

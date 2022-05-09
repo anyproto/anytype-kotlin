@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.editor
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Fields.Companion.NAME_KEY
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals

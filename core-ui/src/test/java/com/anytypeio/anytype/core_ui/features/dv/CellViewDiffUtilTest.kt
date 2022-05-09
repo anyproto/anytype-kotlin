@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.dv
 
-import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.dataview.diff.CellViewDiffUtil
 import com.anytypeio.anytype.presentation.sets.model.CellView
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 

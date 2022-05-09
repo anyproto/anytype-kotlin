@@ -77,7 +77,7 @@ dependencies {
 
     testImplementation acceptanceTesting.fragmentTesting
     testImplementation project(':test:android-utils')
-    testImplementation acceptanceTesting.espressoCore
+    testImplementation project(':test:utils')
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.robolectricLatest

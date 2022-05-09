@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
-import MockDataFactory
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
@@ -14,6 +13,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

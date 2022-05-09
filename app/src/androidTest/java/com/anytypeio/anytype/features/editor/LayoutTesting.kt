@@ -11,8 +11,8 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
 import com.anytypeio.anytype.test_utils.utils.checkIsNotDisplayed

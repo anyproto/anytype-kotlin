@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor
 
-import MockDataFactory
 import android.util.Log
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.ext.asMap
@@ -22,6 +21,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before

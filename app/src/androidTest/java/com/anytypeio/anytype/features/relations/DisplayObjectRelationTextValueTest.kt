@@ -16,13 +16,13 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.espresso.TextLineCountMatcher
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import MockDataFactory
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
@@ -11,6 +10,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runBlockingTest

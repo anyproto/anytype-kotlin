@@ -19,12 +19,12 @@ android {
 }
 
 dependencies {
+    api acceptanceTesting.espressoCore
+
     implementation mainApplication.appcompat
     implementation mainApplication.kotlin
     implementation mainApplication.coroutinesAndroid
     implementation mainApplication.androidxCore
-    implementation acceptanceTesting.espressoCore
-
     implementation mainApplication.design
     implementation mainApplication.recyclerView
 }

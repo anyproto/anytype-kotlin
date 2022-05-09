@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockTypicalDocumentFactory {
 

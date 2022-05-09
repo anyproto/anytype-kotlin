@@ -16,13 +16,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.timeInSecondsFormat
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule

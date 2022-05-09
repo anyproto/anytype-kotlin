@@ -4,12 +4,12 @@ import android.os.Build
 import android.text.method.ArrowKeyMovementMethod
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi

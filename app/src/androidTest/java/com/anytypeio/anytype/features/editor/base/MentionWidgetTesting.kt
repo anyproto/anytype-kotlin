@@ -10,8 +10,8 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
 import com.anytypeio.anytype.test_utils.utils.checkIsNotDisplayed

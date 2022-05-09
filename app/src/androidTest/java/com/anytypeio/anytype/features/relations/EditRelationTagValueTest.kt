@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRec
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
@@ -34,6 +33,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed

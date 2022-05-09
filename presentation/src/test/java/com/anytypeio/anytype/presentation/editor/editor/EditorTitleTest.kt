@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
-import MockDataFactory
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
@@ -14,6 +13,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow

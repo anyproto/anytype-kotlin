@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
-import MockDataFactory
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
@@ -20,6 +19,7 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import net.lachlanmckee.timberjunit.TimberTestRule
 import kotlinx.coroutines.runBlocking

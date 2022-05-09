@@ -3,10 +3,10 @@ package com.anytypeio.anytype.core_ui.features.editor
 import android.os.Build
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

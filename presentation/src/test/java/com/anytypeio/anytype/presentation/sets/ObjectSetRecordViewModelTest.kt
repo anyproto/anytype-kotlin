@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.sets
 
-import MockDataFactory
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest

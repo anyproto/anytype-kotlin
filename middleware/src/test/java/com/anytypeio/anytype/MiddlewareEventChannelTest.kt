@@ -1,12 +1,11 @@
 package com.anytypeio.anytype
 
 import anytype.model.Block
-import com.anytypeio.anytype.common.MockDataFactory
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
 import com.anytypeio.anytype.middleware.mappers.MSmartBlockType
-import kotlinx.coroutines.flow.collect
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

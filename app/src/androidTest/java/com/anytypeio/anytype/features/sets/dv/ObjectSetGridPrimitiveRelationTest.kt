@@ -10,8 +10,8 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasChildViewCount
 import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
 import com.anytypeio.anytype.test_utils.utils.checkHasText

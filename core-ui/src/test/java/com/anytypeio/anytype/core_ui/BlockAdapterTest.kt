@@ -53,6 +53,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

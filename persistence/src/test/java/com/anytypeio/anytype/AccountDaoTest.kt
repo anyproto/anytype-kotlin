@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.model.AccountTable
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After

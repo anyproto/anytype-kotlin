@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.core.text.getSpans
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
@@ -13,6 +12,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

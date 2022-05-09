@@ -77,7 +77,6 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -95,6 +94,7 @@ import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -449,17 +449,6 @@ open class EditorTestSetup {
                     Payload(context = root, events = events)
                 )
             )
-        }
-    }
-
-    fun stubReplaceBlock(
-        command: Command.Replace,
-        events: List<Event.Command>
-    ) {
-        repo.stub {
-            onBlocking {
-                replace(command = command)
-            } doReturn Pair(command.context, Payload(command.context, events))
         }
     }
 

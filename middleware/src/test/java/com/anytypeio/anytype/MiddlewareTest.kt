@@ -4,13 +4,13 @@ import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Block
 import anytype.model.Range
-import com.anytypeio.anytype.common.MockDataFactory
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.service.MiddlewareService
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -227,8 +227,6 @@ class MiddlewareTest {
         val emojiDetail = Rpc.Block.Set.Details.Detail(
             key = emojiIconKey, value_ = emojiValue
         )
-
-        val imageValue = ""
 
         val imageDetail = Rpc.Block.Set.Details.Detail(
             key = imageIconKey

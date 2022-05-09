@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.MockDataFactory
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.times

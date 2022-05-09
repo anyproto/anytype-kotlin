@@ -27,10 +27,10 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.emojifier.suggest.model.EmojiModel
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before

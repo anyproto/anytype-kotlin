@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.dashboard
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.emptyFlow
 import org.junit.Before
 import org.junit.Test

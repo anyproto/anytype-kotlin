@@ -5,12 +5,12 @@ import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.MockDataFactory
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config

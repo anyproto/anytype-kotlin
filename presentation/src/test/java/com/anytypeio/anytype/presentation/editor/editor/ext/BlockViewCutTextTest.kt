@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
-import MockDataFactory
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

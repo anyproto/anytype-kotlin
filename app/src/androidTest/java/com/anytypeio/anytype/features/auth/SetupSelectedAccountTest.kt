@@ -16,9 +16,9 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModelFactory
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.matchView
 import com.anytypeio.anytype.ui.auth.Keys

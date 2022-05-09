@@ -14,8 +14,8 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher

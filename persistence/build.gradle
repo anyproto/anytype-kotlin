@@ -57,8 +57,8 @@ dependencies {
 
     implementation applicationDependencies.timber
 
+    testImplementation project(":test:utils")
     testImplementation databaseDependencies.roomTesting
-
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin

@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.presentation.dashboard
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.mapper.toDashboardViews
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow

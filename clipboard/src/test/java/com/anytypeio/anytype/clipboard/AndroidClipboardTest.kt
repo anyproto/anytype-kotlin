@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test

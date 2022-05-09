@@ -16,9 +16,9 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
-import com.anytypeio.anytype.mocking.MockDataFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasBackgroundColor
 import com.anytypeio.anytype.test_utils.utils.checkHasNoBackground
 import com.anytypeio.anytype.test_utils.utils.checkHasText

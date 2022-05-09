@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.*
@@ -12,6 +11,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlinx.coroutines.runBlocking
 import org.junit.After

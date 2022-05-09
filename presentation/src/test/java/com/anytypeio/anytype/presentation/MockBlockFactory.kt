@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockBlockFactory {
 

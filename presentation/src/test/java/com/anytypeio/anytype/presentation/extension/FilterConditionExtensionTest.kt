@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.extension
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertFails
 import kotlin.test.asserter

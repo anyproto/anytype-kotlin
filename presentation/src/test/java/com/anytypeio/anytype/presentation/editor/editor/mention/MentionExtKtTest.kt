@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor.editor.mention
 
-import MockDataFactory
 import android.util.Log
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
@@ -10,6 +9,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule

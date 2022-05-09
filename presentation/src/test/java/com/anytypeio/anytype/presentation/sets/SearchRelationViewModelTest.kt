@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -22,6 +21,7 @@ import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
@@ -41,7 +41,6 @@ class SearchRelationViewModelTest {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val root = MockDataFactory.randomUuid()
     private val dataViewId = MockDataFactory.randomString()
     private val session = ObjectSetSession()
 

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor
 
-import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -11,6 +10,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule

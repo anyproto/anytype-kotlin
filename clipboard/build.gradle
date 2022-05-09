@@ -53,6 +53,7 @@ dependencies {
     implementation applicationDependencies.coroutinesAndroid
     implementation applicationDependencies.timber
 
+    testImplementation project(":test:utils")
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.androidXTestCore

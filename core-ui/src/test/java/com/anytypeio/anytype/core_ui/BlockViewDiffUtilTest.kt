@@ -13,6 +13,7 @@ import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

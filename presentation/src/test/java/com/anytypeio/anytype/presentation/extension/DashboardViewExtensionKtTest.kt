@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.extension
 
+import FakeGateWay
 import MockDataFactory
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.config.Gateway
@@ -46,14 +47,7 @@ class DashboardViewExtensionKtTest {
             )
         )
 
-
-        val testGate = object : Gateway {
-            override fun obtain(): String {
-                return "anytype.io"
-            }
-        }
-
-        val builder = UrlBuilder(gateway = testGate)
+        val builder = UrlBuilder(FakeGateWay)
 
         val result = views.updateDetails(
             target = views[1].target,

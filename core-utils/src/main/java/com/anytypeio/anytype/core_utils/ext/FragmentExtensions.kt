@@ -18,8 +18,7 @@ inline fun <reified T> Fragment.argOrNull(key: String): T? {
 
 fun Fragment.argString(key: String): String {
     val value = requireArguments().getString(key)
-    checkNotNull(value) { "Value missing for $key" }
-    return value
+    return checkNotNull(value) { "Value missing for $key" }
 }
 
 fun Fragment.argStringOrNull(key: String): String? {
@@ -36,8 +35,7 @@ fun Fragment.argLong(key: String): Long {
 
 fun <T : Parcelable> Fragment.argList(key: String): ArrayList<T> {
     val value = requireArguments().getParcelableArrayList<T>(key)
-    checkNotNull(value)
-    return value
+    return checkNotNull(value)
 }
 
 fun <T> CoroutineScope.subscribe(flow: Flow<T>, body: suspend (T) -> Unit): Job =

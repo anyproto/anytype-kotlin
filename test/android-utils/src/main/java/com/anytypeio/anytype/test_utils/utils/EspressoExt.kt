@@ -75,11 +75,12 @@ fun ViewInteraction.checkHasChildViewCount(count: Int) : ViewInteraction {
     return check(matches(WithChildViewCount(count)))
 }
 
-fun Int.rVMatcher(): RecyclerViewMatcher = RecyclerViewMatcher(this)
+fun Int.rVMatcher(): RecyclerViewMatcher =
+    RecyclerViewMatcher(this)
 
 fun Int.checkRecyclerItemCount(expected: Int) = matchView().check(RecyclerViewItemCountAssertion(expected))
 
-fun RecyclerViewMatcher.onItemView(pos: Int,target: Int): ViewInteraction {
+fun RecyclerViewMatcher.onItemView(pos: Int, target: Int): ViewInteraction {
     return onView(atPositionOnView(pos, target))
 }
 

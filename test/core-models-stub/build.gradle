@@ -1,0 +1,8 @@
+plugins {
+    id "kotlin"
+}
+
+dependencies {
+    api project(':test:utils')
+    api project(":core-models")
+}

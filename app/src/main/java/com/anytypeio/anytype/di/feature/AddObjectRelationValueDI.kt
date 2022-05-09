@@ -52,7 +52,6 @@ object AddObjectRelationValueModule {
         addTagToDataViewRecord: AddTagToDataViewRecord,
         addStatusToDataViewRecord: AddStatusToDataViewRecord,
         urlBuilder: UrlBuilder,
-        analytics: Analytics
     ): RelationOptionValueDVAddViewModel.Factory = RelationOptionValueDVAddViewModel.Factory(
         relations = relations,
         values = values,
@@ -63,7 +62,6 @@ object AddObjectRelationValueModule {
         addDataViewRelationOption = addDataViewRelationOption,
         addTagToDataViewRecord = addTagToDataViewRecord,
         addStatusToDataViewRecord = addStatusToDataViewRecord,
-        analytics = analytics
     )
 
     @JvmStatic

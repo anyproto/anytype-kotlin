@@ -1,13 +1,11 @@
-apply plugin: 'kotlin'
-apply plugin: 'org.jetbrains.dokka'
+plugins {
+    id "kotlin"
+    id "org.jetbrains.dokka"
+}
 
 dependencies {
+    implementation mainApplication.kotlin
 
-    def applicationDependencies = rootProject.ext.mainApplication
-    def unitTestDependencies = rootProject.ext.unitTesting
-
-    implementation applicationDependencies.kotlin
-
-    testImplementation unitTestDependencies.kotlinTest
-    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation unitTesting.kotlinTest
+    testImplementation unitTesting.mockitoKotlin
 }

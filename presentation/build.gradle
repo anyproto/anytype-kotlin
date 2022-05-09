@@ -55,4 +55,5 @@ dependencies {
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.timberJUnit
     testImplementation unitTestDependencies.turbine
+    testImplementation project(":test:core-models-stub")
 }

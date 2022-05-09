@@ -117,7 +117,6 @@ class AddRelationStatusValueTest {
             addStatusToDataViewRecord = addStatusToDataViewRecord,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
-            analytics = analytics
         )
     }
 

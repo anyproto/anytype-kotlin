@@ -76,7 +76,7 @@ dependencies {
     debugImplementation applicationDependencies.composeTooling
 
     testImplementation acceptanceTesting.fragmentTesting
-    testImplementation project(':test-utils')
+    testImplementation project(':test:android-utils')
     testImplementation acceptanceTesting.espressoCore
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest

@@ -221,7 +221,7 @@ dependencies {
     testImplementation unitTestDependencies.mockitoKotlin
 
     //Acceptance tests dependencies
-    androidTestImplementation project(':test-utils')
+    androidTestImplementation project(':test:android-utils')
     androidTestImplementation acceptanceTesting.mockitoAndroid
     androidTestImplementation unitTestDependencies.mockitoKotlin
     androidTestImplementation acceptanceTesting.espressoCore

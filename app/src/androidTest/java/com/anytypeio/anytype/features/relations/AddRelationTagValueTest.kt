@@ -116,7 +116,6 @@ class AddRelationTagValueTest {
             addStatusToDataViewRecord = addStatusToDataViewRecord,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
-            analytics = analytics
         )
     }
 

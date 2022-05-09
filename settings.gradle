@@ -15,5 +15,8 @@ include ':app',
         ':analytics',
         ':protocol',
         ':core-models',
-        ':test-utils'
+        ':test:android-utils',
+        ':test:utils',
+        ':test:core-models-stub'
+
 include ':ui-settings'

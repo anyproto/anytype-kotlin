@@ -8,7 +8,7 @@
 /github.properties
 /apikeys.properties
 .DS_Store
-/build
+**/build
 /libs
 /captures
 .externalNativeBuild

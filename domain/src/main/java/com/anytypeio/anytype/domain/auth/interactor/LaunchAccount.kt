@@ -3,7 +3,7 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
@@ -15,7 +15,7 @@ class LaunchAccount(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider,
     private val context: CoroutineContext = Dispatchers.IO,
-    private val flavourConfigProvider: FlavourConfigProvider
+    private val featuresConfigProvider: FeaturesConfigProvider
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = try {
@@ -25,7 +25,7 @@ class LaunchAccount(
         ).let { pair ->
             val (account, config, status) = pair
             repository.updateAccount(account)
-            flavourConfigProvider.set(
+            featuresConfigProvider.set(
                 enableDataView = config.enableDataView ?: false,
                 enableDebug = config.enableDebug ?: false,
                 enableChannelSwitch = config.enableChannelSwitch ?: false,

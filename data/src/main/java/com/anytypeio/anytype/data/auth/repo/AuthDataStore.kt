@@ -3,13 +3,13 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
+import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AuthDataStore {
 
-    suspend fun startAccount(id: String, path: String): Triple<AccountEntity, FlavourConfigEntity, AccountStatus>
+    suspend fun startAccount(id: String, path: String): Triple<AccountEntity, FeaturesConfigEntity, AccountStatus>
 
     suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): AccountEntity
 

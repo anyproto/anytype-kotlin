@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
@@ -87,11 +87,11 @@ object SplashModule {
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider,
-        flavourConfigProvider: FlavourConfigProvider
+        featuresConfigProvider: FeaturesConfigProvider
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
-        flavourConfigProvider = flavourConfigProvider
+        featuresConfigProvider = featuresConfigProvider
     )
 
     @JvmStatic

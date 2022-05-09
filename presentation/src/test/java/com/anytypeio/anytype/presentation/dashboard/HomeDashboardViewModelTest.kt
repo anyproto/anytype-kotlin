@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.DebugSettings
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
@@ -103,7 +103,7 @@ class HomeDashboardViewModelTest {
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
-    lateinit var flavourConfigProvider: FlavourConfigProvider
+    lateinit var featuresConfigProvider: FeaturesConfigProvider
 
     @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
@@ -155,7 +155,7 @@ class HomeDashboardViewModelTest {
             setObjectListIsArchived = setObjectListIsArchived,
             urlBuilder = builder,
             getDefaultEditorType = getDefaultEditorType,
-            flavourConfigProvider = flavourConfigProvider,
+            featuresConfigProvider = featuresConfigProvider,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,

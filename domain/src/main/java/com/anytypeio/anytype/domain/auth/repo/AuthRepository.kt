@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.auth.repo
 
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
@@ -14,7 +14,7 @@ interface AuthRepository {
      * @param id user account id
      * @param path wallet repository path
      */
-    suspend fun startAccount(id: String, path: String): Triple<Account, FlavourConfig, AccountStatus>
+    suspend fun startAccount(id: String, path: String): Triple<Account, FeaturesConfig, AccountStatus>
 
     suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): Account
 

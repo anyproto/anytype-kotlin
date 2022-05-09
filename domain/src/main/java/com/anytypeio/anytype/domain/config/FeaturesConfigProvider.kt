@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.config
 
-import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.FeaturesConfig
 
-interface FlavourConfigProvider {
+interface FeaturesConfigProvider {
 
-    fun get(): FlavourConfig
+    fun get(): FeaturesConfig
 
     fun set(
         enableDataView: Boolean,

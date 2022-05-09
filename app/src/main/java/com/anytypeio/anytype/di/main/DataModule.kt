@@ -4,11 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.app.DefaultAppActionManager
-import com.anytypeio.anytype.data.auth.config.DefaultFlavourConfigProvider
-import com.anytypeio.anytype.data.auth.config.ExperimentalFlavourConfigProvider
-import com.anytypeio.anytype.data.auth.repo.*
+import com.anytypeio.anytype.data.auth.config.DefaultFeaturesConfigProvider
+import com.anytypeio.anytype.data.auth.repo.AuthCache
+import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
+import com.anytypeio.anytype.data.auth.repo.AuthDataRepository
+import com.anytypeio.anytype.data.auth.repo.AuthDataStoreFactory
+import com.anytypeio.anytype.data.auth.repo.AuthRemote
+import com.anytypeio.anytype.data.auth.repo.AuthRemoteDataStore
+import com.anytypeio.anytype.data.auth.repo.DebugSettingsCache
+import com.anytypeio.anytype.data.auth.repo.InfrastructureDataRepository
+import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.data.auth.repo.UserSettingsDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
@@ -21,7 +28,7 @@ import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -243,11 +250,8 @@ object DataModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideFlavourConfigProvider(): FlavourConfigProvider {
-        return if (BuildConfig.FLAVOR == "experimental")
-            ExperimentalFlavourConfigProvider()
-        else
-            DefaultFlavourConfigProvider()
+    fun provideFeaturesConfigProvider(): FeaturesConfigProvider {
+        return DefaultFeaturesConfigProvider()
     }
 
     @JvmStatic
@@ -274,14 +278,14 @@ object DataModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideAppActionManager(context: Context) : AppActionManager = DefaultAppActionManager(
+    fun provideAppActionManager(context: Context): AppActionManager = DefaultAppActionManager(
         context = context
     )
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideObjectStore() : ObjectStore = DefaultObjectStore()
+    fun provideObjectStore(): ObjectStore = DefaultObjectStore()
 
     //region Unsplash
 
@@ -290,7 +294,7 @@ object DataModule {
     @Singleton
     fun provideUnsplashRepo(
         remote: UnsplashRemote
-    ) : UnsplashRepository = UnsplashDataRepository(
+    ): UnsplashRepository = UnsplashDataRepository(
         remote = remote
     )
 
@@ -299,7 +303,7 @@ object DataModule {
     @Singleton
     fun provideUnsplashRemote(
         service: MiddlewareService
-    ) : UnsplashRemote = UnsplashMiddleware(
+    ): UnsplashRemote = UnsplashMiddleware(
         service = service
     )
 

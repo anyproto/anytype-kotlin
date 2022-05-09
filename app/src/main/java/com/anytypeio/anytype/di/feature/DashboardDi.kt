@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
@@ -74,7 +74,7 @@ object HomeDashboardModule {
         urlBuilder: UrlBuilder,
         setObjectListIsArchived: SetObjectListIsArchived,
         deleteObjects: DeleteObjects,
-        flavourConfigProvider: FlavourConfigProvider,
+        featuresConfigProvider: FeaturesConfigProvider,
         objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
         objectStore: ObjectStore,
@@ -95,7 +95,7 @@ object HomeDashboardModule {
         setObjectListIsArchived = setObjectListIsArchived,
         deleteObjects = deleteObjects,
         getDefaultEditorType = getDefaultEditorType,
-        flavourConfigProvider = flavourConfigProvider,
+        featuresConfigProvider = featuresConfigProvider,
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
         objectStore = objectStore,

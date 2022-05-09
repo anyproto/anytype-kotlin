@@ -4,14 +4,14 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 
 /**
  * Use case for selecting user account.
  */
 class StartAccount(
     private val repository: AuthRepository,
-    private val flavourConfigProvider: FlavourConfigProvider
+    private val featuresConfigProvider: FeaturesConfigProvider
 ) : BaseUseCase<Pair<Id, AccountStatus>, StartAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
@@ -22,7 +22,7 @@ class StartAccount(
         with(repository) {
             saveAccount(account)
             setCurrentAccount(account.id)
-            flavourConfigProvider.set(
+            featuresConfigProvider.set(
                 enableDataView = config.enableDataView ?: false,
                 enableDebug = config.enableDebug ?: false,
                 enableChannelSwitch = config.enableChannelSwitch ?: false,

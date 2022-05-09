@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
 import com.anytypeio.anytype.mocking.MockDataFactory
@@ -57,7 +57,7 @@ class SetupSelectedAccountTest {
     lateinit var blockRepository: BlockRepository
 
     @Mock
-    lateinit var flavourConfigProvider: FlavourConfigProvider
+    lateinit var featuresConfigProvider: FeaturesConfigProvider
 
     @Mock
     lateinit var analytics: Analytics
@@ -72,7 +72,7 @@ class SetupSelectedAccountTest {
         MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
             repository = authRepository,
-            flavourConfigProvider = flavourConfigProvider
+            featuresConfigProvider = featuresConfigProvider
         )
         storeObjectTypes = StoreObjectTypes(
             repo = blockRepository,

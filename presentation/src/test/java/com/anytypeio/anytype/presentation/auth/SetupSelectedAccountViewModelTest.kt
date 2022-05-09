@@ -4,14 +4,14 @@ import MockDataFactory
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -47,7 +47,7 @@ class SetupSelectedAccountViewModelTest {
     lateinit var pathProvider: PathProvider
 
     @Mock
-    lateinit var flavourConfigProvider: FlavourConfigProvider
+    lateinit var featuresConfigProvider: FeaturesConfigProvider
 
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
@@ -61,7 +61,7 @@ class SetupSelectedAccountViewModelTest {
         MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
             repository = authRepo,
-            flavourConfigProvider = flavourConfigProvider
+            featuresConfigProvider = featuresConfigProvider
         )
         storeObjectTypes = StoreObjectTypes(
             repo = blockRepo,
@@ -127,7 +127,7 @@ class SetupSelectedAccountViewModelTest {
                     avatar = null,
                     color = null
                 ),
-                FlavourConfig(),
+                FeaturesConfig(),
                 AccountStatus.Active
             )
         }

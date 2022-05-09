@@ -3,7 +3,7 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
+import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +12,7 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun startAccount(
         id: String,
         path: String
-    ): Triple<AccountEntity, FlavourConfigEntity, AccountStatus> {
+    ): Triple<AccountEntity, FeaturesConfigEntity, AccountStatus> {
         throw UnsupportedOperationException()
     }
 

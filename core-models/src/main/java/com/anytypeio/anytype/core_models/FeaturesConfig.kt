@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.core_models
 
-data class FlavourConfig(
+data class FeaturesConfig(
     val enableDataView: Boolean? = null,
     val enableDebug: Boolean? = null,
     val enableChannelSwitch: Boolean? = null,

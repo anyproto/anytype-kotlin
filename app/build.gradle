@@ -15,18 +15,18 @@ apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 //keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    def config = rootProject.extensions.getByName("ext")
+    def config = rootProject.ext
 
-    compileSdkVersion config["compile_sdk"]
-    buildToolsVersion config["build_tools"]
+    compileSdkVersion config.compile_sdk
+    buildToolsVersion config.build_tools
 
     defaultConfig {
-        applicationId config["application_id"]
-        minSdkVersion config["min_sdk"]
-        targetSdkVersion config["target_sdk"]
+        applicationId config.application_id
+        minSdkVersion config.min_sdk
+        targetSdkVersion config.target_sdk
         versionCode getBuildVersionCode()
         versionName getBuildVersionName()
-        testInstrumentationRunner config["test_runner"]
+        testInstrumentationRunner config.test_runner
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
     }
     packagingOptions {
@@ -72,35 +72,6 @@ android {
         }
     }
 
-    flavorDimensions 'default'
-    productFlavors {
-        stable {
-            dimension 'default'
-        }
-        experimental{
-            dimension 'default'
-        }
-    }
-
-    sourceSets {
-        stable {
-            java {
-                srcDirs 'src/stable/java'
-            }
-            res {
-                srcDirs 'src/stable/res'
-            }
-        }
-        experimental {
-            java {
-                srcDirs 'src/experimental/java'
-            }
-            res {
-                srcDirs 'src/experimental/res'
-            }
-        }
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -111,7 +82,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion config["compose_version"]
+        kotlinCompilerExtensionVersion config.compose_version
     }
 
     lint {

@@ -2,13 +2,13 @@ package com.anytypeio.anytype.domain.auth
 
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.common.MockDataFactory
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -29,14 +29,14 @@ class StartAccountTest {
     lateinit var repo: AuthRepository
 
     @Mock
-    lateinit var flavourConfigProvider: FlavourConfigProvider
+    lateinit var featuresConfigProvider: FeaturesConfigProvider
 
     lateinit var startAccount: StartAccount
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        startAccount = StartAccount(repo, flavourConfigProvider)
+        startAccount = StartAccount(repo, featuresConfigProvider)
     }
 
     @Test
@@ -57,7 +57,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FlavourConfig(
+        val config = FeaturesConfig(
             enableDataView = false,
             enableDebug = false,
             enableChannelSwitch = false
@@ -104,7 +104,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FlavourConfig(
+        val config = FeaturesConfig(
             enableDataView = false,
             enableDebug = false,
             enableChannelSwitch = false
@@ -142,7 +142,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FlavourConfig(
+        val config = FeaturesConfig(
             enableDataView = null,
             enableDebug = null,
             enableChannelSwitch = null
@@ -159,7 +159,7 @@ class StartAccountTest {
 
         val result = startAccount.run(params)
 
-        verify(flavourConfigProvider, times(1)).set(
+        verify(featuresConfigProvider, times(1)).set(
             enableDataView = false,
             enableDebug = false,
             enableChannelSwitch = false,
@@ -187,7 +187,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FlavourConfig(
+        val config = FeaturesConfig(
             enableDataView = true,
             enableDebug = false,
             enableChannelSwitch = true
@@ -204,7 +204,7 @@ class StartAccountTest {
 
         val result = startAccount.run(params)
 
-        verify(flavourConfigProvider, times(1)).set(
+        verify(featuresConfigProvider, times(1)).set(
             enableDataView = true,
             enableDebug = false,
             enableChannelSwitch = true,

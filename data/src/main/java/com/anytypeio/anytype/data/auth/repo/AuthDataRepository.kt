@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
@@ -18,7 +18,7 @@ class AuthDataRepository(
 
     override suspend fun startAccount(
         id: String, path: String
-    ): Triple<Account, FlavourConfig, AccountStatus> = factory.remote.startAccount(id, path).let { triple ->
+    ): Triple<Account, FeaturesConfig, AccountStatus> = factory.remote.startAccount(id, path).let { triple ->
         Triple(
             first = triple.first.toDomain(),
             second = triple.second.toDomain(),

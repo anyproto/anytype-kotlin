@@ -2,7 +2,7 @@ package com.anytypeio.anytype.middleware.auth
 
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
+import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.middleware.EventProxy
@@ -23,20 +23,20 @@ class AuthMiddleware(
     override suspend fun startAccount(
         id: String,
         path: String
-    ): Triple<AccountEntity, FlavourConfigEntity, AccountStatus> {
+    ): Triple<AccountEntity, FeaturesConfigEntity, AccountStatus> {
         val response = middleware.selectAccount(id, path)
         val account = AccountEntity(
             id = response.id,
             name = response.name,
             color = response.avatar?.color
         )
-        val flavourConfig = FlavourConfigEntity(
+        val featuresConfig = FeaturesConfigEntity(
             enableDataView = response.enableDataView,
             enableDebug = response.enableDebug,
             enableChannelSwitch = response.enableChannelSwitch,
             enableSpaces = response.enableSpaces
         )
-        return Triple(account, flavourConfig, response.accountStatus ?: AccountStatus.Unknown)
+        return Triple(account, featuresConfig, response.accountStatus ?: AccountStatus.Unknown)
     }
 
     override suspend fun createAccount(

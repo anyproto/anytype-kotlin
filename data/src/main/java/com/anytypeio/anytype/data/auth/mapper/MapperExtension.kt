@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.data.auth.mapper
 
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FlavourConfigEntity
+import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
-import com.anytypeio.anytype.core_models.FlavourConfig
+import com.anytypeio.anytype.core_models.FeaturesConfig
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -16,8 +16,8 @@ fun AccountEntity.toDomain(): Account {
     )
 }
 
-fun FlavourConfigEntity.toDomain(): FlavourConfig {
-    return FlavourConfig(
+fun FeaturesConfigEntity.toDomain(): FeaturesConfig {
+    return FeaturesConfig(
         enableDataView = enableDataView,
         enableDebug = enableDebug,
         enableChannelSwitch = enableChannelSwitch,

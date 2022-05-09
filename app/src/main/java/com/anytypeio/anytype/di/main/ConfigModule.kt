@@ -4,9 +4,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.data.auth.repo.config.Configuration
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import com.anytypeio.anytype.data.auth.repo.config.GatewayProvider
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.config.GetFlavourConfig
 import com.anytypeio.anytype.middleware.config.DefaultConfigurator
 import dagger.Module
 import dagger.Provides
@@ -33,11 +31,4 @@ object ConfigModule {
     fun provideConfigurator(): Configurator {
         return DefaultConfigurator()
     }
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideGetFlavourConfig(
-        flavourConfigProvider: FlavourConfigProvider
-    ): GetFlavourConfig = GetFlavourConfig(flavourConfigProvider)
 }

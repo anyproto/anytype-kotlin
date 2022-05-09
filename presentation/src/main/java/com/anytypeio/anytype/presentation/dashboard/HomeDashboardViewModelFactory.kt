@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.FlavourConfigProvider
+import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
@@ -38,7 +38,7 @@ class HomeDashboardViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects,
-    private val flavourConfigProvider: FlavourConfigProvider,
+    private val featuresConfigProvider: FeaturesConfigProvider,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
@@ -63,7 +63,7 @@ class HomeDashboardViewModelFactory(
             getDefaultEditorType = getDefaultEditorType,
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived,
-            flavourConfigProvider = flavourConfigProvider,
+            featuresConfigProvider = featuresConfigProvider,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,

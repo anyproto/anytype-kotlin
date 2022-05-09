@@ -13,25 +13,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnMarketplace" />
         <Constraint
-            android:id="@+id/tvGreeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/tvGreeting">
             <CustomAttribute
                 app:attributeName="alpha"
                 app:customFloatValue="1.0" />
         </Constraint>
         <Constraint
-            android:id="@+id/avatarContainer"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvGreeting">
+            android:id="@+id/avatarContainer">
             <CustomAttribute
                 app:attributeName="alpha"
                 app:customFloatValue="1.0" />
@@ -94,25 +82,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivSettings" />
         <Constraint
-            android:id="@+id/tvGreeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/tvGreeting">
             <CustomAttribute
                 app:attributeName="alpha"
                 app:customFloatValue="0.0" />
         </Constraint>
         <Constraint
-            android:id="@+id/avatarContainer"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvGreeting">
+            android:id="@+id/avatarContainer">
             <CustomAttribute
                 app:attributeName="alpha"
                 app:customFloatValue="0.0" />

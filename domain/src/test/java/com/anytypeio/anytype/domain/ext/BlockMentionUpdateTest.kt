@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.ext
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.addMention
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 

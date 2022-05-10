@@ -12,6 +12,7 @@ dependencies {
 
     def unitTestDependencies = rootProject.ext.unitTesting
 
+    testImplementation project(":test:utils")
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.turbine
 

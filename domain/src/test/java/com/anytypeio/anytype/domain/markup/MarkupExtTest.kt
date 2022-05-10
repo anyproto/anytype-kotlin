@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.markup
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.ext.*
 import com.anytypeio.anytype.core_models.misc.Overlap
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.*
 import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import com.anytypeio.anytype.domain.auth.model.Account
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test

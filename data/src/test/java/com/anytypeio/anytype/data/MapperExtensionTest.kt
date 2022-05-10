@@ -5,6 +5,7 @@ import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.domain.auth.model.Account
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertTrue
 

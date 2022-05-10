@@ -10,6 +10,7 @@ dependencies {
     implementation applicationDependencies.kotlin
     implementation applicationDependencies.coroutines
 
+    testImplementation project(":test:utils")
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin

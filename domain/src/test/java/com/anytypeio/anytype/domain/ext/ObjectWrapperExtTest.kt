@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.`object`.unset
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
 import kotlin.test.assertEquals
 

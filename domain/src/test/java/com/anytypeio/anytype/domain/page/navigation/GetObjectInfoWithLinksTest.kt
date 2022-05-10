@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.page.navigation
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi

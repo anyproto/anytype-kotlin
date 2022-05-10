@@ -7,8 +7,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleToolbarColorsBinding
-import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.channels.Channel
@@ -23,10 +22,7 @@ class StyleColorToolbarWidget @JvmOverloads constructor(
     private val channel = Channel<StylingEvent>()
 
     private val blockStyleAdapter = StyleAdapter(
-        props = null,
-        visibleTypes = arrayListOf(),
-        enabledAlignment = arrayListOf(),
-        enabledMarkup = arrayListOf()
+        state = StyleToolbarState.ColorBackground.empty()
     ) { event ->
         Timber.d("Styling Event : $event")
         channel.trySend(event)
@@ -56,8 +52,7 @@ class StyleColorToolbarWidget @JvmOverloads constructor(
         }.attach()
     }
 
-    fun update(config: StyleConfig, props: ControlPanelState.Toolbar.Styling.Props?) {
-        blockStyleAdapter.updateConfig(config, props)
-        blockStyleAdapter.notifyDataSetChanged()
+    fun update(state: StyleToolbarState.ColorBackground) {
+        blockStyleAdapter.update(state)
     }
 }

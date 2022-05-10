@@ -580,10 +580,11 @@ sealed class BlockView : ViewType {
         override var isFocused: Boolean = false,
         override val isSelected: Boolean = false,
         override val color: String? = null,
+        override var cursor: Int? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
         val lang: String? = null
-    ) : BlockView(), Permission, Selectable, Focusable, Indentable, TextSupport {
+    ) : BlockView(), Permission, Selectable, Focusable, Cursor, Indentable, TextSupport {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 

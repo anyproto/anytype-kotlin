@@ -6,10 +6,7 @@ import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleExtraBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -36,36 +33,31 @@ class StyleToolbarExtraWidget @JvmOverloads constructor(
     )
 
     fun setProperties(
-        props: ControlPanelState.Toolbar.Styling.Props?,
-        config: StyleConfig?
+        state: StyleToolbarState.Other
     ) = with(binding) {
-        bold.isSelected = props?.isBold ?: false
-        italic.isSelected = props?.isItalic ?: false
-        strikethrough.isSelected = props?.isStrikethrough ?: false
-        code.isSelected = props?.isCode ?: false
-        alignmentLeft.isSelected = props?.alignment == Alignment.START
-        alignmentMiddle.isSelected = props?.alignment == Alignment.CENTER
-        alignmentRight.isSelected = props?.alignment == Alignment.END
-        setUrl.isSelected = props?.isLinked ?: false
+        bold.isSelected = state.isBoldSelected
+        italic.isSelected = state.isItalicSelected
+        strikethrough.isSelected = state.isStrikethroughSelected
+        code.isSelected = state.isCodeSelected
+        alignmentLeft.isSelected = state.isAlignStartSelected
+        alignmentMiddle.isSelected = state.isAlignCenterSelected
+        alignmentRight.isSelected = state.isAlignEndSelected
 
-        config?.let {
-            alignmentLeft.isEnabled = it.enabledAlignment.contains(Alignment.START)
-            alignmentLeftIcon.isEnabled = alignmentLeft.isEnabled
-            alignmentRight.isEnabled = it.enabledAlignment.contains(Alignment.END)
-            alignmentRightIcon.isEnabled = alignmentRight.isEnabled
-            alignmentMiddle.isEnabled = it.enabledAlignment.contains(Alignment.CENTER)
-            alignmentMiddleIcon.isEnabled = alignmentMiddle.isEnabled
-
-            bold.isEnabled = it.enabledMarkup.contains(Markup.Type.BOLD)
-            boldIcon.isEnabled = bold.isEnabled
-            italic.isEnabled = it.enabledMarkup.contains(Markup.Type.ITALIC)
-            italicIcon.isEnabled = italic.isEnabled
-            strikethrough.isEnabled = it.enabledMarkup.contains(Markup.Type.STRIKETHROUGH)
-            strikethroughIcon.isEnabled = strikethrough.isEnabled
-            code.isEnabled = it.enabledMarkup.contains(Markup.Type.KEYBOARD)
-            codeIcon.isEnabled = code.isEnabled
-            setUrl.isEnabled = it.enabledMarkup.contains(Markup.Type.LINK)
-            setUrlIcon.isEnabled = setUrl.isEnabled
-        }
+        alignmentLeft.isEnabled = state.isSupportAlignStart
+        alignmentLeftIcon.isEnabled = alignmentLeft.isEnabled
+        alignmentRight.isEnabled = state.isSupportAlignEnd
+        alignmentRightIcon.isEnabled = alignmentRight.isEnabled
+        alignmentMiddle.isEnabled = state.isSupportAlignCenter
+        alignmentMiddleIcon.isEnabled = alignmentMiddle.isEnabled
+        bold.isEnabled = state.isSupportBold
+        boldIcon.isEnabled = bold.isEnabled
+        italic.isEnabled = state.isSupportItalic
+        italicIcon.isEnabled = italic.isEnabled
+        strikethrough.isEnabled = state.isSupportStrikethrough
+        strikethroughIcon.isEnabled = strikethrough.isEnabled
+        code.isEnabled = state.isSupportCode
+        codeIcon.isEnabled = code.isEnabled
+        setUrl.isEnabled = state.isSupportLinked
+        setUrlIcon.isEnabled = setUrl.isEnabled
     }
 }

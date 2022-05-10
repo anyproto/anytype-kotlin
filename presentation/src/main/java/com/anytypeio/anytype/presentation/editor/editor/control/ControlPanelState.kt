@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.presentation.editor.editor.control
 
-import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -103,85 +101,47 @@ data class ControlPanelState(
          */
         data class Styling(
             override val isVisible: Boolean,
-            val target: Target? = null,
-            val config: StyleConfig? = null,
-            val props: Props? = null,
-            val style: TextStyle? = TextStyle.P
+            val state: StyleToolbarState.Text
         ) : Toolbar() {
 
             companion object {
                 fun reset() = Styling(
                     isVisible = false,
-                    target = null,
-                    props = null,
+                    state = StyleToolbarState.Text.empty()
                 )
             }
 
-            data class Extra(override val isVisible: Boolean) : Toolbar() {
+            data class Extra(
+                override val isVisible: Boolean,
+                val state: StyleToolbarState.Other
+            ) : Toolbar() {
                 companion object {
-                    fun reset() = Extra(false)
+                    fun reset() = Extra(
+                        isVisible = false,
+                        state = StyleToolbarState.Other.empty()
+                    )
                 }
             }
 
-            data class ColorBackground(override val isVisible: Boolean = false) : Toolbar() {
+            data class ColorBackground(
+                override val isVisible: Boolean = false,
+                val state: StyleToolbarState.ColorBackground
+            ) : Toolbar() {
                 companion object {
-                    fun reset() = ColorBackground(false)
+                    fun reset() = ColorBackground(
+                        isVisible = false,
+                        state = StyleToolbarState.ColorBackground.empty()
+                    )
                 }
             }
 
             data class Background(
                 override val isVisible: Boolean,
-                val selectedBackground: String?
+                val state: StyleToolbarState.Background
             ) : Toolbar() {
                 companion object {
-                    fun reset() = Background(isVisible = false, selectedBackground = null)
-                }
-            }
-
-            /**
-             * Target's properties corresponding to current selection or styling mode.
-             */
-            data class Props(
-                val isBold: Boolean = false,
-                val isItalic: Boolean = false,
-                val isStrikethrough: Boolean = false,
-                val isCode: Boolean = false,
-                val isLinked: Boolean = false,
-                val color: String? = null,
-                val background: String? = null,
-                val alignment: Alignment? = null
-            )
-
-            /**
-             * Target block associated with this toolbar.
-             */
-            data class Target(
-                val id: String,
-                val text: String,
-                val color: String?,
-                val background: String?,
-                val alignment: Alignment?,
-                val marks: List<Markup.Mark>
-            ) {
-
-                val isBold: Boolean = marks.any { mark ->
-                    mark is Markup.Mark.Bold && mark.from == 0 && mark.to == text.length
-                }
-
-                val isItalic: Boolean = marks.any { mark ->
-                    mark is Markup.Mark.Italic && mark.from == 0 && mark.to == text.length
-                }
-
-                val isStrikethrough: Boolean = marks.any { mark ->
-                    mark is Markup.Mark.Strikethrough && mark.from == 0 && mark.to == text.length
-                }
-
-                val isCode: Boolean = marks.any { mark ->
-                    mark is Markup.Mark.Keyboard && mark.from == 0 && mark.to == text.length
-                }
-
-                val isLinked: Boolean = marks.any { mark ->
-                    mark is Markup.Mark.Link && mark.from == 0 && mark.to == text.length
+                    fun reset() =
+                        Background(isVisible = false, state = StyleToolbarState.Background.empty())
                 }
             }
         }
@@ -312,7 +272,8 @@ data class ControlPanelState(
                 count = 0
             ),
             styleTextToolbar = Toolbar.Styling(
-                isVisible = false
+                isVisible = false,
+                state = StyleToolbarState.Text.empty()
             ),
             mentionToolbar = Toolbar.MentionToolbar(
                 isVisible = false,

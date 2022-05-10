@@ -1378,7 +1378,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         state.styleTextToolbar.apply {
             val behavior = BottomSheetBehavior.from(binding.styleToolbarMain)
             if (isVisible) {
-                binding.styleToolbarMain.setSelectedStyle(style)
+                binding.styleToolbarMain.setSelectedStyle(this.state)
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     keyboardDelayJobs += lifecycleScope.launch {
                         if (binding.recycler.itemDecorationCount == 0) {
@@ -1411,10 +1411,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         state.styleExtraToolbar.apply {
             if (isVisible) {
-                binding.styleToolbarOther.setProperties(
-                    props = state.styleTextToolbar.props,
-                    config = state.styleTextToolbar.config
-                )
+                binding.styleToolbarOther.setProperties(state.styleExtraToolbar.state)
                 BottomSheetBehavior.from(binding.styleToolbarOther).apply {
                     setState(BottomSheetBehavior.STATE_EXPANDED)
                     addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1429,12 +1426,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         state.styleColorBackgroundToolbar.apply {
             if (isVisible) {
-                state.styleTextToolbar.config?.let { config ->
-                    binding.styleToolbarColors.update(
-                        config,
-                        state.styleTextToolbar.props
-                    )
-                }
+                binding.styleToolbarColors.update(state.styleColorBackgroundToolbar.state)
                 BottomSheetBehavior.from(binding.styleToolbarColors).apply {
                     setState(BottomSheetBehavior.STATE_EXPANDED)
                     addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1448,13 +1440,29 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
 
         state.styleBackgroundToolbar.apply {
+            val behavior = BottomSheetBehavior.from(binding.styleToolbarBackground)
             if (isVisible) {
-                state.styleBackgroundToolbar.selectedBackground.let {
+                state.styleBackgroundToolbar.state.let {
                     binding.styleToolbarBackground.update(it)
                 }
-                BottomSheetBehavior.from(binding.styleToolbarBackground).apply {
-                    setState(BottomSheetBehavior.STATE_EXPANDED)
-                    addBottomSheetCallback(onHideBottomSheetCallback)
+                if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    keyboardDelayJobs += lifecycleScope.launch {
+                        if (binding.recycler.itemDecorationCount == 0) {
+                            binding.recycler.addItemDecoration(styleToolbarFooter)
+                        }
+                        proceedWithHidingSoftInput()
+                        if (insets != null) {
+                            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                                delay(DELAY_HIDE_KEYBOARD)
+                            }
+                        } else {
+                            delay(DELAY_HIDE_KEYBOARD)
+                        }
+                        behavior.apply {
+                            setState(BottomSheetBehavior.STATE_EXPANDED)
+                            addBottomSheetCallback(onHideBottomSheetCallback)
+                        }
+                    }
                 }
             } else {
                 BottomSheetBehavior.from(binding.styleToolbarBackground).apply {

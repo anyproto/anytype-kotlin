@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
+import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
@@ -113,7 +114,6 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MEN
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.mention.getMentionName
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
@@ -133,8 +133,13 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.slash.convertToMarkType
 import com.anytypeio.anytype.presentation.editor.editor.slash.convertToUiBlock
 import com.anytypeio.anytype.presentation.editor.editor.slash.toSlashItemView
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.styling.getIds
+import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleBackgroundToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleColorBackgroundToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleOtherToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleTextToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
@@ -163,9 +168,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionE
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsWritingEvent
-import com.anytypeio.anytype.presentation.mapper.getPropsForSelectedTextBlocks
-import com.anytypeio.anytype.presentation.mapper.getSelectedBackgroundForSelectedBlocks
-import com.anytypeio.anytype.presentation.mapper.getTextStyleForSelectedTextBlocks
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
@@ -690,47 +692,15 @@ class EditorViewModel(
 
     private fun refreshStyleToolbar(document: Document) {
         controlPanelViewState.value?.let { state ->
-            if (state.styleTextToolbar.isVisible || state.styleColorBackgroundToolbar.isVisible) {
-                when (mode) {
-                    is EditorMode.Styling.Multi -> {
-                        val ids = (mode as EditorMode.Styling.Multi).targets
-                        val selected = blocks.filter { ids.contains(it.id) }
-                        controlPanelInteractor.onEvent(
-                            event = ControlPanelMachine.Event.OnRefresh.StyleToolbarMulti(
-                                target = null,
-                                config = StyleConfig.emptyState(),
-                                props = selected.getPropsForSelectedTextBlocks(),
-                                style = selected.getTextStyleForSelectedTextBlocks()
-                            )
-                        )
-                    }
-                    is EditorMode.Styling.Single -> {
-                        state.styleTextToolbar.target?.id?.let { targetId ->
-                            controlPanelInteractor.onEvent(
-                                event = ControlPanelMachine.Event.OnRefresh.StyleToolbar(
-                                    target = document.find { it.id == targetId },
-                                    selection = orchestrator.stores.textSelection.current().selection,
-                                    urlBuilder = urlBuilder,
-                                    details = orchestrator.stores.details.current()
-                                )
-                            )
-                        }
-                    }
-                    else -> {
-                        Timber.e("refreshStyleToolbar, wrong mode:$mode, skip refresh")
-                    }
-                }
+            if (state.styleTextToolbar.isVisible) {
+                val ids = mode.getIds()
+                if (ids.isNullOrEmpty()) return
+                onSendRefreshStyleTextToolbarEvent(ids)
             }
             if (state.styleBackgroundToolbar.isVisible) {
-                if (mode is EditorMode.Styling.Multi) {
-                    val ids = (mode as EditorMode.Styling.Multi).targets
-                    val selected = blocks.filter { ids.contains(it.id) }
-                    controlPanelInteractor.onEvent(
-                        ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(
-                            selectedBackground = selected.getSelectedBackgroundForSelectedBlocks()
-                        )
-                    )
-                }
+                val ids = mode.getIds()
+                if (ids.isNullOrEmpty()) return
+                onSendRefreshStyleBackgroundToolbarEvent(ids)
             }
             if (state.markupMainToolbar.isVisible) {
                 controlPanelInteractor.onEvent(
@@ -740,7 +710,52 @@ class EditorViewModel(
                     )
                 )
             }
+            if (state.styleColorBackgroundToolbar.isVisible) {
+                val ids = mode.getIds()
+                if (ids.isNullOrEmpty()) return
+                onSendUpdateStyleColorBackgroundToolbarEvent(ids)
+            }
+            if (state.styleExtraToolbar.isVisible) {
+                val ids = mode.getIds()
+                if (ids.isNullOrEmpty()) return
+                onSendUpdateStyleOtherToolbarEvent(ids)
+            }
         }
+    }
+
+    private fun onSendRefreshStyleTextToolbarEvent(ids: List<Id>) {
+        val selected = blocks.filter { ids.contains(it.id) }
+        val isAllSelectedText = selected.isAllTextBlocks()
+        if (isAllSelectedText) {
+            val state = selected.map { it.content.asText() }.getStyleTextToolbarState()
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(state)
+            )
+        }
+    }
+
+    private fun onSendRefreshStyleBackgroundToolbarEvent(ids: List<Id>) {
+        val selected = blocks.filter { ids.contains(it.id) }
+        val state = selected.getStyleBackgroundToolbarState()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(state)
+        )
+    }
+
+    private fun onSendUpdateStyleColorBackgroundToolbarEvent(ids: List<Id>) {
+        val selected = blocks.filter { ids.contains(it.id) }
+        val state = selected.getStyleColorBackgroundToolbarState()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.StylingToolbar.OnUpdateColorBackgroundToolbar(state)
+        )
+    }
+
+    private fun onSendUpdateStyleOtherToolbarEvent(ids: List<Id>) {
+        val selected = blocks.filter { ids.contains(it.id) }
+        val state = selected.map { it.content.asText() }.getStyleOtherToolbarState()
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.StylingToolbar.OnUpdateOtherToolbar(state)
+        )
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
@@ -1625,146 +1640,45 @@ class EditorViewModel(
 
     fun onStylingToolbarEvent(event: StylingEvent) {
         Timber.d("onStylingToolbarEvent, event:[$event]")
-        val state = controlPanelViewState.value!!
+        val ids: List<Id>? = mode.getIds()
+        if (ids.isNullOrEmpty()) return
         when (event) {
             is StylingEvent.Coloring.Text -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    onToolbarTextColorAction(currentMode.targets.toList(), event.color.title)
-                } else {
-                    proceedWithStylingEvent(state, Markup.Type.TEXT_COLOR, event.color.title)
-                }
-                viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
-                    analytics = analytics,
-                    type = Content.Text.Mark.Type.TEXT_COLOR,
-                    context = analyticsContext
-                )
+                onToolbarTextColorAction(ids, event.color.title)
             }
             is StylingEvent.Coloring.Background -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    onBlockBackgroundColorAction(currentMode.targets.toList(), event.color.title)
-                    viewModelScope.sendAnalyticsBlockBackgroundEvent(
-                        analytics = analytics,
-                        count = currentMode.targets.size,
-                        color = event.color.title,
-                        context = analyticsContext
-                    )
-                } else {
-                    proceedWithStylingEvent(state, Markup.Type.BACKGROUND_COLOR, event.color.title)
-                    viewModelScope.sendAnalyticsBlockBackgroundEvent(
-                        analytics = analytics,
-                        count = 1,
-                        color = event.color.title,
-                        context = analyticsContext
-                    )
-                }
+                onBlockBackgroundColorAction(ids, event.color.title)
             }
             is StylingEvent.Markup.Bold -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
-                } else {
-                    proceedWithStylingEvent(state, Markup.Type.BOLD, null)
-                }
-                viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
-                    analytics = analytics,
-                    type = Content.Text.Mark.Type.BOLD,
-                    context = analyticsContext
-                )
+                onUpdateBlockListMarkup(ids, Markup.Type.BOLD)
             }
             is StylingEvent.Markup.Italic -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
-                } else {
-                    proceedWithStylingEvent(state, Markup.Type.ITALIC, null)
-                }
-                viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
-                    analytics = analytics,
-                    type = Content.Text.Mark.Type.ITALIC,
-                    context = analyticsContext
-                )
+                onUpdateBlockListMarkup(ids, Markup.Type.ITALIC)
             }
             is StylingEvent.Markup.StrikeThrough -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
-                } else {
-                    proceedWithStylingEvent(state, Markup.Type.STRIKETHROUGH, null)
-                }
+                onUpdateBlockListMarkup(ids, Markup.Type.STRIKETHROUGH)
             }
             is StylingEvent.Markup.Code -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
-                } else {
-                    proceedWithStylingEvent(state, Markup.Type.KEYBOARD, null)
-                }
+                onUpdateBlockListMarkup(ids, Markup.Type.KEYBOARD)
             }
             is StylingEvent.Markup.Link -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
+                if (ids.size == 1) {
+                    onBlockStyleLinkClicked(ids[0])
                 } else {
-                    proceedWithStylingEvent(state, Markup.Type.LINK, null)
+                    sendToast(ERROR_UNSUPPORTED_BEHAVIOR)
                 }
             }
             is StylingEvent.Alignment.Left -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    proceedWithAlignmentUpdate(
-                        targets = currentMode.targets.toList(),
-                        alignment = Block.Align.AlignLeft
-                    )
-                } else {
-                    onBlockAlignmentActionClicked(Alignment.START)
-                }
+                proceedWithAlignmentUpdate(ids, Block.Align.AlignLeft)
             }
             is StylingEvent.Alignment.Center -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    proceedWithAlignmentUpdate(
-                        targets = currentMode.targets.toList(),
-                        alignment = Block.Align.AlignCenter
-                    )
-                } else {
-                    onBlockAlignmentActionClicked(Alignment.CENTER)
-                }
+                proceedWithAlignmentUpdate(ids, Block.Align.AlignCenter)
             }
             is StylingEvent.Alignment.Right -> {
-                val currentMode = mode
-                if (currentMode is EditorMode.Styling.Multi) {
-                    proceedWithAlignmentUpdate(
-                        targets = currentMode.targets.toList(),
-                        alignment = Block.Align.AlignRight
-                    )
-                } else {
-                    onBlockAlignmentActionClicked(Alignment.END)
-                }
+                proceedWithAlignmentUpdate(ids, Block.Align.AlignRight)
             }
             else -> Timber.d("Ignoring styling toolbar event: $event")
         }
-    }
-
-    private fun proceedWithStylingEvent(
-        state: ControlPanelState,
-        type: Markup.Type,
-        param: String?
-    ) {
-        state.styleTextToolbar.target?.id?.let { id ->
-            when (type) {
-                Markup.Type.ITALIC -> onBlockStyleMarkupActionClicked(id, type)
-                Markup.Type.BOLD -> onBlockStyleMarkupActionClicked(id, type)
-                Markup.Type.STRIKETHROUGH -> onBlockStyleMarkupActionClicked(id, type)
-                Markup.Type.TEXT_COLOR -> onToolbarTextColorAction(listOf(id), param)
-                Markup.Type.BACKGROUND_COLOR -> onBlockBackgroundColorAction(listOf(id), param)
-                Markup.Type.LINK -> onBlockStyleLinkClicked(id)
-                Markup.Type.KEYBOARD -> onBlockStyleMarkupActionClicked(id, type)
-                Markup.Type.MENTION -> Unit
-                Markup.Type.OBJECT -> Unit
-            }
-        } ?: run { Timber.e("Target id was missing for markup styling event: $type") }
     }
 
     fun onStyleToolbarMarkupAction(type: Markup.Type, param: String? = null) {
@@ -1782,19 +1696,6 @@ class EditorViewModel(
             type = type,
             context = analyticsContext
         )
-    }
-
-    private fun onBlockAlignmentActionClicked(alignment: Alignment) {
-        controlPanelViewState.value?.styleTextToolbar?.target?.id?.let { id ->
-            proceedWithAlignmentUpdate(
-                targets = listOf(id),
-                alignment = when (alignment) {
-                    Alignment.START -> Block.Align.AlignLeft
-                    Alignment.CENTER -> Block.Align.AlignCenter
-                    Alignment.END -> Block.Align.AlignRight
-                }
-            )
-        }
     }
 
     private fun proceedWithAlignmentUpdate(targets: List<Id>, alignment: Block.Align) {
@@ -1828,20 +1729,29 @@ class EditorViewModel(
                 )
             )
         }
+        viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
+            analytics = analytics,
+            type = Content.Text.Mark.Type.TEXT_COLOR,
+            context = analyticsContext
+        )
     }
 
-    private fun onBlockBackgroundColorAction(targets: List<Id>, color: String?) {
-        check(color != null)
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnBlockBackgroundColorSelected)
+    private fun onBlockBackgroundColorAction(ids: List<Id>, color: String) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.UpdateBackgroundColor(
                     context = context,
-                    targets = targets,
+                    targets = ids,
                     color = color
                 )
             )
         }
+        viewModelScope.sendAnalyticsBlockBackgroundEvent(
+            analytics = analytics,
+            count = ids.size,
+            color = color,
+            context = analyticsContext
+        )
     }
 
     private fun onBlockStyleLinkClicked(id: String) {
@@ -1853,44 +1763,23 @@ class EditorViewModel(
         stateData.value = ViewState.OpenLinkScreen(context, target, range)
     }
 
-    private fun onBlockStyleMarkupActionClicked(id: String, action: Markup.Type) {
-
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.OnBlockStyleSelected
-        )
-
-        val target = blocks.first { it.id == id }
-        val content = target.content as Content.Text
-
-        if (content.text.isNotEmpty()) {
-
-            val new = target.markup(
-                type = action,
-                range = 0..content.text.length,
-                param = null
-            )
-
-            val update = blocks.map { block ->
-                if (block.id != target.id)
-                    block
-                else
-                    new
-            }
-
-            orchestrator.stores.document.update(update)
-
-            viewModelScope.launch { refresh() }
-
-            viewModelScope.launch {
-                proceedWithUpdatingText(
-                    intent = Intent.Text.UpdateText(
-                        context = context,
-                        target = new.id,
-                        text = new.content<Content.Text>().text,
-                        marks = new.content<Content.Text>().marks
+    private fun onUpdateBlockListMarkup(ids: List<Id>, type: Markup.Type) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.UpdateMark(
+                    context = context,
+                    targets = ids,
+                    mark = Content.Text.Mark(
+                        range = IntRange(0, Int.MAX_VALUE),
+                        type = type.toCoreModel()
                     )
                 )
-            }
+            )
+            sendAnalyticsUpdateTextMarkupEvent(
+                analytics = analytics,
+                type = type,
+                context = analyticsContext
+            )
         }
     }
 
@@ -2310,7 +2199,8 @@ class EditorViewModel(
     private fun proceedWithStyleToolbarEvent() {
         val target = orchestrator.stores.focus.current().id
         val targetBlock = blocks.find { it.id == target }
-        if (targetBlock != null) {
+        val isText = targetBlock?.content is Content.Text
+        if (targetBlock != null && isText) {
             mode = EditorMode.Styling.Single(
                 target = target,
                 cursor = orchestrator.stores.textSelection.current().selection?.first
@@ -2321,41 +2211,37 @@ class EditorViewModel(
                 renderCommand.send(Unit)
             }
 
-            val textSelection = orchestrator.stores.textSelection.current()
-
-            controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = targetBlock,
-                    focused = textSelection.isNotEmpty,
-                    selection = textSelection.selection,
-                    urlBuilder = urlBuilder,
-                    details = orchestrator.stores.details.current()
+            if ((targetBlock.content as Content.Text).style == Content.Text.Style.CODE_SNIPPET) {
+                val state = listOf(targetBlock).getStyleBackgroundToolbarState()
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(state)
                 )
-            )
+            } else {
+                val styleState =
+                    listOf(targetBlock).map { it.content.asText() }.getStyleTextToolbarState()
+                controlPanelInteractor.onEvent(
+                    ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(styleState)
+                )
+            }
         } else {
             Timber.e("Target block for style menu not found. Target id: $target")
-            sendToast("Target block for style menu not found.")
+            sendToast("Couldn't show style menu")
         }
     }
 
     private fun proceedWithMultiStyleToolbarEvent() {
         val selected = blocks.filter { currentSelection().contains(it.id) }
-        val isAllSelectedText = selected.isAllTextAndNoneCodeBlocks()
+        val isAllTextAndNoneCodeBlocks = selected.isAllTextAndNoneCodeBlocks()
         mode = EditorMode.Styling.Multi(currentSelection())
-        if (isAllSelectedText) {
+        if (isAllTextAndNoneCodeBlocks) {
+            val styleState = selected.map { it.content.asText() }.getStyleTextToolbarState()
             controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMultiSelectTextStyleClicked(
-                            target = null,
-                            config = StyleConfig.emptyState(),
-                            props = selected.getPropsForSelectedTextBlocks(),
-                            style = selected.getTextStyleForSelectedTextBlocks()
-                    )
+                    ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(styleState)
             )
         } else {
+            val styleState = selected.getStyleBackgroundToolbarState()
             controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.OnMultiSelectBackgroundStyleClicked(
-                            selectedBackground = selected.getSelectedBackgroundForSelectedBlocks()
-                    )
+                    ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(styleState)
             )
         }
     }
@@ -2448,9 +2334,7 @@ class EditorViewModel(
 
     fun onCloseBlockStyleBackgroundToolbarClicked() {
         Timber.d("onCloseBlockStyleColorToolbarClicked, ")
-        controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnBackgroundClosed
-        )
+        onCloseBlockStyleToolbarClicked()
     }
 
     fun onBlockToolbarBlockActionsClicked() {
@@ -2527,30 +2411,27 @@ class EditorViewModel(
 
     fun onUpdateTextBlockStyle(uiBlock: UiBlock) {
         Timber.d("onUpdateSingleTextBlockStyle, uiBlock:[$uiBlock]")
-        (mode as? EditorMode.Styling.Single)?.let { eMode ->
-            proceedUpdateBlockStyle(
-                targets = listOf(eMode.target),
-                uiBlock = uiBlock,
-                errorAction = { sendToast("Cannot convert block to $uiBlock") }
-            )
-        }
-        (mode as? EditorMode.Styling.Multi)?.let {
-            proceedUpdateBlockStyle(
-                targets = currentSelection().toList(),
-                uiBlock = uiBlock,
-                errorAction = { sendToast("Cannot convert block to $uiBlock") }
-            )
-        }
+        val ids = mode.getIds()
+        if (ids.isNullOrEmpty()) return
+        proceedUpdateBlockStyle(
+            targets = ids,
+            uiBlock = uiBlock,
+            errorAction = { sendToast("Cannot convert block to $uiBlock") }
+        )
     }
 
     fun onBlockStyleToolbarOtherClicked() {
         Timber.d("onBlockStyleToolbarOtherClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnExtraClicked)
+        val ids = mode.getIds()
+        if (ids.isNullOrEmpty()) return
+        onSendUpdateStyleOtherToolbarEvent(ids)
     }
 
     fun onBlockStyleToolbarColorClicked() {
         Timber.d("onBlockStyleToolbarColorClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.StylingToolbar.OnColorBackgroundClicked)
+        val ids = mode.getIds()
+        if (ids.isNullOrEmpty()) return
+        onSendUpdateStyleColorBackgroundToolbarEvent(ids)
     }
 
     private fun proceedUpdateBlockStyle(

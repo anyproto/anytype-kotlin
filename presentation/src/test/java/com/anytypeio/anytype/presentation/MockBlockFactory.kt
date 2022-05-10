@@ -52,7 +52,8 @@ object MockBlockFactory {
     fun makeOnePageWithOneTextBlock(
         root: String,
         child: String,
-        style: Block.Content.Text.Style = Block.Content.Text.Style.P
+        style: Block.Content.Text.Style = Block.Content.Text.Style.P,
+        backgroundColor: String? = null
     ) = listOf(
         Block(
             id = root,
@@ -68,7 +69,8 @@ object MockBlockFactory {
                 marks = emptyList(),
                 style = style
             ),
-            children = emptyList()
+            children = emptyList(),
+            backgroundColor = backgroundColor
         )
     )
 

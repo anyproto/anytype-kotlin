@@ -77,7 +77,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -85,7 +84,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
@@ -4531,12 +4530,7 @@ open class EditorViewModelTest {
             ),
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
-                style = Block.Content.Text.Style.P,
-                config = StyleConfig.emptyState(),
-                props = ControlPanelState.Toolbar.Styling.Props(
-                    color = ThemeColor.DEFAULT.title,
-                    background = ThemeColor.DEFAULT.title
-                )
+                state = StyleToolbarState.Text(Block.Content.Text.Style.P)
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,

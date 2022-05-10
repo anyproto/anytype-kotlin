@@ -387,7 +387,12 @@ fun List<BlockView>.updateCursorAndEditMode(
             isFocused = isTarget,
             cursor = if (isTarget) cursor else null
         )
-        is BlockView.Code -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Code -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
         is BlockView.Error.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Error.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Error.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)

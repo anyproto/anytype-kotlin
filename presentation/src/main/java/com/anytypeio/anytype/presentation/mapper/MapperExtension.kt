@@ -727,20 +727,6 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
 }
 
-fun List<Block>.getPropsForSelectedTextBlocks(): ControlPanelState.Toolbar.Styling.Props {
-    val colors = map { it.textColor() ?: ThemeColor.DEFAULT.title }.distinct()
-    val selectedColor = if (colors.size == 1) colors[0] else null
-    return ControlPanelState.Toolbar.Styling.Props(
-            color = selectedColor,
-            background = this.getSelectedBackgroundForSelectedBlocks()
-    )
-}
-
-fun List<Block>.getSelectedBackgroundForSelectedBlocks(): String? {
-    val backgrounds = map { it.backgroundColor ?: ThemeColor.DEFAULT.title }.distinct()
-    return if (backgrounds.size == 1) backgrounds[0] else null
-}
-
 fun List<Block>.getTextStyleForSelectedTextBlocks(): Block.Content.Text.Style? {
     val styles = map { it.textStyle() }.distinct()
     return if (styles.size == 1) styles[0] else null

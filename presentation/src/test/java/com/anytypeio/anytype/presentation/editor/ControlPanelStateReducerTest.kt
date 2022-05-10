@@ -1,13 +1,12 @@
 package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
-import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -84,26 +83,11 @@ class ControlPanelStateReducerTest {
     fun `state should hide mentions when cursor before mentions start and widget is visible`() {
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
             mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
                 isVisible = true,
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -141,26 +125,11 @@ class ControlPanelStateReducerTest {
     fun `state should not hide mentions when cursor after mention start`() {
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
             mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
                 isVisible = true,
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -195,26 +164,11 @@ class ControlPanelStateReducerTest {
     fun `state should hide mentions after focus changed`() {
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = true
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
             mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
                 isVisible = true,
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -236,7 +190,8 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
-            )
+            ),
+            mainToolbar = ControlPanelState.Toolbar.Main(isVisible = true)
         )
 
         assertEquals(
@@ -251,26 +206,11 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false,
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
             mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
                 isVisible = true,
                 cursorCoordinate = 333,
                 mentionFilter = "start",
                 mentionFrom = 10
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -317,26 +257,8 @@ class ControlPanelStateReducerTest {
     fun `state should have only focus changed`() {
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                isVisible = false,
-                cursorCoordinate = null,
-                mentionFilter = null,
-                mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -364,26 +286,14 @@ class ControlPanelStateReducerTest {
     fun `should return to initial state when focus is cleared`() {
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
             ),
             mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
                 isVisible = false,
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -410,15 +320,6 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val nonSelected = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false,
                 count = 2
@@ -428,34 +329,13 @@ class ControlPanelStateReducerTest {
                 cursorCoordinate = null,
                 mentionFilter = null,
                 mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
         val selected = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
                 count = 0
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                isVisible = false,
-                cursorCoordinate = null,
-                mentionFilter = null,
-                mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -478,52 +358,16 @@ class ControlPanelStateReducerTest {
         val id = MockDataFactory.randomUuid()
 
         val selectedZero = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
                 count = 0
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                isVisible = false,
-                cursorCoordinate = null,
-                mentionFilter = null,
-                mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
         val expected = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = false
-            ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
                 count = 3
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                isVisible = false,
-                cursorCoordinate = null,
-                mentionFilter = null,
-                mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -541,122 +385,123 @@ class ControlPanelStateReducerTest {
     }
 
     @Test
-    fun `should update style toolbar state with italic true after selection changed`() = runBlocking {
+    fun `should update style toolbar state with italic true after selection changed`() =
+        runBlocking {
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo Bar",
-                style = Block.Content.Text.Style.P,
-                marks = listOf(
-                    Block.Content.Text.Mark(
+            val block = Block(
+                id = MockDataFactory.randomUuid(),
+                children = emptyList(),
+                content = Block.Content.Text(
+                    text = "Foo Bar",
+                    style = Block.Content.Text.Style.P,
+                    marks = listOf(
+                        Block.Content.Text.Mark(
+                            range = IntRange(0, 2),
+                            type = Block.Content.Text.Mark.Type.BOLD
+                        ),
+                        Block.Content.Text.Mark(
+                            range = IntRange(4, 6),
+                            type = Block.Content.Text.Mark.Type.ITALIC
+                        )
+                    )
+                ),
+                fields = Block.Fields.empty()
+            )
+
+            val selectionFirst = IntRange(0, 2)
+            val selectionSecond = IntRange(4, 6)
+
+            val given = ControlPanelState(
+                styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                navigationToolbar = ControlPanelState.Toolbar.Navigation.reset(),
+                mainToolbar = ControlPanelState.Toolbar.Main.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect.reset(),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
+                markupMainToolbar = ControlPanelState.Toolbar.MarkupMainToolbar(
+                    isVisible = true,
+                    style = MarkupStyleDescriptor.Default(
+                        isBold = true,
+                        isItalic = false,
+                        isCode = false,
+                        isLinked = false,
+                        isStrikethrough = false,
+                        markupTextColor = "yellow",
+                        markupUrl = null,
+                        markupHighlightColor = "red",
                         range = IntRange(0, 2),
-                        type = Block.Content.Text.Mark.Type.BOLD
+                        blockBackroundColor = null,
+                        blockTextColor = null
                     ),
-                    Block.Content.Text.Mark(
-                        range = IntRange(4, 6),
-                        type = Block.Content.Text.Mark.Type.ITALIC
+                    supportedTypes = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
                     )
                 )
-            ),
-            fields = Block.Fields.empty()
-        )
+            )
 
-        val selectionFirst = IntRange(0, 2)
-        val selectionSecond = IntRange(4, 6)
+            val result = runBlocking {
+                reducer.reduce(
+                    state = given,
+                    event = ControlPanelMachine.Event.OnSelectionChanged(
+                        selection = selectionSecond,
+                        target = block
+                    )
+                )
+            }
 
-        val given = ControlPanelState(
-            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
-            navigationToolbar = ControlPanelState.Toolbar.Navigation.reset(),
-            mainToolbar = ControlPanelState.Toolbar.Main.reset(),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect.reset(),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
-            markupMainToolbar = ControlPanelState.Toolbar.MarkupMainToolbar(
-                isVisible = true,
-                style = MarkupStyleDescriptor.Default(
-                    isBold = true,
-                    isItalic = false,
-                    isCode = false,
-                    isLinked = false,
-                    isStrikethrough = false,
-                    markupTextColor = "yellow",
-                    markupUrl = null,
-                    markupHighlightColor = "red",
-                    range = IntRange(0, 2),
-                    blockBackroundColor = null,
-                    blockTextColor = null
+            val expected = ControlPanelState(
+                navigationToolbar = ControlPanelState.Toolbar.Navigation(
+                    isVisible = false
                 ),
-                supportedTypes = listOf(
-                    Markup.Type.BOLD,
-                    Markup.Type.ITALIC,
-                    Markup.Type.STRIKETHROUGH,
-                    Markup.Type.KEYBOARD,
-                    Markup.Type.LINK
+                mainToolbar = ControlPanelState.Toolbar.Main(
+                    isVisible = false
+                ),
+                styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
+                multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                    isVisible = false
+                ),
+                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
+                    isVisible = false,
+                    cursorCoordinate = null,
+                    mentionFilter = null,
+                    mentionFrom = null
+                ),
+                slashWidget = ControlPanelState.Toolbar.SlashWidget(
+                    isVisible = false
+                ),
+                markupMainToolbar = ControlPanelState.Toolbar.MarkupMainToolbar(
+                    isVisible = true,
+                    style = MarkupStyleDescriptor.Default(
+                        isBold = false,
+                        isItalic = true,
+                        isCode = false,
+                        isLinked = false,
+                        isStrikethrough = false,
+                        markupTextColor = null,
+                        markupUrl = null,
+                        markupHighlightColor = null,
+                        range = IntRange(4, 6),
+                        blockBackroundColor = null,
+                        blockTextColor = null
+                    ),
+                    supportedTypes = listOf(
+                        Markup.Type.BOLD,
+                        Markup.Type.ITALIC,
+                        Markup.Type.STRIKETHROUGH,
+                        Markup.Type.KEYBOARD,
+                        Markup.Type.LINK
+                    )
                 )
             )
-        )
-
-        val result = runBlocking {
-            reducer.reduce(
-                state = given,
-                event = ControlPanelMachine.Event.OnSelectionChanged(
-                    selection = selectionSecond,
-                    target = block
-                )
+            assertEquals(
+                expected = expected,
+                actual = result
             )
         }
-
-        val expected = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                isVisible = false,
-                cursorCoordinate = null,
-                mentionFilter = null,
-                mentionFrom = null
-            ),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
-            ),
-            markupMainToolbar = ControlPanelState.Toolbar.MarkupMainToolbar(
-                isVisible = true,
-                style = MarkupStyleDescriptor.Default(
-                    isBold = false,
-                    isItalic = true,
-                    isCode = false,
-                    isLinked = false,
-                    isStrikethrough = false,
-                    markupTextColor = null,
-                    markupUrl = null,
-                    markupHighlightColor = null,
-                    range = IntRange(4, 6),
-                    blockBackroundColor = null,
-                    blockTextColor = null
-                ),
-                supportedTypes = listOf(
-                    Markup.Type.BOLD,
-                    Markup.Type.ITALIC,
-                    Markup.Type.STRIKETHROUGH,
-                    Markup.Type.KEYBOARD,
-                    Markup.Type.LINK
-                )
-            )
-        )
-        assertEquals(
-            expected = expected,
-            actual = result
-        )
-    }
 
     @Test
     fun `should show style toolbar in markup mode after main toolbar style clicked`() {
@@ -693,19 +538,8 @@ class ControlPanelStateReducerTest {
         }
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget(
-                isVisible = false
             )
         )
 
@@ -722,12 +556,8 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = given,
-                event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = block,
-                    selection = IntRange(0, 3),
-                    focused = true,
-                    urlBuilder = urlBuilder,
-                    details = Block.Details(mapOf())
+                event = ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(
+                    state = StyleToolbarState.Text(textStyle = Block.Content.Text.Style.P)
                 )
             )
         }
@@ -740,40 +570,8 @@ class ControlPanelStateReducerTest {
                 isVisible = false
             ),
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = true,
-                target = ControlPanelState.Toolbar.Styling.Target(
-                    id = id,
-                    text = "Foo Bar",
-                    color = "yellow",
-                    background = "red",
-                    alignment = Alignment.START,
-                    marks = listOf(Markup.Mark.Bold(0, 3))
-                ),
-                config = StyleConfig(
-                    visibleTypes = listOf(
-                        StylingType.STYLE,
-                        StylingType.TEXT_COLOR,
-                        StylingType.BACKGROUND
-                    ),
-                    enabledAlignment = listOf(),
-                    enabledMarkup = listOf(
-                        Markup.Type.BOLD,
-                        Markup.Type.ITALIC,
-                        Markup.Type.STRIKETHROUGH,
-                        Markup.Type.KEYBOARD,
-                        Markup.Type.LINK
-                    )
-                ),
-                props = ControlPanelState.Toolbar.Styling.Props(
-                    isBold = true,
-                    isItalic = false,
-                    isStrikethrough = false,
-                    isCode = false,
-                    isLinked = false,
-                    alignment = Alignment.START,
-                    color = "yellow",
-                    background = "red"
-                )
+                state = StyleToolbarState.Text(Block.Content.Text.Style.P),
+                isVisible = true
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = false
@@ -797,7 +595,7 @@ class ControlPanelStateReducerTest {
             children = emptyList(),
             content = Block.Content.Text(
                 text = "Foo Bar",
-                style = Block.Content.Text.Style.P,
+                style = Block.Content.Text.Style.BULLET,
                 marks = listOf(
                     Block.Content.Text.Mark(
                         range = 0..3,
@@ -816,7 +614,7 @@ class ControlPanelStateReducerTest {
                 state = ControlPanelState.init(),
                 event = ControlPanelMachine.Event.OnFocusChanged(
                     id = id,
-                    style = Block.Content.Text.Style.P
+                    style = Block.Content.Text.Style.BULLET
                 )
             )
         }
@@ -832,87 +630,25 @@ class ControlPanelStateReducerTest {
         }
 
         val given = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
             mainToolbar = ControlPanelState.Toolbar.Main(
                 isVisible = true
-            ),
-            styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+            )
         )
 
         val result = runBlocking {
             reducer.reduce(
                 state = given,
-                event = ControlPanelMachine.Event.OnBlockActionToolbarStyleClicked(
-                    target = block,
-                    selection = IntRange(1, 1),
-                    focused = true,
-                    urlBuilder = urlBuilder,
-                    details = Block.Details(mapOf())
+                event = ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(
+                    state = StyleToolbarState.Text(textStyle = Block.Content.Text.Style.BULLET)
                 )
             )
         }
 
         val expected = ControlPanelState(
-            navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                isVisible = false
-            ),
-            mainToolbar = ControlPanelState.Toolbar.Main(
-                isVisible = false
-            ),
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                isVisible = true,
-                target = ControlPanelState.Toolbar.Styling.Target(
-                    id = id,
-                    text = "Foo Bar",
-                    color = "yellow",
-                    background = "red",
-                    alignment = Alignment.CENTER,
-                    marks = listOf(
-                        Markup.Mark.Bold(0, 3)
-                    )
-                ),
-                config = StyleConfig(
-                    visibleTypes = listOf(
-                        StylingType.STYLE,
-                        StylingType.TEXT_COLOR,
-                        StylingType.BACKGROUND
-                    ),
-                    enabledAlignment = listOf(
-                        Alignment.START,
-                        Alignment.CENTER,
-                        Alignment.END
-                    ),
-                    enabledMarkup = listOf(
-                        Markup.Type.BOLD,
-                        Markup.Type.ITALIC,
-                        Markup.Type.STRIKETHROUGH,
-                        Markup.Type.KEYBOARD,
-                        Markup.Type.LINK
-                    )
-                ),
-                props = ControlPanelState.Toolbar.Styling.Props(
-                    isBold = false,
-                    isItalic = false,
-                    isStrikethrough = false,
-                    isCode = false,
-                    isLinked = false,
-                    alignment = Alignment.CENTER,
-                    color = "yellow",
-                    background = "red"
-                )
-            ),
-            multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                isVisible = false
-            ),
-            mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-            slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                state = StyleToolbarState.Text(textStyle = TextStyle.BULLET),
+                isVisible = true
+            )
         )
         assertEquals(
             expected = expected,
@@ -987,12 +723,6 @@ class ControlPanelStateReducerTest {
             )
 
             val expected = ControlPanelState(
-                styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
-                navigationToolbar = ControlPanelState.Toolbar.Navigation.reset(),
-                mainToolbar = ControlPanelState.Toolbar.Main.reset(),
-                multiSelect = ControlPanelState.Toolbar.MultiSelect.reset(),
-                mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-                slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
                 markupMainToolbar = ControlPanelState.Toolbar.MarkupMainToolbar(
                     isVisible = true,
                     style = MarkupStyleDescriptor.Default(

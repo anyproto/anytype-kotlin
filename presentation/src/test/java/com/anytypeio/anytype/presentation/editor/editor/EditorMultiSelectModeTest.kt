@@ -18,7 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -149,27 +149,11 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                        isVisible = false
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 0
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }
@@ -249,27 +233,11 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                        isVisible = false
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 0
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }
@@ -365,27 +333,11 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                        isVisible = false
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 0
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }
@@ -1336,12 +1288,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         val expectedState = ControlPanelState(
             styleTextToolbar = ControlPanelState.Toolbar.Styling(
                 isVisible = true,
-                style = null,
-                config = StyleConfig.emptyState(),
-                props = ControlPanelState.Toolbar.Styling.Props(
-                    color = ThemeColor.DEFAULT.title,
-                    background = ThemeColor.DEFAULT.title
-                )
+                state = StyleToolbarState.Text(null)
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
@@ -1429,7 +1376,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             ),
             styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
                 isVisible = true,
-                selectedBackground = null
+                state = StyleToolbarState.Background(background = null)
             )
         )
 
@@ -1510,7 +1457,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             ),
             styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
                 isVisible = true,
-                selectedBackground = backgroundA
+                state = StyleToolbarState.Background(background = backgroundA)
             )
         )
 
@@ -1593,7 +1540,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             ),
             styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
                 isVisible = true,
-                selectedBackground = backgroundA
+                state = StyleToolbarState.Background(background = backgroundA)
             )
         )
 
@@ -1674,7 +1621,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             ),
             styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
                 isVisible = true,
-                selectedBackground = ThemeColor.DEFAULT.title
+                state = StyleToolbarState.Background(background = ThemeColor.DEFAULT.title)
             )
         )
 

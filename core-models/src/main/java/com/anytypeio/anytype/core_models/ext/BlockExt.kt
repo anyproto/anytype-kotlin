@@ -277,3 +277,8 @@ fun List<Block>.isAllTextAndNoneCodeBlocks(): Boolean =
     all { block ->
         block.content is Content.Text && block.content.style != Content.Text.Style.CODE_SNIPPET
     }
+
+fun List<Block>.isAllTextBlocks(): Boolean =
+    all { block ->
+        block.content is Content.Text
+    }

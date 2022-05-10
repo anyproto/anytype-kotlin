@@ -2,24 +2,16 @@ package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.TextBlock
-import com.anytypeio.anytype.core_models.TextStyle
-import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.*
-import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Companion.init
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
-import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getSupportedMarkupTypes
 import com.anytypeio.anytype.presentation.extension.*
-import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import kotlinx.coroutines.CoroutineScope
@@ -97,12 +89,6 @@ sealed class ControlPanelMachine {
         object OnBlockStyleSelected : Event()
 
         /**
-         * Represents an event when user selected block background color on [Toolbar.Styling] toolbar.
-         */
-        object OnBlockBackgroundColorSelected : Event()
-
-
-        /**
          * Represents an event when user cleares the current focus by closing keyboard.
          */
         object OnClearFocusClicked : Event()
@@ -122,23 +108,6 @@ sealed class ControlPanelMachine {
             val style: Block.Content.Text.Style
         ) : Event()
 
-        data class OnBlockActionToolbarStyleClicked(
-            val target: Block,
-            val focused: Boolean,
-            val selection: IntRange?,
-            val urlBuilder: UrlBuilder,
-            val details: Block.Details
-        ) : Event()
-
-        data class OnMultiSelectTextStyleClicked(
-            val target: Toolbar.Styling.Target?,
-            val config: StyleConfig?,
-            val props: Toolbar.Styling.Props?,
-            val style: TextStyle?
-        ) : Event()
-
-        data class OnMultiSelectBackgroundStyleClicked(val selectedBackground: String?) : Event()
-
         sealed class SearchToolbar : Event() {
             object OnEnterSearchMode : SearchToolbar()
             object OnExitSearchMode : SearchToolbar()
@@ -155,8 +124,14 @@ sealed class ControlPanelMachine {
          */
 
         sealed class StylingToolbar : Event() {
-            object OnExtraClicked : StylingToolbar()
-            object OnColorBackgroundClicked : StylingToolbar()
+            data class OnUpdateTextToolbar(val state: StyleToolbarState.Text) : StylingToolbar()
+            data class OnUpdateBackgroundToolbar(val state: StyleToolbarState.Background) :
+                StylingToolbar()
+
+            data class OnUpdateColorBackgroundToolbar(val state: StyleToolbarState.ColorBackground) :
+                StylingToolbar()
+
+            data class OnUpdateOtherToolbar(val state: StyleToolbarState.Other) : StylingToolbar()
             object OnExtraClosed : StylingToolbar()
             object OnColorBackgroundClosed : StylingToolbar()
             data class OnClose(val focused: Boolean) : StylingToolbar()
@@ -222,19 +197,7 @@ sealed class ControlPanelMachine {
         }
 
         sealed class OnRefresh : Event() {
-            data class StyleToolbar(
-                val target: Block?,
-                val selection: IntRange?,
-                val urlBuilder: UrlBuilder,
-                val details: Block.Details
-            ) : OnRefresh()
             data class Markup(val target: Block?, val selection: IntRange?) : OnRefresh()
-            data class StyleToolbarMulti(
-                val target: Toolbar.Styling.Target?,
-                val config: StyleConfig?,
-                val props: Toolbar.Styling.Props?,
-                val style: TextStyle?
-            ) : OnRefresh()
         }
 
         object OnDocumentMenuClicked : Event()
@@ -394,7 +357,6 @@ sealed class ControlPanelMachine {
             }
             is Event.OnMarkupTextColorSelected -> state.copy()
             is Event.OnBlockTextColorSelected -> state.copy()
-            is Event.OnBlockBackgroundColorSelected -> state.copy()
             is Event.OnBlockStyleSelected -> state.copy()
             is Event.OnAddBlockToolbarOptionSelected -> state.copy()
             is Event.OnMarkupBackgroundColorSelected -> state.copy()
@@ -417,78 +379,6 @@ sealed class ControlPanelMachine {
                     )
                 }
             }
-            is Event.OnBlockActionToolbarStyleClicked -> {
-                val target = target(
-                    block = event.target,
-                    details = event.details,
-                    urlBuilder = event.urlBuilder
-                )
-                val style = event.target.let {
-                    val content = it.content
-                    check(content is Block.Content.Text)
-                    content.style
-                }
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = true,
-                        target = target,
-                        style = style,
-                        config = event.target.getStyleConfig(event.focused, event.selection),
-                        props = getPropsForSelection(target, event.selection)
-                    ),
-                    navigationToolbar = state.navigationToolbar.copy(
-                        isVisible = false
-                    ),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-                )
-            }
-            // TODO move it somewhere in appropriate group
-            is Event.OnMultiSelectTextStyleClicked -> {
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = true,
-                        target = event.target,
-                        style = event.style,
-                        props = event.props,
-                        config = event.config
-                    ),
-                    navigationToolbar = state.navigationToolbar.copy(
-                        isVisible = false
-                    ),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-                )
-            }
-            is Event.OnMultiSelectBackgroundStyleClicked -> {
-                state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = false
-                    ),
-                    navigationToolbar = state.navigationToolbar.copy(
-                        isVisible = false
-                    ),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(
-                        isVisible = false
-                    ),
-                    styleBackgroundToolbar = Toolbar.Styling.Background(
-                        isVisible = true,
-                        selectedBackground = event.selectedBackground
-                    )
-                )
-            }
-            is Event.OnRefresh.StyleToolbar -> {
-                handleRefreshForMarkupLevelStyling(state, event)
-            }
             is Event.OnRefresh.Markup -> {
                 if (event.target != null && event.selection != null) {
                     state.copy(
@@ -499,16 +389,6 @@ sealed class ControlPanelMachine {
                 } else {
                     state.copy()
                 }
-            }
-            is Event.OnRefresh.StyleToolbarMulti -> {
-                state.copy(
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        props = event.props,
-                        style = event.style,
-                        target = event.target,
-                        config = event.config
-                    )
-                )
             }
             is Event.MultiSelect -> {
                 handleMultiSelectEvent(event, state)
@@ -604,120 +484,26 @@ sealed class ControlPanelMachine {
             }
         }
 
-        private fun handleRefreshForMarkupLevelStyling(
-            state: ControlPanelState,
-            event: Event.OnRefresh.StyleToolbar
-        ): ControlPanelState {
-            val target =
-                event.target?.let {
-                    target(
-                        block = it,
-                        urlBuilder = event.urlBuilder,
-                        details = event.details
-                    )
-                }
-            val style = event.target?.let {
-                val content = it.content
-                check(content is Block.Content.Text)
-                content.style
-            } ?: TextStyle.P
-            return state.copy(
-                styleTextToolbar = state.styleTextToolbar.copy(
-                    target = target,
-                    props = target?.let {
-                        Toolbar.Styling.Props(
-                            isBold = it.isBold,
-                            isItalic = it.isItalic,
-                            isStrikethrough = it.isStrikethrough,
-                            isCode = it.isCode,
-                            isLinked = it.isLinked,
-                            color = it.color,
-                            background = it.background,
-                            alignment = it.alignment
-                        )
-                    },
-                    style = style
-                )
-            )
-        }
-
-        private fun getPropsForSelection(target: Toolbar.Styling.Target, selection: IntRange?)
-                : Toolbar.Styling.Props {
-            return if (selection != null && selection.first != selection.last) {
-                getMarkupLevelStylingProps(target, selection)
-            } else {
-                Toolbar.Styling.Props(
-                    isBold = target.isBold,
-                    isItalic = target.isItalic,
-                    isStrikethrough = target.isStrikethrough,
-                    isCode = target.isCode,
-                    isLinked = target.isLinked,
-                    color = target.color,
-                    background = target.background,
-                    alignment = target.alignment
-                )
-            }
-        }
-
-        private fun getMarkupLevelStylingProps(
-            target: Toolbar.Styling.Target,
-            selection: IntRange
-        ): Toolbar.Styling.Props {
-
-            var color: String? = null
-            var background: String? = null
-
-            val colorOverlaps = mutableListOf<Overlap>()
-            val backgroundOverlaps = mutableListOf<Overlap>()
-
-            target.marks.forEach { mark ->
-                if (mark is Markup.Mark.TextColor) {
-                    val range = mark.from..mark.to
-                    val overlap = selection.overlap(range)
-                    if (incl.contains(overlap))
-                        color = mark.color
-                    else
-                        colorOverlaps.add(overlap)
-                } else if (mark is Markup.Mark.BackgroundColor) {
-                    val range = mark.from..mark.to
-                    val overlap = selection.overlap(range)
-                    if (incl.contains(overlap))
-                        background = mark.background
-                    else
-                        backgroundOverlaps.add(overlap)
-                }
-            }
-
-            if (color == null) {
-                if (colorOverlaps.isEmpty() || colorOverlaps.none { value -> excl.contains(value) })
-                    color = target.color ?: ThemeColor.DEFAULT.title
-            }
-
-            if (background == null) {
-                if (backgroundOverlaps.isEmpty() || backgroundOverlaps.none { value ->
-                        excl.contains(
-                            value
-                        )
-                    })
-                    background = target.background ?: ThemeColor.DEFAULT.title
-            }
-
-            return Toolbar.Styling.Props(
-                isBold = target.marks.isBoldInRange(selection),
-                isItalic = target.marks.isItalicInRange(selection),
-                isStrikethrough = target.marks.isStrikethroughInRange(selection),
-                isCode = target.marks.isKeyboardInRange(selection),
-                isLinked = target.marks.isLinkInRange(selection),
-                color = color,
-                background = background,
-                alignment = target.alignment
-            )
-        }
-
         private fun handleStylingToolbarEvent(
             event: Event.StylingToolbar,
             state: ControlPanelState
         ): ControlPanelState = when (event) {
+            is Event.StylingToolbar.OnUpdateTextToolbar -> {
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    styleTextToolbar = state.styleTextToolbar.copy(
+                        isVisible = true,
+                        state = event.state
+                    ),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = false
+                    ),
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                )
+            }
             is Event.StylingToolbar.OnClose -> {
                 if (event.focused) {
                     state.copy(
@@ -756,21 +542,10 @@ sealed class ControlPanelMachine {
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
-            is Event.StylingToolbar.OnExtraClicked -> {
+            is Event.StylingToolbar.OnUpdateOtherToolbar -> {
                 state.copy(
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = false
-                    ),
-                    styleExtraToolbar = Toolbar.Styling.Extra(true),
-                    styleBackgroundToolbar = Toolbar.Styling.Background.reset()
-                )
-            }
-            is Event.StylingToolbar.OnColorBackgroundClicked -> {
-                state.copy(
-                    styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = false
-                    ),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(true),
+                    styleTextToolbar = Toolbar.Styling.reset(),
+                    styleExtraToolbar = Toolbar.Styling.Extra(true, event.state),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
@@ -779,7 +554,7 @@ sealed class ControlPanelMachine {
                     styleTextToolbar = state.styleTextToolbar.copy(
                         isVisible = true
                     ),
-                    styleExtraToolbar = Toolbar.Styling.Extra(false),
+                    styleExtraToolbar = Toolbar.Styling.Extra.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
@@ -788,13 +563,41 @@ sealed class ControlPanelMachine {
                     styleTextToolbar = state.styleTextToolbar.copy(
                         isVisible = true
                     ),
-                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(false),
+                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
             is Event.StylingToolbar.OnBackgroundClosed -> {
                 state.copy(
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
+                )
+            }
+            is Event.StylingToolbar.OnUpdateBackgroundToolbar -> {
+                state.copy(
+                    mainToolbar = state.mainToolbar.copy(
+                        isVisible = false
+                    ),
+                    styleTextToolbar = Toolbar.Styling.reset(),
+                    navigationToolbar = state.navigationToolbar.copy(
+                        isVisible = false
+                    ),
+                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
+                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background(
+                        isVisible = true,
+                        state = event.state
+                    )
+                )
+            }
+            is Event.StylingToolbar.OnUpdateColorBackgroundToolbar -> {
+                state.copy(
+                    styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(
+                        isVisible = true,
+                        state = event.state
+                    ),
+                    styleTextToolbar = Toolbar.Styling.reset(),
+                    styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
+                    styleExtraToolbar = Toolbar.Styling.Extra.reset()
                 )
             }
         }
@@ -1049,44 +852,6 @@ sealed class ControlPanelMachine {
                 state.copy()
             }
         }
-
-        //todo Need refactoring
-        private fun target(
-            block: Block,
-            details: Block.Details,
-            urlBuilder: UrlBuilder
-        ): Toolbar.Styling.Target =
-            when (val content = block.content) {
-                is Block.Content.RelationBlock -> {
-                    Toolbar.Styling.Target(
-                        id = block.id,
-                        text = "",
-                        color = null,
-                        background = block.backgroundColor,
-                        alignment = null,
-                        marks = listOf()
-                    )
-                }
-                is Block.Content.Text -> {
-                    Toolbar.Styling.Target(
-                        id = block.id,
-                        text = content.text,
-                        color = content.color,
-                        background = block.backgroundColor,
-                        alignment = content.align?.let { alignment ->
-                            when (alignment) {
-                                Block.Align.AlignCenter -> Alignment.CENTER
-                                Block.Align.AlignLeft -> Alignment.START
-                                Block.Align.AlignRight -> Alignment.END
-                            }
-                        },
-                        marks = content.marks(urlBuilder = urlBuilder, details = details)
-                    )
-                }
-                else -> {
-                    throw IllegalArgumentException("Unexpected content type for style toolbar: ${block.content::class.java.simpleName}")
-                }
-            }
 
         private fun logState(text: String, state: ControlPanelState) {
             Timber.i(

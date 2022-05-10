@@ -124,27 +124,11 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                        isVisible = false
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
                         isScrollAndMoveEnabled = true,
                         count = 1
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }
@@ -218,27 +202,11 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         vm.controlPanelViewState.test().apply {
             assertValue(
                 ControlPanelState(
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(
-                        isVisible = false
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
                     multiSelect = ControlPanelState.Toolbar.MultiSelect(
                         isVisible = true,
                         isScrollAndMoveEnabled = false,
                         count = 1
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }
@@ -294,26 +262,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                 ControlPanelState(
                     navigationToolbar = ControlPanelState.Toolbar.Navigation(
                         isVisible = true
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
-                    multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                        isVisible = false,
-                        isScrollAndMoveEnabled = false,
-                        isQuickScrollAndMoveMode = false,
-                        count = 0
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }
@@ -412,25 +361,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                 ControlPanelState(
                     navigationToolbar = ControlPanelState.Toolbar.Navigation(
                         isVisible = true
-                    ),
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = false
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling(
-                        isVisible = false
-                    ),
-                    multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                        isVisible = false,
-                        isScrollAndMoveEnabled = false,
-                        count = 0
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar(
-                        isVisible = false,
-                        cursorCoordinate = null,
-                        mentionFilter = null,
-                        mentionFrom = null
-                    ),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
+                    )
                 )
             )
         }

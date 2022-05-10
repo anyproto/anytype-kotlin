@@ -7,6 +7,7 @@ import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleToolbarBackgroundBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -46,19 +47,19 @@ class StyleBackgroundToolbarWidget @JvmOverloads constructor(
             .map { StylingEvent.Coloring.Background(ThemeColor.GREEN) }
     )
 
-    fun update(background: String?) {
+    fun update(state: StyleToolbarState.Background) {
         with(binding.flowColors) {
-            backgroundColorDefault.isSelected = background == ThemeColor.DEFAULT.title
-            backgroundColorGrey.isSelected = background == ThemeColor.GREY.title
-            backgroundColorYellow.isSelected = background == ThemeColor.YELLOW.title
-            backgroundColorOrange.isSelected = background == ThemeColor.ORANGE.title
-            backgroundColorRed.isSelected = background == ThemeColor.RED.title
-            backgroundColorPink.isSelected = background == ThemeColor.PINK.title
-            backgroundColorPurple.isSelected = background == ThemeColor.PURPLE.title
-            backgroundColorBlue.isSelected = background == ThemeColor.BLUE.title
-            backgroundColorIce.isSelected = background == ThemeColor.ICE.title
-            backgroundColorTeal.isSelected = background == ThemeColor.TEAL.title
-            backgroundColorGreen.isSelected = background == ThemeColor.GREEN.title
+            backgroundColorDefault.isSelected = state.background == ThemeColor.DEFAULT.title
+            backgroundColorGrey.isSelected = state.background == ThemeColor.GREY.title
+            backgroundColorYellow.isSelected = state.background == ThemeColor.YELLOW.title
+            backgroundColorOrange.isSelected = state.background == ThemeColor.ORANGE.title
+            backgroundColorRed.isSelected = state.background == ThemeColor.RED.title
+            backgroundColorPink.isSelected = state.background == ThemeColor.PINK.title
+            backgroundColorPurple.isSelected = state.background == ThemeColor.PURPLE.title
+            backgroundColorBlue.isSelected = state.background == ThemeColor.BLUE.title
+            backgroundColorIce.isSelected = state.background == ThemeColor.ICE.title
+            backgroundColorTeal.isSelected = state.background == ThemeColor.TEAL.title
+            backgroundColorGreen.isSelected = state.background == ThemeColor.GREEN.title
         }
     }
 }

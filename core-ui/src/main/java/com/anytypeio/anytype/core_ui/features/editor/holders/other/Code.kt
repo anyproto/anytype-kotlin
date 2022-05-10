@@ -71,6 +71,7 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
 
             setBackgroundColor(item.backgroundColor)
 
+            setCursor(item)
             setFocus(item)
 
             content.addTextChangedListener(
@@ -158,6 +159,10 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
             setFocus(item)
         }
 
+        if (payload.isCursorChanged) {
+            setCursor(item = item)
+        }
+
         if (payload.backgroundColorChanged()) {
             setBackgroundColor(item.backgroundColor)
         }
@@ -191,6 +196,18 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
                     }
                 } else {
                     Timber.d("Already had focus")
+                }
+            }
+        }
+    }
+
+    private fun setCursor(item: BlockView.Code) {
+        if (item.isFocused) {
+            Timber.d("Setting cursor: $item")
+            item.cursor?.let {
+                val length = content.text?.length ?: 0
+                if (it in 0..length) {
+                    content.setSelection(it)
                 }
             }
         }

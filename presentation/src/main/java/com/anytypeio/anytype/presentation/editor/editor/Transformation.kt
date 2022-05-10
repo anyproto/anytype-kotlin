@@ -29,21 +29,23 @@ fun Block.markup(
 
     val new = Mark(
         range = range,
-        type = when (type) {
-            Markup.Type.BOLD -> Mark.Type.BOLD
-            Markup.Type.ITALIC -> Mark.Type.ITALIC
-            Markup.Type.STRIKETHROUGH -> Mark.Type.STRIKETHROUGH
-            Markup.Type.TEXT_COLOR -> Mark.Type.TEXT_COLOR
-            Markup.Type.LINK -> Mark.Type.LINK
-            Markup.Type.BACKGROUND_COLOR -> Mark.Type.BACKGROUND_COLOR
-            Markup.Type.KEYBOARD -> Mark.Type.KEYBOARD
-            Markup.Type.MENTION -> Mark.Type.MENTION
-            Markup.Type.OBJECT -> Mark.Type.OBJECT
-        },
+        type =type.toCoreModel(),
         param = param
     )
 
     return copy(content = content.addMarkToContent(new))
+}
+
+fun Markup.Type.toCoreModel(): Mark.Type = when (this) {
+    Markup.Type.BOLD -> Mark.Type.BOLD
+    Markup.Type.ITALIC -> Mark.Type.ITALIC
+    Markup.Type.STRIKETHROUGH -> Mark.Type.STRIKETHROUGH
+    Markup.Type.TEXT_COLOR -> Mark.Type.TEXT_COLOR
+    Markup.Type.LINK -> Mark.Type.LINK
+    Markup.Type.BACKGROUND_COLOR -> Mark.Type.BACKGROUND_COLOR
+    Markup.Type.KEYBOARD -> Mark.Type.KEYBOARD
+    Markup.Type.MENTION -> Mark.Type.MENTION
+    Markup.Type.OBJECT -> Mark.Type.OBJECT
 }
 
 fun Block.Content.Text.addMarkToContent(mark: Mark): Block.Content.Text {

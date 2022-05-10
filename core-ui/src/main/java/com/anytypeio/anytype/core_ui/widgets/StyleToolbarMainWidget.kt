@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_ui.databinding.WidgetStyleToolbarMainBinding
 import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -48,8 +49,8 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
     val other = binding.dots.clicks()
     val colors = binding.markupColors.clicks()
 
-    fun setSelectedStyle(style: TextStyle?) {
-        when (style) {
+    fun setSelectedStyle(state: StyleToolbarState.Text?) {
+        when (state?.textStyle) {
             TextStyle.P -> select(binding.tvStyleText.id)
             TextStyle.H1 -> select(binding.tvStyleTitle.id)
             TextStyle.H2 -> select(binding.tvStyleHeading.id)

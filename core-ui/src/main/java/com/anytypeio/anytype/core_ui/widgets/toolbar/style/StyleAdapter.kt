@@ -5,30 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarBackgroundBinding
 import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarColorBinding
-import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
-import com.anytypeio.anytype.presentation.editor.editor.styling.StyleConfig
+import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
-import com.anytypeio.anytype.presentation.editor.editor.styling.StylingType
 
 class StyleAdapter(
-    var props: ControlPanelState.Toolbar.Styling.Props?,
-    private val visibleTypes: ArrayList<StylingType>,
-    private val enabledMarkup: ArrayList<Markup.Type>,
-    private val enabledAlignment: ArrayList<Alignment>,
+    private var state: StyleToolbarState.ColorBackground,
     private val onStylingEvent: (StylingEvent) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    @Deprecated("Maybe legacy, maybe not.")
-    fun updateConfig(config: StyleConfig, props: ControlPanelState.Toolbar.Styling.Props?) {
-        visibleTypes.clear()
-        visibleTypes.addAll(config.visibleTypes)
-        enabledMarkup.clear()
-        enabledMarkup.addAll(config.enabledMarkup)
-        enabledAlignment.clear()
-        enabledAlignment.addAll(config.enabledAlignment)
-        this.props = props
+    fun update(state: StyleToolbarState.ColorBackground) {
+        this.state = state
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -51,10 +38,10 @@ class StyleAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is StyleTextColorViewHolder -> {
-                holder.bind(onStylingEvent, props?.color)
+                holder.bind(onStylingEvent, state.color)
             }
             is StyleBackgroundViewHolder -> {
-                holder.bind(onStylingEvent, props?.background)
+                holder.bind(onStylingEvent, state.background)
             }
         }
     }

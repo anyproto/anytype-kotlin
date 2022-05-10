@@ -18,13 +18,12 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
-import kotlin.math.max
 import kotlin.math.min
 
 
 class EditorDragAndDropListener(
     val onDragLocation: (v: View, ratio: Float) -> Unit,
-    val onDrop: (v: View, ratio: Float) -> Unit,
+    val onDrop: (v: View, event: DragEvent) -> Unit,
     val onDragEnded: (v: View) -> Unit,
     val onDragExited: (v: View) -> Unit
 ) : View.OnDragListener {
@@ -43,8 +42,7 @@ class EditorDragAndDropListener(
                 onDragExited(v)
             }
             DragEvent.ACTION_DROP -> {
-                val ratio = event.y / v.height
-                onDrop(v, ratio)
+                onDrop(v, event)
             }
             DragEvent.ACTION_DRAG_ENDED -> {
                 onDragEnded(v)

@@ -10,6 +10,7 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -506,6 +507,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         setupWindowInsetAnimation()
 
+        binding.recycler.setOnDragListener(dndListener)
         binding.recycler.addOnItemTouchListener(
             OutsideClickDetector(vm::onOutsideClicked)
         )
@@ -713,7 +715,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarBackground).state =
             BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.typeHasTemplateToolbar).state = BottomSheetBehavior.STATE_HIDDEN
+        BottomSheetBehavior.from(binding.typeHasTemplateToolbar).state =
+            BottomSheetBehavior.STATE_HIDDEN
 
         observeNavBackStack()
     }
@@ -2017,9 +2020,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onDragLocation = { target, ratio ->
                 handleDragging(target, ratio)
             },
-            onDrop = { target, ratio ->
+            onDrop = { target, event ->
                 binding.recycler.itemAnimator = DefaultItemAnimator()
-                proceedWithDropping(target, ratio)
+                proceedWithDropping(target, event)
                 binding.recycler.postDelayed({
                     binding.recycler.itemAnimator = null
                 }, RECYCLER_DND_ANIMATION_RELAXATION_TIME)
@@ -2125,8 +2128,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
             handleScrollingWhileDragging(vh, ratio)
             dndTargetPrevious = Pair(ratio, vh.bindingAdapterPosition)
-        } else {
-            toast("onDragLocation: holder not found")
         }
     }
 
@@ -2287,9 +2288,181 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         return false
     }
 
-    private fun proceedWithDropping(target: View, ratio: Float) {
+    private class DropContainer(
+        val vh: RecyclerView.ViewHolder?,
+        val ratio: Float
+    )
+
+    private fun checkIfDroppedBeforeFirstVisibleItem(
+        manager: LinearLayoutManager,
+        touchY: Float
+    ): DropContainer? {
+        manager.findFirstCompletelyVisibleItemPosition().let { first ->
+            if (first != RecyclerView.NO_POSITION) {
+                manager.findViewByPosition(first)?.let { view ->
+                    val point = IntArray(2)
+                    view.getLocationOnScreen(point)
+                    if (touchY < point[1]) {
+                        return DropContainer(
+                            binding.recycler.findContainingViewHolder(view),
+                            TOP_RATIO
+                        )
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    private fun checkIfDroppedAfterLastVisibleItem(
+        manager: LinearLayoutManager,
+        touchY: Float
+    ): DropContainer? {
+        manager.findLastCompletelyVisibleItemPosition().let { last ->
+            if (last != RecyclerView.NO_POSITION) {
+                manager.findViewByPosition(last)?.let { view ->
+                    val point = IntArray(2)
+                    view.getLocationOnScreen(point)
+                    if (touchY > point[1]) {
+                        return DropContainer(
+                            binding.recycler.findContainingViewHolder(view),
+                            BOTTOM_RATIO
+                        )
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    private fun calculateBottomClosestView(
+        manager: LinearLayoutManager,
+        start: Int,
+        end: Int,
+        touchY: Float
+    ): View? {
+        var closestBottomView: View? = null
+        var closestBottomViewDistance = Int.MAX_VALUE
+
+        for (i in start..end) {
+            manager.findViewByPosition(i)?.let { view ->
+                val point = IntArray(2)
+                view.getLocationOnScreen(point)
+                val height = view.height
+                if (touchY <= point[1] + height) {
+                    val newLastDiff = (point[1] - touchY).toInt()
+                    if (newLastDiff < closestBottomViewDistance) {
+                        closestBottomViewDistance = newLastDiff
+                        closestBottomView = view
+                    }
+                }
+            }
+        }
+        return closestBottomView
+    }
+
+    private fun calculateTopClosestView(
+        manager: LinearLayoutManager,
+        start: Int,
+        end: Int,
+        touchY: Float
+    ): View? {
+        var closestTopView: View? = null
+        var closestTopViewDistance = Int.MAX_VALUE
+        for (i in start..end) {
+            manager.findViewByPosition(i)?.let { view ->
+                val point = IntArray(2)
+                view.getLocationOnScreen(point)
+                val height = view.height
+                if (touchY > point[1] + height) {
+                    val newLastDiff = (touchY - point[1] - height).toInt()
+                    if (newLastDiff < closestTopViewDistance) {
+                        closestTopViewDistance = newLastDiff
+                        closestTopView = view
+                    }
+                }
+            }
+        }
+        return closestTopView
+    }
+
+    private fun calculateDropContainer(touchY: Float): DropContainer {
+        val point = IntArray(2)
+        binding.recycler.getLocationOnScreen(point)
+        val touchY = point[1] + touchY
+
+        val manager = (binding.recycler.layoutManager as LinearLayoutManager)
+        checkIfDroppedBeforeFirstVisibleItem(manager, touchY)?.let {
+            return it
+        }
+        checkIfDroppedAfterLastVisibleItem(manager, touchY)?.let {
+            return it
+        }
+
+        val start = manager.findFirstCompletelyVisibleItemPosition()
+        val end = manager.findLastCompletelyVisibleItemPosition()
+
+        val bottomClosestView =
+            calculateBottomClosestView(manager, start, end, touchY) ?: return DropContainer(
+                null,
+                0f
+            )
+        val topClosestView = calculateTopClosestView(manager, start, end, touchY)
+            ?: return DropContainer(null, 0f)
+
+        return getClosestViewToLine(topClosestView, bottomClosestView)
+    }
+
+    private fun getClosestViewToLine(
+        topView: View,
+        bottomView: View
+    ): DropContainer {
+
+        val dndMiddle = kotlin.run {
+            val point = IntArray(2)
+            binding.dndTargetLine.getLocationOnScreen(point)
+            point[1] + binding.dndTargetLine.height / 2f
+        }
+
+        val topViewDistance = kotlin.run {
+            val point = IntArray(2)
+            topView.getLocationOnScreen(point)
+            dndMiddle - point[1] - topView.height
+        }
+
+        val bottomViewDistance = kotlin.run {
+            val point = IntArray(2)
+            bottomView.getLocationOnScreen(point)
+            point[1] - dndMiddle
+        }
+
+        return if (topViewDistance > bottomViewDistance) {
+            DropContainer(binding.recycler.findContainingViewHolder(bottomView), TOP_RATIO)
+        } else {
+            DropContainer(binding.recycler.findContainingViewHolder(topView), BOTTOM_RATIO)
+        }
+    }
+
+    private fun resolveDropContainer(target: View, event: DragEvent): DropContainer {
+        return if (target == binding.recycler) {
+            calculateDropContainer(event.y)
+        } else {
+            val vh = binding.recycler.findContainingViewHolder(target)
+            if (vh != null) {
+                DropContainer(vh, event.y / vh.itemView.height)
+            } else {
+                DropContainer(null, 0f)
+            }
+        }
+    }
+
+    private fun proceedWithDropping(target: View, event: DragEvent) {
         binding.dndTargetLine.invisible()
-        val vh = binding.recycler.findContainingViewHolder(target)
+
+        val dropContainer = resolveDropContainer(target, event)
+        val vh = dropContainer.vh
+        val ratio = dropContainer.ratio
+
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos) {
                 target.isSelected = false
@@ -2410,3 +2583,5 @@ interface OnFragmentInteractionListener {
 }
 
 private const val RECYCLER_DND_ANIMATION_RELAXATION_TIME = 500L
+private const val TOP_RATIO = 0.1f
+private const val BOTTOM_RATIO = 0.9f

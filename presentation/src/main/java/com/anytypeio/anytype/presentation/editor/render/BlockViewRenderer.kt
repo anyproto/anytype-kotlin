@@ -30,6 +30,11 @@ interface BlockViewRenderer {
         relations: List<Relation>,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
-        count: Int = 0
+        count: Int = 0,
+        onRenderFlag: (RenderFlag) -> Unit = {}
     ): List<BlockView>
+
+    sealed class RenderFlag {
+        object ContainsTableOfContents: RenderFlag()
+    }
 }

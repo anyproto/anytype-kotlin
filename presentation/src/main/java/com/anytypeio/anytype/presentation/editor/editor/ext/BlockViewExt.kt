@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
@@ -974,4 +975,44 @@ fun List<BlockView>.updateTableOfContentsViews(header: BlockView.Text.Header): L
         }
     }
     return updated
+}
+
+fun List<BlockView>.fillTableOfContents(): List<BlockView> {
+    val headers = this.filterIsInstance<BlockView.Text.Header>()
+    var isH1Present = false
+    var isH2Present = false
+    val items = mutableListOf<BlockView.TableOfContentsItem>()
+    headers.forEachIndexed { index, b ->
+        var depth = 0
+        when (b) {
+            is BlockView.Text.Header.One -> {
+                isH1Present = true
+                isH2Present = false
+            }
+            is BlockView.Text.Header.Two -> {
+                isH2Present = true
+                if (isH1Present) depth += 1
+            }
+            is BlockView.Text.Header.Three -> {
+                if (isH1Present) depth += 1
+                if (isH2Present) depth += 1
+            }
+            else -> {}
+        }
+        val item = BlockView.TableOfContentsItem(
+            id = b.id,
+            name = b.text,
+            depth = depth
+        )
+        items.add(item)
+    }
+    return this.map { view ->
+        if (view is BlockView.TableOfContents) {
+            view.copy(
+                items = items
+            )
+        } else {
+            view
+        }
+    }
 }

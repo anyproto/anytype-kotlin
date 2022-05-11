@@ -101,6 +101,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
 import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
+import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
 import com.anytypeio.anytype.presentation.editor.editor.ext.singleStylingMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.toEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
@@ -667,7 +668,8 @@ class EditorViewModel(
                     }
                 }
                 footers.value = getFooterState(root, details)
-                models.asMap().render(
+                val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
+                val doc = models.asMap().render(
                     mode = mode,
                     indent = INITIAL_INDENT,
                     anchor = context,
@@ -677,7 +679,12 @@ class EditorViewModel(
                     relations = orchestrator.stores.relations.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
-                )
+                ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
+                if (flags.isNotEmpty()) {
+                    doc.fillTableOfContents()
+                } else {
+                    doc
+                }
             }
             .catch { error ->
                 Timber.e(error, "Get error in renderizePipeline")

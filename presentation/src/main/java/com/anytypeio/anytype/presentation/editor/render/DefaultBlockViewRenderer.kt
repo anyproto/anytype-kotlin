@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -55,7 +54,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         relations: List<Relation>,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
-        count: Int
+        count: Int,
+        onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit
     ): List<BlockView> {
 
         val children = getValue(anchor)
@@ -122,7 +122,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -158,7 +159,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -188,7 +190,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -217,7 +220,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -246,7 +250,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -275,7 +280,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -304,7 +310,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -333,7 +340,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -378,7 +386,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -406,7 +415,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
-                                        selection = selection
+                                        selection = selection,
+                                        onRenderFlag = onRenderFlag
                                     )
                                 )
                             }
@@ -491,7 +501,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             relations = relations,
                             restrictions = restrictions,
                             selection = selection,
-                            count = mCounter
+                            count = mCounter,
+                            onRenderFlag = onRenderFlag
                         )
                     )
                 }
@@ -540,12 +551,12 @@ class DefaultBlockViewRenderer @Inject constructor(
                 is Content.TableOfContents -> {
                     isPreviousBlockMedia = false
                     mCounter = 0
+                    onRenderFlag(BlockViewRenderer.RenderFlag.ContainsTableOfContents)
                     result.add(
                         toc(
                             block = block,
                             mode = mode,
                             selection = selection,
-                            blocks = children
                         )
                     )
                 }
@@ -1453,43 +1464,12 @@ class DefaultBlockViewRenderer @Inject constructor(
 
     private fun toc(
         block: Block,
-        blocks: List<Block>,
         mode: EditorMode,
         selection: Set<Id>
     ): BlockView.TableOfContents {
-        val headers = blocks.filter { (it.content as? Content.Text)?.isHeader() ?: false }
-        var isH1Present = false
-        var isH2Present = false
-        val items = mutableListOf<BlockView.TableOfContentsItem>()
-        headers.forEachIndexed { index, b ->
-            val content = b.content<Content.Text>()
-            var depth = 0
-            when (content.style) {
-                Content.Text.Style.H1 -> {
-                    isH1Present = true
-                    isH2Present = false
-                }
-                Content.Text.Style.H2 -> {
-                    isH2Present = true
-                    if (isH1Present) depth += 1
-                }
-                Content.Text.Style.H3 -> {
-                    if (isH1Present) depth += 1
-                    if (isH2Present) depth += 1
-                }
-                else -> {}
-            }
-            val item = BlockView.TableOfContentsItem(
-                id = b.id,
-                name = content.text,
-                depth = depth
-            )
-            items.add(item)
-        }
-
-        val toc = BlockView.TableOfContents(
+        return BlockView.TableOfContents(
             id = block.id,
-            items = items,
+            items = listOf(),
             backgroundColor = block.backgroundColor,
             isSelected = checkIfSelected(
                 mode = mode,
@@ -1497,7 +1477,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             )
         )
-        return toc
     }
 
     private fun relation(

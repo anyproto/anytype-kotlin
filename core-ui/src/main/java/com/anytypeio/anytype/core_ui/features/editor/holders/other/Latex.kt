@@ -4,11 +4,10 @@ import android.view.View
 import androidx.core.view.updatePadding
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockLatexBinding
-import com.anytypeio.anytype.core_ui.extensions.lighter
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.judemanutd.katexview.KatexView
 
@@ -42,12 +41,7 @@ class Latex(
     }
 
     private fun setBackground(backgroundColor: String?) {
-        val value = ThemeColor.values().find { it.title == backgroundColor }
-        if (value != null && value != ThemeColor.DEFAULT) {
-            itemView.setBackgroundColor(itemView.resources.lighter(value, 0))
-        } else {
-            itemView.background = null
-        }
+        itemView.setBlockBackgroundColor(backgroundColor)
     }
 
     fun processChangePayload(

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.extensions
 
 import android.content.Context
 import android.content.res.Resources
+import android.view.View
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -58,7 +59,28 @@ fun TextView.setTextColor(color: String, defaultColor: Int = R.color.text_primar
     }
 }
 
-fun Context.resolveThemedColor(color: String?, defaultColor: Int): Int {
+
+/**
+ * @param [color] color code, @see [ThemeColor]
+ */
+fun View.setBlockBackgroundColor(color: String?) {
+    if (!color.isNullOrEmpty()) {
+        val value = ThemeColor.values().find { value -> value.title == color }
+        if (value != null && value != ThemeColor.DEFAULT) {
+            setBackgroundColor(resources.lighter(value, 0))
+        } else {
+            background = null
+        }
+    } else {
+        background = null
+    }
+}
+
+
+/**
+ * @param [color] color code, @see [ThemeColor]
+ */
+fun Context.resolveThemedTextColor(color: String?, defaultColor: Int): Int {
     val value = ThemeColor.values().find { value -> value.title == color }
     return if (value != null && value != ThemeColor.DEFAULT) {
         resources.dark(value, defaultColor)

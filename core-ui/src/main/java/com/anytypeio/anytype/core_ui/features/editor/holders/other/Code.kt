@@ -214,7 +214,6 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     }
 
     private fun setBackgroundColor(color: String? = null) {
-        Timber.d("Setting background color: $color")
         val value = ThemeColor.values().find { value -> value.title == color }
         if (value != null && value != ThemeColor.DEFAULT) {
             (root.background as? ColorDrawable)?.color = root.resources.lighter(value, 0)

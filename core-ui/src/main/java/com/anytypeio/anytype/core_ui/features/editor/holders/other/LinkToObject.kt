@@ -10,18 +10,20 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkBinding
-import com.anytypeio.anytype.core_ui.extensions.lighter
-import com.anytypeio.anytype.core_ui.features.editor.*
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import timber.log.Timber
 
 class LinkToObject(
     val binding: ItemBlockObjectLinkBinding
@@ -155,21 +157,7 @@ class LinkToObject(
         }
     }
 
-    private fun applyBackground(
-        background: String?
-    ) {
-        Timber.d("Setting background color: $background")
-        if (!background.isNullOrEmpty()) {
-            val value = ThemeColor.values().find { value -> value.title == background }
-            if (value != null && value != ThemeColor.DEFAULT) {
-                root.setBackgroundColor(itemView.resources.lighter(value, 0))
-            } else {
-                Timber.e("Could not find value for background color: $background, setting background to null")
-                root.setBackgroundColor(0)
-            }
-        } else {
-            Timber.d("Background color is null, setting background to null")
-            root.setBackgroundColor(0)
-        }
+    private fun applyBackground(background: String?) {
+        root.setBlockBackgroundColor(background)
     }
 }

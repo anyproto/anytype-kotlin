@@ -17,8 +17,8 @@ import com.anytypeio.anytype.core_ui.common.setMarkup
 import com.anytypeio.anytype.core_ui.common.toSpannable
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
-import com.anytypeio.anytype.core_ui.extensions.lighter
-import com.anytypeio.anytype.core_ui.extensions.resolveThemedColor
+import com.anytypeio.anytype.core_ui.extensions.resolveThemedTextColor
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
@@ -113,19 +113,7 @@ interface TextBlockHolder : TextHolder {
     }
 
     fun setBackgroundColor(color: String? = null) {
-        Timber.d("Setting background color: $color")
-        if (!color.isNullOrEmpty()) {
-            val value = ThemeColor.values().find { value -> value.title == color }
-            if (value != null && value != ThemeColor.DEFAULT) {
-                root.setBackgroundColor(root.resources.lighter(value, 0))
-            } else {
-                Timber.e("Could not find value for background color: $color, setting background to null")
-                root.background = null
-            }
-        } else {
-            Timber.d("Background color is null, setting background to null")
-            root.background = null
-        }
+        root.setBlockBackgroundColor(color)
     }
 
     fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit, textColor: Int) {
@@ -391,7 +379,7 @@ interface TextBlockHolder : TextHolder {
     }
 
     fun resolveTextBlockThemedColor(color: String?): Int {
-        return content.context.resolveThemedColor(color, getDefaultTextColor())
+        return content.context.resolveThemedTextColor(color, getDefaultTextColor())
     }
 
     //region CONTEXT MENU

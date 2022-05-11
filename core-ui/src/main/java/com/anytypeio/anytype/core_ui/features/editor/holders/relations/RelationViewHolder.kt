@@ -9,8 +9,15 @@ import androidx.core.view.updatePadding
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.*
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
 import com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
@@ -22,7 +29,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
-import timber.log.Timber
 
 sealed class RelationViewHolder(
     view: View
@@ -43,16 +49,7 @@ sealed class RelationViewHolder(
     }
 
     fun setBackgroundColor(color: String? = null) {
-        Timber.d("Setting background color: $color")
-        if (color != null) {
-            val value = ThemeColor.values().find { value -> value.title == color }
-            if (value != null)
-                itemView.setBackgroundColor(value.background)
-            else
-                Timber.e("Could not find value for background color: $color")
-        } else {
-            itemView.background = null
-        }
+        itemView.setBlockBackgroundColor(color)
     }
 
     class Placeholder(val binding: ItemBlockRelationPlaceholderBinding) : RelationViewHolder(binding.root) {

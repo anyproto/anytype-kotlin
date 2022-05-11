@@ -5,7 +5,7 @@ import android.widget.LinearLayout
 import androidx.core.view.ViewCompat.generateViewId
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
-import com.anytypeio.anytype.core_ui.extensions.lighter
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.SELECTION_CHANGED
@@ -13,10 +13,8 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.widgets.text.TableOfContentsItemWidget
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import timber.log.Timber
 
 class TableOfContents(
     val binding: ItemBlockTocBinding
@@ -56,22 +54,8 @@ class TableOfContents(
         applyBackground(item.backgroundColor)
     }
 
-    private fun applyBackground(
-        background: String?
-    ) {
-        Timber.d("Setting background color: $background")
-        if (!background.isNullOrEmpty()) {
-            val value = ThemeColor.values().find { value -> value.title == background }
-            if (value != null && value != ThemeColor.DEFAULT) {
-                root.setBackgroundColor(itemView.resources.lighter(value, 0))
-            } else {
-                Timber.e("Could not find value for background color: $background, setting background to null")
-                root.setBackgroundColor(0)
-            }
-        } else {
-            Timber.d("Background color is null, setting background to null")
-            container.setBackgroundColor(0)
-        }
+    private fun applyBackground(background: String?) {
+        root.setBlockBackgroundColor(background)
     }
 
     private fun getPadding(depth: Int): Int {

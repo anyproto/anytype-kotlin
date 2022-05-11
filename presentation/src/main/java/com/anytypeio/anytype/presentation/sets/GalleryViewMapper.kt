@@ -18,7 +18,7 @@ fun DVViewer.buildGalleryViews(
     urlBuilder: UrlBuilder
 ) : List<Viewer.GalleryView.Item> {
     val filteredRelations = viewerRelations.mapNotNull { setting ->
-        if (setting.isVisible) {
+        if (setting.isVisible && setting.key != Relations.NAME) {
             relations.find { it.key == setting.key }
         } else {
             null

@@ -1,15 +1,26 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.DateParser
-import com.anytypeio.anytype.presentation.relations.NumberParser
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
-import com.anytypeio.anytype.presentation.sets.model.*
+import com.anytypeio.anytype.presentation.sets.model.CellView
+import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.anytypeio.anytype.presentation.sets.model.FileView
+import com.anytypeio.anytype.presentation.sets.model.ObjectView
+import com.anytypeio.anytype.presentation.sets.model.StatusView
+import com.anytypeio.anytype.presentation.sets.model.TagView
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 fun List<ColumnView>.buildGridRow(
     record: Map<String, Any?>,

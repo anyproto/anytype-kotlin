@@ -3,9 +3,9 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.core_utils.const.DateConst
-import com.anytypeio.anytype.core_utils.ext.isWhole
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.hasValue
+import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -33,7 +33,7 @@ fun Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false
-) : DocumentRelationView? {
+): DocumentRelationView? {
     val relation = this
     return when {
         relation.isHidden -> null
@@ -197,28 +197,6 @@ object DateParser {
         return timeInMillis?.times(1000)
     }
 }
-
-/**
- * Converts relation {format NUMBER} value {Any?} to string representation or null
- */
-object NumberParser {
-    fun parse(value: Any?): String? = when (value) {
-        is String -> {
-            val num = value.toDoubleOrNull()
-            num?.convertToString()
-        }
-        is Number -> {
-            val num = value.toDouble()
-            num.convertToString()
-        }
-        else -> null
-    }
-}
-
-fun Double.convertToString(): String = if (isWhole())
-    this.toLong().toString()
-else
-    this.toString()
 
 /**
  *  Get date format for ColumnView type DATE

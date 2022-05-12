@@ -33,33 +33,24 @@ buildscript {
     }
 }
 
-/**
- * Create github.properties in root project folder file
- * with gpr.usr=GITHUB_USER_ID  & gpr.key=PERSONAL_ACCESS_TOKEN
- */
-def githubProperties = new Properties()
-githubProperties.load(new FileInputStream(rootProject.file('github.properties')))
+def testDebugAll = tasks.create("testDebugAll")
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/anytypeio/go-anytype-middleware")
-            credentials {
-                username = githubProperties['gpr.usr']
-                password = githubProperties['gpr.key']
-            }
+subprojects {
+    plugins.withId("kotlin") {
+        testDebugAll.dependsOn(tasks.named("test"))
+    }
+    plugins.withId("com.android.library") {
+        afterEvaluate {
+            testDebugAll.dependsOn(tasks.named("testDebugUnitTest"))
+        }
+    }
+    plugins.withId("com.android.application") {
+        afterEvaluate {
+            testDebugAll.dependsOn(tasks.named("testDebugUnitTest"))
         }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-task runUnitTests(dependsOn: [':app:testDebugUnitTest']) {
-    description 'Run all unit tests'
 }

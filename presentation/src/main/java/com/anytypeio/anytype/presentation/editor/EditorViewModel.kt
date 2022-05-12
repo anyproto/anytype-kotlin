@@ -98,10 +98,10 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
+import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
 import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
-import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
 import com.anytypeio.anytype.presentation.editor.editor.ext.singleStylingMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.toEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
@@ -2010,17 +2010,19 @@ class EditorViewModel(
 
     fun onTogglePlaceholderClicked(target: Id) {
         Timber.d("onTogglePlaceholderClicked, target:[$target]")
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.CRUD.Create(
-                    context = context,
-                    target = target,
-                    prototype = Prototype.Text(
-                        style = Content.Text.Style.P
-                    ),
-                    position = Position.INNER
+        if (mode == EditorMode.Edit) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        target = target,
+                        prototype = Prototype.Text(
+                            style = Content.Text.Style.P
+                        ),
+                        position = Position.INNER
+                    )
                 )
-            )
+            }
         }
     }
 

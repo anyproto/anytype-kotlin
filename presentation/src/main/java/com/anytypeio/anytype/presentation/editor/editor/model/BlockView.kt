@@ -459,6 +459,9 @@ sealed class BlockView : ViewType {
         ) : Text() {
             override fun getViewType() = HOLDER_TOGGLE
             override val body: String get() = text
+            val isCreateBlockButtonVisible : Boolean get() {
+                return mode == Mode.EDIT && toggled && isEmpty
+            }
         }
     }
 

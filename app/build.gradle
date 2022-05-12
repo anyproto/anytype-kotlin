@@ -190,6 +190,7 @@ dependencies {
     testImplementation unitTestDependencies.robolectricLatest
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation project(':test:utils')
 
     //Acceptance tests dependencies
     androidTestImplementation project(':test:android-utils')

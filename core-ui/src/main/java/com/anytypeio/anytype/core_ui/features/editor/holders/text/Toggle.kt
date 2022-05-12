@@ -80,14 +80,10 @@ class Toggle(
         if (item.mode == BlockView.Mode.READ) {
             placeholder.isVisible = false
         } else {
-            placeholder.apply {
-                isVisible = item.isEmpty && item.toggled
-                setOnClickListener { onTogglePlaceholderClicked(item.id) }
-            }
+            placeholder.isVisible = item.isEmpty && item.toggled
         }
-        toggle.setOnClickListener {
-            onToggleClicked(item.id)
-        }
+        placeholder.setOnClickListener { onTogglePlaceholderClicked(item.id) }
+        toggle.setOnClickListener { onToggleClicked(item.id) }
         setupMentionWatcher(onMentionEvent)
         setupSlashWatcher(onSlashEvent, item.getViewType())
     }
@@ -136,10 +132,19 @@ class Toggle(
             onSlashEvent
         )
         payloads.forEach { payload ->
-            if (payload.changes.contains(BlockViewDiffUtil.TOGGLE_EMPTY_STATE_CHANGED))
-                placeholder.isVisible = item.isEmpty
             if (payload.isToggleStateChanged) {
-                toggle.rotation = if (item.toggled) EXPANDED_ROTATION else COLLAPSED_ROTATION
+                if (item.toggled) {
+                    toggle.rotation = EXPANDED_ROTATION
+                } else {
+                    toggle.rotation = COLLAPSED_ROTATION
+                }
+                placeholder.isVisible = item.isCreateBlockButtonVisible
+            }
+            if (payload.isToggleEmptyStateChanged) {
+                placeholder.isVisible = item.isCreateBlockButtonVisible
+            }
+            if (payload.readWriteModeChanged()) {
+                placeholder.isVisible = item.isCreateBlockButtonVisible
             }
         }
     }

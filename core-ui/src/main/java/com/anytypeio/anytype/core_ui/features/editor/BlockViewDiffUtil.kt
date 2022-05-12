@@ -269,6 +269,7 @@ class BlockViewDiffUtil(
         val isLatexChanged: Boolean get() = changes.contains(LATEX_CHANGED)
 
         val isToggleStateChanged: Boolean get() = changes.contains(TOGGLE_STATE_CHANGED)
+        val isToggleEmptyStateChanged: Boolean get() = changes.contains(TOGGLE_EMPTY_STATE_CHANGED)
 
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.ext.isSpanInRange
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -239,7 +240,7 @@ class MarkupExtractTest {
         val mark = Markup.Mark.Link(
             from = 0,
             to = 5,
-            param = DataFactory.randomString()
+            param = MockDataFactory.randomString()
         )
 
         stubMarkup(source, mark)

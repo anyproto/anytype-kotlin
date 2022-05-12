@@ -29,7 +29,7 @@
                 android:layout_marginStart="@dimen/auth_default_margin_start"
                 android:layout_marginTop="22dp"
                 android:layout_marginEnd="@dimen/auth_default_margin_end"
-                android:text="@string/login_with_recovery_phrase"
+                android:text="@string/login"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

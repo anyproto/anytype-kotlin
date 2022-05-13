@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
@@ -50,6 +51,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyZeroInteractions
 
 class HomeDashboardViewModelTest {
@@ -352,7 +354,7 @@ class HomeDashboardViewModelTest {
 
         vm.onAddNewDocumentClicked()
 
-        verify(createPage, times(1)).invoke(any(), any(), any())
+        verifyBlocking(createPage, times(1)) {invoke(any()) }
     }
 
     @Test
@@ -364,6 +366,7 @@ class HomeDashboardViewModelTest {
         stubGetEditorSettings()
         stubCloseDashboard()
         stubCreatePage(id)
+        stubGetTemplates()
         stubGetDefaultObjectType()
 
         vm = buildViewModel()
@@ -376,6 +379,60 @@ class HomeDashboardViewModelTest {
             .assertValue { value ->
                 (value.peekContent() as AppNavigation.Command.OpenObject).id == id
             }
+    }
+
+    @Test
+    fun `should create new object with null template and isDraft true params`() {
+
+        val type = MockDataFactory.randomString()
+
+        stubObserveEvents()
+        stubGetEditorSettings()
+        stubCloseDashboard()
+        stubGetTemplates()
+        stubGetDefaultObjectType(type = type)
+
+        vm = buildViewModel()
+
+        vm.onAddNewDocumentClicked()
+
+        val params = CreatePage.Params(
+            ctx = null,
+            type = type,
+            emoji = null,
+            isDraft = true,
+            template = null
+        )
+
+        verifyBlocking(createPage, times(1)) { invoke(params) }
+    }
+
+    @Test
+    fun `should create new object with non nullable template and isDraft false params`() {
+
+        val templateId = MockDataFactory.randomUuid()
+        val type = MockDataFactory.randomString()
+        val obj = ObjectWrapper.Basic(mapOf("id" to templateId))
+
+        stubObserveEvents()
+        stubGetEditorSettings()
+        stubCloseDashboard()
+        stubGetTemplates(objects = listOf(obj))
+        stubGetDefaultObjectType(type = type)
+
+        vm = buildViewModel()
+
+        vm.onAddNewDocumentClicked()
+
+        val params = CreatePage.Params(
+            ctx = null,
+            type = type,
+            emoji = null,
+            isDraft = false,
+            template = templateId
+        )
+
+        verifyBlocking(createPage, times(1)) { invoke(params) }
     }
 
     private fun stubGetConfig(response: Either.Right<Config>) {
@@ -408,9 +465,7 @@ class HomeDashboardViewModelTest {
 
     private fun stubCreatePage(id: String) {
         createPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Right(id))
-            }
+            onBlocking { invoke(any()) } doReturn Either.Right(id)
         }
     }
 
@@ -448,6 +503,12 @@ class HomeDashboardViewModelTest {
                     dispatcher = any()
                 )
             } doReturn emptyFlow()
+        }
+    }
+
+    private fun stubGetTemplates(objects: List<ObjectWrapper.Basic> = listOf()) {
+        getTemplates.stub {
+            onBlocking { run(any()) } doReturn objects
         }
     }
 }

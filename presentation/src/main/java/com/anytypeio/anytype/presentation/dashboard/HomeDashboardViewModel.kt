@@ -772,12 +772,13 @@ class HomeDashboardViewModel(
                 } catch (e: Exception) {
                     emptyList()
                 }
+                val template = if (templates.size == 1) templates.first().id else null
                 val params = CreatePage.Params(
                     ctx = null,
-                    isDraft = false,
+                    isDraft = template == null,
                     type = type,
                     emoji = null,
-                    template = if (templates.size == 1) templates.first().id else null
+                    template = template
                 )
                 createNewObject(params)
             }
@@ -793,10 +794,10 @@ class HomeDashboardViewModel(
     }
 
     private fun createNewObject(params: CreatePage.Params) {
-        createPage.invoke(viewModelScope, params) { result ->
-            result.either(
-                fnL = { e -> Timber.e(e, "Error while creating a new page") },
-                fnR = { id ->
+        viewModelScope.launch {
+            createPage.invoke(params).proceed(
+                failure = { e -> Timber.e(e, "Error while creating a new page") },
+                success = { id ->
                     machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
                     proceedWithOpeningDocument(id)
                 }

@@ -108,7 +108,9 @@ class KeychainLoginFragment :
     }
 
     private fun startCamera() {
-        IntentIntegrator.forSupportFragment(this).initiateScan()
+        IntentIntegrator.forSupportFragment(this)
+            .setBeepEnabled(false)
+            .initiateScan()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

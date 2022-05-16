@@ -37,8 +37,6 @@ class BlockViewDiffUtil(
         val changes = mutableListOf<Int>()
 
         if (newBlock is BlockView.Title.Basic && oldBlock is BlockView.Title.Basic) {
-            if (newBlock.text != oldBlock.text)
-                changes.add(TEXT_CHANGED)
             if (newBlock.emoji != oldBlock.emoji || newBlock.image != oldBlock.image)
                 changes.add(TITLE_ICON_CHANGED)
             if (newBlock.coverColor != oldBlock.coverColor
@@ -50,8 +48,6 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is BlockView.Title.Todo && oldBlock is BlockView.Title.Todo) {
-            if (newBlock.text != oldBlock.text)
-                changes.add(TEXT_CHANGED)
             if (newBlock.coverColor != oldBlock.coverColor
                 || newBlock.coverGradient != oldBlock.coverGradient
                 || newBlock.coverImage != oldBlock.coverImage
@@ -64,8 +60,6 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is BlockView.Title.Profile && oldBlock is BlockView.Title.Profile) {
-            if (newBlock.text != oldBlock.text)
-                changes.add(TEXT_CHANGED)
             if (newBlock.image != oldBlock.image)
                 changes.add(TITLE_ICON_CHANGED)
             if (newBlock.coverColor != oldBlock.coverColor

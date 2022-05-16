@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
@@ -48,6 +50,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         onCoverClicked: () -> Unit
     ) {
         setImage(item)
+        applyTextColor(item)
+        applyBackground(item)
         setCover(
             coverColor = item.coverColor,
             coverImage = item.coverImage,
@@ -222,6 +226,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     coverGradient = item.coverGradient
                 )
             }
+            if (payload.isBackgroundColorChanged) {
+                applyBackground(item)
+            }
+            if (payload.isTextColorChanged) {
+                applyTextColor(item)
+            }
         }
     }
 
@@ -254,6 +264,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     override fun select(item: BlockView.Selectable) = Unit
+    abstract fun applyTextColor(item: BlockView.Title)
+    abstract fun applyBackground(item: BlockView.Title)
 
     class Document(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
@@ -358,6 +370,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 Timber.e(e, "Could not set emoji icon")
             }
         }
+
+        override fun applyTextColor(item: BlockView.Title) {
+            setTextColor(item.color ?: ThemeColor.DEFAULT.title)
+        }
+
+        override fun applyBackground(item: BlockView.Title) {
+            content.setBlockBackgroundColor(item.backgroundColor)
+        }
     }
 
     class Archive(val binding: ItemBlockTitleBinding) : Title(binding.root) {
@@ -389,6 +409,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 .load(R.drawable.ic_bin_big)
                 .into(image)
         }
+
+        override fun applyTextColor(item: BlockView.Title) {}
+        override fun applyBackground(item: BlockView.Title) {}
     }
 
     class Profile(val binding: ItemBlockTitleProfileBinding) : Title(binding.root) {
@@ -469,6 +492,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 }
             }
         }
+
+        override fun applyTextColor(item: BlockView.Title) {}
+        override fun applyBackground(item: BlockView.Title) {}
     }
 
     class Todo(val binding: ItemBlockTitleTodoBinding) : Title(binding.root) {
@@ -527,6 +553,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     }
                 }
             }
+        }
+
+        override fun applyTextColor(item: BlockView.Title) {
+            setTextColor(item.color ?: ThemeColor.DEFAULT.title)
+        }
+        override fun applyBackground(item: BlockView.Title) {
+            binding.titleContainer.setBlockBackgroundColor(item.backgroundColor)
         }
     }
 }

@@ -477,13 +477,15 @@ sealed class BlockView : ViewType {
         override fun getViewType(): Int = HOLDER_DESCRIPTION
     }
 
-    sealed class Title : BlockView(), Focusable, Cursor, Permission {
+    sealed class Title : BlockView(), TextSupport, Focusable, Cursor, Permission {
 
         abstract val image: String?
-        abstract var text: String?
+        abstract override var text: String
         abstract var coverColor: CoverColor?
         abstract var coverImage: Url?
         abstract var coverGradient: String?
+        abstract override val color: String?
+        abstract override val backgroundColor: String?
 
         val hasCover get() = coverColor != null || coverImage != null || coverGradient != null
 
@@ -495,10 +497,12 @@ sealed class BlockView : ViewType {
         data class Basic(
             override val id: String,
             override var isFocused: Boolean = false,
-            override var text: String? = null,
+            override var text: String,
             override var coverColor: CoverColor? = null,
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
+            override val backgroundColor: String? = null,
+            override val color: String? = null,
             val emoji: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
@@ -517,10 +521,12 @@ sealed class BlockView : ViewType {
         data class Profile(
             override val id: String,
             override var isFocused: Boolean = false,
-            override var text: String? = null,
+            override var text: String,
             override var coverColor: CoverColor? = null,
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
+            override val backgroundColor: String? = null,
+            override val color: String? = null,
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
@@ -537,11 +543,13 @@ sealed class BlockView : ViewType {
         data class Todo(
             override val id: String,
             override var isFocused: Boolean = false,
-            override var text: String? = null,
+            override var text: String,
             override val image: String? = null,
             override var coverColor: CoverColor? = null,
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
+            override val backgroundColor: String? = null,
+            override val color: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
@@ -559,11 +567,13 @@ sealed class BlockView : ViewType {
         data class Archive(
             override val id: String,
             override var isFocused: Boolean = false,
-            override var text: String?,
+            override var text: String,
             override val image: String? = null,
             override var coverColor: CoverColor? = null,
             override var coverImage: Url? = null,
             override var coverGradient: String? = null,
+            override val backgroundColor: String? = null,
+            override val color: String? = null,
             override val mode: Mode = Mode.READ,
             override var cursor: Int? = null
         ) : Title() {

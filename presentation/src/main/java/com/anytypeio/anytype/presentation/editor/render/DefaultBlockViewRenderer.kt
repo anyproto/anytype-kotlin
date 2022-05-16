@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.ext.textColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
@@ -69,7 +70,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         BlockView.Title.Archive(
                             mode = BlockView.Mode.READ,
                             id = anchor,
-                            text = details.details[root.id]?.name
+                            text = details.details[root.id]?.name.orEmpty()
                         )
                     )
                 }
@@ -1187,6 +1188,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverColor = coverColor,
                     coverImage = coverImage,
                     coverGradient = coverGradient,
+                    backgroundColor = block.backgroundColor,
+                    color = block.textColor()
                 )
             }
             ObjectType.Layout.TODO -> {
@@ -1199,7 +1202,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverColor = coverColor,
                     coverImage = coverImage,
                     coverGradient = coverGradient,
-                    isChecked = content.isChecked == true
+                    isChecked = content.isChecked == true,
+                    backgroundColor = block.backgroundColor,
+                    color = block.textColor()
                 )
             }
             ObjectType.Layout.PROFILE -> {
@@ -1217,7 +1222,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     cursor = cursor,
                     coverColor = coverColor,
                     coverImage = coverImage,
-                    coverGradient = coverGradient
+                    coverGradient = coverGradient,
+                    backgroundColor = block.backgroundColor,
+                    color = block.textColor()
                 )
             }
             ObjectType.Layout.FILE, ObjectType.Layout.IMAGE -> {
@@ -1242,7 +1249,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     cursor = cursor,
                     coverColor = coverColor,
                     coverImage = coverImage,
-                    coverGradient = coverGradient
+                    coverGradient = coverGradient,
+                    backgroundColor = block.backgroundColor,
+                    color = block.textColor()
                 )
             }
             else -> throw IllegalStateException("Unexpected layout: $layout")

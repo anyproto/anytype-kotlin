@@ -78,6 +78,7 @@ dependencies {
     testImplementation acceptanceTesting.fragmentTesting
     testImplementation project(':test:android-utils')
     testImplementation project(':test:utils')
+    testImplementation project(":test:core-models-stub")
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.robolectricLatest

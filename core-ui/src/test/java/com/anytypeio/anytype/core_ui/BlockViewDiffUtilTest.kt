@@ -1382,4 +1382,132 @@ class BlockViewDiffUtilTest {
             actual = payload
         )
     }
+
+    @Test
+    fun `should return text change payload for title basic`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+        val newText = MockDataFactory.randomString()
+
+        val oldBlock: BlockView = BlockView.Title.Basic(
+            id = id,
+            text = MockDataFactory.randomString()
+        )
+
+        val newBlock: BlockView = BlockView.Title.Basic(
+            id = id,
+            text = newText
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = Payload(listOf(TEXT_CHANGED))
+        )
+    }
+
+    @Test
+    fun `should return text change payload for title todo`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+        val newText = MockDataFactory.randomString()
+
+        val oldBlock: BlockView = BlockView.Title.Todo(
+            id = id,
+            text = MockDataFactory.randomString()
+        )
+
+        val newBlock: BlockView = BlockView.Title.Todo(
+            id = id,
+            text = newText
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = Payload(listOf(TEXT_CHANGED))
+        )
+    }
+
+    @Test
+    fun `should return text change payload for title profile`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+        val newText = MockDataFactory.randomString()
+
+        val oldBlock: BlockView = BlockView.Title.Profile(
+            id = id,
+            text = MockDataFactory.randomString()
+        )
+
+        val newBlock: BlockView = BlockView.Title.Profile(
+            id = id,
+            text = newText
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = Payload(listOf(TEXT_CHANGED))
+        )
+    }
+
+    @Test
+    fun `should return text change payload for title archive`() {
+
+        val index = 0
+
+        val id = MockDataFactory.randomUuid()
+        val newText = MockDataFactory.randomString()
+
+        val oldBlock: BlockView = BlockView.Title.Archive(
+            id = id,
+            text = MockDataFactory.randomString()
+        )
+
+        val newBlock: BlockView = BlockView.Title.Archive(
+            id = id,
+            text = newText
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = Payload(listOf(TEXT_CHANGED))
+        )
+    }
 }

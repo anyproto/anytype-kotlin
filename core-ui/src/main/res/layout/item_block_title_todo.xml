@@ -52,9 +52,9 @@
         android:id="@+id/titleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:paddingStart="20dp"
         android:layout_marginTop="@dimen/space_between_header_container_and_title"
-        android:layout_marginEnd="20dp"
+        android:paddingEnd="20dp"
         android:orientation="horizontal">
 
         <View

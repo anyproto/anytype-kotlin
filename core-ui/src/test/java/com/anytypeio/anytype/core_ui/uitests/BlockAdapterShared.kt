@@ -54,10 +54,11 @@ fun givenAdapter(
         onSlashEvent = {},
         onKeyPressedEvent = {},
         onDragListener = EditorDragAndDropListener(
-            onDragEnded = {},
+            onDragEnded = { _, _ -> },
             onDragExited = {},
             onDragLocation = { _, _ -> },
-            onDrop = { _, _ -> }
+            onDrop = { _, _ -> },
+            onDragStart = {}
         ),
         onDragAndDropTrigger = { _, _ -> false },
         dragAndDropSelector = DragAndDropAdapterDelegate(),

@@ -18,15 +18,19 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
+import kotlin.math.abs
 import kotlin.math.min
 
 
 class EditorDragAndDropListener(
     val onDragLocation: (v: View, ratio: Float) -> Unit,
     val onDrop: (v: View, event: DragEvent) -> Unit,
-    val onDragEnded: (v: View) -> Unit,
-    val onDragExited: (v: View) -> Unit
+    val onDragEnded: (v: View, isMoved: Boolean) -> Unit,
+    val onDragExited: (v: View) -> Unit,
+    val onDragStart: () -> Unit
 ) : View.OnDragListener {
+
+    private var isMoved = false
 
     override fun onDrag(v: View, event: DragEvent): Boolean {
         when (event.action) {
@@ -35,6 +39,7 @@ class EditorDragAndDropListener(
                 onDragLocation(v, ratio)
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
+                isMoved = true
                 val ratio = event.y / v.height
                 onDragLocation(v, ratio)
             }
@@ -45,7 +50,11 @@ class EditorDragAndDropListener(
                 onDrop(v, event)
             }
             DragEvent.ACTION_DRAG_ENDED -> {
-                onDragEnded(v)
+                onDragEnded(v, isMoved)
+            }
+            DragEvent.ACTION_DRAG_STARTED -> {
+                onDragStart()
+                isMoved = false
             }
         }
         return true
@@ -123,9 +132,9 @@ open class DragSmoothShadowBuilder(
             val startX = point[0]
             val startY = point[1]
             val shadowTouchX =
-                if (touchX == 0f) outShadowSize.x / 2f else (touchX - startX) * scale + viewWidthPaddingValue
+                if (touchX == 0f) outShadowSize.x / 2f else abs((touchX - startX) * scale + viewWidthPaddingValue)
             val shadowTouchY =
-                if (touchX == 0f) outShadowSize.y / 2f else (touchY - startY) * scale + viewHeightPaddingValue
+                if (touchX == 0f) outShadowSize.y / 2f else abs((touchY - startY) * scale + viewHeightPaddingValue)
             outShadowTouchPoint.set(shadowTouchX.toInt(), shadowTouchY.toInt())
         }
     }

@@ -4,18 +4,15 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
-import android.content.ClipDescription
 import android.content.Intent
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewPropertyAnimator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -50,7 +47,6 @@ import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.getFirstLinkOrObjectMarkupParam
@@ -59,19 +55,8 @@ import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.DefaultEditorDragShadow
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
-import com.anytypeio.anytype.core_ui.features.editor.DragAndDropConfig
-import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
-import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
-import com.anytypeio.anytype.core_ui.features.editor.TextInputDragShadow
 import com.anytypeio.anytype.core_ui.features.editor.TurnIntoActionReceiver
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
-import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
-import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
-import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
@@ -120,7 +105,6 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
@@ -171,12 +155,10 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
-import kotlin.ranges.contains
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
@@ -326,12 +308,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onBackPressedCallback = { vm.onBackPressedCallback() },
             onKeyPressedEvent = vm::onKeyPressedEvent,
             onDragAndDropTrigger = { vh: RecyclerView.ViewHolder, event: MotionEvent? ->
-                handleDragAndDropTrigger(
-                    vh,
-                    event
-                )
+                dndDelegate.handleDragAndDropTrigger(vh, event)
             },
-            onDragListener = dndListener,
+            onDragListener = dndDelegate.dndListener,
             lifecycle = lifecycle,
             dragAndDropSelector = DragAndDropAdapterDelegate()
         )
@@ -420,6 +399,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private val pickerDelegate = PickerDelegate.Impl(this as BaseFragment<ViewBinding>)
+    private val dndDelegate = DragAndDropDelegate()
 
     @Inject
     lateinit var factory: EditorViewModelFactory
@@ -507,7 +487,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         setupWindowInsetAnimation()
 
-        binding.recycler.setOnDragListener(dndListener)
+        dndDelegate.init(blockAdapter, vm, this)
         binding.recycler.addOnItemTouchListener(
             OutsideClickDetector(vm::onOutsideClicked)
         )
@@ -2017,530 +1997,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    //region Drag-and-drop UI logic.
-
-    private var dndTargetPos = -1
-    private var dndTargetPrevious: Pair<Float, Int>? = null
-
-    var dndTargetLineAnimator: ViewPropertyAnimator? = null
-
-    private var scrollDownJob: Job? = null
-    private var scrollUpJob: Job? = null
-
-    private val dndListener: EditorDragAndDropListener by lazy {
-        EditorDragAndDropListener(
-            onDragLocation = { target, ratio ->
-                handleDragging(target, ratio)
-            },
-            onDrop = { target, event ->
-                binding.recycler.itemAnimator = DefaultItemAnimator()
-                proceedWithDropping(target, event)
-                binding.recycler.postDelayed({
-                    binding.recycler.itemAnimator = null
-                }, RECYCLER_DND_ANIMATION_RELAXATION_TIME)
-            },
-            onDragExited = {
-                it.isSelected = false
-            },
-            onDragEnded = {
-                binding.dndTargetLine.invisible()
-                blockAdapter.unSelectDraggedViewHolder()
-                blockAdapter.notifyItemChanged(dndTargetPos)
-                stopScrollDownJob()
-                stopScrollUpJob()
-
-            }
-        )
-    }
-
-    private fun handleDragAndDropTrigger(
-        vh: RecyclerView.ViewHolder,
-        event: MotionEvent?
-    ): Boolean {
-        if (vm.mode is Editor.Mode.Edit) {
-            if (vh is BlockViewHolder.DragAndDropHolder && binding.recycler.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
-                dndTargetPos = vh.bindingAdapterPosition
-                if (vh is Video) {
-                    vh.pause()
-                }
-
-                val item = ClipData.Item(EMPTY_TEXT)
-
-                val dragData = ClipData(
-                    DRAG_AND_DROP_LABEL,
-                    arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                    item
-                )
-
-                val shadow = when (vh) {
-                    is Text -> TextInputDragShadow(vh.content.id, vh.itemView, event)
-                    is Code -> TextInputDragShadow(vh.content.id, vh.itemView, event)
-                    else -> DefaultEditorDragShadow(vh.itemView, event)
-                }
-                vh.itemView.startDragAndDrop(
-                    dragData,
-                    shadow,
-                    null,
-                    0
-                )
-                blockAdapter.selectDraggedViewHolder(dndTargetPos)
-                blockAdapter.notifyItemChanged(dndTargetPos)
-            }
-        } else {
-            val pos = vh.bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                vm.onClickListener(
-                    ListenerType.LongClick(vm.views[pos].id, BlockDimensions())
-                )
-            }
-        }
-        return true
-    }
-
-    private fun handleDragging(target: View, ratio: Float) {
-        val vh = binding.recycler.findContainingViewHolder(target)
-        if (vh != null) {
-            if (vh.bindingAdapterPosition != dndTargetPos) {
-                if (vh is SupportNesting) {
-                    when (ratio) {
-                        in DragAndDropConfig.topRange -> {
-                            target.isSelected = false
-                            if (handleDragAbove(vh, ratio))
-                                return
-                        }
-                        in DragAndDropConfig.middleRange -> {
-                            target.isSelected = true
-                            handleDragInside(vh)
-                        }
-                        in DragAndDropConfig.bottomRange -> {
-                            target.isSelected = false
-                            if (handleDragBelow(vh, ratio))
-                                return
-                        }
-                    }
-                } else {
-                    when (ratio) {
-                        in DragAndDropConfig.topHalfRange -> {
-                            if (vh is FeaturedRelationListViewHolder) {
-                                binding.dndTargetLine.invisible()
-                            } else if (vh is Title) {
-                                binding.dndTargetLine.invisible()
-                            } else {
-                                if (handleDragAbove(vh, ratio))
-                                    return
-                            }
-                        }
-                        in DragAndDropConfig.bottomHalfRange -> {
-                            if (handleDragBelow(vh, ratio))
-                                return
-                        }
-                    }
-                }
-            }
-
-            handleScrollingWhileDragging(vh, ratio)
-            dndTargetPrevious = Pair(ratio, vh.bindingAdapterPosition)
-        }
-    }
-
-    private fun handleScrollingWhileDragging(
-        vh: RecyclerView.ViewHolder,
-        ratio: Float
-    ) {
-
-        val targetViewPosition = IntArray(2)
-        vh.itemView.getLocationOnScreen(targetViewPosition)
-        val targetViewY = targetViewPosition[1]
-
-        val targetY = targetViewY + (vh.itemView.height * ratio)
-
-        // Checking whether the touch is at the bottom of the screen.
-
-        if (screen.y - targetY < 200) {
-            if (scrollDownJob == null) {
-                startScrollingDown()
-            }
-        } else {
-            stopScrollDownJob()
-        }
-
-        // Checking whether the touch is at the top of the screen.
-
-        if (targetY < 200) {
-            if (scrollUpJob == null) {
-                startScrollingUp()
-            }
-        } else {
-            stopScrollUpJob()
-        }
-    }
-
-    private fun startScrollingDown() {
-        scrollDownJob = lifecycleScope.launch {
-            while (isActive) {
-                binding.recycler.smoothScrollBy(0, 350)
-                delay(60)
-            }
-        }
-    }
-
-    private fun startScrollingUp() {
-        scrollUpJob = lifecycleScope.launch {
-            while (isActive) {
-                binding.recycler.smoothScrollBy(0, -350)
-                delay(60)
-            }
-        }
-    }
-
-    private fun handleDragBelow(
-        vh: RecyclerView.ViewHolder,
-        ratio: Float
-    ): Boolean {
-        val currPos = vh.bindingAdapterPosition
-        val prev = dndTargetPrevious
-        if (prev != null) {
-            val (prevRatio, prevPosition) = prev
-            if (vh.bindingAdapterPosition.inc() == prevPosition && prevRatio in DragAndDropConfig.topRange) {
-                Timber.d("dnd skipped: prev - $prev, curr: pos ${vh.bindingAdapterPosition}, $ratio")
-                val previousTarget = blockAdapter.views[prevPosition]
-                val currentTarget = blockAdapter.views[currPos]
-                if (previousTarget is BlockView.Indentable && currentTarget is BlockView.Indentable) {
-                    if (previousTarget.indent == currentTarget.indent)
-                        return true
-                } else {
-                    return true
-                }
-            } else {
-                Timber.d("dnd not skipped: prev - $prev, curr: pos ${vh.bindingAdapterPosition}, $ratio")
-            }
-        } else {
-            Timber.d("dnd prev was null")
-        }
-
-        var indent = 0
-
-        val block = blockAdapter.views[vh.bindingAdapterPosition]
-
-        if (block is BlockView.Indentable) {
-            indent = block.indent * dimen(R.dimen.indent)
-        }
-
-        if (binding.dndTargetLine.isVisible) {
-            dndTargetLineAnimator?.cancel()
-            dndTargetLineAnimator = binding.dndTargetLine
-                .animate()
-                .setInterpolator(DecelerateInterpolator())
-                .translationY(vh.itemView.bottom.toFloat())
-                .translationX(indent.toFloat())
-                .setDuration(75)
-            dndTargetLineAnimator?.start()
-        } else {
-            binding.dndTargetLine.translationY = vh.itemView.bottom.toFloat()
-            binding.dndTargetLine.translationX = indent.toFloat()
-            binding.dndTargetLine.visible()
-        }
-
-        return false
-    }
-
-    private fun handleDragInside(vh: RecyclerView.ViewHolder) {
-        dndTargetLineAnimator?.cancel()
-        binding.dndTargetLine.invisible()
-    }
-
-    private fun handleDragAbove(
-        vh: RecyclerView.ViewHolder,
-        ratio: Float
-    ): Boolean {
-        val currPos = vh.bindingAdapterPosition
-        val prev = dndTargetPrevious
-        if (prev != null) {
-            val (prevRatio, prevPosition) = prev
-            if (currPos == prevPosition.inc() && prevRatio in DragAndDropConfig.bottomRange) {
-                Timber.d("dnd skipped: prev - $prev, curr: pos ${vh.bindingAdapterPosition}, $ratio")
-                val previousTarget = blockAdapter.views[prevPosition]
-                val currentTarget = blockAdapter.views[currPos]
-                if (previousTarget is BlockView.Indentable && currentTarget is BlockView.Indentable) {
-                    if (previousTarget.indent == currentTarget.indent)
-                        return true
-                } else {
-                    return true
-                }
-            } else {
-                Timber.d("dnd not skipped: prev - $prev, curr: pos ${vh.bindingAdapterPosition}, $ratio")
-            }
-        } else {
-            Timber.d("dnd prev was null")
-        }
-
-        var indent = 0
-
-        val block = blockAdapter.views[vh.bindingAdapterPosition]
-
-        if (block is BlockView.Indentable) {
-            indent = block.indent * dimen(R.dimen.indent)
-        }
-
-        if (binding.dndTargetLine.isVisible) {
-            dndTargetLineAnimator?.cancel()
-            dndTargetLineAnimator = binding.dndTargetLine
-                .animate()
-                .setInterpolator(DecelerateInterpolator())
-                .translationY(vh.itemView.top.toFloat())
-                .translationX(indent.toFloat())
-                .setDuration(75)
-            dndTargetLineAnimator?.start()
-        } else {
-            binding.dndTargetLine.translationY = vh.itemView.top.toFloat()
-            binding.dndTargetLine.translationX = indent.toFloat()
-            binding.dndTargetLine.visible()
-        }
-
-        return false
-    }
-
-    private class DropContainer(
-        val vh: RecyclerView.ViewHolder?,
-        val ratio: Float
-    )
-
-    private fun checkIfDroppedBeforeFirstVisibleItem(
-        manager: LinearLayoutManager,
-        touchY: Float
-    ): DropContainer? {
-        manager.findFirstCompletelyVisibleItemPosition().let { first ->
-            if (first != RecyclerView.NO_POSITION) {
-                manager.findViewByPosition(first)?.let { view ->
-                    val point = IntArray(2)
-                    view.getLocationOnScreen(point)
-                    if (touchY < point[1]) {
-                        return DropContainer(
-                            binding.recycler.findContainingViewHolder(view),
-                            TOP_RATIO
-                        )
-                    }
-                }
-            }
-        }
-        return null
-    }
-
-    private fun checkIfDroppedAfterLastVisibleItem(
-        manager: LinearLayoutManager,
-        touchY: Float
-    ): DropContainer? {
-        manager.findLastCompletelyVisibleItemPosition().let { last ->
-            if (last != RecyclerView.NO_POSITION) {
-                manager.findViewByPosition(last)?.let { view ->
-                    val point = IntArray(2)
-                    view.getLocationOnScreen(point)
-                    if (touchY > point[1]) {
-                        return DropContainer(
-                            binding.recycler.findContainingViewHolder(view),
-                            BOTTOM_RATIO
-                        )
-                    }
-                }
-            }
-        }
-        return null
-    }
-
-    private fun calculateBottomClosestView(
-        manager: LinearLayoutManager,
-        start: Int,
-        end: Int,
-        touchY: Float
-    ): View? {
-        var closestBottomView: View? = null
-        var closestBottomViewDistance = Int.MAX_VALUE
-
-        for (i in start..end) {
-            manager.findViewByPosition(i)?.let { view ->
-                val point = IntArray(2)
-                view.getLocationOnScreen(point)
-                val height = view.height
-                if (touchY <= point[1] + height) {
-                    val newLastDiff = (point[1] - touchY).toInt()
-                    if (newLastDiff < closestBottomViewDistance) {
-                        closestBottomViewDistance = newLastDiff
-                        closestBottomView = view
-                    }
-                }
-            }
-        }
-        return closestBottomView
-    }
-
-    private fun calculateTopClosestView(
-        manager: LinearLayoutManager,
-        start: Int,
-        end: Int,
-        touchY: Float
-    ): View? {
-        var closestTopView: View? = null
-        var closestTopViewDistance = Int.MAX_VALUE
-        for (i in start..end) {
-            manager.findViewByPosition(i)?.let { view ->
-                val point = IntArray(2)
-                view.getLocationOnScreen(point)
-                val height = view.height
-                if (touchY > point[1] + height) {
-                    val newLastDiff = (touchY - point[1] - height).toInt()
-                    if (newLastDiff < closestTopViewDistance) {
-                        closestTopViewDistance = newLastDiff
-                        closestTopView = view
-                    }
-                }
-            }
-        }
-        return closestTopView
-    }
-
-    private fun calculateDropContainer(touchY: Float): DropContainer {
-        val point = IntArray(2)
-        binding.recycler.getLocationOnScreen(point)
-        val touchY = point[1] + touchY
-
-        val manager = (binding.recycler.layoutManager as LinearLayoutManager)
-        checkIfDroppedBeforeFirstVisibleItem(manager, touchY)?.let {
-            return it
-        }
-        checkIfDroppedAfterLastVisibleItem(manager, touchY)?.let {
-            return it
-        }
-
-        val start = manager.findFirstCompletelyVisibleItemPosition()
-        val end = manager.findLastCompletelyVisibleItemPosition()
-
-        val bottomClosestView =
-            calculateBottomClosestView(manager, start, end, touchY) ?: return DropContainer(
-                null,
-                0f
-            )
-        val topClosestView = calculateTopClosestView(manager, start, end, touchY)
-            ?: return DropContainer(null, 0f)
-
-        return getClosestViewToLine(topClosestView, bottomClosestView)
-    }
-
-    private fun getClosestViewToLine(
-        topView: View,
-        bottomView: View
-    ): DropContainer {
-
-        val dndMiddle = kotlin.run {
-            val point = IntArray(2)
-            binding.dndTargetLine.getLocationOnScreen(point)
-            point[1] + binding.dndTargetLine.height / 2f
-        }
-
-        val topViewDistance = kotlin.run {
-            val point = IntArray(2)
-            topView.getLocationOnScreen(point)
-            dndMiddle - point[1] - topView.height
-        }
-
-        val bottomViewDistance = kotlin.run {
-            val point = IntArray(2)
-            bottomView.getLocationOnScreen(point)
-            point[1] - dndMiddle
-        }
-
-        return if (topViewDistance > bottomViewDistance) {
-            DropContainer(binding.recycler.findContainingViewHolder(bottomView), TOP_RATIO)
-        } else {
-            DropContainer(binding.recycler.findContainingViewHolder(topView), BOTTOM_RATIO)
-        }
-    }
-
-    private fun resolveDropContainer(target: View, event: DragEvent): DropContainer {
-        return if (target == binding.recycler) {
-            calculateDropContainer(event.y)
-        } else {
-            val vh = binding.recycler.findContainingViewHolder(target)
-            if (vh != null) {
-                DropContainer(vh, event.y / vh.itemView.height)
-            } else {
-                DropContainer(null, 0f)
-            }
-        }
-    }
-
-    private fun proceedWithDropping(target: View, event: DragEvent) {
-        binding.dndTargetLine.invisible()
-
-        val dropContainer = resolveDropContainer(target, event)
-        val vh = dropContainer.vh
-        val ratio = dropContainer.ratio
-
-        if (vh != null) {
-            if (vh.bindingAdapterPosition != dndTargetPos) {
-                target.isSelected = false
-                if (vh is SupportNesting) {
-                    when (ratio) {
-                        in DragAndDropConfig.topRange -> {
-                            vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
-                                position = Position.TOP
-                            )
-                        }
-                        in DragAndDropConfig.middleRange -> {
-                            vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
-                                position = Position.INNER
-                            )
-                        }
-                        in DragAndDropConfig.bottomRange -> {
-                            try {
-                                vm.onDragAndDrop(
-                                    dragged = blockAdapter.views[dndTargetPos].id,
-                                    target = blockAdapter.views[vh.bindingAdapterPosition].id,
-                                    position = Position.BOTTOM
-                                )
-                            } catch (e: Exception) {
-                                toast("Failed to drop. Please, try again later.")
-                            }
-                        }
-                        else -> toast("drop skipped, scenario 1")
-                    }
-                } else {
-                    when (ratio) {
-                        in DragAndDropConfig.topHalfRange -> {
-                            vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
-                                position = Position.TOP
-                            )
-                        }
-                        in DragAndDropConfig.bottomHalfRange -> {
-                            vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
-                                position = Position.BOTTOM
-                            )
-                        }
-                        else -> toast("drop skipped, scenario 2")
-                    }
-                }
-            }
-        } else {
-            toast("view holder not found")
-        }
-    }
-
-    private fun stopScrollDownJob() {
-        scrollDownJob?.cancel()
-        scrollDownJob = null
-    }
-
-    private fun stopScrollUpJob() {
-        scrollUpJob?.cancel()
-        scrollUpJob = null
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
@@ -2593,7 +2049,3 @@ interface OnFragmentInteractionListener {
     fun onSetWebLink(uri: String)
     fun onCreateObject(name: String)
 }
-
-private const val RECYCLER_DND_ANIMATION_RELAXATION_TIME = 500L
-private const val TOP_RATIO = 0.1f
-private const val BOTTOM_RATIO = 0.9f

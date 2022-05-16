@@ -398,10 +398,11 @@ class BlockAdapterCursorBindingTest {
             onDescriptionChanged = {},
             onTitleCheckboxClicked = {},
             onDragListener = EditorDragAndDropListener(
-                onDragEnded = {},
+                onDragEnded = { _, _ -> },
                 onDragExited = {},
-                onDragLocation = { _,_ -> },
-                onDrop = { _,_ -> }
+                onDragLocation = { _, _ -> },
+                onDrop = { _, _ -> },
+                onDragStart = {}
             ),
             dragAndDropSelector = DragAndDropAdapterDelegate(),
             lifecycle = object : Lifecycle() {

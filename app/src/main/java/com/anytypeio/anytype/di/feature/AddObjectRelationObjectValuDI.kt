@@ -4,29 +4,29 @@ import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
+import com.anytypeio.anytype.presentation.relations.add.AddObjectRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.ui.relations.RelationObjectValueAddFragment
+import com.anytypeio.anytype.ui.relations.add.AddObjectRelationFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
-@Subcomponent(modules = [AddObjectRelationObjectValueModule::class])
+@Subcomponent(modules = [AddObjectRelationModule::class])
 @PerDialog
-interface AddObjectRelationObjectValueSubComponent {
+interface AddObjectRelationSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: AddObjectRelationObjectValueModule): Builder
-        fun build(): AddObjectRelationObjectValueSubComponent
+        fun module(module: AddObjectRelationModule): Builder
+        fun build(): AddObjectRelationSubComponent
     }
 
-    fun inject(fragment: RelationObjectValueAddFragment)
+    fun inject(fragment: AddObjectRelationFragment)
 }
 
 @Module
-object AddObjectRelationObjectValueModule {
+object AddObjectRelationModule {
 
     @JvmStatic
     @Provides
@@ -37,8 +37,8 @@ object AddObjectRelationObjectValueModule {
         objectTypesProvider: ObjectTypesProvider,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder
-    ): RelationObjectValueAddViewModel.Factory =
-        RelationObjectValueAddViewModel.Factory(
+    ): AddObjectRelationViewModel.Factory =
+        AddObjectRelationViewModel.Factory(
             relations, values, searchObjects, urlBuilder, objectTypesProvider
         )
 }

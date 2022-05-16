@@ -1,7 +1,11 @@
-package com.anytypeio.anytype.ui.relations
+package com.anytypeio.anytype.ui.relations.add
 
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -12,23 +16,29 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationObjectValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.databinding.FragmentRelationObjectValueAddBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.ObjectValueAddCommand
-import com.anytypeio.anytype.presentation.relations.ObjectValueAddView
-import com.anytypeio.anytype.presentation.relations.RelationObjectValueAddViewModel
+import com.anytypeio.anytype.presentation.relations.add.AddObjectRelationViewModel
+import com.anytypeio.anytype.presentation.relations.add.ObjectValueAddCommand
+import com.anytypeio.anytype.presentation.relations.add.ObjectValueAddView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 
-class RelationObjectValueAddFragment : BaseDialogFragment<FragmentRelationObjectValueAddBinding>() {
+class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValueAddBinding>() {
 
     private val behavior get() = BottomSheetBehavior.from(binding.sheet)
 
     @Inject
-    lateinit var factory: RelationObjectValueAddViewModel.Factory
-    val vm: RelationObjectValueAddViewModel by viewModels { factory }
+    lateinit var factory: AddObjectRelationViewModel.Factory
+    val vm: AddObjectRelationViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
@@ -179,7 +189,7 @@ class RelationObjectValueAddFragment : BaseDialogFragment<FragmentRelationObject
             relationId: Id,
             types: List<Id>,
             flow: Int = FLOW_DEFAULT
-        ) = RelationObjectValueAddFragment().apply {
+        ) = AddObjectRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,

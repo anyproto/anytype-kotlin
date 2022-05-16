@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.di.common
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.di.feature.AddObjectRelationObjectValueModule
+import com.anytypeio.anytype.di.feature.AddFileRelationModule
+import com.anytypeio.anytype.di.feature.AddObjectRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.ArchiveModule
 import com.anytypeio.anytype.di.feature.AuthModule
@@ -46,7 +47,6 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
 import com.anytypeio.anytype.di.feature.OtherSettingsModule
 import com.anytypeio.anytype.di.feature.PageNavigationModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
-import com.anytypeio.anytype.di.feature.RelationFileValueAddModule
 import com.anytypeio.anytype.di.feature.RelationTextValueModule
 import com.anytypeio.anytype.di.feature.SelectAccountModule
 import com.anytypeio.anytype.di.feature.SelectCoverObjectModule
@@ -463,7 +463,7 @@ class ComponentManager(
         objectSetObjectRelationValueComponent
             .get(ctx)
             .addObjectRelationObjectValueComponent()
-            .module(AddObjectRelationObjectValueModule)
+            .module(AddObjectRelationModule)
             .build()
     }
 
@@ -471,7 +471,7 @@ class ComponentManager(
         objectObjectRelationValueComponent
             .get(ctx)
             .addObjectRelationObjectValueComponent()
-            .module(AddObjectRelationObjectValueModule)
+            .module(AddObjectRelationModule)
             .build()
     }
 
@@ -479,7 +479,7 @@ class ComponentManager(
         objectObjectRelationValueComponent
             .get(ctx)
             .addRelationFileValueAddComponent()
-            .module(RelationFileValueAddModule)
+            .module(AddFileRelationModule)
             .build()
     }
 
@@ -487,7 +487,7 @@ class ComponentManager(
         objectSetObjectRelationValueComponent
             .get(ctx)
             .addRelationFileValueAddComponent()
-            .module(RelationFileValueAddModule)
+            .module(AddFileRelationModule)
             .build()
     }
 

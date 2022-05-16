@@ -6,8 +6,9 @@ import com.anytypeio.anytype.core_models.StubRelation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-internal object FakeObjectRelationProvider : ObjectRelationProvider {
-    internal var relation: Relation = StubRelation()
+internal class FakeObjectRelationProvider(
+    var relation: Relation = StubRelation()
+) : ObjectRelationProvider {
 
     override fun get(relation: Id): Relation {
         return this.relation

@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.features.relations
 
-import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
-import com.anytypeio.anytype.ui.relations.RelationOptionValueDVAddFragment
+import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
+import com.anytypeio.anytype.ui.relations.add.AddOptionsRelationDVFragment
 
-class TestRelationOptionValueDVAddFragment : RelationOptionValueDVAddFragment() {
+class TestRelationOptionValueDVAddFragment : AddOptionsRelationDVFragment() {
     init {
         factory = testVmFactory
     }
@@ -12,6 +12,6 @@ class TestRelationOptionValueDVAddFragment : RelationOptionValueDVAddFragment() 
     override fun releaseDependencies() {}
 
     companion object {
-        lateinit var testVmFactory: RelationOptionValueDVAddViewModel.Factory
+        lateinit var testVmFactory: AddOptionsRelationDVViewModel.Factory
     }
 }

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.relations
+package com.anytypeio.anytype.presentation.relations.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -6,36 +6,29 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
 import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
+import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class RelationOptionValueDVAddViewModel(
-    details: ObjectDetailProvider,
-    types: ObjectTypesProvider,
-    urlBuilder: UrlBuilder,
+class AddOptionsRelationDVViewModel(
     values: ObjectValueProvider,
     relations: ObjectRelationProvider,
+    optionsProvider: AddOptionsRelationProvider,
     private val addDataViewRelationOption: AddDataViewRelationOption,
     private val addTagToDataViewRecord: AddTagToDataViewRecord,
     private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
     private val dispatcher: Dispatcher<Payload>,
-) : AddObjectRelationValueViewModel(
-    details = details,
+) : BaseAddOptionsRelationViewModel(
     values = values,
-    types = types,
-    urlBuilder = urlBuilder,
     relations = relations,
+    optionsProvider = optionsProvider
 ) {
 
     fun onCreateDataViewRelationOptionClicked(
@@ -96,7 +89,7 @@ class RelationOptionValueDVAddViewModel(
         viewer: Id,
         relation: Id,
         obj: Id,
-        status: RelationValueBaseViewModel.RelationValueView.Status
+        status: RelationValueView.Option.Status
     ) {
         proceedWithAddingStatusToDataViewRecord(ctx, dataview, viewer, relation, obj, status.id)
     }
@@ -134,8 +127,8 @@ class RelationOptionValueDVAddViewModel(
         relation: Id,
         viewer: Id
     ) {
-        val tags = views.value.mapNotNull { view ->
-            if (view is RelationValueBaseViewModel.RelationValueView.Tag && view.isSelected == true)
+        val tags = choosingRelationOptions.value.mapNotNull { view ->
+            if (view is RelationValueView.Option.Tag && view.isSelected)
                 view.id
             else
                 null
@@ -179,27 +172,23 @@ class RelationOptionValueDVAddViewModel(
 
     class Factory(
         private val values: ObjectValueProvider,
-        private val details: ObjectDetailProvider,
         private val relations: ObjectRelationProvider,
-        private val types: ObjectTypesProvider,
         private val addDataViewRelationOption: AddDataViewRelationOption,
         private val addTagToDataViewRecord: AddTagToDataViewRecord,
         private val addStatusToDataViewRecord: AddStatusToDataViewRecord,
-        private val urlBuilder: UrlBuilder,
         private val dispatcher: Dispatcher<Payload>,
+        private val optionsProvider: AddOptionsRelationProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return RelationOptionValueDVAddViewModel(
-                details = details,
+            return AddOptionsRelationDVViewModel(
                 values = values,
                 relations = relations,
-                types = types,
-                urlBuilder = urlBuilder,
                 addDataViewRelationOption = addDataViewRelationOption,
                 addTagToDataViewRecord = addTagToDataViewRecord,
                 addStatusToDataViewRecord = addStatusToDataViewRecord,
                 dispatcher = dispatcher,
+                optionsProvider = optionsProvider
             ) as T
         }
     }

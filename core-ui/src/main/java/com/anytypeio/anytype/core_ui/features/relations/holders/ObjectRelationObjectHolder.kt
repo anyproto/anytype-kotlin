@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemEditCellObjectBinding
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
+import com.anytypeio.anytype.presentation.relations.RelationValueView
 
 class ObjectRelationObjectHolder(
     val binding: ItemEditCellObjectBinding

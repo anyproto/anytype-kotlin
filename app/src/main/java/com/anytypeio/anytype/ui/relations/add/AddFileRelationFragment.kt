@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.relations
+package com.anytypeio.anytype.ui.relations.add
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,21 +13,26 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationFileValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationValueFileAddBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.FileValueAddCommand
-import com.anytypeio.anytype.presentation.relations.FileValueAddView
-import com.anytypeio.anytype.presentation.relations.RelationFileValueAddViewModel
+import com.anytypeio.anytype.presentation.relations.add.AddFileRelationViewModel
+import com.anytypeio.anytype.presentation.relations.add.FileValueAddCommand
+import com.anytypeio.anytype.presentation.relations.add.FileValueAddView
 import javax.inject.Inject
 
-class RelationFileValueAddFragment :
+class AddFileRelationFragment :
     BaseBottomSheetFragment<FragmentRelationValueFileAddBinding>() {
 
     @Inject
-    lateinit var factory: RelationFileValueAddViewModel.Factory
-    val vm: RelationFileValueAddViewModel by viewModels { factory }
+    lateinit var factory: AddFileRelationViewModel.Factory
+    val vm: AddFileRelationViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
     private val objectId get() = argString(OBJECT_ID)
@@ -140,7 +145,7 @@ class RelationFileValueAddFragment :
             objectId: Id,
             relationId: Id,
             flow: Int = FLOW_DEFAULT
-        ) = RelationFileValueAddFragment().apply {
+        ) = AddFileRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 OBJECT_ID to objectId,

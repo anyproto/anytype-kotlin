@@ -1,23 +1,33 @@
-package com.anytypeio.anytype.presentation.relations
+package com.anytypeio.anytype.presentation.relations.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.toRelationFileValueView
+import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.addIsHiddenFilter
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import com.anytypeio.anytype.presentation.relations.searchObjectsFilter
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class RelationFileValueAddViewModel(
+class AddFileRelationViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val searchObjects: SearchObjects,
@@ -25,7 +35,7 @@ class RelationFileValueAddViewModel(
 ) : ViewModel() {
 
     private val _views =
-        MutableStateFlow<List<RelationValueBaseViewModel.RelationValueView.File>>(listOf())
+        MutableStateFlow<List<RelationValueView.File>>(listOf())
     private val _filter = MutableStateFlow("")
     private var _selected = MutableStateFlow<List<Id>>(listOf())
     private val _viewsFiltered = MutableStateFlow(FileValueAddView())
@@ -164,7 +174,7 @@ class RelationFileValueAddViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return RelationFileValueAddViewModel(
+            return AddFileRelationViewModel(
                 relations = relations,
                 values = values,
                 searchObjects = searchObjects,
@@ -176,7 +186,7 @@ class RelationFileValueAddViewModel(
 }
 
 data class FileValueAddView(
-    val files: List<RelationValueBaseViewModel.RelationValueView.File> = emptyList(),
+    val files: List<RelationValueView.File> = emptyList(),
     val count: String? = null
 )
 

@@ -7,7 +7,11 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.dataview.interactor.*
+import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
+import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.RemoveStatusFromDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
@@ -37,8 +41,8 @@ interface ObjectSetObjectRelationValueSubComponent {
     fun inject(fragment: RelationValueDVFragment)
 
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
-    fun addObjectRelationObjectValueComponent(): AddObjectRelationObjectValueSubComponent.Builder
-    fun addRelationFileValueAddComponent() : RelationFileValueAddSubComponent.Builder
+    fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
+    fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
 }
 
 @Subcomponent(modules = [ObjectRelationValueModule::class, ObjectObjectRelationValueModule::class])
@@ -53,8 +57,8 @@ interface ObjectObjectRelationValueSubComponent {
     fun inject(fragment: RelationValueFragment)
 
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
-    fun addObjectRelationObjectValueComponent(): AddObjectRelationObjectValueSubComponent.Builder
-    fun addRelationFileValueAddComponent() : RelationFileValueAddSubComponent.Builder
+    fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
+    fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
 }
 
 @Module

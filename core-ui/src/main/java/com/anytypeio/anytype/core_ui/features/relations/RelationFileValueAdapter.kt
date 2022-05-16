@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.databinding.ItemEditCellFileBinding
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationFileHolder
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel.RelationValueView
+import com.anytypeio.anytype.presentation.relations.RelationValueView
 
 class RelationFileValueAdapter(
     private val onFileClick: (String) -> Unit

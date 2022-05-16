@@ -1,20 +1,20 @@
-package com.anytypeio.anytype.ui.relations
+package com.anytypeio.anytype.ui.relations.add
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.RelationOptionValueAddViewModel
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationViewModel
 import javax.inject.Inject
 
-class RelationOptionValueAddFragment : RelationOptionValueBaseAddFragment() {
+class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
 
     @Inject
-    lateinit var factory: RelationOptionValueAddViewModel.Factory
-    override val vm: RelationOptionValueAddViewModel by viewModels { factory }
+    lateinit var factory: AddOptionsRelationViewModel.Factory
+    override val vm: AddOptionsRelationViewModel by viewModels { factory }
 
-    override fun onStatusClicked(status: RelationValueBaseViewModel.RelationValueView.Status) {
+    override fun onStatusClicked(status: RelationValueView.Option.Status) {
         vm.onAddObjectStatusClicked(
             ctx = ctx,
             relation = relation,
@@ -52,7 +52,7 @@ class RelationOptionValueAddFragment : RelationOptionValueBaseAddFragment() {
             ctx: Id,
             objectId: Id,
             relationId: Id
-        ) = RelationOptionValueAddFragment().apply {
+        ) = AddOptionsRelationFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to objectId,

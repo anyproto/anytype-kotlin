@@ -1,7 +1,11 @@
-package com.anytypeio.anytype.ui.relations
+package com.anytypeio.anytype.ui.relations.add
 
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
@@ -12,15 +16,23 @@ import com.anytypeio.anytype.core_ui.features.sets.RelationValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.focusChanges
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
-import com.anytypeio.anytype.databinding.RelationOptionValueAddFragmentBinding
-import com.anytypeio.anytype.presentation.relations.AddObjectRelationValueViewModel
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import com.anytypeio.anytype.databinding.AddOptionRelationFragmentBinding
+import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.add.BaseAddOptionsRelationViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment<RelationOptionValueAddFragmentBinding>() {
+abstract class BaseAddOptionsRelationFragment : BaseDialogFragment<AddOptionRelationFragmentBinding>() {
 
     private val behavior get() = BottomSheetBehavior.from(binding.sheet)
 
@@ -34,7 +46,7 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment<RelationO
     private lateinit var searchRelationInput: EditText
     private lateinit var clearSearchText: View
 
-    abstract val vm: AddObjectRelationValueViewModel
+    abstract val vm: BaseAddOptionsRelationViewModel
 
     private val editCellTagAdapter by lazy {
         RelationValueAdapter(
@@ -50,7 +62,7 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment<RelationO
         )
     }
 
-    abstract fun onStatusClicked(status: RelationValueBaseViewModel.RelationValueView.Status)
+    abstract fun onStatusClicked(status: RelationValueView.Option.Status)
     abstract fun onCreateOptionClicked(name: String)
     abstract fun onAddButtonClicked()
 
@@ -187,7 +199,7 @@ abstract class RelationOptionValueBaseAddFragment : BaseDialogFragment<RelationO
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): RelationOptionValueAddFragmentBinding = RelationOptionValueAddFragmentBinding.inflate(
+    ): AddOptionRelationFragmentBinding = AddOptionRelationFragmentBinding.inflate(
         inflater, container, false
     )
 

@@ -10,10 +10,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -25,10 +23,10 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.relations.RelationOptionValueDVAddViewModel
+import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
+import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -42,7 +40,7 @@ import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.performClick
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.test_utils.utils.type
-import com.anytypeio.anytype.ui.relations.RelationOptionValueBaseAddFragment
+import com.anytypeio.anytype.ui.relations.add.BaseAddOptionsRelationFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -102,21 +100,14 @@ class AddRelationStatusValueTest {
         removeTagFromDataViewRecord = RemoveTagFromDataViewRecord(repo)
         updateDetail = UpdateDetail(repo)
         urlBuilder = UrlBuilder(gateway)
-        TestRelationOptionValueDVAddFragment.testVmFactory = RelationOptionValueDVAddViewModel.Factory(
+        TestRelationOptionValueDVAddFragment.testVmFactory = AddOptionsRelationDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
-            details = object : ObjectDetailProvider {
-                override fun provide(): Map<Id, Block.Fields> = state.value.details
-            },
-            types = object : ObjectTypesProvider {
-                override fun set(objectTypes: List<ObjectType>) {}
-                override fun get(): List<ObjectType> = state.value.objectTypes
-            },
             addDataViewRelationOption = addRelationOption,
             addTagToDataViewRecord = addTagToDataViewRecord,
             addStatusToDataViewRecord = addStatusToDataViewRecord,
-            urlBuilder = urlBuilder,
             dispatcher = dispatcher,
+            optionsProvider = AddOptionsRelationProvider()
         )
     }
 
@@ -199,11 +190,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
-                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
-                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
-                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
-                RelationOptionValueBaseAddFragment.TARGET_KEY to obj
+                BaseAddOptionsRelationFragment.CTX_KEY to ctx,
+                BaseAddOptionsRelationFragment.RELATION_KEY to relation.key,
+                BaseAddOptionsRelationFragment.DATAVIEW_KEY to dv.id,
+                BaseAddOptionsRelationFragment.VIEWER_KEY to viewer.id,
+                BaseAddOptionsRelationFragment.TARGET_KEY to obj
             )
         )
 
@@ -314,11 +305,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
-                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
-                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
-                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
-                RelationOptionValueBaseAddFragment.TARGET_KEY to obj
+                BaseAddOptionsRelationFragment.CTX_KEY to ctx,
+                BaseAddOptionsRelationFragment.RELATION_KEY to relation.key,
+                BaseAddOptionsRelationFragment.DATAVIEW_KEY to dv.id,
+                BaseAddOptionsRelationFragment.VIEWER_KEY to viewer.id,
+                BaseAddOptionsRelationFragment.TARGET_KEY to obj
             )
         )
 
@@ -407,11 +398,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
-                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
-                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
-                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
-                RelationOptionValueBaseAddFragment.TARGET_KEY to target
+                BaseAddOptionsRelationFragment.CTX_KEY to ctx,
+                BaseAddOptionsRelationFragment.RELATION_KEY to relation.key,
+                BaseAddOptionsRelationFragment.DATAVIEW_KEY to dv.id,
+                BaseAddOptionsRelationFragment.VIEWER_KEY to viewer.id,
+                BaseAddOptionsRelationFragment.TARGET_KEY to target
             )
         )
 
@@ -501,11 +492,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
-                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
-                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
-                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
-                RelationOptionValueBaseAddFragment.TARGET_KEY to target
+                BaseAddOptionsRelationFragment.CTX_KEY to ctx,
+                BaseAddOptionsRelationFragment.RELATION_KEY to relation.key,
+                BaseAddOptionsRelationFragment.DATAVIEW_KEY to dv.id,
+                BaseAddOptionsRelationFragment.VIEWER_KEY to viewer.id,
+                BaseAddOptionsRelationFragment.TARGET_KEY to target
             )
         )
 
@@ -604,11 +595,11 @@ class AddRelationStatusValueTest {
 
         launchFragment(
             bundleOf(
-                RelationOptionValueBaseAddFragment.CTX_KEY to ctx,
-                RelationOptionValueBaseAddFragment.RELATION_KEY to relation.key,
-                RelationOptionValueBaseAddFragment.DATAVIEW_KEY to dv.id,
-                RelationOptionValueBaseAddFragment.VIEWER_KEY to viewer.id,
-                RelationOptionValueBaseAddFragment.TARGET_KEY to target
+                BaseAddOptionsRelationFragment.CTX_KEY to ctx,
+                BaseAddOptionsRelationFragment.RELATION_KEY to relation.key,
+                BaseAddOptionsRelationFragment.DATAVIEW_KEY to dv.id,
+                BaseAddOptionsRelationFragment.VIEWER_KEY to viewer.id,
+                BaseAddOptionsRelationFragment.TARGET_KEY to target
             )
         )
 

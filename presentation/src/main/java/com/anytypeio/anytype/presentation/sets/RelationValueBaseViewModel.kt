@@ -5,7 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -22,6 +26,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEv
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -30,7 +35,11 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -91,11 +100,13 @@ abstract class RelationValueBaseViewModel(
                     val option = options.find { it.id == key }
                     if (option != null) {
                         items.add(
-                            RelationValueView.Tag(
+                            RelationValueView.Option.Tag(
                                 id = option.id,
                                 name = option.text,
                                 color = option.color.ifEmpty { null },
-                                removeable = isRemoveable
+                                removable = isRemoveable,
+                                isCheckboxShown = false,
+                                isSelected = true,
                             )
                         )
                     } else {
@@ -114,7 +125,7 @@ abstract class RelationValueBaseViewModel(
                     val option = options.find { it.id == key }
                     if (option != null) {
                         items.add(
-                            RelationValueView.Status(
+                            RelationValueView.Option.Status(
                                 id = option.id,
                                 name = option.text,
                                 color = option.color.ifEmpty { null },
@@ -231,8 +242,8 @@ abstract class RelationValueBaseViewModel(
             when (v) {
                 is RelationValueView.Object.Default -> v.copy(removeable = isEditing.value)
                 is RelationValueView.Object.NonExistent -> v.copy(removeable = isEditing.value)
-                is RelationValueView.Tag -> v.copy(removeable = isEditing.value)
-                is RelationValueView.Status -> v.copy(removeable = isEditing.value)
+                is RelationValueView.Option.Tag -> v.copy(removable = isEditing.value)
+                is RelationValueView.Option.Status -> v.copy(removable = isEditing.value)
                 is RelationValueView.File -> v.copy(removeable = isEditing.value)
                 else -> v
             }
@@ -352,66 +363,6 @@ abstract class RelationValueBaseViewModel(
         object ShowAddObjectScreen : ObjectRelationValueCommand()
         object ShowFileValueActionScreen : ObjectRelationValueCommand()
         object ShowAddFileScreen : ObjectRelationValueCommand()
-    }
-
-    sealed class RelationValueView {
-
-        interface Selectable {
-            val isSelected: Boolean?
-        }
-
-        object Empty : RelationValueView()
-
-        data class Create(val name: String) : RelationValueView()
-
-        data class Tag(
-            val id: Id,
-            val name: String,
-            val color: String? = null,
-            val removeable: Boolean = false,
-            override val isSelected: Boolean? = null
-        ) : RelationValueView(), Selectable
-
-        data class Status(
-            val id: Id,
-            val name: String,
-            val removeable: Boolean = false,
-            val color: String? = null
-        ) : RelationValueView()
-
-        sealed class Object : RelationValueView(), Selectable {
-
-            abstract val id: Id
-
-            data class Default(
-                override val id: Id,
-                val name: String,
-                val typeName: String?,
-                val type: String?,
-                val removeable: Boolean,
-                val icon: ObjectIcon,
-                val layout: ObjectType.Layout?,
-                override val isSelected: Boolean? = null,
-                val selectedNumber: String? = null
-            ) : Object(), Selectable
-
-            data class NonExistent(
-                override val id: Id,
-                override val isSelected: Boolean? = null,
-                val removeable: Boolean
-            ) : Object(), Selectable
-        }
-
-        data class File(
-            val id: Id,
-            val name: String,
-            val mime: String,
-            val ext: String,
-            val removeable: Boolean = false,
-            val image: Url?,
-            override val isSelected: Boolean? = null,
-            val selectedNumber: String? = null
-        ) : RelationValueView(), Selectable
     }
 
     companion object {

@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
+import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 
 fun List<ObjectWrapper.Basic>.toView(
@@ -77,13 +77,13 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
     ids: List<String>,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectType>
-): List<RelationValueBaseViewModel.RelationValueView.Object> =
+): List<RelationValueView.Object> =
     this.mapNotNull { obj ->
         val typeUrl = obj.getProperType()
         val layout = obj.getProperLayout()
         if (obj.id !in ids) {
             if (obj.isDeleted == null || obj.isDeleted == false) {
-                RelationValueBaseViewModel.RelationValueView.Object.Default(
+                RelationValueView.Object.Default(
                     id = obj.id,
                     name = obj.getProperName(),
                     typeName = getProperTypeName(
@@ -101,7 +101,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
                     removeable = false
                 )
             } else {
-                RelationValueBaseViewModel.RelationValueView.Object.NonExistent(
+                RelationValueView.Object.NonExistent(
                     id = obj.id,
                     isSelected = false,
                     removeable = false
@@ -115,11 +115,11 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
 fun List<ObjectWrapper.Basic>.toRelationFileValueView(
     ids: List<String>,
     urlBuilder: UrlBuilder
-): List<RelationValueBaseViewModel.RelationValueView.File> =
+): List<RelationValueView.File> =
     this.mapNotNull { obj ->
         val image = obj.getProperFileImage(urlBuilder)
         if (obj.id !in ids) {
-            RelationValueBaseViewModel.RelationValueView.File(
+            RelationValueView.File(
                 id = obj.id,
                 name = obj.getProperName(),
                 ext = obj.getProperFileExt(),

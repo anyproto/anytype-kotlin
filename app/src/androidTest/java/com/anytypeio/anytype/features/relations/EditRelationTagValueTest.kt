@@ -205,7 +205,8 @@ class EditRelationTagValueTest {
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to ctx,
                 RelationValueBaseFragment.RELATION_KEY to relationKey,
-                RelationValueBaseFragment.TARGET_KEY to target
+                RelationValueBaseFragment.TARGET_KEY to target,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 
@@ -326,7 +327,8 @@ class EditRelationTagValueTest {
                 RelationValueBaseFragment.DATAVIEW_KEY to dv.id,
                 RelationValueBaseFragment.VIEWER_KEY to viewer.id,
                 RelationValueBaseFragment.RELATION_KEY to relationKey,
-                RelationValueBaseFragment.TARGET_KEY to target
+                RelationValueBaseFragment.TARGET_KEY to target,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 
@@ -350,7 +352,7 @@ class EditRelationTagValueTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestRelationValueDVFragment> {
-        return launchFragmentInContainer<TestRelationValueDVFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

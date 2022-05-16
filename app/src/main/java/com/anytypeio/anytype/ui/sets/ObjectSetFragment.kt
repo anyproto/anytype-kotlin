@@ -510,7 +510,8 @@ open class ObjectSetFragment :
                         ObjectMenuBaseFragment.CTX_KEY to command.ctx,
                         ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
                         ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
-                        ObjectMenuBaseFragment.IS_PROFILE_KEY to false
+                        ObjectMenuBaseFragment.IS_PROFILE_KEY to false,
+                        ObjectMenuBaseFragment.IS_LOCKED_KEY to false
                     )
                 )
             }
@@ -541,7 +542,8 @@ open class ObjectSetFragment :
                         RelationValueBaseFragment.DATAVIEW_KEY to command.dataview,
                         RelationValueBaseFragment.RELATION_KEY to command.relation,
                         RelationValueBaseFragment.VIEWER_KEY to command.viewer,
-                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes
+                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
+                        RelationValueBaseFragment.IS_LOCKED_KEY to false
                     )
                 )
             }

@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.Url
 
 sealed class Command {
 
-    data class OpenDocumentImagePicker(val mimeType: String): Command()
+    data class OpenDocumentImagePicker(val mimeType: String) : Command()
 
     data class OpenDocumentEmojiIconPicker(
         val target: String
@@ -54,10 +54,14 @@ sealed class Command {
 
     data class OpenDocumentMenu(
         val isArchived: Boolean,
-        val isFavorite: Boolean
+        val isFavorite: Boolean,
+        val isLocked: Boolean
     ) : Command()
 
-    data class OpenProfileMenu(val isFavorite: Boolean) : Command()
+    data class OpenProfileMenu(
+        val isFavorite: Boolean,
+        val isLocked: Boolean
+    ) : Command()
 
     data class OpenCoverGallery(val ctx: String) : Command()
     data class OpenObjectLayout(val ctx: String) : Command()
@@ -74,7 +78,12 @@ sealed class Command {
     }
 
     sealed class OpenObjectRelationScreen : Command() {
-        data class RelationList(val ctx: String, val target: String?) : OpenObjectRelationScreen()
+        data class RelationList(
+            val ctx: String,
+            val target: String?,
+            val isLocked: Boolean
+        ) : OpenObjectRelationScreen()
+
         data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
             data class Default(
@@ -87,7 +96,8 @@ sealed class Command {
             data class Text(
                 val ctx: Id,
                 val target: Id,
-                val relation: Id
+                val relation: Id,
+                val isLocked: Boolean = false
             ) : OpenObjectRelationScreen.Value()
 
             data class Date(

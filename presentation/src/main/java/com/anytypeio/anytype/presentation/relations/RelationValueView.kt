@@ -46,7 +46,7 @@ sealed class RelationValueView {
             val name: String,
             val typeName: String?,
             val type: String?,
-            val removeable: Boolean,
+            val removable: Boolean,
             val icon: ObjectIcon,
             val layout: ObjectType.Layout?,
             override val isSelected: Boolean? = null,
@@ -56,7 +56,7 @@ sealed class RelationValueView {
         data class NonExistent(
             override val id: Id,
             override val isSelected: Boolean? = null,
-            val removeable: Boolean
+            val removable: Boolean
         ) : Object(), Selectable
     }
 
@@ -65,7 +65,7 @@ sealed class RelationValueView {
         val name: String,
         val mime: String,
         val ext: String,
-        val removeable: Boolean = false,
+        val removable: Boolean = false,
         val image: Url?,
         override val isSelected: Boolean? = null,
         val selectedNumber: String? = null

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -58,11 +59,11 @@ abstract class RelationValueBaseViewModel(
     private var relationFormat: Relation.Format? = null
 
     val isEditing = MutableStateFlow(false)
-    val isDimissed = MutableStateFlow(false)
+    val isDismissed = MutableStateFlow(false)
     val name = MutableStateFlow("")
     val views = MutableStateFlow(listOf<RelationValueView>())
     val commands = MutableSharedFlow<ObjectRelationValueCommand>(replay = 0)
-    val isLoading = MutableStateFlow<Boolean>(false)
+    val isLoading = MutableStateFlow(false)
 
     fun onStart(objectId: Id, relationId: Id) {
         Timber.d("onStart")
@@ -150,7 +151,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.NonExistent(
                                     id = id,
-                                    removeable = isRemoveable
+                                    removable = isRemoveable
                                 )
                             )
                         } else {
@@ -165,7 +166,7 @@ abstract class RelationValueBaseViewModel(
                                         layout = wrapper.layout,
                                         builder = urlBuilder
                                     ),
-                                    removeable = isRemoveable,
+                                    removable = isRemoveable,
                                     layout = wrapper.layout
                                 )
                             )
@@ -180,7 +181,7 @@ abstract class RelationValueBaseViewModel(
                         items.add(
                             RelationValueView.Object.NonExistent(
                                 id = value,
-                                removeable = isRemoveable
+                                removable = isRemoveable
                             )
                         )
                     } else {
@@ -195,7 +196,7 @@ abstract class RelationValueBaseViewModel(
                                     layout = wrapper.layout,
                                     builder = urlBuilder
                                 ),
-                                removeable = isRemoveable,
+                                removable = isRemoveable,
                                 layout = wrapper.layout
                             )
                         )
@@ -217,7 +218,7 @@ abstract class RelationValueBaseViewModel(
                                 mime = detail?.fileMimeType.orEmpty(),
                                 ext = detail?.fileExt.orEmpty(),
                                 image = detail?.iconImage,
-                                removeable = isRemoveable
+                                removable = isRemoveable
                             )
                         )
                     }
@@ -236,39 +237,47 @@ abstract class RelationValueBaseViewModel(
         name.value = relation.name
     }
 
-    fun onEditOrDoneClicked() {
-        isEditing.value = !isEditing.value
-        views.value = views.value.map { v ->
-            when (v) {
-                is RelationValueView.Object.Default -> v.copy(removeable = isEditing.value)
-                is RelationValueView.Object.NonExistent -> v.copy(removeable = isEditing.value)
-                is RelationValueView.Option.Tag -> v.copy(removable = isEditing.value)
-                is RelationValueView.Option.Status -> v.copy(removable = isEditing.value)
-                is RelationValueView.File -> v.copy(removeable = isEditing.value)
-                else -> v
+    fun onEditOrDoneClicked(isLocked: Boolean) {
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+        } else {
+            isEditing.value = !isEditing.value
+            views.value = views.value.map { v ->
+                when (v) {
+                    is RelationValueView.Object.Default -> v.copy(removable = isEditing.value)
+                    is RelationValueView.Object.NonExistent -> v.copy(removable = isEditing.value)
+                    is RelationValueView.Option.Tag -> v.copy(removable = isEditing.value)
+                    is RelationValueView.Option.Status -> v.copy(removable = isEditing.value)
+                    is RelationValueView.File -> v.copy(removable = isEditing.value)
+                    else -> v
+                }
             }
         }
     }
 
-    fun onAddValueClicked() {
-        when (relationFormat) {
-            Relation.Format.STATUS,
-            Relation.Format.TAG -> {
-                viewModelScope.launch {
-                    commands.emit(ObjectRelationValueCommand.ShowAddStatusOrTagScreen)
+    fun onAddValueClicked(isLocked: Boolean) {
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+        } else {
+            when (relationFormat) {
+                Relation.Format.STATUS,
+                Relation.Format.TAG -> {
+                    viewModelScope.launch {
+                        commands.emit(ObjectRelationValueCommand.ShowAddStatusOrTagScreen)
+                    }
                 }
-            }
-            Relation.Format.FILE -> {
-                viewModelScope.launch {
-                    commands.emit(ObjectRelationValueCommand.ShowFileValueActionScreen)
+                Relation.Format.FILE -> {
+                    viewModelScope.launch {
+                        commands.emit(ObjectRelationValueCommand.ShowFileValueActionScreen)
+                    }
                 }
-            }
-            Relation.Format.OBJECT -> {
-                viewModelScope.launch {
-                    commands.emit(ObjectRelationValueCommand.ShowAddObjectScreen)
+                Relation.Format.OBJECT -> {
+                    viewModelScope.launch {
+                        commands.emit(ObjectRelationValueCommand.ShowAddObjectScreen)
+                    }
                 }
-            }
-            else -> {
+                else -> {
+                }
             }
         }
     }
@@ -277,7 +286,6 @@ abstract class RelationValueBaseViewModel(
         viewModelScope.launch {
             commands.emit(ObjectRelationValueCommand.ShowAddFileScreen)
         }
-
     }
 
     fun onFileValueActionUploadFromGalleryClicked() {}

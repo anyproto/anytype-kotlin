@@ -99,7 +99,7 @@ class RelationValueAdapter(
                 ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
-                        if (item is RelationValueView.Object.Default && !item.removeable) {
+                        if (item is RelationValueView.Object.Default && !item.removable) {
                             onObjectClicked(item)
                         }
                     }
@@ -117,7 +117,7 @@ class RelationValueAdapter(
                 ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.Object
-                        if (item is RelationValueView.Object.NonExistent && !item.removeable) {
+                        if (item is RelationValueView.Object.NonExistent && !item.removable) {
                             onObjectClicked(item)
                         }
                     }
@@ -135,7 +135,7 @@ class RelationValueAdapter(
                 ).apply {
                     itemView.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.File
-                        if (!item.removeable) onFileClicked(item)
+                        if (!item.removable) onFileClicked(item)
                     }
                     binding.btnRemoveFile.setOnClickListener {
                         val item = views[bindingAdapterPosition] as RelationValueView.File
@@ -274,7 +274,7 @@ class RelationValueAdapter(
                 } else {
                     tvSubtitle.setText(R.string.unknown_object_type)
                 }
-                if (!item.removeable) {
+                if (!item.removable) {
                     btnRemoveObject.gone()
                     btnDragAndDropObject.gone()
                 } else {
@@ -289,7 +289,7 @@ class RelationValueAdapter(
             val binding: ItemEditCellObjectNonExistentBinding
         ) : ViewHolder(binding.root), DragAndDropViewHolder {
             fun bind(item: RelationValueView.Object.NonExistent) = with(binding) {
-                if (!item.removeable) {
+                if (!item.removable) {
                     btnRemoveObject.gone()
                     btnDragAndDropObject.gone()
                 } else {
@@ -305,7 +305,7 @@ class RelationValueAdapter(
                 tvTitle.text = "${item.name}.${item.ext}"
                 val mimeIcon = item.mime.getMimeIcon(item.name)
                 iconMime.setImageResource(mimeIcon)
-                if (!item.removeable) {
+                if (!item.removable) {
                     btnRemoveFile.gone()
                     btnDragAndDropFile.gone()
                 } else {

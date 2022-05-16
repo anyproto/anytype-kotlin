@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.relations
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationFeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
@@ -23,9 +22,13 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -105,6 +108,18 @@ class RelationListViewModel(
     }
 
     fun onCheckboxClicked(ctx: Id, view: DocumentRelationView) {
+        val isLocked = resolveIsLockedState(ctx)
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+        } else {
+            proceedWithUpdatingFeaturedRelations(view, ctx)
+        }
+    }
+
+    private fun proceedWithUpdatingFeaturedRelations(
+        view: DocumentRelationView,
+        ctx: Id
+    ) {
         viewModelScope.launch {
             if (view.isFeatured) {
                 viewModelScope.launch {
@@ -163,15 +178,19 @@ class RelationListViewModel(
         }
     }
 
-    fun onEditOrDoneClicked() {
-        isEditMode.value = !isEditMode.value
-        views.value = views.value.map { view ->
-            if (view is Model.Item) {
-                view.copy(
-                    isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.view.relationId)
-                )
-            } else {
-                view
+    fun onEditOrDoneClicked(isLocked: Boolean) {
+        if (isLocked) {
+            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+        } else {
+            isEditMode.value = !isEditMode.value
+            views.value = views.value.map { view ->
+                if (view is Model.Item) {
+                    view.copy(
+                        isRemoveable = isEditMode.value && !Relations.defaultRelations.contains(view.view.relationId)
+                    )
+                } else {
+                    view
+                }
             }
         }
     }
@@ -210,7 +229,8 @@ class RelationListViewModel(
                         Command.EditTextRelationValue(
                             ctx = ctx,
                             relation = view.relationId,
-                            target = ctx
+                            target = ctx,
+                            isLocked = resolveIsLockedState(ctx)
                         )
                     )
                 }
@@ -235,12 +255,18 @@ class RelationListViewModel(
                             ctx = ctx,
                             relation = view.relationId,
                             target = ctx,
-                            targetObjectTypes = relation.objectTypes
+                            targetObjectTypes = relation.objectTypes,
+                            isLocked = resolveIsLockedState(ctx)
                         )
                     )
                 }
             }
         }
+    }
+
+    private fun resolveIsLockedState(ctx: Id): Boolean {
+        val doc = stores.document.get().find { it.id == ctx }
+        return doc?.fields?.isLocked ?: false
     }
 
     private fun proceedWithTogglingRelationCheckboxValue(view: DocumentRelationView, ctx: Id) {
@@ -325,7 +351,8 @@ class RelationListViewModel(
         data class EditTextRelationValue(
             val ctx: Id,
             val relation: Id,
-            val target: Id
+            val target: Id,
+            val isLocked: Boolean = false
         ) : Command()
 
         data class EditDateRelationValue(
@@ -338,7 +365,8 @@ class RelationListViewModel(
             val ctx: Id,
             val relation: Id,
             val target: Id,
-            val targetObjectTypes: List<Id>
+            val targetObjectTypes: List<Id>,
+            val isLocked: Boolean = false
         ) : Command()
 
         data class SetRelationKey(

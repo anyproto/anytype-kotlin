@@ -176,6 +176,7 @@ class DisplayRelationObjectValueTest {
         launchFragment(
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to root,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
                 RelationValueBaseFragment.RELATION_KEY to relation,
                 RelationValueBaseFragment.TARGET_KEY to target
             )
@@ -253,7 +254,8 @@ class DisplayRelationObjectValueTest {
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to root,
                 RelationValueBaseFragment.RELATION_KEY to relation,
-                RelationValueBaseFragment.TARGET_KEY to target
+                RelationValueBaseFragment.TARGET_KEY to target,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 
@@ -324,7 +326,8 @@ class DisplayRelationObjectValueTest {
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to root,
                 RelationValueBaseFragment.RELATION_KEY to relationId,
-                RelationValueBaseFragment.TARGET_KEY to targetId
+                RelationValueBaseFragment.TARGET_KEY to targetId,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 
@@ -442,7 +445,8 @@ class DisplayRelationObjectValueTest {
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to root,
                 RelationValueBaseFragment.RELATION_KEY to relationId,
-                RelationValueBaseFragment.TARGET_KEY to recordId
+                RelationValueBaseFragment.TARGET_KEY to recordId,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 
@@ -572,7 +576,8 @@ class DisplayRelationObjectValueTest {
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to root,
                 RelationValueBaseFragment.RELATION_KEY to relationId,
-                RelationValueBaseFragment.TARGET_KEY to recordId
+                RelationValueBaseFragment.TARGET_KEY to recordId,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 
@@ -690,7 +695,8 @@ class DisplayRelationObjectValueTest {
             bundleOf(
                 RelationValueBaseFragment.CTX_KEY to root,
                 RelationValueBaseFragment.RELATION_KEY to relationId,
-                RelationValueBaseFragment.TARGET_KEY to recordId
+                RelationValueBaseFragment.TARGET_KEY to recordId,
+                RelationValueBaseFragment.IS_LOCKED_KEY to false,
             )
         )
 

@@ -78,6 +78,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
     protected val dataview get() = argString(DATAVIEW_KEY)
     protected val viewer get() = argString(VIEWER_KEY)
     protected val types get() = arg<List<String>>(TARGET_TYPES_KEY)
+    protected val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
 
     abstract val vm: RelationValueBaseViewModel
 
@@ -143,15 +144,15 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
             setDrawable(drawable(R.drawable.divider_relations_edit))
         }
         with(lifecycleScope) {
-            subscribe(binding.btnEditOrDone.clicks()) { vm.onEditOrDoneClicked() }
-            subscribe(binding.btnAddValue.clicks()) { vm.onAddValueClicked() }
+            subscribe(binding.btnEditOrDone.clicks()) { vm.onEditOrDoneClicked(isLocked) }
+            subscribe(binding.btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
         }
     }
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
-        jobs += lifecycleScope.subscribe(vm.isDimissed) { observeDismiss(it) }
+        jobs += lifecycleScope.subscribe(vm.isDismissed) { observeDismiss(it) }
         jobs += lifecycleScope.subscribe(vm.isEditing) { observeEditing(it) }
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.name) { binding.tvTagOrStatusRelationHeader.text = it }
@@ -424,6 +425,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
 
     companion object {
         const val CTX_KEY = "arg.edit-cell-tag.ctx"
+        const val IS_LOCKED_KEY = "arg.edit-cell-tag.locked"
         const val RELATION_KEY = "arg.edit-cell-tag.relation"
         const val TARGET_KEY = "arg.edit-cell-tag.target"
         const val DATAVIEW_KEY = "arg.edit-cell-tag.dataview"

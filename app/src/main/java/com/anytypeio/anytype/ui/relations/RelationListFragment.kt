@@ -42,6 +42,7 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
     private val ctx: String get() = argString(ARG_CTX)
     private val target: String? get() = argStringOrNull(ARG_TARGET)
     private val mode: Int get() = argInt(ARG_MODE)
+    private val isLocked: Boolean get() = arg(ARG_LOCKED)
 
     private val docRelationAdapter by lazy {
         DocumentRelationAdapter(
@@ -89,11 +90,13 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
             )
         }
         binding.btnPlus.setOnClickListener {
-            RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
+            if (!isLocked) {
+                RelationAddToObjectFragment.new(ctx).show(childFragmentManager, null)
+            } else {
+                toast(getString(R.string.unlock_your_object_to_add_new_relation))
+            }
         }
-        binding.btnEditOrDone.setOnClickListener {
-            vm.onEditOrDoneClicked()
-        }
+        binding.btnEditOrDone.setOnClickListener { vm.onEditOrDoneClicked(isLocked) }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -144,7 +147,8 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                 val fr = RelationTextValueFragment.new(
                     ctx = ctx,
                     relationId = command.relation,
-                    objectId = command.target
+                    objectId = command.target,
+                    isLocked = command.isLocked
                 )
                 fr.show(childFragmentManager, null)
             }
@@ -163,7 +167,8 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
                         RelationValueBaseFragment.CTX_KEY to command.ctx,
                         RelationValueBaseFragment.TARGET_KEY to command.target,
                         RelationValueBaseFragment.RELATION_KEY to command.relation,
-                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes
+                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
+                        RelationValueBaseFragment.IS_LOCKED_KEY to command.isLocked
                     )
                 )
             }
@@ -238,17 +243,24 @@ open class RelationListFragment : BaseBottomSheetFragment<FragmentRelationListBi
     )
 
     companion object {
-        fun new(ctx: String, target: String?, mode: Int) = RelationListFragment().apply {
+        fun new(
+            ctx: String,
+            target: String?,
+            mode: Int,
+            locked: Boolean = false
+        ) = RelationListFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_TARGET to target,
-                ARG_MODE to mode
+                ARG_MODE to mode,
+                ARG_LOCKED to locked
             )
         }
 
         const val ARG_CTX = "arg.document-relation.ctx"
         const val ARG_MODE = "arg.document-relation.mode"
         const val ARG_TARGET = "arg.document-relation.target"
+        const val ARG_LOCKED = "arg.document-relation.locked"
         const val MODE_ADD = 1
         const val MODE_LIST = 2
     }

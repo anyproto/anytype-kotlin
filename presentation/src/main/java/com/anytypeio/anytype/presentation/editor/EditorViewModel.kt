@@ -1353,7 +1353,8 @@ class EditorViewModel(
                     val details = orchestrator.stores.details.current().details
                     dispatch(
                         command = Command.OpenProfileMenu(
-                            isFavorite = details[context]?.isFavorite ?: false
+                            isFavorite = details[context]?.isFavorite ?: false,
+                            isLocked = mode == EditorMode.Locked
                         )
                     )
                 }
@@ -1364,6 +1365,7 @@ class EditorViewModel(
                         command = Command.OpenDocumentMenu(
                             isArchived = details[context]?.isArchived ?: false,
                             isFavorite = details[context]?.isFavorite ?: false,
+                            isLocked = mode == EditorMode.Locked
                         )
                     )
                 }
@@ -1374,6 +1376,7 @@ class EditorViewModel(
                         command = Command.OpenDocumentMenu(
                             isArchived = details[context]?.isArchived ?: false,
                             isFavorite = details[context]?.isFavorite ?: false,
+                            isLocked = mode == EditorMode.Locked
                         )
                     )
                 }
@@ -1894,7 +1897,13 @@ class EditorViewModel(
 
     fun onDocRelationsClicked() {
         Timber.d("onDocRelationsClicked, ")
-        dispatch(Command.OpenObjectRelationScreen.RelationList(ctx = context, target = null))
+        dispatch(
+            Command.OpenObjectRelationScreen.RelationList(
+                ctx = context,
+                target = null,
+                isLocked = mode == EditorMode.Locked
+            )
+        )
     }
 
     fun onSearchToolbarEvent(event: SearchInDocEvent) {
@@ -3437,7 +3446,8 @@ class EditorViewModel(
                                     Command.OpenObjectRelationScreen.Value.Text(
                                         ctx = context,
                                         target = context,
-                                        relation = relationId
+                                        relation = relationId,
+                                        isLocked = mode == EditorMode.Locked
                                     )
                                 )
                             }
@@ -3494,7 +3504,8 @@ class EditorViewModel(
                                     Command.OpenObjectRelationScreen.Value.Text(
                                         ctx = context,
                                         target = context,
-                                        relation = relationId
+                                        relation = relationId,
+                                        isLocked = mode == EditorMode.Locked
                                     )
                                 )
                             }

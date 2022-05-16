@@ -935,6 +935,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectMenuBaseFragment.CTX_KEY to ctx,
                             ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
                             ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
+                            ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
                             ObjectMenuBaseFragment.IS_PROFILE_KEY to false
                         )
                     )
@@ -947,6 +948,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectMenuBaseFragment.CTX_KEY to ctx,
                             ObjectMenuBaseFragment.IS_ARCHIVED_KEY to false,
                             ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
+                            ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
                             ObjectMenuBaseFragment.IS_PROFILE_KEY to true
                         )
                     )
@@ -1010,7 +1012,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         bundleOf(
                             RelationListFragment.ARG_CTX to command.ctx,
                             RelationListFragment.ARG_TARGET to command.target,
-                            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
+                            RelationListFragment.ARG_LOCKED to command.isLocked,
+                            RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST,
                         )
                     )
                 }
@@ -1029,7 +1032,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = RelationTextValueFragment.new(
                         ctx = command.ctx,
                         objectId = command.target,
-                        relationId = command.relation
+                        relationId = command.relation,
+                        isLocked = command.isLocked
                     )
                     fr.show(childFragmentManager, null)
                 }

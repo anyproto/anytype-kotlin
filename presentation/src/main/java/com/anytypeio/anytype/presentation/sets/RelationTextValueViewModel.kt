@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -25,35 +26,57 @@ class RelationTextValueViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(relationId: Id, recordId: String) {
+    fun onStart(
+        relationId: Id,
+        recordId: String,
+        isLocked: Boolean = false
+    ) {
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.subscribe(relationId),
                 values.subscribe(recordId)
             ) { relation, values ->
                 title.value = relation.name
+                val value = values[relationId] as? String
+                val isValueReadOnly = values[Relations.IS_READ_ONLY] as? Boolean ?: false
+                val isValueEditable = !(isValueReadOnly || isLocked)
                 views.value = listOf(
                     when (relation.format) {
                         Relation.Format.SHORT_TEXT -> {
-                            RelationTextValueView.TextShort(value = values[relationId] as? String)
+                            RelationTextValueView.TextShort(
+                                value = value,
+                                isEditable = isValueEditable
+                            )
                         }
                         Relation.Format.LONG_TEXT -> {
-                            RelationTextValueView.Text(value = values[relationId] as? String)
+                            RelationTextValueView.Text(
+                                value = value,
+                                isEditable = isValueEditable
+                            )
                         }
                         Relation.Format.NUMBER -> {
-                            val value = values[relationId]
                             RelationTextValueView.Number(
-                                value = NumberParser.parse(value)
+                                value = NumberParser.parse(value),
+                                isEditable = isValueEditable
                             )
                         }
                         Relation.Format.URL -> {
-                            RelationTextValueView.Url(value = values[relationId] as? String)
+                            RelationTextValueView.Url(
+                                value = value,
+                                isEditable = isValueEditable
+                            )
                         }
                         Relation.Format.EMAIL -> {
-                            RelationTextValueView.Email(value = values[relationId] as? String)
+                            RelationTextValueView.Email(
+                                value = value,
+                                isEditable = isValueEditable
+                            )
                         }
                         Relation.Format.PHONE -> {
-                            RelationTextValueView.Phone(value = values[relationId] as? String)
+                            RelationTextValueView.Phone(
+                                value = value,
+                                isEditable = isValueEditable
+                            )
                         }
                         else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
                     }
@@ -79,12 +102,38 @@ class RelationTextValueViewModel(
 }
 
 sealed class RelationTextValueView {
-    data class Text(val value: String?) : RelationTextValueView()
-    data class TextShort(val value: String?) : RelationTextValueView()
-    data class Phone(val value: String?) : RelationTextValueView()
-    data class Url(val value: String?) : RelationTextValueView()
-    data class Email(val value: String?) : RelationTextValueView()
-    data class Number(val value: String?) : RelationTextValueView()
+    abstract val value: String?
+    abstract val isEditable: Boolean
+
+    data class Text(
+        override val value: String? = null,
+        override val isEditable: Boolean = true
+    ) : RelationTextValueView()
+
+    data class TextShort(
+        override val value: String? = null,
+        override val isEditable: Boolean = true
+    ) : RelationTextValueView()
+
+    data class Phone(
+        override val value: String? = null,
+        override val isEditable: Boolean = true
+    ) : RelationTextValueView()
+
+    data class Url(
+        override val value: String? = null,
+        override val isEditable: Boolean = true
+    ) : RelationTextValueView()
+
+    data class Email(
+        override val value: String? = null,
+        override val isEditable: Boolean = true
+    ) : RelationTextValueView()
+
+    data class Number(
+        override val value: String? = null,
+        override val isEditable: Boolean = true
+    ) : RelationTextValueView()
 }
 
 sealed class EditGridCellAction {

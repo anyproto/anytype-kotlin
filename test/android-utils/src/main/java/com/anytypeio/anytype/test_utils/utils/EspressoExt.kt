@@ -8,7 +8,9 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withHint
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withInputType
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.test_utils.utils.espresso.HasChildViewWithText
 import com.anytypeio.anytype.test_utils.utils.espresso.HasViewGroupChildViewWithText
@@ -29,6 +31,14 @@ fun Int.type(text: String) = matchView().perform(click(), typeText(text))
 
 fun ViewInteraction.checkHasText(text: String) {
     check(matches(ViewMatchers.withText(text)))
+}
+
+fun ViewInteraction.checkHasHintText(text: Int) {
+    check(matches(withHint(text)))
+}
+
+fun ViewInteraction.checkHasInputType(type: Int) {
+    check(matches(withInputType(type)))
 }
 
 fun ViewInteraction.checkIsSelected() {

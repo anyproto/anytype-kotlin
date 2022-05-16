@@ -37,6 +37,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
     private val isProfile get() = arg<Boolean>(IS_PROFILE_KEY)
     private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
+    private val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
 
     abstract val vm: ObjectMenuViewModelBase
 
@@ -130,6 +131,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
                     bundleOf(
                         RelationListFragment.ARG_CTX to ctx,
                         RelationListFragment.ARG_TARGET to null,
+                        RelationListFragment.ARG_LOCKED to isLocked,
                         RelationListFragment.ARG_MODE to RelationListFragment.MODE_LIST
                     )
                 )
@@ -170,6 +172,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
         const val IS_ARCHIVED_KEY = "arg.doc-menu-bottom-sheet.is-archived"
         const val IS_PROFILE_KEY = "arg.doc-menu-bottom-sheet.is-profile"
         const val IS_FAVORITE_KEY = "arg.doc-menu-bottom-sheet.is-favorite"
+        const val IS_LOCKED_KEY = "arg.doc-menu-bottom-sheet.is-locked"
         const val COMING_SOON_MSG = "Coming soon..."
     }
 
@@ -206,21 +209,5 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
 
     override fun releaseDependencies() {
         componentManager().objectMenuComponent.release(ctx)
-    }
-
-    companion object {
-        fun new(
-            ctx: Id,
-            isProfile: Boolean = false,
-            isArchived: Boolean,
-            isFavorite: Boolean
-        ) = ObjectMenuFragment().apply {
-            arguments = bundleOf(
-                CTX_KEY to ctx,
-                IS_ARCHIVED_KEY to isArchived,
-                IS_PROFILE_KEY to isProfile,
-                IS_FAVORITE_KEY to isFavorite
-            )
-        }
     }
 }

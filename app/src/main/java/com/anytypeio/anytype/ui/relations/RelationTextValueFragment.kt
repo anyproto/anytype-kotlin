@@ -13,7 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.normalizeUrl
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -36,6 +41,7 @@ open class RelationTextValueFragment :
     private val relationId get() = arg<String>(RELATION_ID)
     private val objectId get() = arg<String>(OBJECT_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
+    private val isLocked get() = arg<Boolean>(LOCKED_KEY)
 
     private val relationValueAdapter by lazy {
         RelationTextValueAdapter(
@@ -72,7 +78,11 @@ open class RelationTextValueFragment :
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.title) { binding.tvRelationHeader.text = it }
         super.onStart()
-        vm.onStart(relationId = relationId, recordId = objectId)
+        vm.onStart(
+            relationId = relationId,
+            recordId = objectId,
+            isLocked = isLocked
+        )
     }
 
     override fun onStop() {
@@ -195,13 +205,15 @@ open class RelationTextValueFragment :
             ctx: Id,
             relationId: Id,
             objectId: Id,
-            flow: Int = FLOW_DEFAULT
+            flow: Int = FLOW_DEFAULT,
+            isLocked: Boolean = false
         ) = RelationTextValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 RELATION_ID to relationId,
                 OBJECT_ID to objectId,
-                FLOW_KEY to flow
+                FLOW_KEY to flow,
+                LOCKED_KEY to isLocked
             )
         }
 
@@ -209,6 +221,7 @@ open class RelationTextValueFragment :
         const val RELATION_ID = "arg.edit-relation-value.relation.id"
         const val OBJECT_ID = "arg.edit-relation-value.object.id"
         const val FLOW_KEY = "arg.edit-relation-value.flow"
+        const val LOCKED_KEY = "arg.edit-relation-value.locked"
 
         const val FLOW_DEFAULT = 0
         const val FLOW_DATAVIEW = 1

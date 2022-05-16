@@ -8,7 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectRelationTextBinding
-import com.anytypeio.anytype.core_ui.features.relations.holders.*
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationEmailHolder
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationNumberHolder
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationPhoneHolder
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextHolder
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextShortHolder
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextValueViewHolderBase
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationUrlHolder
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
 import com.anytypeio.anytype.presentation.sets.EditGridCellAction
@@ -18,9 +24,9 @@ class RelationTextValueAdapter(
     private var items: List<RelationTextValueView>,
     private val actionClick: (EditGridCellAction) -> Unit,
     private val onEditCompleted: (RelationTextValueView, String) -> Unit
-) : RecyclerView.Adapter<RelationBaseHolder>() {
+) : RecyclerView.Adapter<RelationTextValueViewHolderBase>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelationBaseHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelationTextValueViewHolderBase {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TEXT -> RelationTextHolder(
@@ -111,29 +117,33 @@ class RelationTextValueAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: RelationBaseHolder, position: Int) {
+    override fun onBindViewHolder(holder: RelationTextValueViewHolderBase, position: Int) {
+        val item = items[position]
         when (holder) {
             is RelationTextHolder -> holder.bind(
-                items[position] as RelationTextValueView.Text
+                item as RelationTextValueView.Text
             )
             is RelationTextShortHolder -> holder.bind(
-                items[position] as RelationTextValueView.TextShort
+                item as RelationTextValueView.TextShort
             )
             is RelationPhoneHolder -> holder.bind(
-                items[position] as RelationTextValueView.Phone,
+                item as RelationTextValueView.Phone,
                 actionClick
             )
             is RelationEmailHolder -> holder.bind(
-                items[position] as RelationTextValueView.Email,
+                item as RelationTextValueView.Email,
                 actionClick
             )
             is RelationUrlHolder -> holder.bind(
-                items[position] as RelationTextValueView.Url,
+                item as RelationTextValueView.Url,
                 actionClick
             )
             is RelationNumberHolder -> holder.bind(
-                items[position] as RelationTextValueView.Number
+                item as RelationTextValueView.Number
             )
+        }
+        if (!item.isEditable) {
+            holder.enableReadMode()
         }
     }
 

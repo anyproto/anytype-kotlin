@@ -98,13 +98,13 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
                         builder = urlBuilder
                     ),
                     isSelected = false,
-                    removeable = false
+                    removable = false
                 )
             } else {
                 RelationValueView.Object.NonExistent(
                     id = obj.id,
                     isSelected = false,
-                    removeable = false
+                    removable = false
                 )
             }
         } else {

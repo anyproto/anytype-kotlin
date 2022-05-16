@@ -283,4 +283,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Don’t forget to take and save your recovery phrase from settings</string>
+    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
+    <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
 </resources>

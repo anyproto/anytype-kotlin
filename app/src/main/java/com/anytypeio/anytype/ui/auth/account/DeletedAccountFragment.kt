@@ -8,7 +8,12 @@ import androidx.compose.animation.core.FloatTweenSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -39,6 +44,8 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel.DeletionDate
+import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment.Companion.DISPLAYED_PROGRESS_MAX_VALUE
+import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment.Companion.DISPLAYED_PROGRESS_MIN_VALUE
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui_settings.account.Action
 import com.anytypeio.anytype.ui_settings.account.ActionWithProgressBar
@@ -114,6 +121,8 @@ class DeletedAccountFragment : BaseComposeFragment() {
 
     companion object {
         const val DEADLINE_KEY = "arg.deleted-account.date"
+        const val DISPLAYED_PROGRESS_MIN_VALUE = 0.10f
+        const val DISPLAYED_PROGRESS_MAX_VALUE = 0.90f
     }
 }
 
@@ -139,7 +148,7 @@ fun DeletedAccountScreen(
                 Column {
                     Chart(
                         chartColor = colorResource(R.color.anytype_text_red),
-                        progress = progress
+                        actualProgress = progress
                     )
                     Text(
                         text = when (date) {
@@ -206,10 +215,15 @@ fun DeletedAccountScreen(
 @Composable
 fun Chart(
     chartColor: Color,
-    progress: Float = 0.0f
+    actualProgress: Float = 0.0f
 ) {
+    val displayedProgress = when {
+        actualProgress < DISPLAYED_PROGRESS_MIN_VALUE -> DISPLAYED_PROGRESS_MIN_VALUE
+        actualProgress > DISPLAYED_PROGRESS_MAX_VALUE -> DISPLAYED_PROGRESS_MAX_VALUE
+        else -> actualProgress
+    }
     val sweepAngleValueAnimation by animateFloatAsState(
-        targetValue = 360f * progress,
+        targetValue = 360f * displayedProgress,
         animationSpec = FloatTweenSpec(duration = 300)
     )
     Box(

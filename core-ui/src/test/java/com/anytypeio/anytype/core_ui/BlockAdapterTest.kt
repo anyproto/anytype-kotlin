@@ -40,7 +40,15 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.Bookma
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
-import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderOne
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderThree
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderTwo
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Highlight
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
@@ -55,6 +63,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.spy
@@ -64,6 +73,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToLong
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -1288,7 +1298,8 @@ class BlockAdapterTest {
 
         val actual = holder.itemView.findViewById<ViewGroup>(R.id.root).paddingLeft
 
-        val expected = view.indent * holder.dimen(R.dimen.indent)+ holder.dimen(R.dimen.default_document_item_padding_start)
+        val expected =
+            view.indent * holder.dimen(R.dimen.indent) + holder.dimen(R.dimen.default_document_item_padding_start)
 
         assertEquals(expected, actual)
     }
@@ -3423,9 +3434,75 @@ class BlockAdapterTest {
         verify(player).release()
     }
 
+    @Ignore("Only for performance testing")
+    @Test
+    fun `adapter performance testing`() {
+
+        val recycler = givenRecycler()
+
+        val runs = mutableListOf<PerformanceTestsResults>()
+
+        givenPerformancePackageList().forEach { pack ->
+            val adapter = buildAdapter(listOf(pack.block))
+            val holder = adapter.onCreateViewHolder(recycler, pack.holderId)
+
+            check(holder.javaClass.canonicalName == pack.className)
+
+            for (i in 1..WARMUP_RUNS) {
+                adapter.bindViewHolder(holder, 0)
+            }
+
+            val start = System.nanoTime()
+            for (i in 1..TEST_RUNS) {
+                adapter.bindViewHolder(holder, 0)
+            }
+            runs.add(
+                PerformanceTestsResults(
+                    ((System.nanoTime() - start) / TEST_RUNS.toDouble()).roundToLong(),
+                    holder.javaClass.simpleName + ": " + pack.scenarioName
+                )
+            )
+        }
+
+        println("# Performance Test Results")
+
+        runs
+            .apply { sortBy { it.first } }
+            .forEach {
+                println("${it.second}: ${it.first}")
+            }
+    }
+
+    private fun givenPerformancePackageList() = listOf(
+        PerformancePackage(
+            Types.HOLDER_PICTURE,
+            "Empty Picture",
+            givenPicture(),
+            Picture::class.qualifiedName!!
+        ),
+        PerformancePackage(Types.HOLDER_TITLE, "Title", givenTitle(), Document::class.qualifiedName!!)
+    )
+
     private fun givenRecycler() = RecyclerView(context).apply {
         layoutManager = LinearLayoutManager(context)
     }
+
+    private fun givenTitle() = BlockView.Title.Basic(
+        text = MockDataFactory.randomString(),
+        id = MockDataFactory.randomUuid(),
+        mode = BlockView.Mode.READ,
+        isFocused = false
+    )
+
+    private fun givenPicture() = BlockView.Media.Picture(
+        id = MockDataFactory.randomUuid(),
+        hash = MockDataFactory.randomString(),
+        indent = MockDataFactory.randomInt(),
+        mime = MockDataFactory.randomString(),
+        name = MockDataFactory.randomString(),
+        size = MockDataFactory.randomLong(),
+        url = MockDataFactory.randomString()
+    )
 
     private fun givenVideo() = BlockView.Media.Video(
         id = MockDataFactory.randomUuid(),
@@ -3483,13 +3560,26 @@ class BlockAdapterTest {
         )
     }
 
-    class TestLifecycle (
+    private data class PerformancePackage(
+        val holderId: Int,
+        val scenarioName: String,
+        val block: BlockView,
+        val className: String
+    )
+
+    class TestLifecycle(
         val observers: MutableList<LifecycleObserver> = mutableListOf()
-    ): Lifecycle() {
+    ) : Lifecycle() {
         override fun addObserver(observer: LifecycleObserver) {
             observers.add(observer)
         }
+
         override fun removeObserver(observer: LifecycleObserver) {}
         override fun getCurrentState() = State.DESTROYED
     }
 }
+
+private const val TEST_RUNS = 40000
+private const val WARMUP_RUNS = 1000
+
+private typealias PerformanceTestsResults = Pair<Long, String>

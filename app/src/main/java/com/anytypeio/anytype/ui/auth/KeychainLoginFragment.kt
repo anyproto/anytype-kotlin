@@ -89,7 +89,7 @@ class KeychainLoginFragment :
     private fun setupButtons() {
         binding.loginButton.setOnClickListener {
             vm.onLoginClicked(
-                chain = binding.keychainInputField.text.toString()
+                chain = binding.keychainInputField.text.trim().toString()
             )
         }
         binding.backButton.setOnClickListener { vm.onBackButtonPressed() }

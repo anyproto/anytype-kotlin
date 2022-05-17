@@ -90,7 +90,8 @@ sealed class Command {
                 val ctx: Id,
                 val target: Id,
                 val relation: Id,
-                val targetObjectTypes: List<Id>
+                val targetObjectTypes: List<Id>,
+                val isLocked: Boolean
             ) : OpenObjectRelationScreen.Value()
 
             data class Text(

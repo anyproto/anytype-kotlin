@@ -3482,7 +3482,8 @@ class EditorViewModel(
                                         ctx = context,
                                         target = context,
                                         relation = relationId,
-                                        targetObjectTypes = relation.objectTypes
+                                        targetObjectTypes = relation.objectTypes,
+                                        isLocked = mode == EditorMode.Locked
                                     )
                                 )
                             }
@@ -3565,7 +3566,8 @@ class EditorViewModel(
                                         ctx = context,
                                         target = context,
                                         relation = relationId,
-                                        targetObjectTypes = relation.objectTypes
+                                        targetObjectTypes = relation.objectTypes,
+                                        isLocked = mode == EditorMode.Locked
                                     )
                                 )
                             }

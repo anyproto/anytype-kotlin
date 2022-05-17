@@ -603,24 +603,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment() {
     override fun releaseDependencies() {
         componentManager().objectSetObjectRelationValueComponent.release(ctx)
     }
-
-    companion object {
-        fun new(
-            ctx: Id,
-            target: Id,
-            relation: Id,
-            dataview: Id,
-            viewer: Id
-        ) = RelationValueDVFragment().apply {
-            arguments = bundleOf(
-                CTX_KEY to ctx,
-                TARGET_KEY to target,
-                RELATION_KEY to relation,
-                DATAVIEW_KEY to dataview,
-                VIEWER_KEY to viewer
-            )
-        }
-    }
 }
 
 class RelationValueFragment : RelationValueBaseFragment() {
@@ -783,13 +765,15 @@ class RelationValueFragment : RelationValueBaseFragment() {
             ctx: Id,
             target: Id,
             relation: Id,
-            targetObjectTypes: List<Id>
+            targetObjectTypes: List<Id>,
+            isLocked: Boolean = false
         ) = RelationValueFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
                 RELATION_KEY to relation,
-                TARGET_TYPES_KEY to targetObjectTypes
+                TARGET_TYPES_KEY to targetObjectTypes,
+                IS_LOCKED_KEY to isLocked
             )
         }
     }

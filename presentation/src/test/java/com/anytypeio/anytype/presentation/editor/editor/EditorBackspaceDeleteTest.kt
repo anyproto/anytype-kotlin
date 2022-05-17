@@ -4,9 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.StubBulleted
+import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubCheckbox
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubNumbered
+import com.anytypeio.anytype.core_models.StubQuote
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubToggle
 import com.anytypeio.anytype.core_models.ext.content
@@ -63,6 +65,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                             && style != Block.Content.Text.Style.BULLET
                             && style != Block.Content.Text.Style.CHECKBOX
                             && style != Block.Content.Text.Style.NUMBERED
+                            && style != Block.Content.Text.Style.QUOTE
                 }.random()
             )
         )
@@ -176,7 +179,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                             && style != Block.Content.Text.Style.BULLET
                             && style != Block.Content.Text.Style.CHECKBOX
                             && style != Block.Content.Text.Style.NUMBERED
-
+                            && style != Block.Content.Text.Style.QUOTE
                 }.random()
             )
         )
@@ -296,6 +299,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                             && style != Block.Content.Text.Style.BULLET
                             && style != Block.Content.Text.Style.CHECKBOX
                             && style != Block.Content.Text.Style.NUMBERED
+                            && style != Block.Content.Text.Style.QUOTE
                 }.random()
             )
         )
@@ -772,4 +776,54 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             )
         }
     }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in empty quote block`() {
+
+        // SETUP
+
+        val quote = StubQuote()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, quote.id)
+        )
+
+        val document = listOf(page, header, title, quote)
+
+        stubOpenDocument(document = document)
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = quote.id,
+                hasFocus = true
+            )
+            onEmptyBlockBackspaceClicked(id = quote.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(quote.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in empty callout block`() {
+        // Add test when callout block is ready.
+    }
+
 }

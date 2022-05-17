@@ -89,3 +89,33 @@ fun StubNumbered(
     children = children,
     fields = Block.Fields.empty()
 )
+
+fun StubQuote(
+    text: String = MockDataFactory.randomString(),
+    children: List<Id> = emptyList(),
+    marks: List<Block.Content.Text.Mark> = emptyList()
+): Block = Block(
+    id = MockDataFactory.randomUuid(),
+    content = Block.Content.Text(
+        text = text,
+        style = Block.Content.Text.Style.QUOTE,
+        marks = marks
+    ),
+    children = children,
+    fields = Block.Fields.empty()
+)
+
+fun StubCallout(
+    text: String = MockDataFactory.randomString(),
+    children: List<Id> = emptyList(),
+    marks: List<Block.Content.Text.Mark> = emptyList()
+): Block = Block(
+    id = MockDataFactory.randomUuid(),
+    content = Block.Content.Text(
+        text = text,
+        style = Block.Content.Text.Style.CALLOUT,
+        marks = marks
+    ),
+    children = children,
+    fields = Block.Fields.empty()
+)

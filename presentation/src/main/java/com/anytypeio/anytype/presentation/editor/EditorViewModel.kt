@@ -100,6 +100,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
 import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
 import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
+import com.anytypeio.anytype.presentation.editor.editor.ext.isStyleClearable
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.singleStylingMode
@@ -1392,7 +1393,7 @@ class EditorViewModel(
         val position = views.indexOfFirst { it.id == id }
         if (position > 0) {
             val current = views[position]
-            if (current is BlockView.Text && current.isListBlock) {
+            if (current is BlockView.Text && current.isStyleClearable()) {
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
                         Intent.Text.UpdateStyle(

@@ -1016,3 +1016,7 @@ fun List<BlockView>.fillTableOfContents(): List<BlockView> {
         }
     }
 }
+
+fun BlockView.Text.isStyleClearable() : Boolean {
+    return this.isListBlock || this is BlockView.Text.Highlight
+}

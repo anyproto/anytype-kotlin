@@ -2,7 +2,10 @@ package com.anytypeio.anytype.core_ui.widgets.text
 
 import android.content.Context
 import android.text.Editable
-import android.text.InputType.*
+import android.text.InputType.TYPE_CLASS_TEXT
+import android.text.InputType.TYPE_NULL
+import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+import android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.DragEvent
@@ -10,7 +13,12 @@ import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatEditText
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
-import com.anytypeio.anytype.library_syntax_highlighter.*
+import com.anytypeio.anytype.library_syntax_highlighter.Syntax
+import com.anytypeio.anytype.library_syntax_highlighter.SyntaxHighlighter
+import com.anytypeio.anytype.library_syntax_highlighter.SyntaxTextWatcher
+import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
+import com.anytypeio.anytype.library_syntax_highlighter.obtainGenericSyntaxRules
+import com.anytypeio.anytype.library_syntax_highlighter.obtainSyntaxRules
 import timber.log.Timber
 
 class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
@@ -49,12 +57,13 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     private fun setup() {
         enableEditMode()
+        super.addTextChangedListener(MonospaceTabTextWatcher(paint.measureText(MEASURING_CHAR)))
     }
 
     private fun setupSyntaxHighlighter() {
         addRules(context.obtainSyntaxRules(Syntaxes.KOTLIN))
         highlight()
-        addTextChangedListener(syntaxTextWatcher)
+        super.addTextChangedListener(syntaxTextWatcher)
     }
 
     fun enableEditMode() {
@@ -72,7 +81,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     }
 
     override fun addTextChangedListener(watcher: TextWatcher) {
-        if (watcher !is SyntaxTextWatcher) watchers.add(watcher)
+        watchers.add(watcher)
         super.addTextChangedListener(watcher)
     }
 
@@ -137,3 +146,5 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         return editorTouchProcessor.process(this, event)
     }
 }
+
+private const val MEASURING_CHAR = " "

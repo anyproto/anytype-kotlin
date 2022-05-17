@@ -221,6 +221,8 @@ sealed class BlockView : ViewType {
         abstract override var cursor: Int?
         abstract override val alignment: Alignment?
 
+        val isListBlock: Boolean get() = (this is Bulleted || this is Checkbox || this is Numbered || this is Toggle)
+
         /**
          * UI-model for a basic paragraph block.
          * @property id block's id

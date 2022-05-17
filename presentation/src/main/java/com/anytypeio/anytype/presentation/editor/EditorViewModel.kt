@@ -1391,25 +1391,38 @@ class EditorViewModel(
         Timber.d("onEmptyBlockBackspaceClicked, id:[$id]")
         val position = views.indexOfFirst { it.id == id }
         if (position > 0) {
-            val previous = views[position.dec()]
-            if (previous !is BlockView.Text
-                && previous !is BlockView.Title
-                && previous !is BlockView.Description
-                && previous !is BlockView.FeaturedRelation
-            ) {
+            val current = views[position]
+            if (current is BlockView.Text && current.isListBlock) {
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
-                        Intent.CRUD.Unlink(
+                        Intent.Text.UpdateStyle(
                             context = context,
-                            targets = listOf(previous.id),
-                            previous = null,
-                            next = null,
-                            cursor = null
+                            targets = listOf(id),
+                            style = Content.Text.Style.P
                         )
                     )
                 }
             } else {
-                proceedWithUnlinking(target = id)
+                val previous = views[position.dec()]
+                if (previous !is BlockView.Text
+                    && previous !is BlockView.Title
+                    && previous !is BlockView.Description
+                    && previous !is BlockView.FeaturedRelation
+                ) {
+                    viewModelScope.launch {
+                        orchestrator.proxies.intents.send(
+                            Intent.CRUD.Unlink(
+                                context = context,
+                                targets = listOf(previous.id),
+                                previous = null,
+                                next = null,
+                                cursor = null
+                            )
+                        )
+                    }
+                } else {
+                    proceedWithUnlinking(target = id)
+                }
             }
         }
     }

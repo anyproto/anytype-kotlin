@@ -3,8 +3,15 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.StubBulleted
+import com.anytypeio.anytype.core_models.StubCheckbox
+import com.anytypeio.anytype.core_models.StubHeader
+import com.anytypeio.anytype.core_models.StubNumbered
+import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.StubToggle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -17,6 +24,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyZeroInteractions
 
 class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
@@ -26,35 +34,19 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    val title = StubTitle()
+
+    val header = StubHeader(children = listOf(title.id))
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
     }
 
     @Test
-    fun `should focus parent text block when its child is deleted`() {
+    fun `should focus parent text block - when its child is deleted`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val child = Block(
             id = "CHILD",
@@ -64,7 +56,13 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 text = "",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.values().filter { style ->
-                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION && style != Block.Content.Text.Style.CALLOUT
+                    style != Block.Content.Text.Style.TITLE
+                            && style != Block.Content.Text.Style.DESCRIPTION
+                            && style != Block.Content.Text.Style.CALLOUT
+                            && style != Block.Content.Text.Style.TOGGLE
+                            && style != Block.Content.Text.Style.BULLET
+                            && style != Block.Content.Text.Style.CHECKBOX
+                            && style != Block.Content.Text.Style.NUMBERED
                 }.random()
             )
         )
@@ -148,29 +146,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should focus previous nested text block when the next one is deleted`() {
+    fun `should focus previous nested text block - when the next one is deleted`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val child1 = Block(
             id = "CHILD1",
@@ -191,7 +169,14 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 text = "",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.values().filter { style ->
-                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION && style != Block.Content.Text.Style.CALLOUT
+                    style != Block.Content.Text.Style.TITLE
+                            && style != Block.Content.Text.Style.DESCRIPTION
+                            && style != Block.Content.Text.Style.CALLOUT
+                            && style != Block.Content.Text.Style.TOGGLE
+                            && style != Block.Content.Text.Style.BULLET
+                            && style != Block.Content.Text.Style.CHECKBOX
+                            && style != Block.Content.Text.Style.NUMBERED
+
                 }.random()
             )
         )
@@ -281,29 +266,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should focus the previous nested textual block when the next text block is deleted`() {
+    fun `should focus the previous nested textual block - when the next text block is deleted`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val child1 = Block(
             id = "CHILD1-TEXT",
@@ -324,7 +289,13 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.values().filter { style ->
-                    style != Block.Content.Text.Style.TITLE && style != Block.Content.Text.Style.DESCRIPTION && style != Block.Content.Text.Style.CALLOUT
+                    style != Block.Content.Text.Style.TITLE
+                            && style != Block.Content.Text.Style.DESCRIPTION
+                            && style != Block.Content.Text.Style.CALLOUT
+                            && style != Block.Content.Text.Style.TOGGLE
+                            && style != Block.Content.Text.Style.BULLET
+                            && style != Block.Content.Text.Style.CHECKBOX
+                            && style != Block.Content.Text.Style.NUMBERED
                 }.random()
             )
         )
@@ -414,29 +385,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should delete the previous bookmark when pressing backspace in an empty text block following this bookmark`() {
+    fun `should delete the previous bookmark - when pressing backspace in an empty text block following this bookmark`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val bookmark = Block(
             id = MockDataFactory.randomString(),
@@ -538,29 +489,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should delete the previous bookmark when pressing backspace in an non-empty text block following this bookmark`() {
+    fun `should delete the previous bookmark - when pressing backspace in an non-empty text block following this bookmark`() {
 
         // SETUP
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                style = Block.Content.Text.Style.TITLE,
-                marks = emptyList()
-            ),
-            children = emptyList(),
-            fields = Block.Fields.empty()
-        )
-
-        val header = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            fields = Block.Fields.empty(),
-            children = listOf(title.id)
-        )
 
         val bookmark = Block(
             id = MockDataFactory.randomString(),
@@ -661,6 +592,182 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 UnlinkBlocks.Params(
                     context = root,
                     targets = listOf(bookmark.id)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in empty checkbox block`() {
+
+        // SETUP
+
+        val checkbox = StubCheckbox()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, checkbox.id)
+        )
+
+        val document = listOf(page, header, title, checkbox)
+
+        stubOpenDocument(document = document)
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = checkbox.id,
+                hasFocus = true
+            )
+            onEmptyBlockBackspaceClicked(id = checkbox.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(checkbox.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in empty bulleted block`() {
+
+        // SETUP
+
+        val bulleted = StubBulleted()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, bulleted.id)
+        )
+
+        val document = listOf(page, header, title, bulleted)
+
+        stubOpenDocument(document = document)
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = bulleted.id,
+                hasFocus = true
+            )
+            onEmptyBlockBackspaceClicked(id = bulleted.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(bulleted.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in empty numbered block`() {
+
+        // SETUP
+
+        val numbered = StubNumbered()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, numbered.id)
+        )
+
+        val document = listOf(page, header, title, numbered)
+
+        stubOpenDocument(document = document)
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = numbered.id,
+                hasFocus = true
+            )
+            onEmptyBlockBackspaceClicked(id = numbered.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(numbered.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in empty toggle block`() {
+
+        // SETUP
+
+        val toggle = StubToggle()
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, toggle.id)
+        )
+
+        val document = listOf(page, header, title, toggle)
+
+        stubOpenDocument(document = document)
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = toggle.id,
+                hasFocus = true
+            )
+            onEmptyBlockBackspaceClicked(id = toggle.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(toggle.id),
+                    style = Block.Content.Text.Style.P
                 )
             )
         }

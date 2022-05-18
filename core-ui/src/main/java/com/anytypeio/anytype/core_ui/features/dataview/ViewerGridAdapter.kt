@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.dataview
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
@@ -35,6 +36,13 @@ class ViewerGridAdapter(
         val binding = ItemViewerGridRowBinding.inflate(
             inflater, parent, false
         )
+
+        with(parent.context.resources) {
+            val headerMargin = getDimensionPixelSize(R.dimen.dv_grid_name_margin_end)
+            binding.headerContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+                width = displayMetrics.widthPixels - headerMargin * 2
+            }
+        }
 
         val horizontalDivider = binding.root.context.drawable(R.drawable.divider_dv_horizontal_2)
 

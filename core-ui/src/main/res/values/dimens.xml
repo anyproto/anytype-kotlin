@@ -155,6 +155,7 @@
     <dimen name="dv_grid_cell_height">20dp</dimen>
     <dimen name="dv_grid_cell_description_height">22dp</dimen>
     <dimen name="dv_grid_cell_width">144dp</dimen>
+    <dimen name="dv_grid_name_margin_end">16dp</dimen>
 
     <dimen name="dv_tag_left_right_padding">5dp</dimen>
     <dimen name="dv_tag_text_size">15sp</dimen>

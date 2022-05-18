@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
-        android:background="@drawable/rectangle_bookmark_placeholder">
+        android:background="@drawable/rectangle_media_block_placeholder">
 
         <TextView
             android:id="@+id/errorBookmarkUrl"
@@ -23,7 +23,7 @@
             android:maxLines="1"
             android:layout_gravity="center_vertical"
             android:text="@string/bookmark_error"
-            android:textColor="#2C2B27"
+            android:textColor="@color/text_tertiary"
             android:textSize="15sp"
             tools:text="error url medium.com/s/story/The Akari pull request as ready for review" />
 

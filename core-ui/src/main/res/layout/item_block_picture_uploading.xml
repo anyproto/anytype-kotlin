@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
-        android:background="@drawable/rectangle_bookmark_placeholder">
+        android:background="@drawable/rectangle_media_block_placeholder">
 
         <ImageView
             android:id="@+id/icPicture"

@@ -1,9 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
 import android.content.Context
+import android.content.res.Resources
+import androidx.annotation.ColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetColorBinding
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
@@ -13,7 +17,7 @@ class ColorMenuHolder(
 
     fun bind(item: SlashItem.Color) = with(binding) {
         circle.isSelected = item.isSelected
-        circle.innerColor = item.colorHex
+        circle.innerColor = view.context.resources.getColor(item)
         val capitalizedTitle = view.context.getTitle(item.themeColor)
         title.text = when (item) {
             is SlashItem.Color.Text -> capitalizedTitle
@@ -21,6 +25,14 @@ class ColorMenuHolder(
                 R.string.slash_widget_background_item,
                 capitalizedTitle
             )
+        }
+    }
+
+    @ColorInt
+    private fun Resources.getColor(item: SlashItem.Color): Int {
+        return when (item) {
+            is SlashItem.Color.Text -> dark(item.themeColor)
+            is SlashItem.Color.Background -> veryLight(item.themeColor)
         }
     }
 

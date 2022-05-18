@@ -14,12 +14,8 @@ class StatusWidget @JvmOverloads constructor(
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
     fun setColor(color: String?) {
-        val defaultTextColor = resources.getColor(R.color.text_primary, null)
-        val themeColor = ThemeColor.values().find { it.code == color }
-        if (themeColor != null && themeColor != ThemeColor.DEFAULT) {
-            setTextColor(resources.dark(themeColor, defaultTextColor))
-        } else {
-            setTextColor(defaultTextColor)
-        }
+        val defaultTextColor = context.getColor(R.color.text_primary)
+        val themeColor = ThemeColor.values().find { it.code == color } ?: ThemeColor.DEFAULT
+        setTextColor(resources.dark(themeColor, defaultTextColor))
     }
 }

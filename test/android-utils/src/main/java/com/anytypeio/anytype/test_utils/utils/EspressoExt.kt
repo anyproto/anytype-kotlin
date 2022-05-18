@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.test_utils.utils
 
+import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
@@ -65,15 +67,15 @@ fun ViewInteraction.checkIsNotSelected() {
     check(matches(not(ViewMatchers.isSelected())))
 }
 
-fun ViewInteraction.checkHasText(resId: Int) {
+fun ViewInteraction.checkHasText(@IdRes resId: Int) {
     check(matches(ViewMatchers.withText(resId)))
 }
 
-fun ViewInteraction.checkHasTextColor(color: Int) {
+fun ViewInteraction.checkHasTextColor(@ColorInt color: Int) {
     check(matches(WithTextColor(color)))
 }
 
-fun ViewInteraction.checkHasBackgroundColor(color: Int) {
+fun ViewInteraction.checkHasBackgroundColor(@ColorInt color: Int) {
     check(matches(WithBackgroundColor(color)))
 }
 

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -40,8 +41,10 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
-import com.anytypeio.anytype.test_utils.utils.espresso.WithTextColor
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
 import com.anytypeio.anytype.test_utils.utils.espresso.WithTextColorRes
+import com.anytypeio.anytype.test_utils.utils.resources
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -356,13 +359,13 @@ class DisplayRelationTagValueTest {
 //        }
 
         onView(rvMatcher.atPositionOnView(0, R.id.tvTagName)).apply {
-            check(matches(withText(option2.text)))
-            check(matches(WithTextColor(option2Color.text)))
+            checkHasText(option2.text)
+            checkHasTextColor(resources.dark(option2Color))
         }
 
         onView(rvMatcher.atPositionOnView(1, R.id.tvTagName)).apply {
-            check(matches(withText(option3.text)))
-            check(matches(WithTextColorRes(R.color.default_filter_tag_text_color)))
+            checkHasText(option3.text)
+            check(matches(WithTextColorRes(com.anytypeio.anytype.core_ui.R.color.text_primary)))
         }
     }
 
@@ -442,7 +445,7 @@ class DisplayRelationTagValueTest {
         val rvMatcher = withRecyclerView(R.id.recycler)
 
         onView(rvMatcher.atPositionOnView(0, R.id.tvTagName)).apply {
-            check(matches(WithTextColorRes(R.color.default_filter_tag_text_color)))
+            check(matches(WithTextColorRes(com.anytypeio.anytype.core_ui.R.color.text_primary)))
         }
     }
 

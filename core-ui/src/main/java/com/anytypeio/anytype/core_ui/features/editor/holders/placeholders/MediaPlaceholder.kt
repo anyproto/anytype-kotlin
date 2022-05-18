@@ -7,7 +7,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
-import com.anytypeio.anytype.core_ui.extensions.lighter
+import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -93,7 +93,7 @@ abstract class MediaPlaceholder(binding: ItemBlockMediaPlaceholderBinding) :
         if (!background.isNullOrEmpty()) {
             val value = ThemeColor.values().find { value -> value.code == background }
             if (value != null && value != ThemeColor.DEFAULT) {
-                card.setCardBackgroundColor(card.resources.lighter(value, 0))
+                card.setCardBackgroundColor(card.resources.veryLight(value, 0))
             } else {
                 Timber.e("Could not find value for background color: $background, setting background to null")
                 card.setCardBackgroundColor(0)

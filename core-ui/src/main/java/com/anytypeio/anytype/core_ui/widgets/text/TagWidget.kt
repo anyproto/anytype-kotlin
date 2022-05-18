@@ -34,15 +34,10 @@ class TagWidget @JvmOverloads constructor(
     }
 
     private fun setColor(color: String?) {
-        val defaultTextColor = resources.getColor(R.color.text_primary, null)
-        val defaultBackground = resources.getColor(R.color.shape_primary, null)
-        val themeColor = ThemeColor.values().find { it.code == color }
-        if (themeColor != null && themeColor != ThemeColor.DEFAULT) {
-            background.setDrawableColor(resources.light(themeColor, defaultBackground))
-            setTextColor(resources.dark(themeColor, defaultTextColor))
-        } else {
-            background.setDrawableColor(defaultBackground)
-            setTextColor(defaultTextColor)
-        }
+        val defaultTextColor = context.getColor(R.color.text_primary)
+        val defaultBackground = context.getColor(R.color.shape_primary)
+        val themeColor = ThemeColor.values().find { it.code == color } ?: ThemeColor.DEFAULT
+        setTextColor(resources.dark(themeColor, defaultTextColor))
+        background.setDrawableColor(resources.light(themeColor, defaultBackground))
     }
 }

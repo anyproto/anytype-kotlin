@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
@@ -39,6 +40,7 @@ import com.anytypeio.anytype.test_utils.utils.matchView
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.performClick
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.resources
 import com.anytypeio.anytype.test_utils.utils.type
 import com.anytypeio.anytype.ui.relations.add.BaseAddOptionsRelationFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
@@ -407,9 +409,9 @@ class AddRelationStatusValueTest {
         )
 
         R.id.recycler.rVMatcher().apply {
-            onItemView(0, R.id.tvStatusName).checkHasText(option1.text)
-            onItemView(0, R.id.tvStatusName).checkHasTextColor(option1Color.text)
             checkIsRecyclerSize(1)
+            onItemView(0, R.id.tvStatusName).checkHasText(option1.text)
+            onItemView(0, R.id.tvStatusName).checkHasTextColor(resources.dark(option1Color))
         }
     }
 
@@ -624,7 +626,7 @@ class AddRelationStatusValueTest {
     }
 
     private fun launchFragment(args: Bundle): FragmentScenario<TestRelationOptionValueDVAddFragment> {
-        return launchFragmentInContainer<TestRelationOptionValueDVAddFragment>(
+        return launchFragmentInContainer(
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )

@@ -5,6 +5,7 @@ import androidx.core.text.getSpans
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -52,7 +53,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = holder.content.currentTextColor,
-            expected = ThemeColor.DEFAULT.text
+            expected = context.resources.dark(ThemeColor.DEFAULT)
         )
     }
 
@@ -85,7 +86,7 @@ class BlockAdapterCheckboxTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = holder.content.currentTextColor,
-            expected = ThemeColor.DEFAULT.text
+            expected = context.resources.dark(ThemeColor.DEFAULT)
         )
 
         val spans = holder.content.text!!.getSpans<CheckedCheckboxColorSpan>(0)

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.BACKGROUND_COLOR_CHANGED
@@ -196,7 +197,7 @@ class BlockAdapterTest {
         val color = holder.content.currentTextColor
 
         assertEquals(
-            expected = ThemeColor.BLUE.text,
+            expected = context.resources.dark(ThemeColor.BLUE),
             actual = color
         )
     }
@@ -344,7 +345,7 @@ class BlockAdapterTest {
         // Testing
 
         assertEquals(
-            expected = ThemeColor.BLUE.text,
+            expected = context.resources.dark(ThemeColor.BLUE),
             actual = holder.content.currentTextColor
         )
 

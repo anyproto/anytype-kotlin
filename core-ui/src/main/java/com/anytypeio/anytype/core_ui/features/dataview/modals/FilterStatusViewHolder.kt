@@ -5,6 +5,7 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterStatusBinding
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -12,7 +13,8 @@ import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import timber.log.Timber
 
-class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) : FilterViewHolder(binding.root) {
+class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) :
+    FilterViewHolder(binding.root) {
 
     override val textTitle: TextView get() = binding.tvTitle
     override val textCondition: TextView get() = binding.tvCondition
@@ -43,16 +45,11 @@ class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) : Fil
     }
 
     private fun setTextColor(view: TextView, color: String) {
-        if (color.isNotBlank()) {
-            val value = ThemeColor.values().find { value -> value.code == color }
-            if (value != null)
-                view.setTextColor(value.text)
-            else{
-                Timber.e("Could not find value for text color: $color")
-                view.setTextColor(view.context.color(R.color.black))
-            }
-        } else {
-            view.setTextColor(view.context.color(R.color.black))
+        val defaultColor = view.context.color(R.color.default_filter_tag_text_color)
+        val value = ThemeColor.values().find { value -> value.code == color }
+        if (value == null) {
+            Timber.w("Could not find value for text color: $color")
         }
+        view.setTextColor(view.resources.dark(value ?: ThemeColor.DEFAULT, defaultColor))
     }
 }

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -43,6 +44,7 @@ import com.anytypeio.anytype.test_utils.utils.matchView
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.performClick
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.resources
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -216,7 +218,7 @@ class EditRelationTagValueTest {
 
         with(R.id.recycler.rVMatcher()) {
             onItemView(0, R.id.tvTagName).checkHasText(option2.text)
-            onItemView(0, R.id.tvTagName).checkHasTextColor(option2Color.text)
+            onItemView(0, R.id.tvTagName).checkHasTextColor(resources.dark(option2Color))
             onItemView(0, R.id.btnRemoveTag).checkIsNotDisplayed()
             onItemView(0, R.id.btnDragAndDropTag).checkIsNotDisplayed()
             onItemView(1, R.id.tvTagName).checkHasText(option3.text)
@@ -231,7 +233,7 @@ class EditRelationTagValueTest {
 
         with(R.id.recycler.rVMatcher()) {
             onItemView(0, R.id.tvTagName).checkHasText(option2.text)
-            onItemView(0, R.id.tvTagName).checkHasTextColor(option2Color.text)
+            onItemView(0, R.id.tvTagName).checkHasTextColor(resources.dark(option2Color))
             onItemView(0, R.id.btnRemoveTag).checkIsDisplayed()
             onItemView(0, R.id.btnDragAndDropTag).checkIsDisplayed()
             onItemView(1, R.id.tvTagName).checkHasText(option3.text)
@@ -344,7 +346,6 @@ class EditRelationTagValueTest {
                 target = dv.id,
                 record = target,
                 values = mapOf(
-                    ObjectSetConfig.ID_KEY to target,
                     relationKey to listOf(option2.id)
                 )
             )

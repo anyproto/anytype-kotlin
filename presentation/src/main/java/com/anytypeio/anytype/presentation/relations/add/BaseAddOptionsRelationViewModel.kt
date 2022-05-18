@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 abstract class BaseAddOptionsRelationViewModel(
@@ -36,6 +37,8 @@ abstract class BaseAddOptionsRelationViewModel(
 
     val isMultiple = MutableStateFlow(true)
 
+    private val logger = Timber.tag("BaseAddOptionsRelationViewModel")
+
     init {
         viewModelScope.launch {
             allRelationOptions.collect { all ->
@@ -45,7 +48,10 @@ abstract class BaseAddOptionsRelationViewModel(
         viewModelScope.launch {
             choosingRelationOptions.combine(query) { choosing, query ->
                 filterRelationsBy(query, allRelationOptions.value.all, choosing)
-            }.collect { ui.value = it }
+            }.collect {
+                logger.i("Update ui: $it")
+                ui.value = it
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.test_utils.utils.checkIsSelected
 import com.anytypeio.anytype.test_utils.utils.onItem
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.resources
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.checkHasMarginStart
 import com.anytypeio.anytype.utils.checkHasPaddingLeft
@@ -383,7 +385,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            backgroundColor = background2.code,
+            backgroundColor = background3.code,
             content = Block.Content.RelationBlock(
                 key = relation3.key
             )
@@ -393,7 +395,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            backgroundColor = background2.code,
+            backgroundColor = background4.code,
             content = Block.Content.RelationBlock(
                 key = relation4.key
             )
@@ -431,10 +433,10 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         with(R.id.recycler.rVMatcher()) {
             checkIsRecyclerSize(7)
-            onItem(2).checkHasBackgroundColor(background1.background)
-            onItem(3).checkHasBackgroundColor(background2.background)
-            onItem(4).checkHasBackgroundColor(background3.background)
-            onItem(5).checkHasBackgroundColor(background4.background)
+            onItem(2).checkHasBackgroundColor(resources.veryLight(background1))
+            onItem(3).checkHasBackgroundColor(resources.veryLight(background2))
+            onItem(4).checkHasBackgroundColor(resources.veryLight(background3))
+            onItem(5).checkHasBackgroundColor(resources.veryLight(background4))
             onItem(6).checkHasNoBackground()
         }
 

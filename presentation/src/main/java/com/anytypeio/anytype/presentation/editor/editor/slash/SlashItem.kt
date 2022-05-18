@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor.editor.slash
 
-import androidx.annotation.ColorInt
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.const.SlashConst
 import com.anytypeio.anytype.core_utils.const.SlashConst.SLASH_OTHER_TOC_ABBREVIATION
@@ -404,8 +403,6 @@ sealed class SlashItem {
 
         abstract val isSelected: Boolean
         abstract val themeColor: ThemeColor
-        @get:ColorInt
-        abstract val colorHex: Int
 
         override fun getSearchName(): String = themeColor.code
         override fun getAbbreviation(): List<String>? = null
@@ -413,18 +410,12 @@ sealed class SlashItem {
         data class Text(
             override val themeColor: ThemeColor,
             override val isSelected: Boolean,
-        ) : Color() {
-            @get:ColorInt
-            override val colorHex: Int = themeColor.text
-        }
+        ) : Color()
 
         data class Background(
             override val themeColor: ThemeColor,
             override val isSelected: Boolean,
-        ) : Color() {
-            @get:ColorInt
-            override val colorHex: Int = themeColor.background
-        }
+        ) : Color()
     }
     //endregion
 }

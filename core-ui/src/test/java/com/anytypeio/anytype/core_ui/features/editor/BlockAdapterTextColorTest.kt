@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor
 import android.os.Build
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -57,7 +58,7 @@ class BlockAdapterTextColorTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = holder.content.currentTextColor,
-            expected = ThemeColor.BLUE.text
+            expected = context.resources.dark(ThemeColor.BLUE)
         )
 
         val payload: MutableList<Any> = mutableListOf(
@@ -74,7 +75,7 @@ class BlockAdapterTextColorTest : BlockAdapterTestSetup() {
 
         assertEquals(
             actual = holder.content.currentTextColor,
-            expected = ThemeColor.DEFAULT.text
+            expected = context.resources.dark(ThemeColor.DEFAULT)
         )
     }
 }

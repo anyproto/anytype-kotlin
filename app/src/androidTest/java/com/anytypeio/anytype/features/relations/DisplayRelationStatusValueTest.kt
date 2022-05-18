@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -40,8 +41,10 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
-import com.anytypeio.anytype.test_utils.utils.espresso.WithTextColor
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
 import com.anytypeio.anytype.test_utils.utils.espresso.WithTextColorRes
+import com.anytypeio.anytype.test_utils.utils.resources
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -102,7 +105,7 @@ class DisplayRelationStatusValueTest {
         TestRelationValueDVFragment.testVmFactory = RelationValueDVViewModel.Factory(
             relations = DataViewObjectRelationProvider(state),
             values = DataViewObjectValueProvider(state, session),
-            details = object: ObjectDetailProvider {
+            details = object : ObjectDetailProvider {
                 override fun provide(): Map<Id, Block.Fields> = state.value.details
             },
             types = object : ObjectTypesProvider {
@@ -352,8 +355,8 @@ class DisplayRelationStatusValueTest {
         val rvMatcher = withRecyclerView(R.id.recycler)
 
         onView(rvMatcher.atPositionOnView(0, R.id.tvStatusName)).apply {
-            check(matches(withText(option2.text)))
-            check(matches(WithTextColor(option2Color.text)))
+            checkHasText(option2.text)
+            checkHasTextColor(resources.dark(option2Color))
         }
     }
 
@@ -433,7 +436,7 @@ class DisplayRelationStatusValueTest {
         val rvMatcher = withRecyclerView(R.id.recycler)
 
         onView(rvMatcher.atPositionOnView(0, R.id.tvStatusName)).apply {
-            check(matches(WithTextColorRes(R.color.default_filter_tag_text_color)))
+            check(matches(WithTextColorRes(com.anytypeio.anytype.core_ui.R.color.text_primary)))
         }
     }
 

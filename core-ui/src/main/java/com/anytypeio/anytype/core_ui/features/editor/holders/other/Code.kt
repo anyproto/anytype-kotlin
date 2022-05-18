@@ -12,7 +12,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
-import com.anytypeio.anytype.core_ui.extensions.lighter
+import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -216,7 +216,7 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     private fun setBackgroundColor(color: String? = null) {
         val value = ThemeColor.values().find { value -> value.code == color }
         if (value != null && value != ThemeColor.DEFAULT) {
-            (root.background as? ColorDrawable)?.color = root.resources.lighter(value, 0)
+            (root.background as? ColorDrawable)?.color = root.resources.veryLight(value, 0)
         } else {
             val defaultBackgroundColor =
                 content.context.resources.getColor(R.color.shape_tertiary, null)

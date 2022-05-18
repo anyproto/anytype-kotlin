@@ -4,11 +4,18 @@ import android.content.Context
 import android.content.res.Resources
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
-fun Resources.dark(color: ThemeColor, default: Int): Int = when (color) {
-    ThemeColor.DEFAULT -> default
+@ColorInt
+fun Resources.dark(
+    color: ThemeColor,
+    @ColorInt
+    default: Int? = null
+): Int = when (color) {
+    // TODO pass Theme
+    ThemeColor.DEFAULT -> default ?: getColor(R.color.palette_dark_default, null)
     ThemeColor.GREY -> getColor(R.color.palette_dark_grey, null)
     ThemeColor.YELLOW -> getColor(R.color.palette_dark_yellow, null)
     ThemeColor.ORANGE -> getColor(R.color.palette_dark_orange, null)
@@ -21,8 +28,13 @@ fun Resources.dark(color: ThemeColor, default: Int): Int = when (color) {
     ThemeColor.LIME -> getColor(R.color.palette_dark_lime, null)
 }
 
-fun Resources.light(color: ThemeColor, default: Int): Int = when (color) {
-    ThemeColor.DEFAULT -> default
+@ColorInt
+fun Resources.light(
+    color: ThemeColor,
+    @ColorInt
+    default: Int? = null
+): Int = when (color) {
+    ThemeColor.DEFAULT -> default ?: getColor(R.color.palette_light_default, null)
     ThemeColor.GREY -> getColor(R.color.palette_light_grey, null)
     ThemeColor.YELLOW -> getColor(R.color.palette_light_yellow, null)
     ThemeColor.ORANGE -> getColor(R.color.palette_light_orange, null)
@@ -35,8 +47,13 @@ fun Resources.light(color: ThemeColor, default: Int): Int = when (color) {
     ThemeColor.LIME -> getColor(R.color.palette_light_lime, null)
 }
 
-fun Resources.lighter(color: ThemeColor, default: Int): Int = when (color) {
-    ThemeColor.DEFAULT -> default
+@ColorInt
+fun Resources.veryLight(
+    color: ThemeColor,
+    @ColorInt
+    default: Int? = null
+): Int = when (color) {
+    ThemeColor.DEFAULT -> default ?: getColor(R.color.palette_very_light_default, null)
     ThemeColor.GREY -> getColor(R.color.palette_very_light_grey, null)
     ThemeColor.YELLOW -> getColor(R.color.palette_very_light_yellow, null)
     ThemeColor.ORANGE -> getColor(R.color.palette_very_light_orange, null)
@@ -67,7 +84,7 @@ fun View.setBlockBackgroundColor(color: String?) {
     if (!color.isNullOrEmpty()) {
         val value = ThemeColor.values().find { value -> value.code == color }
         if (value != null && value != ThemeColor.DEFAULT) {
-            setBackgroundColor(resources.lighter(value, 0))
+            setBackgroundColor(resources.veryLight(value, 0))
         } else {
             background = null
         }

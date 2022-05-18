@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.UiController
@@ -17,8 +19,11 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
-
-class WithTextColor(private val expectedColor: Int) : BoundedMatcher<View, TextView>(TextView::class.java) {
+class WithTextColor(
+    @ColorInt
+    private val expectedColor: Int
+) :
+    BoundedMatcher<View, TextView>(TextView::class.java) {
     override fun matchesSafely(item: TextView) = item.currentTextColor == expectedColor
     override fun describeTo(description: Description) {
         description.appendText("with text color:")
@@ -26,7 +31,10 @@ class WithTextColor(private val expectedColor: Int) : BoundedMatcher<View, TextV
     }
 }
 
-class WithBackgroundColor(private val expected: Int) : BoundedMatcher<View, View>(View::class.java) {
+class WithBackgroundColor(
+    @ColorInt
+    private val expected: Int
+) : BoundedMatcher<View, View>(View::class.java) {
     override fun describeTo(description: Description) {
         description.appendText("with background color:")
         description.appendValue(expected)
@@ -48,14 +56,16 @@ class WithoutBackgroundColor : BoundedMatcher<View, View>(View::class.java) {
     }
 }
 
-class WithChildViewCount(private val expectedCount: Int) : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+class WithChildViewCount(private val expectedCount: Int) :
+    BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
     override fun matchesSafely(item: ViewGroup): Boolean = item.childCount == expectedCount
     override fun describeTo(description: Description) {
         description.appendText("ViewGroup with child-count = $expectedCount");
     }
 }
 
-class HasViewGroupChildViewWithText(private val pos: Int, val text: String) : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+class HasViewGroupChildViewWithText(private val pos: Int, val text: String) :
+    BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
 
     private var actual: String? = null
 
@@ -66,6 +76,7 @@ class HasViewGroupChildViewWithText(private val pos: Int, val text: String) : Bo
         actual = child.text.toString()
         return actual == text
     }
+
     override fun describeTo(description: Description) {
         if (actual != null) {
             description.appendText("Should have text [$text] at position: $pos but was: $actual");
@@ -73,7 +84,8 @@ class HasViewGroupChildViewWithText(private val pos: Int, val text: String) : Bo
     }
 }
 
-class HasChildViewWithText(private val pos: Int, val text: String, val target: Int) : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
+class HasChildViewWithText(private val pos: Int, val text: String, val target: Int) :
+    BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
 
     private var actual: String? = null
 
@@ -84,6 +96,7 @@ class HasChildViewWithText(private val pos: Int, val text: String, val target: I
         actual = target.text.toString()
         return actual == text
     }
+
     override fun describeTo(description: Description) {
         if (actual != null) {
             description.appendText("Should have text [$text] at position: $pos but was: $actual");
@@ -91,11 +104,16 @@ class HasChildViewWithText(private val pos: Int, val text: String, val target: I
     }
 }
 
-class WithTextColorRes(private val expectedColorRes: Int) : BoundedMatcher<View, TextView>(TextView::class.java) {
+class WithTextColorRes(
+    @ColorRes
+    private val expectedColorRes: Int
+) :
+    BoundedMatcher<View, TextView>(TextView::class.java) {
     override fun matchesSafely(item: TextView): Boolean {
         val color = ContextCompat.getColor(item.context, expectedColorRes)
         return item.currentTextColor == color
     }
+
     override fun describeTo(description: Description) {
         description.appendText("with text color:")
         description.appendValue(expectedColorRes)

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.test_utils.utils.checkHasTextColor
 import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
+import com.anytypeio.anytype.test_utils.utils.resources
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -501,10 +503,10 @@ class ObjectRelationListTest {
             onItemView(0, R.id.tvSectionName).checkHasText(R.string.other_relations)
             onItemView(1, R.id.tvRelationTitle).checkHasText(name1)
             onItemView(1, R.id.tvRelationValue).checkHasText(option1.text)
-            onItemView(1, R.id.tvRelationValue).checkHasTextColor(color1.text)
+            onItemView(1, R.id.tvRelationValue).checkHasTextColor(resources.dark(color1))
             onItemView(2, R.id.tvRelationTitle).checkHasText(name2)
             onItemView(2, R.id.tvRelationValue).checkHasText(option2.text)
-            onItemView(2, R.id.tvRelationValue).checkHasTextColor(color2.text)
+            onItemView(2, R.id.tvRelationValue).checkHasTextColor(resources.dark(color2))
             checkIsRecyclerSize(3)
         }
     }

@@ -8,8 +8,8 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetMarkupToolbarMainBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.core_ui.extensions.tint
+import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -89,7 +89,7 @@ class MarkupToolbarWidget @JvmOverloads constructor(
             val code = ThemeColor.values().find { it.code == props?.blockBackroundColor }
             if (code != null) {
                 val default = resources.getColor(R.color.background_primary, null)
-                val value = resources.lighter(code, default)
+                val value = resources.veryLight(code, default)
                 backgroundColorCircle.tint(value)
             } else
                 backgroundColorCircle.backgroundTintList = null

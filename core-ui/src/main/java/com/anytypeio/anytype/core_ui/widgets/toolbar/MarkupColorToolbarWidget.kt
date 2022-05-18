@@ -27,8 +27,8 @@ class MarkupColorToolbarWidget @JvmOverloads constructor(
         markupColorAdapter.update(
             ThemeColor.values().map { color ->
                 MarkupColorView.Text(
-                    code = color.title,
-                    isSelected = color.title == code
+                    code = color.code,
+                    isSelected = color.code == code
                 )
             }
         )
@@ -38,8 +38,8 @@ class MarkupColorToolbarWidget @JvmOverloads constructor(
         markupColorAdapter.update(
             ThemeColor.values().map { color ->
                 MarkupColorView.Background(
-                    code = color.title,
-                    isSelected = color.title == code
+                    code = color.code,
+                    isSelected = color.code == code
                 )
             }
         )

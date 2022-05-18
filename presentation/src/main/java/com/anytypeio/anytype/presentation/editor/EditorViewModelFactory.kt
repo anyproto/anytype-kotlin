@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -41,7 +40,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 open class EditorViewModelFactory(
     private val openPage: OpenPage,
     private val closeObject: CloseBlock,
-    private val createPage: CreatePage,
     private val createDocument: CreateDocument,
     private val createObjectSet: CreateObjectSet,
     private val createObject: CreateObject,
@@ -82,7 +80,6 @@ open class EditorViewModelFactory(
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            createPage = createPage,
             createObject = createObject,
             reducer = documentEventReducer,
             urlBuilder = urlBuilder,

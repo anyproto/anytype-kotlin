@@ -15,7 +15,7 @@ class StatusWidget @JvmOverloads constructor(
 
     fun setColor(color: String?) {
         val defaultTextColor = resources.getColor(R.color.text_primary, null)
-        val themeColor = ThemeColor.values().find { it.title == color }
+        val themeColor = ThemeColor.values().find { it.code == color }
         if (themeColor != null && themeColor != ThemeColor.DEFAULT) {
             setTextColor(resources.dark(themeColor, defaultTextColor))
         } else {

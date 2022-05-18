@@ -19,23 +19,23 @@ class StyleTextColorViewHolder(
     private val blue = binding.textColorBlue
     private val ice = binding.textColorIce
     private val teal = binding.textColorTeal
-    private val green = binding.textColorGreen
+    private val lime = binding.textColorGreen
 
     fun bind(
         onStylingEvent: (StylingEvent) -> Unit,
         color: String?
     ) {
-        default.isSelected = color == ThemeColor.DEFAULT.title || color == null
-        grey.isSelected = color == ThemeColor.GREY.title
-        yellow.isSelected = color == ThemeColor.YELLOW.title
-        orange.isSelected = color == ThemeColor.ORANGE.title
-        red.isSelected = color == ThemeColor.RED.title
-        pink.isSelected = color == ThemeColor.PINK.title
-        purple.isSelected = color == ThemeColor.PURPLE.title
-        blue.isSelected = color == ThemeColor.BLUE.title
-        ice.isSelected = color == ThemeColor.ICE.title
-        teal.isSelected = color == ThemeColor.TEAL.title
-        green.isSelected = color == ThemeColor.GREEN.title
+        default.isSelected = color == ThemeColor.DEFAULT.code || color == null
+        grey.isSelected = color == ThemeColor.GREY.code
+        yellow.isSelected = color == ThemeColor.YELLOW.code
+        orange.isSelected = color == ThemeColor.ORANGE.code
+        red.isSelected = color == ThemeColor.RED.code
+        pink.isSelected = color == ThemeColor.PINK.code
+        purple.isSelected = color == ThemeColor.PURPLE.code
+        blue.isSelected = color == ThemeColor.BLUE.code
+        ice.isSelected = color == ThemeColor.ICE.code
+        teal.isSelected = color == ThemeColor.TEAL.code
+        lime.isSelected = color == ThemeColor.LIME.code
 
         default.setOnClickListener {
             onStylingEvent(StylingEvent.Coloring.Text(color = ThemeColor.DEFAULT))
@@ -67,8 +67,8 @@ class StyleTextColorViewHolder(
         teal.setOnClickListener {
             onStylingEvent(StylingEvent.Coloring.Text(color = ThemeColor.TEAL))
         }
-        green.setOnClickListener {
-            onStylingEvent(StylingEvent.Coloring.Text(color = ThemeColor.GREEN))
+        lime.setOnClickListener {
+            onStylingEvent(StylingEvent.Coloring.Text(color = ThemeColor.LIME))
         }
     }
 }

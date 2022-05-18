@@ -5,7 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.*
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterDateBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterStatusBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
@@ -133,7 +137,7 @@ class CreateFilterAdapter(
             fun bind(item: CreateFilterView.Tag) = with(binding) {
                 ivSelectTagIcon.isSelected = item.isSelected
                 tvTagName.text = item.name
-                val color = ThemeColor.values().find { v -> v.title == item.color }
+                val color = ThemeColor.values().find { v -> v.code == item.color }
                 val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
                 val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
                 if (color != null && color != ThemeColor.DEFAULT) {
@@ -155,7 +159,7 @@ class CreateFilterAdapter(
             fun bind(item: CreateFilterView.Status) = with(binding) {
                 ivSelectStatusIcon.isSelected = item.isSelected
                 tvStatusName.text = item.name
-                val color = ThemeColor.values().find { v -> v.title == item.color }
+                val color = ThemeColor.values().find { v -> v.code == item.color }
                 val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
                 if (color != null && color != ThemeColor.DEFAULT) {
                     tvStatusName.setTextColor(itemView.resources.dark(color, defaultTextColor))

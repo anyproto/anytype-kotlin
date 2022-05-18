@@ -132,7 +132,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                     val defaultTextColor = resources.getColor(R.color.text_primary, null)
                     if (relation.status.isNotEmpty()) {
                         val status = relation.status[0]
-                        val color = ThemeColor.values().find { v -> v.title == status.color }
+                        val color = ThemeColor.values().find { v -> v.code == status.color }
                         val view = TextView(context).apply {
                             id = generateViewId()
                             text = status.status

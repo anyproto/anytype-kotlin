@@ -313,7 +313,7 @@ interface TextBlockHolder : TextHolder {
         }
 
         if (payload.textColorChanged()) {
-            val color = item.color ?: ThemeColor.DEFAULT.title
+            val color = item.color ?: ThemeColor.DEFAULT.code
             setTextColor(resolveTextBlockThemedColor(color))
             setMarkup(item, clicked, resolveTextBlockThemedColor(item.color))
         }

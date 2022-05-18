@@ -49,7 +49,7 @@
             android:fontFamily="@font/inter_regular"
             android:gravity="center_vertical"
             android:text="@string/remove"
-            android:textColor="@color/anytype_text_red"
+            android:textColor="@color/palette_dark_red"
             android:textSize="17sp" />
 
     </FrameLayout>

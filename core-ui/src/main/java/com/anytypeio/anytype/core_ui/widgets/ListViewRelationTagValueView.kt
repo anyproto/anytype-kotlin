@@ -30,7 +30,7 @@ class ListViewRelationTagValueView @JvmOverloads constructor(
         } else {
             tvCount.gone()
         }
-        val color = ThemeColor.values().find { it.title == tagColor }
+        val color = ThemeColor.values().find { it.code == tagColor }
         val defaultTextColor = resources.getColor(R.color.text_primary, null)
         val defaultBackground = resources.getColor(R.color.shape_primary, null)
         if (color != null) {

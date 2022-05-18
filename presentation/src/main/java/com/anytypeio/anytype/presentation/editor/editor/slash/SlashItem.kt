@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.presentation.editor.editor.slash
 
+import androidx.annotation.ColorInt
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.const.SlashConst
 import com.anytypeio.anytype.core_utils.const.SlashConst.SLASH_OTHER_TOC_ABBREVIATION
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.core_models.ObjectType.Layout as ObjectTypeLayout
 
 sealed class SlashWidgetState {
@@ -399,14 +401,29 @@ sealed class SlashItem {
 
     //region TEXT COLOR & BACKGROUND
     sealed class Color : SlashItem() {
-        data class Text(val code: String, val isSelected: Boolean) : Color() {
-            override fun getSearchName(): String = code
-            override fun getAbbreviation(): List<String>? = null
+
+        abstract val isSelected: Boolean
+        abstract val themeColor: ThemeColor
+        @get:ColorInt
+        abstract val colorHex: Int
+
+        override fun getSearchName(): String = themeColor.code
+        override fun getAbbreviation(): List<String>? = null
+
+        data class Text(
+            override val themeColor: ThemeColor,
+            override val isSelected: Boolean,
+        ) : Color() {
+            @get:ColorInt
+            override val colorHex: Int = themeColor.text
         }
 
-        data class Background(val code: String, val isSelected: Boolean) : Color() {
-            override fun getSearchName(): String = code
-            override fun getAbbreviation(): List<String>? = null
+        data class Background(
+            override val themeColor: ThemeColor,
+            override val isSelected: Boolean,
+        ) : Color() {
+            @get:ColorInt
+            override val colorHex: Int = themeColor.background
         }
     }
     //endregion

@@ -3,8 +3,8 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 
 fun List<ObjectType>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
@@ -39,7 +39,6 @@ fun SlashItem.Style.Markup.convertToMarkType() = when (this) {
 object SlashExtensions {
 
     const val SLASH_CHAR = '/'
-    private const val SLASH_ALIGN = "Align"
     const val SLASH_EMPTY_SEARCH_MAX = 3
 
     //region {SLASH ITEMS FOR WIDGET}
@@ -135,20 +134,20 @@ object SlashExtensions {
             SlashRelationView.RelationNew
         ) + relations
 
-    fun getSlashWidgetColorItems(code: String?): List<SlashItem.Color.Text> =
+    fun getSlashWidgetColorItems(color: ThemeColor?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->
-            val isSelected = if (code == null) false else themeColor.title == code
+            val isSelected = if (color == null) false else themeColor == color
             SlashItem.Color.Text(
-                code = themeColor.title,
+                themeColor = themeColor,
                 isSelected = isSelected
             )
         }
 
-    fun getSlashWidgetBackgroundItems(code: String?): List<SlashItem.Color.Background> =
+    fun getSlashWidgetBackgroundItems(color: ThemeColor?): List<SlashItem.Color.Background> =
         ThemeColor.values().map { themeColor ->
-            val isSelected = if (code == null) false else themeColor.title == code
+            val isSelected = if (color == null) false else themeColor == color
             SlashItem.Color.Background(
-                code = themeColor.title,
+                themeColor = themeColor,
                 isSelected = isSelected
             )
         }
@@ -188,11 +187,11 @@ object SlashExtensions {
         )
         val filteredColor = filterColor(
             filter = filter,
-            items = getSlashWidgetColorItems(code = null)
+            items = getSlashWidgetColorItems(color = null)
         )
         val filteredBackground = filterBackground(
             filter = filter,
-            items = getSlashWidgetBackgroundItems(code = null)
+            items = getSlashWidgetBackgroundItems(color = null)
         )
         val filteredObjects = filterObjectTypes(
             filter = filter,
@@ -224,7 +223,7 @@ object SlashExtensions {
             searchBySubheadingOrName(
                 filter = filter,
                 subheading = SlashItem.Main.Color.getSearchName(),
-                name = item.code
+                name = item.themeColor.code
             )
         }
         return updateWithSubheader(filtered)
@@ -238,7 +237,7 @@ object SlashExtensions {
             searchBySubheadingOrName(
                 filter = filter,
                 subheading = SlashItem.Main.Background.getSearchName(),
-                name = item.code
+                name = item.themeColor.code
             )
         }
         return updateWithSubheader(filtered)

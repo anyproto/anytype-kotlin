@@ -56,7 +56,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
@@ -192,9 +191,6 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var splitBlock: SplitBlock
-
-    @Mock
-    lateinit var createPage: CreatePage
 
     @Mock
     lateinit var createObject: CreateObject
@@ -3999,7 +3995,6 @@ open class EditorViewModelTest {
         vm = EditorViewModel(
             openPage = openPage,
             closePage = closePage,
-            createPage = createPage,
             createObject = createObject,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,

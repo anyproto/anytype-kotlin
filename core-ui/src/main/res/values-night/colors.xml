@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="anytype_text_default">#F3F2EC</color>
-
     <color name="markup_keyboard_bg">#1F1E1D</color>
 
     <color name="text_primary">#F3F2EC</color>
@@ -27,6 +25,7 @@
     <color name="dashboard_card_background">#99000000</color>
     <color name="dashboard_background">#99252525</color>
 
+    <!--  Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A115  -->
     <color name="palette_dark_default">#000000</color>
     <color name="palette_dark_yellow">#ECD91B</color>
     <color name="palette_dark_orange">#F1A91A</color>
@@ -36,7 +35,7 @@
     <color name="palette_dark_blue">#5871FF</color>
     <color name="palette_dark_ice">#18A3F1</color>
     <color name="palette_dark_teal">#0CC3B5</color>
-    <color name="palette_dark_green">#70CD28</color>
+    <color name="palette_dark_lime">#70CD28</color>
     <color name="palette_dark_grey">#908F86</color>
 
     <color name="palette_light_default">#000000</color>
@@ -48,7 +47,7 @@
     <color name="palette_light_blue">#20295C</color>
     <color name="palette_light_ice">#093B57</color>
     <color name="palette_light_teal">#044641</color>
-    <color name="palette_light_green">#294B0E</color>
+    <color name="palette_light_lime">#294B0E</color>
     <color name="palette_light_grey">#343330</color>
 
     <color name="palette_very_light_default">#000000</color>
@@ -60,7 +59,7 @@
     <color name="palette_very_light_blue">#131938</color>
     <color name="palette_very_light_ice">#052130</color>
     <color name="palette_very_light_teal">#022724</color>
-    <color name="palette_very_light_green">#172A08</color>
+    <color name="palette_very_light_lime">#172A08</color>
     <color name="palette_very_light_grey">#1D1D1B</color>
 
 </resources>

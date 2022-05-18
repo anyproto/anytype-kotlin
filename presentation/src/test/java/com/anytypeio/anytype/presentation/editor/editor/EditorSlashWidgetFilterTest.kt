@@ -869,21 +869,21 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashItem.Subheader.Color,
             SlashItem.Color.Text(
-                code = ThemeColor.GREY.title,
+                themeColor = ThemeColor.GREY,
                 isSelected = false
             ),
             SlashItem.Color.Text(
-                code = ThemeColor.ORANGE.title,
+                themeColor = ThemeColor.ORANGE,
                 isSelected = false
             ),
             SlashItem.Color.Text(
-                code = ThemeColor.RED.title,
+                themeColor = ThemeColor.RED,
                 isSelected = false
             ),
             SlashItem.Color.Text(
-                code = ThemeColor.PURPLE.title,
+                themeColor = ThemeColor.PURPLE,
                 isSelected = false
-            )
+            ),
         )
         assertEquals(expected = expectedItems, actual = command.colorItems)
     }
@@ -967,21 +967,21 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashItem.Subheader.Background,
             SlashItem.Color.Background(
-                code = ThemeColor.GREY.title,
+                themeColor = ThemeColor.GREY,
                 isSelected = false
             ),
             SlashItem.Color.Background(
-                code = ThemeColor.ORANGE.title,
+                themeColor = ThemeColor.ORANGE,
                 isSelected = false
             ),
             SlashItem.Color.Background(
-                code = ThemeColor.RED.title,
+                themeColor = ThemeColor.RED,
                 isSelected = false
             ),
             SlashItem.Color.Background(
-                code = ThemeColor.PURPLE.title,
+                themeColor = ThemeColor.PURPLE,
                 isSelected = false
-            )
+            ),
         )
         assertEquals(expected = expectedItems, actual = command.backgroundItems)
     }
@@ -1445,17 +1445,17 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         assertNotNull(command)
         val expectedItems = listOf(
             SlashItem.Subheader.Color,
-            SlashItem.Color.Text(ThemeColor.DEFAULT.title, false),
-            SlashItem.Color.Text(ThemeColor.GREY.title, false),
-            SlashItem.Color.Text(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Text(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Text(ThemeColor.RED.title, false),
-            SlashItem.Color.Text(ThemeColor.PINK.title, false),
-            SlashItem.Color.Text(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Text(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Text(ThemeColor.ICE.title, false),
-            SlashItem.Color.Text(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Text(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Text(ThemeColor.DEFAULT, false),
+            SlashItem.Color.Text(ThemeColor.GREY, false),
+            SlashItem.Color.Text(ThemeColor.YELLOW, false),
+            SlashItem.Color.Text(ThemeColor.ORANGE, false),
+            SlashItem.Color.Text(ThemeColor.RED, false),
+            SlashItem.Color.Text(ThemeColor.PINK, false),
+            SlashItem.Color.Text(ThemeColor.PURPLE, false),
+            SlashItem.Color.Text(ThemeColor.BLUE, false),
+            SlashItem.Color.Text(ThemeColor.ICE, false),
+            SlashItem.Color.Text(ThemeColor.TEAL, false),
+            SlashItem.Color.Text(ThemeColor.LIME, false)
         )
         assertEquals(expected = expectedItems, actual = command.colorItems)
     }
@@ -1498,17 +1498,17 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         assertNotNull(command)
         val expectedItems = listOf(
             SlashItem.Subheader.Background,
-            SlashItem.Color.Background(ThemeColor.DEFAULT.title, false),
-            SlashItem.Color.Background(ThemeColor.GREY.title, false),
-            SlashItem.Color.Background(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Background(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Background(ThemeColor.RED.title, false),
-            SlashItem.Color.Background(ThemeColor.PINK.title, false),
-            SlashItem.Color.Background(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Background(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Background(ThemeColor.ICE.title, false),
-            SlashItem.Color.Background(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Background(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Background(ThemeColor.DEFAULT, false),
+            SlashItem.Color.Background(ThemeColor.GREY, false),
+            SlashItem.Color.Background(ThemeColor.YELLOW, false),
+            SlashItem.Color.Background(ThemeColor.ORANGE, false),
+            SlashItem.Color.Background(ThemeColor.RED, false),
+            SlashItem.Color.Background(ThemeColor.PINK, false),
+            SlashItem.Color.Background(ThemeColor.PURPLE, false),
+            SlashItem.Color.Background(ThemeColor.BLUE, false),
+            SlashItem.Color.Background(ThemeColor.ICE, false),
+            SlashItem.Color.Background(ThemeColor.TEAL, false),
+            SlashItem.Color.Background(ThemeColor.LIME, false)
         )
         assertEquals(expected = expectedItems, actual = command.backgroundItems)
     }

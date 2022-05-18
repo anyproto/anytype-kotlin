@@ -91,7 +91,7 @@ abstract class MediaPlaceholder(binding: ItemBlockMediaPlaceholderBinding) :
     ) {
         Timber.d("Setting background color: $background")
         if (!background.isNullOrEmpty()) {
-            val value = ThemeColor.values().find { value -> value.title == background }
+            val value = ThemeColor.values().find { value -> value.code == background }
             if (value != null && value != ThemeColor.DEFAULT) {
                 card.setCardBackgroundColor(card.resources.lighter(value, 0))
             } else {

@@ -444,13 +444,13 @@ class ObjectRelationListTest {
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "In progress",
-            color = color1.title
+            color = color1.code
         )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Done",
-            color = color2.title
+            color = color2.code
         )
 
         val name1 = "Status 1"
@@ -524,25 +524,25 @@ class ObjectRelationListTest {
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Essayist",
-            color = color1.title
+            color = color1.code
         )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Journalist",
-            color = color2.title
+            color = color2.code
         )
 
         val option3 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Politik",
-            color = color3.title
+            color = color3.code
         )
 
         val option4 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Critic",
-            color = color4.title
+            color = color4.code
         )
 
         val relation = Relation(

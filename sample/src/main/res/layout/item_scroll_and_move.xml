@@ -8,7 +8,7 @@
     <View
         android:visibility="invisible"
         android:layout_gravity="top"
-        android:background="@color/anytype_text_teal"
+        android:background="@color/palette_dark_teal"
         android:id="@+id/topDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp" />

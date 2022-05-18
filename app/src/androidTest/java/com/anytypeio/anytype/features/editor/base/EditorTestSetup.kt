@@ -63,7 +63,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
@@ -122,7 +121,6 @@ open class EditorTestSetup {
     lateinit var createBookmark: CreateBookmark
     lateinit var uploadBlock: UploadBlock
     lateinit var splitBlock: SplitBlock
-    lateinit var createPage: CreatePage
     lateinit var updateBackgroundColor: UpdateBackgroundColor
     lateinit var move: Move
     lateinit var setRelationKey: SetRelationKey
@@ -254,7 +252,6 @@ open class EditorTestSetup {
         )
 
         splitBlock = SplitBlock(repo)
-        createPage = CreatePage(repo)
         setObjectIsArchived = SetObjectIsArchived(repo)
         createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)
@@ -321,7 +318,6 @@ open class EditorTestSetup {
             interceptEvents = interceptEvents,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
-            createPage = createPage,
             createObject = createObject,
             documentEventReducer = DocumentExternalEventReducer(),
             setObjectIsArchived = setObjectIsArchived,

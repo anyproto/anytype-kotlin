@@ -1247,7 +1247,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
             ),
-            backgroundColor = ThemeColor.DEFAULT.title
+            backgroundColor = ThemeColor.DEFAULT.code
         )
 
         val c = Block(
@@ -1621,7 +1621,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             ),
             styleBackgroundToolbar = ControlPanelState.Toolbar.Styling.Background(
                 isVisible = true,
-                state = StyleToolbarState.Background(background = ThemeColor.DEFAULT.title)
+                state = StyleToolbarState.Background(background = ThemeColor.DEFAULT.code)
             )
         )
 

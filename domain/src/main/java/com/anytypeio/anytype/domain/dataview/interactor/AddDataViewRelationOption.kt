@@ -28,6 +28,7 @@ class AddDataViewRelationOption(
      * @property [dataview] dataview id
      * @property [relation] relation id or relation key
      * @property [name] name for new option
+     * @property [color] color code
      */
     class Params(
         val ctx: Id,

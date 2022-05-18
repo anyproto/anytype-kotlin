@@ -52,7 +52,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     @Test
     fun `should selected red color when block text color is red`() {
 
-        val code = ThemeColor.RED.title
+        val code = ThemeColor.RED.code
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -115,17 +115,17 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val expected = listOf(
             SlashItem.Subheader.ColorWithBack,
-            SlashItem.Color.Text(ThemeColor.DEFAULT.title, false),
-            SlashItem.Color.Text(ThemeColor.GREY.title, false),
-            SlashItem.Color.Text(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Text(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Text(ThemeColor.RED.title, true),
-            SlashItem.Color.Text(ThemeColor.PINK.title, false),
-            SlashItem.Color.Text(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Text(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Text(ThemeColor.ICE.title, false),
-            SlashItem.Color.Text(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Text(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Text(ThemeColor.DEFAULT, false),
+            SlashItem.Color.Text(ThemeColor.GREY, false),
+            SlashItem.Color.Text(ThemeColor.YELLOW, false),
+            SlashItem.Color.Text(ThemeColor.ORANGE, false),
+            SlashItem.Color.Text(ThemeColor.RED, true),
+            SlashItem.Color.Text(ThemeColor.PINK, false),
+            SlashItem.Color.Text(ThemeColor.PURPLE, false),
+            SlashItem.Color.Text(ThemeColor.BLUE, false),
+            SlashItem.Color.Text(ThemeColor.ICE, false),
+            SlashItem.Color.Text(ThemeColor.TEAL, false),
+            SlashItem.Color.Text(ThemeColor.LIME, false)
         )
 
         assertEquals(
@@ -200,17 +200,17 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val expected = listOf(
             SlashItem.Subheader.ColorWithBack,
-            SlashItem.Color.Text(ThemeColor.DEFAULT.title, true),
-            SlashItem.Color.Text(ThemeColor.GREY.title, false),
-            SlashItem.Color.Text(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Text(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Text(ThemeColor.RED.title, false),
-            SlashItem.Color.Text(ThemeColor.PINK.title, false),
-            SlashItem.Color.Text(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Text(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Text(ThemeColor.ICE.title, false),
-            SlashItem.Color.Text(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Text(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Text(ThemeColor.DEFAULT, true),
+            SlashItem.Color.Text(ThemeColor.GREY, false),
+            SlashItem.Color.Text(ThemeColor.YELLOW, false),
+            SlashItem.Color.Text(ThemeColor.ORANGE, false),
+            SlashItem.Color.Text(ThemeColor.RED, false),
+            SlashItem.Color.Text(ThemeColor.PINK, false),
+            SlashItem.Color.Text(ThemeColor.PURPLE, false),
+            SlashItem.Color.Text(ThemeColor.BLUE, false),
+            SlashItem.Color.Text(ThemeColor.ICE, false),
+            SlashItem.Color.Text(ThemeColor.TEAL, false),
+            SlashItem.Color.Text(ThemeColor.LIME, false)
         )
 
         assertEquals(
@@ -222,7 +222,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     @Test
     fun `should selected default color when block text color is default`() {
 
-        val code: String = ThemeColor.DEFAULT.title
+        val code: String = ThemeColor.DEFAULT.code
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -285,17 +285,17 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val expected = listOf(
             SlashItem.Subheader.ColorWithBack,
-            SlashItem.Color.Text(ThemeColor.DEFAULT.title, true),
-            SlashItem.Color.Text(ThemeColor.GREY.title, false),
-            SlashItem.Color.Text(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Text(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Text(ThemeColor.RED.title, false),
-            SlashItem.Color.Text(ThemeColor.PINK.title, false),
-            SlashItem.Color.Text(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Text(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Text(ThemeColor.ICE.title, false),
-            SlashItem.Color.Text(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Text(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Text(ThemeColor.DEFAULT, true),
+            SlashItem.Color.Text(ThemeColor.GREY, false),
+            SlashItem.Color.Text(ThemeColor.YELLOW, false),
+            SlashItem.Color.Text(ThemeColor.ORANGE, false),
+            SlashItem.Color.Text(ThemeColor.RED, false),
+            SlashItem.Color.Text(ThemeColor.PINK, false),
+            SlashItem.Color.Text(ThemeColor.PURPLE, false),
+            SlashItem.Color.Text(ThemeColor.BLUE, false),
+            SlashItem.Color.Text(ThemeColor.ICE, false),
+            SlashItem.Color.Text(ThemeColor.TEAL, false),
+            SlashItem.Color.Text(ThemeColor.LIME, false)
         )
 
         assertEquals(
@@ -338,7 +338,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
-        vm.onSlashItemClicked(SlashItem.Color.Text(code = "red", isSelected = false))
+        vm.onSlashItemClicked(SlashItem.Color.Text(themeColor = ThemeColor.RED, isSelected = false))
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -375,7 +375,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
-        vm.onSlashItemClicked(SlashItem.Color.Text(code = "red", isSelected = false))
+        vm.onSlashItemClicked(SlashItem.Color.Text(themeColor = ThemeColor.RED, isSelected = false))
 
         val state = vm.controlPanelViewState.value
 
@@ -412,10 +412,10 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        val code = ThemeColor.ICE.title
+        val code = ThemeColor.ICE.code
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
-        vm.onSlashItemClicked(SlashItem.Color.Text(code = code, isSelected = false))
+        vm.onSlashItemClicked(SlashItem.Color.Text(themeColor = ThemeColor.ICE, isSelected = false))
 
         val params = UpdateTextColor.Params(
             context = root,
@@ -432,7 +432,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     @Test
     fun `should selected green color when block background color is green`() {
 
-        val code = ThemeColor.GREEN.title
+        val code = ThemeColor.LIME.code
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -497,17 +497,17 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val expected = listOf(
             SlashItem.Subheader.BackgroundWithBack,
-            SlashItem.Color.Background(ThemeColor.DEFAULT.title, false),
-            SlashItem.Color.Background(ThemeColor.GREY.title, false),
-            SlashItem.Color.Background(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Background(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Background(ThemeColor.RED.title, false),
-            SlashItem.Color.Background(ThemeColor.PINK.title, false),
-            SlashItem.Color.Background(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Background(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Background(ThemeColor.ICE.title, false),
-            SlashItem.Color.Background(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Background(ThemeColor.GREEN.title, true)
+            SlashItem.Color.Background(ThemeColor.DEFAULT, false),
+            SlashItem.Color.Background(ThemeColor.GREY, false),
+            SlashItem.Color.Background(ThemeColor.YELLOW, false),
+            SlashItem.Color.Background(ThemeColor.ORANGE, false),
+            SlashItem.Color.Background(ThemeColor.RED, false),
+            SlashItem.Color.Background(ThemeColor.PINK, false),
+            SlashItem.Color.Background(ThemeColor.PURPLE, false),
+            SlashItem.Color.Background(ThemeColor.BLUE, false),
+            SlashItem.Color.Background(ThemeColor.ICE, false),
+            SlashItem.Color.Background(ThemeColor.TEAL, false),
+            SlashItem.Color.Background(ThemeColor.LIME, true)
         )
 
         assertEquals(
@@ -584,17 +584,17 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val expected = listOf(
             SlashItem.Subheader.BackgroundWithBack,
-            SlashItem.Color.Background(ThemeColor.DEFAULT.title, true),
-            SlashItem.Color.Background(ThemeColor.GREY.title, false),
-            SlashItem.Color.Background(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Background(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Background(ThemeColor.RED.title, false),
-            SlashItem.Color.Background(ThemeColor.PINK.title, false),
-            SlashItem.Color.Background(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Background(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Background(ThemeColor.ICE.title, false),
-            SlashItem.Color.Background(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Background(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Background(ThemeColor.DEFAULT, true),
+            SlashItem.Color.Background(ThemeColor.GREY, false),
+            SlashItem.Color.Background(ThemeColor.YELLOW, false),
+            SlashItem.Color.Background(ThemeColor.ORANGE, false),
+            SlashItem.Color.Background(ThemeColor.RED, false),
+            SlashItem.Color.Background(ThemeColor.PINK, false),
+            SlashItem.Color.Background(ThemeColor.PURPLE, false),
+            SlashItem.Color.Background(ThemeColor.BLUE, false),
+            SlashItem.Color.Background(ThemeColor.ICE, false),
+            SlashItem.Color.Background(ThemeColor.TEAL, false),
+            SlashItem.Color.Background(ThemeColor.LIME, false)
         )
 
         assertEquals(
@@ -606,7 +606,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     @Test
     fun `should selected default color when block background color is default`() {
 
-        val code: String = ThemeColor.DEFAULT.title
+        val code: String = ThemeColor.DEFAULT.code
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -671,17 +671,17 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         val expected = listOf(
             SlashItem.Subheader.BackgroundWithBack,
-            SlashItem.Color.Background(ThemeColor.DEFAULT.title, true),
-            SlashItem.Color.Background(ThemeColor.GREY.title, false),
-            SlashItem.Color.Background(ThemeColor.YELLOW.title, false),
-            SlashItem.Color.Background(ThemeColor.ORANGE.title, false),
-            SlashItem.Color.Background(ThemeColor.RED.title, false),
-            SlashItem.Color.Background(ThemeColor.PINK.title, false),
-            SlashItem.Color.Background(ThemeColor.PURPLE.title, false),
-            SlashItem.Color.Background(ThemeColor.BLUE.title, false),
-            SlashItem.Color.Background(ThemeColor.ICE.title, false),
-            SlashItem.Color.Background(ThemeColor.TEAL.title, false),
-            SlashItem.Color.Background(ThemeColor.GREEN.title, false)
+            SlashItem.Color.Background(ThemeColor.DEFAULT, true),
+            SlashItem.Color.Background(ThemeColor.GREY, false),
+            SlashItem.Color.Background(ThemeColor.YELLOW, false),
+            SlashItem.Color.Background(ThemeColor.ORANGE, false),
+            SlashItem.Color.Background(ThemeColor.RED, false),
+            SlashItem.Color.Background(ThemeColor.PINK, false),
+            SlashItem.Color.Background(ThemeColor.PURPLE, false),
+            SlashItem.Color.Background(ThemeColor.BLUE, false),
+            SlashItem.Color.Background(ThemeColor.ICE, false),
+            SlashItem.Color.Background(ThemeColor.TEAL, false),
+            SlashItem.Color.Background(ThemeColor.LIME, false)
         )
 
         assertEquals(
@@ -727,7 +727,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
-        vm.onSlashItemClicked(SlashItem.Color.Background(code = "red", isSelected = false))
+        vm.onSlashItemClicked(SlashItem.Color.Background(themeColor = ThemeColor.RED, isSelected = false))
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -766,7 +766,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
-        vm.onSlashItemClicked(SlashItem.Color.Background(code = "red", isSelected = false))
+        vm.onSlashItemClicked(SlashItem.Color.Background(themeColor = ThemeColor.RED, isSelected = false))
 
         val state = vm.controlPanelViewState.value
 
@@ -803,10 +803,10 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        val code = ThemeColor.PURPLE.title
+        val code = ThemeColor.PURPLE.code
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
-        vm.onSlashItemClicked(SlashItem.Color.Background(code = code, isSelected = false))
+        vm.onSlashItemClicked(SlashItem.Color.Background(themeColor = ThemeColor.PURPLE, isSelected = false))
 
         val params = UpdateBackgroundColor.Params(
             context = root,

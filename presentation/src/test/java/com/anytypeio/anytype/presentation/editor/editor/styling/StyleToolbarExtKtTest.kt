@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor.styling
 import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.TextStyle
-import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Assert
@@ -127,7 +126,7 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundTeal = ThemeColor.TEAL.title
+        val backgroundTeal = ThemeColor.TEAL.code
 
         val given1 = Block(
             id = child,
@@ -174,8 +173,8 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundLime = ThemeColor.TEAL.title
-        val textColorRed = ThemeColor.RED.title
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
 
         val given1 = Block(
             id = child,
@@ -232,8 +231,8 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundLime = ThemeColor.TEAL.title
-        val textColorRed = ThemeColor.RED.title
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
 
         val given1 = Block(
             id = child,
@@ -268,9 +267,9 @@ class StyleToolbarExtKtTest {
                 style = Block.Content.Text.Style.NUMBERED,
                 text = MockDataFactory.randomString(),
                 marks = listOf(),
-                color = ThemeColor.ICE.title
+                color = ThemeColor.ICE.code
             ),
-            backgroundColor = ThemeColor.GREEN.title,
+            backgroundColor = ThemeColor.LIME.code,
             children = emptyList()
         )
 
@@ -333,8 +332,8 @@ class StyleToolbarExtKtTest {
             listOf(given1, given2, given3).getStyleColorBackgroundToolbarState()
 
         val expected = StyleToolbarState.ColorBackground(
-            background = ThemeColor.DEFAULT.title,
-            color = ThemeColor.DEFAULT.title
+            background = ThemeColor.DEFAULT.code,
+            color = ThemeColor.DEFAULT.code
         )
 
         Assert.assertEquals(expected, result)
@@ -345,8 +344,8 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundLime = ThemeColor.TEAL.title
-        val textColorRed = ThemeColor.RED.title
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
 
         val given1 = Block(
             id = child,
@@ -378,7 +377,7 @@ class StyleToolbarExtKtTest {
             id = child,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.File(),
-            backgroundColor = ThemeColor.GREEN.title,
+            backgroundColor = ThemeColor.LIME.code,
             children = emptyList()
         )
 
@@ -395,8 +394,8 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundLime = ThemeColor.TEAL.title
-        val textColorRed = ThemeColor.RED.title
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
 
         val given1 = Block(
             id = child,
@@ -459,8 +458,8 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundLime = ThemeColor.TEAL.title
-        val textColorRed = ThemeColor.RED.title
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
 
         val given1 = Block(
             id = child,
@@ -523,8 +522,8 @@ class StyleToolbarExtKtTest {
 
         val child = MockDataFactory.randomUuid()
 
-        val backgroundLime = ThemeColor.TEAL.title
-        val textColorRed = ThemeColor.RED.title
+        val backgroundLime = ThemeColor.TEAL.code
+        val textColorRed = ThemeColor.RED.code
 
         val given1Text = MockDataFactory.randomString()
         val given1 = Block(

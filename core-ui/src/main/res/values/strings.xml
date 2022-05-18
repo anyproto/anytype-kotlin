@@ -395,6 +395,17 @@
     <string name="slash_widget_align_center">Center</string>
     <string name="slash_widget_align_left">Left</string>
 
+    <string name="slash_widget_default_color_title">Default</string>
+    <string name="slash_widget_gray_color_title">Gray</string>
+    <string name="slash_widget_yellow_color_title">Yellow</string>
+    <string name="slash_widget_orange_color_title">Amber</string>
+    <string name="slash_widget_red_color_title">Red</string>
+    <string name="slash_widget_pink_color_title">Pink</string>
+    <string name="slash_widget_purple_color_title">Purple</string>
+    <string name="slash_widget_blue_color_title">Blue</string>
+    <string name="slash_widget_ice_color_title">Sky</string>
+    <string name="slash_widget_teal_color_title">Teal</string>
+    <string name="slash_widget_lime_color_title">Green</string>
     <string name="slash_widget_background_item">%1$s background</string>
 
     <string name="dv_filter_checkbox_checked">checked</string>

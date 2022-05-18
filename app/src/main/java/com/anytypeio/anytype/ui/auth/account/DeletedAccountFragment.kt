@@ -147,7 +147,7 @@ fun DeletedAccountScreen(
             ) {
                 Column {
                     Chart(
-                        chartColor = colorResource(R.color.anytype_text_red),
+                        chartColor = colorResource(R.color.palette_dark_red),
                         actualProgress = progress
                     )
                     Text(
@@ -194,13 +194,13 @@ fun DeletedAccountScreen(
                     )
                     Action(
                         name = stringResource(R.string.cancel_deletion),
-                        color = colorResource(R.color.anytype_text_red),
+                        color = colorResource(R.color.palette_dark_red),
                         onClick = onCancelDeletionClicked
                     )
                     Divider()
                     ActionWithProgressBar(
                         name = stringResource(R.string.logout_and_clear_local_data),
-                        color = colorResource(R.color.anytype_text_red),
+                        color = colorResource(R.color.palette_dark_red),
                         onClick = onLogoutAndClearDataClicked,
                         isInProgress = isLoggingOutInProgress
                     )

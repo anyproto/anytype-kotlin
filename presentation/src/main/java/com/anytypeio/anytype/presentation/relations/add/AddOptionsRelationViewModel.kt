@@ -132,7 +132,7 @@ class AddOptionsRelationViewModel(
                     ctx = ctx,
                     relation = relation,
                     name = name,
-                    color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().title
+                    color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().code
                 )
             ).proceed(
                 success = { (payload, option) ->

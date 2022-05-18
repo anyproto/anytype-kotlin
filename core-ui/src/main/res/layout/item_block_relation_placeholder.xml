@@ -33,7 +33,7 @@
             android:layout_marginBottom="4dp"
             android:layout_marginStart="@dimen/dp_4"
             android:text="@string/set_new_relation"
-            android:textColor="@color/anytype_text_grey" />
+            android:textColor="@color/palette_dark_grey" />
 
     </LinearLayout>
 

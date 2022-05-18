@@ -22,7 +22,7 @@ class DVGridCellTagHolder(val binding: ItemViewerGridCellTagBinding) : RecyclerV
                     getViewByIndex(index)?.let { view ->
                         view.visible()
                         view.text = tagView.tag
-                        val color = ThemeColor.values().find { v -> v.title == tagView.color }
+                        val color = ThemeColor.values().find { v -> v.code == tagView.color }
                         val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
                         val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
                         if (color != null && color != ThemeColor.DEFAULT) {

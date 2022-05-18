@@ -327,13 +327,13 @@ class AddRelationStatusValueTest {
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "In progress",
-            color = option1Color.title
+            color = option1Color.code
         )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Done",
-            color = option2Color.title
+            color = option2Color.code
         )
 
         val option3 = Relation.Option(
@@ -421,19 +421,19 @@ class AddRelationStatusValueTest {
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "In Testing",
-            color = ThemeColor.values().random().title
+            color = ThemeColor.values().random().code
         )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Done",
-            color = ThemeColor.values().random().title
+            color = ThemeColor.values().random().code
         )
 
         val option3 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "In Development",
-            color = ThemeColor.values().random().title
+            color = ThemeColor.values().random().code
         )
 
         val relationKey = MockDataFactory.randomUuid()
@@ -524,19 +524,19 @@ class AddRelationStatusValueTest {
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "In progress",
-            color = ThemeColor.values().random().title
+            color = ThemeColor.values().random().code
         )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Testing",
-            color = ThemeColor.values().random().title
+            color = ThemeColor.values().random().code
         )
 
         val option3 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Development",
-            color = ThemeColor.values().random().title
+            color = ThemeColor.values().random().code
         )
 
         val relationKey = MockDataFactory.randomUuid()

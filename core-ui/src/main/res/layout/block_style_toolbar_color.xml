@@ -68,7 +68,7 @@
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
         android:id="@+id/textColorGreen"
         style="@style/DefaultCircleColorStyle"
-        app:innerColor="@color/palette_dark_green"
+        app:innerColor="@color/palette_dark_lime"
         tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.helper.widget.Flow

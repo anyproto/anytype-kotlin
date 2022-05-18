@@ -9,12 +9,12 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.test_utils.TestFragment
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.lighter
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.TestFragment
 import com.anytypeio.anytype.test_utils.utils.checkHasBackgroundColor
 import com.anytypeio.anytype.test_utils.utils.checkHasNoBackground
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -79,7 +79,7 @@ class TitleBlockTest {
             val redBackground = ThemeColor.RED
 
             val title = givenTitleBlock(
-                backgroundColor = redBackground.title
+                backgroundColor = redBackground.code
             )
 
             val recycler = givenRecycler(it)
@@ -105,7 +105,7 @@ class TitleBlockTest {
     private fun givenTitleBlock(
         isFocused: Boolean = false,
         mode: BlockView.Mode = BlockView.Mode.EDIT,
-        backgroundColor: String = ThemeColor.DEFAULT.title
+        backgroundColor: String = ThemeColor.DEFAULT.code
     ) = BlockView.Title.Basic(
         text = MockDataFactory.randomString(),
         id = MockDataFactory.randomUuid(),

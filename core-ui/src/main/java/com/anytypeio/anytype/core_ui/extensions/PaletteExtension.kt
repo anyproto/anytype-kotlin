@@ -18,7 +18,7 @@ fun Resources.dark(color: ThemeColor, default: Int): Int = when (color) {
     ThemeColor.BLUE -> getColor(R.color.palette_dark_blue, null)
     ThemeColor.ICE -> getColor(R.color.palette_dark_ice, null)
     ThemeColor.TEAL -> getColor(R.color.palette_dark_teal, null)
-    ThemeColor.GREEN -> getColor(R.color.palette_dark_green, null)
+    ThemeColor.LIME -> getColor(R.color.palette_dark_lime, null)
 }
 
 fun Resources.light(color: ThemeColor, default: Int): Int = when (color) {
@@ -32,7 +32,7 @@ fun Resources.light(color: ThemeColor, default: Int): Int = when (color) {
     ThemeColor.BLUE -> getColor(R.color.palette_light_blue, null)
     ThemeColor.ICE -> getColor(R.color.palette_light_ice, null)
     ThemeColor.TEAL -> getColor(R.color.palette_light_teal, null)
-    ThemeColor.GREEN -> getColor(R.color.palette_light_green, null)
+    ThemeColor.LIME -> getColor(R.color.palette_light_lime, null)
 }
 
 fun Resources.lighter(color: ThemeColor, default: Int): Int = when (color) {
@@ -46,11 +46,11 @@ fun Resources.lighter(color: ThemeColor, default: Int): Int = when (color) {
     ThemeColor.BLUE -> getColor(R.color.palette_very_light_blue, null)
     ThemeColor.ICE -> getColor(R.color.palette_very_light_ice, null)
     ThemeColor.TEAL -> getColor(R.color.palette_very_light_teal, null)
-    ThemeColor.GREEN -> getColor(R.color.palette_very_light_green, null)
+    ThemeColor.LIME -> getColor(R.color.palette_very_light_lime, null)
 }
 
 fun TextView.setTextColor(color: String, defaultColor: Int = R.color.text_primary) {
-    val value = ThemeColor.values().find { value -> value.title == color }
+    val value = ThemeColor.values().find { value -> value.code == color }
     val default = context.getColor(defaultColor)
     if (value != null && value != ThemeColor.DEFAULT) {
         setTextColor(resources.dark(value, default))
@@ -65,7 +65,7 @@ fun TextView.setTextColor(color: String, defaultColor: Int = R.color.text_primar
  */
 fun View.setBlockBackgroundColor(color: String?) {
     if (!color.isNullOrEmpty()) {
-        val value = ThemeColor.values().find { value -> value.title == color }
+        val value = ThemeColor.values().find { value -> value.code == color }
         if (value != null && value != ThemeColor.DEFAULT) {
             setBackgroundColor(resources.lighter(value, 0))
         } else {
@@ -81,7 +81,7 @@ fun View.setBlockBackgroundColor(color: String?) {
  * @param [color] color code, @see [ThemeColor]
  */
 fun Context.resolveThemedTextColor(color: String?, defaultColor: Int): Int {
-    val value = ThemeColor.values().find { value -> value.title == color }
+    val value = ThemeColor.values().find { value -> value.code == color }
     return if (value != null && value != ThemeColor.DEFAULT) {
         resources.dark(value, defaultColor)
     } else {

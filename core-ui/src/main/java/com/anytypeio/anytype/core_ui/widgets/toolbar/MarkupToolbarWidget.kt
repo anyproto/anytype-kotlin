@@ -61,12 +61,12 @@ class MarkupToolbarWidget @JvmOverloads constructor(
         urlIcon.isEnabled = url.isEnabled
 
         if (props?.markupTextColor != null) {
-            val code = ThemeColor.values().first { it.title == props.markupTextColor }
+            val code = ThemeColor.values().first { it.code == props.markupTextColor }
             val default = resources.getColor(R.color.text_primary, null)
             val value = resources.dark(code, default)
             textColorCircle.tint(value)
         } else {
-            val code = ThemeColor.values().find { it.title == props?.blockTextColor }
+            val code = ThemeColor.values().find { it.code == props?.blockTextColor }
             if (code != null) {
                 val default = resources.getColor(R.color.text_primary, null)
                 val value = resources.dark(code, default)
@@ -77,7 +77,7 @@ class MarkupToolbarWidget @JvmOverloads constructor(
         }
 
         if (props?.markupHighlightColor != null) {
-            val code = ThemeColor.values().first { it.title == props.markupHighlightColor }
+            val code = ThemeColor.values().first { it.code == props.markupHighlightColor }
             if (code == ThemeColor.DEFAULT) {
                 backgroundColorCircle.backgroundTintList = null
             } else {
@@ -86,7 +86,7 @@ class MarkupToolbarWidget @JvmOverloads constructor(
                 backgroundColorCircle.tint(value)
             }
         } else {
-            val code = ThemeColor.values().find { it.title == props?.blockBackroundColor }
+            val code = ThemeColor.values().find { it.code == props?.blockBackroundColor }
             if (code != null) {
                 val default = resources.getColor(R.color.background_primary, null)
                 val value = resources.lighter(code, default)

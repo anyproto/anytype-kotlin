@@ -66,9 +66,9 @@
         tools:ignore="MissingConstraints" />
 
     <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
-        android:id="@+id/backgroundColorGreen"
+        android:id="@+id/backgroundColorLime"
         style="@style/DefaultCircleColorStyle"
-        app:innerColor="@color/palette_light_green"
+        app:innerColor="@color/palette_light_lime"
         tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.helper.widget.Flow
@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:constraint_referenced_ids="backgroundColorDefault,backgroundColorGrey,backgroundColorYellow,backgroundColorOrange,backgroundColorRed,backgroundColorPink,backgroundColorPurple,backgroundColorBlue,backgroundColorIce,backgroundColorTeal,backgroundColorGreen"
+        app:constraint_referenced_ids="backgroundColorDefault,backgroundColorGrey,backgroundColorYellow,backgroundColorOrange,backgroundColorRed,backgroundColorPink,backgroundColorPurple,backgroundColorBlue,backgroundColorIce,backgroundColorTeal,backgroundColorLime"
         app:flow_horizontalGap="0dp"
         app:flow_horizontalStyle="packed"
         app:flow_maxElementsWrap="6"

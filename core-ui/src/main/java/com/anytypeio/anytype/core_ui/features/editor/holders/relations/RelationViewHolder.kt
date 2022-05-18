@@ -116,7 +116,7 @@ sealed class RelationViewHolder(
                 if (item.status.isNotEmpty()) {
                     val status = item.status.first()
                     text = status.status
-                    val color = ThemeColor.values().find { v -> v.title == status.color }
+                    val color = ThemeColor.values().find { v -> v.code == status.color }
                     val defaultTextColor = resources.getColor(R.color.text_primary, null)
                     if (color != null && color != ThemeColor.DEFAULT) {
                         setTextColor(resources.dark(color, defaultTextColor))

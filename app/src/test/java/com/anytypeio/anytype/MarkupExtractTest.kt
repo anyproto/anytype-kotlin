@@ -176,7 +176,7 @@ class MarkupExtractTest {
         val mark = Markup.Mark.TextColor(
             from = 0,
             to = 5,
-            color = ThemeColor.DEFAULT.title
+            color = ThemeColor.DEFAULT.code
         )
 
         stubMarkup(source, mark)
@@ -191,7 +191,7 @@ class MarkupExtractTest {
         assertEquals(
             expected = Mark(
                 range = mark.from..mark.to,
-                param = ThemeColor.DEFAULT.title,
+                param = ThemeColor.DEFAULT.code,
                 type = Mark.Type.TEXT_COLOR
             ),
             actual = marks.first()
@@ -208,7 +208,7 @@ class MarkupExtractTest {
         val mark = Markup.Mark.BackgroundColor(
             from = 0,
             to = 5,
-            background = ThemeColor.BLUE.title
+            background = ThemeColor.BLUE.code
         )
 
         stubMarkup(source, mark)
@@ -223,7 +223,7 @@ class MarkupExtractTest {
         assertEquals(
             expected = Mark(
                 range = mark.from..mark.to,
-                param = ThemeColor.BLUE.title,
+                param = ThemeColor.BLUE.code,
                 type = Mark.Type.BACKGROUND_COLOR
             ),
             actual = marks.first()

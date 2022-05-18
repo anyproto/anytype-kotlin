@@ -44,7 +44,7 @@ class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) : Fil
 
     private fun setTextColor(view: TextView, color: String) {
         if (color.isNotBlank()) {
-            val value = ThemeColor.values().find { value -> value.title == color }
+            val value = ThemeColor.values().find { value -> value.code == color }
             if (value != null)
                 view.setTextColor(value.text)
             else{

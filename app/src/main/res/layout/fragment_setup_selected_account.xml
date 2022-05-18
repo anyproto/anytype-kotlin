@@ -83,7 +83,7 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/auth_default_button_height"
                     android:layout_marginStart="16dp"
-                    android:backgroundTint="@color/anytype_text_red"
+                    android:backgroundTint="@color/palette_dark_red"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:text="@string/retry"

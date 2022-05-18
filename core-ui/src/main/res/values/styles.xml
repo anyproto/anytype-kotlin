@@ -76,7 +76,7 @@
         <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/anytype_text_default</item>
+        <item name="android:textColor">@color/palette_dark_default</item>
         <item name="android:textColorHint">@color/editor_default_hint_text_color</item>
         <item name="android:textSize">28sp</item>
     </style>
@@ -339,7 +339,7 @@
     <style name="BlockImageErrorTextStyle">
         <item name="android:layout_gravity">center</item>
         <item name="android:fontFamily">@font/inter_regular</item>
-        <item name="android:textColor">@color/anytype_text_grey</item>
+        <item name="android:textColor">@color/palette_dark_grey</item>
         <item name="android:textSize">9sp</item>
     </style>
 

@@ -47,7 +47,7 @@ class AddOptionsRelationDVViewModel(
                     dataview = dataview,
                     record = target,
                     name = name,
-                    color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().title
+                    color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().code
                 )
             ).proceed(
                 success = { (payload, option) ->

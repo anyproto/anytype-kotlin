@@ -272,13 +272,13 @@ class DisplayRelationTagValueTest {
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Architect",
-            color = option1Color.title
+            color = option1Color.code
         )
 
         val option2 = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Manager",
-            color = option2Color.title
+            color = option2Color.code
         )
 
         val option3 = Relation.Option(

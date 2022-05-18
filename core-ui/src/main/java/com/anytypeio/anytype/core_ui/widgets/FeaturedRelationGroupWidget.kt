@@ -147,7 +147,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 }
                 is DocumentRelationView.Status -> {
                     relation.status.forEach { status ->
-                        val color = ThemeColor.values().find { v -> v.title == status.color }
+                        val color = ThemeColor.values().find { v -> v.code == status.color }
                         val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val view = TextView(context).apply {
                             id = generateViewId()
@@ -177,7 +177,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 }
                 is DocumentRelationView.Tags -> {
                     relation.tags.forEach { tag ->
-                        val color = ThemeColor.values().find { v -> v.title == tag.color }
+                        val color = ThemeColor.values().find { v -> v.code == tag.color }
                         val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val defaultBackground = resources.getColor(R.color.shape_primary, null)
                         val view = TextView(context).apply {

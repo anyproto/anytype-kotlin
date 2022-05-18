@@ -65,7 +65,7 @@ fun AccountAndDataScreen(
         Divider()
         ActionWithProgressBar(
                 name = stringResource(R.string.log_out),
-                color = colorResource(R.color.anytype_text_red),
+                color = colorResource(R.color.palette_dark_red),
                 onClick = onLogoutClicked,
                 isInProgress = isLogoutInProgress
         )

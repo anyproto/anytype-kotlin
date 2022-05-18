@@ -177,7 +177,6 @@ object EditorSessionModule {
         interceptThreadStatus: InterceptThreadStatus,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
-        createPage: CreatePage,
         createDocument: CreateDocument,
         createObjectSet: CreateObjectSet,
         createObject: CreateObject,
@@ -205,7 +204,6 @@ object EditorSessionModule {
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
-        createPage = createPage,
         createDocument = createDocument,
         createObject = createObject,
         createNewDocument = createNewDocument,

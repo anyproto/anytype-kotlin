@@ -3,68 +3,68 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.graphics.Color
 
 /**
- * @property title color code name
+ * @property code color code name
  * @property text text color integer for text styling
  * @property background background color integer for background/highlight styling
  */
 enum class ThemeColor(
-    val title: String,
+    val code: String,
     val text: Int,
     val background: Int
 ) {
     DEFAULT(
-        title = "default",
+        code = "default",
         text = Color.parseColor("#2C2B27"),
         background = Color.parseColor("#FFFFFF")
     ),
     GREY(
-        title = "grey",
-        text = Color.parseColor("#ACA996"),
-        background = Color.parseColor("#F3F2EC")
+        code = "grey",
+        text = Color.parseColor("#929082"),
+        background = Color.parseColor("#F1F0ED")
     ),
     YELLOW(
-        title = "yellow",
-        text = Color.parseColor("#ECD91B"),
-        background = Color.parseColor("#FEF9CC")
+        code = "yellow",
+        text = Color.parseColor("#AFA100"),
+        background = Color.parseColor("#FCF8D6")
     ),
     ORANGE(
-        title = "orange",
-        text = Color.parseColor("#FFB522"),
-        background = Color.parseColor("#FEF3C5")
+        code = "orange",
+        text = Color.parseColor("#C38400"),
+        background = Color.parseColor("#FFF2D7")
     ),
     RED(
-        title = "red",
-        text = Color.parseColor("#F55522"),
-        background = Color.parseColor("#FFEBE5")
+        code = "red",
+        text = Color.parseColor("#E9410B"),
+        background = Color.parseColor("#FEE7E0")
     ),
     PINK(
-        title = "pink",
-        text = Color.parseColor("#E51CA0"),
-        background = Color.parseColor("#FEE3F5")
+        code = "pink",
+        text = Color.parseColor("#D20D8F"),
+        background = Color.parseColor("#FBDFF2")
     ),
     PURPLE(
-        title = "purple",
-        text = Color.parseColor("#AB50CC"),
-        background = Color.parseColor("#F4E3FA")
+        code = "purple",
+        text = Color.parseColor("#9F43C1"),
+        background = Color.parseColor("#F3E7F8")
     ),
     BLUE(
-        title = "blue",
+        code = "blue",
         text = Color.parseColor("#3E58EB"),
-        background = Color.parseColor("#E4E7FC")
+        background = Color.parseColor("#E4E8FC")
     ),
     ICE(
-        title = "ice",
-        text = Color.parseColor("#2AA7EE"),
-        background = Color.parseColor("#D6EFFD")
+        code = "ice",
+        text = Color.parseColor("#188DCF"),
+        background = Color.parseColor("#DDF1FC")
     ),
     TEAL(
-        title = "teal",
-        text = Color.parseColor("#0FC8BA"),
-        background = Color.parseColor("#D6F5F3")
+        code = "teal",
+        text = Color.parseColor("#0BA599"),
+        background = Color.parseColor("#D9F6F4")
     ),
-    GREEN(
-        title = "lime",
-        text = Color.parseColor("#57C600"),
-        background = Color.parseColor("#E3F7D0")
+    LIME(
+        code = "lime",
+        text = Color.parseColor("#4DAE00"),
+        background = Color.parseColor("#E5F8D6")
     );
 }

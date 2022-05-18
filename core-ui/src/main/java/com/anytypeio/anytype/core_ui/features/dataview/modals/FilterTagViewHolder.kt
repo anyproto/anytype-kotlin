@@ -59,7 +59,7 @@ class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) : FilterVie
         with(chip) {
             val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
             val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
-            val color = ThemeColor.values().find { v -> v.title == value?.color }
+            val color = ThemeColor.values().find { v -> v.code == value?.color }
             if (color != null && color != ThemeColor.DEFAULT) {
                 chipBackgroundColor = ColorStateList.valueOf(resources.light(color, defaultBackground))
                 setTextColor(resources.dark(color, defaultTextColor))

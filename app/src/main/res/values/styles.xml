@@ -260,14 +260,14 @@
         <item name="android:padding">32dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:fontFamily">monospace</item>
-        <item name="android:textColor">@color/anytype_text_grey</item>
+        <item name="android:textColor">@color/palette_dark_grey</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="dataViewUnsupportedViewErrorStyle">
         <item name="android:padding">32dp</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/anytype_text_grey</item>
+        <item name="android:textColor">@color/palette_dark_grey</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -275,7 +275,7 @@
         <item name="lineHeight">18dp</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">monospace</item>
-        <item name="android:textColor">@color/anytype_text_red</item>
+        <item name="android:textColor">@color/palette_dark_red</item>
         <item name="maxLines">4</item>
     </style>
 

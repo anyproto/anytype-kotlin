@@ -53,7 +53,7 @@
         app:layout_constraintStart_toEndOf="@+id/iconContainer"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         tools:background="@drawable/circle_solid_default"
-        tools:backgroundTint="@color/anytype_text_red" />
+        tools:backgroundTint="@color/palette_dark_red" />
 
     <TextView
         android:id="@+id/tvTitle"

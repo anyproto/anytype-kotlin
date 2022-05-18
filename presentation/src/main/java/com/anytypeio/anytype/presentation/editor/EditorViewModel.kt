@@ -70,7 +70,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -210,7 +209,6 @@ import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 class EditorViewModel(
     private val openPage: OpenPage,
     private val closePage: CloseBlock,
-    private val createPage: CreatePage,
     private val createDocument: CreateDocument,
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
@@ -259,7 +257,7 @@ class EditorViewModel(
     val isUndoRedoToolbarIsVisible = MutableStateFlow(false)
 
     val selectTemplateViewState = templateDelegateState.map { state ->
-        when(state) {
+        when (state) {
             is SelectTemplateState.Available -> {
                 SelectTemplateViewState.Active(
                     count = state.templates.size
@@ -361,7 +359,7 @@ class EditorViewModel(
         viewModelScope.launch {
             templateDelegateState.collect { state ->
                 Timber.d("Template delegate state: $state")
-                when(state) {
+                when (state) {
                     is SelectTemplateState.Accepted -> {
                         commands.postValue(EventWrapper(Command.CloseKeyboard))
                         navigate(
@@ -1668,10 +1666,10 @@ class EditorViewModel(
         if (ids.isNullOrEmpty()) return
         when (event) {
             is StylingEvent.Coloring.Text -> {
-                onToolbarTextColorAction(ids, event.color.title)
+                onToolbarTextColorAction(ids, event.color.code)
             }
             is StylingEvent.Coloring.Background -> {
-                onBlockBackgroundColorAction(ids, event.color.title)
+                onBlockBackgroundColorAction(ids, event.color.code)
             }
             is StylingEvent.Markup.Bold -> {
                 onUpdateBlockListMarkup(ids, Markup.Type.BOLD)
@@ -2268,12 +2266,12 @@ class EditorViewModel(
         if (isAllTextAndNoneCodeBlocks) {
             val styleState = selected.map { it.content.asText() }.getStyleTextToolbarState()
             controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(styleState)
+                ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(styleState)
             )
         } else {
             val styleState = selected.getStyleBackgroundToolbarState()
             controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(styleState)
+                ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(styleState)
             )
         }
     }
@@ -4117,10 +4115,12 @@ class EditorViewModel(
             is SlashItem.Main.Color -> {
                 val block = blocks.first { it.id == targetId }
                 val blockColor = block.content.asText().color
-                val color = blockColor ?: ThemeColor.DEFAULT.title
+                val color = if (blockColor != null) {
+                    ThemeColor.valueOf(blockColor.toUpperCase())
+                } else ThemeColor.DEFAULT
                 val items =
                     listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getSlashWidgetColorItems(
-                        code = color
+                        color = color
                     )
                 onSlashWidgetStateChanged(
                     SlashWidgetState.UpdateItems.empty().copy(
@@ -4131,10 +4131,14 @@ class EditorViewModel(
             is SlashItem.Main.Background -> {
                 val block = blocks.first { it.id == targetId }
                 val blockBackground = block.backgroundColor
-                val background = blockBackground ?: ThemeColor.DEFAULT.title
+                val background = if (blockBackground == null) {
+                    ThemeColor.DEFAULT
+                } else {
+                    ThemeColor.valueOf(blockBackground.toUpperCase())
+                }
                 val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
                         SlashExtensions.getSlashWidgetBackgroundItems(
-                            code = background
+                            color = background
                         )
                 onSlashWidgetStateChanged(
                     SlashWidgetState.UpdateItems.empty().copy(
@@ -4375,14 +4379,14 @@ class EditorViewModel(
                 Intent.Text.UpdateBackgroundColor(
                     context = context,
                     targets = listOf(targetId),
-                    color = item.code
+                    color = item.themeColor.code
                 )
             }
             is SlashItem.Color.Text -> {
                 Intent.Text.UpdateColor(
                     context = context,
                     targets = listOf(targetId),
-                    color = item.code
+                    color = item.themeColor.code
                 )
             }
         }
@@ -4392,7 +4396,7 @@ class EditorViewModel(
                 is SlashItem.Color.Background -> {
                     sendAnalyticsBlockBackgroundEvent(
                         analytics = analytics,
-                        color = item.code,
+                        color = item.themeColor.code,
                         context = analyticsContext
                     )
                 }
@@ -4963,12 +4967,12 @@ class EditorViewModel(
         Timber.d("onMultiSelectPasteClicked, ")
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
-                    Intent.Clipboard.Paste(
-                            context = context,
-                            focus = Editor.Focus.EMPTY_FOCUS,
-                            selected = currentSelection().toList(),
-                            range = DEFAULT_RANGE
-                    )
+                Intent.Clipboard.Paste(
+                    context = context,
+                    focus = Editor.Focus.EMPTY_FOCUS,
+                    selected = currentSelection().toList(),
+                    range = DEFAULT_RANGE
+                )
             )
         }
     }
@@ -5043,28 +5047,6 @@ class EditorViewModel(
             },
             errorAction = { sendToast("Cannot convert selected blocks to $uiBlock") }
         )
-    }
-
-    //endregion
-
-    //region SAM
-
-    fun onQuickBlockMoveClicked() {
-        val target = orchestrator.stores.focus.current().id
-        toggleSelection(target)
-        val descendants = blocks.asMap().descendants(parent = target)
-        if (isSelected(target)) {
-            descendants.forEach { child -> select(child) }
-        } else {
-            descendants.forEach { child -> unselect(child) }
-        }
-        viewModelScope.launch {
-            mode = EditorMode.SAM
-            orchestrator.stores.focus.update(Editor.Focus.empty())
-            orchestrator.stores.views.update(views.enterSAM(currentSelection()))
-            renderCommand.send(Unit)
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnQuickStart(1))
-        }
     }
 
     //endregion
@@ -5648,9 +5630,9 @@ class EditorViewModel(
 
     //region TEMPLATING
 
-   fun onShowTemplateClicked() {
-       viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
-   }
+    fun onShowTemplateClicked() {
+        viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
+    }
 
     fun onTypeHasTemplateToolbarHidden() {
         viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }

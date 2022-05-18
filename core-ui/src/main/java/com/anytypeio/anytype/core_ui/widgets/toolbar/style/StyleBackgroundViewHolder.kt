@@ -19,24 +19,24 @@ class StyleBackgroundViewHolder(
     private val blue = binding.backgroundColorBlue
     private val ice = binding.backgroundColorIce
     private val teal = binding.backgroundColorTeal
-    private val green = binding.backgroundColorGreen
+    private val lime = binding.backgroundColorLime
 
     fun bind(
         onStylingEvent: (StylingEvent) -> Unit,
         background: String?
     ) {
 
-        default.isSelected = background == ThemeColor.DEFAULT.title
-        grey.isSelected = background == ThemeColor.GREY.title
-        yellow.isSelected = background == ThemeColor.YELLOW.title
-        orange.isSelected = background == ThemeColor.ORANGE.title
-        red.isSelected = background == ThemeColor.RED.title
-        pink.isSelected = background == ThemeColor.PINK.title
-        purple.isSelected = background == ThemeColor.PURPLE.title
-        blue.isSelected = background == ThemeColor.BLUE.title
-        ice.isSelected = background == ThemeColor.ICE.title
-        teal.isSelected = background == ThemeColor.TEAL.title
-        green.isSelected = background == ThemeColor.GREEN.title
+        default.isSelected = background == ThemeColor.DEFAULT.code
+        grey.isSelected = background == ThemeColor.GREY.code
+        yellow.isSelected = background == ThemeColor.YELLOW.code
+        orange.isSelected = background == ThemeColor.ORANGE.code
+        red.isSelected = background == ThemeColor.RED.code
+        pink.isSelected = background == ThemeColor.PINK.code
+        purple.isSelected = background == ThemeColor.PURPLE.code
+        blue.isSelected = background == ThemeColor.BLUE.code
+        ice.isSelected = background == ThemeColor.ICE.code
+        teal.isSelected = background == ThemeColor.TEAL.code
+        lime.isSelected = background == ThemeColor.LIME.code
 
         default.setOnClickListener {
             onStylingEvent(StylingEvent.Coloring.Background(color = ThemeColor.DEFAULT))
@@ -68,8 +68,8 @@ class StyleBackgroundViewHolder(
         teal.setOnClickListener {
             onStylingEvent(StylingEvent.Coloring.Background(color = ThemeColor.TEAL))
         }
-        green.setOnClickListener {
-            onStylingEvent(StylingEvent.Coloring.Background(color = ThemeColor.GREEN))
+        lime.setOnClickListener {
+            onStylingEvent(StylingEvent.Coloring.Background(color = ThemeColor.LIME))
         }
     }
 }

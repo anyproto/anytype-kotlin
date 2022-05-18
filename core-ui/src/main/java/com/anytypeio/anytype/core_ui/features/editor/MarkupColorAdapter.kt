@@ -78,13 +78,13 @@ class MarkupColorAdapter(
         private val circle = itemView.findViewById<ColorCircleWidget>(R.id.circle)
         fun bind(view: MarkupColorView.Text) {
             circle.isSelected = view.isSelected
-            val color = ThemeColor.values().first { it.title == view.code }
+            val color = ThemeColor.values().first { it.code == view.code }
             val default = itemView.resources.getColor(R.color.text_primary, null)
             circle.innerColor = itemView.resources.dark(color, default)
         }
 
         fun bind(view: MarkupColorView.Background) {
-            val color = ThemeColor.values().first { it.title == view.code }
+            val color = ThemeColor.values().first { it.code == view.code }
             val default = itemView.resources.getColor(R.color.background_primary, null)
             circle.isSelected = view.isSelected
             circle.innerColor = itemView.resources.light(color, default)

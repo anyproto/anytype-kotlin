@@ -24,7 +24,11 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.core_utils.ext.removeSpans
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -372,7 +376,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyTextColor(item: BlockView.Title) {
-            setTextColor(item.color ?: ThemeColor.DEFAULT.title)
+            setTextColor(item.color ?: ThemeColor.DEFAULT.code)
         }
 
         override fun applyBackground(item: BlockView.Title) {
@@ -556,7 +560,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyTextColor(item: BlockView.Title) {
-            setTextColor(item.color ?: ThemeColor.DEFAULT.title)
+            setTextColor(item.color ?: ThemeColor.DEFAULT.code)
         }
         override fun applyBackground(item: BlockView.Title) {
             binding.titleContainer.setBlockBackgroundColor(item.backgroundColor)

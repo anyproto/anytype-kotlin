@@ -36,7 +36,7 @@ sealed class FeaturedRelationViewHolder(view: View) : RecyclerView.ViewHolder(vi
                     TextView(itemView.context).apply {
                         text = tag.tag
                         setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                        val themeColor = ThemeColor.values().find { it.title == tag.color }
+                        val themeColor = ThemeColor.values().find { it.code == tag.color }
                         if (themeColor != null) {
                             background.setDrawableColor(themeColor.background)
                             setTextColor(themeColor.text)
@@ -62,7 +62,7 @@ sealed class FeaturedRelationViewHolder(view: View) : RecyclerView.ViewHolder(vi
                 container.addView(
                     TextView(itemView.context).apply {
                         text = status.status
-                        val themeColor = ThemeColor.values().find { it.title == status.color }
+                        val themeColor = ThemeColor.values().find { it.code == status.color }
                         if (themeColor != null) {
                             setTextColor(themeColor.text)
                         } else {

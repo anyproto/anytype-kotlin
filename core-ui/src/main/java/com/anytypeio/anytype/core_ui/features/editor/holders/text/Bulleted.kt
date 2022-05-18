@@ -85,7 +85,7 @@ class Bulleted(
 
     override fun setTextColor(color: String) {
         super.setTextColor(color)
-        val value = ThemeColor.values().find { value -> value.title == color }
+        val value = ThemeColor.values().find { value -> value.code == color }
         if (value != null && value != ThemeColor.DEFAULT) {
             DrawableCompat.setTint(
                 bullet.drawable,

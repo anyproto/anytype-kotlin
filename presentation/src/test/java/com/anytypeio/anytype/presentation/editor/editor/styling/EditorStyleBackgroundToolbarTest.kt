@@ -200,7 +200,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         val codeStyle = TextStyle.CODE_SNIPPET
         val codeId = MockDataFactory.randomUuid()
-        val backgroundColor = ThemeColor.GREEN.title
+        val backgroundColor = ThemeColor.LIME.code
         val doc = MockBlockFactory.makeOnePageWithOneTextBlock(
             root = root,
             child = codeId,
@@ -243,7 +243,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
     fun `show StyleBackgroundToolbar with proper background and then close when code block in focus`() {
         val textStyle = TextStyle.CODE_SNIPPET
         val blockId = MockDataFactory.randomUuid()
-        val backgroundColor = ThemeColor.GREEN.title
+        val backgroundColor = ThemeColor.LIME.code
         val doc = MockBlockFactory.makeOnePageWithOneTextBlock(
             root = root,
             child = blockId,

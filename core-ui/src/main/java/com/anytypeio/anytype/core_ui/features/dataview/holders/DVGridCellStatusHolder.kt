@@ -13,7 +13,7 @@ class DVGridCellStatusHolder(val binding: ItemViewerGridCellDescriptionBinding) 
         val status = cell.status.firstOrNull()
         if (status != null) {
             tvText.text = status.status
-            val color = ThemeColor.values().find { v -> v.title == status.color }
+            val color = ThemeColor.values().find { v -> v.code == status.color }
             val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
             if (color != null && color != ThemeColor.DEFAULT) {
                 tvText.setTextColor(itemView.resources.dark(color, defaultTextColor))

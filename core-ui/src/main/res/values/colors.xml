@@ -5,18 +5,6 @@
     <color name="sync_status_green">#57C600</color>
     <color name="sync_status_orange">#FFB522</color>
 
-    <color name="anytype_text_default">#2C2B27</color>
-    <color name="anytype_text_grey">#ACA996</color>
-    <color name="anytype_text_yellow">#ECD91B</color>
-    <color name="anytype_text_orange">#FFB522</color>
-    <color name="anytype_text_red">#F55522</color>
-    <color name="anytype_text_pink">#E51CA0</color>
-    <color name="anytype_text_purple">#AB50CC</color>
-    <color name="anytype_text_blue">#3E58EB</color>
-    <color name="anytype_text_ice">#2AA7EE</color>
-    <color name="anytype_text_teal">#0FC8BA</color>
-    <color name="anytype_text_green">#57C600</color>
-
     <color name="anytype_shadow_main">#8C000000</color>
 
     <color name="debug">#F44336</color>
@@ -151,7 +139,8 @@
     <color name="dashboard_card_background">#FFFFFF</color>
     <color name="dashboard_background">#99F5F5F5</color>
 
-    <color name="palette_dark_default">#FFFFFF</color>
+    <!-- Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A160 -->
+    <color name="palette_dark_default">#2C2B27</color>
     <color name="palette_dark_yellow">#AFA100</color>
     <color name="palette_dark_orange">#C38400</color>
     <color name="palette_dark_red">#E9410B</color>
@@ -160,7 +149,7 @@
     <color name="palette_dark_blue">#3E58EB</color>
     <color name="palette_dark_ice">#188DCF</color>
     <color name="palette_dark_teal">#0BA599</color>
-    <color name="palette_dark_green">#4DAE00</color>
+    <color name="palette_dark_lime">#4DAE00</color>
     <color name="palette_dark_grey">#929082</color>
 
     <color name="palette_light_default">#FFFFFF</color>
@@ -172,7 +161,7 @@
     <color name="palette_light_blue">#CBD2FA</color>
     <color name="palette_light_ice">#B2DFF9</color>
     <color name="palette_light_teal">#A9EBE6</color>
-    <color name="palette_light_green">#C5EFA3</color>
+    <color name="palette_light_lime">#C5EFA3</color>
     <color name="palette_light_grey">#DEDCCC</color>
 
     <color name="palette_very_light_default">#FFFFFF</color>
@@ -184,20 +173,8 @@
     <color name="palette_very_light_blue">#E4E8FC</color>
     <color name="palette_very_light_ice">#DDF1FC</color>
     <color name="palette_very_light_teal">#D9F6F4</color>
-    <color name="palette_very_light_green">#E5F8D6</color>
+    <color name="palette_very_light_lime">#E5F8D6</color>
     <color name="palette_very_light_grey">#F1F0ED</color>
-
-    <color name="anytype_background_default">#FFFFFF</color>
-    <color name="anytype_background_yellow">#FCF8D6</color>
-    <color name="anytype_background_orange">#FFF2D7</color>
-    <color name="anytype_background_red">#FEE7E0</color>
-    <color name="anytype_background_pink">#FBDFF2</color>
-    <color name="anytype_background_purple">#F3E7F8</color>
-    <color name="anytype_background_blue">#E4E8FC</color>
-    <color name="anytype_background_ice">#DDF1FC</color>
-    <color name="anytype_background_teal">#D9F6F4</color>
-    <color name="anytype_background_green">#E5F8D6</color>
-    <color name="anytype_background_grey">#F1F0ED</color>
 
     <color name="dashboard_tab_color">#CC0066C3</color>
 

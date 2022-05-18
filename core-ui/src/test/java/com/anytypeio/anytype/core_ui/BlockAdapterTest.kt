@@ -174,7 +174,7 @@ class BlockAdapterTest {
         val paragraph = BlockView.Text.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            color = ThemeColor.BLUE.title
+            color = ThemeColor.BLUE.code
         )
 
         val views = listOf(paragraph)
@@ -267,7 +267,7 @@ class BlockAdapterTest {
         )
 
         val updated = paragraph.copy(
-            backgroundColor = ThemeColor.PURPLE.title
+            backgroundColor = ThemeColor.PURPLE.code
         )
 
         val views = listOf(paragraph)
@@ -320,11 +320,11 @@ class BlockAdapterTest {
         val paragraph = BlockView.Text.Paragraph(
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
-            color = ThemeColor.BLUE.title
+            color = ThemeColor.BLUE.code
         )
 
         val updated = paragraph.copy(
-            color = ThemeColor.GREEN.title
+            color = ThemeColor.LIME.code
         )
 
         val views = listOf(paragraph)
@@ -362,7 +362,7 @@ class BlockAdapterTest {
             onSlashEvent = {}
         )
 
-        val expected = context.resources.getColor(R.color.palette_dark_green)
+        val expected = context.resources.getColor(R.color.palette_dark_lime)
 
         assertEquals(
             expected = expected,

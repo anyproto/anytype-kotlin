@@ -363,7 +363,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            backgroundColor = background1.title,
+            backgroundColor = background1.code,
             content = Block.Content.RelationBlock(
                 key = relation1.key,
             )
@@ -373,7 +373,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            backgroundColor = background2.title,
+            backgroundColor = background2.code,
             content = Block.Content.RelationBlock(
                 key = relation2.key
             )
@@ -383,7 +383,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            backgroundColor = background2.title,
+            backgroundColor = background2.code,
             content = Block.Content.RelationBlock(
                 key = relation3.key
             )
@@ -393,7 +393,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            backgroundColor = background2.title,
+            backgroundColor = background2.code,
             content = Block.Content.RelationBlock(
                 key = relation4.key
             )
@@ -447,7 +447,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val option = Relation.Option(
             id = MockDataFactory.randomUuid(),
             text = "Done",
-            color = ThemeColor.PURPLE.title
+            color = ThemeColor.PURPLE.code
         )
 
         val relation1 = Relation(
@@ -866,7 +866,7 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         val option1 = Relation.Option(
             id = MockDataFactory.randomUuid(),
-            color = ThemeColor.BLUE.title,
+            color = ThemeColor.BLUE.code,
             text = "In testing"
         )
 

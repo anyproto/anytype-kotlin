@@ -40,7 +40,7 @@ fun List<Block.Content.Text>.getStyleTextToolbarState(): StyleToolbarState.Text 
  * We take as a statement that if block background value is null, then this block have default color
  */
 fun List<Block>.getStyleBackgroundToolbarState(): StyleToolbarState.Background {
-    val result = map { it.backgroundColor ?: ThemeColor.DEFAULT.title }.distinct()
+    val result = map { it.backgroundColor ?: ThemeColor.DEFAULT.code }.distinct()
     return if (result.size == 1) {
         StyleToolbarState.Background(
             background = result[0]
@@ -61,8 +61,8 @@ fun List<Block>.getStyleBackgroundToolbarState(): StyleToolbarState.Background {
 fun List<Block>.getStyleColorBackgroundToolbarState(): StyleToolbarState.ColorBackground {
     val isAllText = all { it.content is Block.Content.Text }
     if (!isAllText) return StyleToolbarState.ColorBackground.empty()
-    val resultColor = map { it.content.asText().color ?: ThemeColor.DEFAULT.title }.distinct()
-    val resultBackground = map { it.backgroundColor ?: ThemeColor.DEFAULT.title }.distinct()
+    val resultColor = map { it.content.asText().color ?: ThemeColor.DEFAULT.code }.distinct()
+    val resultBackground = map { it.backgroundColor ?: ThemeColor.DEFAULT.code }.distinct()
     return StyleToolbarState.ColorBackground(
         background = if (resultBackground.size == 1) resultBackground[0] else null,
         color = if (resultColor.size == 1) resultColor[0] else null

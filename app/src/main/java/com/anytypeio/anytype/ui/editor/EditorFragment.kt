@@ -1546,14 +1546,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     binding.markupColorToolbar.setTextColor(
                         state.markupMainToolbar.style?.markupTextColor
                             ?: state.markupMainToolbar.style?.blockTextColor
-                            ?: ThemeColor.DEFAULT.title
+                            ?: ThemeColor.DEFAULT.code
                     )
                 }
                 if (state.markupMainToolbar.isBackgroundColorSelected) {
                     binding.markupColorToolbar.setBackgroundColor(
                         state.markupMainToolbar.style?.markupHighlightColor
                             ?: state.markupMainToolbar.style?.blockBackroundColor
-                            ?: ThemeColor.DEFAULT.title
+                            ?: ThemeColor.DEFAULT.code
                     )
                 }
                 if (binding.markupColorToolbar.translationY > 0) {

@@ -14,10 +14,6 @@ android {
     }
 
     testOptions.unitTests.includeAndroidResources = true
-
-    lint {
-        disable 'NullSafeMutableLiveData'
-    }
 }
 
 dependencies {

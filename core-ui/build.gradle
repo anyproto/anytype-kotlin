@@ -31,10 +31,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion config["compose_version"]
     }
-
-    lint {
-        abortOnError false
-    }
     
     buildFeatures {
         viewBinding true

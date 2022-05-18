@@ -37,7 +37,7 @@ abstract class BaseAddOptionsRelationViewModel(
 
     val isMultiple = MutableStateFlow(true)
 
-    private val logger = Timber.tag("BaseAddOptionsRelationViewModel")
+    private val logger = Timber.tag("BaseAddOptionsRelation")
 
     init {
         viewModelScope.launch {

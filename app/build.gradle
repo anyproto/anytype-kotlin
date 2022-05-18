@@ -85,13 +85,6 @@ android {
         kotlinCompilerExtensionVersion config.compose_version
     }
 
-    lint {
-        abortOnError false
-        disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder'
-        ignoreWarnings true
-        quiet true
-    }
-
     buildFeatures {
         viewBinding true
         compose true

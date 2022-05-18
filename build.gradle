@@ -40,11 +40,13 @@ subprojects {
         testDebugAll.dependsOn(tasks.named("test"))
     }
     plugins.withId("com.android.library") {
+        project.apply from: "$rootDir/lint.gradle"
         afterEvaluate {
             testDebugAll.dependsOn(tasks.named("testDebugUnitTest"))
         }
     }
     plugins.withId("com.android.application") {
+        project.apply from: "$rootDir/lint.gradle"
         afterEvaluate {
             testDebugAll.dependsOn(tasks.named("testDebugUnitTest"))
         }

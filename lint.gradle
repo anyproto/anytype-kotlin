@@ -1,0 +1,10 @@
+android {
+    lint {
+        abortOnError false
+        disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder', 'NullSafeMutableLiveData'
+        ignoreWarnings true
+        quiet true
+        checkReleaseBuilds false
+        checkDependencies false
+    }
+}

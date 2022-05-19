@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.StubBulleted
-import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubCheckbox
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubNumbered
@@ -13,11 +12,13 @@ import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubToggle
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import org.junit.Before
@@ -27,6 +28,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyZeroInteractions
+import kotlin.test.assertEquals
 
 class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
@@ -589,7 +591,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             )
         )
 
-        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        releasePendingTextUpdates()
 
         verifyBlocking(unlinkBlocks, times(1)) {
             invoke(
@@ -606,7 +608,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val checkbox = StubCheckbox()
+        val checkbox = StubCheckbox(text = "")
 
         val page = Block(
             id = root,
@@ -634,6 +636,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         verifyZeroInteractions(unlinkBlocks)
+        verifyZeroInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -650,7 +653,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val bulleted = StubBulleted()
+        val bulleted = StubBulleted(text = "")
 
         val page = Block(
             id = root,
@@ -678,6 +681,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         verifyZeroInteractions(unlinkBlocks)
+        verifyZeroInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -694,7 +698,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val numbered = StubNumbered()
+        val numbered = StubNumbered(text = "")
 
         val page = Block(
             id = root,
@@ -722,6 +726,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         verifyZeroInteractions(unlinkBlocks)
+        verifyZeroInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -738,7 +743,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val toggle = StubToggle()
+        val toggle = StubToggle(text = "")
 
         val page = Block(
             id = root,
@@ -766,6 +771,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         verifyZeroInteractions(unlinkBlocks)
+        verifyZeroInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -782,7 +788,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val quote = StubQuote()
+        val quote = StubQuote(text = "")
 
         val page = Block(
             id = root,
@@ -810,6 +816,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         verifyZeroInteractions(unlinkBlocks)
+        verifyZeroInteractions(updateText)
         verifyBlocking(updateTextStyle, times(1)) {
             invoke(
                 UpdateTextStyle.Params(
@@ -823,7 +830,427 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should reset style to paragraph - when pressing backspace in empty callout block`() {
-        // Add test when callout block is ready.
+        // TODO Add test when callout block is ready.
     }
 
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in non-empty checkbox block after deleting all text`() {
+
+        // SETUP
+
+        val checkbox = StubCheckbox(text = "Foo")
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, checkbox.id)
+        )
+
+        val document = listOf(page, header, title, checkbox)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = checkbox.id,
+                hasFocus = true
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Checkbox(
+                    id = checkbox.id,
+                    text = "",
+                    isChecked = checkbox.content<TXT>().isChecked ?: false,
+                    isFocused = true,
+                    marks = emptyList(),
+                )
+            )
+            onEmptyBlockBackspaceClicked(id = checkbox.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(checkbox.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        // Checking that block text is updated remotely
+
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                UpdateText.Params(
+                    context = root,
+                    target = checkbox.id,
+                    text = "",
+                    marks = emptyList()
+                )
+            )
+        }
+
+        // Checking that document is also updated locally
+
+        orchestrator.stores.document.get().first { it.id == checkbox.id }.let { block ->
+            assertEquals(
+                expected = checkbox.copy(
+                    content = checkbox.content<TXT>().copy(
+                        text = "",
+                        marks = emptyList()
+                    )
+                ),
+                actual = block
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in non-empty bulleted block after deleting all text`() {
+
+        // SETUP
+
+        val bulleted = StubBulleted(text = "Foo")
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, bulleted.id)
+        )
+
+        val document = listOf(page, header, title, bulleted)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = bulleted.id,
+                hasFocus = true
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Bulleted(
+                    id = bulleted.id,
+                    text = "",
+                    isFocused = true,
+                    marks = emptyList(),
+                )
+            )
+            onEmptyBlockBackspaceClicked(id = bulleted.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(bulleted.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        // Checking that block text is updated remotely
+
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                UpdateText.Params(
+                    context = root,
+                    target = bulleted.id,
+                    text = "",
+                    marks = emptyList()
+                )
+            )
+        }
+
+        // Checking that document is also updated locally
+
+        orchestrator.stores.document.get().first { it.id == bulleted.id }.let { block ->
+            assertEquals(
+                expected = bulleted.copy(
+                    content = bulleted.content<TXT>().copy(
+                        text = "",
+                        marks = emptyList()
+                    )
+                ),
+                actual = block
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in non-empty quote block after deleting all text`() {
+
+        // SETUP
+
+        val quote = StubQuote(text = "Foo")
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, quote.id)
+        )
+
+        val document = listOf(page, header, title, quote)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = quote.id,
+                hasFocus = true
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Highlight(
+                    id = quote.id,
+                    text = "",
+                    isFocused = true,
+                    marks = emptyList(),
+                )
+            )
+            onEmptyBlockBackspaceClicked(id = quote.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(quote.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        // Checking that block text is updated remotely
+
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                UpdateText.Params(
+                    context = root,
+                    target = quote.id,
+                    text = "",
+                    marks = emptyList()
+                )
+            )
+        }
+
+        // Checking that document is also updated locally
+
+        orchestrator.stores.document.get().first { it.id == quote.id }.let { block ->
+            assertEquals(
+                expected = quote.copy(
+                    content = quote.content<TXT>().copy(
+                        text = "",
+                        marks = emptyList()
+                    )
+                ),
+                actual = block
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in non-empty toggle block after deleting all text`() {
+
+        // SETUP
+
+        val toggle = StubToggle(text = "Foo")
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, toggle.id)
+        )
+
+        val document = listOf(page, header, title, toggle)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = toggle.id,
+                hasFocus = true
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Toggle(
+                    id = toggle.id,
+                    text = "",
+                    isFocused = true,
+                    marks = emptyList(),
+                )
+            )
+            onEmptyBlockBackspaceClicked(id = toggle.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(toggle.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        // Checking that block text is updated remotely
+
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                UpdateText.Params(
+                    context = root,
+                    target = toggle.id,
+                    text = "",
+                    marks = emptyList()
+                )
+            )
+        }
+
+        // Checking that document is also updated locally
+
+        orchestrator.stores.document.get().first { it.id == toggle.id }.let { block ->
+            assertEquals(
+                expected = toggle.copy(
+                    content = toggle.content<TXT>().copy(
+                        text = "",
+                        marks = emptyList()
+                    )
+                ),
+                actual = block
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should reset style to paragraph - when pressing backspace in non-empty numbered block after deleting all text`() {
+
+        // SETUP
+
+        val numbered = StubNumbered(text = "Foo")
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, numbered.id)
+        )
+
+        val document = listOf(page, header, title, numbered)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubUpdateTextStyle()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = numbered.id,
+                hasFocus = true
+            )
+            onTextBlockTextChanged(
+                view = BlockView.Text.Numbered(
+                    id = numbered.id,
+                    text = "",
+                    isFocused = true,
+                    marks = emptyList(),
+                    number = 1
+                )
+            )
+            onEmptyBlockBackspaceClicked(id = numbered.id)
+        }
+
+        verifyZeroInteractions(unlinkBlocks)
+
+        verifyBlocking(updateTextStyle, times(1)) {
+            invoke(
+                UpdateTextStyle.Params(
+                    context = root,
+                    targets = listOf(numbered.id),
+                    style = Block.Content.Text.Style.P
+                )
+            )
+        }
+
+        // Checking that block text is updated remotely
+
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                UpdateText.Params(
+                    context = root,
+                    target = numbered.id,
+                    text = "",
+                    marks = emptyList()
+                )
+            )
+        }
+
+        // Checking that document is also updated locally
+
+        orchestrator.stores.document.get().first { it.id == numbered.id }.let { block ->
+            assertEquals(
+                expected = numbered.copy(
+                    content = numbered.content<TXT>().copy(
+                        text = "",
+                        marks = emptyList()
+                    )
+                ),
+                actual = block
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    private fun releasePendingTextUpdates() {
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
 }

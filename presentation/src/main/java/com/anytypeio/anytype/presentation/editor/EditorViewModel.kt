@@ -778,9 +778,7 @@ class EditorViewModel(
             .changes
             .stream()
             .filterNotNull()
-            .onEach { update ->
-                orchestrator.textInteractor.consume(update, context)
-            }
+            .onEach { update -> orchestrator.textInteractor.consume(update, context) }
             .launchIn(viewModelScope)
 
         orchestrator
@@ -1393,6 +1391,27 @@ class EditorViewModel(
             val current = views[position]
             if (current is BlockView.Text && current.isStyleClearable()) {
                 viewModelScope.launch {
+                    val pending = pendingTextUpdate
+                    if (pending != null && pending.target == id) {
+                        val update = blocks.updateTextContent(
+                            target = id,
+                            text = "",
+                            marks = emptyList()
+                        )
+                        orchestrator.stores.document.update(update)
+                        with(orchestrator.proxies) {
+                            changes.send(null)
+                            saves.send(null)
+                            intents.send(
+                                Intent.Text.UpdateText(
+                                    context = context,
+                                    target = id,
+                                    marks = emptyList(),
+                                    text = ""
+                                )
+                            )
+                        }
+                    }
                     orchestrator.proxies.intents.send(
                         Intent.Text.UpdateStyle(
                             context = context,

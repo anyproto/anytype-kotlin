@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="18dp"
-        android:text="@string/connect_with" />
+        android:text="@string/fragment_relation_create_from_scratch_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/connectWithRecycler"

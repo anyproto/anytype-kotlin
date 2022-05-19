@@ -267,7 +267,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="anytype_analytics">Anytype Analytics</string>
     <string name="anytype_analytics_msg">Understanding how people use Anytype helps us improve the product. This version of Anytype includes the analytics code that protects your privacy.\nIt doesn\'t record the actual document\'s content but still allows us to understand how you use Anytype.\nStay subscribed to our mailing list, as we will soon announce a new release that enables you to opt-out.</string>
     <string name="retry">Retry</string>
-    <string name="limit_object_types">Limit object types</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Cancel deletion</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
@@ -285,4 +284,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="do_not_forget_to_save_recovery_phrase_msg">Don’t forget to take and save your recovery phrase from settings</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
+
+    <string name="fragment_relation_create_from_scratch_title">Select relation type</string>
 </resources>

@@ -236,6 +236,7 @@
     <string name="relations">Relations</string>
     <string name="relation">Relation</string>
     <string name="download">Download</string>
+    <string name="view">View</string>
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>

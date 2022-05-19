@@ -43,6 +43,25 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/btnView"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rect_data_view_customize_view_button"
+            app:layout_constraintEnd_toStartOf="@+id/btnRelations"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dragger">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_action_preview" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btnRelations"
             android:layout_width="52dp"
             android:layout_height="52dp"
@@ -50,7 +69,7 @@
             android:background="@drawable/rect_data_view_customize_view_button"
             app:layout_constraintEnd_toStartOf="@+id/btnSort"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnView"
             app:layout_constraintTop_toBottomOf="@+id/dragger">
 
             <ImageView
@@ -100,13 +119,26 @@
         </FrameLayout>
 
         <TextView
+            android:id="@+id/tvView"
+            style="@style/DataViewCustomizePanelTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/view"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnView"
+            app:layout_constraintStart_toStartOf="@+id/btnView"
+            app:layout_constraintTop_toBottomOf="@+id/btnView" />
+
+        <TextView
             android:id="@+id/tvRelations"
             style="@style/DataViewCustomizePanelTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/relations"
+            android:text="@string/settings"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/btnRelations"
             app:layout_constraintStart_toStartOf="@+id/btnRelations"

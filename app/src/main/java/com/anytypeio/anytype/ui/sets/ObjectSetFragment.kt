@@ -190,6 +190,9 @@ open class ObjectSetFragment :
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnGroup).clicks()) {
                 toast(getString(R.string.coming_soon))
             }
+            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnView).clicks()) {
+                vm.onViewerEditClicked()
+            }
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 

@@ -107,7 +107,7 @@ class BlockActionWidget @JvmOverloads constructor(
                     }
                     ActionItemType.Preview -> {
                         title.setText(R.string.preview)
-                        icon.setImageResource(R.drawable.ic_block_action_preview)
+                        icon.setImageResource(R.drawable.ic_action_preview)
                     }
                     ActionItemType.Copy -> {
                         title.setText(R.string.copy)

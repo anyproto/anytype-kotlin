@@ -6,7 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.cover.*
+import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
+import com.anytypeio.anytype.domain.cover.RemoveDocCover
+import com.anytypeio.anytype.domain.cover.SetDocCoverColor
+import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -36,20 +40,20 @@ abstract class SelectCoverViewModel(
     }
 
     private fun render() {
-        val result = mutableListOf<DocCoverGalleryView>()
-        result.add(DocCoverGalleryView.Section.Color)
-        result.addAll(
-            CoverColor.values().map {
-                DocCoverGalleryView.Color(it)
-            }
-        )
-        result.add(DocCoverGalleryView.Section.Gradient)
-        result.addAll(
-            getCoverGradientCollection.provide().map {
-                DocCoverGalleryView.Gradient(it)
-            }
-        )
-        views.value = result.toList()
+        views.value = buildList {
+            add(DocCoverGalleryView.Section.Gradient)
+            addAll(
+                getCoverGradientCollection.provide().map {
+                    DocCoverGalleryView.Gradient(it)
+                }
+            )
+            add(DocCoverGalleryView.Section.Color)
+            addAll(
+                CoverColor.values().map {
+                    DocCoverGalleryView.Color(it)
+                }
+            )
+        }
     }
 
     fun onImagePicked(ctx: Id, path: String) {

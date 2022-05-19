@@ -5,7 +5,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.cover.*
+import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
+import com.anytypeio.anytype.domain.cover.RemoveDocCover
+import com.anytypeio.anytype.domain.cover.SetDocCoverColor
+import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
+import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
@@ -79,7 +83,7 @@ object SelectCoverObjectModule {
     @Provides
     @PerModal
     fun provideGetCoverGradientCollectionUseCase(
-    ): GetCoverGradientCollection = GetCoverGradientCollection(DefaultGradientCollectionProvider())
+    ): GetCoverGradientCollection = GetCoverGradientCollection(DefaultGradientCollectionProvider)
 }
 
 @Subcomponent(modules = [SelectCoverObjectSetModule::class])
@@ -143,5 +147,5 @@ object SelectCoverObjectSetModule {
     @Provides
     @PerModal
     fun provideGetCoverGradientCollectionUseCase(
-    ): GetCoverGradientCollection = GetCoverGradientCollection(DefaultGradientCollectionProvider())
+    ): GetCoverGradientCollection = GetCoverGradientCollection(DefaultGradientCollectionProvider)
 }

@@ -2,7 +2,9 @@ package com.anytypeio.anytype.di.feature.wallpaper
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperSelectViewModel
 import com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment
@@ -36,7 +38,8 @@ object WallpaperSelectModule {
         analytics: Analytics
     ): WallpaperSelectViewModel.Factory = WallpaperSelectViewModel.Factory(
         setWallpaper = setWallpaper,
-        analytics = analytics
+        analytics = analytics,
+        getGradients = GetCoverGradientCollection(DefaultGradientCollectionProvider)
     )
 
     @JvmStatic

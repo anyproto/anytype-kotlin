@@ -11,5 +11,5 @@ object CoverGradient {
     const val SKY = "sky"
 
 
-    val default = listOf(YELLOW, RED, BLUE, TEAL, PINK_ORANGE, BLUE_PINK, GREEN_ORANGE, SKY)
+    val default = listOf(SKY, PINK_ORANGE, GREEN_ORANGE, BLUE_PINK, YELLOW, RED, BLUE, TEAL)
 }

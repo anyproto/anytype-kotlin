@@ -60,9 +60,9 @@ Or [download](https://download.anytype.io/) an apk for your device architecture 
 
 ##### PR naming: 
 ```
-{APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
+{APP AREA} | {NATURE OF CHANGE: Fix, Enhancement, Feature, Design, Documentation} | {CONCISE DESCRIPTION OF WHAT HAS BEEN DONE}
 ```
-App area can be `Editor`, `Sets`, `Relations`, `Auth`, `Analytics`, `Tech` (CI, DI, scripting, etc.), etc.
+App area can be `App`, `Editor`, `Sets`, `Relations`, `Auth`, `Settings`, `Analytics`, `Tech` (CI, DI, scripting, etc.), etc.
 
 Example: *Editor | Fix | Show meaningful message when failed to open file by an existing application*
 

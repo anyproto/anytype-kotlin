@@ -93,6 +93,7 @@
         android:paddingTop="0dp"
         android:layout_marginBottom="6dp"
         app:ignoreDragAndDrop="true"
+        app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 
 </LinearLayout>

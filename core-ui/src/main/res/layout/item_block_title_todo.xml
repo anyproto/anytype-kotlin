@@ -76,6 +76,7 @@
             android:letterSpacing="-0.02"
             android:paddingTop="0dp"
             app:ignoreDragAndDrop="true"
+            app:onlyPasteAsPlaneText="true"
             tools:text="Check new Android version" />
     </LinearLayout>
 

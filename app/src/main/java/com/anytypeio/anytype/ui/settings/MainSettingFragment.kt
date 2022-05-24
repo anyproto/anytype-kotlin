@@ -8,12 +8,19 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
+import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
+import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainSettingFragment : BaseBottomSheetComposeFragment() {
@@ -24,23 +31,19 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<MainSettingsViewModel> { factory }
 
     private val onAccountAndDataClicked = {
-        vm.onAccountAndDataClicked()
-        findNavController().navigate(R.id.actionOpenAccountAndDataScreen)
+        vm.onOptionClicked(Event.OnAccountAndDataClicked)
     }
 
     private val onAboutAppClicked = {
-        vm.onAboutClicked()
-        findNavController().navigate(R.id.actionOpenAboutAppScreen)
+        vm.onOptionClicked(Event.OnAboutClicked)
     }
 
     private val onPersonalizationClicked = {
-        vm.onPersonalizationClicked()
-        findNavController().navigate(R.id.actionOpenPersonalizationScreen)
+        vm.onOptionClicked(Event.OnPersonalizationClicked)
     }
 
     private val onAppearanceClicked = {
-        vm.onAppearanceClicked()
-        findNavController().navigate(R.id.actionOpenAppearanceScreen)
+        vm.onOptionClicked(Event.OnAppearanceClicked)
     }
 
     override fun onCreateView(
@@ -59,6 +62,32 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                         onPersonalizationClicked = onPersonalizationClicked
                     )
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.commands.collect { command -> processCommands(command) }
+            }
+        }
+    }
+
+    private fun processCommands(command: Command) {
+        when (command) {
+            Command.OpenAboutScreen -> {
+                findNavController().navigate(R.id.actionOpenAboutAppScreen)
+            }
+            Command.OpenAccountAndDataScreen -> {
+                findNavController().navigate(R.id.actionOpenAccountAndDataScreen)
+            }
+            Command.OpenAppearanceScreen -> {
+                findNavController().navigate(R.id.actionOpenAppearanceScreen)
+            }
+            Command.OpenPersonalizationScreen -> {
+                findNavController().navigate(R.id.actionOpenPersonalizationScreen)
             }
         }
     }

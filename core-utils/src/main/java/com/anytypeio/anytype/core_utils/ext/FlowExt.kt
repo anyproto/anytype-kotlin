@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.core_utils.ext
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 
-fun <T> Flow<T>.throttleFist(windowDuration: Long): Flow<T> = flow {
+fun <T> Flow<T>.throttleFirst(windowDuration: Long = DEFAULT_THROTTLE_DURATION): Flow<T> = flow {
     var windowStartTime = System.currentTimeMillis()
     var emitted = false
     collect { value ->
@@ -100,3 +103,5 @@ fun MutableList<Job>.cancel() {
     forEach { it.cancel() }
     clear()
 }
+
+const val DEFAULT_THROTTLE_DURATION = 1000L

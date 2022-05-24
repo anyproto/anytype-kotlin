@@ -37,6 +37,7 @@ class TextInputWidget : AppCompatEditText {
         setOnLongClickListener { view -> view != null && !view.hasFocus() }
         context.obtainStyledAttributes(attrs, R.styleable.TextInputWidget).apply {
             ignoreDragAndDrop = getBoolean(R.styleable.TextInputWidget_ignoreDragAndDrop, false)
+            pasteAsPlainTextOnly = getBoolean(R.styleable.TextInputWidget_onlyPasteAsPlaneText, false)
             recycle()
         }
     }
@@ -56,6 +57,7 @@ class TextInputWidget : AppCompatEditText {
     }
 
     private var ignoreDragAndDrop = false
+    private var pasteAsPlainTextOnly = false
 
     val editorTouchProcessor by lazy {
         EditorTouchProcessor(
@@ -206,13 +208,18 @@ class TextInputWidget : AppCompatEditText {
 
         when (id) {
             paste -> {
-                if (clipboardInterceptor != null) {
-                    clipboardInterceptor?.onClipboardAction(
-                        ClipboardInterceptor.Action.Paste(
-                            selection = selectionStart..selectionEnd
-                        )
-                    )
+                if (pasteAsPlainTextOnly) {
+                    super.onTextContextMenuItem(android.R.id.pasteAsPlainText)
                     consumed = true
+                } else {
+                    if (clipboardInterceptor != null) {
+                        clipboardInterceptor?.onClipboardAction(
+                            ClipboardInterceptor.Action.Paste(
+                                selection = selectionStart..selectionEnd
+                            )
+                        )
+                        consumed = true
+                    }
                 }
             }
             copy -> {

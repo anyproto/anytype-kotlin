@@ -411,6 +411,7 @@ class DashboardFragment : ViewStateFragment<State, FragmentDashboardBinding>(R.l
 
         binding.ivSettings
             .clicks()
+            .throttleFirst()
             .onEach { vm.onSettingsClicked() }
             .launchIn(lifecycleScope)
 

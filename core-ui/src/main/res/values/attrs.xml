@@ -46,6 +46,7 @@
     </declare-styleable>
     <declare-styleable name="TextInputWidget">
         <attr name="ignoreDragAndDrop" format="boolean" />
+        <attr name="onlyPasteAsPlaneText" format="boolean" />
     </declare-styleable>
     <declare-styleable name="GalleryViewContentWidget">
         <attr name="firstItemMargin" format="dimension" />

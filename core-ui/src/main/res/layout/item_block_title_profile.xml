@@ -65,6 +65,7 @@
         android:textColor="@color/black"
         android:textSize="28sp"
         app:ignoreDragAndDrop="true"
+        app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 
 </LinearLayout>

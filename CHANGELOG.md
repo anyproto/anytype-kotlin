@@ -1,11 +1,65 @@
 # Change log for Android @Anytype app.
 
-## Version 0.6.2 (WIP)
+## Version 0.7.1 (WIP)
+
+### New features & enhancements 🚀
+
+*
 
 ### Fixes & tech 🚒
 
-* Editor | Fix inconsistent toggle icon state (#2164)
-* App | Fix | About-app screen should display Anytype user ID instead of profile object ID (#2172)
+*
+
+### Design & UX 🔳
+
+*
+
+## Version 0.7.0
+
+### New features & enhancements 🚀
+
+* Editor | New block: Table of contents (#2208)
+* Editor | Duplicate your object via object menu (#2195)
+* Editor | Select & copy blocks via block action menu (#2187)
+* Editor | Show sync status description on long click (#2181)  
+* Editor | Add possibility to upload an image by clicking on avatar in objects with profile layout (#2186)
+* Objects & Sets | Introduced templates (#2212)
+* Settings | Introduced theme (light/dark) selector (#2178)
+
+### Fixes & tech 🚒
+
+* Editor | Fixed inconsistent toggle states (#2164)
+* Editor | Lifecycle-aware video block — stopped or paused when needed (#2173)
+* Editor | Style toolbar would not always display correctly selected state (#2185)
+* Editor | Numbered block won't change the text color of the number when the text color is updated (#2206)
+* Editor | When object with TODO layout is locked, checkbox state should be in read mode (#2206)
+* Editor | Display generic error message when failed to fetch images from Unsplash (#2205)
+* Editor | Show avatar with initials when object with profile layout has no image (#2204)
+* Editor | Link-to-object block should support indentation (#2201)  
+* Editor | Link-to-object card should display content snippet when description is missing (#2193)
+* Editor | When you select file blocks, download option is now available as the first option (#2198)
+* Editor | Breakthrough style is renamed to Strikethrough (#2189)
+* Editor | Show meaningful message when failed to open file by an existing application (#2163)  
+* Sets | Gallery view might show object name twice (#2251)
+* App | About-app screen should display Anytype user ID instead of profile object ID (#2172)
+* Search | Search screen does not display updated search query when search results are missing (#2202)  
+* Auth | Show/hide keyboard automatically when needed (#2207)
+* Relations | When you create a new relation, default format is object now (#2196)
+* Relations | Do not create new option if there is already an existing one with the same name (#2262)
+* Relations | When you create a new relation and its name is too long, text should be ellipsized at the end (#2235)
+* Dashboard | Do not crash when clicking twice on settings button (#2278) 
+* Dashboard | When greeting message is too long, text should be ellipsized at the end (#2245)
+* Settings | Do not crash when clicking twice on options (#2278)
+
+### Design & UX 🔳
+
+* App | Better keyboard animation starting from Android 11 (#2133)
+* Editor | New fancy drag-and-drop behavior (#2246)
+* Editor | All media blocks now support background styling (#2176)
+* Editor | Improved sync status toolbar and header overlay behavior (#2170)
+* Editor | TODO layout without cover had incorrect header height (#2169)  
+* Editor | Code snippet design improvements (#2231)
+* Editor | Fix corner radius for card-looking blocks (#2232)
 
 ## Version 0.6.1
 

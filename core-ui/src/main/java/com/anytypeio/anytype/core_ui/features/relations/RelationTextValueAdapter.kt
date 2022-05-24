@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
@@ -13,7 +14,7 @@ import com.anytypeio.anytype.core_ui.features.relations.holders.RelationNumberHo
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationPhoneHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextHolder
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextShortHolder
-import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextValueViewHolderBase
+import com.anytypeio.anytype.core_ui.features.relations.holders.RelationTextViewHolderBase
 import com.anytypeio.anytype.core_ui.features.relations.holders.RelationUrlHolder
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.text.ActionDoneListener
@@ -24,89 +25,47 @@ class RelationTextValueAdapter(
     private var items: List<RelationTextValueView>,
     private val actionClick: (EditGridCellAction) -> Unit,
     private val onEditCompleted: (RelationTextValueView, String) -> Unit
-) : RecyclerView.Adapter<RelationTextValueViewHolderBase>() {
+) : RecyclerView.Adapter<RelationTextViewHolderBase<*>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelationTextValueViewHolderBase {
-        val inflater = LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): RelationTextViewHolderBase<*> {
+        val holder = createHolder(parent, viewType)
+        with(holder.binding) {
+            setWindowFocusController(textInputField)
+            textInputField.setOnEditorActionListener(
+                ActionDoneListener { txt ->
+                    onEditCompleted(items[holder.bindingAdapterPosition], txt)
+                }
+            )
+            textInputField.doAfterTextChanged { newText ->
+                if (newText.isNullOrEmpty()) {
+                    btnAction.alpha = 0.5F
+                    btnAction.isEnabled = false
+                } else {
+                    btnAction.alpha = 1F
+                    btnAction.isEnabled = true
+                }
+            }
+        }
+        return holder
+    }
+
+    private fun createHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): RelationTextViewHolderBase<*> {
+        val binding = ItemObjectRelationTextBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return when (viewType) {
-            TYPE_TEXT -> RelationTextHolder(
-                binding = ItemObjectRelationTextBinding.inflate(
-                    inflater, parent, false
-                )
-            ).apply {
-                binding.textInputField.setHint(R.string.enter_text)
-                binding.textInputField.setOnEditorActionListener(
-                    ActionDoneListener { txt ->
-                        onEditCompleted(items[bindingAdapterPosition], txt)
-                    }
-                )
-                setWindowFocusController(binding.textInputField)
-            }
-            TYPE_TEXT_SHORT -> RelationTextShortHolder(
-                binding = ItemObjectRelationTextBinding.inflate(
-                    inflater, parent, false
-                )
-            ).apply {
-                binding.textInputField.setHint(R.string.enter_text)
-                binding.textInputField.setOnEditorActionListener(
-                    ActionDoneListener { txt ->
-                        onEditCompleted(items[bindingAdapterPosition], txt)
-                    }
-                )
-                setWindowFocusController(binding.textInputField)
-            }
-            TYPE_URL -> RelationUrlHolder(
-                binding = ItemObjectRelationTextBinding.inflate(
-                    inflater, parent, false
-                )
-            ).apply {
-                binding.textInputField.setHint(R.string.enter_url)
-                binding.textInputField.setOnEditorActionListener(
-                    ActionDoneListener { txt ->
-                        onEditCompleted(items[bindingAdapterPosition], txt)
-                    }
-                )
-                setWindowFocusController(binding.textInputField)
-            }
-            TYPE_PHONE -> RelationPhoneHolder(
-                binding = ItemObjectRelationTextBinding.inflate(
-                    inflater, parent, false
-                )
-            ).apply {
-                binding.textInputField.setHint(R.string.enter_phone)
-                binding.textInputField.setOnEditorActionListener(
-                    ActionDoneListener { txt ->
-                        onEditCompleted(items[bindingAdapterPosition], txt)
-                    }
-                )
-                setWindowFocusController(binding.textInputField)
-            }
-            TYPE_EMAIL -> RelationEmailHolder(
-                binding = ItemObjectRelationTextBinding.inflate(
-                    inflater, parent, false
-                )
-            ).apply {
-                binding.textInputField.setHint(R.string.enter_email)
-                binding.textInputField.setOnEditorActionListener(
-                    ActionDoneListener { txt ->
-                        onEditCompleted(items[bindingAdapterPosition], txt)
-                    }
-                )
-                setWindowFocusController(binding.textInputField)
-            }
-            TYPE_NUMBER -> RelationNumberHolder(
-                binding = ItemObjectRelationTextBinding.inflate(
-                    inflater, parent, false
-                )
-            ).apply {
-                binding.textInputField.setHint(R.string.enter_number)
-                binding.textInputField.setOnEditorActionListener(
-                    ActionDoneListener { txt ->
-                        onEditCompleted(items[bindingAdapterPosition], txt)
-                    }
-                )
-                setWindowFocusController(binding.textInputField)
-            }
+            TYPE_TEXT -> RelationTextHolder(binding, R.string.enter_text)
+            TYPE_TEXT_SHORT -> RelationTextShortHolder(binding, R.string.enter_text)
+            TYPE_URL -> RelationUrlHolder(binding, actionClick, R.string.enter_url)
+            TYPE_PHONE -> RelationPhoneHolder(binding, actionClick, R.string.enter_phone)
+            TYPE_EMAIL -> RelationEmailHolder(binding, actionClick, R.string.enter_email)
+            TYPE_NUMBER -> RelationNumberHolder(binding, R.string.enter_number)
             else -> throw IllegalArgumentException("Unexpected view type: $viewType")
         }
     }
@@ -117,33 +76,15 @@ class RelationTextValueAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: RelationTextValueViewHolderBase, position: Int) {
+    override fun onBindViewHolder(holder: RelationTextViewHolderBase<*>, position: Int) {
         val item = items[position]
         when (holder) {
-            is RelationTextHolder -> holder.bind(
-                item as RelationTextValueView.Text
-            )
-            is RelationTextShortHolder -> holder.bind(
-                item as RelationTextValueView.TextShort
-            )
-            is RelationPhoneHolder -> holder.bind(
-                item as RelationTextValueView.Phone,
-                actionClick
-            )
-            is RelationEmailHolder -> holder.bind(
-                item as RelationTextValueView.Email,
-                actionClick
-            )
-            is RelationUrlHolder -> holder.bind(
-                item as RelationTextValueView.Url,
-                actionClick
-            )
-            is RelationNumberHolder -> holder.bind(
-                item as RelationTextValueView.Number
-            )
-        }
-        if (!item.isEditable) {
-            holder.enableReadMode()
+            is RelationTextHolder -> holder.bind(item as RelationTextValueView.Text)
+            is RelationTextShortHolder -> holder.bind(item as RelationTextValueView.TextShort)
+            is RelationPhoneHolder -> holder.bind(item as RelationTextValueView.Phone)
+            is RelationEmailHolder -> holder.bind(item as RelationTextValueView.Email)
+            is RelationUrlHolder -> holder.bind(item as RelationTextValueView.Url)
+            is RelationNumberHolder -> holder.bind(item as RelationTextValueView.Number)
         }
     }
 

@@ -125,6 +125,15 @@ message Block {
             string targetBlockId = 1; // id of the target block
             Style style = 2; // deprecated
             google.protobuf.Struct fields = 3;
+            IconSize iconSize = 4;
+            CardStyle cardStyle = 5;
+            Description description = 6;
+            repeated string relations = 7;
+
+            enum IconSize {
+                Small = 0;
+                Medium = 1;
+            }
 
             enum Style {
                 Page = 0;
@@ -132,6 +141,18 @@ message Block {
                 Dashboard = 2;
                 Archive = 3;
                 // ...
+            }
+
+            enum Description {
+                None = 0;
+                Added = 1;
+                Content = 2;
+            }
+
+            enum CardStyle {
+                Text = 0;
+                Card = 1;
+                Inline = 2;
             }
         }
 
@@ -207,13 +228,13 @@ message Block {
                 Header4 = 4; // deprecated
                 Quote = 5;
                 Code = 6;
-                Title = 7; // currently only only one block of this style can exists on a page
+                Title = 7; // currently only one block of this style can exists on a page
                 Checkbox = 8;
                 Marked = 9;
                 Numbered = 10;
                 Toggle = 11;
-                Description = 12; // currently only only one block of this style can exists on a page
-                Callout = 13; // currently only only one block of this style can exists on a page
+                Description = 12; // currently only one block of this style can exists on a page
+                Callout = 13;
 
             }
         }

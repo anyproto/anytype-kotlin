@@ -406,6 +406,35 @@ message Rpc {
                     }
                 }
             }
+            message Link {
+                message Appearance {
+                    message Request {
+                        string contextId = 1;
+                        repeated string blockIds = 2;
+                        anytype.model.Block.Content.Link.IconSize iconSize = 4;
+                        anytype.model.Block.Content.Link.CardStyle cardStyle = 5;
+                        anytype.model.Block.Content.Link.Description description = 6;
+                        repeated string relations = 7;
+                    }
+
+                    message Response {
+                        Error error = 1;
+                        ResponseEvent event = 2;
+
+                        message Error {
+                            Code code = 1;
+                            string description = 2;
+
+                            enum Code {
+                                NULL = 0;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                // ...
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         message TurnInto {
@@ -2663,6 +2692,34 @@ message Rpc {
         }
     }
 
+    message DeviceState {
+        message Request {
+            DeviceState deviceState = 1;
+
+            enum DeviceState {
+                BACKGROUND = 0;
+                FOREGROUND = 1;
+            }
+        }
+
+        message Response {
+            Error error = 1;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+
+                    NODE_NOT_STARTED = 101;
+                }
+            }
+
+        }
+    }
+
     message Config {
         message Get {
             message Request {
@@ -3412,19 +3469,7 @@ message Rpc {
                 int32 limit = 2;
                 // additional filter by objectTypes
                 repeated string objectTypeFilter = 3;
-            }
-
-            message Node {
-                string id = 1;
-                string type = 2;
-                string name = 3;
-                int32 layout = 4;
-                string description = 5;
-                string iconImage = 6;
-                string iconEmoji = 7;
-                bool done = 8;
-                int32 relationFormat = 9;
-                string snippet = 10;
+                repeated string keys = 4;
             }
 
             message Edge {
@@ -3444,7 +3489,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                repeated Node nodes = 2;
+                repeated google.protobuf.Struct nodes = 2;
                 repeated Edge edges = 3;
 
                 message Error {
@@ -4210,6 +4255,7 @@ message Rpc {
                 string blockId = 1;
                 string path = 2;
                 bool unanonymized = 3; // set to true to disable mocking of the actual data inside changes
+                bool generateSvg = 4; // set to true to write both ZIP and SVG files
             }
 
             message Response {

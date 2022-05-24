@@ -410,6 +410,10 @@ message Event {
                 TargetBlockId targetBlockId = 2;
                 Style style = 3;
                 Fields fields = 4;
+                IconSize iconSize = 5;
+                CardStyle cardStyle = 6;
+                Description description = 7;
+                Relations relations = 8;
 
                 message TargetBlockId {
                     string value = 1;
@@ -423,6 +427,21 @@ message Event {
                     google.protobuf.Struct value = 1;
                 }
 
+                message IconSize {
+                    anytype.model.Block.Content.Link.IconSize value = 1;
+                }
+
+                message CardStyle {
+                    anytype.model.Block.Content.Link.CardStyle value = 1;
+                }
+
+                message Description {
+                    anytype.model.Block.Content.Link.Description value = 1;
+                }
+
+                message Relations {
+                    repeated string value = 1;
+                }
             }
 
             message Bookmark {

@@ -12,6 +12,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyZeroInteractions
 import java.time.Duration
 import kotlin.test.assertEquals
 
@@ -51,7 +54,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `progress should be zero when view model is created`() {
+    fun `progress should be zero - when view model is created`() {
         assertEquals(
             expected = 0f,
             actual = vm.progress.value
@@ -59,7 +62,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `progress should be equal to 0,5 when deadline equals to 15 days`() {
+    fun `progress should be equal to 0,5 - when deadline equals to 15 days`() {
         val nowInMillis = System.currentTimeMillis()
         val deadlineInMillis = nowInMillis + Duration.ofDays(15).toMillis()
         vm.onStart(
@@ -73,7 +76,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `progress should be equal to 0,6 when deadline equals to 15 days`() {
+    fun `progress should be equal to 0,6 - when deadline equals to 15 days`() {
         val nowInMillis = System.currentTimeMillis()
         val deadlineInMillis = nowInMillis + Duration.ofDays(10).toMillis()
         vm.onStart(
@@ -87,7 +90,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `progress should be equal to 0,3 when deadline equals to 15 days`() {
+    fun `progress should be equal to 0,3 - when deadline equals to 15 days`() {
         val nowInMillis = System.currentTimeMillis()
         val deadlineInMillis = nowInMillis + Duration.ofDays(20).toMillis()
         vm.onStart(
@@ -101,7 +104,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `progress should be equal to 1,0 when deadline equals to now`() {
+    fun `progress should be equal to 1,0 - when deadline equals to now`() {
         val nowInMillis = System.currentTimeMillis()
         vm.onStart(
             nowInMillis = nowInMillis,
@@ -114,7 +117,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `progress should be equal to 0 when deadline is in 30days`() {
+    fun `progress should be equal to 0 - when deadline is in 30days`() {
         val nowInMillis = System.currentTimeMillis()
         val deadlineInMillis = nowInMillis + Duration.ofDays(30).toMillis()
         vm.onStart(
@@ -125,5 +128,61 @@ class DeleteAccountViewModelTest {
             expected = 0f,
             actual = vm.progress.value
         )
+    }
+
+    @Test
+    fun `should proceed with logout - when deletion date is expired`() {
+        val nowInMillis = System.currentTimeMillis()
+        val deadlineInMillis = nowInMillis - Duration.ofDays(30).toMillis()
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis
+        )
+        verifyBlocking(repo, times(1)) {
+            logout(clearLocalRepositoryData = true)
+        }
+    }
+
+    @Test
+    fun `should display 30 days until deletion - when account is deleted today`() {
+        val nowInMillis = System.currentTimeMillis()
+
+        val tenSecondsEllapsed = Duration.ofSeconds(10).toMillis()
+        val fiveHoursElapsed = Duration.ofHours(5).toMillis()
+        val tenHoursElapsed = Duration.ofHours(10).toMillis()
+
+        val deadlineInMillis = nowInMillis + Duration.ofDays(30).toMillis()
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + tenSecondsEllapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + fiveHoursElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + tenHoursElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        verifyZeroInteractions(repo)
     }
 }

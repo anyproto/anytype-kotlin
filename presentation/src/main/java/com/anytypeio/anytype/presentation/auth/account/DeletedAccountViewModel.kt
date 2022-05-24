@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.math.RoundingMode
 import kotlin.time.DurationUnit.DAYS
 import kotlin.time.DurationUnit.MILLISECONDS
 import kotlin.time.toDuration
@@ -41,11 +42,16 @@ class DeletedAccountViewModel(
                     date.value = DeletionDate.Tomorrow
                 }
                 else -> {
-                    date.value = DeletionDate.Later(days = days.toInt())
+                    date.value = DeletionDate.Later(
+                        days = days.toBigDecimal().setScale(0, RoundingMode.UP).toInt()
+                    )
                 }
             }
             val delta = 1f - (days.toFloat() / DEADLINE_DURATION_IN_DAYS)
             this.progress.value = delta
+        } else {
+            sendToast("Your account has been deleted")
+            proceedWithLogginOut()
         }
     }
 
@@ -58,7 +64,8 @@ class DeletedAccountViewModel(
                             commands.emit(Command.Resume)
                         }
                         is AccountStatus.Deleted -> {
-                            // TODO
+                            sendToast("Sorry, your account has been deleted")
+                            proceedWithLogginOut()
                         }
                         is AccountStatus.PendingDeletion -> {
                             // TODO
@@ -74,6 +81,10 @@ class DeletedAccountViewModel(
     }
 
     fun onLogoutAndClearDataClicked() {
+        proceedWithLogginOut()
+    }
+
+    private fun proceedWithLogginOut() {
         viewModelScope.launch {
             logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
                 when (status) {

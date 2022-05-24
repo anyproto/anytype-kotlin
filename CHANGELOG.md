@@ -4,7 +4,7 @@
 
 ### New features & enhancements 🚀
 
-*
+* Editor | Improved markup shortcuts supported for all basic text blocks (#2275)
 
 ### Fixes & tech 🚒
 

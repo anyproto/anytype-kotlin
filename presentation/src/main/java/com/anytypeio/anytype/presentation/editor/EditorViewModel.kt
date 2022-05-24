@@ -1129,14 +1129,9 @@ class EditorViewModel(
     }
 
     fun onTextBlockTextChanged(view: BlockView.Text) {
-
         Timber.d("onTextBlockTextChanged, view:[$view]")
 
-        val update = if (view is BlockView.Text.Paragraph) TextUpdate.Pattern(
-            target = view.id,
-            text = view.text,
-            markup = view.marks.map { it.mark() }
-        ) else TextUpdate.Default(
+        val update = TextUpdate.Pattern(
             target = view.id,
             text = view.text,
             markup = view.marks.map { it.mark() }

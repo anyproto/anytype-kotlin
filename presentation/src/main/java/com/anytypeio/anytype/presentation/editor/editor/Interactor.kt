@@ -78,10 +78,22 @@ interface Interactor {
                             style = Block.Content.Text.Style.TOGGLE
                         )
                     )
-                    patterns.contains(Pattern.DIVIDER) -> replaceBy(
+                    patterns.contains(Pattern.DIVIDER_LINE) -> replaceBy(
                         context = context,
                         target = update.target,
                         prototype = Block.Prototype.DividerLine
+                    )
+                    patterns.contains(Pattern.DIVIDER_DOTS) -> replaceBy(
+                        context = context,
+                        target = update.target,
+                        prototype = Block.Prototype.DividerDots
+                    )
+                    patterns.contains(Pattern.SNIPPET) -> replaceBy(
+                        context = context,
+                        target = update.target,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.CODE_SNIPPET
+                        )
                     )
                     else -> proxies.saves.send(update)
                 }

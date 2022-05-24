@@ -20,7 +20,11 @@ import android.text.Spannable
 import android.text.Spanned
 import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
-import android.view.*
+import android.view.TouchDelegate
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
@@ -108,11 +112,7 @@ fun Uri.parseImagePath(context: Context): String {
 
 fun Throwable.timber() = Timber.e("Get error : ${this.message}")
 
-const val KEY_ROUNDED = "key"
 const val VALUE_ROUNDED = "rounded"
-const val MIME_VIDEO_ALL = "video/*"
-const val MIME_IMAGE_ALL = "image/*"
-const val MIME_FILE_ALL = "*/*"
 
 fun Long.formatToDateString(pattern: String, locale: Locale): String {
     val formatter = SimpleDateFormat(pattern, locale)
@@ -269,8 +269,8 @@ fun View.focusAndShowKeyboard() {
 fun String.normalizeUrl(): String =
     if (!startsWith("http://") && !startsWith("https://")) "https://$this" else this
 
-fun Context.isPermissionGranted(mimeType: String): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && mimeType == MIME_FILE_ALL) {
+fun Context.isPermissionGranted(mimeType: Mimetype): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && mimeType == Mimetype.MIME_FILE_ALL) {
         true
     } else {
         val readExternalStorage: Int = ContextCompat.checkSelfPermission(
@@ -289,13 +289,13 @@ fun Activity.shouldShowRequestPermissionRationaleCompat(permission: String) =
  * Should be refactored here:
  * https://app.clickup.com/t/2cbqneb
  */
-fun Fragment.startFilePicker(mime: String, requestCode: Int? = null) {
+fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-            type = mime
+            type = mime.value
         }
-        val code = if (mime == MIME_FILE_ALL) {
+        val code = if (mime == Mimetype.MIME_FILE_ALL) {
             REQUEST_FILE_SAF_CODE
         } else {
             REQUEST_MEDIA_CODE
@@ -309,7 +309,7 @@ fun Fragment.startFilePicker(mime: String, requestCode: Int? = null) {
                 Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
             }
         intent.apply {
-            type = mime
+            type = mime.value
             action = Intent.ACTION_GET_CONTENT
             putExtra("return-data", true)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

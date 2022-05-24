@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
+import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_utils.ext.Mimetype
+import kotlinx.parcelize.Parcelize
 
 sealed class Intent {
 
@@ -86,6 +89,7 @@ sealed class Intent {
             val selected: List<Id>,
             val range: IntRange
         ) : Clipboard()
+
         class Copy(
             val context: Id,
             val range: IntRange?,
@@ -171,11 +175,17 @@ sealed class Intent {
 
         class Upload(
             val context: Id,
-            val target: Id,
+            val description: Description,
             val url: String,
             val filePath: String,
-            val mediaType: String
-        ) : Media()
+        ) : Media() {
+
+            @Parcelize
+            data class Description(
+                val blockId: Id,
+                val type: Mimetype
+            ) : Parcelable
+        }
     }
 
     sealed class Bookmark : Intent() {
@@ -184,6 +194,7 @@ sealed class Intent {
             val target: Id,
             val url: String
         ) : Bookmark()
+
         class CreateBookmark(
             val context: Id,
             val target: Id,

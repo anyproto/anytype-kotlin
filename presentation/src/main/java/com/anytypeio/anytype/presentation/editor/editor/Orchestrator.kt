@@ -4,7 +4,25 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.block.UpdateDivider
-import com.anytypeio.anytype.domain.block.interactor.*
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
+import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.SetObjectType
+import com.anytypeio.anytype.domain.block.interactor.SplitBlock
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
+import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
+import com.anytypeio.anytype.domain.block.interactor.UpdateAlignment
+import com.anytypeio.anytype.domain.block.interactor.UpdateBackgroundColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateBlocksMark
+import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
+import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
+import com.anytypeio.anytype.domain.block.interactor.UploadBlock
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.dataview.interactor.SetRelationKey
@@ -17,7 +35,18 @@ import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.extension.*
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeTextBlockStyleEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCopyBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsDeleteBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsDownloadMediaEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsDuplicateBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsPasteBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRedoEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSplitBlockEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsUndoEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsUploadMediaEvent
 import timber.log.Timber
 
 class Orchestrator(
@@ -405,7 +434,7 @@ class Orchestrator(
                     uploadBlock(
                         params = UploadBlock.Params(
                             contextId = intent.context,
-                            blockId = intent.target,
+                            blockId = intent.description.blockId,
                             url = intent.url,
                             filePath = intent.filePath
                         )
@@ -413,7 +442,7 @@ class Orchestrator(
                         failure = defaultOnError,
                         success = { payload ->
                             proxies.payloads.send(payload)
-                            analytics.sendAnalyticsUploadMediaEvent(intent.mediaType)
+                            analytics.sendAnalyticsUploadMediaEvent(intent.description.type)
                         }
                     )
                 }

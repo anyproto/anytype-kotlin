@@ -29,7 +29,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
-import com.anytypeio.anytype.core_utils.ext.MIME_FILE_ALL
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.drawable
@@ -334,7 +334,7 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
             val readResult = grantResults[READ_EXTERNAL_STORAGE]
             if (readResult == true) {
-                startFilePicker(MIME_FILE_ALL)
+                startFilePicker(Mimetype.MIME_FILE_ALL)
             } else {
                 binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
             }
@@ -345,8 +345,8 @@ abstract class RelationValueBaseFragment : BaseBottomSheetFragment<FragmentRelat
     private var mSnackbar: Snackbar? = null
 
     protected fun openFilePicker() {
-        if (requireContext().isPermissionGranted(MIME_FILE_ALL)) {
-            startFilePicker(MIME_FILE_ALL)
+        if (requireContext().isPermissionGranted(Mimetype.MIME_FILE_ALL)) {
+            startFilePicker(Mimetype.MIME_FILE_ALL)
         } else {
             takeReadStoragePermission()
         }

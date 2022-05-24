@@ -475,6 +475,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         super.onStop()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(CURRENT_MEDIA_UPLOAD_KEY, vm.currentMediaUploadDescription)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            vm.onRestoreSavedState(savedInstanceState.getParcelable(CURRENT_MEDIA_UPLOAD_KEY))
+        }
+    }
+
     private fun setupOnBackPressedDispatcher() =
         requireActivity()
             .onBackPressedDispatcher
@@ -2037,6 +2049,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         const val EMPTY_TEXT = ""
         const val DRAG_AND_DROP_LABEL = "Anytype's editor drag-and-drop."
+        private const val CURRENT_MEDIA_UPLOAD_KEY = "currentMediaUploadDescription"
     }
 }
 

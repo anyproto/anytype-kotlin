@@ -40,9 +40,7 @@ import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.core_utils.ext.MIME_FILE_ALL
-import com.anytypeio.anytype.core_utils.ext.MIME_IMAGE_ALL
-import com.anytypeio.anytype.core_utils.ext.MIME_VIDEO_ALL
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
@@ -85,6 +83,7 @@ import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Intent
+import com.anytypeio.anytype.presentation.editor.editor.Intent.Media
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
@@ -318,9 +317,8 @@ class EditorViewModel(
     /**
      * Open gallery and search media files for block with that id
      */
-    private var mediaBlockId = ""
-    private var mediaBlockType = ""
-
+    var currentMediaUploadDescription: Media.Upload.Description? = null
+        private set
 
     /**
      * Currently pending text update. If null, it is not present or already dispatched.
@@ -2037,15 +2035,13 @@ class EditorViewModel(
     }
 
     private fun onAddLocalVideoClicked(blockId: String) {
-        mediaBlockId = blockId
-        mediaBlockType = MIME_VIDEO_ALL
-        dispatch(Command.OpenGallery(mimeType = MIME_VIDEO_ALL))
+        currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_VIDEO_ALL)
+        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_VIDEO_ALL))
     }
 
     private fun onAddLocalPictureClicked(blockId: String) {
-        mediaBlockId = blockId
-        mediaBlockType = MIME_IMAGE_ALL
-        dispatch(Command.OpenGallery(mimeType = MIME_IMAGE_ALL))
+        currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_IMAGE_ALL)
+        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_IMAGE_ALL))
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
@@ -2075,9 +2071,8 @@ class EditorViewModel(
     }
 
     private fun onAddLocalFileClicked(blockId: String) {
-        mediaBlockId = blockId
-        mediaBlockType = MIME_FILE_ALL
-        dispatch(Command.OpenGallery(mimeType = MIME_FILE_ALL))
+        currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_FILE_ALL)
+        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_FILE_ALL))
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
@@ -3369,7 +3364,7 @@ class EditorViewModel(
             }
             is ListenerType.ProfileImageIcon -> {
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-                dispatch(Command.OpenDocumentImagePicker(MIME_IMAGE_ALL))
+                dispatch(Command.OpenDocumentImagePicker(Mimetype.MIME_IMAGE_ALL))
             }
             is ListenerType.LongClick -> {
                 when (mode) {
@@ -3675,25 +3670,32 @@ class EditorViewModel(
     override fun onProceedWithFilePath(filePath: String?) {
         Timber.d("onProceedWithFilePath, filePath:[$filePath]")
         if (filePath == null) {
-            Timber.d("Error while getting filePath")
+            Timber.w("Error while getting filePath")
             return
         }
         if (filePath.endsWith(FORMAT_WEBP, true)) {
-            Timber.d("onProceedWithFilePath, not allowed to add WEBP format")
             sendToast(ERROR_UNSUPPORTED_WEBP)
             return
         }
         viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Media.Upload(
-                    context = context,
-                    target = mediaBlockId,
-                    filePath = filePath,
-                    url = "",
-                    mediaType = mediaBlockType
+            val uploadDescription = currentMediaUploadDescription
+            if (uploadDescription != null) {
+                orchestrator.proxies.intents.send(
+                    Media.Upload(
+                        context = context,
+                        description = uploadDescription,
+                        filePath = filePath,
+                        url = "",
+                    )
                 )
-            )
+            } else {
+                Timber.w("Failed to upload file $filePath. uploadDescription==null")
+            }
         }
+    }
+
+    fun onRestoreSavedState(uploadMediaDescription: Media.Upload.Description?) {
+        currentMediaUploadDescription = uploadMediaDescription
     }
 
     fun onPageIconClicked() {
@@ -3734,7 +3736,7 @@ class EditorViewModel(
         if (content is Content.File && content.state == Content.File.State.DONE) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
-                    Intent.Media.DownloadFile(
+                    Media.DownloadFile(
                         url = when (content.type) {
                             Content.File.Type.IMAGE -> urlBuilder.image(content.hash)
                             else -> urlBuilder.file(content.hash)

@@ -9,10 +9,14 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
-import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_utils.ext.MIME_FILE_ALL
-import com.anytypeio.anytype.core_utils.ext.MIME_IMAGE_ALL
-import com.anytypeio.anytype.core_utils.ext.MIME_VIDEO_ALL
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import kotlinx.coroutines.CoroutineScope
 
@@ -481,11 +485,11 @@ suspend fun Analytics.sendAnalyticsReorderBlockEvent(count: Int) {
     registerEvent(event)
 }
 
-suspend fun Analytics.sendAnalyticsUploadMediaEvent(mediaType: String) {
+suspend fun Analytics.sendAnalyticsUploadMediaEvent(mediaType: Mimetype) {
     val type = when (mediaType) {
-        MIME_FILE_ALL -> "file"
-        MIME_IMAGE_ALL -> "image"
-        MIME_VIDEO_ALL -> "video"
+        Mimetype.MIME_FILE_ALL -> "file"
+        Mimetype.MIME_IMAGE_ALL -> "image"
+        Mimetype.MIME_VIDEO_ALL -> "video"
         else -> ""
     }
     val event = EventAnalytics.Anytype(

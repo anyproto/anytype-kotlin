@@ -3,17 +3,18 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 
 sealed class Command {
 
-    data class OpenDocumentImagePicker(val mimeType: String) : Command()
+    data class OpenDocumentImagePicker(val mimeType: Mimetype) : Command()
 
     data class OpenDocumentEmojiIconPicker(
         val target: String
     ) : Command()
 
     data class OpenGallery(
-        val mimeType: String
+        val mimeType: Mimetype
     ) : Command()
 
     data class OpenBookmarkSetter(

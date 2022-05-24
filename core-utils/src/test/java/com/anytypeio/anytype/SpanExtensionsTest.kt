@@ -1,17 +1,15 @@
 package com.anytypeio.anytype
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Build
-import android.text.Annotation
-import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.*
-import com.anytypeio.anytype.core_utils.ext.KEY_ROUNDED
-import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
+import android.text.style.BackgroundColorSpan
+import android.text.style.URLSpan
+import android.text.style.UnderlineSpan
 import com.anytypeio.anytype.core_utils.ext.hasSpan
-import junit.framework.Assert.*
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

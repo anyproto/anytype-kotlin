@@ -14,6 +14,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.const.FileConstants
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.isPermissionGranted
 import com.anytypeio.anytype.core_utils.ext.shouldShowRequestPermissionRationaleCompat
 import com.anytypeio.anytype.core_utils.ext.showSnackbar
@@ -33,7 +34,7 @@ interface PickerDelegate : PickiTCallbacks {
 
     fun resolveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
 
-    fun openFilePicker(mimeType: String, requestCode: Int? = null)
+    fun openFilePicker(mimeType: Mimetype, requestCode: Int? = null)
 
     fun clearPickit()
 
@@ -56,7 +57,7 @@ interface PickerDelegate : PickiTCallbacks {
         private var pickitAlertDialog: AlertDialog? = null
         private var snackbar: Snackbar? = null
 
-        private var mimeType = ""
+        private var mimeType: Mimetype? = null
         private var requestCode: Int? = null
 
         override fun resolveActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,7 +88,7 @@ interface PickerDelegate : PickiTCallbacks {
             }
         }
 
-        override fun openFilePicker(mimeType: String, requestCode: Int?) {
+        override fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
             this.mimeType = mimeType
             this.requestCode = requestCode
             if (fragment.requireContext().isPermissionGranted(mimeType)) {
@@ -167,7 +168,10 @@ interface PickerDelegate : PickiTCallbacks {
             { grantResults ->
                 val readResult = grantResults[READ_EXTERNAL_STORAGE]
                 if (readResult == true) {
-                    fragment.startFilePicker(mimeType, requestCode)
+                    val type = requireNotNull(mimeType) {
+                        "mimeType should be initialized"
+                    }
+                    fragment.startFilePicker(type, requestCode)
                 } else {
                     fragment.binding.root.showSnackbar(
                         R.string.permission_read_denied,

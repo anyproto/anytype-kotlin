@@ -1,0 +1,216 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: 'com.google.firebase.crashlytics'
+
+apply from: "$rootDir/versioning.gradle"
+
+def apikeyPropertiesFile = rootProject.file("apikeys.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
+//def keystorePropertiesFile = rootProject.file("signing.properties")
+//def keystoreProperties = new Properties()
+//keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    def config = rootProject.ext
+
+    compileSdkVersion config.compile_sdk
+    buildToolsVersion config.build_tools
+
+    defaultConfig {
+        applicationId config.application_id
+        minSdkVersion config.min_sdk
+        targetSdkVersion config.target_sdk
+        versionCode getBuildVersionCode()
+        versionName getBuildVersionName()
+        testInstrumentationRunner config.test_runner
+        buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+    }
+    packagingOptions {
+        resources {
+            excludes += ['LICENSE.txt', 'META-INF/DEPENDENCIES', 'META-INF/ASL2.0', 'META-INF/NOTICE', 'META-INF/LICENSE']
+        }
+    }
+
+
+//    signingConfigs {
+//        //For proper signing, use debuggable false for a build.
+//        release {
+//            keyAlias keystoreProperties['RELEASE_KEY_ALIAS']
+//            keyPassword keystoreProperties['RELEASE_KEY_PASSWORD']
+//            storeFile file(keystoreProperties['RELEASE_STORE_FILE'])
+//            storePassword keystoreProperties['RELEASE_STORE_PASSWORD']
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
+//        debug {
+//            keyAlias keystoreProperties['DEBUG_KEY_ALIAS']
+//            keyPassword keystoreProperties['DEBUG_KEY_PASSWORD']
+//            storeFile file(keystoreProperties['DEBUG_STORE_FILE'])
+//            storePassword keystoreProperties['DEBUG_STORE_PASSWORD']
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
+//    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
+            //signingConfig signingConfigs.release
+        }
+
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
+            //signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion config.compose_version
+    }
+
+    lint {
+        abortOnError false
+        disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder'
+        ignoreWarnings true
+        quiet true
+    }
+
+    buildFeatures {
+        viewBinding true
+        compose true
+    }
+
+    splits {
+        // Configures multiple APKs based on ABI.
+        abi {
+            // Enables building multiple APKs per ABI.
+            enable false
+            reset()
+            include "armeabi-v7a", "arm64-v8a"//, "x86_64", "x86",
+            universalApk false
+        }
+    }
+}
+
+dependencies {
+
+    implementation project(':domain')
+    implementation project(':core-models')
+    implementation project(':data')
+    implementation project(':device')
+    implementation project(':persistence')
+    implementation project(':middleware')
+    implementation project(':presentation')
+    implementation project(':clipboard')
+    implementation project(':core-utils')
+    implementation project(':core-ui')
+    implementation project(':library-page-icon-picker-widget')
+    implementation project(':library-emojifier')
+    implementation project(':library-syntax-highlighter')
+    implementation project(':analytics')
+    implementation project(':ui-settings')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+    def acceptanceTesting = rootProject.ext.acceptanceTesting
+    def databaseDependencies = rootProject.ext.db
+    def analyticsDependencies = rootProject.ext.analytics
+    def protobufDependencies = rootProject.ext.protobuf
+
+
+    //Compile time dependencies
+    kapt applicationDependencies.daggerCompiler
+    kapt applicationDependencies.glideCompiler
+    compileOnly applicationDependencies.javaxAnnotation
+    compileOnly applicationDependencies.javaxInject
+
+    //Application dependencies
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutinesAndroid
+    implementation applicationDependencies.fragment
+    implementation applicationDependencies.navigation
+    implementation applicationDependencies.navigationUi
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.design
+    implementation applicationDependencies.recyclerView
+    implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.glide
+    implementation applicationDependencies.dagger
+    implementation applicationDependencies.timber
+    implementation applicationDependencies.gson
+    implementation applicationDependencies.pickT
+    implementation applicationDependencies.emojiCompat
+
+    implementation applicationDependencies.lifecycleViewModel
+    implementation applicationDependencies.lifecycleRuntime
+    implementation applicationDependencies.lifecycleLiveData
+
+    implementation applicationDependencies.compose
+    implementation applicationDependencies.composeFoundation
+    implementation applicationDependencies.composeMaterial
+    implementation applicationDependencies.composeToolingPreview
+    debugImplementation applicationDependencies.composeTooling
+
+    implementation databaseDependencies.room
+
+    implementation applicationDependencies.crashlytics
+
+    implementation applicationDependencies.exoPlayerCore
+    implementation applicationDependencies.exoPlayerUi
+
+    implementation analyticsDependencies.amplitude
+    implementation analyticsDependencies.okhttp
+
+    implementation applicationDependencies.shimmerLayout
+    implementation applicationDependencies.photoView
+    implementation applicationDependencies.zxing
+
+    implementation applicationDependencies.androidxSecurityCrypto
+
+    //Unit/Integration tests dependencies
+    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation project(':test:utils')
+
+    //Acceptance tests dependencies
+    androidTestImplementation project(':test:android-utils')
+    androidTestImplementation acceptanceTesting.mockitoAndroid
+    androidTestImplementation unitTestDependencies.mockitoKotlin
+    androidTestImplementation acceptanceTesting.espressoContrib
+    androidTestImplementation acceptanceTesting.androidJUnit
+    androidTestImplementation unitTestDependencies.kotlinTest
+    androidTestImplementation acceptanceTesting.testRules
+    androidTestImplementation acceptanceTesting.disableAnimation
+    androidTestImplementation acceptanceTesting.navigationTesting
+    androidTestImplementation project(":test:utils")
+
+    androidTestImplementation(unitTestDependencies.coroutineTesting) {
+        exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
+    }
+
+    debugImplementation acceptanceTesting.fragmentTesting
+
+    implementation protobufDependencies.wireRuntime
+}
+
+apply plugin: 'com.google.gms.google-services'

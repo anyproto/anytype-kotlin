@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="about">About</string>
+    <string name="app_version">App version</string>
+    <string name="library">Library</string>
+    <string name="user_id">User ID</string>
+    <string name="account_and_data"><![CDATA[Account & Data]]></string>
+    <string name="personalization">Personalization</string>
+    <string name="appearance">Appearance</string>
+    <string name="recovery_phrase">Recovery phrase</string>
+    <string name="clear_file_cache">Clear file cache</string>
+    <string name="account">Account</string>
+    <string name="reset_account">Reset account</string>
+    <string name="delete_account">Delete account</string>
+    <string name="data">Data</string>
+    <string name="mode">Mode</string>
+    <string name="log_out">Logout</string>
+    <string name="pin_code">Pin code</string>
+    <string name="access">Access</string>
+    <string name="wallpaper">Wallpaper</string>
+
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="system">System</string>
+
+    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your recovery phrase?</string>
+    <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+
+</resources>

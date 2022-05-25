@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rect_bottom_sheet"
+    android:transitionName="checkoutTransition"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/dragger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/modal_rect_margin_top"
+        android:contentDescription="@string/content_description_modal_icon"
+        android:src="@drawable/sheet_top" />
+
+    <include
+        android:id="@+id/searchBar"
+        layout="@layout/widget_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchRelationRecycler"
+        tools:listitem="@layout/item_search_relation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp" />
+
+</LinearLayout>

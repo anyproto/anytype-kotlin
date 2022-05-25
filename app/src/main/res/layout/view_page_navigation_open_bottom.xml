@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/bg_page_nav_filter"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/avatarSmall"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="18dp"
+        app:layout_constraintBottom_toBottomOf="@+id/pageTitleSmall"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pageTitleSmall"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/pageTitleSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/inter_regular"
+        android:maxLines="1"
+        android:textColor="#2C2B27"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnOpenPageSmall"
+        app:layout_constraintEnd_toStartOf="@+id/btnOpenPageSmall"
+        app:layout_constraintStart_toEndOf="@+id/avatarSmall"
+        app:layout_constraintTop_toTopOf="@+id/btnOpenPageSmall"
+        tools:text="The Iraqi-British Zaha Hadid became famous for her intensely futuristic architecture " />
+
+    <TextView
+        android:id="@+id/btnOpenPageSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/rounded_button_nav_open"
+        android:drawablePadding="0dp"
+        android:fontFamily="@font/inter_medium"
+        android:gravity="center"
+        android:paddingStart="20dp"
+        android:paddingTop="3dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="3dp"
+        android:text="@string/btn_nav_open"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

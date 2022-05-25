@@ -1,0 +1,46 @@
+include ':app',
+        ':core-utils',
+        ':middleware',
+        ':persistence',
+        ':domain',
+        ':data',
+        ':device',
+        ':presentation',
+        ':core-ui',
+        ':library-page-icon-picker-widget',
+        ':library-emojifier',
+        ':library-syntax-highlighter',
+        ':sample',
+        ':clipboard',
+        ':analytics',
+        ':protocol',
+        ':core-models',
+        ':test:android-utils',
+        ':test:utils',
+        ':test:core-models-stub'
+
+include ':ui-settings'
+
+dependencyResolutionManagement {
+    /**
+     * Create github.properties in root project folder file
+     * with gpr.usr=GITHUB_USER_ID  & gpr.key=PERSONAL_ACCESS_TOKEN
+     */
+    def githubProperties = new Properties()
+    def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
+    githubProperties.load(new FileInputStream(githubPropertiesFile))
+
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/anytypeio/go-anytype-middleware")
+            credentials {
+                username = githubProperties['gpr.usr']
+                password = githubProperties['gpr.key']
+            }
+        }
+    }
+}

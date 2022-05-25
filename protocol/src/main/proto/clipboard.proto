@@ -1,0 +1,8 @@
+syntax = "proto3";
+package anytype.clipboard;
+
+import "models.proto";
+
+message Clipboard {
+    repeated anytype.model.Block blocks = 1;
+}

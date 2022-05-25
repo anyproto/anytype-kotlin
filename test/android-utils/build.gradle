@@ -1,0 +1,30 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion compile_sdk
+
+    defaultConfig {
+        minSdkVersion min_sdk
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    api acceptanceTesting.espressoCore
+
+    implementation mainApplication.appcompat
+    implementation mainApplication.kotlin
+    implementation mainApplication.coroutinesAndroid
+    implementation mainApplication.androidxCore
+    implementation mainApplication.design
+    implementation mainApplication.recyclerView
+}

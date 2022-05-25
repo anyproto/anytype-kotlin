@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="@color/black"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="10dp">
+
+        <HorizontalScrollView
+            android:id="@+id/scrollContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnCopy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/graphik_font"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12"
+                    android:text="@string/menu_item_copy"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <View
+                    android:id="@+id/divCopy"
+                    android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:background="#6C6A5F" />
+
+                <TextView
+                    android:id="@+id/btnCut"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/graphik_font"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12"
+                    android:text="@string/menu_item_cut"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <View
+                    android:id="@+id/divCut"
+                    android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:background="#6C6A5F" />
+
+                <TextView
+                    android:id="@+id/btnPaste"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/graphik_font"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12"
+                    android:text="@string/menu_item_paste"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <View
+                    android:id="@+id/divPaste"
+                    android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:background="#6C6A5F" />
+
+                <ImageView
+                    android:id="@+id/btnBold"
+                    style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:src="@drawable/ic_menu_bold" />
+
+                <View
+                    android:id="@+id/divBold"
+                    android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:background="#6C6A5F" />
+
+                <ImageView
+                    android:id="@+id/btnItalic"
+                    style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:src="@drawable/ic_menu_italic" />
+
+                <View
+                    android:id="@+id/divItalic"
+                    android:layout_width="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_height="match_parent"
+                    android:background="#6C6A5F" />
+
+                <ImageView
+                    android:id="@+id/btnStroke"
+                    style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:src="@drawable/ic_menu_strike_through" />
+
+                <View
+                    android:id="@+id/divStroke"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:background="#6C6A5F" />
+
+                <ImageView
+                    android:id="@+id/btnCode"
+                    style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:src="@drawable/ic_menu_code" />
+
+                <View
+                    android:id="@+id/divCode"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:background="#6C6A5F" />
+
+                <ImageView
+                    android:id="@+id/btnLink"
+                    style="@style/ActionModePopupButton"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:src="@drawable/ic_menu_link" />
+
+                <View
+                    android:id="@+id/divLink"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:background="#6C6A5F" />
+
+                <TextView
+                    android:id="@+id/btnColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/graphik_font"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:text="@string/menu_item_color"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <View
+                    android:id="@+id/divColor"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:background="#6C6A5F" />
+
+                <TextView
+                    android:id="@+id/btnBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/graphik_font"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12"
+                    android:text="@string/menu_item_background"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <FrameLayout
+            android:id="@+id/arrowRightContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end">
+
+            <ImageView
+                android:id="@+id/arrow_right"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:src="@drawable/ic_menu_arrow_right" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="44dp"
+                android:background="#6C6A5F" />
+        </FrameLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

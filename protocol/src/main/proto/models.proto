@@ -1,0 +1,610 @@
+syntax = "proto3";
+package anytype.model;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "pkg/lib/pb/model";
+
+message SmartBlockSnapshotBase {
+    repeated Block blocks = 1;
+    google.protobuf.Struct details = 2;
+    google.protobuf.Struct fileKeys = 3;
+    repeated Relation extraRelations = 4;
+    repeated string objectTypes = 5;
+    google.protobuf.Struct collections = 6;
+}
+
+enum SmartBlockType {
+    AccountOld = 0;
+    Breadcrumbs = 0x01;
+
+    Page = 0x10;
+    ProfilePage = 0x11;
+    Home = 0x20;
+    Archive = 0x30;
+    Database = 0x40;
+    Set = 0x41; // only have dataview simpleblock
+    STObjectType = 0x60; // have relations list
+
+    File = 0x100;
+
+    Template = 0x120;
+    BundledTemplate = 0x121;
+
+    MarketplaceType = 0x110;
+    MarketplaceRelation = 0x111;
+    MarketplaceTemplate = 0x112;
+
+    BundledRelation = 0x200;
+    IndexedRelation = 0x201;
+    BundledObjectType = 0x202;
+    AnytypeProfile = 0x203;
+    Date = 0x204;
+    WorkspaceOld = 0x205; // deprecated thread-based workspace
+    Workspace = 0x206;
+
+}
+
+message Block {
+    string id = 1;
+    google.protobuf.Struct fields = 2;
+    Restrictions restrictions = 3;
+    repeated string childrenIds = 4;
+    string backgroundColor = 5;
+    Align align = 6;
+
+    oneof content {
+        Content.Smartblock smartblock = 11;
+
+        Content.Text text = 14;
+        Content.File file = 15;
+        Content.Layout layout = 16;
+        Content.Div div = 17;
+        Content.Bookmark bookmark = 18;
+        Content.Icon icon = 19;
+        Content.Link link = 20;
+        Content.Dataview dataview = 21;
+        Content.Relation relation = 22;
+        Content.FeaturedRelations featuredRelations = 23;
+        Content.Latex latex = 24;
+        Content.TableOfContents tableOfContents = 25;
+    }
+
+    message Restrictions {
+        bool read = 1;
+        bool edit = 2;
+        bool remove = 3;
+        bool drag = 4;
+        bool dropOn = 5;
+    }
+
+    enum Position {
+        None = 0;
+        // above target block
+        Top = 1;
+        // under target block
+        Bottom = 2;
+        // to left of target block
+        Left = 3;
+        // to right of target block
+        Right = 4;
+        // inside target block, as last block
+        Inner = 5;
+        // replace target block
+        Replace = 6;
+        // inside target block, as first block
+        InnerFirst = 7;
+    }
+
+    enum Align {
+        AlignLeft = 0;
+        AlignCenter = 1;
+        AlignRight = 2;
+    }
+
+    message Content {
+        /*
+        * Layout have no visual representation, but affects on blocks, that it contains.
+        * Row/Column layout blocks creates only automatically, after some of a D&D operations, for example
+        */
+        message Layout {
+            Style style = 1;
+
+            enum Style {
+                Row = 0;
+                Column = 1;
+                Div = 2;
+                Header = 3;
+            }
+        }
+
+        /*
+        * Link: block to link some content from an external sources.
+        */
+        message Link {
+            string targetBlockId = 1; // id of the target block
+            Style style = 2; // deprecated
+            google.protobuf.Struct fields = 3;
+
+            enum Style {
+                Page = 0;
+                Dataview = 1;
+                Dashboard = 2;
+                Archive = 3;
+                // ...
+            }
+        }
+
+        /*
+        * Divider: block, that contains only one horizontal thin line
+        */
+        message Div {
+            Style style = 1;
+
+            enum Style {
+                Line = 0;
+                Dots = 1;
+            }
+        }
+
+        /*
+        * Bookmark is to keep a web-link and to preview a content.
+        */
+        message Bookmark {
+            string url = 1;
+            string title = 2;
+            string description = 3;
+            string imageHash = 4;
+            string faviconHash = 5;
+            LinkPreview.Type type = 6;
+        }
+
+        message Icon {
+            string name = 1;
+        }
+
+        message FeaturedRelations {
+        }
+
+        message Text {
+            string text = 1;
+            Style style = 2;
+            Marks marks = 3; // list of marks to apply to the text
+            bool checked = 4;
+            string color = 5;
+            string iconEmoji = 6; // used with style Callout
+            string iconImage = 7; // in case both image and emoji are set, image should has a priority in the UI
+
+            message Marks {
+                repeated Mark marks = 1;
+            }
+
+            message Mark {
+                Range range = 1; // range of symbols to apply this mark. From(symbol) To(symbol)
+                Type type = 2;
+                string param = 3; // link, color, etc
+
+                enum Type {
+                    Strikethrough = 0;
+                    Keyboard = 1;
+                    Italic = 2;
+                    Bold = 3;
+                    Underscored = 4;
+                    Link = 5;
+                    TextColor = 6;
+                    BackgroundColor = 7;
+                    Mention = 8;
+                    Emoji = 9;
+                    Object = 10;
+                }
+            }
+
+            enum Style {
+                Paragraph = 0;
+                Header1 = 1;
+                Header2 = 2;
+                Header3 = 3;
+                Header4 = 4; // deprecated
+                Quote = 5;
+                Code = 6;
+                Title = 7; // currently only only one block of this style can exists on a page
+                Checkbox = 8;
+                Marked = 9;
+                Numbered = 10;
+                Toggle = 11;
+                Description = 12; // currently only only one block of this style can exists on a page
+                Callout = 13; // currently only only one block of this style can exists on a page
+
+            }
+        }
+
+        message File {
+            string hash = 1;
+            string name = 2;
+            Type type = 3;
+            string mime = 4;
+            int64 size = 5;
+            int64 addedAt = 6;
+
+            State state = 7;
+            Style style = 8;
+
+            enum Type {
+                None = 0;
+                File = 1;
+                Image = 2;
+                Video = 3;
+                Audio = 4;
+                PDF = 5;
+            }
+
+            enum Style {
+                Auto = 0; // all types expect File and None has Embed style by default
+                Link = 1;
+                Embed = 2;
+            }
+
+            enum State {
+                Empty = 0; // There is no file and preview, it's an empty block, that waits files.
+                Uploading = 1; // There is still no file/preview, but file already uploading
+                Done = 2; // File and preview downloaded
+                Error = 3; // Error while uploading
+            }
+        }
+
+        message Smartblock {
+        }
+
+        message Dataview {
+            repeated string source = 1;
+            repeated View views = 2;
+            // index 3 is deprecated, was used for schemaURL in old-format sets
+            repeated model.Relation relations = 4;
+            string activeView = 3; // saved within a session
+
+            message View {
+                string id = 1;
+                Type type = 2;
+                string name = 3;
+                repeated Sort sorts = 4;
+                repeated Filter filters = 5;
+                repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
+				string coverRelationKey = 7; // Relation used for cover in gallery
+                bool hideIcon = 8; // Hide icon near name 
+                Size cardSize = 9; // Gallery card size
+                bool coverFit = 10; // Image fits container
+
+                enum Type {
+                    Table = 0;
+                    List = 1;
+                    Gallery = 2;
+                    Kanban = 3;
+                }
+
+                enum Size {
+                    Small = 0;
+                    Medium = 1;
+                    Large = 2;
+                }
+            }
+
+            message Relation {
+                string key = 1;
+                bool isVisible = 2;
+                int32 width = 3; // the displayed column % calculated based on other visible relations
+                // bool isReadOnly = 4; // deprecated
+
+                bool dateIncludeTime = 5;
+                TimeFormat timeFormat = 6;
+                DateFormat dateFormat = 7;
+
+                enum DateFormat {
+                    MonthAbbrBeforeDay = 0; // Jul 30, 2020
+                    MonthAbbrAfterDay = 1; // 30 Jul 2020
+                    Short = 2; // 30/07/2020
+                    ShortUS = 3; // 07/30/2020
+                    ISO = 4; // 2020-07-30
+                }
+
+                enum TimeFormat {
+                    Format12 = 0;
+                    Format24 = 1;
+                }
+            }
+
+            message Sort {
+                string RelationKey = 1;
+                Type type = 2;
+
+                enum Type {
+                    Asc = 0;
+                    Desc = 1;
+                }
+            }
+
+            message Filter {
+                Operator operator = 1; // looks not applicable?
+                string RelationKey = 2;
+                string relationProperty = 5;
+                Condition condition = 3;
+                google.protobuf.Value value = 4;
+
+                enum Operator {
+                    And = 0;
+                    Or = 1;
+                }
+
+                enum Condition {
+                    None = 0;
+                    Equal = 1;
+                    NotEqual = 2;
+                    Greater = 3;
+                    Less = 4;
+                    GreaterOrEqual = 5;
+                    LessOrEqual = 6;
+                    Like = 7;
+                    NotLike = 8;
+                    In = 9;
+                    NotIn = 10;
+                    Empty = 11;
+                    NotEmpty = 12;
+                    AllIn = 13;
+                    NotAllIn = 14;
+                }
+            }
+        }
+
+        message Relation {
+            string key = 1;
+        }
+
+        message Latex {
+            string text = 1;
+        }
+
+        message TableOfContents {
+        }
+    }
+}
+
+/*
+* Used to decode block meta only, without the content itself
+*/
+message BlockMetaOnly {
+    string id = 1;
+    google.protobuf.Struct fields = 2;
+}
+
+/*
+* General purpose structure, uses in Mark.
+*/
+message Range {
+    int32 from = 1;
+    int32 to = 2;
+}
+
+/**
+* Contains basic information about a user account
+*/
+message Account {
+    string id = 1; // User's thread id
+    string name = 2; // User name, that associated with this account
+    Avatar avatar = 3; // Avatar of a user's account
+    Config config = 4;
+    Status status = 5;
+
+    /**
+    * Avatar of a user's account. It could be an image or color
+    */
+    message Avatar {
+        oneof avatar {
+            Block.Content.File image = 1; // Image of the avatar. Contains the hash to retrieve the image.
+            string color = 2; // Color of the avatar, used if image not set.
+        }
+    }
+
+    message Config {
+        bool enableDataview = 1;
+        bool enableDebug = 2;
+        bool enableReleaseChannelSwitch = 3;
+        bool enableSpaces = 4;
+
+        google.protobuf.Struct extra = 100;
+    }
+
+    message Status {
+        StatusType statusType = 1;
+        int64 deletionDate = 2;
+    }
+
+    enum StatusType {
+        Active = 0;
+        PendingDeletion = 1;
+        StartedDeletion = 2;
+        Deleted = 3;
+    }
+}
+
+message LinkPreview {
+    string url = 1;
+    string title = 2;
+    string description = 3;
+    string imageUrl = 4;
+    string faviconUrl = 5;
+    Type type = 6;
+
+    enum Type {
+        Unknown = 0;
+        Page = 1;
+        Image = 2;
+        Text = 3;
+    }
+}
+
+message Restrictions {
+    repeated ObjectRestriction object = 1;
+    repeated DataviewRestrictions dataview = 2;
+
+    enum ObjectRestriction {
+        None = 0;
+        // restricts delete
+        Delete = 1;
+        // restricts work with relations
+        Relations = 2;
+        // restricts work with blocks
+        Blocks = 3;
+        // restricts work with details
+        Details = 4;
+        TypeChange = 5;
+        LayoutChange = 6;
+        Template = 7;
+    }
+
+
+    message DataviewRestrictions {
+        string blockId = 1;
+        repeated DataviewRestriction restrictions = 2;
+    }
+
+    enum DataviewRestriction {
+        DVNone = 0;
+        DVRelation = 1;
+        DVCreateObject = 2;
+        DVViews = 3;
+    }
+}
+
+message ThreadDeeplinkPayload {
+    string key = 1;
+    repeated string addrs = 2;
+}
+
+message ThreadCreateQueueEntry {
+    string collectionThread = 1;
+    string threadId = 2;
+}
+
+message ObjectType {
+    string url = 1; // leave empty in case you want to create the new one
+    string name = 2; // name of objectType (can be localized for bundled types)
+    repeated Relation relations = 3; // cannot contain more than one Relation with the same RelationType
+    Layout layout = 4;
+    string iconEmoji = 5; // emoji symbol
+    string description = 6;
+    bool hidden = 7;
+    bool readonly = 10;
+    repeated SmartBlockType types = 8;
+    bool isArchived = 9; // sets locally to hide object type from set and some other places
+
+    enum Layout {
+        basic = 0;
+        profile = 1;
+        todo = 2;
+        set = 3;
+        objectType = 4;
+        relation = 5;
+        file = 6;
+        dashboard = 7;
+        image = 8;
+        note = 9;
+        space = 10;
+
+        database = 20; // to be released later
+    }
+}
+
+message Layout {
+    ObjectType.Layout id = 1;
+    string name = 2;
+    repeated Relation requiredRelations = 3; // relations required for this object type
+}
+
+message RelationWithValue {
+    Relation relation = 1;
+    google.protobuf.Value value = 2;
+}
+
+// Relation describe the human-interpreted relation type. It may be something like "Date of creation, format=date" or "Assignee, format=objectId, objectType=person"
+message Relation {
+    // Key under which the value is stored in the map. Must be unique for the object type.
+    // It usually auto-generated bsonid, but also may be something human-readable in case of prebuilt types.
+    string key = 1;
+
+    RelationFormat format = 2; // format of the underlying data
+    string name = 3; // name to show (can be localized for bundled types)
+    google.protobuf.Value defaultValue = 4;
+    DataSource dataSource = 5; // where the data is stored
+
+    bool hidden = 6; // internal, not displayed to user (e.g. coverX, coverY)
+    bool readOnly = 7; // value not editable by user tobe renamed to readonlyValue
+    bool readOnlyRelation = 15; // relation metadata, eg name and format is not editable by user
+
+    bool multi = 8; // allow multiple values (stored in pb list)
+
+    repeated string objectTypes = 9; // URL of object type, empty to allow link to any object
+    // index 10, 11 was used in internal-only builds. Can be reused, but may break some test accounts
+    repeated Option selectDict = 12; // default dictionary with unique values to choose for select/multiSelect format
+    int32 maxCount = 13; // max number of values can be set for this relation. 0 means no limit. 1 means the value can be stored in non-repeated field
+    string description = 14;
+
+    // on-store fields, injected only locally
+    Scope scope = 20; // scope from which this relation have been aggregated
+    string creator = 21; // creator profile id
+
+    message Option {
+        string id = 1; // id generated automatically if omitted
+        string text = 2;
+        string color = 3; // stored
+        Scope scope = 4; // on-store contains only local-scope relations. All others injected on-the-fly
+
+        enum Scope {
+            local = 0; // stored within the object/aggregated from set
+            relation = 1; // aggregated from all relation of this relation's key
+            format = 2; // aggregated from all relations of this relation's format
+        }
+    }
+
+    enum Scope {
+        object = 0; // stored within the object
+        type = 1; // stored within the object type
+        setOfTheSameType = 2; // aggregated from the dataview of sets of the same object type
+        objectsOfTheSameType = 3; // aggregated from the dataview of sets of the same object type
+        library = 4; // aggregated from relations library
+    }
+
+    enum DataSource {
+        details = 0; // default, stored inside the object's details
+        derived = 1; // stored locally, e.g. in badger or generated on the fly
+        account = 2; // stored in the account DB. means existing only for specific anytype account
+        local = 3; // stored locally
+    }
+}
+
+// RelationFormat describes how the underlying data is stored in the google.protobuf.Value and how it should be validated/sanitized
+enum RelationFormat {
+    longtext = 0; // string
+    shorttext = 1; // string, usually short enough. May be truncated in the future
+    number = 2; // double
+    status = 3; // string or list of string(len==1)
+    tag = 11; // list of string (choose multiple from a list)
+    date = 4; // float64(pb.Value doesn't have int64) or the string
+    file = 5; // relation can has objects of specific types: file, image, audio, video
+    checkbox = 6; // boolean
+    url = 7; // string with sanity check
+    email = 8; // string with sanity check
+    phone = 9; // string with sanity check
+    emoji = 10; // one emoji, can contains multiple utf-8 symbols
+
+    object = 100; // relation can has objectType to specify objectType
+    relations = 101; // base64-encoded relation pb model
+
+}
+
+message Relations {
+    repeated Relation relations = 1;
+}
+
+message RelationOptions {
+    repeated Relation.Option options = 1;
+}
+

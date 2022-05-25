@@ -1,0 +1,18 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':core-models')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
+
+    testImplementation project(":test:utils")
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation unitTestDependencies.coroutineTesting
+}

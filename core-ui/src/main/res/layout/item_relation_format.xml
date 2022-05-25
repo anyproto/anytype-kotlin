@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/default_ripple"
+    android:layout_height="52dp"
+    android:orientation="horizontal">
+
+    <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
+        android:id="@+id/ivRelationFormat"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="20dp"
+        tools:src="@drawable/ic_relation_format_text_small" />
+
+    <TextView
+        android:id="@+id/tvRelationName"
+        style="@style/DefaultRelationTitleStyle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_weight="1"
+        tools:text="Text" />
+
+</LinearLayout>

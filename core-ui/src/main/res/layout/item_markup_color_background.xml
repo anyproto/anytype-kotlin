@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="44dp"
+    android:layout_height="match_parent">
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/circle"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        app:outerStrokeColor="@color/shape_primary"
+        app:innerRadius="18dp" />
+</FrameLayout>

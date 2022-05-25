@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            style="@style/ModifyViewerTextStyle"
+            android:maxLines="1"
+            android:singleLine="true"
+            tools:text="@string/default_text_placeholder" />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/btnActionMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/content_description_more_button"
+        android:paddingStart="14dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="28dp"
+        android:paddingBottom="14dp"
+        android:src="@drawable/ic_data_view_edit_view"
+        android:visibility="visible"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/dndDragger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingBottom="14dp"
+        android:src="@drawable/ic_dv_manage_view_dnd_dragger"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</LinearLayout>

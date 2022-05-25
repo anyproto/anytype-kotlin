@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/btnRemoveTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_remove_viewer_sort"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.text.TagWidget
+        android:id="@+id/tvTagName"
+        style="@style/TagTextStyle"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="32dp"
+        tools:layout_marginStart="36dp"
+        tools:text="Tag" />
+
+    <ImageView
+        android:id="@+id/btnDragAndDropTag"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical|end"
+        android:src="@drawable/ic_dnd"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/tagCheckbox"
+        style="@style/SelectedRelationCircleBadgeStyle"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical|end"
+        android:background="@drawable/ic_tag_selected_selector"
+        android:visibility="invisible"
+        tools:text="1"
+        tools:visibility="visible" />
+
+</FrameLayout>

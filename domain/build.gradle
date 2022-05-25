@@ -1,0 +1,21 @@
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+dependencies {
+
+    implementation project(':core-models')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutines
+
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    testImplementation project(":test:utils")
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.turbine
+
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation unitTestDependencies.coroutineTesting
+}

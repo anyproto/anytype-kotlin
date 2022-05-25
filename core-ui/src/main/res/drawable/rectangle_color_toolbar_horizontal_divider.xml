@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size android:width="@dimen/default_toolbar_color_item_divider_width" />
+    <solid android:color="#F3F2EC" />
+</shape>

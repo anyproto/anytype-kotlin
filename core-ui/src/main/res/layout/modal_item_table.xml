@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iconTable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_main_margin_start"
+        android:layout_marginTop="@dimen/modal_item_icon_margin_top"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_table_view" />
+
+    <TextView
+        android:id="@+id/table"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_text_from_button_margin"
+        android:text="@string/modal_table"
+        app:layout_constraintBottom_toBottomOf="@+id/iconTable"
+        app:layout_constraintStart_toEndOf="@+id/iconTable"
+        app:layout_constraintTop_toTopOf="@+id/iconTable" />
+
+    <ImageView
+        android:id="@+id/tableChosen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_main_margin_end"
+        android:contentDescription="@string/content_description_modal_icon"
+        android:padding="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/table"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/table"
+        app:srcCompat="@drawable/ic_chosen"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

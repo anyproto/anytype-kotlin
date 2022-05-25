@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/coverAndIconContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_cover_height"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="@string/content_description_document_cover"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/docProfileIconContainer"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/circle_profile_icon"
+            android:transitionName="@string/logo_transition">
+
+            <ImageView
+                android:layout_margin="4dp"
+                android:id="@+id/imageIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/imageText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:fontFamily="@font/inter_semibold"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="64sp"
+                tools:text="S" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="13dp"
+        android:background="@null"
+        android:textAlignment="center"
+        android:fontFamily="@font/inter_bold"
+        android:hint="@string/untitled"
+        android:textColorHint="@color/editor_default_hint_text_color"
+        android:textColor="@color/black"
+        android:textSize="28sp"
+        app:ignoreDragAndDrop="true"
+        app:onlyPasteAsPlaneText="true"
+        tools:text="Title" />
+
+</LinearLayout>

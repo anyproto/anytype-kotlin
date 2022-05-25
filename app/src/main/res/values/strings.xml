@@ -1,0 +1,286 @@
+<resources>
+
+    <string name="amplitude_api_key">1ba981d1a9afb8af8c81847ef3383a20</string>
+    <string name="amplitude_api_key_debug">b9791dd64a1e9f07a330a4ac9feb1f10</string>
+
+    <string name="example_1">
+        To layout text on Android, the system does a lot of work. Each glyph is resolved — dependent on font, locale, size, font features (like bold or italic). Then the system will resolve rules for how they line up, combine, or merge as they form words. After all that, the words can finally be wrapped into available space.
+    </string>
+
+    <string name="example_2">
+        For these reasons, it makes sense that laying out text can be expensive. Android uses a per-word cache to avoid recomputing much of this data, but that can only help so much — new words showing on screen, or even just new fonts and text sizes limit this as an optimization.
+    </string>
+
+    <string name="example_3">
+        RecyclerView is especially sensitive to layout performance. As new items come on screen, they must layout as part of the first frame showing them. So if a complex paragraph of text in a RecyclerView item take 12ms to measure, that’s almost guaranteed to lead to jank, and dropped frames.
+    </string>
+
+    <string name="example_4">
+        In this article, we’ll talk about how to use the new PrecomputedText APIs to compute text layout early, before the UI thread needs it. We’ll also go over the new text prefetch APIs in Jetpack specifically designed for displaying large amounts of text in RecyclerView, and how they can reduce UI thread text measurement cost by 95%!
+    </string>
+
+    <string name="example_5">
+        The below images show a simple RecyclerView that presents large blocks of text. On a Pixel2 (Running Android P, CPU at 1GHz), measuring 80 words (~520 characters) takes TextView 15.6ms. That’s a huge amount of time! Each frame’s deadline is 16.67ms, so if the UI thread has to measure even one TextView of that complexity, it’ll blow past the deadline.
+
+You may not have that much text in your TextViews, but if you’re running on a low-end phone, displaying something more complex than Roman characters, or use varied fonts and styles, times like these can be quite realistic.
+
+Using Developer Options > Monitoring > Profile GPU rendering, we can see this problem visually. The green horizontal bar shows the 16.67ms ideal, and frames stack up vertically depending on how much time they take. Using a regular TextView on the left, there’s a lot of missed frames — big spikes in the graph when new items come on-screen.
+    </string>
+
+    <string name="example_6">
+        The capture on the right shows the same app, but using PrecomputedText to avoid expensive measure work on the UI thread. The remaining measurement work is still there, causing small spikes, but no longer causes jank. TextView.onMeasure is reduced to 0.9ms — that’s more than 16 times faster!
+    </string>
+
+    <string name="example_7">
+        PrecomputedText, announced at I/O this year, is a new API in Android P, with a compat version in Jetpack that reduces UI thread costs of text. It lets you pre-compute the vast majority of measure/layout work on a background thread.
+
+From the UI thread, determine layout parameters from a TextView:
+
+val params : PrecomputedTextCompat.Params =
+        TextViewCompat.getTextMetricsParams(myTextView)
+Do the computation of an expensive paragraph of text on a background thread:
+    </string>
+
+    <string name="example_8">
+        Тестирую текст
+    </string>
+    <string name="editor_toolbar">button</string>
+
+    <string name="confirm">Confirm</string>
+    <string name="code_empty">Invitation code should not be null</string>
+    <string name="enter_invitation_hint">Invitation code</string>
+    <string name="enter_invitation_text">If you don\'t have one just go to anytype.io and sign up to the waiting list. We are inviting people on the rolling bases.</string>
+    <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="type_your_recovery_phrase">or type your recovery phrase</string>
+    <string name="login_with_recovery_phrase">Login with recovery phrase</string>
+    <string name="or_scan_qr_code">Scan QR code</string>
+    <string name="choose_pin_code">Choose pin code</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="time_to_update_title">It\'s time to update</string>
+    <string name="time_to_update_text">Some of your data was managed in a newer version of Anytype.\nPlease update the app to work with all your docs and the latest features.</string>
+    <string name="update">Update</string>
+    <string name="later">Later</string>
+    <string name="let_us_start">Let\'s start!</string>
+    <string name="you_ve_created_your_first_profile">You\'ve created your first profile!</string>
+    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">It\'s stored on your device and nobody will know about it until you share it!</string>
+    <string name="choose_profile">Choose profile</string>
+    <string name="logout">Logout</string>
+    <string name="add_profile">Add profile</string>
+    <string name="add_name_and_profile_picture">Add your name \nand profile picture</string>
+    <string name="type_your_name">Enter your name</string>
+    <string name="create_profile">Create</string>
+    <string name="t">T</string>
+    <string name="do_it_later">Do it later</string>
+    <string name="enter_pin_code">Enter pin code</string>
+    <string name="confirm_pin_code">Confirm pin code</string>
+
+    <string name="switch_profile">Switch profile</string>
+    <string name="description_profile_picture">Profile picture</string>
+    <string name="description_arrow_icon">Arrow icon</string>
+    <string name="recovery_phrase">Recovery phrase</string>
+    <string name="pin_code">Pin code</string>
+    <string name="user_settings">User settings</string>
+    <string name="other_settings">Other settings</string>
+    <string name="your_page">Your public page</string>
+    <string name="updates">Updates</string>
+    <string name="log_out">Log out</string>
+    <string name="recovery_phrase_text">Your recovery phrase protects your account. You need it to sign in if you don\'t have access to your devices. Keep it in a safe place.</string>
+    <string name="back_up_your_recovery_phrase">Back up your recovery \nphrase</string>
+    <string name="i_ve_written_it_down">i\'ve written it down</string>
+    <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
+
+    <string name="greet">Hi, %1$s</string>
+    <string name="greet_user">Hi, User</string>
+    <string name="enter_your_code">Enter your invitation code</string>
+    <string name="organize_everything">Welcome to Anytype</string>
+    <string name="setting_up_the_wallet">Setting up the wallet…</string>
+    <string name="sign_clock">⏳</string>
+    <string name="back">Back</string>
+    <string name="create_a_new_profile">Create a new profile</string>
+    <string name="no_peers">No peers</string>
+    <string name="content_description_back_button_icon">Back button icon</string>
+    <string name="hint_link">Paste or type a URL</string>
+    <string name="button_unlink">Unlink</string>
+    <string name="button_link">Link</string>
+
+    <string name="permission_read_rationale">Read permission is needed to load file to media block.</string>
+    <string name="permission_read_denied">User denied permission. Please, approve this permission in \"Permissions\" in the app settings on your device.</string>
+    <string name="permission_read_never_ask_again">Read permission was denied with never ask again.\n You must approve this permission in \"Permissions\" in the app settings on your device.</string>
+    <string name="permission_write_rationale">Write permission is needed to load file to device.</string>
+    <string name="permission_write_denied">Write permission was denied. Please consider granting it in order to load files to device!</string>
+    <string name="permission_write_never_ask_again">Write permission was denied with never ask again.</string>
+    <string name="button_allow">Allow</string>
+    <string name="button_deny">Deny</string>
+    <string name="button_ok">Ok</string>
+    <string name="error">Error</string>
+
+    <string name="page_icon">Page icon</string>
+    <string name="page_icon_picker_remove_text">Remove</string>
+    <string name="create_bookmark">Create</string>
+    <string name="hint_paste_or_type_a_url">Paste or type a URL</string>
+    <string name="content_description_menu_icon">Menu icon</string>
+    <string name="add_new">Add new</string>
+    <string name="failed_to_launch_wallet">Failed to launch wallet after retry.</string>
+
+    <string name="pickit_drive">Drive file was selected</string>
+    <string name="pickit_file_selected">File was selected from unknown provider</string>
+    <string name="pickit_local_file">Local file was selected</string>
+    <string name="pickit_waiting">Waiting to receive file…</string>
+    <string name="profile_wallpaper">Wallpaper</string>
+    <string name="content_desc_wallpaper">Wallpaper icon</string>
+    <string name="content_desc_key">Keychain icon</string>
+    <string name="content_desc_pin">Pin icon</string>
+    <string name="nav_open_page">Open as page</string>
+    <string name="btn_nav_open">Open</string>
+    <string name="search_no_results">There is no object named \"%1$s\"</string>
+    <string name="search_no_results_try">Try to create a new one or search for something else</string>
+    <string name="search_empty_pages">You have no pages to search for.</string>
+    <string name="link_to_this_page">Link to this page</string>
+    <string name="link">Link</string>
+    <string name="move_into_this_page">Move into this page</string>
+    <string name="move_into">Move into</string>
+
+    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
+    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
+    <string name="fetching_your_account">Fetching your account…</string>
+    <string name="search_on_page">Search on page</string>
+    <string name="object_view_type">Object view type</string>
+    <string name="object_type_name">Object type name</string>
+    <string name="name">Name</string>
+    <string name="hint_type_name_for_new_relation">Name for new relation</string>
+    <string name="dv_create_new_object">New</string>
+    <string name="content_description_plus_button">Plus button</string>
+    <string name="content_description_customize_view_button">Customize-view button</string>
+    <string name="content_description_image_icon">Image icon</string>
+    <string name="content_description_emoji_icon">Emoji icon</string>
+    <string name="sort_by">Sort by</string>
+    <string name="hint_tap_to_type">Tap to type</string>
+    <string name="viewer_gallery">Gallery</string>
+    <string name="viewer_as">View as</string>
+    <string name="viewer_kanban">Kanban</string>
+    <string name="viewer_table">Grid</string>
+    <string name="viewer_list">List</string>
+    <string name="filter_text_enter_button">Enter</string>
+    <string name="filter_text_cancel_button">Cancel</string>
+    <string name="filter_text_value_hint">Enter text</string>
+    <string name="filter_number_value_hint">Enter a numeric value</string>
+    <string name="view_name">View name</string>
+    <string name="delete">Delete</string>
+    <string name="view_relations">View relations</string>
+    <string name="edit">Edit</string>
+    <string name="views">Views</string>
+    <string name="create">Create</string>
+    <string name="new_view">New view</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="edit_relations_title">Relations</string>
+    <string name="edit_view">Edit view</string>
+    <string name="relation_open_edit">Open to edit</string>
+    <string name="content_description_delete_button">Delete button</string>
+    <string name="content_description_duplicate_button">Duplicate button</string>
+    <string name="content_description_edit_view_button">Edit-view button</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
+    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+    <string name="remove_from_set">Remove from this set</string>
+    <string name="reset">Reset</string>
+    <string name="search_a_relation">Search a relation</string>
+    <string name="content_description_check_icon">Check icon</string>
+    <string name="filter_condition_is">Is</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="no_date">No date</string>
+    <string name="exact_day">Exact day</string>
+    <string name="reorder">Reorder</string>
+    <string name="choose_an_image">Choose an image</string>
+    <string name="optimal_dimensions_in_width_1080_pixels">Optimal dimensions in width 1080 pixels</string>
+    <string name="cover_size">Cover size</string>
+    <string name="tab_upload_image">Upload image</string>
+    <string name="tab_gallery">Gallery</string>
+    <string name="change_type">Change type</string>
+    <string name="change_cover">Change cover</string>
+
+    <string name="remove">Remove</string>
+    <string name="choose_options">Choose options</string>
+    <string name="choose_relation_to_filter">Choose a relation to filter</string>
+    <string name="choose_relation_to_sort">Choose a relation to sort</string>
+    <string name="btn_apply_new_object">Add to list</string>
+    <string name="btn_add">Add</string>
+    <string name="btn_upload_gallery">Upload from Gallery</string>
+    <string name="btn_upload_storage">Upload from External storage</string>
+    <string name="btn_upload">Upload</string>
+
+    <string name="alert_qr_camera">Open "Settings" and then "Recovery phrase" in Anytype Desktop.</string>
+    <string name="alert_qr_camera_ok">Ok</string>
+    <string name="choose_option">Choose option</string>
+    <string name="find_a_relation">Find a relation</string>
+    <string name="favorites">Favorites</string>
+    <string name="recent">Recent</string>
+    <string name="sets">Sets</string>
+    <string name="inbox">Inbox</string>
+    <string name="unknown_type">Unknown type</string>
+    <string name="set">Set</string>
+    <string name="layout">Layout</string>
+    <string name="restore_from_archive">Restore from archive</string>
+    <string name="icon">Icon</string>
+    <string name="icon_description">Emoji or image for object</string>
+    <string name="cover">Cover</string>
+    <string name="cover_description">Background picture</string>
+    <string name="layout_description">Arrangement of objects on a canvas</string>
+    <string name="relations">Relations</string>
+    <string name="relations_description">List of related objects</string>
+    <string name="history_description">All version of object</string>
+    <string name="history">History</string>
+    <string name="provide_name">Provide name for new object</string>
+    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
+    <string name="soon">Soon</string>
+
+    <string name="one_selected_block">1 selected block</string>
+    <string name="number_selected_blocks">%1$d selected blocks</string>
+    <string name="select_all">Select all</string>
+    <string name="unselect_all">Unselect all (%1$d)</string>
+    <string name="put_back">Put back</string>
+    <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
+    <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
+    <string name="delete_irrevocably">These objects will be deleted irrevocably. You can\'t undo this action.</string>
+    <string name="delete_irrevocably_one_object">This object will be deleted irrevocably. You can\'t undo this action.</string>
+    <string name="shared">Shared</string>
+    <string name="object_not_exist">This object doesn\'t exist</string>
+    <string name="back_to_dashboard">Back to dashboard</string>
+
+    <string name="snack_object_set_not_found">Set not found for this type.</string>
+    <string name="create_new_set">Create</string>
+
+    <string name="shortcut_create_new">Create a new %1$s</string>
+    <string name="close">Close</string>
+    <string name="go_to_settings">Go to settings</string>
+    <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your recovery phrase</string>
+    <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
+    <string name="if_you_lose_passphrase_warning">If you lose the passphrase and get logged out you will not be able to ever access your data again. Save this passphrase outside of Anytype for data recovery.</string>
+    <string name="card_size">Card size</string>
+    <string name="clear_cache">Clear cache</string>
+    <string name="download_from_node">All files will be deleted from your current device. They can be downloaded again from a backup node or another device.</string>
+
+    <string name="new_profile">new profile</string>
+    <string name="back_up_your_phrase">Back up</string>
+    <string name="anytype_analytics">Anytype Analytics</string>
+    <string name="anytype_analytics_msg">Understanding how people use Anytype helps us improve the product. This version of Anytype includes the analytics code that protects your privacy.\nIt doesn\'t record the actual document\'s content but still allows us to understand how you use Anytype.\nStay subscribed to our mailing list, as we will soon announce a new release that enables you to opt-out.</string>
+    <string name="retry">Retry</string>
+    <string name="limit_object_types">Limit object types</string>
+    <string name="unsplash">Unsplash</string>
+    <string name="cancel_deletion">Cancel deletion</string>
+    <string name="logout_and_clear_local_data">Logout and clear local data</string>
+    <string name="planned_for_deletion_in_n_days">This account is planned for deletion in %1$d days</string>
+    <string name="planned_for_deletion_tomorrow">This account is planned for deletion tomorrow</string>
+    <string name="planned_for_deletion_today">This account is planned for deletion today</string>
+    <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
+    <string name="are_you_sure_to_delete_account">Are you sure to delete account?</string>
+    <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
+    <string name="use_template">Use template</string>
+    <string name="type_has_templates">Type \"%1$s\" has %2$d templates</string>
+    <string name="swipe_to_choose">Use swipe to choose</string>
+    <string name="without_template">Without template</string>
+    <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Don’t forget to take and save your recovery phrase from settings</string>
+</resources>

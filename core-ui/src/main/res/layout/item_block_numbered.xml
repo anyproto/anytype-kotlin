@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/DefaultDocumentContainerStyle">
+
+    <LinearLayout
+        android:id="@+id/numberedBlockContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:paddingEnd="@dimen/default_document_content_padding_end"
+        tools:background="@drawable/item_block_multi_select_selected"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minWidth="@dimen/default_block_type_width"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:fontFamily="@font/inter_regular"
+            android:visibility="visible"
+            tools:text="19." />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/numberedListContent"
+            style="@style/BlockNumberedContentStyle"
+            android:layout_marginStart="4dp"
+            android:hint="@string/hint_numbered_list"
+            tools:text="@string/default_text_placeholder" />
+
+    </LinearLayout>
+
+</FrameLayout>

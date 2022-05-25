@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:background="@drawable/default_ripple"
+        android:gravity="center"
+        tools:text="1"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/tvNumber"
+        android:textSize="15sp"
+        android:textColor="@color/selector_paginator_number_color"
+        android:fontFamily="@font/inter_medium"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"/>
+
+</FrameLayout>

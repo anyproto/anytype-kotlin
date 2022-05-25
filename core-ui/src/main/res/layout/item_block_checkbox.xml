@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultDocumentContainerStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/checkboxBlockContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:paddingEnd="@dimen/default_document_content_padding_end"
+        tools:background="@drawable/item_block_multi_select_selected">
+
+        <ImageView
+            android:duplicateParentState="false"
+            android:id="@+id/checkboxIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="3dp"
+            android:contentDescription="@string/content_description_checkbox_pic"
+            android:src="@drawable/selector_block_checkbox" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/checkboxContent"
+            style="@style/BlockCheckboxContentStyle"
+            android:layout_marginStart="4dp"
+            android:hint="@string/hint_checkbox"
+            tools:text="New front-end based on design" />
+
+    </LinearLayout>
+
+</FrameLayout>

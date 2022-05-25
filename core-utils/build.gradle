@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        testInstrumentationRunner config["test_runner"]
+        buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+    def acceptanceTesting = rootProject.ext.acceptanceTesting
+
+    kapt applicationDependencies.daggerCompiler
+
+    implementation applicationDependencies.appcompat
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutinesAndroid
+    implementation applicationDependencies.dagger
+
+    implementation applicationDependencies.timber
+    implementation applicationDependencies.crashlytics
+
+    implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.recyclerView
+
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
+
+    implementation applicationDependencies.navigation
+    implementation applicationDependencies.navigationUi
+
+    testImplementation unitTestDependencies.robolectricLatest
+    androidTestImplementation acceptanceTesting.androidJUnit
+    androidTestImplementation acceptanceTesting.testRules
+    testImplementation unitTestDependencies.archCoreTesting
+    testImplementation unitTestDependencies.coroutineTesting
+}

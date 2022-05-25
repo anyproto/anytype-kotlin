@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dv_grid_cell_width"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ivCheckbox"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/content_description_checkbox_pic"
+        android:src="@drawable/ic_relation_checkbox_selector" />
+
+</FrameLayout>

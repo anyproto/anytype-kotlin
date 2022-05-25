@@ -1,0 +1,11 @@
+plugins {
+    id "kotlin"
+    id "org.jetbrains.dokka"
+}
+
+dependencies {
+    implementation mainApplication.kotlin
+
+    testImplementation unitTesting.kotlinTest
+    testImplementation unitTesting.mockitoKotlin
+}

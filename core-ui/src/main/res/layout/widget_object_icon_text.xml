@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIcon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        style="@style/ObjectIcon15Style"
+        android:layout_gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/objectName"
+        style="@style/GridCellDateTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/black"
+        tools:text="Feature" />
+
+</FrameLayout>

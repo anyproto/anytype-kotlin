@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="defaultCanvasColor">#FFFFFF</color>
+
+    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#3F51B5</color>
+
+    <color name="gray_background">#6a6962</color>
+    <color name="button_active">#FFBB2C</color>
+    <color name="button_not_active">#ACA996</color>
+
+    <color name="orange">#FFBB2C</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#2C2B27</color>
+    <color name="gray">#ACA996</color>
+    <color name="keychain_hint_color">#ACA996</color>
+    <color name="blue">#3F51B5</color>
+
+    <color name="auth_divider">#DFDDD0</color>
+    <color name="hint_color">#ACA996</color>
+
+    <color name="default_dashboard_background_color">#0066C3</color>
+
+</resources>

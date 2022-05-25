@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    app:layoutDescription="@xml/fragment_object_set_scene">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/dvProgressBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorColor="@color/gray"
+        app:layout_constraintBottom_toBottomOf="@+id/gridContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        android:id="@+id/objectHeader"
+        layout="@layout/layout_object_set_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/dataViewHeader"
+        layout="@layout/layout_object_set_dv_header"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_toolbar_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/objectHeader" />
+
+    <View
+        android:id="@+id/controlDivider2"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/data_view_divider_height"
+        android:background="@color/shape_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dataViewHeader" />
+
+
+    <include
+        android:id="@+id/gridContainer"
+        layout="@layout/item_viewer_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/galleryView"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+
+    <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewWidget
+        android:id="@+id/galleryView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingTop="10dp"
+        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+
+    <com.anytypeio.anytype.core_ui.widgets.dv.ListViewWidget
+        android:id="@+id/listView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingTop="10dp"
+        android:paddingEnd="@dimen/dp_20"
+        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+
+    <include
+        android:id="@+id/bottomPanel"
+        layout="@layout/widget_data_view_customize_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewPaginatorToolbar
+        android:id="@+id/paginatorToolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_toolbar_height"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvError"
+        style="@style/dataViewTextErrorStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_48"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/unsupportedViewError"
+        style="@style/dataViewUnsupportedViewErrorStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gridContainer"
+        tools:visibility="visible" />
+
+    <include
+        android:id="@+id/topToolbar"
+        layout="@layout/layout_object_set_top_toolbar" />
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/default_toolbar_height"
+        app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

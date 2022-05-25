@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:drawable="@drawable/bg_toolbar_style_block_middle"/>
+    <item android:drawable="@drawable/bg_toolbar_style_block_middle" android:state_selected="false" android:state_enabled="true"/>
+    <item android:drawable="@drawable/bg_toolbar_style_block_middle_active" android:state_selected="true" android:state_enabled="true"/>
+</selector>

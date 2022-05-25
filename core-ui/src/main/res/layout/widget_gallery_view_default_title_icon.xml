@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/ivIconEmoji"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/ivIconImage"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvAvatar"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:background="@drawable/circle_default_avatar_background"
+        android:fontFamily="@font/inter_medium"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:visibility="gone"
+        tools:text="T" />
+
+</merge>

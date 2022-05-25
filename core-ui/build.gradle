@@ -1,0 +1,86 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        testInstrumentationRunner config["test_runner"]
+        buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion config["compose_version"]
+    }
+
+    lint {
+        abortOnError false
+    }
+    
+    buildFeatures {
+        viewBinding true
+        compose true
+    }
+}
+
+dependencies {
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    implementation project(':core-utils')
+    implementation project(':core-models')
+    implementation project(':presentation')
+    implementation project(':library-emojifier')
+    implementation project(':library-syntax-highlighter')
+
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutinesAndroid
+    implementation applicationDependencies.androidxCore
+
+    implementation applicationDependencies.design
+    implementation applicationDependencies.recyclerView
+    implementation applicationDependencies.constraintLayout
+    implementation applicationDependencies.glide
+    implementation applicationDependencies.shimmerLayout
+    implementation applicationDependencies.timber
+    implementation applicationDependencies.betterLinkMovement
+    implementation applicationDependencies.exoPlayerCore
+    implementation applicationDependencies.exoPlayerUi
+    implementation applicationDependencies.urlcleaner
+    implementation applicationDependencies.katex
+
+    implementation applicationDependencies.compose
+    implementation applicationDependencies.composeFoundation
+    implementation applicationDependencies.composeMaterial
+    implementation applicationDependencies.composeToolingPreview
+    debugImplementation applicationDependencies.composeTooling
+
+    testImplementation acceptanceTesting.fragmentTesting
+    testImplementation project(':test:android-utils')
+    testImplementation project(':test:utils')
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation unitTestDependencies.mockitoKotlin
+}

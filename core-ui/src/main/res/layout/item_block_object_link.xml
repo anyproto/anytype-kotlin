@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    style="@style/DefaultGraphicTextBlockRootStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObject">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/DefaultGraphicTextBlockContainerStyle"
+        tools:background="@drawable/item_block_multi_select_selected">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="0dp" />
+
+        <FrameLayout
+            android:id="@+id/iconObjectContainer"
+            style="@style/DefaultGraphicTextBlockGraphicStyle"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/objectIconWidget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:checkboxSize="@dimen/dp_20"
+                app:emojiSize="20dp"
+                app:hasEmojiRounded8Background="false"
+                app:hasInitialRounded8Background="true"
+                app:imageSize="20dp"
+                app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+                app:initialTextSize="13sp" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/text"
+            style="@style/DefaultGraphicTextBlockTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iconObjectContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="0dp"
+            tools:text="Partnership terms" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

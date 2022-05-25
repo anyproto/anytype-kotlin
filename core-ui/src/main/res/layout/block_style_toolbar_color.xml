@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorDefault"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/text_primary"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorGrey"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_grey"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorYellow"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_yellow"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorOrange"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_orange"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorRed"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_red"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorPink"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_pink"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorPurple"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_purple"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorBlue"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_blue"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorIce"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_ice"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorTeal"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_teal"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/textColorGreen"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_dark_green"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:constraint_referenced_ids="textColorDefault,textColorGrey,textColorYellow,textColorOrange,textColorRed,textColorPink,textColorPurple,textColorBlue,textColorIce,textColorTeal,textColorGreen"
+        app:flow_horizontalGap="0dp"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="6"
+        app:flow_verticalGap="0dp"
+        app:flow_wrapMode="chain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

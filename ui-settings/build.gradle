@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion config["compose_version"]
+    }
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':core-ui')
+    implementation project(':analytics')
+    implementation project(':core-models')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+
+    compileOnly applicationDependencies.javaxInject
+
+    implementation applicationDependencies.lifecycleViewModel
+    implementation applicationDependencies.lifecycleRuntime
+
+    implementation applicationDependencies.appcompat
+    implementation applicationDependencies.compose
+    implementation applicationDependencies.composeFoundation
+    implementation applicationDependencies.composeMaterial
+    implementation applicationDependencies.composeToolingPreview
+
+    debugImplementation applicationDependencies.composeTooling
+
+    implementation applicationDependencies.timber
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+}

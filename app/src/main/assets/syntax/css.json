@@ -1,0 +1,32 @@
+{
+  "keywords": [
+  ],
+  "operators": [],
+  "other": [
+    {
+      "pattern": "[-a-z0-9]+(?=\\()",
+      "color": "#6f42c1",
+      "key": "function"
+    },
+    {
+      "pattern": "[-_a-z\\xA0-\\uFFFF][-\\w\\xA0-\\uFFFF]*(?=\\s*:)",
+      "color": "#0366d6",
+      "key": "property"
+    },
+    {
+      "pattern": "!important\\b",
+      "color": "#d73a49",
+      "key": "important"
+    },
+    {
+      "pattern": "\\/\\*[\\s\\S]*?\\*\\/",
+      "color": "#6a737d",
+      "key": "comment"
+    },
+    {
+      "pattern": "(\"|')(?:\\\\(?:\\r\\n|[\\s\\S])|(?!\\1)[^\\\\\\r\\n])*\\1",
+      "color": "#05264c",
+      "key": "string"
+    }
+  ]
+}

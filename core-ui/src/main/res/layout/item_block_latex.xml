@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/DefaultDocumentContainerStyle">
+
+    <FrameLayout
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:minHeight="@dimen/dp_48"
+        android:id="@+id/latexContainer"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.judemanutd.katexview.KatexView
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:id="@+id/latexView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+</FrameLayout>

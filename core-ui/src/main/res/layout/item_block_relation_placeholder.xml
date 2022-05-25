@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/DefaultDocumentContainerStyle">
+
+    <LinearLayout
+        android:id="@+id/placeholderContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/default_document_content_padding_start"
+        android:paddingEnd="@dimen/default_document_content_padding_end"
+        tools:background="@drawable/item_block_multi_select_selected">
+
+        <ImageView
+            android:id="@+id/relationIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/content_description_checkbox_pic"
+            android:duplicateParentState="false"
+            android:src="@drawable/ic_block_relation_placeholder" />
+
+        <TextView
+            android:id="@+id/tvPlaceholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="@dimen/dp_4"
+            android:text="@string/set_new_relation"
+            android:textColor="@color/anytype_text_grey" />
+
+    </LinearLayout>
+
+</FrameLayout>

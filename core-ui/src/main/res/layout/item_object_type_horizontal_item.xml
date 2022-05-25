@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="96dp"
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/icon"
+        android:layout_width="@dimen/dp_48"
+        android:layout_height="@dimen/dp_48"
+        app:emojiSize="28dp"
+        app:hasEmojiRounded12Background="true"
+        app:hasInitialRounded8Background="true"
+        app:initialTextSize="22sp"
+        android:layout_gravity="center_horizontal"
+        tools:background="@drawable/ic_search" />
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/ObjectTypeNameSmallStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="13dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:singleLine="true"
+        tools:text="Some object type" />
+
+</LinearLayout>

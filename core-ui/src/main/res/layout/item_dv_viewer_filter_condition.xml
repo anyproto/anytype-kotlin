@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_marginStart="@dimen/dp_16"
+    android:layout_marginEnd="@dimen/dp_16"
+    android:layout_height="@dimen/db_viewer_filter_condition_item_height">
+
+    <TextView
+        android:id="@+id/tvCondition"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:layout_weight="1"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/text_primary"
+        android:layout_gravity="center_vertical"/>
+
+    <ImageView
+        android:id="@+id/iconCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_option_checked_black"/>
+
+</LinearLayout>

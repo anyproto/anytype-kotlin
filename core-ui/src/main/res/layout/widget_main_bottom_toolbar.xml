@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:id="@+id/btnBack"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_desc_back_button"
+            app:srcCompat="@drawable/ic_main_toolbar_back" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnHome"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_desc_home_button"
+            app:srcCompat="@drawable/ic_main_toolbar_home" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_desc_search_button"
+            app:srcCompat="@drawable/ic_page_toolbar_search" />
+
+    </FrameLayout>
+
+</merge>

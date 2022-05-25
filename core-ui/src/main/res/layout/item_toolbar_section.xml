@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/default_toolbar_section_padding_start"
+        android:paddingTop="@dimen/default_toolbar_section_padding_top"
+        android:paddingEnd="@dimen/default_toolbar_section_padding_end"
+        android:paddingBottom="@dimen/default_toolbar_section_padding_bottom"
+        android:textColor="@color/selector_toolbar_section"
+        android:textSize="@dimen/default_toolbar_section_text_size"
+        android:textStyle="bold"
+        tools:text="Text" />
+</FrameLayout>

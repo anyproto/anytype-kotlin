@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/auth_default_card_margin"
+        android:layout_marginEnd="@dimen/auth_default_card_margin"
+        android:layout_marginBottom="@dimen/auth_default_card_margin"
+        app:cardBackgroundColor="@color/background_secondary"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="@dimen/auth_default_card_corner_radius">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/title"
+                style="@style/AuthHeaderStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:text="@string/login"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvqrcode"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="20dp"
+                android:drawableEnd="@drawable/ic_arrow_forward_legacy"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/or_scan_qr_code"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/inter_regular"
+                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:background="@color/auth_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvqrcode" />
+
+            <EditText
+                android:id="@+id/keychainInputField"
+                android:layout_width="0dp"
+                android:layout_height="96dp"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:gravity="top"
+                android:background="@null"
+                android:fontFamily="@font/inconsolata"
+                android:hint="@string/type_your_recovery_phrase"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine|text"
+                android:textColorHint="@color/keychain_hint_color"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider"/>
+
+            <TextView
+                android:id="@+id/loginButton"
+                style="@style/DefaultSolidButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:text="@string/confirm"
+                app:layout_constraintBottom_toBottomOf="@+id/backButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/backButton"
+                app:layout_constraintTop_toTopOf="@+id/backButton" />
+
+            <TextView
+                android:id="@+id/backButton"
+                style="@style/DefaultStrokeButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/back"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/loginButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/keychainInputField" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="24dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/loginButton"
+                app:layout_constraintEnd_toEndOf="@+id/loginButton"
+                app:layout_constraintTop_toTopOf="@+id/loginButton" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

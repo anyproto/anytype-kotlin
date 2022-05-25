@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/holderRoot"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:id="@+id/headerContainer"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dv_grid_cell_description_height">
+        
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/objectIcon"
+            app:imageSize="20dp"
+            app:emojiSize="18dp"
+            app:checkboxSize="20dp"
+            app:initialTextSize="11sp"
+            app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+            android:layout_marginEnd="8dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_gravity="center_vertical"
+            android:id="@+id/tvTitle"
+            android:layout_height="wrap_content"
+            android:hint="@string/untitled"
+            tools:text="Name"
+            style="@style/DataViewCellObjectHeaderNameStyle" />
+        
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rowCellRecycler"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+</LinearLayout>

@@ -1,0 +1,75 @@
+tasks.register("incrementVersionMajor") {
+    doLast {
+        incrementVersion true, false, false
+    }
+}
+
+tasks.register("incrementVersionMinor") {
+    doLast {
+        incrementVersion false, true, false
+    }
+}
+
+tasks.register("incrementVersionPatch") {
+    doLast {
+        incrementVersion false, false, true
+    }
+}
+
+def incrementVersion(maj, min, patch) {
+    def versionMajor = getProperty('version.versionMajor').toInteger()
+    def versionMinor = getProperty('version.versionMinor').toInteger()
+    def versionPatch = getProperty('version.versionPatch').toInteger()
+
+    if(maj){
+        versionMajor++
+        versionMinor = 0
+        versionPatch = 0
+    }
+
+    if(min){
+        versionMinor++
+        versionPatch = 0
+    }
+
+    if(patch){
+        versionPatch++
+    }
+
+    def file = file('gradle.properties')
+    def sb = new StringBuilder()
+
+    file.eachLine {line ->
+        if(line.startsWith('version.versionMajor=')){
+            sb.append("version.versionMajor=${versionMajor}")
+        }else if(line.startsWith('version.versionMinor=')){
+            sb.append("version.versionMinor=${versionMinor}")
+        }else if(line.startsWith('version.versionPatch=')){
+            sb.append("version.versionPatch=${versionPatch}")
+        }else{
+            sb.append(line)
+        }
+
+        sb.append(System.getProperty("line.separator"))
+    }
+
+    file.text = sb.toString()
+}
+
+ext.getBuildVersionName = {
+    def versionMajor = getProperty('version.versionMajor').toInteger()
+    def versionMinor = getProperty('version.versionMinor').toInteger()
+    def versionPatch = getProperty('version.versionPatch').toInteger()
+
+    def name = "${versionMajor}.${versionMinor}.${versionPatch}"
+
+    return name
+}
+
+ext.getBuildVersionCode = {
+    def versionMajor = getProperty('version.versionMajor').toInteger()
+    def versionMinor = getProperty('version.versionMinor').toInteger()
+    def versionPatch = getProperty('version.versionPatch').toInteger()
+
+    return versionMajor * 1000 + versionMinor * 100 + versionPatch
+}

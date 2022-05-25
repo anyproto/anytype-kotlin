@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/defaultCanvasColor"
+    tools:context="com.anytypeio.anytype.ui.editor.EditorFragment">
+
+    <View
+        android:id="@+id/placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/editor_recycler_bottom_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/item_block_title" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
+            android:id="@+id/topToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectTopToolbarWidget
+            android:id="@+id/multiSelectTopToolbar"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@color/defaultCanvasColor"
+            android:translationY="-48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/defaultCanvasColor"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTypesWidget
+            android:id="@+id/objectTypesToolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/background_primary"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MarkupColorToolbarWidget
+            android:id="@+id/markupColorToolbar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@color/defaultCanvasColor"
+            android:translationY="104dp"
+            app:layout_constraintBottom_toTopOf="@id/markupToolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MarkupToolbarWidget
+            android:id="@+id/markupToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/defaultCanvasColor"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectBottomToolbarWidget
+            android:id="@+id/bottomMenu"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/defaultCanvasColor"
+            android:translationY="@dimen/default_toolbar_height"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MentionToolbar
+            android:id="@+id/mentionSuggesterToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_primary"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveHintWidget
+            android:id="@+id/scrollAndMoveHint"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/defaultCanvasColor"
+            android:translationY="-48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveActionWidget
+            android:id="@+id/scrollAndMoveBottomAction"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@color/background_primary"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.features.editor.slash.SlashWidget
+            android:id="@+id/slashWidget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.SearchToolbarWidget
+            android:id="@+id/searchToolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/default_toolbar_height"
+            android:background="@color/defaultCanvasColor"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_toolbar_height"
+        android:layout_gravity="bottom"
+        android:background="@color/defaultCanvasColor"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        tools:visibility="visible" />
+
+    <FrameLayout
+        android:id="@+id/targeter"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_gravity="center_vertical"
+        android:alpha="0.5"
+        android:visibility="invisible">
+
+        <ImageView
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:rotation="180"
+            android:src="@drawable/ic_scroll_and_move_target_anchor" />
+
+        <ImageView
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_scroll_and_move_target_anchor" />
+
+    </FrameLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/panels"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.anytypeio.anytype.core_ui.widgets.BlockActionWidget
+            android:id="@+id/blockActionToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="false"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.StyleToolbarMainWidget
+            android:id="@+id/styleToolbarMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.StyleToolbarExtraWidget
+            android:id="@+id/styleToolbarOther"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleColorToolbarWidget
+            android:id="@+id/styleToolbarColors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.style.StyleBackgroundToolbarWidget
+            android:id="@+id/styleToolbarBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.UndoRedoToolbarWidget
+            android:id="@+id/undoRedoToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.TypeHasTemplateToolbarWidget
+            android:id="@+id/typeHasTemplateToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:behavior_skipCollapsed="true"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            app:layout_behavior="@string/bottom_sheet_behavior"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <View
+        android:id="@+id/dndTargetLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/orange"
+        android:visibility="invisible" />
+
+    <include
+        android:id="@+id/objectNotExist"
+        layout="@layout/view_object_not_exist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

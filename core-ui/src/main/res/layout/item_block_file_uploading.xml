@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fileUploadingPlaceholderRoot"
+    style="@style/BlockMediaRootLayoutStyle"
+    android:background="@drawable/item_block_multi_select_mode_selector"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48"
+        android:background="@drawable/rectangle_block_media_background">
+
+        <ImageView
+            android:id="@+id/icFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/content_description_file_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_file_light" />
+
+        <TextView
+            android:id="@+id/editUrl"
+            style="@style/BlockVideoStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:inputType="none"
+            android:fontFamily="@font/inter_regular"
+            android:text="Loading, please wait"
+            android:textColor="#ACA996"
+            app:layout_constraintBottom_toBottomOf="@+id/icFile"
+            app:layout_constraintStart_toEndOf="@+id/icFile"
+            app:layout_constraintTop_toTopOf="@+id/icFile" />
+
+        <ImageView
+            android:id="@+id/icMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_block_more" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/editUrl"
+            app:layout_constraintStart_toEndOf="@+id/editUrl"
+            app:layout_constraintTop_toTopOf="@+id/editUrl" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

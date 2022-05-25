@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/btnCardSmall"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:background="@drawable/default_ripple"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_marginStart="20dp"
+        android:textColor="@color/text_secondary"
+        android:fontFamily="@font/inter_regular"
+        android:gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="8dp"
+        android:text="@string/relations" />
+
+</FrameLayout>

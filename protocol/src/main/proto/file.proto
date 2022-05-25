@@ -1,0 +1,63 @@
+syntax = "proto3";
+package anytype.storage;
+option go_package = "pkg/lib/pb/storage";
+
+import "google/protobuf/struct.proto";
+
+message Step {
+    string name = 1;
+    Link link   = 2;
+}
+
+message FileKeys {
+    map<string,string> keysByPath = 1;
+}
+
+message FileInfo {
+    string mill = 1;
+    string checksum = 2;
+    string source = 3;
+    string opts = 4;
+    string hash = 5;
+    string key = 6;
+    string media = 7;
+    string name = 8;
+    int64 size = 9;
+    int64 added = 10;
+    google.protobuf.Struct meta = 11;
+    repeated string targets = 12;
+    EncryptionMode encMode = 13;
+    string metaHash = 14;
+
+    enum EncryptionMode {
+        AES_GCM = 0;
+        AES_CFB = 1;
+    }
+}
+
+message Directory {
+    map<string, FileInfo> files = 1;
+}
+
+message DirectoryList {
+    repeated Directory items = 1;
+}
+
+message Node {
+    string name                        = 1;
+    bool pin                           = 2;
+    bool plaintext                     = 3;
+    string mill                        = 4;
+    map<string, string> opts           = 5;
+    google.protobuf.Struct json_schema = 6;
+    map<string, Link> links            = 8;
+}
+
+message Link {
+    string use                         = 1;
+    bool pin                           = 2;
+    bool plaintext                     = 3;
+    string mill                        = 4;
+    map<string, string> opts           = 5;
+    google.protobuf.Struct json_schema = 6;
+}

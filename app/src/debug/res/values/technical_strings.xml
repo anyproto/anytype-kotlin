@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DEBUG-Anytype</string>
+    <color name="ic_app_back_main">#000</color>
+</resources>

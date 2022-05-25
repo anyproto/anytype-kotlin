@@ -1,0 +1,38 @@
+{
+  "keywords": [
+    {
+      "pattern": "\\b(?:break|case|chan|const|continue|default|defer|else|fallthrough|for|func|go(?:to)?|if|import|interface|map|package|range|return|select|struct|switch|type|var)\\b",
+      "color": "#d73a49",
+      "key": "keyword"
+    }
+  ],
+  "operators": [
+    {
+      "pattern": "[*\\/%^!=]=?|\\+[=+]?|-[=-]?|\\|[=|]?|&(?:=|&|\\^=?)?|>(?:>=?|=)?|<(?:<=?|=|-)?|:=|\\.\\.\\.",
+      "color": "#d73a49",
+      "key": "operator"
+    }
+  ],
+  "other": [
+    {
+      "pattern": "([a-zA-Z_{1}][a-zA-Z0-9_]+)(?=\\()",
+      "color": "#6f42c1",
+      "key": "function"
+    },
+    {
+      "pattern": "\\b(?:_|iota|nil|true|false)\\b",
+      "color": "#0366d6",
+      "key": "boolean"
+    },
+    {
+      "pattern": "(?:\\b0x[a-f\\d]+|(?:\\b\\d+\\.?\\d*|\\B\\.\\d+)(?:e[-+]?\\d+)?)i?",
+      "color": "#0366d6",
+      "key": "number"
+    },
+    {
+      "pattern": "([\"'`])(?:\\\\[\\s\\S]|(?!\\1)[^\\\\])*\\1",
+      "color": "#05264c",
+      "key": "string"
+    }
+  ]
+}

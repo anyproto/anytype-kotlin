@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="default_button_text_size">15sp</dimen>
+
+    <dimen name="button_text_size">18sp</dimen>
+    <dimen name="profile_adapter_margin_top">12dp</dimen>
+    <dimen name="dot_spacing">20dp</dimen>
+    <dimen name="num_pad_vertical_spacing">16dp</dimen>
+
+    <dimen name="auth_default_card_margin">20dp</dimen>
+    <dimen name="auth_default_card_corner_radius">12dp</dimen>
+    <dimen name="auth_default_margin_start">20dp</dimen>
+    <dimen name="auth_default_margin_end">20dp</dimen>
+    <dimen name="auth_default_margin_bottom">20dp</dimen>
+    <dimen name="auth_default_button_height">48dp</dimen>
+    <dimen name="auth_default_icon_circle_diameter">64dp</dimen>
+    <dimen name="auth_default_button_text_size">15sp</dimen>
+
+
+    <dimen name="table_column_header_height">16dp</dimen>
+    <dimen name="table_row_header_width">16dp</dimen>
+
+    <dimen name="list_margin_start">20dp</dimen>
+    <dimen name="editor_recycler_bottom_padding">48dp</dimen>
+    <dimen name="avatar_height_big">96dp</dimen>
+    <dimen name="avatar_width_big">96dp</dimen>
+
+    <dimen name="action_toolbar_block_padding_top">12dp</dimen>
+    <dimen name="action_toolbar_block_padding_bottom">12dp</dimen>
+    <dimen name="action_toolbar_bar_margin_bottom">16dp</dimen>
+    <dimen name="action_toolbar_bar_margin_top">8dp</dimen>
+
+    <dimen name="scroll_and_move_start_end_padding">8dp</dimen>
+    <dimen name="height_avatar_on_dashboard">80dp</dimen>
+    <dimen name="width_avatar_on_dashboard">80dp</dimen>
+    <dimen name="single_option_value_bottom_list_margin">32dp</dimen>
+    <dimen name="multiple_option_value_bottom_list_margin">68dp</dimen>
+    <dimen name="default_dashboard_card_height">126dp</dimen>
+    <dimen name="dashboard_object_icon_default_size">48dp</dimen>
+    <dimen name="default_divider_height">0.5dp</dimen>
+    <dimen name="default_search_toolbar_clip_height">36dp</dimen>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/DefaultDocumentContainerStyle">
+
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+        tools:background="@drawable/item_block_multi_select_selected"
+        android:id="@+id/textContent"
+        style="@style/BlockTextContentStyle"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        android:focusable="true"
+        android:textIsSelectable="true"
+        tools:text="@string/default_text_placeholder" />
+
+</FrameLayout>

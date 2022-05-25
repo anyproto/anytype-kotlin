@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:paddingEnd="@dimen/default_document_item_padding_end">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bookmarkRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_12"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:rippleColor="@android:color/transparent"
+        app:strokeColor="@color/shape_primary"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerWithBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/bookmarkLogo"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription" />
+
+            <ImageView
+                android:id="@+id/bookmarkImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.333"
+                tools:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/bookmarkTitle"
+                style="@style/BlockBookmarkTitleStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_goneMarginEnd="@dimen/dp_16"
+                tools:text="Octoverse spotlight: An analysis of developer productivity, work cadence, and collaboration in the early days of COVID-19" />
+
+            <TextView
+                android:id="@+id/bookmarkDescription"
+                style="@style/BlockBookmarkDescriptionStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                android:lineSpacingExtra="5sp"
+                app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bookmarkTitle"
+                app:layout_goneMarginEnd="@dimen/dp_16"
+                tools:text="We can both help with building an event from scratch, and join... We can both help with building an event from scratch" />
+
+            <TextView
+                android:id="@+id/bookmarkUrl"
+                style="@style/BlockBookmarkUrlStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintStart_toEndOf="@+id/bookmarkLogo"
+                app:layout_constraintTop_toBottomOf="@+id/bookmarkDescription"
+                app:layout_goneMarginEnd="@dimen/dp_16"
+                app:layout_goneMarginStart="16dp"
+                tools:text="https://medium.com/s/story/The The Akari inst..." />
+
+            <TextView
+                android:id="@+id/loadBookmarkPictureError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/error_while_loading_picture"
+                android:textColor="@color/black"
+                android:textSize="8sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/bookmarkImage"
+                app:layout_constraintStart_toStartOf="@+id/bookmarkImage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
+
+</FrameLayout>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/keyboard_text"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/llHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvFirst"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:textColor="@android:color/holo_red_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvSecond"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:textColor="@android:color/holo_red_dark"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvThree"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:textColor="@android:color/holo_red_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/edtTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test1983"
+            android:hint="Start typing" />
+
+        <EditText
+            android:id="@+id/edtTest2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Second "/>
+
+        <Button
+            android:id="@+id/btnTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TEST45" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iconNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/modal_property_margin_top"
+        android:layout_marginBottom="@dimen/modal_property_margin_bottom"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_number" />
+
+    <TextView
+        android:id="@+id/propNumber"
+        style="@style/ModalRowTestStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/modal_property_text_from_icon_margin"
+        android:text="@string/detail_number"
+        app:layout_constraintBottom_toBottomOf="@+id/iconNumber"
+        app:layout_constraintStart_toEndOf="@+id/iconNumber"
+        app:layout_constraintTop_toTopOf="@+id/iconNumber" />
+
+    <ImageView
+        android:id="@+id/dragNDrop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description_modal_icon"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/propNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propNumber"
+        app:srcCompat="@drawable/ic_drag_and_drop" />
+
+    <ImageView
+        android:id="@+id/numberForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/propNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/propNumber"
+        app:srcCompat="@drawable/ic_arrow_forward_legacy" />
+
+    <ImageView
+        android:id="@+id/numberHide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/modal_property_hide_forward_margin"
+        android:contentDescription="@string/content_description_modal_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/numberForward"
+        app:layout_constraintEnd_toStartOf="@+id/numberForward"
+        app:layout_constraintTop_toTopOf="@+id/numberForward"
+        app:srcCompat="@drawable/ic_hide" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

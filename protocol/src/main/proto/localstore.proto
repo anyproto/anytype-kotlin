@@ -1,0 +1,62 @@
+syntax = "proto3";
+package anytype.model;
+
+import "google/protobuf/struct.proto";
+import "models.proto";
+
+option go_package = "pkg/lib/pb/model";
+
+message ObjectInfo {
+    string id = 1;
+    repeated string objectTypeUrls = 2; // deprecated
+    google.protobuf.Struct details = 3;
+    repeated Relation relations = 4;
+
+    string snippet = 5;
+    bool hasInboundLinks = 6;
+    SmartBlockType objectType = 7;
+}
+
+message ObjectDetails {
+    google.protobuf.Struct details = 1;
+}
+
+message ObjectLinks {
+    repeated string inboundIDs = 1;
+    repeated string outboundIDs = 2;
+}
+
+message ObjectLinksInfo {
+    repeated ObjectInfo inbound = 1;
+    repeated ObjectInfo outbound = 2;
+}
+
+message ObjectInfoWithLinks {
+    string id = 1;
+    ObjectInfo info = 2;
+    ObjectLinksInfo links = 3;
+}
+
+message ObjectInfoWithOutboundLinks {
+    string id = 1;
+    ObjectInfo info = 2;
+    repeated ObjectInfo outboundLinks = 3;
+}
+
+message ObjectInfoWithOutboundLinksIDs {
+    string id = 1;
+    ObjectInfo info = 2;
+    repeated string outboundLinks = 3;
+}
+
+message ObjectStoreChecksums {
+    string bundledObjectTypes = 1;
+    string bundledRelations = 2;
+    string bundledLayouts = 3;
+    int32 objectsForceReindexCounter = 4; // increased in order to trigger all objects reindex
+    int32 filesForceReindexCounter = 5; // increased in order to fully reindex all objects
+    int32 idxRebuildCounter = 6; // increased in order to remove indexes and reindex everything. Automatically triggers objects and files reindex(one time only)
+    int32 fulltextRebuild = 7; // increased in order to perform fulltext indexing for all type of objects (useful when we change fulltext config)
+    string bundledTemplates = 8;
+    int32 bundledObjects = 9; // anytypeProfile and maybe some others in the feature
+}

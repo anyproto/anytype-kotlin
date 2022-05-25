@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/splashScreen">
+
+    <navigation
+        android:id="@+id/objectNavigation"
+        app:startDestination="@id/pageScreen">
+        <fragment
+            android:id="@+id/pageScreen"
+            android:name="com.anytypeio.anytype.ui.editor.EditorFragment"
+            android:label="Page screen"
+            tools:layout="@layout/fragment_editor" >
+            <action
+                android:id="@+id/action_pageScreen_to_objectCoverScreen"
+                app:destination="@id/objectCoverScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/action_pageScreen_to_objectIconPickerScreen"
+                app:destination="@id/objectIconPickerScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/action_pageScreen_to_relationAddToObjectBlockFragment"
+                app:destination="@id/relationAddToObjectBlockFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </fragment>
+        <dialog
+            android:id="@+id/objectRelationListScreen"
+            android:name="com.anytypeio.anytype.ui.relations.RelationListFragment"
+            android:label="Object-Relation-List-Screen" />
+        <dialog
+            android:id="@+id/objectRelationValueScreen"
+            android:name="com.anytypeio.anytype.ui.relations.RelationValueFragment"
+            android:label="Object-Relation-Value-Screen" />
+        <dialog
+            android:id="@+id/objectIconPickerScreen"
+            android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
+            android:label="Object-Icon-Picker-Screen" />
+        <dialog
+            android:id="@+id/objectMainMenuScreen"
+            android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
+            android:label="Doc-Menu-Bottom-Sheet-Screen"/>
+        <dialog
+            android:id="@+id/objectCoverScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
+            android:label="Object-Cover-Screen"/>
+        <dialog
+            android:id="@+id/objectCoverUnsplashScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.ObjectUnsplashFragment"
+            android:label="Object-Cover-Unsplash-Screen"/>
+        <dialog
+            android:id="@+id/relationAddToObjectBlockFragment"
+            android:name="com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment"
+            android:label="RelationAddToObjectBlockFragment" >
+            <action
+                android:id="@+id/action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment"
+                app:destination="@id/relationCreateFromScratchForObjectBlockFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </dialog>
+        <dialog
+            android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
+            android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
+            android:label="RelationCreateFromScratchForObjectBlockFragment" />
+    </navigation>
+
+    <navigation
+        android:id="@+id/dataViewNavigation"
+        app:startDestination="@id/objectSetScreen">
+        <fragment
+            android:id="@+id/objectSetScreen"
+            android:name="com.anytypeio.anytype.ui.sets.ObjectSetFragment"
+            android:label="ObjectSetScreen" >
+            <action
+                android:id="@+id/action_objectSetScreen_to_objectSetIconPickerScreen"
+                app:destination="@id/objectSetIconPickerScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/action_objectSetScreen_to_objectSetCoverScreen"
+                app:destination="@id/objectSetCoverScreen"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </fragment>
+        <dialog
+            android:id="@+id/dataViewRelationValueScreen"
+            android:name="com.anytypeio.anytype.ui.relations.RelationValueDVFragment"
+            android:label="DV-Relation-Value-Screen" />
+        <dialog
+            android:id="@+id/objectSetMainMenuScreen"
+            android:name="com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment"
+            android:label="Object-SetMenu"/>
+        <dialog
+            android:id="@+id/objectSetIconPickerScreen"
+            android:name="com.anytypeio.anytype.ui.sets.ObjectSetIconPickerFragment"
+            android:label="Object-Set-Icon-Picker-Screen" />
+        <dialog
+            android:id="@+id/objectSetCoverScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment"
+            android:label="Object-Cover-Screen"/>
+        <dialog
+            android:id="@+id/objectCoverUnsplashScreen"
+            android:name="com.anytypeio.anytype.ui.editor.cover.ObjectSetUnsplashFragment"
+            android:label="Object-Cover-Unsplash-Screen"/>
+        <dialog
+            android:id="@+id/viewerCardSizeSelectFragment"
+            android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment"
+            android:label="ViewCardSizeSelectFragment" />
+        <dialog
+            android:id="@+id/viewerImagePreviewSelectFragment"
+            android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment"
+            android:label="ViewerCoverSelectFragment" />
+        <dialog
+            android:id="@+id/setNameForNewRecordScreen"
+            android:name="com.anytypeio.anytype.ui.sets.SetObjectSetRecordNameFragment" />
+    </navigation>
+
+    <fragment
+        android:id="@+id/desktopScreen"
+        android:name="com.anytypeio.anytype.ui.dashboard.DashboardFragment"
+        android:label="DesktopFragment"
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_open_settings"
+            app:destination="@id/settingsScreen"/>
+        <action
+            android:id="@+id/action_desktopScreen_to_pageNavigationFragment"
+            app:destination="@id/pageNavigationFragment" />
+        <action
+            android:id="@+id/action_desktopScreen_to_archiveFragment"
+            app:destination="@id/archiveFragment" />
+        <action
+            android:id="@+id/from_desktop_to_create_sets"
+            app:destination="@id/createSetScreen" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/settingsScreen"
+        android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
+        android:label="SettingScreen">
+        <action android:id="@+id/actionOpenAccountAndDataScreen" app:destination="@id/accountAndDataScreen"/>
+        <action android:id="@+id/actionOpenAboutAppScreen" app:destination="@id/aboutAppScreen"/>
+        <action android:id="@+id/actionOpenPersonalizationScreen" app:destination="@+id/personalizationScreen"/>
+        <action android:id="@+id/actionOpenAppearanceScreen" app:destination="@+id/appearanceScreen"/>
+        <action
+            android:id="@+id/action_profileScreen_to_splashFragment"
+            app:destination="@+id/main_navigation"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_create_profile"
+            app:destination="@id/createAccountScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_open_keychain"
+            app:destination="@id/keychainDialog" />
+        <action
+            android:id="@+id/action_profileScreen_to_debugSettingsFragment"
+            app:destination="@id/debugSettingsFragment" />
+        <action
+            android:id="@+id/action_profileScreen_to_userSettingsFragment"
+            app:destination="@id/personalizationScreen"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/accountAndDataScreen"
+        android:name="com.anytypeio.anytype.ui.settings.AccountAndDataFragment">
+    </dialog>
+
+    <dialog
+        android:id="@+id/aboutAppScreen"
+        android:name="com.anytypeio.anytype.ui.settings.AboutAppFragment" />
+
+    <dialog
+        android:id="@+id/logoutWarningScreen"
+        android:name="com.anytypeio.anytype.ui.settings.LogoutWarningFragment" >
+    </dialog>
+
+    <dialog
+        android:id="@+id/deleteAccountWarningScreen"
+        android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning" >
+    </dialog>
+
+    <fragment
+        android:id="@+id/createAccountScreen"
+        android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
+        android:label="StartLoginFragment"
+        tools:layout="@layout/fragment_create_account">
+        <action
+            android:id="@+id/action_setup_new_account"
+            app:destination="@id/setupNewAccountScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/startLoginScreen"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupNewAccountScreen"
+        android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
+        android:label="SetupAccount"
+        tools:layout="@layout/fragment_setup_new_account"/>
+    <fragment
+        android:id="@+id/splashScreen"
+        android:name="com.anytypeio.anytype.ui.splash.SplashFragment"
+        android:label="SplashFragment"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/action_splashScreen_to_desktopScreen"
+            app:destination="@id/desktopScreen"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashScreen"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashScreen_to_objectScreen"
+            app:destination="@id/objectNavigation"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashScreen_to_objectSetScreen"
+            app:destination="@id/dataViewNavigation"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_login_nav"
+            app:destination="@id/login_nav"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashScreen"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/keychainDialog"
+        android:name="com.anytypeio.anytype.ui.profile.KeychainPhraseDialog"
+        tools:layout="@layout/dialog_keychain_phrase" />
+
+    <dialog
+        android:id="@+id/dashboardKeychainDialog"
+        android:name="com.anytypeio.anytype.ui.dashboard.DashboardMnemonicReminderDialog"
+        tools:layout="@layout/dialog_dashboard_keychain_phrase" />
+
+    <dialog
+        android:id="@+id/mnemonicReminderDialog"
+        android:name="com.anytypeio.anytype.ui.dashboard.MnemonicReminderDialog"
+        tools:layout="@layout/alert_mnemonic_reminder" />
+
+    <navigation
+        android:id="@+id/login_nav"
+        app:startDestination="@id/startLoginScreen">
+        <fragment
+            android:id="@+id/selectAccountScreen"
+            android:name="com.anytypeio.anytype.ui.auth.account.SelectAccountFragment"
+            android:label="ChooseProfileScreen"
+            tools:layout="@layout/fragment_select_account">
+            <action
+                android:id="@+id/action_setup_selected_account"
+                app:destination="@id/setupSelectedAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"
+                app:popUpTo="@+id/startLoginScreen"
+                app:popUpToInclusive="true" />
+        </fragment>
+        <fragment
+            android:id="@+id/setupNewAccountScreen"
+            android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
+            android:label="SetupAccount"
+            tools:layout="@layout/fragment_setup_new_account">
+            <action
+                android:id="@+id/action_setupNewAccountScreen_to_invitationFragment"
+                app:destination="@id/invitationFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popUpTo="@+id/invitationFragment"
+                app:popUpToInclusive="true" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/keychainLoginScreen"
+            android:name="com.anytypeio.anytype.ui.auth.KeychainLoginFragment"
+            android:label="KeychainLogin"
+            tools:layout="@layout/fragment_keychain_login">
+            <action
+                android:id="@+id/action_select_account"
+                app:destination="@id/selectAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/createAccountScreen"
+            android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
+            android:label="StartLoginFragment"
+            tools:layout="@layout/fragment_create_account">
+            <action
+                android:id="@+id/action_setup_new_account"
+                app:destination="@id/setupNewAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+        <fragment
+            android:id="@+id/setupSelectedAccountScreen"
+            android:name="com.anytypeio.anytype.ui.auth.account.SetupSelectedAccountFragment"
+            android:label="SetupAccount"
+            tools:layout="@layout/fragment_setup_selected_account">
+            <argument
+                android:name="selected_account_id"
+                android:defaultValue="0"
+                app:argType="integer"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+        <fragment
+            android:id="@+id/startLoginScreen"
+            android:name="com.anytypeio.anytype.ui.auth.StartLoginFragment"
+            android:label="StartLoginFragment"
+            tools:layout="@layout/fragment_start_login">
+            <action
+                android:id="@+id/action_open_sign_in"
+                app:destination="@id/keychainLoginScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"
+                app:popUpToInclusive="false" />
+            <action
+                android:id="@+id/action_create_profile"
+                app:destination="@id/createAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+            <action
+                android:id="@+id/openAboutAnalyticsScreen"
+                app:destination="@id/aboutAnalyticsScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+        <action
+            android:id="@+id/action_global_desktopScreen"
+            app:destination="@+id/desktopScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/login_nav"
+            app:popUpToInclusive="true" />
+        <fragment
+            android:id="@+id/choosePinCodeScreen"
+            android:name="com.anytypeio.anytype.ui.auth.pin.ChoosePinCodeFragment"
+            android:label="StartLoginFragment"
+            tools:layout="@layout/fragment_choose_pin_code" />
+        <fragment
+            android:id="@+id/confirmPinCodeScreen"
+            android:name="com.anytypeio.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
+            android:label="StartLoginFragment"
+            tools:layout="@layout/fragment_confirm_pin_code" />
+        <fragment
+            android:id="@+id/invitationFragment"
+            android:name="com.anytypeio.anytype.ui.auth.InvitationFragment"
+            android:label="InvitationFragment"
+            tools:layout="@layout/fragment_invitation">
+            <action
+                android:id="@+id/action_invitationFragment_to_createAccountScreen"
+                app:destination="@id/createAccountScreen"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+        <fragment
+            android:id="@+id/aboutAnalyticsScreen"
+            android:name="com.anytypeio.anytype.ui.auth.AboutAnalyticsFragment"
+            android:label="About analytics">
+            <action
+                android:id="@+id/openInviteCodeScreen"
+                app:destination="@id/invitationFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+    </navigation>
+
+    <fragment
+        android:id="@+id/debugSettingsFragment"
+        android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
+        android:label="DebugSettingsFragment"
+        tools:layout="@layout/fragment_debug_settings" />
+    <fragment
+        android:id="@+id/pageNavigationFragment"
+        android:name="com.anytypeio.anytype.ui.navigation.PageNavigationFragment"
+        android:label="PageNavigationFragment"
+        tools:layout="@layout/fragment_page_navigation">
+        <argument
+            android:name="ID_KEY"
+            android:defaultValue='""'
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/pageSearchFragment"
+        android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
+        android:label="PageSearchFragment"
+        tools:layout="@layout/fragment_object_search" />
+    <fragment
+        android:id="@+id/archiveFragment"
+        android:name="com.anytypeio.anytype.ui.archive.ArchiveFragment"
+        android:label="ArchiveFragment" />
+    <fragment
+        android:id="@+id/fullScreenImageFragment"
+        android:name="com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment"
+        android:label="FullScreenImageFragment" />
+    <fragment
+        android:id="@+id/createSetScreen"
+        android:name="com.anytypeio.anytype.ui.sets.CreateObjectSetFragment"
+        android:label="CreateSetScreen"
+        tools:layout="@layout/fragment_create_set" />
+    <dialog
+        android:id="@+id/personalizationScreen"
+        android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
+        android:label="fragment_user_settings"
+        tools:layout="@layout/fragment_user_settings"/>
+    <dialog
+        android:id="@+id/wallpaperSetScreen"
+        android:name="com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment"
+        android:label="fragment_wallpaper_set"
+        tools:layout="@layout/fragment_wallpaper_select"/>
+    <dialog
+        android:id="@+id/appearanceScreen"
+        android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
+        android:label="fragment_wallpaper_set"
+        tools:layout="@layout/fragment_wallpaper_select"/>
+    <dialog
+        android:id="@+id/objectTypeChangeScreen"
+        android:name="com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment"
+        android:label="ObjectTypeChangeFragment"
+        tools:layout="@layout/fragment_object_type_change"/>
+    <dialog
+        android:id="@+id/alertUpdateAppFragment"
+        android:name="com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment"
+        android:label="AlertUpdateAppFragment" />
+    <fragment
+        android:id="@+id/createObjectFragment"
+        android:name="com.anytypeio.anytype.ui.editor.CreateObjectFragment"
+        android:label="CreateObjectFragment" />
+    <action
+        android:id="@+id/action_global_createObjectFragment"
+        app:destination="@id/createObjectFragment"
+        app:launchSingleTop="true" />
+
+    <dialog
+        android:id="@+id/relationFormatPickerScreen"
+        android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment"
+        android:label="Pick relation screen" />
+
+    <dialog
+        android:id="@+id/limitObjectTypeScreen"
+        android:name="com.anytypeio.anytype.ui.relations.LimitObjectTypeFragment"
+        android:label="Limit object type screen" />
+
+    <navigation
+        android:id="@+id/deletedAccountNavigation"
+        app:startDestination="@id/deletedAccountScreen">
+
+    <fragment
+        android:id="@+id/deletedAccountScreen"
+        android:name="com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment"
+        android:label="DeletedAccountScreen" />
+
+    </navigation>
+
+    <action
+        android:id="@+id/actionLogout"
+        app:destination="@+id/main_navigation"
+        app:popUpTo="@+id/main_navigation"
+        app:popUpToInclusive="true" />
+
+    <fragment
+        android:id="@+id/templateSelectScreen"
+        android:name="com.anytypeio.anytype.ui.templates.TemplateSelectFragment"
+        android:label="TemplateSelectScreen"
+        tools:layout="@layout/fragment_template_select"/>
+
+</navigation>

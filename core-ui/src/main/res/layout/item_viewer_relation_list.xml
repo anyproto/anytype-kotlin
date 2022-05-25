@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
+        android:id="@+id/iconRelation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_12"
+        android:layout_gravity="center_vertical"
+        tools:src="@drawable/ic_relation_text_32" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_weight="1.0"
+        android:ellipsize="end"
+        android:fontFamily="@font/inter_regular"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/text_primary"
+        android:textSize="17sp"
+        tools:text="We need to render the " />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/dp_12"
+        android:paddingStart="0dp"
+        app:useMaterialThemeColors="false"
+        app:splitTrack="false"
+        app:thumbTint="@drawable/viewer_relation_switch_thumb"
+        app:trackTint="@drawable/viewer_relation_switch_track"/>
+
+</LinearLayout>

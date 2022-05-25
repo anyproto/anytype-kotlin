@@ -1,0 +1,67 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        testInstrumentationRunner config["test_runner"]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
+    testOptions  {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+
+    implementation project(':data')
+    implementation project(':core-models')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+    def databaseDependencies = rootProject.ext.db
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutinesAndroid
+    implementation applicationDependencies.gson
+    implementation applicationDependencies.lifecycleLiveData
+
+    implementation databaseDependencies.room
+    implementation databaseDependencies.roomKtx
+
+    kapt databaseDependencies.annotations
+
+    implementation applicationDependencies.timber
+
+    testImplementation project(":test:utils")
+    testImplementation databaseDependencies.roomTesting
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation unitTestDependencies.archCoreTesting
+}

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_white_logo" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/auth_default_card_margin"
+        android:layout_marginEnd="@dimen/auth_default_card_margin"
+        android:layout_marginBottom="@dimen/auth_default_card_margin"
+        app:cardBackgroundColor="@color/background_secondary"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="@dimen/auth_default_card_corner_radius">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginTop="23dp"
+                android:layout_marginBottom="11dp"
+                android:fontFamily="@font/inter_bold"
+                android:letterSpacing="-0.0218"
+                android:text="@string/organize_everything"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:layout_marginBottom="18dp"
+                android:fontFamily="@font/inter_regular"
+                android:lineSpacingMultiplier="1.21"
+                android:text="@string/start_login_text"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/loginButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/loginButton"
+                style="@style/DefaultSolidButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="@dimen/auth_default_margin_end"
+                android:layout_marginBottom="16dp"
+                android:text="@string/login"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/signUpButton" />
+
+            <TextView
+                android:id="@+id/signUpButton"
+                style="@style/DefaultStrokeButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_default_button_height"
+                android:layout_marginStart="@dimen/auth_default_margin_start"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/sign_up"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/loginButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/dragger"
+            android:layout_width="48dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/dragger"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <HorizontalScrollView
+            android:id="@+id/textStyles"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:scrollbars="none"
+            android:layout_marginTop="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dragger">
+
+            <LinearLayout
+                android:paddingStart="16dp"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:textSize="28sp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/title"
+                    android:id="@+id/tvStyleTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    style="@style/StyleToolbarTextStyleStyle" />
+
+                <TextView
+                    android:textSize="22sp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/heading"
+                    android:id="@+id/tvStyleHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    style="@style/StyleToolbarTextStyleStyle"/>
+
+                <TextView
+                    android:textSize="17sp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/subheading"
+                    android:id="@+id/tvStyleSubheading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    style="@style/StyleToolbarTextStyleStyle"/>
+
+                <TextView
+                    android:layout_marginEnd="26dp"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/text"
+                    android:id="@+id/tvStyleText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    style="@style/StyleToolbarTextStyleStyle"/>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <FrameLayout
+            android:id="@+id/checkbox"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_style_toolbar_button_background_selector">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_style_toolbar_checkbox" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/bulleted"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_style_toolbar_button_background_selector">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_style_toolbar_bullet" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/numbered"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_style_toolbar_button_background_selector">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_style_toolbar_numbered" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/toggle"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_style_toolbar_button_background_selector">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_style_toolbar_toogle" />
+        </FrameLayout>
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:constraint_referenced_ids="checkbox,bulleted,numbered,toggle"
+            app:flow_horizontalGap="8dp"
+            app:flow_horizontalStyle="packed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textStyles" />
+
+        <FrameLayout
+            android:id="@+id/highlight"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_style_toolbar_button_background_selector">
+
+            <TextView
+                android:layout_marginStart="10dp"
+                android:drawablePadding="5dp"
+                android:drawableStart="@drawable/ic_style_toolbar_highlight_cursor"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="12dp"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/highlight"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/callout"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_style_toolbar_button_background_selector">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="18dp"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/ic_style_toolbar_callout_background"
+                android:fontFamily="@font/inter_regular"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="@string/callout"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/other"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/markupColors"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp">
+
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_style_toolbar_color" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/dots"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_style_toolbar_more" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
+            app:constraint_referenced_ids="highlight,callout,other"
+            app:flow_horizontalGap="8dp"
+            app:flow_horizontalStyle="packed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/flow" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

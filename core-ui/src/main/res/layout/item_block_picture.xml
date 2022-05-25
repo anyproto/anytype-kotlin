@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/BlockMediaRootLayoutStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:background="@drawable/item_block_multi_select_mode_selector">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:cardCornerRadius="8dp">
+
+        <ImageView
+            android:adjustViewBounds="true"
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/block_with_a_picture" />
+
+        <TextView
+            android:visibility="invisible"
+            android:padding="8dp"
+            android:id="@+id/error"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/error_while_loading_picture"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/image"
+            app:layout_constraintTop_toTopOf="@+id/image"
+            style="@style/BlockImageErrorTextStyle" />
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

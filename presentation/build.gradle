@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
+
+android {
+    def config = rootProject.extensions.getByName("ext")
+    compileSdkVersion config["compile_sdk"]
+
+    defaultConfig {
+        minSdkVersion config["min_sdk"]
+        targetSdkVersion config["target_sdk"]
+        testInstrumentationRunner config["test_runner"]
+    }
+
+    testOptions.unitTests.includeAndroidResources = true
+
+    lint {
+        disable 'NullSafeMutableLiveData'
+    }
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':core-utils')
+    implementation project(':library-emojifier')
+    implementation project(':analytics')
+    implementation project(':core-models')
+
+    def applicationDependencies = rootProject.ext.mainApplication
+    def unitTestDependencies = rootProject.ext.unitTesting
+    def analyticsDependencies = rootProject.ext.analytics
+
+    implementation applicationDependencies.kotlin
+    implementation applicationDependencies.coroutinesAndroid
+
+    implementation applicationDependencies.lifecycleViewModel
+    implementation applicationDependencies.lifecycleLiveData
+
+    implementation applicationDependencies.timber
+
+    implementation applicationDependencies.urlcleaner
+
+    implementation analyticsDependencies.amplitude
+
+    compileOnly applicationDependencies.javaxInject
+
+    testImplementation unitTestDependencies.junit
+    testImplementation unitTestDependencies.kotlinTest
+    testImplementation unitTestDependencies.mockitoKotlin
+    testImplementation unitTestDependencies.coroutineTesting
+    testImplementation unitTestDependencies.liveDataTesting
+    testImplementation unitTestDependencies.archCoreTesting
+    testImplementation unitTestDependencies.androidXTestCore
+    testImplementation unitTestDependencies.robolectricLatest
+    testImplementation unitTestDependencies.timberJUnit
+    testImplementation unitTestDependencies.turbine
+    testImplementation project(":test:utils")
+    testImplementation project(":test:core-models-stub")
+}

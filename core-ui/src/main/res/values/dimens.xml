@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="default_document_item_padding_start">8dp</dimen>
+    <dimen name="default_document_item_padding_end">8dp</dimen>
+
+    <dimen name="default_toast_top_gravity_offset">16dp</dimen>
+    <dimen name="default_container_height">24dp</dimen>
+    <dimen name="default_container_width">24dp</dimen>
+
+    <dimen name="default_avatar_text_size">21sp</dimen>
+
+    <dimen name="default_toolbar_height">48dp</dimen>
+
+    <dimen name="default_toolbar_section_radius">16dp</dimen>
+    <dimen name="default_toolbar_section_height">24dp</dimen>
+    <dimen name="default_toolbar_section_text_size">13sp</dimen>
+    <dimen name="default_toolbar_section_padding_top">2dp</dimen>
+    <dimen name="default_toolbar_section_padding_bottom">2dp</dimen>
+    <dimen name="default_toolbar_section_padding_start">16dp</dimen>
+    <dimen name="default_toolbar_section_padding_end">16dp</dimen>
+
+    <dimen name="default_toolbar_option_height">64dp</dimen>
+    <dimen name="default_toolbar_option_width">64dp</dimen>
+    <dimen name="default_toolbar_option_corner_radius">10dp</dimen>
+
+    <dimen name="default_toolbar_action_height">64dp</dimen>
+    <dimen name="default_toolbar_action_width">64dp</dimen>
+    <dimen name="default_toolbar_action_corner_radius">10dp</dimen>
+    <dimen name="default_toolbar_action_text_size">11sp</dimen>
+
+    <dimen name="default_bottom_toolbar_option_text_size">11sp</dimen>
+    <dimen name="default_bottom_toolbar_option_item_spacing">8dp</dimen>
+    <dimen name="default_bottom_toolbar_option_item_spacing_first">16dp</dimen>
+    <dimen name="default_bottom_toolbar_option_item_spacing_last">16dp</dimen>
+
+    <dimen name="default_toolbar_section_item_spacing">8dp</dimen>
+    <dimen name="default_toolbar_section_item_spacing_first">16dp</dimen>
+    <dimen name="default_toolbar_section_item_spacing_last">16dp</dimen>
+
+
+    <dimen name="default_toolbar_action_item_height">44dp</dimen>
+    <dimen name="default_toolbar_action_item_spacing">8dp</dimen>
+    <dimen name="default_toolbar_action_item_spacing_first">16dp</dimen>
+    <dimen name="default_toolbar_action_item_spacing_last">16dp</dimen>
+    <dimen name="default_toolbar_action_item_divider_height">1dp</dimen>
+    <dimen name="default_toolbar_action_item_divider_extended_height">8dp</dimen>
+
+    <dimen name="default_toolbar_text_color_item_height">48dp</dimen>
+    <dimen name="default_toolbar_text_color_item_width">64dp</dimen>
+    <dimen name="default_toolbar_color_item_spacing_first">16dp</dimen>
+    <dimen name="default_toolbar_color_item_spacing_last">16dp</dimen>
+    <dimen name="default_toolbar_background_color_item_height">48dp</dimen>
+    <dimen name="default_toolbar_background_color_item_width">64dp</dimen>
+    <dimen name="default_toolbar_background_color_content_radius">2dp</dimen>
+    <dimen name="default_toolbar_background_color_container_radius">10dp</dimen>
+    <dimen name="default_toolbar_color_item_divider_width">1dp</dimen>
+    <dimen name="default_toolbar_color_placeholder_text_size">22sp</dimen>
+
+    <dimen name="default_note_title_offset">124dp</dimen>
+
+    <dimen name="modal_rect_margin_top">6dp</dimen>
+    <dimen name="modal_main_margin_start">20dp</dimen>
+    <dimen name="modal_main_margin_end">20dp</dimen>
+    <dimen name="modal_top_item_margin_top">30dp</dimen>
+    <dimen name="modal_item_divider_margin_top">12dp</dimen>
+    <dimen name="modal_item_icon_margin_top">12dp</dimen>
+    <dimen name="modal_text_from_button_margin">8dp</dimen>
+    <dimen name="modal_button_width">155dp</dimen>
+    <dimen name="modal_button_height">40dp</dimen>
+    <dimen name="modal_button_margin_top">30dp</dimen>
+    <dimen name="modal_button_margin_bottom">16dp</dimen>
+
+    <!-- Item property -->
+    <dimen name="modal_property_margin_start">20dp</dimen>
+    <dimen name="modal_property_margin_end">20dp</dimen>
+    <dimen name="modal_property_margin_top">12dp</dimen>
+    <dimen name="modal_property_margin_bottom">12dp</dimen>
+    <dimen name="modal_property_text_from_icon_margin">4dp</dimen>
+    <dimen name="modal_property_hide_forward_margin">20dp</dimen>
+
+    <dimen name="sp_12">12sp</dimen>
+    <dimen name="sp_13">13sp</dimen>
+    <dimen name="dp_2">2dp</dimen>
+    <dimen name="dp_4">4dp</dimen>
+    <dimen name="dp_6">6dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_10">10dp</dimen>
+    <dimen name="dp_1">1dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_12">12dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_20">20dp</dimen>
+    <dimen name="dp_104">104dp</dimen>
+    <dimen name="dp_45">45dp</dimen>
+    <dimen name="dp_203">203dp</dimen>
+
+    <dimen name="roundedTextBorderRadius">4dp</dimen>
+    <dimen name="roundedTextBorderWidth">1dp</dimen>
+
+    <dimen name="footer_default_height">50dp</dimen>
+
+    <dimen name="default_dashboard_item_spacing">20dp</dimen>
+    <dimen name="cover_gallery_item_spacing">8dp</dimen>
+
+    <dimen name="indent">28dp</dimen>
+
+    <dimen name="default_block_type_width">24dp</dimen>
+    <dimen name="block_style_toolbar_circle_size">52dp</dimen>
+    <dimen name="default_document_content_padding_start">12dp</dimen>
+    <dimen name="default_document_content_padding_end">12dp</dimen>
+    <dimen name="default_document_item_margin_top">1dp</dimen>
+    <dimen name="default_document_title_margin_bottom">1dp</dimen>
+    <dimen name="bookmark_default_margin_start">@dimen/dp_8</dimen>
+    <dimen name="video_default_margin_start">@dimen/dp_8</dimen>
+    <dimen name="picture_default_margin_start">@dimen/dp_8</dimen>
+    <dimen name="file_default_margin_start">@dimen/dp_8</dimen>
+
+    <dimen name="popup_context_menu_height">44dp</dimen>
+    <dimen name="popup_context_menu_margin">8dp</dimen>
+    <dimen name="popup_context_menu_bottom_allowance">40dp</dimen>
+    <dimen name="default_style_color_circle_inner_radius">22dp</dimen>
+    <dimen name="default_style_color_outer_stroke_width">2dp</dimen>
+
+    <dimen name="default_page_links_bottom_offset">64dp</dimen>
+    
+    <dimen name="mention_span_image_size_default">20dp</dimen>
+    <dimen name="mention_span_image_size_header_three">20dp</dimen>
+    <dimen name="mention_span_image_size_header_two">24dp</dimen>
+    <dimen name="mention_span_image_size_header_one">28dp</dimen>
+    <dimen name="mention_span_image_padding_default">6dp</dimen>
+    <dimen name="mention_span_image_padding_header_three">5dp</dimen>
+    <dimen name="mention_span_image_padding_header_two">7dp</dimen>
+    <dimen name="mention_span_image_padding_header_one">8dp</dimen>
+    <dimen name="mention_span_initials_size_default">13sp</dimen>
+    <dimen name="mention_span_initials_size_header_three">13sp</dimen>
+    <dimen name="mention_span_initials_size_header_two">16sp</dimen>
+    <dimen name="mention_span_initials_size_header_one">19sp</dimen>
+
+    <dimen name="mention_suggester_item_height">56dp</dimen>
+    <dimen name="mention_list_padding_top">4dp</dimen>
+    <dimen name="mention_list_padding_bottom">5dp</dimen>
+    <dimen name="mention_suggester_padding_top">10dp</dimen>
+    <dimen name="mention_divider_height">1dp</dimen>
+
+    <dimen name="viewer_grid_header_width">144dp</dimen>
+
+    <dimen name="viewer_base_item_list_height">40dp</dimen>
+    <dimen name="dv_viewer_filter_item_height">68dp</dimen>
+    <dimen name="db_viewer_filter_condition_item_height">48dp</dimen>
+    <dimen name="default_dragger_width">48dp</dimen>
+    <dimen name="default_dragger_height">4dp</dimen>
+    <dimen name="dv_viewer_filter_value_tag_height">20dp</dimen>
+    <dimen name="dv_grid_cell_height">20dp</dimen>
+    <dimen name="dv_grid_cell_description_height">22dp</dimen>
+    <dimen name="dv_grid_cell_width">144dp</dimen>
+
+    <dimen name="dv_tag_left_right_padding">5dp</dimen>
+    <dimen name="dv_tag_text_size">15sp</dimen>
+    <dimen name="edit_tag_list_text_margin_start">36dp</dimen>
+
+    <dimen name="relation_view_padding_top">5dp</dimen>
+    <dimen name="relation_view_padding_bottom">7dp</dimen>
+
+    <dimen name="slash_widget_item_height">55dp</dimen>
+    <dimen name="data_view_divider_height">0.5dp</dimen>
+    <dimen name="object_icon_card_emoji_size">28dp</dimen>
+    <dimen name="object_icon_card_rectangle_image_radius">2dp</dimen>
+
+
+    <!-- Object items is full screen lists -->
+    <dimen name="list_item_object_icon_width">48dp</dimen>
+    <dimen name="list_item_object_icon_height">48dp</dimen>
+    <dimen name="list_item_object_icon_margin_start">20dp</dimen>
+    <dimen name="list_item_object_icon_margin_top">10dp</dimen>
+    <dimen name="list_item_object_icon_margin_bottom">10dp</dimen>
+    <dimen name="list_item_object_title_margin_top">13dp</dimen>
+    <dimen name="list_item_object_title_margin_start">80dp</dimen>
+    <dimen name="list_item_object_title_margin_end">20dp</dimen>
+    <dimen name="list_item_object_subtitle_margin_top">34dp</dimen>
+    <dimen name="list_item_object_subtitle_margin_start">80dp</dimen>
+    <dimen name="list_item_object_subtitle_margin_end">20dp</dimen>
+    <dimen name="list_item_object_emoji_size">28dp</dimen>
+    <dimen name="list_item_object_checkbox_size">24dp</dimen>
+    <dimen name="list_item_object_initials_size">28sp</dimen>
+    <dimen name="list_item_object_image_corner_radius">2dp</dimen>
+    <dimen name="list_item_object_image_corner_radius_small">1dp</dimen>
+
+    <!-- Object items is half screen lists -->
+    <dimen name="list_item_object_half_icon_width">40dp</dimen>
+    <dimen name="list_item_object_half_icon_height">40dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_start">0dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_top">8dp</dimen>
+    <dimen name="list_item_object_half_icon_margin_bottom">8dp</dimen>
+    <dimen name="list_item_object_half_title_margin_top">8dp</dimen>
+    <dimen name="list_item_object_half_title_margin_start">52dp</dimen>
+    <dimen name="list_item_object_half_title_margin_end">0dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_top">30dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_start">52dp</dimen>
+    <dimen name="list_item_object_half_subtitle_margin_end">0dp</dimen>
+    <dimen name="list_item_object_half_emoji_size">24dp</dimen>
+    <dimen name="list_item_object_half_checkbox_size">22dp</dimen>
+    <dimen name="list_item_object_half_initials_size">24sp</dimen>
+    <dimen name="list_item_object_half_text_margin_start">72dp</dimen>
+    <dimen name="list_item_object_half_text_margin_end">20dp</dimen>
+    <dimen name="default_cover_height">200dp</dimen>
+    <dimen name="default_cover_height_todo">188dp</dimen>
+    <dimen name="dp_14">14dp</dimen>
+    <dimen name="defaultGalleryViewTextSize">12sp</dimen>
+    <dimen name="defaultGalleryViewAvatarTextSize">11sp</dimen>
+    <dimen name="default_wallpaper_select_item_height">208dp</dimen>
+    <dimen name="todoToolbarHeaderMinHeight">80dp</dimen>
+    <dimen name="space_between_header_container_and_title">32dp</dimen>
+
+    <!-- Editor, block: graphic + text -->
+    <dimen name="default_graphic_text_container_padding_start">@dimen/default_document_content_padding_start</dimen>
+    <dimen name="default_graphic_text_container_padding_end">@dimen/default_document_content_padding_end</dimen>
+    <dimen name="default_graphic_text_root_margin_top">0dp</dimen>
+    <dimen name="default_graphic_text_root_margin_bottom">2dp</dimen>
+    <dimen name="default_graphic_text_text_margin_start">4dp</dimen>
+    <dimen name="default_graphic_text_text_padding_top">4dp</dimen>
+    <dimen name="default_graphic_text_text_padding_bottom">4dp</dimen>
+    <dimen name="default_graphic_text_graphic_margin_top">5dp</dimen>
+    <dimen name="default_graphic_text_graphic_width">24dp</dimen>
+
+    <!-- Editor, block: media placeholder -->
+    <dimen name="default_media_placeholder_root_margin_top">10dp</dimen>
+    <dimen name="default_media_placeholder_root_margin_bottom">10dp</dimen>
+    <dimen name="default_media_placeholder_root_height">52dp</dimen>
+    <dimen name="default_media_placeholder_root_margin_start">8dp</dimen>
+    <dimen name="default_media_placeholder_card_padding_end">12dp</dimen>
+    <dimen name="default_media_placeholder_card_padding_start">12dp</dimen>
+    <dimen name="default_media_placeholder_card_margin_start">12dp</dimen>
+    <dimen name="default_media_placeholder_card_margin_end">12dp</dimen>
+    <dimen name="default_media_placeholder_title_margin_start">12dp</dimen>
+    <dimen name="default_media_placeholder_title_icon_padding">8dp</dimen>
+
+    <!-- Editor, block: link to object as card -->
+    <dimen name="default_link_card_root_margin_top">10dp</dimen>
+
+    <!-- Editor, block: table of contents -->
+    <dimen name="def_toc_item_padding_start">20dp</dimen>
+
+    <!-- Editor, drag shadow -->
+    <dimen name="drag_shadow_corner_radius">6dp</dimen>
+    <dimen name="drag_shadow_elevation">12dp</dimen>
+    <dimen name="drag_shadow_padding_height_text">23dp</dimen>
+    <dimen name="drag_shadow_padding_width_text">4dp</dimen>
+    <dimen name="drag_shadow_padding_height_other">28dp</dimen>
+    <dimen name="drag_shadow_padding_width_other">10dp</dimen>
+    <dimen name="drag_shadow_max_size">150dp</dimen>
+
+
+</resources>

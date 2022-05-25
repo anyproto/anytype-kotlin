@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/viewer_grid_header_width"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:layout_height="match_parent">
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
+        android:id="@+id/object0"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
+        android:id="@+id/object1"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="@dimen/dp_6"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/object0"
+        app:layout_constraintStart_toEndOf="@+id/object0"
+        app:layout_constraintTop_toTopOf="@+id/object0"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
+        android:id="@+id/object2"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="@dimen/dp_6"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/object0"
+        app:layout_constraintStart_toEndOf="@+id/object1"
+        app:layout_constraintTop_toTopOf="@+id/object0"
+        tools:visibility="visible" />
+
+    <com.anytypeio.anytype.core_ui.widgets.GridCellObjectItem
+        android:id="@+id/object3"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="@dimen/dp_6"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/object0"
+        app:layout_constraintStart_toEndOf="@+id/object2"
+        app:layout_constraintTop_toTopOf="@+id/object0"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

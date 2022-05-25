@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/ivIcon"
+        android:layout_width="@dimen/list_item_object_icon_width"
+        android:layout_height="@dimen/list_item_object_icon_height"
+        android:layout_marginStart="@dimen/list_item_object_icon_margin_start"
+        android:layout_marginTop="@dimen/list_item_object_icon_margin_top"
+        android:layout_marginBottom="@dimen/list_item_object_icon_margin_bottom"
+        android:contentDescription="@string/content_desc_object_icon"
+        app:checkboxSize="@dimen/list_item_object_checkbox_size"
+        app:hasEmojiRounded8Background="true"
+        app:hasInitialRounded8Background="true"
+        app:emojiSize="@dimen/list_item_object_emoji_size"
+        app:imageSize="@dimen/list_item_object_icon_height"
+        app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
+        app:initialTextSize="@dimen/list_item_object_initials_size" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/ObjectListItemTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_item_object_title_margin_start"
+        android:layout_marginTop="@dimen/list_item_object_title_margin_top"
+        android:layout_marginEnd="@dimen/list_item_object_title_margin_end"
+        android:hint="@string/untitled"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        tools:text="Is your feature request related to a problem? Please describe." />
+
+    <TextView
+        android:id="@+id/tvSubtitle"
+        style="@style/ObjectListItemSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_item_object_subtitle_margin_start"
+        android:layout_marginTop="@dimen/list_item_object_subtitle_margin_top"
+        android:layout_marginEnd="@dimen/list_item_object_subtitle_margin_end"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        tools:text="Task" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="@dimen/list_item_object_subtitle_margin_start"
+        android:layout_marginTop="68dp"
+        android:layout_marginEnd="@dimen/list_item_object_subtitle_margin_end"
+        android:background="@drawable/divider_relations"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</FrameLayout>

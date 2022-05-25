@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorDefault"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/background_primary"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorGrey"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_grey"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorYellow"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_yellow"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorOrange"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_orange"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorRed"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_red"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorPink"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_pink"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorPurple"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_purple"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorBlue"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_blue"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorIce"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_ice"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorTeal"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_teal"
+        tools:ignore="MissingConstraints" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
+        android:id="@+id/backgroundColorGreen"
+        style="@style/DefaultCircleColorStyle"
+        app:innerColor="@color/palette_light_green"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:constraint_referenced_ids="backgroundColorDefault,backgroundColorGrey,backgroundColorYellow,backgroundColorOrange,backgroundColorRed,backgroundColorPink,backgroundColorPurple,backgroundColorBlue,backgroundColorIce,backgroundColorTeal,backgroundColorGreen"
+        app:flow_horizontalGap="0dp"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="6"
+        app:flow_verticalGap="0dp"
+        app:flow_wrapMode="chain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

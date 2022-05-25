@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="@color/shape_transparent"
+        android:pathData="M12,0L36,0A12,12 0,0 1,48 12L48,36A12,12 0,0 1,36 48L12,48A12,12 0,0 1,0 36L0,12A12,12 0,0 1,12 0z" />
+    <path
+        android:fillColor="@color/glyph_active"
+        android:fillType="evenOdd"
+        android:pathData="M30,14.5H18C16.067,14.5 14.5,16.067 14.5,18V30C14.5,31.933 16.067,33.5 18,33.5H30C31.933,33.5 33.5,31.933 33.5,30V18C33.5,16.067 31.933,14.5 30,14.5ZM18,13C15.2386,13 13,15.2386 13,18V30C13,32.7614 15.2386,35 18,35H30C32.7614,35 35,32.7614 35,30V18C35,15.2386 32.7614,13 30,13H18Z" />
+    <path
+        android:fillColor="@color/glyph_active"
+        android:pathData="M14,20.5H34V19H14V20.5Z" />
+    <path
+        android:fillColor="@color/glyph_active"
+        android:pathData="M26.4688,27.4688C26.4688,26.9165 26.9165,26.4688 27.4688,26.4688H29.4688C30.021,26.4688 30.4688,26.9165 30.4688,27.4688V29.4688C30.4688,30.021 30.021,30.4688 29.4688,30.4688H27.4688C26.9165,30.4688 26.4688,30.021 26.4688,29.4688V27.4688Z" />
+</vector>

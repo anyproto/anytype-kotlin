@@ -78,6 +78,9 @@ sealed class ObjectIcon {
                     None
                 }
             }
+            ObjectType.Layout.NOTE -> {
+                Basic.Avatar(obj.snippet.orEmpty())
+            }
             else -> None
         }
     }

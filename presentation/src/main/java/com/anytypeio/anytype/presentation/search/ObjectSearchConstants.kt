@@ -87,7 +87,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region MOVE TO
-    fun filterMoveTo(types: List<String>) = listOf(
+    fun filterMoveTo(ctx: Id, types: List<String>) = listOf(
         DVFilter(
             relationKey = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
@@ -107,6 +107,16 @@ object ObjectSearchConstants {
             relationKey = Relations.TYPE,
             condition = DVFilterCondition.IN,
             value = types
+        ),
+        DVFilter(
+            relationKey = Relations.IS_DELETED,
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        ),
+        DVFilter(
+            relationKey = Relations.ID,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(ctx)
         )
     )
 

@@ -63,7 +63,7 @@ class MoveToViewModel(
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 sendSearchQueryEvent()
-                val params = getSearchObjectsParams().copy(fulltext = query)
+                val params = getSearchObjectsParams(ctx).copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects ->
                         setObjects(
@@ -112,7 +112,7 @@ class MoveToViewModel(
         }
     }
 
-    private fun getSearchObjectsParams(): SearchObjects.Params {
+    private fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
 
         val filteredTypes = types.value
             .filter { objectType -> objectType.smartBlockTypes.contains(SmartBlockType.PAGE) }
@@ -120,7 +120,7 @@ class MoveToViewModel(
 
         return SearchObjects.Params(
             limit = SEARCH_LIMIT,
-            filters = ObjectSearchConstants.filterMoveTo(filteredTypes),
+            filters = ObjectSearchConstants.filterMoveTo(ctx, filteredTypes),
             sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY,
             keys = ObjectSearchConstants.defaultKeys

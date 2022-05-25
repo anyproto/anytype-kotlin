@@ -5,8 +5,10 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -61,6 +63,7 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
@@ -244,6 +247,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
+
+    @Mock
+    lateinit var getTemplates: GetTemplates
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -603,6 +609,14 @@ open class EditorPresentationTestSetup {
         val result = CreateNewDocument.Result(id, name, null)
         createNewDocument.stub {
             onBlocking { invoke(params) } doReturn Either.Right(result)
+        }
+    }
+
+    protected fun stubGetTemplates(
+        templates : List<ObjectWrapper.Basic> = emptyList()
+    ) {
+        getTemplates.stub {
+            onBlocking { run(any()) } doReturn templates
         }
     }
 }

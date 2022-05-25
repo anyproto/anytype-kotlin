@@ -3,14 +3,22 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubBulleted
 import com.anytypeio.anytype.core_models.StubCheckbox
+import com.anytypeio.anytype.core_models.StubDescription
+import com.anytypeio.anytype.core_models.StubFeatured
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubNumbered
+import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubQuote
+import com.anytypeio.anytype.core_models.StubRelation
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubToggle
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
@@ -1244,6 +1252,303 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     )
                 ),
                 actual = block
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should merge description vs text when title - description - featured - text`() {
+
+        // SETUP
+
+        val featured = StubFeatured()
+        val description = StubDescription()
+        val paragraph = StubParagraph()
+
+        val relation = StubRelation(format = Relation.Format.NUMBER)
+
+        val details = Block.Details(
+            mapOf(
+                root to Block.Fields(
+                    mapOf(
+                        Relations.FEATURED_RELATIONS to listOf(
+                            relation.key,
+                            Relations.DESCRIPTION
+                        )
+                    )
+                )
+            )
+        )
+
+        val header = StubHeader(
+            children = listOf(title.id, description.id, featured.id)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id),
+        )
+
+        val document = listOf(page, header, title, description, featured, paragraph)
+
+        stubOpenDocument(
+            document = document,
+            details = details,
+            relations = listOf(relation)
+        )
+        stubUpdateText()
+        stubGetTemplates()
+        stubUpdateTextStyle()
+        stubMergeBlocks(root)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = paragraph.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = paragraph.id,
+                selection = IntRange(0, 0)
+            )
+            onNonEmptyBlockBackspaceClicked(
+                id = paragraph.id,
+                text = paragraph.content.asText().text,
+                marks = paragraph.content.asText().marks
+            )
+        }
+
+        assertEquals(4, vm.views.size)
+
+        verifyBlocking(mergeBlocks, times(1)) {
+            invoke(
+                params = MergeBlocks.Params(
+                    context = root,
+                    pair = Pair(description.id, paragraph.id),
+                )
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should merge title vs text when title - featured - text`() {
+
+        // SETUP
+
+        val featured = StubFeatured()
+        val paragraph = StubParagraph()
+        val relation = StubRelation(format = Relation.Format.NUMBER)
+
+        val details = Block.Details(
+            mapOf(root to Block.Fields(mapOf(Relations.FEATURED_RELATIONS to listOf(relation.key))))
+        )
+
+        val header = StubHeader(
+            children = listOf(title.id, featured.id)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id),
+        )
+
+        val document = listOf(page, header, title, featured, paragraph)
+
+        stubOpenDocument(
+            document = document,
+            details = details,
+            relations = listOf(relation)
+        )
+        stubUpdateText()
+        stubGetTemplates()
+        stubUpdateTextStyle()
+        stubMergeBlocks(root)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = paragraph.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = paragraph.id,
+                selection = IntRange(0, 0)
+            )
+            onNonEmptyBlockBackspaceClicked(
+                id = paragraph.id,
+                text = paragraph.content.asText().text,
+                marks = paragraph.content.asText().marks
+            )
+        }
+
+        assertEquals(3, vm.views.size)
+
+        verifyBlocking(mergeBlocks, times(1)) {
+            invoke(
+                params = MergeBlocks.Params(
+                    context = root,
+                    pair = Pair(title.id, paragraph.id),
+                )
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should merge title vs text when title - text`() {
+
+        // SETUP
+
+        val paragraph = StubParagraph()
+
+        val header = StubHeader(
+            children = listOf(title.id)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id),
+        )
+
+        val document = listOf(page, header, title, paragraph)
+
+        stubOpenDocument(document = document)
+        stubUpdateText()
+        stubGetTemplates()
+        stubUpdateTextStyle()
+        stubMergeBlocks(root)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = paragraph.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = paragraph.id,
+                selection = IntRange(0, 0)
+            )
+            onNonEmptyBlockBackspaceClicked(
+                id = paragraph.id,
+                text = paragraph.content.asText().text,
+                marks = paragraph.content.asText().marks
+            )
+        }
+
+        assertEquals(2, vm.views.size)
+
+        verifyBlocking(mergeBlocks, times(1)) {
+            invoke(
+                params = MergeBlocks.Params(
+                    context = root,
+                    pair = Pair(title.id, paragraph.id),
+                )
+            )
+        }
+
+        releasePendingTextUpdates()
+    }
+
+    @Test
+    fun `should merge description vs text when description - featured - text`() {
+
+        // SETUP
+
+        val featured = StubFeatured()
+        val description = StubDescription()
+        val paragraph = StubParagraph()
+
+        val relationKey = MockDataFactory.randomUuid()
+        val relation = StubRelation(relationKey, RelationFormat.NUMBER)
+
+        val details = Block.Details(
+            mapOf(
+                root to Block.Fields(
+                    mapOf(
+                        Relations.FEATURED_RELATIONS to listOf(
+                            relationKey,
+                            Relations.DESCRIPTION
+                        )
+                    )
+                )
+            )
+        )
+
+        val header = StubHeader(
+            children = listOf(description.id, featured.id)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, paragraph.id),
+        )
+
+        val document = listOf(page, header, description, featured, paragraph)
+
+        stubOpenDocument(
+            document = document,
+            details = details,
+            relations = listOf(relation)
+        )
+        stubUpdateText()
+        stubGetTemplates()
+        stubUpdateTextStyle()
+        stubMergeBlocks(root)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.apply {
+            onStart(root)
+            onBlockFocusChanged(
+                id = paragraph.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = paragraph.id,
+                selection = IntRange(0, 0)
+            )
+            onNonEmptyBlockBackspaceClicked(
+                id = paragraph.id,
+                text = paragraph.content.asText().text,
+                marks = paragraph.content.asText().marks
+            )
+        }
+
+        assertEquals(3, vm.views.size)
+
+        verifyBlocking(mergeBlocks, times(1)) {
+            invoke(
+                params = MergeBlocks.Params(
+                    context = root,
+                    pair = Pair(description.id, paragraph.id),
+                )
             )
         }
 

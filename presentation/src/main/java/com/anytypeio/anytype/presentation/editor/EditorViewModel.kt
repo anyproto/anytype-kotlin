@@ -1479,17 +1479,29 @@ class EditorViewModel(
         val index = views.indexOfFirst { it.id == id }
 
         if (index > 0) {
-            when (val previous = views[index.dec()]) {
+            val previousBlockId = index.dec()
+            when (val previous = views[previousBlockId]) {
                 is BlockView.Text -> {
                     proceedWithMergingBlocks(
                         previous = previous.id,
                         target = id
                     )
                 }
-                is BlockView.FeaturedRelation,
+                is BlockView.FeaturedRelation -> {
+                    val upperThanPreviousBlock = views.getOrNull(previousBlockId.dec())
+                    if (upperThanPreviousBlock is Focusable) {
+                        proceedWithMergingBlocks(
+                            previous = upperThanPreviousBlock.id,
+                            target = id
+                        )
+                    }
+                }
                 is BlockView.Description,
                 is BlockView.Title -> {
-                    sendToast("Merging with title or description currently not supported")
+                    proceedWithMergingBlocks(
+                        previous = previous.id,
+                        target = id
+                    )
                 }
                 else -> {
                     viewModelScope.launch {

@@ -26,6 +26,29 @@ fun StubTitle(
     fields = Block.Fields.empty()
 )
 
+fun StubFeatured(
+    children: List<Id> = emptyList()
+): Block = Block(
+    id = MockDataFactory.randomUuid(),
+    content = Block.Content.FeaturedRelations,
+    children = children,
+    fields = Block.Fields.empty()
+)
+
+fun StubDescription(
+    id: Id = MockDataFactory.randomUuid(),
+    text: String = MockDataFactory.randomString()
+): Block = Block(
+    id = id,
+    content = Block.Content.Text(
+        text = text,
+        style = Block.Content.Text.Style.DESCRIPTION,
+        marks = emptyList()
+    ),
+    children = emptyList(),
+    fields = Block.Fields.empty()
+)
+
 fun StubCheckbox(
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
@@ -38,6 +61,22 @@ fun StubCheckbox(
         style = Block.Content.Text.Style.CHECKBOX,
         marks = marks,
         isChecked = isChecked
+    ),
+    children = children,
+    fields = Block.Fields.empty()
+)
+
+fun StubParagraph(
+    id: Id = MockDataFactory.randomUuid(),
+    text: String = MockDataFactory.randomString(),
+    children: List<Id> = emptyList(),
+    marks: List<Block.Content.Text.Mark> = emptyList()
+): Block = Block(
+    id = id,
+    content = Block.Content.Text(
+        text = text,
+        style = Block.Content.Text.Style.P,
+        marks = marks
     ),
     children = children,
     fields = Block.Fields.empty()
@@ -118,4 +157,14 @@ fun StubCallout(
     ),
     children = children,
     fields = Block.Fields.empty()
+)
+
+fun StubRelation(
+    relationKey: String = MockDataFactory.randomString(),
+    format: RelationFormat
+): Relation = Relation(
+    key = relationKey,
+    name = MockDataFactory.randomString(),
+    format = format,
+    source = Relation.Source.values().random()
 )

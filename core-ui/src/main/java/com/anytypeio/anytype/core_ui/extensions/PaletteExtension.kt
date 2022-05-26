@@ -9,6 +9,15 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
 @ColorInt
+fun Resources.text(
+    color: ThemeColor,
+    default: Int = getColor(R.color.text_primary, null)
+) = dark(
+    color = color,
+    default = default
+)
+
+@ColorInt
 fun Resources.dark(
     color: ThemeColor,
     @ColorInt
@@ -100,7 +109,7 @@ fun View.setBlockBackgroundColor(color: String?) {
 fun Context.resolveThemedTextColor(color: String?, defaultColor: Int): Int {
     val value = ThemeColor.values().find { value -> value.code == color }
     return if (value != null && value != ThemeColor.DEFAULT) {
-        resources.dark(value, defaultColor)
+        resources.text(value, defaultColor)
     } else {
         defaultColor
     }

@@ -118,7 +118,7 @@ abstract class Text(
         if (color != null) {
             setTextColor(color)
         } else {
-            setTextColor(content.context.color(R.color.palette_dark_default))
+            setTextColor(content.context.color(R.color.text_primary))
         }
         setBackgroundColor(color = item.backgroundColor)
     }

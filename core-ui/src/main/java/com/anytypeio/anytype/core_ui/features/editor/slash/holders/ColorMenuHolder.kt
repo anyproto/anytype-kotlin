@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetColorBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.text
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
@@ -31,7 +32,7 @@ class ColorMenuHolder(
     @ColorInt
     private fun Resources.getColor(item: SlashItem.Color): Int {
         return when (item) {
-            is SlashItem.Color.Text -> dark(item.themeColor)
+            is SlashItem.Color.Text -> text(item.themeColor)
             is SlashItem.Color.Background -> veryLight(item.themeColor)
         }
     }

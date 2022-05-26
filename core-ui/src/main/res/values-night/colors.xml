@@ -26,7 +26,7 @@
     <color name="dashboard_background">#99252525</color>
 
     <!--  Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A115  -->
-    <color name="palette_dark_default">#000000</color>
+    <color name="palette_dark_default">#F3F2EC</color>
     <color name="palette_dark_yellow">#ECD91B</color>
     <color name="palette_dark_orange">#F1A91A</color>
     <color name="palette_dark_red">#F55522</color>

@@ -7,14 +7,20 @@ import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.scan
 
 /** Use case for getting currently selected user account.
  */
 class GetProfile(
+    private val provider: ConfigStorage,
     private val repo: BlockRepository,
     private val channel: SubscriptionEventChannel
 ) : BaseUseCase<ObjectWrapper.Basic, GetProfile.Params>() {
@@ -58,7 +64,7 @@ class GetProfile(
         subscription: Id,
         keys: List<String>
     ): ObjectWrapper.Basic {
-        val config = repo.getConfig()
+        val config = provider.get()
         val result = repo.searchObjectsByIdWithSubscription(
             subscription = subscription,
             ids = listOf(config.profile),
@@ -72,7 +78,7 @@ class GetProfile(
 
     @Deprecated("Should not be used. Will be changed.")
     override suspend fun run(params: Params) = safe {
-        val config = repo.getConfig()
+        val config = provider.get()
         val result = repo.searchObjectsByIdWithSubscription(
             subscription = params.subscription,
             ids = listOf(config.profile),

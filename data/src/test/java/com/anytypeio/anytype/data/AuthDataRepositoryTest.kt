@@ -1,12 +1,16 @@
 package com.anytypeio.anytype.data
 
+import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.FeaturesConfig
+import com.anytypeio.anytype.core_models.StubAccount
+import com.anytypeio.anytype.core_models.StubAccountSetup
+import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.StubFeatureConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.*
-import com.anytypeio.anytype.data.auth.repo.config.Configurator
-import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -23,10 +27,9 @@ class AuthDataRepositoryTest {
     @Mock
     lateinit var authCache: AuthCache
 
-    @Mock
-    lateinit var configurator: Configurator
-
     lateinit var repo: AuthDataRepository
+
+    val config = StubConfig()
 
     @Before
     fun setup() {
@@ -39,8 +42,7 @@ class AuthDataRepositoryTest {
                 remote = AuthRemoteDataStore(
                     authRemote = authRemote
                 )
-            ),
-            configurator = configurator
+            )
         )
     }
 
@@ -51,17 +53,14 @@ class AuthDataRepositoryTest {
 
         val path = MockDataFactory.randomString()
 
-        val account = AccountEntity(
-            id = id,
-            name = MockDataFactory.randomString(),
-            color = null
-        )
+        val account = StubAccount()
 
-        val config = FeaturesConfigEntity()
+        val features = StubFeatureConfig()
 
         authRemote.stub {
-            onBlocking { startAccount(id = id, path = path) } doReturn Triple(
-                account, config, AccountStatus.Active
+            onBlocking { startAccount(id = id, path = path) } doReturn StubAccountSetup(
+                account = account,
+                features = features
             )
         }
 
@@ -131,12 +130,7 @@ class AuthDataRepositoryTest {
     @Test
     fun `should call only cache in order to save account`() = runBlocking {
 
-        val account = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
-        )
+        val account = StubAccount()
 
         authCache.stub {
             onBlocking { saveAccount(any()) } doReturn Unit
@@ -234,8 +228,6 @@ class AuthDataRepositoryTest {
         verifyNoMoreInteractions(authCache)
         verify(authRemote, times(1)).logout(false)
         verifyNoMoreInteractions(authRemote)
-        verify(configurator, times(1)).release()
-        verifyZeroInteractions(configurator)
     }
 
     @Test

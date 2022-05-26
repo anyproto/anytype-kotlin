@@ -4,11 +4,13 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,17 +29,23 @@ class OpenDashboardTest {
     @Mock
     lateinit var auth: AuthRepository
 
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     private lateinit var usecase: OpenDashboard
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        usecase = OpenDashboard(repo = repo, auth = auth)
+        usecase = OpenDashboard(
+            repo = repo,
+            auth = auth,
+            provider = configStorage
+        )
     }
 
     @Test
-    fun `should open a dashboard based on the given params if these are present`() =
-        runBlockingTest {
+    fun `should open a dashboard based on the given params if these are present`() = runTest {
 
             val params = OpenDashboard.Param(
                 contextId = MockDataFactory.randomUuid(),
@@ -46,7 +54,7 @@ class OpenDashboardTest {
 
             usecase.run(params)
 
-            verify(repo, never()).getConfig()
+            verify(configStorage, never()).get()
             verify(repo, times(1)).openDashboard(contextId = params.contextId, id = params.id)
             verifyNoMoreInteractions(repo)
         }
@@ -60,13 +68,13 @@ class OpenDashboardTest {
             profile = MockDataFactory.randomUuid()
         )
 
-        repo.stub {
-            onBlocking { getConfig() } doReturn config
+        configStorage.stub {
+            onBlocking { get() } doReturn config
         }
 
         usecase.run(null)
 
-        verify(repo, times(1)).getConfig()
+        verify(configStorage, times(1)).get()
         verify(repo, times(1)).openDashboard(
             contextId = config.home,
             id = config.home

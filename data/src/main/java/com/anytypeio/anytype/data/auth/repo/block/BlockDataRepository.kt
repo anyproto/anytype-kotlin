@@ -31,8 +31,6 @@ class BlockDataRepository(
     private val factory: BlockDataStoreFactory
 ) : BlockRepository {
 
-    override suspend fun getConfig() = factory.remote.getConfig()
-
     override suspend fun openDashboard(
         contextId: String,
         id: String

@@ -1,10 +1,9 @@
 syntax = "proto3";
 package anytype;
-
-import "google/protobuf/struct.proto";
-import "models.proto";
-
 option go_package = "pb";
+
+import "models.proto";
+import "google/protobuf/struct.proto";
 
 /*
  * Event – type of message, that could be sent from a middleware to the corresponding front-end.
@@ -98,7 +97,6 @@ message Event {
             google.protobuf.Struct details = 2;
         }
 
-        // Deprecated
         message Config {
             message Update {
                 anytype.model.Account.Config config = 1;
@@ -306,7 +304,7 @@ message Event {
 
             message Text {
                 string id = 1;
-                TText text = 2;
+                Text text = 2;
                 Style style = 3;
                 Marks marks = 4;
                 Checked checked = 5;
@@ -314,7 +312,7 @@ message Event {
                 IconEmoji iconEmoji = 7;
                 IconImage iconImage = 8;
 
-                message TText {
+                message Text {
                     string value = 1;
                 }
 
@@ -520,13 +518,13 @@ message Event {
 
             message Text {
                 string id = 1;
-                TText text = 2;
+                Text text = 2;
                 Style style = 3;
                 Marks marks = 4;
                 Checked checked = 5;
                 Color color = 6;
 
-                message TText {
+                message Text {
                     string value = 1;
                 }
 

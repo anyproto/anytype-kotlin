@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.domain.dashboard.interactor
 
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.MainConfig
 
 /**
@@ -11,23 +11,17 @@ import com.anytypeio.anytype.domain.config.MainConfig
  * @property repo
  */
 class CloseDashboard(
-    private val repo: BlockRepository
+    private val repo: BlockRepository,
+    private val provider: ConfigStorage
 ) : BaseUseCase<Unit, CloseDashboard.Param>() {
 
-    override suspend fun run(params: Param) = try {
-        if (params.id == MainConfig.HOME_DASHBOARD_ID)
-            repo.getConfig().let { config ->
-                repo.closeDashboard(id = config.home)
-            }.let {
-                Either.Right(it)
-            }
-        else
-            repo.closeDashboard(id = params.id).let {
-                Either.Right(it)
-            }
-
-    } catch (t: Throwable) {
-        Either.Left(t)
+    override suspend fun run(params: Param) = safe {
+        if (params.id == MainConfig.HOME_DASHBOARD_ID) {
+            val config = provider.get()
+            repo.closeDashboard(id = config.home)
+        } else {
+            repo.closeDashboard(id = params.id)
+        }
     }
 
     /**

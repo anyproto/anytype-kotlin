@@ -1,10 +1,11 @@
 syntax = "proto3";
 package anytype.storage;
-option go_package = "pkg/lib/pb/storage";
 
-import "models.proto";
 import "file.proto";
 import "google/protobuf/struct.proto";
+import "models.proto";
+
+option go_package = "pkg/lib/pb/storage";
 
 message SmartBlockSnapshot {
     map<string, uint64> state = 1;

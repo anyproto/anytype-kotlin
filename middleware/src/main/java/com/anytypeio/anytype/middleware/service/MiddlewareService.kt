@@ -1,266 +1,298 @@
 package com.anytypeio.anytype.middleware.service
 
-import anytype.Rpc.ObjectDuplicate
-import anytype.Rpc.Account
-import anytype.Rpc.ApplyTemplate
-import anytype.Rpc.Block
-import anytype.Rpc.BlockList
-import anytype.Rpc.Config
-import anytype.Rpc.Debug
-import anytype.Rpc.ExportLocalstore
-import anytype.Rpc.FileList
-import anytype.Rpc.Navigation
-import anytype.Rpc.Object
-import anytype.Rpc.ObjectList
-import anytype.Rpc.ObjectType
-import anytype.Rpc.Page
-import anytype.Rpc.UnsplashDownload
-import anytype.Rpc.UnsplashSearch
-import anytype.Rpc.UploadFile
-import anytype.Rpc.Version
-import anytype.Rpc.Wallet
+import anytype.Rpc
 
 /**
  * Service for interacting with the backend.
  */
 interface MiddlewareService {
-    @Throws(Exception::class)
-    fun configGet(request: Config.Get.Request): Config.Get.Response
 
+    //region APP commands
+
     @Throws(Exception::class)
-    fun walletCreate(request: Wallet.Create.Request): Wallet.Create.Response
+    fun versionGet(request: Rpc.App.GetVersion.Request): Rpc.App.GetVersion.Response
+
+    //endregion
 
+    //region WALLET commands
+
     @Throws(Exception::class)
-    fun walletConvert(request: Wallet.Convert.Request): Wallet.Convert.Response
+    fun walletCreate(request: Rpc.Wallet.Create.Request): Rpc.Wallet.Create.Response
 
     @Throws(Exception::class)
-    fun walletRecover(request: Wallet.Recover.Request): Wallet.Recover.Response
+    fun walletRecover(request: Rpc.Wallet.Recover.Request): Rpc.Wallet.Recover.Response
 
     @Throws(Exception::class)
-    fun accountCreate(request: Account.Create.Request): Account.Create.Response
+    fun walletConvert(request: Rpc.Wallet.Convert.Request): Rpc.Wallet.Convert.Response
+
+    //endregion com
+
+    //region ACCOUNT commands
 
     @Throws(Exception::class)
-    fun accountDelete(request: Account.Delete.Request) : Account.Delete.Response
+    fun accountRecover(request: Rpc.Account.Recover.Request): Rpc.Account.Recover.Response
 
     @Throws(Exception::class)
-    fun accountSelect(request: Account.Select.Request): Account.Select.Response
+    fun accountCreate(request: Rpc.Account.Create.Request): Rpc.Account.Create.Response
 
     @Throws(Exception::class)
-    fun accountRecover(request: Account.Recover.Request): Account.Recover.Response
+    fun accountDelete(request: Rpc.Account.Delete.Request): Rpc.Account.Delete.Response
 
     @Throws(Exception::class)
-    fun accountStop(request: Account.Stop.Request): Account.Stop.Response
+    fun accountSelect(request: Rpc.Account.Select.Request): Rpc.Account.Select.Response
 
     @Throws(Exception::class)
-    fun blockOpen(request: Block.Open.Request): Block.Open.Response
+    fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response
 
+    //endregion
+
+    //region OBJECT commands
+
     @Throws(Exception::class)
-    fun blockShow(request: Block.Show.Request): Block.Show.Response
+    fun objectOpen(request: Rpc.Object.Open.Request): Rpc.Object.Open.Response
 
     @Throws(Exception::class)
-    fun blockClose(request: Block.Close.Request): Block.Close.Response
+    fun objectClose(request: Rpc.Object.Close.Request): Rpc.Object.Close.Response
 
     @Throws(Exception::class)
-    fun blockCreate(request: Block.Create.Request): Block.Create.Response
+    fun objectShow(request: Rpc.Object.Show.Request): Rpc.Object.Show.Response
 
     @Throws(Exception::class)
-    fun blockCreatePage(request: Block.CreatePage.Request): Block.CreatePage.Response
+    fun objectCreate(request: Rpc.Object.Create.Request): Rpc.Object.Create.Response
 
     @Throws(Exception::class)
-    fun blockSetTextText(request: Block.Set.Text.TText.Request): Block.Set.Text.TText.Response
+    fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response
 
     @Throws(Exception::class)
-    fun blockSetTextChecked(request: Block.Set.Text.Checked.Request): Block.Set.Text.Checked.Response
+    fun objectSearch(request: Rpc.Object.Search.Request): Rpc.Object.Search.Response
 
     @Throws(Exception::class)
-    fun blockSetTextColor(request: BlockList.Set.Text.Color.Request): BlockList.Set.Text.Color.Response
+    fun objectSearchSubscribe(request: Rpc.Object.SearchSubscribe.Request): Rpc.Object.SearchSubscribe.Response
 
     @Throws(Exception::class)
-    fun blockListSetBackgroundColor(request: BlockList.Set.BackgroundColor.Request): BlockList.Set.BackgroundColor.Response
+    fun objectSearchUnsubscribe(request: Rpc.Object.SearchUnsubscribe.Request): Rpc.Object.SearchUnsubscribe.Response
 
     @Throws(Exception::class)
-    fun blockListSetAlign(request: BlockList.Set.Align.Request): BlockList.Set.Align.Response
+    fun objectIdsSubscribe(request: Rpc.Object.SubscribeIds.Request): Rpc.Object.SubscribeIds.Response
 
     @Throws(Exception::class)
-    fun blockListSetTextStyle(request: BlockList.Set.Text.Style.Request): BlockList.Set.Text.Style.Response
+    fun objectSetDetails(request: Rpc.Object.SetDetails.Request): Rpc.Object.SetDetails.Response
 
     @Throws(Exception::class)
-    fun blockListSetDivStyle(request: BlockList.Set.Div.Style.Request): BlockList.Set.Div.Style.Response
+    fun objectDuplicate(request: Rpc.Object.Duplicate.Request): Rpc.Object.Duplicate.Response
 
     @Throws(Exception::class)
-    fun blockListMove(request: BlockList.Move.Request): BlockList.Move.Response
+    fun objectSetObjectType(request: Rpc.Object.SetObjectType.Request): Rpc.Object.SetObjectType.Response
 
     @Throws(Exception::class)
-    fun blockUnlink(request: Block.Unlink.Request): Block.Unlink.Response
+    fun objectSetLayout(request: Rpc.Object.SetLayout.Request): Rpc.Object.SetLayout.Response
 
     @Throws(Exception::class)
-    fun blockMerge(request: Block.Merge.Request): Block.Merge.Response
+    fun objectSetIsFavorite(request: Rpc.Object.SetIsFavorite.Request): Rpc.Object.SetIsFavorite.Response
 
     @Throws(Exception::class)
-    fun blockSplit(request: Block.Split.Request): Block.Split.Response
+    fun objectSetIsArchived(request: Rpc.Object.SetIsArchived.Request): Rpc.Object.SetIsArchived.Response
 
     @Throws(Exception::class)
-    fun blockListDuplicate(request: BlockList.Duplicate.Request): BlockList.Duplicate.Response
+    fun objectListSetIsArchived(request: Rpc.Object.ListSetIsArchived.Request): Rpc.Object.ListSetIsArchived.Response
 
     @Throws(Exception::class)
-    fun convertChildrenToPages(request: BlockList.ConvertChildrenToPages.Request): BlockList.ConvertChildrenToPages.Response
+    fun objectListDelete(request: Rpc.Object.ListDelete.Request): Rpc.Object.ListDelete.Response
 
     @Throws(Exception::class)
-    fun blockBookmarkFetch(request: Block.Bookmark.Fetch.Request): Block.Bookmark.Fetch.Response
+    fun objectApplyTemplate(request: Rpc.Object.ApplyTemplate.Request): Rpc.Object.ApplyTemplate.Response
 
     @Throws(Exception::class)
-    fun blockBookmarkCreateAndFetch(request: Block.Bookmark.CreateAndFetch.Request): Block.Bookmark.CreateAndFetch.Response
+    fun objectUndo(request: Rpc.Object.Undo.Request): Rpc.Object.Undo.Response
 
     @Throws(Exception::class)
-    fun blockUpload(request: Block.Upload.Request): Block.Upload.Response
+    fun objectRedo(request: Rpc.Object.Redo.Request): Rpc.Object.Redo.Response
+
+    //endregion
 
+    //region OBJECT'S RELATIONS command
+
     @Throws(Exception::class)
-    fun blockUndo(request: Block.Undo.Request): Block.Undo.Response
+    fun objectRelationAdd(request: Rpc.ObjectRelation.Add.Request): Rpc.ObjectRelation.Add.Response
 
     @Throws(Exception::class)
-    fun blockRedo(request: Block.Redo.Request): Block.Redo.Response
+    fun objectRelationDelete(request: Rpc.ObjectRelation.Delete.Request): Rpc.ObjectRelation.Delete.Response
 
     @Throws(Exception::class)
-    fun blockSetDetails(request: Block.Set.Details.Request): Block.Set.Details.Response
+    fun objectRelationAddFeatured(request: Rpc.ObjectRelation.AddFeatured.Request): Rpc.ObjectRelation.AddFeatured.Response
 
     @Throws(Exception::class)
-    fun blockPaste(request: Block.Paste.Request): Block.Paste.Response
+    fun objectRelationRemoveFeatured(request: Rpc.ObjectRelation.RemoveFeatured.Request): Rpc.ObjectRelation.RemoveFeatured.Response
 
     @Throws(Exception::class)
-    fun blockCopy(request: Block.Copy.Request): Block.Copy.Response
+    fun objectRelationListAvailable(request: Rpc.ObjectRelation.ListAvailable.Request): Rpc.ObjectRelation.ListAvailable.Response
 
     @Throws(Exception::class)
-    fun uploadFile(request: UploadFile.Request): UploadFile.Response
+    fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response
+
+    //endregion
 
+    //region OBJECT TYPE commands
+
     @Throws(Exception::class)
-    fun objectInfoWithLinks(request: Navigation.GetObjectInfoWithLinks.Request): Navigation.GetObjectInfoWithLinks.Response
+    fun objectTypeCreate(request: Rpc.ObjectType.Create.Request): Rpc.ObjectType.Create.Response
 
     @Throws(Exception::class)
-    fun listObjects(request: Navigation.ListObjects.Request): Navigation.ListObjects.Response
+    fun objectTypeList(request: Rpc.ObjectType.List.Request): Rpc.ObjectType.List.Response
+
+    //endregion
 
+    //region FILES commands
+
     @Throws(Exception::class)
-    fun pageCreate(request: Page.Create.Request): Page.Create.Response
+    fun fileListOffload(request: Rpc.File.ListOffload.Request): Rpc.File.ListOffload.Response
 
     @Throws(Exception::class)
-    fun versionGet(request: Version.Get.Request): Version.Get.Response
+    fun fileUpload(request: Rpc.File.Upload.Request): Rpc.File.Upload.Response
+
+    //endregion
+
+    //region UNSPLASH commands
 
     @Throws(Exception::class)
-    fun blockListSetFields(request: BlockList.Set.Fields.Request): BlockList.Set.Fields.Response
+    fun unsplashSearch(request: Rpc.Unsplash.Search.Request): Rpc.Unsplash.Search.Response
 
     @Throws(Exception::class)
-    fun objectTypeList(request: ObjectType.List.Request): ObjectType.List.Response
+    fun unsplashDownload(request: Rpc.Unsplash.Download.Request): Rpc.Unsplash.Download.Response
 
+    //endregion
+
+    //region BLOCK commands
+
     @Throws(Exception::class)
-    fun objectTypeCreate(request: ObjectType.Create.Request): ObjectType.Create.Response
+    fun blockCreate(request: Rpc.Block.Create.Request): Rpc.Block.Create.Response
 
     @Throws(Exception::class)
-    fun blockCreateSet(request: Block.CreateSet.Request): Block.CreateSet.Response
+    fun blockPaste(request: Rpc.Block.Paste.Request): Rpc.Block.Paste.Response
 
     @Throws(Exception::class)
-    fun blockDataViewActiveSet(request: Block.Dataview.ViewSetActive.Request): Block.Dataview.ViewSetActive.Response
+    fun blockCopy(request: Rpc.Block.Copy.Request): Rpc.Block.Copy.Response
 
     @Throws(Exception::class)
-    fun blockDataViewRelationAdd(request: Block.Dataview.RelationAdd.Request): Block.Dataview.RelationAdd.Response
+    fun blockUpload(request: Rpc.Block.Upload.Request): Rpc.Block.Upload.Response
 
     @Throws(Exception::class)
-    fun blockDataViewRelationDelete(request: Block.Dataview.RelationDelete.Request): Block.Dataview.RelationDelete.Response
+    fun blockMerge(request: Rpc.Block.Merge.Request): Rpc.Block.Merge.Response
 
     @Throws(Exception::class)
-    fun blockDataViewViewUpdate(request: Block.Dataview.ViewUpdate.Request): Block.Dataview.ViewUpdate.Response
+    fun blockSplit(request: Rpc.Block.Split.Request): Rpc.Block.Split.Response
 
     @Throws(Exception::class)
-    fun blockDataViewViewDelete(request: Block.Dataview.ViewDelete.Request): Block.Dataview.ViewDelete.Response
+    fun blockListDelete(request: Rpc.Block.ListDelete.Request): Rpc.Block.ListDelete.Response
 
     @Throws(Exception::class)
-    fun blockDataViewRecordCreate(request: Block.Dataview.RecordCreate.Request): Block.Dataview.RecordCreate.Response
+    fun blockListMoveToExistingObject(request: Rpc.Block.ListMoveToExistingObject.Request): Rpc.Block.ListMoveToExistingObject.Response
 
     @Throws(Exception::class)
-    fun blockDataViewRecordUpdate(request: Block.Dataview.RecordUpdate.Request): Block.Dataview.RecordUpdate.Response
+    fun blockListMoveToNewObject(request: Rpc.Block.ListMoveToNewObject.Request): Rpc.Block.ListMoveToNewObject.Response
 
     @Throws(Exception::class)
-    fun blockDataViewViewCreate(request: Block.Dataview.ViewCreate.Request): Block.Dataview.ViewCreate.Response
+    fun blockListSetFields(request: Rpc.Block.ListSetFields.Request): Rpc.Block.ListSetFields.Response
 
     @Throws(Exception::class)
-    fun blockDataViewRecordRelationOptionAdd(request: Block.Dataview.RecordRelationOptionAdd.Request): Block.Dataview.RecordRelationOptionAdd.Response
+    fun blockListSetBackgroundColor(request: Rpc.Block.ListSetBackgroundColor.Request): Rpc.Block.ListSetBackgroundColor.Response
 
     @Throws(Exception::class)
-    fun objectRelationOptionAdd(request: Object.RelationOptionAdd.Request): Object.RelationOptionAdd.Response
+    fun blockListSetAlign(request: Rpc.Block.ListSetAlign.Request): Rpc.Block.ListSetAlign.Response
 
     @Throws(Exception::class)
-    fun objectSearch(request: Object.Search.Request): Object.Search.Response
+    fun blockListDuplicate(request: Rpc.Block.ListDuplicate.Request): Rpc.Block.ListDuplicate.Response
 
     @Throws(Exception::class)
-    fun objectSearchSubscribe(request: Object.SearchSubscribe.Request): Object.SearchSubscribe.Response
+    fun blockListTurnInto(request: Rpc.Block.ListTurnInto.Request): Rpc.Block.ListTurnInto.Response
 
     @Throws(Exception::class)
-    fun objectIdsSubscribe(request: Object.IdsSubscribe.Request): Object.IdsSubscribe.Response
+    fun blockListSetDivStyle(request: Rpc.BlockDiv.ListSetStyle.Request): Rpc.BlockDiv.ListSetStyle.Response
 
     @Throws(Exception::class)
-    fun objectSearchUnsubscribe(request: Object.SearchUnsubscribe.Request): Object.SearchUnsubscribe.Response
+    fun blockBookmarkFetch(request: Rpc.BlockBookmark.Fetch.Request): Rpc.BlockBookmark.Fetch.Response
 
     @Throws(Exception::class)
-    fun relationListAvailable(request: Object.RelationListAvailable.Request): Object.RelationListAvailable.Response
+    fun blockBookmarkCreateAndFetch(request: Rpc.BlockBookmark.CreateAndFetch.Request): Rpc.BlockBookmark.CreateAndFetch.Response
 
     @Throws(Exception::class)
-    fun objectRelationAdd(request: Object.RelationAdd.Request) : Object.RelationAdd.Response
+    fun blockLinkCreateWithObject(request: Rpc.BlockLink.CreateWithObject.Request): Rpc.BlockLink.CreateWithObject.Response
 
     @Throws(Exception::class)
-    fun objectRelationDelete(request: Object.RelationDelete.Request) : Object.RelationDelete.Response
+    fun blockRelationAdd(request: Rpc.BlockRelation.Add.Request): Rpc.BlockRelation.Add.Response
 
     @Throws(Exception::class)
-    fun debugSync(request: Debug.Sync.Request) : Debug.Sync.Response
+    fun blockRelationSetKey(request: Rpc.BlockRelation.SetKey.Request): Rpc.BlockRelation.SetKey.Response
+
+    //endregion
+
+    //region NAVIGATION commands
 
     @Throws(Exception::class)
-    fun relationSetKey(request: Block.Relation.SetKey.Request) : Block.Relation.SetKey.Response
+    fun navigationGetObjectInfoWithLinks(request: Rpc.Navigation.GetObjectInfoWithLinks.Request): Rpc.Navigation.GetObjectInfoWithLinks.Response
 
     @Throws(Exception::class)
-    fun blockAddRelation(request: Block.Relation.Add.Request) : Block.Relation.Add.Response
+    fun navigationListObjects(request: Rpc.Navigation.ListObjects.Request): Rpc.Navigation.ListObjects.Response
 
+    //endregion
+
+    //region DATA VIEW commands
+
     @Throws(Exception::class)
-    fun blockListTurnInto(request: BlockList.TurnInto.Request): BlockList.TurnInto.Response
+    fun blockDataViewActiveSet(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response
 
     @Throws(Exception::class)
-    fun blockListSetTextMark(request: BlockList.Set.Text.Mark.Request): BlockList.Set.Text.Mark.Response
+    fun blockDataViewViewCreate(request: Rpc.BlockDataview.View.Create.Request): Rpc.BlockDataview.View.Create.Response
 
     @Throws(Exception::class)
-    fun blockSetObjectType(request: Block.ObjectType.Set.Request): Block.ObjectType.Set.Response
+    fun blockDataViewViewUpdate(request: Rpc.BlockDataview.View.Update.Request): Rpc.BlockDataview.View.Update.Response
 
     @Throws(Exception::class)
-    fun featuredRelationsAdd(request: Object.FeaturedRelation.Add.Request): Object.FeaturedRelation.Add.Response
+    fun blockDataViewViewDelete(request: Rpc.BlockDataview.View.Delete.Request): Rpc.BlockDataview.View.Delete.Response
 
     @Throws(Exception::class)
-    fun featuredRelationsRemove(request: Object.FeaturedRelation.Remove.Request): Object.FeaturedRelation.Remove.Response
+    fun blockDataViewRecordCreate(request: Rpc.BlockDataviewRecord.Create.Request): Rpc.BlockDataviewRecord.Create.Response
 
     @Throws(Exception::class)
-    fun objectSetIsFavorite(request: Object.SetIsFavorite.Request): Object.SetIsFavorite.Response
+    fun blockDataViewRecordUpdate(request: Rpc.BlockDataviewRecord.Update.Request): Rpc.BlockDataviewRecord.Update.Response
 
     @Throws(Exception::class)
-    fun objectSetIsArchived(request: Object.SetIsArchived.Request): Object.SetIsArchived.Response
+    fun blockDataViewRecordRelationOptionAdd(request: Rpc.BlockDataviewRecord.RelationOption.Add.Request): Rpc.BlockDataviewRecord.RelationOption.Add.Response
 
     @Throws(Exception::class)
-    fun objectListSetIsArchived(request: ObjectList.Set.IsArchived.Request): ObjectList.Set.IsArchived.Response
+    fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response
 
     @Throws(Exception::class)
-    fun objectListDelete(request: ObjectList.Delete.Request): ObjectList.Delete.Response
+    fun blockDataViewRelationDelete(request: Rpc.BlockDataview.Relation.Delete.Request): Rpc.BlockDataview.Relation.Delete.Response
+
+    //endregion
 
+    //region TEXT BLOCK commands
+
     @Throws(Exception::class)
-    fun objectSetLayout(request: Object.SetLayout.Request): Object.SetLayout.Response
+    fun blockTextSetText(request: Rpc.BlockText.SetText.Request): Rpc.BlockText.SetText.Response
 
     @Throws(Exception::class)
-    fun exportLocalStore(request: ExportLocalstore.Request): ExportLocalstore.Response
+    fun blockTextSetChecked(request: Rpc.BlockText.SetChecked.Request): Rpc.BlockText.SetChecked.Response
 
     @Throws(Exception::class)
-    fun fileListOffload(request: FileList.Offload.Request): FileList.Offload.Response
+    fun blockTextListSetColor(request: Rpc.BlockText.ListSetColor.Request): Rpc.BlockText.ListSetColor.Response
 
     @Throws(Exception::class)
-    fun unsplashSearch(request: UnsplashSearch.Request) : UnsplashSearch.Response
+    fun blockTextListSetMark(request: Rpc.BlockText.ListSetMark.Request): Rpc.BlockText.ListSetMark.Response
 
     @Throws(Exception::class)
-    fun unsplashDownload(request: UnsplashDownload.Request) : UnsplashDownload.Response
+    fun blockTextListSetStyle(request: Rpc.BlockText.ListSetStyle.Request): Rpc.BlockText.ListSetStyle.Response
+
+    //endregion
 
+    //region DEBUG commands
+
     @Throws(Exception::class)
-    fun objectDuplicate(request: ObjectDuplicate.Request) : ObjectDuplicate.Response
+    fun debugSync(request: Rpc.Debug.Sync.Request): Rpc.Debug.Sync.Response
 
     @Throws(Exception::class)
-    fun applyTemplate(request: ApplyTemplate.Request): ApplyTemplate.Response
+    fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
+
+    //endregion
 }

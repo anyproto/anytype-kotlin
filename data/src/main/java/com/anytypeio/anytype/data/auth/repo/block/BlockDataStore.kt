@@ -41,7 +41,6 @@ interface BlockDataStore {
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun move(command: Command.Move): Payload
     suspend fun unlink(command: Command.Unlink): Payload
-    suspend fun getConfig(): Config
     suspend fun createPage(
         ctx: Id?,
         emoji: String?,

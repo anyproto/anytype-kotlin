@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import org.junit.Before
@@ -32,6 +33,9 @@ class DeleteAccountViewModelTest {
     @Mock
     lateinit var helper: DateHelper
 
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     lateinit var restoreAccount: RestoreAccount
     lateinit var logout: Logout
 
@@ -44,7 +48,8 @@ class DeleteAccountViewModelTest {
             repo = repo
         )
         logout = Logout(
-            repo = repo
+            repo = repo,
+            provider = configStorage
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

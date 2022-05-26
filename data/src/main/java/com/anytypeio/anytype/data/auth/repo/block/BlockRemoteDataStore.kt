@@ -19,8 +19,6 @@ import com.anytypeio.anytype.core_models.SearchResult
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
-    override suspend fun getConfig() = remote.getConfig()
-
     override suspend fun openDashboard(
         contextId: String,
         id: String

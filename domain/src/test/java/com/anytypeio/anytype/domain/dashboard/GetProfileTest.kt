@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.nhaarman.mockitokotlin2.doReturn
@@ -31,6 +32,9 @@ class GetProfileTest {
     @Mock
     lateinit var channel: SubscriptionEventChannel
 
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     private lateinit var usecase: GetProfile
 
     val config = Config(
@@ -44,7 +48,8 @@ class GetProfileTest {
         MockitoAnnotations.initMocks(this)
         usecase = GetProfile(
             repo = repo,
-            channel = channel
+            channel = channel,
+            provider = configStorage
         )
     }
 
@@ -60,8 +65,8 @@ class GetProfileTest {
             )
         )
 
-        repo.stub {
-            onBlocking { getConfig() } doReturn config
+        configStorage.stub {
+            onBlocking { get() } doReturn config
         }
 
         channel.stub {
@@ -116,8 +121,8 @@ class GetProfileTest {
             )
         )
 
-        repo.stub {
-            onBlocking { getConfig() } doReturn config
+        configStorage.stub {
+            onBlocking { get() } doReturn config
         }
 
         channel.stub {
@@ -185,8 +190,8 @@ class GetProfileTest {
             )
         )
 
-        repo.stub {
-            onBlocking { getConfig() } doReturn config
+        configStorage.stub {
+            onBlocking { get() } doReturn config
         }
 
         channel.stub {
@@ -265,8 +270,8 @@ class GetProfileTest {
             )
         )
 
-        repo.stub {
-            onBlocking { getConfig() } doReturn config
+        configStorage.stub {
+            onBlocking { get() } doReturn config
         }
 
         channel.stub {

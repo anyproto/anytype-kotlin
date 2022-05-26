@@ -2,9 +2,9 @@ package com.anytypeio.anytype.presentation.auth
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
-import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory

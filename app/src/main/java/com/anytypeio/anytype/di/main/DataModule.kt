@@ -20,7 +20,6 @@ import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataStoreFactory
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemoteDataStore
-import com.anytypeio.anytype.data.auth.repo.config.Configurator
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
@@ -66,12 +65,10 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        factory: AuthDataStoreFactory,
-        configurator: Configurator
+        factory: AuthDataStoreFactory
     ): AuthRepository {
         return AuthDataRepository(
-            factory = factory,
-            configurator = configurator
+            factory = factory
         )
     }
 

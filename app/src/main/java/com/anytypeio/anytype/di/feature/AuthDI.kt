@@ -5,10 +5,18 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerFeature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
-import com.anytypeio.anytype.domain.auth.interactor.*
+import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
+import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
+import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
+import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
+import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
+import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
+import com.anytypeio.anytype.domain.auth.interactor.StartAccount
+import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
@@ -41,6 +49,7 @@ interface AuthSubComponent {
     }
 
     fun inject(fragment: InvitationFragment)
+
     @ExperimentalMaterialApi
     fun inject(fragment: AboutAnalyticsFragment)
 
@@ -261,10 +270,12 @@ object SetupSelectedAccountModule {
     @PerScreen
     fun provideSelectAccountUseCase(
         repository: AuthRepository,
+        configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider
     ): StartAccount {
         return StartAccount(
             repository = repository,
+            configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider
         )
     }
@@ -358,7 +369,7 @@ object KeychainLoginModule {
     @PerScreen
     fun provideConvertWallet(
         authRepository: AuthRepository
-    ) : ConvertWallet {
+    ): ConvertWallet {
         return ConvertWallet(
             authRepository = authRepository
         )

@@ -1,10 +1,9 @@
 syntax = "proto3";
 package anytype.model;
+option go_package = "pkg/lib/pb/model";
 
 import "google/protobuf/struct.proto";
 import "models.proto";
-
-option go_package = "pkg/lib/pb/model";
 
 message ObjectInfo {
     string id = 1;

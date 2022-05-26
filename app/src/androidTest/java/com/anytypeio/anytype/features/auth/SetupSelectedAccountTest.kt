@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.auth.interactor.StartAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
@@ -65,6 +66,9 @@ class SetupSelectedAccountTest {
     @Mock
     lateinit var pathProvider: PathProvider
 
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     lateinit var storeObjectTypes: StoreObjectTypes
 
     @Before
@@ -72,7 +76,8 @@ class SetupSelectedAccountTest {
         MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
             repository = authRepository,
-            featuresConfigProvider = featuresConfigProvider
+            featuresConfigProvider = featuresConfigProvider,
+            configStorage = configStorage
         )
         storeObjectTypes = StoreObjectTypes(
             repo = blockRepository,

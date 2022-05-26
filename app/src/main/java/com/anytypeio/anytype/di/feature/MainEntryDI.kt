@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -64,10 +65,12 @@ object MainEntryModule {
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider,
+        configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
+        configStorage = configStorage,
         featuresConfigProvider = featuresConfigProvider
     )
 
@@ -112,7 +115,11 @@ object MainEntryModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideLogoutUseCase(repo: AuthRepository): Logout = Logout(
-        repo = repo
+    fun provideLogoutUseCase(
+        repo: AuthRepository,
+        provider: ConfigStorage
+    ): Logout = Logout(
+        repo = repo,
+        provider
     )
 }

@@ -2,14 +2,17 @@ package com.anytypeio.anytype.presentation.auth
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
-import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
@@ -50,6 +53,9 @@ class SetupSelectedAccountViewModelTest {
     lateinit var featuresConfigProvider: FeaturesConfigProvider
 
     @Mock
+    lateinit var configStorage: ConfigStorage
+
+    @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     lateinit var storeObjectTypes: StoreObjectTypes
@@ -61,7 +67,8 @@ class SetupSelectedAccountViewModelTest {
         MockitoAnnotations.openMocks(this)
         startAccount = StartAccount(
             repository = authRepo,
-            featuresConfigProvider = featuresConfigProvider
+            featuresConfigProvider = featuresConfigProvider,
+            configStorage = configStorage
         )
         storeObjectTypes = StoreObjectTypes(
             repo = blockRepo,
@@ -105,7 +112,7 @@ class SetupSelectedAccountViewModelTest {
         )
     }
 
-//    @Test
+    //    @Test
     fun `should hide migration-in-progress msg if succeeded to start account`() {
 
         // SETUP
@@ -120,15 +127,20 @@ class SetupSelectedAccountViewModelTest {
                     id = any(),
                     path = any()
                 )
-            } doReturn Triple(
-                Account(
+            } doReturn AccountSetup(
+                account = Account(
                     id = MockDataFactory.randomUuid(),
                     name = MockDataFactory.randomString(),
                     avatar = null,
                     color = null
                 ),
-                FeaturesConfig(),
-                AccountStatus.Active
+                features = FeaturesConfig(),
+                status = AccountStatus.Active,
+                config = Config(
+                    home = MockDataFactory.randomUuid(),
+                    gateway = MockDataFactory.randomUuid(),
+                    profile = MockDataFactory.randomUuid()
+                )
             )
         }
 
@@ -150,7 +162,7 @@ class SetupSelectedAccountViewModelTest {
         )
     }
 
-//    @Test
+    //    @Test
     fun `should hide migration-in-progress msg if failed to start account`() {
 
         // SETUP

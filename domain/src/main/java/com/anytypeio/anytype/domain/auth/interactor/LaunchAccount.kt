@@ -4,6 +4,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
@@ -15,6 +16,7 @@ class LaunchAccount(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider,
     private val context: CoroutineContext = Dispatchers.IO,
+    private val configStorage: ConfigStorage,
     private val featuresConfigProvider: FeaturesConfigProvider
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
@@ -22,16 +24,16 @@ class LaunchAccount(
         repository.startAccount(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath()
-        ).let { pair ->
-            val (account, config, status) = pair
-            repository.updateAccount(account)
+        ).let { setup ->
+            repository.updateAccount(setup.account)
             featuresConfigProvider.set(
-                enableDataView = config.enableDataView ?: false,
-                enableDebug = config.enableDebug ?: false,
-                enableChannelSwitch = config.enableChannelSwitch ?: false,
-                enableSpaces = config.enableSpaces ?: false
+                enableDataView = setup.features.enableDataView ?: false,
+                enableDebug = setup.features.enableDebug ?: false,
+                enableChannelSwitch = setup.features.enableChannelSwitch ?: false,
+                enableSpaces = setup.features.enableSpaces ?: false
             )
-            Either.Right(account.id)
+            configStorage.set(config = setup.config)
+            Either.Right(setup.account.id)
         }
     } catch (e: Throwable) {
         Either.Left(e)

@@ -1,12 +1,11 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
-import anytype.Rpc.BlockList
-import anytype.Rpc.BlockList.Set.Fields.Request.BlockField
 import anytype.model.Block
 import anytype.model.ObjectInfo
 import anytype.model.ObjectInfoWithLinks
 import anytype.model.Range
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
@@ -22,9 +21,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.middleware.BuildConfig
+import com.anytypeio.anytype.middleware.auth.core
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MObjectType
 import com.anytypeio.anytype.middleware.mappers.MRelation
@@ -35,7 +36,6 @@ import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateAccountResponse
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
-import com.anytypeio.anytype.middleware.model.SelectAccountResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import timber.log.Timber
 
@@ -43,49 +43,9 @@ class Middleware(
     private val service: MiddlewareService,
     private val factory: MiddlewareFactory
 ) {
-    private val iconEmojiKey = "iconEmoji"
-    private val iconImageKey = "iconImage"
-    private val coverIdKey = "coverId"
-    private val coverTypeKey = "coverType"
-    private val nameKey = "name"
-    private val typeKey = "type"
-    private val layoutKey = "layout"
-    private val isDraftKey = "isDraft"
 
     @Throws(Exception::class)
-    fun getConfig(): Config {
-
-        val request = Rpc.Config.Get.Request()
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.configGet(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return Config(
-            home = response.homeBlockId,
-            profile = response.profileBlockId,
-            gateway = response.gatewayUrl
-        )
-    }
-
-    @Throws(Exception::class)
-    fun createWallet(path: String): CreateWalletResponse {
-
-        val request = Rpc.Wallet.Create.Request(rootPath = path)
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.walletCreate(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return CreateWalletResponse(response.mnemonic)
-    }
-
-    @Throws(Exception::class)
-    fun createAccount(
+    fun accountCreate(
         name: String,
         path: String?,
         invitationCode: String
@@ -115,7 +75,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun deleteAccount() : AccountStatus {
+    fun accountDelete() : AccountStatus {
         val request = Rpc.Account.Delete.Request(
             revert = false
         )
@@ -128,7 +88,15 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun restoreAccount() : AccountStatus {
+    fun accountRecover() {
+        val request = Rpc.Account.Recover.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.accountRecover(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun accountRestore() : AccountStatus {
         val request = Rpc.Account.Delete.Request(
             revert = true
         )
@@ -141,28 +109,19 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun recoverWallet(path: String, mnemonic: String) {
-        val request = Rpc.Wallet.Recover.Request(
-            mnemonic = mnemonic,
+    fun accountSelect(id: String, path: String): AccountSetup {
+        val request = Rpc.Account.Select.Request(
+            id = id,
             rootPath = path
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.walletRecover(request)
+        val response = service.accountSelect(request)
         if (BuildConfig.DEBUG) logResponse(response)
+        return response.core()
     }
 
     @Throws(Exception::class)
-    fun convertWallet(entropy: String): String {
-        val request = Rpc.Wallet.Convert.Request(entropy = entropy)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.walletConvert(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.mnemonic
-    }
-
-    @Throws(Exception::class)
-    fun logout(clearLocalRepositoryData: Boolean) {
+    fun accountStop(clearLocalRepositoryData: Boolean) {
         val request: Rpc.Account.Stop.Request = Rpc.Account.Stop.Request(
             removeData = clearLocalRepositoryData
         )
@@ -172,269 +131,58 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun recoverAccount() {
-        val request = Rpc.Account.Recover.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountRecover(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
-    fun selectAccount(id: String, path: String): SelectAccountResponse {
-
-        val request = Rpc.Account.Select.Request(
-            id = id,
-            rootPath = path
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.accountSelect(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        val acc = response.account
-        val config = response.config
-
-        checkNotNull(acc)
-
-        return SelectAccountResponse(
-            id = acc.id,
-            name = acc.name,
-            avatar = acc.avatar,
-            enableDataView = config?.enableDataview,
-            enableDebug = config?.enableDebug,
-            enableChannelSwitch = config?.enableReleaseChannelSwitch,
-            enableSpaces = config?.enableSpaces,
-            accountStatus = acc.status?.core()
-        )
-    }
-
-    @Throws(Exception::class)
-    fun openDashboard(contextId: String, id: String): Payload {
-        val request: Rpc.Block.Open.Request = Rpc.Block.Open.Request(
-            contextId = contextId,
-            blockId = id
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockOpen(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun openBlock(id: String): Payload {
-        val request = Rpc.Block.Open.Request(blockId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockOpen(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun showBlock(id: String): Payload {
-        val request = Rpc.Block.Show.Request(blockId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockShow(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun createPage(
-        ctx: Id?,
-        emoji: String?,
-        isDraft: Boolean?,
-        type: String?,
-        template: Id?
-    ): Id {
-
-        val details: MutableMap<String, Any> = mutableMapOf()
-        emoji?.let { details[iconEmojiKey] = it }
-        isDraft?.let { details[isDraftKey] = it }
-        type?.let { details[typeKey] = it }
-
-        val request = Rpc.Block.CreatePage.Request(
-            contextId = ctx.orEmpty(),
-            details = details,
-            position = Block.Position.Inner,
-            templateId = template.orEmpty()
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockCreatePage(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.targetId
-    }
-
-    @Throws(Exception::class)
-    fun closePage(id: String) {
-        val request = Rpc.Block.Close.Request(blockId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockClose(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
-    fun closeDashboard(id: String) {
-        val request = Rpc.Block.Close.Request(blockId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockClose(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
-    fun updateDocumentTitle(command: Command.UpdateTitle) {
-
-        val detail = Rpc.Block.Set.Details.Detail(
-            key = nameKey,
-            value_ = command.title
-        )
-
-        val request = Rpc.Block.Set.Details.Request(
+    fun blockBookmarkCreateAndFetch(command: Command.CreateBookmark): Payload {
+        val request = Rpc.BlockBookmark.CreateAndFetch.Request(
             contextId = command.context,
-            details = listOf(detail)
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockSetDetails(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
-    fun updateText(
-        contextId: String,
-        blockId: String,
-        text: String,
-        marks: List<Block.Content.Text.Mark>
-    ) {
-        val markup: Block.Content.Text.Marks = Block.Content.Text.Marks(marks)
-
-        val request = Rpc.Block.Set.Text.TText.Request(
-            contextId = contextId,
-            blockId = blockId,
-            text = text,
-            marks = markup
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockSetTextText(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
-    fun updateCheckbox(
-        context: String,
-        target: String,
-        isChecked: Boolean
-    ): Payload {
-        val request = Rpc.Block.Set.Text.Checked.Request(
-            contextId = context,
-            blockId = target,
-            checked = isChecked
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetTextChecked(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun updateTextStyle(command: Command.UpdateStyle): Payload {
-
-        val style = command.style.toMiddlewareModel()
-
-        val request: BlockList.Set.Text.Style.Request = BlockList.Set.Text.Style.Request(
-            style = style,
-            blockIds = command.targets,
-            contextId = command.context
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockListSetTextStyle(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun updateTextColor(command: Command.UpdateTextColor): Payload {
-        val request = BlockList.Set.Text.Color.Request(
-            contextId = command.context,
-            color = command.color,
-            blockIds = command.targets
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetTextColor(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload {
-        val request = BlockList.Set.BackgroundColor.Request(
-            contextId = command.context,
-            blockIds = command.targets,
-            color = command.color
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetBackgroundColor(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun updateAlignment(command: Command.UpdateAlignment): Payload {
-
-        val align: Block.Align = command.alignment.toMiddlewareModel()
-
-        val request = BlockList.Set.Align.Request(
-            contextId = command.context,
-            blockIds = command.targets,
-            align = align
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockListSetAlign(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun uploadBlock(command: Command.UploadBlock): Payload {
-        val request = Rpc.Block.Upload.Request(
-            filePath = command.filePath,
+            targetId = command.target,
             url = command.url,
-            contextId = command.contextId,
-            blockId = command.blockId
+            position = command.position.toMiddlewareModel()
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockUpload(request)
+        val response = service.blockBookmarkCreateAndFetch(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun createBlock(
+    fun blockBookmarkFetch(command: Command.SetupBookmark): Payload {
+        val request = Rpc.BlockBookmark.Fetch.Request(
+            contextId = command.context,
+            blockId = command.target,
+            url = command.url
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockBookmarkFetch(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockCopy(command: Command.Copy): Response.Clipboard.Copy {
+        val range: Range? = command.range?.let {
+            Range(
+                from = it.first,
+                to = it.last
+            )
+        }
+        val blocks: List<Block> = command.blocks.map { it.toMiddlewareModel() }
+        val request = Rpc.Block.Copy.Request(
+            contextId = command.context,
+            selectedTextRange = range,
+            blocks = blocks
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockCopy(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Response.Clipboard.Copy(
+            response.textSlot,
+            response.htmlSlot,
+            response.anySlot.toCoreModels()
+        )
+    }
+
+    @Throws(Exception::class)
+    fun blockCreate(
         contextId: String,
         targetId: String,
         position: Position,
@@ -454,7 +202,484 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun replace(command: Command.Replace): Pair<String, Payload> {
+    fun blockDataViewActiveSet(
+        contextId: String,
+        blockId: String,
+        viewId: String,
+        offset: Int,
+        limit: Int
+    ): Payload {
+        val request = Rpc.BlockDataview.View.SetActive.Request(
+            contextId = contextId,
+            blockId = blockId,
+            viewId = viewId,
+            offset = offset,
+            limit = limit
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewActiveSet(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewRecordCreate(
+        context: String,
+        target: String,
+        template: Id?
+    ): Map<String, Any?> {
+        val request = Rpc.BlockDataviewRecord.Create.Request(
+            contextId = context,
+            blockId = target,
+            templateId = template.orEmpty()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRecordCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.record?.toMap() ?: emptyMap()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewRecordRelationOptionAdd(
+        ctx: Id,
+        dataview: Id,
+        relation: Id,
+        record: Id,
+        name: String,
+        color: String
+    ): Pair<Payload, Id?> {
+        val request = Rpc.BlockDataviewRecord.RelationOption.Add.Request(
+            contextId = ctx,
+            blockId = dataview,
+            relationKey = relation,
+            recordId = record,
+            option = MRelationOption(text = name, color = color)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRecordRelationOptionAdd(request)
+        val option = response.option?.id
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Pair(response.event.toPayload(), option)
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewRecordUpdate(
+        context: String,
+        target: String,
+        record: String,
+        values: Map<String, Any?>
+    ) {
+        val request = Rpc.BlockDataviewRecord.Update.Request(
+            contextId = context,
+            blockId = target,
+            recordId = record,
+            record = values
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRecordUpdate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewRelationAdd(
+        context: String,
+        target: String,
+        name: String,
+        format: Relation.Format,
+        limitObjectTypes: List<Id>
+    ): Pair<Id, Payload> {
+        val relation = MRelation(
+            name = name,
+            format = format.toMiddlewareModel(),
+            objectTypes = limitObjectTypes
+        )
+        val request = Rpc.BlockDataview.Relation.Add.Request(
+            contextId = context,
+            blockId = target,
+            relation = relation
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Pair(response.relationKey, response.event.toPayload())
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewRelationAdd(ctx: Id, dv: Id, relation: Id): Payload {
+        val request = Rpc.BlockDataview.Relation.Add.Request(
+            contextId = ctx,
+            blockId = dv,
+            relation = MRelation(
+                key = relation
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewRelationDelete(ctx: Id, dv: Id, relation: Id): Payload {
+        val request = Rpc.BlockDataview.Relation.Delete.Request(
+            contextId = ctx,
+            blockId = dv,
+            relationKey = relation
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewRelationDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewViewCreate(
+        ctx: String,
+        target: String,
+        name: String,
+        type: DVViewerType
+    ): Payload {
+        val request = Rpc.BlockDataview.View.Create.Request(
+            contextId = ctx,
+            blockId = target,
+            view = Block.Content.Dataview.View(
+                name = name,
+                type = type.toMiddlewareModel()
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewViewCreate(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload {
+        val request = Rpc.BlockDataview.View.Create.Request(
+            contextId = context,
+            blockId = target,
+            view = viewer.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewViewDelete(
+        ctx: String,
+        dataview: String,
+        viewer: String
+    ): Payload {
+        val request = Rpc.BlockDataview.View.Delete.Request(
+            contextId = ctx,
+            blockId = dataview,
+            viewId = viewer
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewViewUpdate(
+        context: String,
+        target: String,
+        viewer: DVViewer
+    ): Payload {
+        val request = Rpc.BlockDataview.View.Update.Request(
+            contextId = context,
+            blockId = target,
+            viewId = viewer.id,
+            view = viewer.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockDataViewViewUpdate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockLinkCreateWithObject(
+        ctx: Id?,
+        emoji: String?,
+        isDraft: Boolean?,
+        type: String?,
+        template: Id?
+    ): Id {
+        val details: MutableMap<String, Any> = mutableMapOf()
+        emoji?.let { details[Relations.ICON_EMOJI] = it }
+        isDraft?.let { details[Relations.IS_DRAFT] = it }
+        type?.let { details[Relations.TYPE] = it }
+
+        val request = Rpc.BlockLink.CreateWithObject.Request(
+            contextId = ctx.orEmpty(),
+            details = details,
+            position = Block.Position.Inner,
+            templateId = template.orEmpty()
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+
+        val response = service.blockLinkCreateWithObject(request)
+
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.targetId
+    }
+
+    @Throws(Exception::class)
+    fun blockLinkCreateWithObject(command: Command.CreateDocument): Triple<String, String, Payload> {
+
+        val details: MutableMap<String, Any> = mutableMapOf()
+
+        command.emoji?.let { details[Relations.ICON_EMOJI] = it }
+        command.type?.let { details[Relations.TYPE] = it }
+        command.layout?.let { details[Relations.LAYOUT] = it.toMiddlewareModel().value.toDouble() }
+
+        val position: Block.Position = command.position.toMiddlewareModel()
+
+        val request = Rpc.BlockLink.CreateWithObject.Request(
+            contextId = command.context,
+            targetId = command.target,
+            position = position,
+            details = details,
+            templateId = command.template.orEmpty()
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+
+        val response = service.blockLinkCreateWithObject(request)
+
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return Triple(
+            response.blockId,
+            response.targetId,
+            response.event.toPayload()
+        )
+    }
+
+    @Throws(Exception::class)
+    fun blockListDelete(command: Command.Unlink): Payload {
+        val request = Rpc.Block.ListDelete.Request(
+            contextId = command.context,
+            blockIds = command.targets
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockListDuplicate(command: Command.Duplicate): Pair<List<Id>, Payload> {
+        val request = Rpc.Block.ListDuplicate.Request(
+            contextId = command.context,
+            targetId = command.target,
+            blockIds = command.blocks,
+            position = Block.Position.Bottom
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListDuplicate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return Pair(response.blockIds, response.event.toPayload())
+    }
+
+    @Throws(Exception::class)
+    fun blockListMoveToExistingObject(command: Command.Move): Payload {
+        val position: Block.Position = command.position.toMiddlewareModel()
+
+        val request = Rpc.Block.ListMoveToExistingObject.Request(
+            contextId = command.ctx,
+            targetContextId = command.targetContextId,
+            position = position,
+            blockIds = command.blockIds,
+            dropTargetId = command.targetId
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListMoveToExistingObject(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockListMoveToNewObject(command: Command.TurnIntoDocument): List<String> {
+        val request = Rpc.Block.ListMoveToNewObject.Request(
+            contextId = command.context,
+            blockIds = command.targets
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListMoveToNewObject(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return listOf(response.linkId)
+    }
+
+    @Throws(Exception::class)
+    fun blockListSetAlign(command: Command.UpdateAlignment): Payload {
+
+        val align: Block.Align = command.alignment.toMiddlewareModel()
+
+        val request = Rpc.Block.ListSetAlign.Request(
+            contextId = command.context,
+            blockIds = command.targets,
+            align = align
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListSetAlign(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockListSetBackgroundColor(command: Command.UpdateBackgroundColor): Payload {
+        val request = Rpc.Block.ListSetBackgroundColor.Request(
+            contextId = command.context,
+            blockIds = command.targets,
+            color = command.color
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListSetBackgroundColor(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockListSetDivStyle(command: Command.UpdateDivider): Payload {
+        val style = command.style.toMiddlewareModel()
+        val request = Rpc.BlockDiv.ListSetStyle.Request(
+            contextId = command.context,
+            blockIds = command.targets,
+            style = style
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListSetDivStyle(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockListSetFields(command: Command.SetFields): Payload {
+        val fields: MutableList<Rpc.Block.ListSetFields.Request.BlockField> = ArrayList()
+        for (i in command.fields.indices) {
+            val (first, second) = command.fields[i]
+            val field = Rpc.Block.ListSetFields.Request.BlockField(
+                blockId = first,
+                fields = second.map
+            )
+            fields.add(field)
+        }
+        val request = Rpc.Block.ListSetFields.Request(
+            contextId = command.context,
+            blockFields = fields
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListSetFields(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockListTurnInto(
+        context: String,
+        targets: List<String>,
+        style: CBTextStyle
+    ): Payload {
+        val request = Rpc.Block.ListTurnInto.Request(
+            contextId = context,
+            blockIds = targets,
+            style = style.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockListTurnInto(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockMerge(command: Command.Merge): Payload {
+        val request = Rpc.Block.Merge.Request(
+            contextId = command.context,
+            firstBlockId = command.pair.first,
+            secondBlockId = command.pair.second
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockMerge(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockPaste(command: Command.Paste): Response.Clipboard.Paste {
+
+        val range = Range(
+            from = command.range.first,
+            to = command.range.last
+        )
+
+        val blocks: List<Block> = command.blocks.map { it.toMiddlewareModel() }
+
+        val request: Rpc.Block.Paste.Request = Rpc.Block.Paste.Request(
+            contextId = command.context,
+            focusedBlockId = command.focus,
+            textSlot = command.text,
+            htmlSlot = command.html.orEmpty(),
+            selectedTextRange = range,
+            anySlot = blocks,
+            selectedBlockIds = command.selected
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockPaste(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Response.Clipboard.Paste(
+            response.caretPosition,
+            response.isSameBlockCaret,
+            response.blockIds,
+            response.event.toPayload()
+        )
+    }
+
+    //todo Add Relation mapping
+    @Throws(Exception::class)
+    fun blockRelationAdd(command: Command.AddRelationToBlock): Payload {
+        val request = Rpc.BlockRelation.Add.Request(
+            contextId = command.contextId,
+            blockId = command.blockId,
+            relation = null
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockRelationSetKey(command: Command.SetRelationKey): Payload {
+        val request = Rpc.BlockRelation.SetKey.Request(
+            contextId = command.contextId,
+            blockId = command.blockId,
+            key = command.key
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockRelationSetKey(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockReplace(command: Command.Replace): Pair<String, Payload> {
 
         val model: Block = factory.create(command.prototype)
 
@@ -475,125 +700,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun createDocument(command: Command.CreateDocument): Triple<String, String, Payload> {
-
-        val details: MutableMap<String, Any> = mutableMapOf()
-
-        command.emoji?.let { details[iconEmojiKey] = it }
-        command.type?.let { details[typeKey] = it }
-        command.layout?.let { details[layoutKey] = it.toMiddlewareModel().value.toDouble() }
-
-        val position: Block.Position = command.position.toMiddlewareModel()
-
-        val request = Rpc.Block.CreatePage.Request(
-            contextId = command.context,
-            targetId = command.target,
-            position = position,
-            details = details,
-            templateId = command.template.orEmpty()
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockCreatePage(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return Triple(
-            response.blockId,
-            response.targetId,
-            response.event.toPayload()
-        )
-    }
-
-    @Throws(Exception::class)
-    fun createPage(command: Command.CreateNewDocument): Id {
-
-        val details: MutableMap<String, Any> = mutableMapOf()
-
-        command.emoji?.let { details[iconEmojiKey] = it }
-        command.name.let { details[nameKey] = it }
-        command.type?.let { details[typeKey] = it }
-
-        val request = Rpc.Page.Create.Request(
-                details = details.toMap()
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.pageCreate(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.pageId
-    }
-
-    @Throws(Exception::class)
-    fun move(command: Command.Move): Payload {
-
-        val position: Block.Position = command.position.toMiddlewareModel()
-
-        val request: BlockList.Move.Request = BlockList.Move.Request(
-            contextId = command.ctx,
-            targetContextId = command.targetContextId,
-            position = position,
-            blockIds = command.blockIds,
-            dropTargetId = command.targetId
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockListMove(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun duplicate(command: Command.Duplicate): Pair<List<Id>, Payload> {
-        val request = BlockList.Duplicate.Request(
-            contextId = command.context,
-            targetId = command.target,
-            blockIds = command.blocks,
-            position = Block.Position.Bottom
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListDuplicate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return Pair(response.blockIds, response.event.toPayload())
-    }
-
-    @Throws(Exception::class)
-    fun unlink(command: Command.Unlink): Payload {
-        val request = Rpc.Block.Unlink.Request(
-            contextId = command.context,
-            blockIds = command.targets
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockUnlink(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun merge(command: Command.Merge): Payload {
-        val request = Rpc.Block.Merge.Request(
-            contextId = command.context,
-            firstBlockId = command.pair.first,
-            secondBlockId = command.pair.second
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockMerge(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun split(command: Command.Split): Pair<String, Payload> {
+    fun blockSplit(command: Command.Split): Pair<String, Payload> {
 
         val style = command.style.toMiddlewareModel()
 
@@ -622,332 +729,182 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload {
-
-        val emojiDetail = Rpc.Block.Set.Details.Detail(
-            key = iconEmojiKey,
-            value_ = command.emoji
-        )
-
-        val imageDetail = Rpc.Block.Set.Details.Detail(
-            key = iconImageKey,
-            value_ = null
-        )
-
-        val request = Rpc.Block.Set.Details.Request(
+    fun blockTextListSetColor(command: Command.UpdateTextColor): Payload {
+        val request = Rpc.BlockText.ListSetColor.Request(
             contextId = command.context,
-            details = listOf(emojiDetail, imageDetail)
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockSetDetails(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload {
-
-        val imageDetail = Rpc.Block.Set.Details.Detail(
-            key = iconImageKey,
-            value_ = command.hash
-        )
-        val emojiDetail = Rpc.Block.Set.Details.Detail(
-            key = iconEmojiKey,
-            value_ = null
-        )
-
-        val request = Rpc.Block.Set.Details.Request(
-            contextId = command.context,
-            details = listOf(imageDetail, emojiDetail)
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockSetDetails(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun setDocumentCoverColor(
-        ctx: String,
-        color: String
-    ): Payload {
-        val coverIdDetail = Rpc.Block.Set.Details.Detail(
-            key = coverIdKey,
-            value_ = color
-        )
-        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
-            key = coverTypeKey,
-            value_ = Constants.COVER_TYPE_COLOR.toDouble()
-        )
-        val request = Rpc.Block.Set.Details.Request(
-            contextId = ctx,
-            details = listOf(coverIdDetail, coverTypeDetail)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun setDocumentCoverGradient(
-        ctx: String,
-        gradient: String
-    ): Payload {
-        val coverIdDetail = Rpc.Block.Set.Details.Detail(
-            key = coverIdKey,
-            value_ = gradient
-        )
-        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
-            key = coverTypeKey,
-            value_ = Constants.COVER_TYPE_GRADIENT.toDouble()
-        )
-        val request = Rpc.Block.Set.Details.Request(
-            contextId = ctx,
-            details = listOf(coverIdDetail, coverTypeDetail)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun setDocumentCoverImage(
-        ctx: String,
-        hash: String
-    ): Payload {
-        val coverIdDetail = Rpc.Block.Set.Details.Detail(
-            key = coverIdKey,
-            value_ = hash
-        )
-        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
-            key = coverTypeKey,
-            value_ = Constants.COVER_TYPE_UPLOADED_IMAGE.toDouble()
-        )
-        val request = Rpc.Block.Set.Details.Request(
-            contextId = ctx,
-            details = listOf(coverIdDetail, coverTypeDetail)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun removeDocumentCover(ctx: String): Payload {
-        val coverIdDetail = Rpc.Block.Set.Details.Detail(
-            key = coverIdKey,
-            value_ = null
-        )
-        val coverTypeDetail = Rpc.Block.Set.Details.Detail(
-            key = coverTypeKey,
-            value_ = Constants.COVER_TYPE_NONE.toDouble()
-        )
-        val request = Rpc.Block.Set.Details.Request(
-            contextId = ctx,
-            details = listOf(coverIdDetail, coverTypeDetail)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun removeDocumentIcon(ctx: String): Payload {
-        val imageDetail = Rpc.Block.Set.Details.Detail(
-            key = iconImageKey,
-            value_ = null
-        )
-        val emojiDetail = Rpc.Block.Set.Details.Detail(
-            key = iconEmojiKey,
-            value_ = null
-        )
-
-        val request = Rpc.Block.Set.Details.Request(
-            contextId = ctx,
-            details = listOf(imageDetail, emojiDetail)
-        )
-
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun setupBookmark(command: Command.SetupBookmark): Payload {
-        val request: Rpc.Block.Bookmark.Fetch.Request = Rpc.Block.Bookmark.Fetch.Request(
-            contextId = command.context,
-            blockId = command.target,
-            url = command.url
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockBookmarkFetch(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun createAndSetupBookmark(command: Command.CreateBookmark): Payload {
-        val request: Rpc.Block.Bookmark.CreateAndFetch.Request = Rpc.Block.Bookmark.CreateAndFetch.Request(
-            contextId = command.context,
-            targetId = command.target,
-            url = command.url,
-            position = command.position.toMiddlewareModel()
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockBookmarkCreateAndFetch(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun undo(command: Command.Undo): Payload {
-        val request = Rpc.Block.Undo.Request(contextId = command.context)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockUndo(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun redo(command: Command.Redo): Payload {
-        val request = Rpc.Block.Redo.Request(contextId = command.context)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockRedo(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun turnIntoDocument(command: Command.TurnIntoDocument): List<String> {
-        val request = BlockList.ConvertChildrenToPages.Request(
-            contextId = command.context,
+            color = command.color,
             blockIds = command.targets
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.convertChildrenToPages(request)
+        val response = service.blockTextListSetColor(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return response.linkIds
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun paste(command: Command.Paste): Response.Clipboard.Paste {
-
-        val range = Range(
-            from = command.range.first,
-            to = command.range.last
+    fun blockTextListSetMark(command: Command.UpdateBlocksMark): Payload {
+        val context = command.context
+        val mark = command.mark.toMiddlewareModel()
+        val targets = command.targets
+        val request = Rpc.BlockText.ListSetMark.Request(
+            contextId = context,
+            blockIds = targets,
+            mark = mark
         )
-
-        val blocks: List<Block> = command.blocks.map { it.toMiddlewareModel() }
-
-        val request: Rpc.Block.Paste.Request = Rpc.Block.Paste.Request(
-            contextId = command.context,
-            focusedBlockId = command.focus,
-            textSlot = command.text,
-            htmlSlot = command.html.orEmpty(),
-            selectedTextRange = range,
-            anySlot = blocks,
-            selectedBlockIds = command.selected
-        )
-
         if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockPaste(request)
-
+        val response = service.blockTextListSetMark(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        return Response.Clipboard.Paste(
-            response.caretPosition,
-            response.isSameBlockCaret,
-            response.blockIds,
-            response.event.toPayload()
-        )
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun copy(command: Command.Copy): Response.Clipboard.Copy {
-
-        val range: Range? = command.range?.let {
-            Range(
-                from = it.first,
-                to = it.last
-            )
-        }
-
-        val blocks: List<Block> = command.blocks.map { it.toMiddlewareModel() }
-
-        val request = Rpc.Block.Copy.Request(
-            contextId = command.context,
-            selectedTextRange = range,
-            blocks = blocks
+    fun blockTextListSetStyle(command: Command.UpdateStyle): Payload {
+        val style = command.style.toMiddlewareModel()
+        val request = Rpc.BlockText.ListSetStyle.Request(
+            style = style,
+            blockIds = command.targets,
+            contextId = command.context
         )
-
         if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockCopy(request)
-
+        val response = service.blockTextListSetStyle(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        return Response.Clipboard.Copy(
-            response.textSlot,
-            response.htmlSlot,
-            response.anySlot.toCoreModels()
-        )
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun uploadFile(command: Command.UploadFile): Response.Media.Upload {
+    fun blockTextSetChecked(
+        context: String,
+        target: String,
+        isChecked: Boolean
+    ): Payload {
+        val request = Rpc.BlockText.SetChecked.Request(
+            contextId = context,
+            blockId = target,
+            checked = isChecked
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTextSetChecked(request)
+        if (BuildConfig.DEBUG) logResponse(response)
 
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockTextSetText(
+        contextId: String,
+        blockId: String,
+        text: String,
+        marks: List<Block.Content.Text.Mark>
+    ) {
+        val markup: Block.Content.Text.Marks = Block.Content.Text.Marks(marks)
+        val request = Rpc.BlockText.SetText.Request(
+            contextId = contextId,
+            blockId = blockId,
+            text = text,
+            marks = markup
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTextSetText(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun blockUpload(command: Command.UploadBlock): Payload {
+        val request = Rpc.Block.Upload.Request(
+            filePath = command.filePath,
+            url = command.url,
+            contextId = command.contextId,
+            blockId = command.blockId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockUpload(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    private val coverIdKey = "coverId"
+    private val coverTypeKey = "coverType"
+
+    @Deprecated("Should deleted. Use objectOpen()")
+    @Throws(Exception::class)
+    fun dashboardOpen(contextId: String, id: String): Payload {
+        val request: Rpc.Object.Open.Request = Rpc.Object.Open.Request(
+            contextId = contextId,
+            objectId = id
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectOpen(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun debugExportLocalStore(path: String): String {
+        val request = Rpc.Debug.ExportLocalstore.Request(path = path)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugExportLocalStore(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.path
+    }
+
+    @Throws(Exception::class)
+    fun debugSync(): String {
+        val request = Rpc.Debug.Sync.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugSync(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toString()
+    }
+
+    @Throws(Exception::class)
+    fun fileListOffload() {
+        val request = Rpc.File.ListOffload.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.fileListOffload(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun fileUpload(command: Command.UploadFile): Response.Media.Upload {
         val type = command.type.toMiddlewareModel()
-
-        val request = Rpc.UploadFile.Request(
+        val request = Rpc.File.Upload.Request(
             localPath = command.path,
             type = type
         )
-
         if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.uploadFile(request)
-
+        val response = service.fileUpload(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
         return Response.Media.Upload(response.hash)
     }
 
     @Throws(Exception::class)
-    fun getMiddlewareVersion(): Rpc.Version.Get.Response {
-        val request = Rpc.Version.Get.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.versionGet(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response
+    fun getConfig(): Config {
+        TODO()
+//        val request = Rpc.Config.Get.Request()
+//
+//        if (BuildConfig.DEBUG) logRequest(request)
+//
+//        val response = service.configGet(request)
+//
+//        if (BuildConfig.DEBUG) logResponse(response)
+//
+//        return Config(
+//            home = response.homeBlockId,
+//            profile = response.profileBlockId,
+//            gateway = response.gatewayUrl
+//        )
     }
 
     @Throws(Exception::class)
-    fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
+    fun navigationGetObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
         val request = Rpc.Navigation.GetObjectInfoWithLinks.Request(
             objectId = pageId
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectInfoWithLinks(request)
+        val response = service.navigationGetObjectInfoWithLinks(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
         val info = response.object_
@@ -958,101 +915,56 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun listObjects(): List<ObjectInfo> {
+    fun navigationListObjects(): List<ObjectInfo> {
         val request = Rpc.Navigation.ListObjects.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.listObjects(request)
+        val response = service.navigationListObjects(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
         return response.objects
     }
 
     @Throws(Exception::class)
-    fun updateDividerStyle(command: Command.UpdateDivider): Payload {
-        val style = command.style.toMiddlewareModel()
-
-        val request: BlockList.Set.Div.Style.Request = BlockList.Set.Div.Style.Request(
-            contextId = command.context,
-            blockIds = command.targets,
-            style = style
+    fun objectApplyTemplate(
+        ctx: Id,
+        template: Id
+    ) {
+        val request = Rpc.Object.ApplyTemplate.Request(
+            contextId = ctx,
+            templateId = template
         )
-
         if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockListSetDivStyle(request)
-
+        val response = service.objectApplyTemplate(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun setFields(command: Command.SetFields): Payload {
-
-        val fields: MutableList<BlockField> = ArrayList()
-
-        for (i in command.fields.indices) {
-            val (first, second) = command.fields[i]
-            val field = BlockField(
-                blockId = first,
-                fields = second.map
-            )
-            fields.add(field)
-        }
-
-        val request = BlockList.Set.Fields.Request(
-            contextId = command.context,
-            blockFields = fields
-        )
-
+    fun objectClose(id: String) {
+        val request = Rpc.Object.Close.Request(objectId = id)
         if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockListSetFields(request)
-
+        val response = service.objectClose(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun getObjectTypes(): List<MObjectType> {
-        val request = Rpc.ObjectType.List.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectTypeList(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.objectTypes
-    }
+    fun objectCreate(command: Command.CreateNewDocument): Id {
+        val details: MutableMap<String, Any> = mutableMapOf()
+        command.emoji?.let { details[Relations.ICON_EMOJI] = it }
+        command.name.let { details[Relations.NAME] = it }
+        command.type?.let { details[Relations.TYPE] = it }
 
-    @Throws(Exception::class)
-    fun objectTypeCreate(prototype: ObjectType.Prototype): MObjectType {
-
-        val layout = prototype.layout.toMiddlewareModel()
-
-        val objectType = MObjectType(
-            name = prototype.name,
-            iconEmoji = prototype.emoji,
-            layout = layout
-        )
-
-        val request = Rpc.ObjectType.Create.Request(
-            objectType = objectType
+        val request = Rpc.Object.Create.Request(
+                details = details.toMap()
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.objectTypeCreate(request)
-
+        val response = service.objectCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)
-
-        val result = response.objectType
-
-        checkNotNull(result) { "Empty result" }
-
-        return result
+        return response.pageId
     }
 
     @Throws(Exception::class)
-    fun createSet(
+    fun objectCreateSet(
         contextId: String,
         targetId: String?,
         position: Position?,
@@ -1065,214 +977,257 @@ class Middleware(
             listOf()
         }
 
-        val request = Rpc.Block.CreateSet.Request(
-            contextId = contextId,
-            targetId = targetId.orEmpty(),
-            source = source,
-            position = position?.toMiddlewareModel() ?: Block.Position.Bottom
+        val request = Rpc.Object.CreateSet.Request(
+            source = source
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
 
-        val response = service.blockCreateSet(request)
+        val response = service.objectCreateSet(request)
 
         if (BuildConfig.DEBUG) logResponse(response)
 
         return Response.Set.Create(
-            blockId = response.blockId.ifEmpty { null },
-            targetId = response.targetId,
-            payload = response.event.toPayload()
+            targetId = response.id,
+            payload = response.event.toPayload(),
+            blockId = null
         )
     }
 
     @Throws(Exception::class)
-    fun setActiveDataViewViewer(
-        contextId: String,
-        blockId: String,
-        viewId: String,
-        offset: Int,
-        limit: Int
-    ): Payload {
-        val request = Rpc.Block.Dataview.ViewSetActive.Request(
-            contextId = contextId,
-            blockId = blockId,
-            viewId = viewId,
-            offset = offset,
-            limit = limit
+    fun objectDuplicate(id: Id): Id {
+        val request = Rpc.Object.Duplicate.Request(contextId = id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectDuplicate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.id
+    }
+
+    @Throws(Exception::class)
+    fun objectIdsSubscribe(
+        subscription: Id,
+        ids: List<Id>,
+        keys: List<String>
+    ): SearchResult {
+        val request = Rpc.Object.SubscribeIds.Request(
+            subId = subscription,
+            keys = keys,
+            ids = ids
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewActiveSet(request)
+        val response = service.objectIdsSubscribe(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return SearchResult(
+            results = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            dependencies = response.dependencies.mapNotNull { record ->
+                if (record != null && record.isNotEmpty())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+        )
+    }
+
+    @Throws(Exception::class)
+    fun objectListDelete(targets: List<Id>) {
+        val request = Rpc.Object.ListDelete.Request(objectIds = targets)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectListDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun objectListSetIsArchived(
+        targets: List<Id>,
+        isArchived: Boolean
+    ) {
+        val request = Rpc.Object.ListSetIsArchived.Request(
+            objectIds = targets,
+            isArchived = isArchived,
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectListSetIsArchived(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun objectOpen(id: String): Payload {
+        val request = Rpc.Object.Open.Request(objectId = id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectOpen(request)
         if (BuildConfig.DEBUG) logResponse(response)
 
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun addNewRelationToDataView(
-        context: String,
-        target: String,
-        name: String,
-        format: Relation.Format,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> {
-
-        val relation = MRelation(
-            name = name,
-            format = format.toMiddlewareModel(),
-            objectTypes = limitObjectTypes
-        )
-
-        val request = Rpc.Block.Dataview.RelationAdd.Request(
-            contextId = context,
-            blockId = target,
-            relation = relation
-        )
-
+    fun objectRedo(command: Command.Redo): Payload {
+        val request = Rpc.Object.Redo.Request(contextId = command.context)
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRelationAdd(request)
+        val response = service.objectRedo(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.relationKey, response.event.toPayload())
+        return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun objectRelationAdd(
+        ctx: Id,
+        format: RelationFormat,
+        name: String,
+        limitObjectTypes: List<Id>
+    ): Pair<Id, Payload> {
+        val request = Rpc.ObjectRelation.Add.Request(
+            contextId = ctx,
+            relation = MRelation(
+                format = format.toMiddlewareModel(),
+                name = name,
+                objectTypes = limitObjectTypes
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectRelationAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return Pair(
+            first = response.relation?.key.orEmpty(),
+            second = response.event.toPayload()
+        )
+    }
 
     @Throws(Exception::class)
-    fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload {
-        val request = Rpc.Block.Dataview.RelationAdd.Request(
+    fun objectRelationAdd(ctx: Id, relation: Id): Payload {
+        val request = Rpc.ObjectRelation.Add.Request(
             contextId = ctx,
-            blockId = dv,
             relation = MRelation(
                 key = relation
             )
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRelationAdd(request)
+        val response = service.objectRelationAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload {
-        val request = Rpc.Block.Dataview.RelationDelete.Request(
+    fun objectRelationAddFeatured(
+        ctx: Id,
+        relations: List<Id>
+    ): Payload {
+        val request = Rpc.ObjectRelation.AddFeatured.Request(
             contextId = ctx,
-            blockId = dv,
+            relations = relations
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectRelationAddFeatured(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectRelationDelete(ctx: Id, relation: Id): Payload {
+        val request = Rpc.ObjectRelation.Delete.Request(
+            contextId = ctx,
             relationKey = relation
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRelationDelete(request)
+        val response = service.objectRelationDelete(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun updateDataViewViewer(
-        context: String,
-        target: String,
-        viewer: DVViewer
-    ): Payload {
-        val request = Rpc.Block.Dataview.ViewUpdate.Request(
-            contextId = context,
-            blockId = target,
-            viewId = viewer.id,
-            view = viewer.toMiddlewareModel()
+    fun objectRelationListAvailable(ctx: Id): List<MRelation> {
+        val request = Rpc.ObjectRelation.ListAvailable.Request(
+            contextId = ctx
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewUpdate(request)
+        val response = service.objectRelationListAvailable(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
+        return response.relations
     }
 
     @Throws(Exception::class)
-    fun duplicateDataViewViewer(
-        context: String,
-        target: String,
-        viewer: DVViewer
-    ): Payload {
-        val request = Rpc.Block.Dataview.ViewCreate.Request(
-            contextId = context,
-            blockId = target,
-            view = viewer.toMiddlewareModel()
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun createDataViewRecord(
-        context: String,
-        target: String,
-        template: Id?
-    ): Map<String, Any?> {
-        val request = Rpc.Block.Dataview.RecordCreate.Request(
-            contextId = context,
-            blockId = target,
-            templateId = template.orEmpty()
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRecordCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.record?.toMap() ?: emptyMap()
-    }
-
-    @Throws(Exception::class)
-    fun updateDataViewRecord(
-        context: String,
-        target: String,
-        record: String,
-        values: Map<String, Any?>
-    ) {
-        val request = Rpc.Block.Dataview.RecordUpdate.Request(
-            contextId = context,
-            blockId = target,
-            recordId = record,
-            record = values
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRecordUpdate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    @Throws(Exception::class)
-    fun addDataViewViewer(
-        ctx: String,
-        target: String,
-        name: String,
-        type: DVViewerType
-    ): Payload {
-        val request = Rpc.Block.Dataview.ViewCreate.Request(
+    fun objectRelationOptionAdd(
+        ctx: Id,
+        relation: Id,
+        name: Id,
+        color: String
+    ): Pair<Payload, Id?> {
+        val request = Rpc.ObjectRelationOption.Add.Request(
             contextId = ctx,
-            blockId = target,
-            view = Block.Content.Dataview.View(
-                name = name,
-                type = type.toMiddlewareModel()
-            )
+            relationKey = relation,
+            option = MRelationOption(text = name, color = color)
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewCreate(request)
+        val response = service.objectRelationOptionAdd(request)
+        val option = response.option?.id
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
+        return Pair(response.event.toPayload(), option)
     }
 
     @Throws(Exception::class)
-    fun removeDataViewViewer(
-        ctx: String,
-        dataview: String,
-        viewer: String
+    fun objectRelationRemoveFeatured(
+        ctx: Id,
+        relations: List<Id>
     ): Payload {
-        val request = Rpc.Block.Dataview.ViewDelete.Request(
+        val request = Rpc.ObjectRelation.RemoveFeatured.Request(
             contextId = ctx,
-            blockId = dataview,
-            viewId = viewer
+            relations = relations
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewDelete(request)
+        val response = service.objectRelationRemoveFeatured(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun searchObjects(
+    fun objectRemoveCover(ctx: String): Payload {
+        val coverIdDetail = Rpc.Object.SetDetails.Detail(
+            key = coverIdKey,
+            value_ = null
+        )
+        val coverTypeDetail = Rpc.Object.SetDetails.Detail(
+            key = coverTypeKey,
+            value_ = Constants.COVER_TYPE_NONE.toDouble()
+        )
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectRemoveIcon(ctx: String): Payload {
+        val imageDetail = Rpc.Object.SetDetails.Detail(
+            key = Relations.ICON_IMAGE,
+            value_ = null
+        )
+        val emojiDetail = Rpc.Object.SetDetails.Detail(
+            key = Relations.ICON_EMOJI,
+            value_ = null
+        )
+
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = ctx,
+            details = listOf(imageDetail, emojiDetail)
+        )
+
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectSearch(
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
@@ -1294,10 +1249,8 @@ class Middleware(
         return response.records.map { it?.toMap() ?: emptyMap() }
     }
 
-    //region SEARCHING WITH SUBSCRIPTIONS
-
     @Throws(Exception::class)
-    fun searchObjectsWithSubscription(
+    fun objectSearchSubscribe(
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -1337,37 +1290,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun searchObjectsByIdWithSubscription(
-        subscription: Id,
-        ids: List<Id>,
-        keys: List<String>
-    ): SearchResult {
-        val request = Rpc.Object.IdsSubscribe.Request(
-            subId = subscription,
-            keys = keys,
-            ids = ids
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectIdsSubscribe(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return SearchResult(
-            results = response.records.mapNotNull { record ->
-                if (record != null && record.isNotEmpty())
-                    ObjectWrapper.Basic(record)
-                else
-                    null
-            },
-            dependencies = response.dependencies.mapNotNull { record ->
-                if (record != null && record.isNotEmpty())
-                    ObjectWrapper.Basic(record)
-                else
-                    null
-            },
-        )
-    }
-
-    @Throws(Exception::class)
-    fun cancelObjectSearchSubscription(subscriptions: List<String>) {
+    fun objectSearchUnsubscribe(subscriptions: List<String>) {
         val request = Rpc.Object.SearchUnsubscribe.Request(
             subIds = subscriptions
         )
@@ -1376,261 +1299,150 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
-    //endregion
-
     @Throws(Exception::class)
-    fun relationListAvailable(ctx: Id): List<MRelation> {
-        val request = Rpc.Object.RelationListAvailable.Request(
-            contextId = ctx
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.relationListAvailable(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.relations
-    }
-
-    //todo Add Relation mapping
-    @Throws(Exception::class)
-    fun addRelationToBlock(command: Command.AddRelationToBlock): Payload {
-        val request = Rpc.Block.Relation.Add.Request(
-            contextId = command.contextId,
-            blockId = command.blockId,
-            relation = null
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockAddRelation(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    fun setRelationKey(command: Command.SetRelationKey): Payload {
-        Rpc.Block.Relation.Add
-        val request = Rpc.Block.Relation.SetKey.Request(
-            contextId = command.contextId,
-            blockId = command.blockId,
-            key = command.key
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.relationSetKey(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
-    fun debugSync(): String {
-        val request = Rpc.Debug.Sync.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugSync(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.toString()
-    }
-
-    fun addRecordRelationOption(
-        ctx: Id,
-        dataview: Id,
-        relation: Id,
-        record: Id,
-        name: String,
+    fun objectSetCoverColor(
+        ctx: String,
         color: String
-    ): Pair<Payload, Id?> {
-        val request = Rpc.Block.Dataview.RecordRelationOptionAdd.Request(
-            contextId = ctx,
-            blockId = dataview,
-            relationKey = relation,
-            recordId = record,
-            option = MRelationOption(text = name, color = color)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRecordRelationOptionAdd(request)
-        val option = response.option?.id
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.event.toPayload(), option)
-    }
-
-    fun addObjectRelationOption(
-        ctx: Id,
-        relation: Id,
-        name: Id,
-        color: String
-    ): Pair<Payload, Id?> {
-        val request = Rpc.Object.RelationOptionAdd.Request(
-            contextId = ctx,
-            relationKey = relation,
-            option = MRelationOption(text = name, color = color)
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationOptionAdd(request)
-        val option = response.option?.id
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.event.toPayload(), option)
-    }
-
-    fun blockListTurnInto(
-        context: String,
-        targets: List<String>,
-        style: CBTextStyle
     ): Payload {
-        val request = BlockList.TurnInto.Request(
-            contextId = context,
-            blockIds = targets,
-            style = style.toMiddlewareModel()
+        val coverIdDetail = Rpc.Object.SetDetails.Detail(
+            key = coverIdKey,
+            value_ = color
+        )
+        val coverTypeDetail = Rpc.Object.SetDetails.Detail(
+            key = coverTypeKey,
+            value_ = Constants.COVER_TYPE_COLOR.toDouble()
+        )
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListTurnInto(request)
+        val response = service.objectSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
 
-    fun updateDetail(
+    @Throws(Exception::class)
+    fun objectSetCoverGradient(
+        ctx: String,
+        gradient: String
+    ): Payload {
+        val coverIdDetail = Rpc.Object.SetDetails.Detail(
+            key = coverIdKey,
+            value_ = gradient
+        )
+        val coverTypeDetail = Rpc.Object.SetDetails.Detail(
+            key = coverTypeKey,
+            value_ = Constants.COVER_TYPE_GRADIENT.toDouble()
+        )
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectSetCoverImage(
+        ctx: String,
+        hash: String
+    ): Payload {
+        val coverIdDetail = Rpc.Object.SetDetails.Detail(
+            key = coverIdKey,
+            value_ = hash
+        )
+        val coverTypeDetail = Rpc.Object.SetDetails.Detail(
+            key = coverTypeKey,
+            value_ = Constants.COVER_TYPE_UPLOADED_IMAGE.toDouble()
+        )
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = ctx,
+            details = listOf(coverIdDetail, coverTypeDetail)
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSetDetails(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectSetDetails(
         ctx: Id,
         key: String,
         value: Any?
     ): Payload {
-        val detail = Rpc.Block.Set.Details.Detail(
+        val detail = Rpc.Object.SetDetails.Detail(
             key = key,
             value_ = value
         )
-        val request = Rpc.Block.Set.Details.Request(
+        val request = Rpc.Object.SetDetails.Request(
             contextId = ctx,
             details = listOf(detail)
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetDetails(request)
+        val response = service.objectSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun blockListSetTextMarkup(command: Command.UpdateBlocksMark): Payload {
-        val context = command.context
-        val mark = command.mark.toMiddlewareModel()
-        val targets = command.targets
+    fun objectSetEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload {
 
-        val request = BlockList.Set.Text.Mark.Request(
-            contextId = context,
-            blockIds = targets,
-            mark = mark
+        val emojiDetail = Rpc.Object.SetDetails.Detail(
+            key = Relations.ICON_EMOJI,
+            value_ = command.emoji
+        )
+
+        val imageDetail = Rpc.Object.SetDetails.Detail(
+            key = Relations.ICON_IMAGE,
+            value_ = null
+        )
+
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = command.context,
+            details = listOf(emojiDetail, imageDetail)
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetTextMark(request)
+
+        val response = service.objectSetDetails(request)
+
         if (BuildConfig.DEBUG) logResponse(response)
+
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
-    fun setObjectType(ctx: Id, typeId: Id): Payload {
+    fun objectSetImageIcon(command: Command.SetDocumentImageIcon): Payload {
 
-        val request = Rpc.Block.ObjectType.Set.Request(
-            contextId = ctx,
-            objectTypeUrl = typeId
+        val imageDetail = Rpc.Object.SetDetails.Detail(
+            key = Relations.ICON_IMAGE,
+            value_ = command.hash
         )
+        val emojiDetail = Rpc.Object.SetDetails.Detail(
+            key = Relations.ICON_EMOJI,
+            value_ = null
+        )
+
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = command.context,
+            details = listOf(imageDetail, emojiDetail)
+        )
+
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockSetObjectType(request)
+
+        val response = service.objectSetDetails(request)
+
         if (BuildConfig.DEBUG) logResponse(response)
+
         return response.event.toPayload()
     }
 
-    private fun logRequest(any: Any) {
-        val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
-        Timber.d(message)
-    }
-
-    private fun logResponse(any: Any) {
-        val message = "<=== " + any::class.java.canonicalName + ":" + "\n" + any.toString()
-        Timber.d(message)
-    }
-
-    fun addRelationToObject(ctx: Id, relation: Id): Payload {
-        val request = Rpc.Object.RelationAdd.Request(
-            contextId = ctx,
-            relation = MRelation(
-                key = relation
-            )
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    fun addNewRelationToObject(
-        ctx: Id,
-        format: RelationFormat,
-        name: String,
-        limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> {
-        val request = Rpc.Object.RelationAdd.Request(
-            contextId = ctx,
-            relation = MRelation(
-                format = format.toMiddlewareModel(),
-                name = name,
-                objectTypes = limitObjectTypes
-            )
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(
-            first = response.relation?.key.orEmpty(),
-            second = response.event.toPayload()
-        )
-    }
-
-    fun deleteRelationFromObject(ctx: Id, relation: Id): Payload {
-        val request = Rpc.Object.RelationDelete.Request(
-            contextId = ctx,
-            relationKey = relation
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    fun addToFeaturedRelations(
-        ctx: Id,
-        relations: List<Id>
-    ): Payload {
-        val request = Rpc.Object.FeaturedRelation.Add.Request(
-            contextId = ctx,
-            relations = relations
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.featuredRelationsAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    fun removeFromFeaturedRelations(
-        ctx: Id,
-        relations: List<Id>
-    ): Payload {
-        val request = Rpc.Object.FeaturedRelation.Remove.Request(
-            contextId = ctx,
-            relations = relations
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.featuredRelationsRemove(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    fun setObjectIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload {
-        val request = Rpc.Object.SetIsFavorite.Request(
-            contextId = ctx,
-            isFavorite = isFavorite
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetIsFavorite(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
-    }
-
-    fun setObjectIsArchived(
+    @Throws(Exception::class)
+    fun objectSetIsArchived(
         ctx: Id,
         isArchived: Boolean
     ): Payload {
@@ -1644,27 +1456,23 @@ class Middleware(
         return response.event.toPayload()
     }
 
-    fun setObjectListIsArchived(
-        targets: List<Id>,
-        isArchived: Boolean
-    ) {
-        val request = Rpc.ObjectList.Set.IsArchived.Request(
-            objectIds = targets,
-            isArchived = isArchived,
+    @Throws(Exception::class)
+    fun objectSetIsFavorite(
+        ctx: Id,
+        isFavorite: Boolean
+    ): Payload {
+        val request = Rpc.Object.SetIsFavorite.Request(
+            contextId = ctx,
+            isFavorite = isFavorite
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectListSetIsArchived(request)
+        val response = service.objectSetIsFavorite(request)
         if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
     }
 
-    fun deleteObjects(targets: List<Id>) {
-        val request = Rpc.ObjectList.Delete.Request(objectIds = targets)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectListDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-    }
-
-    fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload {
+    @Throws(Exception::class)
+    fun objectSetLayout(ctx: Id, layout: ObjectType.Layout): Payload {
         val request = Rpc.Object.SetLayout.Request(
             contextId = ctx,
             layout = layout.toMiddlewareModel()
@@ -1675,45 +1483,141 @@ class Middleware(
         return response.event.toPayload()
     }
 
-    fun exportLocalStore(path: String): String {
-        val request = Rpc.ExportLocalstore.Request(path = path)
+    @Throws(Exception::class)
+    fun objectSetObjectType(ctx: Id, typeId: Id): Payload {
+        val request = Rpc.Object.SetObjectType.Request(
+            contextId = ctx,
+            objectTypeUrl = typeId
+        )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.exportLocalStore(request)
+        val response = service.objectSetObjectType(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.path
+        return response.event.toPayload()
     }
 
-    fun fileListOffload() {
-        val request = Rpc.FileList.Offload.Request()
+    @Throws(Exception::class)
+    fun objectSetTitle(command: Command.UpdateTitle) {
+        val detail = Rpc.Object.SetDetails.Detail(
+            key = Relations.NAME,
+            value_ = command.title
+        )
+        val request = Rpc.Object.SetDetails.Request(
+            contextId = command.context,
+            details = listOf(detail)
+        )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.fileListOffload(request)
+        val response = service.objectSetDetails(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
     @Throws(Exception::class)
-    fun objectDuplicate(id: Id): Id {
+    fun objectShow(id: String): Payload {
+        val request = Rpc.Object.Show.Request(objectId = id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectShow(request)
+        if (BuildConfig.DEBUG) logResponse(response)
 
-        val request = Rpc.ObjectDuplicate.Request(contextId = id)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeCreate(prototype: ObjectType.Prototype): MObjectType {
+
+        val layout = prototype.layout.toMiddlewareModel()
+
+        val objectType = MObjectType(
+            name = prototype.name,
+            iconEmoji = prototype.emoji,
+            layout = layout
+        )
+
+        val request = Rpc.ObjectType.Create.Request(
+            objectType = objectType
+        )
 
         if (BuildConfig.DEBUG) logRequest(request)
 
-        val response = service.objectDuplicate(request)
+        val response = service.objectTypeCreate(request)
 
         if (BuildConfig.DEBUG) logResponse(response)
 
-        return response.id
+        val result = response.objectType
+
+        checkNotNull(result) { "Empty result" }
+
+        return result
     }
 
-    fun applyTemplate(
-        ctx: Id,
-        template: Id
-    ) {
-        val request = Rpc.ApplyTemplate.Request(
-            contextId = ctx,
-            templateId = template
+    @Throws(Exception::class)
+    fun objectTypeList(): List<MObjectType> {
+        val request = Rpc.ObjectType.List.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectTypeList(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.objectTypes
+    }
+
+    @Throws(Exception::class)
+    fun objectUndo(command: Command.Undo): Payload {
+        val request = Rpc.Object.Undo.Request(contextId = command.context)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectUndo(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun versionGet(): Rpc.App.GetVersion.Response {
+        val request = Rpc.App.GetVersion.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.versionGet(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response
+    }
+
+    @Throws(Exception::class)
+    fun walletConvert(entropy: String): String {
+        val request = Rpc.Wallet.Convert.Request(entropy = entropy)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.walletConvert(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return response.mnemonic
+    }
+
+    @Throws(Exception::class)
+    fun walletCreate(path: String): CreateWalletResponse {
+
+        val request = Rpc.Wallet.Create.Request(rootPath = path)
+
+        if (BuildConfig.DEBUG) logRequest(request)
+
+        val response = service.walletCreate(request)
+
+        if (BuildConfig.DEBUG) logResponse(response)
+
+        return CreateWalletResponse(response.mnemonic)
+    }
+
+    @Throws(Exception::class)
+    fun walletRecover(path: String, mnemonic: String) {
+        val request = Rpc.Wallet.Recover.Request(
+            mnemonic = mnemonic,
+            rootPath = path
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.applyTemplate(request)
+        val response = service.walletRecover(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
+
+    private fun logRequest(any: Any) {
+        val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
+        Timber.d(message)
+    }
+
+    private fun logResponse(any: Any) {
+        val message = "<=== " + any::class.java.canonicalName + ":" + "\n" + any.toString()
+        Timber.d(message)
+    }
+
 }

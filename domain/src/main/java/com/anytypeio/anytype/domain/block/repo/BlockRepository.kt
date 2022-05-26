@@ -85,8 +85,6 @@ interface BlockRepository {
 
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
-    suspend fun getConfig(): Config
-
     suspend fun createPage(
         ctx: Id?,
         emoji: String?,

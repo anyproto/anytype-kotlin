@@ -1,15 +1,22 @@
 package com.anytypeio.anytype.domain.auth
 
+import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.domain.auth.interactor.StartAccount
-import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -31,12 +38,25 @@ class StartAccountTest {
     @Mock
     lateinit var featuresConfigProvider: FeaturesConfigProvider
 
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     lateinit var startAccount: StartAccount
+
+    val config = Config(
+        home = MockDataFactory.randomUuid(),
+        gateway = MockDataFactory.randomUuid(),
+        profile = MockDataFactory.randomUuid()
+    )
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        startAccount = StartAccount(repo, featuresConfigProvider)
+        startAccount = StartAccount(
+            repository = repo,
+            configStorage = configStorage,
+            featuresConfigProvider = featuresConfigProvider
+        )
     }
 
     @Test
@@ -57,7 +77,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FeaturesConfig(
+        val featuresConfig = FeaturesConfig(
             enableDataView = false,
             enableDebug = false,
             enableChannelSwitch = false
@@ -69,7 +89,12 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Triple(account, config, AccountStatus.Active)
+            } doReturn AccountSetup(
+                account = account,
+                features = featuresConfig,
+                status = AccountStatus.Active,
+                config = config
+            )
         }
 
         startAccount.run(params)
@@ -104,7 +129,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FeaturesConfig(
+        val featuresConfig = FeaturesConfig(
             enableDataView = false,
             enableDebug = false,
             enableChannelSwitch = false
@@ -116,7 +141,12 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Triple(account, config, AccountStatus.Active)
+            } doReturn AccountSetup(
+                account = account,
+                features = featuresConfig,
+                status = AccountStatus.Active,
+                config = config
+            )
         }
 
         val result = startAccount.run(params)
@@ -142,7 +172,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FeaturesConfig(
+        val featuresConfig = FeaturesConfig(
             enableDataView = null,
             enableDebug = null,
             enableChannelSwitch = null
@@ -154,7 +184,12 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Triple(account, config, AccountStatus.Active)
+            } doReturn AccountSetup(
+                account = account,
+                features = featuresConfig,
+                status = AccountStatus.Active,
+                config = config
+            )
         }
 
         val result = startAccount.run(params)
@@ -187,7 +222,7 @@ class StartAccountTest {
             color = null
         )
 
-        val config = FeaturesConfig(
+        val featuresConfig = FeaturesConfig(
             enableDataView = true,
             enableDebug = false,
             enableChannelSwitch = true
@@ -199,7 +234,12 @@ class StartAccountTest {
                     id = id,
                     path = path
                 )
-            } doReturn Triple(account, config, AccountStatus.Active)
+            } doReturn AccountSetup(
+                account = account,
+                features = featuresConfig,
+                status = AccountStatus.Active,
+                config = config
+            )
         }
 
         val result = startAccount.run(params)

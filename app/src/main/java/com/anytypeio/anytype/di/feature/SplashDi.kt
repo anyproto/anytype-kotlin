@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.interactor.sets.StoreObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -22,12 +23,6 @@ import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-
-/**
- * Created by Konstantin Ivanov
- * email :  ki@agileburo.com
- * on 2019-10-21.
- */
 
 @PerScreen
 @Subcomponent(modules = [SplashModule::class])
@@ -87,11 +82,13 @@ object SplashModule {
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider,
-        featuresConfigProvider: FeaturesConfigProvider
+        featuresConfigProvider: FeaturesConfigProvider,
+        configStorage: ConfigStorage
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
-        featuresConfigProvider = featuresConfigProvider
+        featuresConfigProvider = featuresConfigProvider,
+        configStorage = configStorage
     )
 
     @JvmStatic

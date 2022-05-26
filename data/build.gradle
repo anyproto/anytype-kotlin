@@ -11,6 +11,7 @@ dependencies {
     implementation applicationDependencies.coroutines
 
     testImplementation project(":test:utils")
+    testImplementation project(":test:core-models-stub")
     testImplementation unitTestDependencies.junit
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.mockitoKotlin

@@ -1,10 +1,11 @@
 package com.anytypeio.anytype.domain.dashboard.interactor
 
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 
 /**
  * Use-case for opening a dashboard by sending a special request.
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 class OpenDashboard(
     private val repo: BlockRepository,
     private val auth: AuthRepository,
+    private val provider: ConfigStorage
 ) : BaseUseCase<Payload, OpenDashboard.Param?>() {
 
     override suspend fun run(params: Param?) = try {
@@ -27,7 +29,7 @@ class OpenDashboard(
                 }
             }
         else {
-            repo.getConfig().let { config ->
+            provider.get().let { config ->
                 repo.openDashboard(
                     contextId = config.home,
                     id = config.home

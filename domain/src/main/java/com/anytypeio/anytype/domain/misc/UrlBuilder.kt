@@ -12,27 +12,27 @@ class UrlBuilder(val gateway: Gateway) {
     /**
      * Builds image url for given [hash]
      */
-    fun image(hash: String?): Url = gateway.obtain() + IMAGE_PATH + hash + DEFAULT_WIDTH_PARAM
+    fun image(hash: String?): Url = gateway.provide() + IMAGE_PATH + hash + DEFAULT_WIDTH_PARAM
 
     /**
      * Builds original image url for given [hash]
      */
-    fun original(hash: String?): Url = gateway.obtain() + IMAGE_PATH + hash
+    fun original(hash: String?): Url = gateway.provide() + IMAGE_PATH + hash
 
     /**
      * Builds small image url for given [hash]
      */
-    fun thumbnail(hash: String): Url = gateway.obtain() + IMAGE_PATH + hash + THUMBNAIL_WIDTH_PARAM
+    fun thumbnail(hash: String): Url = gateway.provide() + IMAGE_PATH + hash + THUMBNAIL_WIDTH_PARAM
 
     /**
      * Builds file url for given [hash]
      */
-    fun file(hash: String?): Url = gateway.obtain() + FILE_PATH + hash
+    fun file(hash: String?): Url = gateway.provide() + FILE_PATH + hash
 
     /**
      * Builds video url for given [hash]
      */
-    fun video(hash: String?): Url = gateway.obtain() + FILE_PATH + hash
+    fun video(hash: String?): Url = gateway.provide() + FILE_PATH + hash
 
     companion object {
         const val IMAGE_PATH = "/image/"

@@ -27,15 +27,13 @@ class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
 
-    override suspend fun getConfig(): Config = middleware.getConfig()
-
     override suspend fun openDashboard(
         contextId: String,
         id: String
-    ): Payload = middleware.openDashboard(contextId, id)
+    ): Payload = middleware.dashboardOpen(contextId, id)
 
     override suspend fun closeDashboard(id: String) {
-        middleware.closeDashboard(id)
+        middleware.objectClose(id)
     }
 
     override suspend fun createPage(
@@ -44,7 +42,7 @@ class BlockMiddleware(
         isDraft: Boolean?,
         type: String?,
         template: Id?
-    ): String = middleware.createPage(
+    ): String = middleware.blockLinkCreateWithObject(
         ctx = ctx,
         emoji = emoji,
         isDraft = isDraft,
@@ -54,23 +52,23 @@ class BlockMiddleware(
 
     override suspend fun createPage(
         command: Command.CreateNewDocument
-    ): String = middleware.createPage(command)
+    ): String = middleware.objectCreate(command)
 
-    override suspend fun openPage(id: String): Payload = middleware.openBlock(id)
-    override suspend fun openProfile(id: String): Payload = middleware.openBlock(id)
-    override suspend fun openObjectSet(id: String): Payload = middleware.openBlock(id)
-    override suspend fun openObjectPreview(id: Id): Payload = middleware.showBlock(id)
+    override suspend fun openPage(id: String): Payload = middleware.objectOpen(id)
+    override suspend fun openProfile(id: String): Payload = middleware.objectOpen(id)
+    override suspend fun openObjectSet(id: String): Payload = middleware.objectOpen(id)
+    override suspend fun openObjectPreview(id: Id): Payload = middleware.objectShow(id)
 
     override suspend fun closePage(id: String) {
-        middleware.closePage(id)
+        middleware.objectClose(id)
     }
 
     override suspend fun updateDocumentTitle(command: Command.UpdateTitle) {
-        middleware.updateDocumentTitle(command)
+        middleware.objectSetTitle(command)
     }
 
     override suspend fun updateText(command: Command.UpdateText) {
-        middleware.updateText(
+        middleware.blockTextSetText(
             command.contextId,
             command.blockId,
             command.text,
@@ -79,27 +77,27 @@ class BlockMiddleware(
     }
 
     override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
-        middleware.uploadBlock(command)
+        middleware.blockUpload(command)
 
     override suspend fun updateTextStyle(
         command: Command.UpdateStyle
-    ): Payload = middleware.updateTextStyle(command)
+    ): Payload = middleware.blockTextListSetStyle(command)
 
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor
-    ): Payload = middleware.updateTextColor(command)
+    ): Payload = middleware.blockTextListSetColor(command)
 
     override suspend fun updateBackgroundColor(
         command: Command.UpdateBackgroundColor
-    ): Payload = middleware.updateBackgroundColor(command)
+    ): Payload = middleware.blockListSetBackgroundColor(command)
 
     override suspend fun updateAlignment(
         command: Command.UpdateAlignment
-    ): Payload = middleware.updateAlignment(command)
+    ): Payload = middleware.blockListSetAlign(command)
 
     override suspend fun updateCheckbox(
         command: Command.UpdateCheckbox
-    ): Payload = middleware.updateCheckbox(
+    ): Payload = middleware.blockTextSetChecked(
         command.context,
         command.target,
         command.isChecked
@@ -107,7 +105,7 @@ class BlockMiddleware(
 
     override suspend fun create(
         command: Command.Create
-    ): Pair<String, Payload> = middleware.createBlock(
+    ): Pair<String, Payload> = middleware.blockCreate(
         command.context,
         command.target,
         command.position,
@@ -116,119 +114,119 @@ class BlockMiddleware(
 
     override suspend fun createDocument(
         command: Command.CreateDocument
-    ): Triple<String, String, Payload> = middleware.createDocument(command)
+    ): Triple<String, String, Payload> = middleware.blockLinkCreateWithObject(command)
 
     override suspend fun duplicate(
         command: Command.Duplicate
-    ): Pair<List<Id>, Payload> = middleware.duplicate(command)
+    ): Pair<List<Id>, Payload> = middleware.blockListDuplicate(command)
 
     override suspend fun duplicateObject(id: Id) = middleware.objectDuplicate(id)
 
     override suspend fun move(command: Command.Move): Payload {
-        return middleware.move(command)
+        return middleware.blockListMoveToExistingObject(command)
     }
 
     override suspend fun unlink(
         command: Command.Unlink
-    ): Payload = middleware.unlink(command)
+    ): Payload = middleware.blockListDelete(command)
 
     override suspend fun merge(
         command: Command.Merge
-    ): Payload = middleware.merge(command)
+    ): Payload = middleware.blockMerge(command)
 
     override suspend fun split(
         command: Command.Split
-    ): Pair<String, Payload> = middleware.split(command)
+    ): Pair<String, Payload> = middleware.blockSplit(command)
 
     override suspend fun setDocumentEmojiIcon(
         command: Command.SetDocumentEmojiIcon
-    ): Payload = middleware.setDocumentEmojiIcon(command)
+    ): Payload = middleware.objectSetEmojiIcon(command)
 
     override suspend fun setDocumentImageIcon(
         command: Command.SetDocumentImageIcon
-    ): Payload = middleware.setDocumentImageIcon(command)
+    ): Payload = middleware.objectSetImageIcon(command)
 
     override suspend fun setDocumentCoverColor(
         ctx: String,
         color: String
-    ): Payload = middleware.setDocumentCoverColor(ctx = ctx, color = color)
+    ): Payload = middleware.objectSetCoverColor(ctx = ctx, color = color)
 
     override suspend fun setDocumentCoverGradient(
         ctx: String,
         gradient: String
-    ): Payload = middleware.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
+    ): Payload = middleware.objectSetCoverGradient(ctx = ctx, gradient = gradient)
 
     override suspend fun setDocumentCoverImage(
         ctx: String,
         hash: String
-    ): Payload = middleware.setDocumentCoverImage(ctx = ctx, hash = hash)
+    ): Payload = middleware.objectSetCoverImage(ctx = ctx, hash = hash)
 
     override suspend fun removeDocumentCover(
         ctx: String
-    ): Payload = middleware.removeDocumentCover(ctx)
+    ): Payload = middleware.objectRemoveCover(ctx)
 
     override suspend fun removeDocumentIcon(
         ctx: Id
-    ): Payload = middleware.removeDocumentIcon(ctx)
+    ): Payload = middleware.objectRemoveIcon(ctx)
 
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
-    ): Payload = middleware.setupBookmark(command)
+    ): Payload = middleware.blockBookmarkFetch(command)
 
     override suspend fun createBookmark(
         command: Command.CreateBookmark
-    ): Payload = middleware.createAndSetupBookmark(command)
+    ): Payload = middleware.blockBookmarkCreateAndFetch(command)
 
     override suspend fun undo(
         command: Command.Undo
-    ): Payload = middleware.undo(command)
+    ): Payload = middleware.objectUndo(command)
 
     override suspend fun redo(
         command: Command.Redo
-    ): Payload = middleware.redo(command)
+    ): Payload = middleware.objectRedo(command)
 
     override suspend fun turnIntoDocument(
         command: Command.TurnIntoDocument
-    ): List<String> = middleware.turnIntoDocument(command)
+    ): List<String> = middleware.blockListMoveToNewObject(command)
 
     override suspend fun replace(
         command: Command.Replace
-    ): Pair<String, Payload> = middleware.replace(command)
+    ): Pair<String, Payload> = middleware.blockReplace(command)
 
     override suspend fun paste(
         command: Command.Paste
-    ): Response.Clipboard.Paste = middleware.paste(command)
+    ): Response.Clipboard.Paste = middleware.blockPaste(command)
 
     override suspend fun copy(
         command: Command.Copy
-    ): Response.Clipboard.Copy = middleware.copy(command)
+    ): Response.Clipboard.Copy = middleware.blockCopy(command)
 
     override suspend fun uploadFile(
         command: Command.UploadFile
-    ): String = middleware.uploadFile(command).hash
+    ): String = middleware.fileUpload(command).hash
 
     override suspend fun getObjectInfoWithLinks(pageId: String): ObjectInfoWithLinks {
-        return middleware.getObjectInfoWithLinks(pageId).toCoreModel()
+        return middleware.navigationGetObjectInfoWithLinks(pageId).toCoreModel()
     }
 
     override suspend fun getListPages(): List<DocumentInfo> {
-        return middleware.listObjects().map { it.toCoreModel() }
+        return middleware.navigationListObjects().map { it.toCoreModel() }
     }
 
     override suspend fun setRelationKey(command: Command.SetRelationKey): Payload {
-        return middleware.setRelationKey(command)
+        return middleware.blockRelationSetKey(command)
     }
 
     override suspend fun updateDivider(
         command: Command.UpdateDivider
-    ): Payload = middleware.updateDividerStyle(command)
+    ): Payload = middleware.blockListSetDivStyle(command)
 
     override suspend fun setFields(
         command: Command.SetFields
-    ): Payload = middleware.setFields(command)
+    ): Payload = middleware.blockListSetFields(command)
 
     override suspend fun getObjectTypes(): List<ObjectType> {
-        return middleware.getObjectTypes().map { it.toCoreModels() }
+        return middleware.objectTypeList().map { it.toCoreModels() }
     }
 
     override suspend fun createObjectType(
@@ -240,7 +238,7 @@ class BlockMiddleware(
         targetId: String?,
         position: Position?,
         objectType: String?
-    ): Response.Set.Create = middleware.createSet(
+    ): Response.Set.Create = middleware.objectCreateSet(
         contextId = contextId,
         targetId = targetId,
         position = position,
@@ -253,7 +251,7 @@ class BlockMiddleware(
         view: String,
         offset: Int,
         limit: Int
-    ): Payload = middleware.setActiveDataViewViewer(
+    ): Payload = middleware.blockDataViewActiveSet(
         contextId = context,
         blockId = block,
         viewId = view,
@@ -267,7 +265,7 @@ class BlockMiddleware(
         name: String,
         format: Relation.Format,
         limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = middleware.addNewRelationToDataView(
+    ): Pair<Id, Payload> = middleware.blockDataViewRelationAdd(
         context = context,
         target = target,
         format = format,
@@ -279,7 +277,7 @@ class BlockMiddleware(
         ctx: Id,
         dv: Id,
         relation: Id
-    ): Payload = middleware.addRelationToDataView(
+    ): Payload = middleware.blockDataViewRelationAdd(
         ctx = ctx,
         dv = dv,
         relation = relation
@@ -289,7 +287,7 @@ class BlockMiddleware(
         ctx: Id,
         dv: Id,
         relation: Id
-    ): Payload = middleware.deleteRelationFromDataView(
+    ): Payload = middleware.blockDataViewRelationDelete(
         ctx = ctx,
         dv = dv,
         relation = relation
@@ -299,7 +297,7 @@ class BlockMiddleware(
         context: String,
         target: String,
         viewer: DVViewer
-    ): Payload = middleware.updateDataViewViewer(
+    ): Payload = middleware.blockDataViewViewUpdate(
         context = context,
         target = target,
         viewer = viewer
@@ -309,7 +307,7 @@ class BlockMiddleware(
         context: String,
         target: String,
         viewer: DVViewer
-    ): Payload = middleware.duplicateDataViewViewer(
+    ): Payload = middleware.blockDataViewViewCreate(
         context = context,
         target = target,
         viewer = viewer
@@ -319,7 +317,7 @@ class BlockMiddleware(
         context: String,
         target: String,
         template: Id?
-    ): Map<String, Any?> = middleware.createDataViewRecord(
+    ): Map<String, Any?> = middleware.blockDataViewRecordCreate(
         context = context,
         target = target,
         template = template
@@ -330,7 +328,7 @@ class BlockMiddleware(
         target: String,
         record: String,
         values: Map<String, Any?>
-    ) = middleware.updateDataViewRecord(
+    ) = middleware.blockDataViewRecordUpdate(
         context = context,
         target = target,
         record = record,
@@ -342,7 +340,7 @@ class BlockMiddleware(
         target: String,
         name: String,
         type: DVViewerType
-    ): Payload = middleware.addDataViewViewer(
+    ): Payload = middleware.blockDataViewViewCreate(
         ctx = ctx,
         target = target,
         name = name,
@@ -353,7 +351,7 @@ class BlockMiddleware(
         ctx: String,
         dataview: String,
         viewer: String
-    ): Payload = middleware.removeDataViewViewer(
+    ): Payload = middleware.blockDataViewViewDelete(
         ctx = ctx,
         dataview = dataview,
         viewer = viewer
@@ -366,7 +364,7 @@ class BlockMiddleware(
         record: Id,
         name: String,
         color: String
-    ): Pair<Payload, Id?> = middleware.addRecordRelationOption(
+    ): Pair<Payload, Id?> = middleware.blockDataViewRecordRelationOptionAdd(
         ctx = ctx,
         dataview = dataview,
         relation = relation,
@@ -380,7 +378,7 @@ class BlockMiddleware(
         relation: Id,
         name: Id,
         color: String
-    ): Pair<Payload, Id?> = middleware.addObjectRelationOption(
+    ): Pair<Payload, Id?> = middleware.objectRelationOptionAdd(
         ctx = ctx,
         relation = relation,
         name = name,
@@ -394,7 +392,7 @@ class BlockMiddleware(
         offset: Int,
         limit: Int,
         keys: List<Id>
-    ): List<Map<String, Any?>> = middleware.searchObjects(
+    ): List<Map<String, Any?>> = middleware.objectSearch(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
@@ -412,7 +410,7 @@ class BlockMiddleware(
         limit: Long,
         beforeId: Id?,
         afterId: Id?
-    ): SearchResult = middleware.searchObjectsWithSubscription(
+    ): SearchResult = middleware.objectSearchSubscribe(
         subscription = subscription,
         sorts = sorts,
         filters = filters,
@@ -427,7 +425,7 @@ class BlockMiddleware(
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
-    ): SearchResult = middleware.searchObjectsByIdWithSubscription(
+    ): SearchResult = middleware.objectIdsSubscribe(
         subscription = subscription,
         ids = ids,
         keys = keys
@@ -435,22 +433,22 @@ class BlockMiddleware(
 
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
-    ) = middleware.cancelObjectSearchSubscription(subscriptions = subscriptions)
+    ) = middleware.objectSearchUnsubscribe(subscriptions = subscriptions)
 
     override suspend fun relationListAvailable(
         ctx: Id
-    ): List<Relation> = middleware.relationListAvailable(ctx).map { it.toCoreModels() }
+    ): List<Relation> = middleware.objectRelationListAvailable(ctx).map { it.toCoreModels() }
 
     override suspend fun addRelationToObject(
         ctx: Id, relation: Id
-    ) : Payload = middleware.addRelationToObject(ctx, relation)
+    ) : Payload = middleware.objectRelationAdd(ctx, relation)
 
     override suspend fun addNewRelationToObject(
         ctx: Id,
         name: String,
         format: RelationFormat,
         limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = middleware.addNewRelationToObject(
+    ): Pair<Id, Payload> = middleware.objectRelationAdd(
         ctx = ctx,
         format = format,
         name = name,
@@ -460,13 +458,13 @@ class BlockMiddleware(
     override suspend fun deleteRelationFromObject(
         ctx: Id,
         relation: Id
-    ): Payload = middleware.deleteRelationFromObject(
+    ): Payload = middleware.objectRelationDelete(
         ctx = ctx,
         relation = relation
     )
 
     override suspend fun debugSync(): String = middleware.debugSync()
-    override suspend fun debugLocalStore(path: String): String = middleware.exportLocalStore(path)
+    override suspend fun debugLocalStore(path: String): String = middleware.debugExportLocalStore(path)
 
     override suspend fun turnInto(
         context: String,
@@ -482,59 +480,59 @@ class BlockMiddleware(
         ctx: Id,
         key: String,
         value: Any?
-    ): Payload = middleware.updateDetail(
+    ): Payload = middleware.objectSetDetails(
         ctx = ctx,
         key = key,
         value = value
     )
 
     override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
-        middleware.blockListSetTextMarkup(command)
+        middleware.blockTextListSetMark(command)
 
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
-        middleware.addRelationToBlock(command)
+        middleware.blockRelationAdd(command)
 
     override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
-        middleware.setObjectType(ctx = ctx, typeId = typeId)
+        middleware.objectSetObjectType(ctx = ctx, typeId = typeId)
 
     override suspend fun addToFeaturedRelations(
         ctx: Id,
         relations: List<Id>
-    ): Payload = middleware.addToFeaturedRelations(ctx, relations)
+    ): Payload = middleware.objectRelationAddFeatured(ctx, relations)
 
     override suspend fun removeFromFeaturedRelations(
         ctx: Id,
         relations: List<Id>
-    ): Payload = middleware.removeFromFeaturedRelations(ctx, relations)
+    ): Payload = middleware.objectRelationRemoveFeatured(ctx, relations)
 
     override suspend fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
-    ): Payload = middleware.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
+    ): Payload = middleware.objectSetIsFavorite(ctx = ctx, isFavorite = isFavorite)
 
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload = middleware.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+    ): Payload = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
 
-    override suspend fun deleteObjects(targets: List<Id>) = middleware.deleteObjects(
+    override suspend fun deleteObjects(targets: List<Id>) = middleware.objectListDelete(
         targets = targets
     )
 
     override suspend fun setObjectListIsArchived(
         targets: List<Id>,
         isArchived: Boolean
-    ) = middleware.setObjectListIsArchived(
+    ) = middleware.objectListSetIsArchived(
         targets = targets,
         isArchived = isArchived
     )
 
     override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload =
-        middleware.setObjectLayout(ctx, layout)
+        middleware.objectSetLayout(ctx, layout)
 
     override suspend fun clearFileCache() = middleware.fileListOffload()
 
-    override suspend fun applyTemplate(ctx: Id, template: Id) = middleware.applyTemplate(
+    override suspend fun applyTemplate(ctx: Id, template: Id) = middleware.objectApplyTemplate(
         ctx = ctx,
         template = template
     )

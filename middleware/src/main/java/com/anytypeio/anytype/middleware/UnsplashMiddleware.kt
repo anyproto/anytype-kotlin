@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.middleware
 
-import anytype.Rpc
-import anytype.Rpc.UnsplashSearch
+import anytype.Rpc.Unsplash.Download
+import anytype.Rpc.Unsplash.Search
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.UnsplashImage
@@ -16,7 +16,7 @@ class UnsplashMiddleware(
 ) : UnsplashRemote {
 
     override fun search(query: String, limit: Int): List<UnsplashImage> {
-        val request = UnsplashSearch.Request(
+        val request = Search.Request(
             query = query,
             limit = limit
         ).also { it.logRequest() }
@@ -25,7 +25,7 @@ class UnsplashMiddleware(
     }
 
     override fun download(id: Id): Hash {
-        val request = Rpc.UnsplashDownload.Request(pictureId = id).also { it.logRequest() }
+        val request = Download.Request(pictureId = id).also { it.logRequest() }
         val response = service.unsplashDownload(request = request).also { it.logResponse() }
         return response.hash
     }

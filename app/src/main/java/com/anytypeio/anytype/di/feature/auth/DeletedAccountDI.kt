@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
@@ -49,8 +50,12 @@ object DeletedAccountModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideLogout(repo: AuthRepository): Logout = Logout(
-        repo = repo
+    fun provideLogout(
+        repo: AuthRepository,
+        provider: ConfigStorage
+    ): Logout = Logout(
+        repo = repo,
+        provider = provider
     )
 
     @JvmStatic

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
@@ -107,10 +108,12 @@ object HomeDashboardModule {
     @PerScreen
     fun provideGetProfileUseCase(
         repository: BlockRepository,
-        subscriptionEventChannel: SubscriptionEventChannel
+        subscriptionEventChannel: SubscriptionEventChannel,
+        provider: ConfigStorage
     ): GetProfile = GetProfile(
         repo = repository,
-        channel = subscriptionEventChannel
+        channel = subscriptionEventChannel,
+        provider = provider
     )
 
     @JvmStatic
@@ -118,19 +121,23 @@ object HomeDashboardModule {
     @PerScreen
     fun provideOpenDashboardUseCase(
         repo: BlockRepository,
-        auth: AuthRepository
+        auth: AuthRepository,
+        provider: ConfigStorage
     ): OpenDashboard = OpenDashboard(
         repo = repo,
-        auth = auth
+        auth = auth,
+        provider = provider
     )
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideCloseDashboardUseCase(
-        repo: BlockRepository
+        repo: BlockRepository,
+        provider: ConfigStorage
     ): CloseDashboard = CloseDashboard(
-        repo = repo
+        repo = repo,
+        provider = provider
     )
 
     @JvmStatic
@@ -146,9 +153,9 @@ object HomeDashboardModule {
     @Provides
     @PerScreen
     fun getConfigUseCase(
-        repo: BlockRepository
+        provider: ConfigStorage
     ): GetConfig = GetConfig(
-        repo = repo
+        provider = provider
     )
 
     @JvmStatic

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.auth
 
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
@@ -21,30 +22,15 @@ class AuthMiddleware(
 ) : AuthRemote {
 
     override suspend fun startAccount(
-        id: String,
-        path: String
-    ): Triple<AccountEntity, FeaturesConfigEntity, AccountStatus> {
-        val response = middleware.selectAccount(id, path)
-        val account = AccountEntity(
-            id = response.id,
-            name = response.name,
-            color = response.avatar?.color
-        )
-        val featuresConfig = FeaturesConfigEntity(
-            enableDataView = response.enableDataView,
-            enableDebug = response.enableDebug,
-            enableChannelSwitch = response.enableChannelSwitch,
-            enableSpaces = response.enableSpaces
-        )
-        return Triple(account, featuresConfig, response.accountStatus ?: AccountStatus.Unknown)
-    }
+        id: String, path: String
+    ): AccountSetup = middleware.accountSelect(id, path)
 
     override suspend fun createAccount(
         name: String,
         avatarPath: String?,
         invitationCode: String
     ) = withContext(Dispatchers.IO) {
-        middleware.createAccount(name, avatarPath, invitationCode).let { response ->
+        middleware.accountCreate(name, avatarPath, invitationCode).let { response ->
             AccountEntity(
                 id = response.id,
                 name = response.name,
@@ -53,11 +39,11 @@ class AuthMiddleware(
         }
     }
 
-    override suspend fun deleteAccount(): AccountStatus = middleware.deleteAccount()
-    override suspend fun restoreAccount(): AccountStatus = middleware.restoreAccount()
+    override suspend fun deleteAccount(): AccountStatus = middleware.accountDelete()
+    override suspend fun restoreAccount(): AccountStatus = middleware.accountRestore()
 
     override suspend fun recoverAccount() = withContext(Dispatchers.IO) {
-        middleware.recoverAccount()
+        middleware.accountRecover()
     }
 
     override fun observeAccounts() = events
@@ -81,19 +67,19 @@ class AuthMiddleware(
 
     override suspend fun createWallet(
         path: String
-    ) = WalletEntity(mnemonic = middleware.createWallet(path).mnemonic)
+    ) = WalletEntity(mnemonic = middleware.walletCreate(path).mnemonic)
 
     override suspend fun recoverWallet(path: String, mnemonic: String) {
-        middleware.recoverWallet(path, mnemonic)
+        middleware.walletRecover(path, mnemonic)
     }
 
-    override suspend fun convertWallet(entropy: String): String = middleware.convertWallet(entropy)
+    override suspend fun convertWallet(entropy: String): String = middleware.walletConvert(entropy)
 
     override suspend fun logout(clearLocalRepositoryData: Boolean) {
-        middleware.logout(clearLocalRepositoryData)
+        middleware.accountStop(clearLocalRepositoryData)
     }
 
     override suspend fun getVersion(): String {
-        return middleware.getMiddlewareVersion().version
+        return middleware.versionGet().version
     }
 }

@@ -1,30 +1,23 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
-import com.anytypeio.anytype.data.auth.repo.config.Configurator
-import com.anytypeio.anytype.domain.auth.model.Account
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import kotlinx.coroutines.flow.map
 
 class AuthDataRepository(
-    private val factory: AuthDataStoreFactory,
-    private val configurator: Configurator
+    private val factory: AuthDataStoreFactory
 ) : AuthRepository {
 
     override suspend fun startAccount(
         id: String, path: String
-    ): Triple<Account, FeaturesConfig, AccountStatus> = factory.remote.startAccount(id, path).let { triple ->
-        Triple(
-            first = triple.first.toDomain(),
-            second = triple.second.toDomain(),
-            third = triple.third
-        )
-    }
+    ): AccountSetup = factory.remote.startAccount(id, path)
 
     override suspend fun createAccount(
         name: String,
@@ -71,7 +64,6 @@ class AuthDataRepository(
     override suspend fun getMnemonic() = factory.cache.getMnemonic()
 
     override suspend fun logout(clearLocalRepositoryData: Boolean) {
-        configurator.release()
         factory.remote.logout(clearLocalRepositoryData)
         factory.cache.logout(clearLocalRepositoryData)
     }

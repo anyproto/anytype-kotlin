@@ -1121,7 +1121,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.show(childFragmentManager, null)
                 }
                 is Command.ScrollToPosition -> {
-                    binding.recycler.smoothScrollToPosition(command.pos)
+                    val lm = binding.recycler.layoutManager as LinearLayoutManager
+                    val margin = resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
+                    lm.scrollToPositionWithOffset(command.pos, margin)
                 }
             }
         }

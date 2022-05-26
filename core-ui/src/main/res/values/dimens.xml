@@ -11,6 +11,7 @@
     <dimen name="default_avatar_text_size">21sp</dimen>
 
     <dimen name="default_toolbar_height">48dp</dimen>
+    <dimen name="default_editor_item_offset">48dp</dimen>
 
     <dimen name="default_toolbar_section_radius">16dp</dimen>
     <dimen name="default_toolbar_section_height">24dp</dimen>

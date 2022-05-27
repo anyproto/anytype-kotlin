@@ -33,7 +33,7 @@ class RelationTextValueViewModel(
     ) {
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.subscribe(relationId),
+                relations.observe(relationId),
                 values.subscribe(recordId)
             ) { relation, values ->
                 title.value = relation.name

@@ -6,17 +6,34 @@ import com.anytypeio.anytype.core_models.StubRelation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-internal class FakeObjectRelationProvider(
-    var relation: Relation = StubRelation()
-) : ObjectRelationProvider {
+internal class FakeObjectRelationProvider : ObjectRelationProvider {
 
-    override fun get(relation: Id): Relation {
-        return this.relation
+    private var relations: List<Relation>
+
+    var relation: Relation = StubRelation()
+        set(value) {
+            relations = listOf(value)
+        }
+
+    constructor(relations: List<Relation>) {
+        this.relations = relations
     }
 
-    override fun subscribe(relationId: Id): Flow<Relation> {
+    constructor(relation: Relation = StubRelation()) : this(listOf(relation))
+
+    override fun get(relation: Id): Relation {
+        return relations.first { it.key == relation }
+    }
+
+    override fun observe(relationId: Id): Flow<Relation> {
         return flow {
-            emit(relation)
+            emit(get(relationId))
+        }
+    }
+
+    override fun observeAll(): Flow<List<Relation>> {
+        return flow {
+            emit(relations)
         }
     }
 }

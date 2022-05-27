@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ObjectRelationProvider {
     fun get(relation: Id): Relation
-    fun subscribe(relation: Id) : Flow<Relation>
+    fun observe(relationId: Id): Flow<Relation>
+    fun observeAll(): Flow<List<Relation>>
 }

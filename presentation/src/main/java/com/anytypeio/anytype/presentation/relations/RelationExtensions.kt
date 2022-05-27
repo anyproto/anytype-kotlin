@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -213,15 +212,4 @@ fun ColumnView.getDateRelationFormat(): String {
     } else {
         format
     }
-}
-
-fun List<Relation>.toNotHiddenRelationViews(): List<RelationView.Existing> {
-    return filter { !it.isHidden }
-        .map {
-            RelationView.Existing(
-                id = it.key,
-                name = it.name,
-                format = it.format
-            )
-        }
 }

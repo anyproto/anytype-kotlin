@@ -79,7 +79,7 @@ abstract class BaseAddOptionsRelationViewModel(
     }
 
     fun onStart(target: Id, relationId: Id) {
-        val s1 = relations.subscribe(relationId)
+        val s1 = relations.observe(relationId)
         val s2 = values.subscribe(target)
         jobs += viewModelScope.launch {
             s1.combine(s2) { relation, record ->

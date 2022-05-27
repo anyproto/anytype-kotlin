@@ -29,7 +29,7 @@ class BaseAddOptionsRelationViewModelTest {
         format = Relation.Format.TAG,
         selections = listOf(notSelectedOption, selectedOption)
     )
-    private val relationId = "stubRelationId"
+    private val relationId = relation.key
     private val targetId = "stubTargetId"
     private val relationsProvider = FakeObjectRelationProvider()
     private val valuesProvider = FakeObjectValueProvider(

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -44,12 +45,14 @@ object RelationAddToObjectModule {
         addRelationToObject: AddRelationToObject,
         objectRelationList: ObjectRelationList,
         dispatcher: Dispatcher<Payload>,
-        analytics: Analytics
+        analytics: Analytics,
+        relationsProvider: ObjectRelationProvider,
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         objectRelationList = objectRelationList,
         addRelationToObject = addRelationToObject,
         dispatcher = dispatcher,
-        analytics = analytics
+        analytics = analytics,
+        relationsProvider = relationsProvider,
     )
 
     @JvmStatic
@@ -92,7 +95,8 @@ object RelationAddToDataViewModule {
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
-        analytics: Analytics
+        analytics: Analytics,
+        relationsProvider: ObjectRelationProvider,
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         objectRelationList = objectRelationList,
         addRelationToDataView = addRelationToDataView,
@@ -100,7 +104,8 @@ object RelationAddToDataViewModule {
         state = state,
         session = session,
         updateDataViewViewer = updateDataViewViewer,
-        analytics = analytics
+        analytics = analytics,
+        relationsProvider = relationsProvider
     )
 
     @JvmStatic

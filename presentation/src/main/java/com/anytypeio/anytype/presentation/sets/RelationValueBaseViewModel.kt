@@ -68,7 +68,7 @@ abstract class RelationValueBaseViewModel(
     fun onStart(objectId: Id, relationId: Id) {
         Timber.d("onStart")
         jobs += viewModelScope.launch {
-            val s1 = relations.subscribe(relationId)
+            val s1 = relations.observe(relationId)
             val s2 = values.subscribe(objectId)
             s1.combine(s2) { relation, record ->
                 initDataViewUIState(relation, record, relationId)

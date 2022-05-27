@@ -5,12 +5,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.getTodayTimeUnit
+import com.anytypeio.anytype.core_utils.ext.getTomorrowTimeUnit
+import com.anytypeio.anytype.core_utils.ext.getYesterdayTimeUnit
+import com.anytypeio.anytype.core_utils.ext.isSameDay
+import com.anytypeio.anytype.core_utils.ext.timeInSecondsFormat
+import com.anytypeio.anytype.core_utils.ext.toTimeSecondsLong
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -28,7 +38,7 @@ class RelationDateValueViewModel(
     fun onStart(relationId: Id, objectId: String) {
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.subscribe(relationId),
+                relations.observe(relationId),
                 values.subscribe(objectId)
             ) { relation, value ->
                 setName(relation.name)

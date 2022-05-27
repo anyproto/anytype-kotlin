@@ -7,7 +7,10 @@ import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.presentation.extension.updateFields
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.scan
 import timber.log.Timber
 
 class ObjectSetReducer {

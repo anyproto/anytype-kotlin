@@ -12,6 +12,18 @@ import kotlinx.coroutines.flow.map
 class DataViewObjectRelationProvider(
     private val objectSetState: StateFlow<ObjectSet>,
 ) : ObjectRelationProvider {
+
+    override fun observeAll(): Flow<List<Relation>> {
+        return objectSetState
+            .filter { state -> state.isInitialized }
+            .map { state ->
+                val block = state.dataview
+                val dv = block.content as DV
+                dv.relations
+            }
+
+    }
+
     override fun get(relation: Id): Relation {
         val state = objectSetState.value
         val block = state.dataview
@@ -19,11 +31,8 @@ class DataViewObjectRelationProvider(
         return dv.relations.first { it.key == relation }
     }
 
-    override fun subscribe(relation: Id): Flow<Relation> = objectSetState
-        .filter { state -> state.isInitialized }
-        .map { state ->
-            val block = state.dataview
-            val dv = block.content as DV
-            dv.relations.first { it.key == relation }
+    override fun observe(relationId: Id): Flow<Relation> =
+        observeAll().map { relations ->
+            relations.single { relation -> relation.key == relationId }
         }
 }

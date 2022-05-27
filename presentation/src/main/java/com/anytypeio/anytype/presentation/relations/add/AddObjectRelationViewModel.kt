@@ -48,7 +48,7 @@ class AddObjectRelationViewModel(
         processingViewsSelectionsAndFilter()
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.subscribe(relationId),
+                relations.observe(relationId),
                 values.subscribe(objectId)
             ) { relation, value ->
                 when (val ids = value[relation.key]) {

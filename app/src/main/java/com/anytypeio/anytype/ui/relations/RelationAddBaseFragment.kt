@@ -25,9 +25,9 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentRelationAddBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.RelationAddBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.Serializable
@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 abstract class RelationAddBaseFragment : BaseBottomSheetTextInputFragment<FragmentRelationAddBinding>() {
 
-    abstract val vm: RelationAddBaseViewModel
+    abstract val vm: RelationAddViewModelBase
 
     override val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
 

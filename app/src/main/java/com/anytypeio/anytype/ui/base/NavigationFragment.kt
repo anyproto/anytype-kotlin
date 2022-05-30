@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.base
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -14,11 +15,20 @@ abstract class NavigationFragment<BINDING : ViewBinding>(
 ) : BaseFragment<BINDING>(layout) {
 
     val navObserver = Observer<EventWrapper<Command>> { event ->
-        event.getContentIfNotHandled()?.let { navigate(it) }
+        event.getContentIfNotHandled()?.let {
+            try {
+                navigate(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Navigation: $it")
+                if (BuildConfig.DEBUG) {
+                    throw e
+                }
+            }
+        }
     }
 
     fun navigate(command: Command) {
-
+        Timber.d("Navigate to $command")
         val navigation = (requireActivity() as AppNavigation.Provider).nav()
 
         when (command) {

@@ -16,7 +16,13 @@ import androidx.transition.TransitionSet
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentDashboardBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -36,7 +42,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class DashboardFragment : ViewStateFragment<State, FragmentDashboardBinding>(R.layout.fragment_dashboard) {
+class DashboardFragment :
+    ViewStateFragment<State, FragmentDashboardBinding>(R.layout.fragment_dashboard) {
 
     private val isMnemonicReminderDialogNeeded: Boolean?
         get() = argOrNull(
@@ -194,7 +201,14 @@ class DashboardFragment : ViewStateFragment<State, FragmentDashboardBinding>(R.l
                     vm.archived.collect { dashboardArchiveAdapter.update(it) }
                 }
                 launch {
-                    vm.count.collect { binding.tvSelectedCount.text = "$it object selected" }
+                    vm.count.collect { count ->
+                        val selectedObjectsText = resources.getQuantityString(
+                            R.plurals.fragment_dashboard_selected_count,
+                            count,
+                            count
+                        )
+                        binding.tvSelectedCount.text = selectedObjectsText
+                    }
                 }
                 launch {
                     vm.alerts.collect { alert ->
@@ -430,7 +444,7 @@ class DashboardFragment : ViewStateFragment<State, FragmentDashboardBinding>(R.l
             .onEach { vm.onSelectAllClicked() }
             .launchIn(lifecycleScope)
 
-        binding.tvPutBack
+        binding.tvRestore
             .clicks()
             .onEach { vm.onPutBackClicked() }
             .launchIn(lifecycleScope)

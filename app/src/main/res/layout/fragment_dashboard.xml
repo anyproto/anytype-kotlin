@@ -215,7 +215,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/tvPutBack"
+            android:id="@+id/tvRestore"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -223,7 +223,7 @@
             android:gravity="center"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:text="@string/put_back"
+            android:text="@string/fragment_dashboard_restore"
             android:background="@drawable/default_ripple"
             android:textColor="@color/text_primary"
             android:textSize="17sp" />

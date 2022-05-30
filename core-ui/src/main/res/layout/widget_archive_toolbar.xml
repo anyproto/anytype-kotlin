@@ -19,11 +19,11 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/btnPutBack"
+        android:id="@+id/btnRestore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        android:text="Put back"
+        android:text="@string/btn_restore"
         android:padding="@dimen/dp_12"
         android:fontFamily="@font/inter_regular"
         android:textSize="17sp"

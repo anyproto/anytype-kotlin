@@ -256,7 +256,6 @@
     <string name="preview">Preview</string>
     <string name="link_to">Link to</string>
     <string name="mention_suggester_new_page">Create new object</string>
-    <string name="widget_archive_select_pages">Select pages</string>
     <string name="your_search_query">Search</string>
     <string name="syncing">Syncing…</string>
     <string name="choose_a_object_type_for_this_set">Choose a object type for this set</string>
@@ -514,5 +513,6 @@
     <string name="this_type_has_templates">This type has %1$d templates</string>
 
     <string name="item_relation_create_from_scratch_title">Type</string>
+    <string name="btn_restore">Restore</string>
 
 </resources>

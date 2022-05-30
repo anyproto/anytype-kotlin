@@ -19,12 +19,12 @@ class ArchiveToolbarWidget @JvmOverloads constructor(
     )
 
     fun update(count: Int) = with(binding) {
-        if (count == 0) {
-            tvSelect.text = resources.getString(R.string.widget_archive_select_pages)
-            btnPutBack.setTextColor(context.color(R.color.toolbar_archive_button_disable))
+        tvSelect.text = resources.getQuantityString(R.plurals.page_selected, count, count)
+        val color = if (count == 0) {
+            R.color.toolbar_archive_button_disable
         } else {
-            tvSelect.text = resources.getQuantityString(R.plurals.page_selected, count, count)
-            btnPutBack.setTextColor(context.color(R.color.black))
+            R.color.black
         }
+        btnRestore.setTextColor(context.color(color))
     }
 }

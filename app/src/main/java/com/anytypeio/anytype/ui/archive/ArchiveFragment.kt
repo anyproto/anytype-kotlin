@@ -72,7 +72,7 @@ open class ArchiveFragment : NavigationFragment<FragmentArchiveBinding>(R.layout
 
         with(binding.bottomMenu) {
             update(COUNTER_INIT)
-            findViewById<TextView>(R.id.btnPutBack).setOnClickListener {
+            findViewById<TextView>(R.id.btnRestore).setOnClickListener {
                 vm.onPutBackClicked()
             }
         }

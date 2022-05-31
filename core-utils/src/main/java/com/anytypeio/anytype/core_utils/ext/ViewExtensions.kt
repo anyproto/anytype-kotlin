@@ -3,10 +3,12 @@ package com.anytypeio.anytype.core_utils.ext
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 
@@ -88,6 +90,21 @@ fun RecyclerView.containsItemDecoration(decoration: RecyclerView.ItemDecoration)
     } else {
         return false
     }
+}
+
+fun RecyclerView.smoothSnapToPosition(
+    position: Int,
+    snapMode: Int = LinearSmoothScroller.SNAP_TO_START,
+    scrollDuration: Float = 500f) {
+    val smoothScroller = object : LinearSmoothScroller(this.context) {
+        override fun getVerticalSnapPreference(): Int = snapMode
+        override fun getHorizontalSnapPreference(): Int = snapMode
+        override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+            return scrollDuration / computeHorizontalScrollRange();
+        }
+    }
+    smoothScroller.targetPosition = position
+    layoutManager?.startSmoothScroll(smoothScroller)
 }
 
 val Activity.statusBarHeight: Int

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockActionBinding
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
+import com.anytypeio.anytype.core_utils.ext.smoothSnapToPosition
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 
 class BlockActionWidget @JvmOverloads constructor(
@@ -46,8 +47,12 @@ class BlockActionWidget @JvmOverloads constructor(
         blockActionAdapter.submitList(actions)
     }
 
-    fun scrollToPosition(pos: Int) {
-        binding.blockActionRecycler.scrollToPosition(pos)
+    fun scrollToPosition(pos: Int, smooth: Boolean = false) {
+        if (smooth) {
+            binding.blockActionRecycler.smoothSnapToPosition(pos)
+        } else {
+            binding.blockActionRecycler.scrollToPosition(pos)
+        }
     }
 
     class Adapter(

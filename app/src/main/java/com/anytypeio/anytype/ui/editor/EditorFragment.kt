@@ -149,6 +149,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
@@ -780,7 +781,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }.launchIn(lifecycleScope)
 
         with(lifecycleScope) {
-            subscribe(vm.actions) { binding.blockActionToolbar.bind(it) }
+            launch {
+                vm.actions.collectLatest {
+                    binding.blockActionToolbar.bind(it)
+                    delay(DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR)
+                    binding.blockActionToolbar.post {
+                        binding.blockActionToolbar.scrollToPosition(0, smooth = true)
+                    }
+                }
+            }
             subscribe(vm.isUndoRedoToolbarIsVisible) { isVisible ->
                 val behavior = BottomSheetBehavior.from(binding.undoRedoToolbar)
                 if (isVisible) {
@@ -2035,6 +2044,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         const val DEBUG_SETTINGS = "debug_settings"
 
         const val DEFAULT_ANIM_DURATION = 150L
+        const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L
         const val DEFAULT_TOOLBAR_ANIM_DURATION = 150L
 
         const val SHOW_MENTION_TRANSITION_DURATION = 150L

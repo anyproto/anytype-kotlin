@@ -6,7 +6,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectSetMenuViewModel
+import com.anytypeio.anytype.presentation.objects.menu.ObjectSetMenuViewModel
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import javax.inject.Inject
 

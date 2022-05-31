@@ -33,7 +33,7 @@ data class ObjectType(
         IMAGE(8),
         NOTE(9),
         SPACE(10),
-        DATABASE(20)
+        DATABASE(20),
     }
 
     /**

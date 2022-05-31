@@ -28,7 +28,7 @@
         app:title="@string/icon" />
 
     <View
-        android:id="@+id/divider1"
+        android:id="@+id/iconDivider"
         android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:layout_marginStart="72dp"
@@ -48,12 +48,12 @@
         app:icon="@drawable/ic_object_menu_cover"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider1"
+        app:layout_constraintTop_toBottomOf="@id/iconDivider"
         app:subtitle="@string/cover_description"
         app:title="@string/cover" />
 
     <View
-        android:id="@+id/divider2"
+        android:id="@+id/coverDivider"
         android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:layout_marginStart="72dp"
@@ -73,12 +73,12 @@
         app:icon="@drawable/ic_object_menu_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider2"
+        app:layout_constraintTop_toBottomOf="@id/coverDivider"
         app:subtitle="@string/layout_description"
         app:title="@string/layout" />
 
     <View
-        android:id="@+id/divider3"
+        android:id="@+id/layoutDivider"
         android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:layout_marginStart="72dp"
@@ -98,12 +98,12 @@
         app:icon="@drawable/ic_object_menu_relations"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider3"
+        app:layout_constraintTop_toBottomOf="@id/layoutDivider"
         app:subtitle="@string/relations_description"
         app:title="@string/relations" />
 
     <View
-        android:id="@+id/divider4"
+        android:id="@+id/relationsDivider"
         android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:layout_marginStart="72dp"
@@ -123,12 +123,12 @@
         app:icon="@drawable/ic_object_menu_history"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider4"
+        app:layout_constraintTop_toBottomOf="@id/relationsDivider"
         app:subtitle="@string/history_description"
         app:title="@string/history" />
 
     <View
-        android:id="@+id/divider5"
+        android:id="@+id/historyDivider"
         android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:layout_marginTop="21dp"
@@ -144,7 +144,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider5">
+        app:layout_constraintTop_toBottomOf="@+id/historyDivider">
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_gravity="center_vertical"

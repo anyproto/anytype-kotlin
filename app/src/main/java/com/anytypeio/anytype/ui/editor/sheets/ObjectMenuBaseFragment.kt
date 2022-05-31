@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -19,9 +17,8 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
-import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
-import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModelBase
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
@@ -29,7 +26,6 @@ import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMenuBinding>() {
 
@@ -94,14 +90,35 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
             jobs += subscribe(vm.commands) { command -> execute(command) }
+            jobs += subscribe(vm.options) { options -> renderOptions(options) }
         }
         super.onStart()
         vm.onStart(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isProfile = isProfile
+            isProfile = isProfile,
+            isLocked = isLocked
         )
+    }
+
+    // TODO refactor to recycler view
+    private fun renderOptions(options: ObjectMenuOptionsProvider.Options) {
+        val iconVisibility = if (options.hasIcon) View.VISIBLE else View.GONE
+        val coverVisibility = if (options.hasCover) View.VISIBLE else View.GONE
+        val layoutVisibility = if (options.hasLayout) View.VISIBLE else View.GONE
+        val relationsVisibility = if (options.hasRelations) View.VISIBLE else View.GONE
+        val historyVisibility = if (options.hasHistory) View.VISIBLE else View.GONE
+        binding.optionIcon.visibility = iconVisibility
+        binding.optionCover.visibility = coverVisibility
+        binding.optionLayout.visibility = layoutVisibility
+        binding.optionRelations.visibility = relationsVisibility
+        binding.optionHistory.visibility = historyVisibility
+        binding.iconDivider.visibility = iconVisibility
+        binding.coverDivider.visibility = coverVisibility
+        binding.layoutDivider.visibility = layoutVisibility
+        binding.relationsDivider.visibility = relationsVisibility
+        binding.historyDivider.visibility = historyVisibility
     }
 
     private fun execute(command: ObjectMenuViewModelBase.Command) {
@@ -185,29 +202,5 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
         fun onSetIconClicked()
         fun onLayoutClicked()
         fun onUndoRedoClicked()
-    }
-}
-
-class ObjectMenuFragment : ObjectMenuBaseFragment() {
-
-    @Inject
-    lateinit var factory: ObjectMenuViewModel.Factory
-    override val vm by viewModels<ObjectMenuViewModel> { factory }
-
-    override fun onStart() {
-        super.onStart()
-        with(lifecycleScope) {
-            subscribe(vm.isObjectArchived) { isArchived ->
-                if (isArchived) parentFragment?.findNavController()?.popBackStack()
-            }
-        }
-    }
-
-    override fun injectDependencies() {
-        componentManager().objectMenuComponent.get(ctx).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().objectMenuComponent.release(ctx)
     }
 }

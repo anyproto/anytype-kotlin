@@ -12,8 +12,9 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.objects.ObjectMenuViewModel
-import com.anytypeio.anytype.presentation.objects.ObjectSetMenuViewModel
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProviderImpl
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
+import com.anytypeio.anytype.presentation.objects.menu.ObjectSetMenuViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
@@ -22,6 +23,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 
 
 @Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectMenuModule::class])
@@ -29,7 +31,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface ObjectMenuComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun base(module: ObjectMenuModuleBase) : Builder
+        fun base(module: ObjectMenuModuleBase): Builder
         fun module(module: ObjectMenuModule): Builder
         fun build(): ObjectMenuComponent
     }
@@ -42,7 +44,7 @@ interface ObjectMenuComponent {
 interface ObjectSetMenuComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun base(module: ObjectMenuModuleBase) : Builder
+        fun base(module: ObjectMenuModuleBase): Builder
         fun module(module: ObjectSetMenuModule): Builder
         fun build(): ObjectSetMenuComponent
     }
@@ -57,14 +59,14 @@ object ObjectMenuModuleBase {
     @PerDialog
     fun provideAddToFavoriteUseCase(
         repo: BlockRepository
-    ) : AddToFavorite = AddToFavorite(repo = repo)
+    ): AddToFavorite = AddToFavorite(repo = repo)
 
     @JvmStatic
     @Provides
     @PerDialog
     fun provideRemoveFromFavoriteUseCase(
         repo: BlockRepository
-    ) : RemoveFromFavorite = RemoveFromFavorite(repo = repo)
+    ): RemoveFromFavorite = RemoveFromFavorite(repo = repo)
 }
 
 @Module
@@ -91,12 +93,21 @@ object ObjectMenuModule {
         analytics = analytics,
         dispatcher = dispatcher,
         updateFields = updateFields,
-        delegator = delegator
+        delegator = delegator,
+        menuOptionsProvider = createMenuOptionsProvider(storage)
     )
+
+    @JvmStatic
+    private fun createMenuOptionsProvider(storage: Editor.Storage) =
+        ObjectMenuOptionsProviderImpl(
+            details = storage.details.stream().map { it.details },
+            restrictions = storage.objectRestrictions.stream()
+        )
 }
 
 @Module
 object ObjectSetMenuModule {
+
     @JvmStatic
     @Provides
     @PerDialog
@@ -113,6 +124,14 @@ object ObjectSetMenuModule {
         removeFromFavorite = removeFromFavorite,
         analytics = analytics,
         state = state,
-        dispatcher = dispatcher
+        dispatcher = dispatcher,
+        menuOptionsProvider = createMenuOptionsProvider(state)
     )
+
+    @JvmStatic
+    private fun createMenuOptionsProvider(state: StateFlow<ObjectSet>) =
+        ObjectMenuOptionsProviderImpl(
+            details = state.map { it.details },
+            restrictions = state.map { it.objectRestrictions }
+        )
 }

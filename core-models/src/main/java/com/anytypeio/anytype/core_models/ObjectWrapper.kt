@@ -48,7 +48,7 @@ sealed class ObjectWrapper {
 
         val layout: ObjectType.Layout?
             get() = when (val value = map[Relations.LAYOUT]) {
-                is Double -> ObjectType.Layout.values().find { layout ->
+                is Double -> ObjectType.Layout.values().singleOrNull { layout ->
                     layout.code == value.toInt()
                 }
                 else -> null

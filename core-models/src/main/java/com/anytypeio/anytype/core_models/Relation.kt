@@ -27,11 +27,11 @@ data class Relation(
         STATUS("Status"),
         TAG("Tag"),
         DATE("Date"),
-        FILE("File"),
+        FILE("File & Media"),
         CHECKBOX("Checkbox"),
         URL("URL"),
         EMAIL("Email"),
-        PHONE("Phone number"),
+        PHONE("Phone"),
         EMOJI("Emoji"),
         OBJECT("Object"),
         RELATIONS("Relations")
@@ -54,9 +54,20 @@ data class Relation(
 
     companion object {
         fun orderedFormatList(): List<Format> = listOf(
-            Format.OBJECT, Format.LONG_TEXT, Format.SHORT_TEXT, Format.STATUS,
-            Format.TAG, Format.DATE, Format.FILE, Format.CHECKBOX,
-            Format.URL, Format.EMAIL, Format.PHONE, Format.EMOJI, Format.RELATIONS
+            Format.OBJECT,
+            Format.LONG_TEXT,
+            Format.NUMBER,
+            Format.SHORT_TEXT,
+            Format.STATUS,
+            Format.TAG,
+            Format.DATE,
+            Format.FILE,
+            Format.CHECKBOX,
+            Format.URL,
+            Format.EMAIL,
+            Format.PHONE,
+            Format.EMOJI,
+            Format.RELATIONS
         )
     }
 }

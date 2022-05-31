@@ -9,7 +9,19 @@ class ObjectRelationList(
     private val repo: BlockRepository
 ) : BaseUseCase<List<Relation>, ObjectRelationList.Params>() {
 
-    override suspend fun run(params: Params) = safe { repo.relationListAvailable(ctx = params.ctx) }
+    override suspend fun run(params: Params) = safe {
+        repo.relationListAvailable(ctx = params.ctx)
+            .let {
+                if (params.sorted) {
+                    it.sortedBy { it.name }
+                } else {
+                    it
+                }
+            }
+    }
 
-    class Params(val ctx: Id)
+    class Params(
+        val ctx: Id,
+        val sorted: Boolean = true
+    )
 }

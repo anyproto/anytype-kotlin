@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
+import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import androidx.viewbinding.ViewBinding
@@ -1508,7 +1509,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     binding.slashWidget.onStateChanged(it)
                 }
             } else {
-                binding.slashWidget.gone()
+                if (binding.slashWidget.isVisible) {
+                    applySlideTransition(
+                        binding.slashWidget,
+                        SLASH_HIDE_ANIM_DURATION,
+                        binding.sheet
+                    )
+                    binding.slashWidget.gone()
+                }
                 binding.recycler.removeItemDecoration(slashWidgetFooter)
             }
         }
@@ -1531,6 +1539,21 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.objectTypesToolbar.clear()
             }
         }
+    }
+
+    private fun applySlideTransition(transTarget: View, transDuration: Long, transRoot: ViewGroup) {
+        val transitionSet = TransitionSet().apply {
+            addTransition(Slide())
+            duration = transDuration
+            interpolator = DecelerateInterpolator(DECELERATE_INTERPOLATOR_FACTOR)
+            ordering = TransitionSet.ORDERING_TOGETHER
+            addTarget(transTarget)
+        }
+        TransitionManager.endTransitions(transRoot)
+        TransitionManager.beginDelayedTransition(
+            transRoot,
+            transitionSet
+        )
     }
 
     private fun proceedWithHidingSoftInput() {
@@ -1681,7 +1704,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 val scrollY = (parentBottom - minPosY) - (parentBottom - cursorCoordinate)
                 binding.recycler.addItemDecoration(slashWidgetFooter)
                 binding.recycler.post {
-                    binding.recycler.smoothScrollBy(0, scrollY)
+                    binding.recycler.smoothScrollBy(
+                        0,
+                        scrollY,
+                        DecelerateInterpolator(DECELERATE_INTERPOLATOR_FACTOR),
+                        SLASH_SHOW_ANIM_DURATION.toInt()
+                    )
                 }
             }
             binding.slashWidget.updateLayoutParams<ConstraintLayout.LayoutParams> {
@@ -1697,13 +1725,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     ConstraintSet.BOTTOM
                 )
             }
-            val transitionSet = TransitionSet().apply {
-                addTransition(ChangeBounds())
-                duration = SHOW_MENTION_TRANSITION_DURATION
-                interpolator = LinearInterpolator()
-                ordering = TransitionSet.ORDERING_TOGETHER
-            }
-            TransitionManager.beginDelayedTransition(binding.sheet, transitionSet)
+            applySlideTransition(binding.slashWidget, SLASH_SHOW_ANIM_DURATION, binding.sheet)
             set.applyTo(binding.sheet)
         }
     }
@@ -2046,6 +2068,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L
         const val DEFAULT_TOOLBAR_ANIM_DURATION = 150L
+        const val SLASH_SHOW_ANIM_DURATION = 400L
+        const val SLASH_HIDE_ANIM_DURATION = 1200L
+        const val DECELERATE_INTERPOLATOR_FACTOR = 2.5f
 
         const val SHOW_MENTION_TRANSITION_DURATION = 150L
         const val SELECT_BUTTON_SHOW_ANIMATION_DURATION = 200L

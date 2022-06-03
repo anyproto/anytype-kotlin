@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewbinding.ViewBinding
+import com.anytypeio.anytype.core_utils.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Job
@@ -27,6 +28,11 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
     ): View? {
         _binding = inflateBinding(inflater, container)
         return _binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dialog?.window?.attributes?.windowAnimations = R.style.DefaultBottomDialogAnimation
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.StubRelation
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.ObjectRelationList
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -36,6 +37,7 @@ class RelationAddViewModelBaseTest {
     fun `no added relations - results are available without hidden`() {
         runTest {
             vm.onStart("")
+            coroutineTestRule.testDispatcher.scheduler.runCurrent()
             vm.results.test {
                 assertEquals(
                     actual = awaitItem(),
@@ -66,7 +68,14 @@ class RelationAddViewModelBaseTest {
     }
 
     private fun createVM() = object : RelationAddViewModelBase(
-        objectRelationList = ObjectRelationList(blockRepository),
+        objectRelationList = ObjectRelationList(
+            repo = blockRepository,
+            dispatchers = AppCoroutineDispatchers(
+                io = coroutineTestRule.testDispatcher,
+                computation = coroutineTestRule.testDispatcher,
+                main = coroutineTestRule.testDispatcher
+            )
+        ),
         relationsProvider = relationsProvider
     ) {
         override fun sendAnalyticsEvent(length: Int) {}

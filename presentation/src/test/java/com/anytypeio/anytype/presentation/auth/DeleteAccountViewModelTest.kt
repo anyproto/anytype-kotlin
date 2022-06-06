@@ -5,9 +5,11 @@ import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,6 +21,7 @@ import org.mockito.kotlin.verifyZeroInteractions
 import java.time.Duration
 import kotlin.test.assertEquals
 
+@ExperimentalCoroutinesApi
 class DeleteAccountViewModelTest {
 
     @get:Rule
@@ -26,6 +29,12 @@ class DeleteAccountViewModelTest {
 
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
+
+    private val testDispatchers = AppCoroutineDispatchers(
+        io = coroutineTestRule.testDispatcher,
+        computation = coroutineTestRule.testDispatcher,
+        main = coroutineTestRule.testDispatcher
+    )
 
     @Mock
     lateinit var repo: AuthRepository
@@ -45,11 +54,13 @@ class DeleteAccountViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         restoreAccount = RestoreAccount(
-            repo = repo
+            repo = repo,
+            dispatchers = testDispatchers
         )
         logout = Logout(
             repo = repo,
-            provider = configStorage
+            provider = configStorage,
+            dispatchers = testDispatchers
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

@@ -2598,6 +2598,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 repeated string linkIds = 2;
+                ResponseEvent event = 3;
 
                 message Error {
                     Code code = 1;

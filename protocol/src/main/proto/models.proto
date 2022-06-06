@@ -130,8 +130,9 @@ message Block {
             repeated string relations = 7;
 
             enum IconSize {
-                Small = 0;
-                Medium = 1;
+                SizeNone = 0;
+                SizeSmall = 1;
+                SizeMedium = 2;
             }
 
             enum Style {
@@ -290,7 +291,7 @@ message Block {
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
 				string coverRelationKey = 7; // Relation used for cover in gallery
-                bool hideIcon = 8; // Hide icon near name 
+                bool hideIcon = 8; // Hide icon near name
                 Size cardSize = 9; // Gallery card size
                 bool coverFit = 10; // Image fits container
 
@@ -348,6 +349,7 @@ message Block {
                 string relationProperty = 5;
                 Condition condition = 3;
                 google.protobuf.Value value = 4;
+                QuickOption quickOption = 6;
 
                 enum Operator {
                     And = 0;
@@ -370,6 +372,21 @@ message Block {
                     NotEmpty = 12;
                     AllIn = 13;
                     NotAllIn = 14;
+                }
+
+                enum QuickOption {
+                    ExactDate = 0;
+                    Yesterday = 1;
+                    Today = 2;
+                    Tomorrow = 3;
+                    LastWeek = 4;
+                    CurrentWeek = 5;
+                    NextWeek = 6;
+                    LastMonth = 7;
+                    CurrentMonth = 8;
+                    NextMonth = 9;
+                    NumberOfDaysAgo = 10;
+                    NumberOfDaysNow = 11;
                 }
             }
         }

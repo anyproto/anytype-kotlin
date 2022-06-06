@@ -14,7 +14,9 @@ import kotlin.coroutines.CoroutineContext
  * It can be used as alternative for [BaseUseCase].
  * @property context coroutine's context for this operation.
  */
-abstract class Interactor<in P>(private val context: CoroutineContext = Dispatchers.IO) {
+abstract class Interactor<in P>(
+    private val context: CoroutineContext = Dispatchers.IO
+) {
 
     operator fun invoke(params: P): Flow<Status> {
         return flow {
@@ -52,10 +54,11 @@ abstract class Interactor<in P>(private val context: CoroutineContext = Dispatch
 abstract class ResultInteractor<in P, R> {
     operator fun invoke(params: P): Flow<R> = flow { emit(doWork(params)) }
     suspend fun run(params: P) = doWork(params)
-    suspend fun execute(params: P) : Result<R> = try {
+    suspend fun execute(params: P): Result<R> = try {
         Result.success(doWork(params))
     } catch (e: Exception) {
         Result.failure(e)
     }
+
     protected abstract suspend fun doWork(params: P): R
 }

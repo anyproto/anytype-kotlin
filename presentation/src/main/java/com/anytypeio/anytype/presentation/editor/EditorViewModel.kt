@@ -246,7 +246,7 @@ class EditorViewModel(
     EditorTemplateDelegate by templateDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
-    val actions = MutableStateFlow(ActionItemType.default)
+    val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
     val isSyncStatusVisible = MutableStateFlow(true)
     val syncStatus = MutableStateFlow<SyncStatus?>(null)
@@ -1622,8 +1622,8 @@ class EditorViewModel(
     private fun proceedWithUpdatingActionsForCurrentSelection() {
         val isMultiMode = currentSelection().size > 1
 
-        val targetActions = mutableSetOf<ActionItemType>().apply {
-            addAll(ActionItemType.default)
+        val targetActions = mutableListOf<ActionItemType>().apply {
+            addAll(ActionItemType.defaultSorting)
         }
         val excludedActions = mutableSetOf<ActionItemType>()
 
@@ -1647,14 +1647,18 @@ class EditorViewModel(
                     is Content.File -> {
                         needSortByDownloads = true
                         if (content.state == Content.File.State.DONE) {
-                            targetActions.add(ActionItemType.Download)
+                            targetActions.addIfNotExists(ActionItemType.Download)
                         } else {
                             excludedActions.add(ActionItemType.Download)
                         }
                     }
                     is Content.Link -> {
                         excludedActions.add(ActionItemType.Download)
-                        if (!isMultiMode) targetActions.add(ActionItemType.Preview)
+                        if (!isMultiMode) {
+                            var copyIndex = targetActions.indexOf(ActionItemType.Style)
+                            if (copyIndex == NO_POSITION) copyIndex = PREVIEW_POSITION
+                            targetActions.addIfNotExists(ActionItemType.Preview, copyIndex)
+                        }
                     }
                     is Content.Page -> {
                         excludedActions.add(ActionItemType.Download)
@@ -1678,9 +1682,24 @@ class EditorViewModel(
         targetActions.removeAll(excludedActions)
 
         actions.value = if (needSortByDownloads) {
-            targetActions.toList().sortedBy { it !is ActionItemType.Download }
+            targetActions.sortedBy { it !is ActionItemType.Download }
         } else {
-            targetActions.toList()
+            targetActions
+        }
+    }
+
+    private fun MutableList<ActionItemType>.addIfNotExists(
+        item: ActionItemType,
+        position: Int = NO_POSITION
+    ) {
+        if (indexOf(item) != NO_POSITION) {
+            return
+        }
+
+        if (position == NO_POSITION) {
+            add(item)
+        } else {
+            add(position, item)
         }
     }
 
@@ -5679,3 +5698,6 @@ class EditorViewModel(
 
     //endregion
 }
+
+private const val NO_POSITION = -1
+private const val PREVIEW_POSITION = 2

@@ -20,12 +20,12 @@ sealed class ActionItemType {
     object Paste : ActionItemType()
 
     companion object {
-        val default = listOf(
-                AddBelow,
-                Delete,
-                Copy,
+        val defaultSorting = listOf(
                 Paste,
+                Copy,
                 Style,
+                Delete,
+                AddBelow,
                 Duplicate,
                 SAM,
                 MoveTo

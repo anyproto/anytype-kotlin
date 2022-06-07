@@ -6,6 +6,7 @@ import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -13,7 +14,7 @@ import org.mockito.MockitoAnnotations
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class EditorBlockActionsTest  : EditorPresentationTestSetup() {
+class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -30,12 +31,57 @@ class EditorBlockActionsTest  : EditorPresentationTestSetup() {
     }
 
     @Test
+    fun `preview action should be in actions before style - when link block`() {
+
+        val link = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Link(
+                target = MockDataFactory.randomUuid(),
+                type = Block.Content.Link.Type.PAGE,
+                fields = Block.Fields.empty()
+            ),
+            backgroundColor = null
+        )
+
+        val smart = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart(),
+            children = listOf(header.id, link.id)
+        )
+
+        val document = listOf(smart, header, link)
+
+        stubDefaultMethods(document)
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+
+        // Simulating long tap on link block, in order to enter multi-select mode.
+        vm.onClickListener(
+            ListenerType.LongClick(
+                target = link.id,
+                dimensions = BlockDimensions()
+            )
+        )
+
+        assertTrue {
+            vm.actions.value.indexOf(ActionItemType.Preview) == vm.actions.value.indexOf(ActionItemType.Style) - 1
+        }
+    }
+
+    @Test
     fun `style action should be in actions for divider block when entering multi-select mode`() {
 
         // SETUP
 
         val p1 = MockBlockFactory.paragraph()
-        val divider = MockBlockFactory.divider(style = Block.Content.Divider.Style.values().random())
+        val divider =
+            MockBlockFactory.divider(style = Block.Content.Divider.Style.values().random())
         val p2 = MockBlockFactory.paragraph()
 
         val smart = Block(
@@ -76,7 +122,8 @@ class EditorBlockActionsTest  : EditorPresentationTestSetup() {
         // SETUP
 
         val p1 = MockBlockFactory.paragraph()
-        val divider = MockBlockFactory.divider(style = Block.Content.Divider.Style.values().random())
+        val divider =
+            MockBlockFactory.divider(style = Block.Content.Divider.Style.values().random())
         val p2 = MockBlockFactory.paragraph()
 
         val smart = Block(
@@ -124,7 +171,8 @@ class EditorBlockActionsTest  : EditorPresentationTestSetup() {
         // SETUP
 
         val p1 = MockBlockFactory.paragraph()
-        val divider = MockBlockFactory.divider(style = Block.Content.Divider.Style.values().random())
+        val divider =
+            MockBlockFactory.divider(style = Block.Content.Divider.Style.values().random())
         val p2 = MockBlockFactory.paragraph()
 
         val smart = Block(
@@ -157,7 +205,7 @@ class EditorBlockActionsTest  : EditorPresentationTestSetup() {
 
         vm.onClickListener(ListenerType.DividerClick(target = divider.id))
 
-        assertFalse{ vm.actions.value.contains(ActionItemType.AddBelow) }
+        assertFalse { vm.actions.value.contains(ActionItemType.AddBelow) }
 
         vm.onClickListener(ListenerType.DividerClick(target = divider.id))
 

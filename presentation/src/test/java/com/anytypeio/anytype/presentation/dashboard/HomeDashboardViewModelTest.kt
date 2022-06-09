@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -44,7 +45,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -53,6 +57,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyZeroInteractions
+import kotlin.test.assertContains
 
 class HomeDashboardViewModelTest {
 
@@ -137,7 +142,7 @@ class HomeDashboardViewModelTest {
         MockitoAnnotations.openMocks(this)
     }
 
-    private fun buildViewModel(): HomeDashboardViewModel {
+    private fun givenViewModel(): HomeDashboardViewModel {
         return HomeDashboardViewModel(
             getProfile = getProfile,
             openDashboard = openDashboard,
@@ -166,6 +171,23 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
+    fun `key set for search subscription should contain done relation - when request`() {
+        givenViewModel().onStart()
+
+        captureObserveKeys(objectSearchSubscriptionContainer).allValues.forEach { keys ->
+            assertContains(keys, Relations.DONE, "Should contain done relation for tasks!")
+        }
+    }
+
+    private fun captureObserveKeys(spannable: ObjectSearchSubscriptionContainer): KArgumentCaptor<List<String>> {
+        val captor = argumentCaptor<List<String>>()
+        verify(spannable, atLeast(3)).observe(
+            any(), any(), any(), any(), any(), captor.capture()
+        )
+        return captor
+    }
+
+    @Test
     fun `should only start getting config when view model is initialized`() {
 
         // SETUP
@@ -178,7 +200,7 @@ class HomeDashboardViewModelTest {
 
         // TESTING
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verifyZeroInteractions(openDashboard)
@@ -198,7 +220,7 @@ class HomeDashboardViewModelTest {
 
         // TESTING
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verify(interceptEvents, times(1)).build(params)
@@ -217,7 +239,7 @@ class HomeDashboardViewModelTest {
 
         // TESTING
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         verify(getConfig, times(1)).invoke(any(), any(), any())
         verifyZeroInteractions(openDashboard)
@@ -240,7 +262,7 @@ class HomeDashboardViewModelTest {
 
         // TESTING
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         vm.onViewCreated()
 
@@ -300,7 +322,7 @@ class HomeDashboardViewModelTest {
 
         // TESTING
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         vm.onViewCreated()
 
@@ -336,7 +358,7 @@ class HomeDashboardViewModelTest {
 
         // TESTING
 
-        vm = buildViewModel()
+        vm = givenViewModel()
         vm.onViewCreated()
 
         runBlockingTest {
@@ -350,11 +372,11 @@ class HomeDashboardViewModelTest {
         stubObserveEvents()
         stubGetDefaultObjectType()
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         vm.onAddNewDocumentClicked()
 
-        verifyBlocking(createPage, times(1)) {invoke(any()) }
+        verifyBlocking(createPage, times(1)) { invoke(any()) }
     }
 
     @Test
@@ -369,7 +391,7 @@ class HomeDashboardViewModelTest {
         stubGetTemplates()
         stubGetDefaultObjectType()
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         vm.onAddNewDocumentClicked()
 
@@ -392,7 +414,7 @@ class HomeDashboardViewModelTest {
         stubGetTemplates()
         stubGetDefaultObjectType(type = type)
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         vm.onAddNewDocumentClicked()
 
@@ -420,7 +442,7 @@ class HomeDashboardViewModelTest {
         stubGetTemplates(objects = listOf(obj))
         stubGetDefaultObjectType(type = type)
 
-        vm = buildViewModel()
+        vm = givenViewModel()
 
         vm.onAddNewDocumentClicked()
 

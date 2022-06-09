@@ -500,67 +500,69 @@ class HomeDashboardViewModel(
         subscriptions += viewModelScope.launch {
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_RECENT,
-                keys = ObjectSearchConstants.defaultKeys + listOf(Relations.LAST_MODIFIED_DATE),
+                keys = DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
                 filters = ObjectSearchConstants.filterTabHistory,
                 sorts = ObjectSearchConstants.sortTabHistory,
                 limit = ObjectSearchConstants.limitTabHistory,
                 offset = 0
-            ).catch { Timber.e(it, "Error while collecting search results") }.collectLatest { objects ->
-                Timber.d("Results updated: $objects")
-                recent.value = objects.objects
-                    .mapNotNull { target ->
-                        val obj = objectStore.get(target)
-                        if (obj != null) {
-                            val oType = objectStore.get(obj.type.firstOrNull() ?: "")
-                            val layout = obj.layout
-                            if (layout == ObjectType.Layout.SET) {
-                                DashboardView.ObjectSet(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.getProperName(),
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
+            ).catch { Timber.e(it, "Error while collecting search results") }
+                .collectLatest { objects ->
+                    Timber.d("Results updated: $objects")
+                    recent.value = objects.objects
+                        .mapNotNull { target ->
+                            val obj = objectStore.get(target)
+                            if (obj != null) {
+                                val oType = objectStore.get(obj.type.firstOrNull() ?: "")
+                                val layout = obj.layout
+                                if (layout == ObjectType.Layout.SET) {
+                                    DashboardView.ObjectSet(
+                                        id = obj.id,
+                                        target = obj.id,
+                                        title = obj.getProperName(),
+                                        isArchived = obj.isArchived ?: false,
+                                        isLoading = false,
+                                        icon = ObjectIcon.from(
+                                            obj = obj,
+                                            layout = obj.layout,
+                                            builder = urlBuilder
+                                        )
                                     )
-                                )
+                                } else {
+                                    DashboardView.Document(
+                                        id = obj.id,
+                                        target = obj.id,
+                                        title = obj.getProperName(),
+                                        isArchived = obj.isArchived ?: false,
+                                        isLoading = false,
+                                        emoji = obj.iconEmoji,
+                                        image = obj.iconImage,
+                                        type = obj.type.firstOrNull(),
+                                        typeName = oType?.name,
+                                        layout = obj.layout,
+                                        done = obj.done,
+                                        icon = ObjectIcon.from(
+                                            obj = obj,
+                                            layout = obj.layout,
+                                            builder = urlBuilder
+                                        )
+                                    )
+                                }
                             } else {
-                                DashboardView.Document(
-                                    id = obj.id,
-                                    target = obj.id,
-                                    title = obj.getProperName(),
-                                    isArchived = obj.isArchived ?: false,
-                                    isLoading = false,
-                                    emoji = obj.iconEmoji,
-                                    image = obj.iconImage,
-                                    type = obj.type.firstOrNull(),
-                                    typeName = oType?.name,
-                                    layout = obj.layout,
-                                    done = obj.done,
-                                    icon = ObjectIcon.from(
-                                        obj = obj,
-                                        layout = obj.layout,
-                                        builder = urlBuilder
-                                    )
-                                )
+                                null
                             }
-                        } else {
-                            null
                         }
-                    }
-            }
+                }
         }
         subscriptions += viewModelScope.launch {
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
-                keys = ObjectSearchConstants.defaultKeys,
+                keys = DEFAULT_KEYS,
                 filters = ObjectSearchConstants.filterTabArchive,
                 sorts = ObjectSearchConstants.sortTabArchive,
                 limit = 0,
                 offset = 0
-            ).catch { Timber.e(it, "Error while collecting search results") }.collectLatest { objects ->
+            ).catch { Timber.e(it, "Error while collecting search results") }
+                .collectLatest { objects ->
                     archived.value = objects.objects
                         .mapNotNull { target ->
                             val obj = objectStore.get(target)
@@ -594,12 +596,13 @@ class HomeDashboardViewModel(
         subscriptions += viewModelScope.launch {
             objectSearchSubscriptionContainer.observe(
                 subscription = Subscriptions.SUBSCRIPTION_SETS,
-                keys = ObjectSearchConstants.defaultKeys,
+                keys = DEFAULT_KEYS,
                 filters = ObjectSearchConstants.filterTabSets,
                 sorts = ObjectSearchConstants.sortTabSets,
                 limit = 0,
                 offset = 0
-            ).catch { Timber.e(it, "Error while collecting search results") }.collectLatest { objects ->
+            ).catch { Timber.e(it, "Error while collecting search results") }
+                .collectLatest { objects ->
                     sets.value = objects.objects
                         .mapNotNull { target ->
                             val obj = objectStore.get(target)
@@ -812,3 +815,5 @@ class HomeDashboardViewModel(
         data class Delete(val count: Int) : Alert()
     }
 }
+
+private val DEFAULT_KEYS = ObjectSearchConstants.defaultKeys + Relations.DONE

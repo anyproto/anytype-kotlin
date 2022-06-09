@@ -33,33 +33,9 @@ class SelectAccountViewModel(
     val state by lazy { MutableLiveData<List<SelectAccountView>>() }
     val error by lazy { MutableLiveData<String>() }
 
-    private val accountChannel = Channel<Account>()
-
-    private val accounts = accountChannel
-        .consumeAsFlow()
-        .scan(emptyList<Account>()) { list, value -> list + value }
-        .drop(1)
-
     init {
         startObservingAccounts()
         startLoadingAccount()
-        startDispatchingAccumulatedAccounts()
-    }
-
-    private fun startDispatchingAccumulatedAccounts() {
-        accounts
-            .onEach { result ->
-                state.postValue(
-                    result.map { account ->
-                        SelectAccountView.AccountView(
-                            id = account.id,
-                            name = account.name,
-                            image = account.avatar
-                        )
-                    }
-                )
-            }
-            .launchIn(viewModelScope)
     }
 
     private fun startLoadingAccount() {
@@ -97,14 +73,5 @@ class SelectAccountViewModel(
 
     fun onProfileClicked(id: String) {
         navigation.postValue(EventWrapper(AppNavigation.Command.SetupSelectedAccountScreen(id)))
-    }
-
-    fun onAddProfileClicked() {
-        // TODO
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        accountChannel.close()
     }
 }

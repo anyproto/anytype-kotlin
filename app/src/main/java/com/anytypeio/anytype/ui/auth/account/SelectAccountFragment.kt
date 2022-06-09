@@ -26,7 +26,7 @@ class SelectAccountFragment : NavigationFragment<FragmentSelectAccountBinding>(R
     private val profileAdapter by lazy {
         SelectAccountAdapter(
             views = mutableListOf(),
-            onAddNewProfileClicked = { vm.onAddProfileClicked() },
+            onAddNewProfileClicked = {},
             onProfileClicked = { vm.onProfileClicked(it.id) }
         )
     }

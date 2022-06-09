@@ -102,8 +102,4 @@ class KeychainLoginViewModel(
             )
         }
     }
-
-    fun onScanQrCodeClicked() {
-        // TODO
-    }
 }

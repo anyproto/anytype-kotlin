@@ -10,6 +10,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -133,6 +135,34 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
+    fun `progress should be equal to 1,0 - when deadline date is expired`() {
+        val nowInMillis = System.currentTimeMillis()
+        val deadlineInMillis = nowInMillis - 1000
+        vm.onStart(
+            nowInMillis = nowInMillis,
+            deadlineInMillis = deadlineInMillis
+        )
+        assertEquals(
+            expected = 1f,
+            actual = vm.progress.value
+        )
+    }
+
+    @Test
+    fun `date should be marked as deleted date - when deadline date is expired`() {
+        val nowInMillis = System.currentTimeMillis()
+        val deadlineInMillis = nowInMillis - 1000
+        vm.onStart(
+            nowInMillis = nowInMillis,
+            deadlineInMillis = deadlineInMillis
+        )
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Deleted,
+            actual = vm.date.value
+        )
+    }
+
+    @Test
     fun `progress should be equal to 0 - when deadline is in 30days`() {
         val nowInMillis = System.currentTimeMillis()
         val deadlineInMillis = nowInMillis + Duration.ofDays(30).toMillis()
@@ -163,7 +193,7 @@ class DeleteAccountViewModelTest {
     fun `should display 30 days until deletion - when account is deleted today`() {
         val nowInMillis = System.currentTimeMillis()
 
-        val tenSecondsEllapsed = Duration.ofSeconds(10).toMillis()
+        val tenSecondsElapsed = Duration.ofSeconds(10).toMillis()
         val fiveHoursElapsed = Duration.ofHours(5).toMillis()
         val tenHoursElapsed = Duration.ofHours(10).toMillis()
 
@@ -171,7 +201,7 @@ class DeleteAccountViewModelTest {
 
         vm.onStart(
             deadlineInMillis = deadlineInMillis,
-            nowInMillis = nowInMillis + tenSecondsEllapsed
+            nowInMillis = nowInMillis + tenSecondsElapsed
         )
 
         assertEquals(

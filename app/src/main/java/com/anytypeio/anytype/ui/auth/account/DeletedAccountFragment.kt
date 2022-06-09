@@ -173,6 +173,11 @@ fun DeletedAccountScreen(
                                     R.string.planned_for_deletion_unknown
                                 )
                             }
+                            DeletionDate.Deleted -> {
+                                stringResource(
+                                    R.string.your_account_deleted
+                                )
+                            }
                         },
                         color = colorResource(R.color.text_primary),
                         style = MaterialTheme.typography.h2,
@@ -192,12 +197,14 @@ fun DeletedAccountScreen(
                         ),
                         fontSize = 15.sp
                     )
-                    Action(
-                        name = stringResource(R.string.cancel_deletion),
-                        color = colorResource(R.color.palette_dark_red),
-                        onClick = onCancelDeletionClicked
-                    )
-                    Divider()
+                    if (date != DeletionDate.Deleted) {
+                        Action(
+                            name = stringResource(R.string.cancel_deletion),
+                            color = colorResource(R.color.palette_dark_red),
+                            onClick = onCancelDeletionClicked
+                        )
+                        Divider()
+                    }
                     ActionWithProgressBar(
                         name = stringResource(R.string.logout_and_clear_local_data),
                         color = colorResource(R.color.palette_dark_red),

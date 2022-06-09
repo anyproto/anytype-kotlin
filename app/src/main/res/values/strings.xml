@@ -287,6 +287,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="fragment_relation_create_from_scratch_title">Select relation type</string>
 
     <string name="fragment_dashboard_restore">Restore</string>
+    <string name="your_account_deleted">Your account is deleted.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d object selected</item>
         <item quantity="other">%d objects selected</item>

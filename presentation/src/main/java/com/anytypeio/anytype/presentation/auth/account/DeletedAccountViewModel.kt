@@ -51,55 +51,65 @@ class DeletedAccountViewModel(
             this.progress.value = delta
         } else {
             sendToast("Your account has been deleted")
-            proceedWithLogginOut()
+            progress.value = 1.0f
+            date.value = DeletionDate.Deleted
+            proceedWithLoggingOut()
         }
     }
 
     fun cancelDeletionClicked() {
-        viewModelScope.launch {
-            restoreAccount(BaseUseCase.None).process(
-                success = { status ->
-                    when (status) {
-                        is AccountStatus.Active -> {
-                            commands.emit(Command.Resume)
+        if (!isLoggingOut.value) {
+            viewModelScope.launch {
+                restoreAccount(BaseUseCase.None).process(
+                    success = { status ->
+                        when (status) {
+                            is AccountStatus.Active -> {
+                                commands.emit(Command.Resume)
+                            }
+                            is AccountStatus.Deleted -> {
+                                sendToast("Sorry, your account has been deleted")
+                                proceedWithLoggingOut()
+                            }
+                            is AccountStatus.PendingDeletion -> {
+                                // TODO
+                            }
                         }
-                        is AccountStatus.Deleted -> {
-                            sendToast("Sorry, your account has been deleted")
-                            proceedWithLogginOut()
-                        }
-                        is AccountStatus.PendingDeletion -> {
-                            // TODO
-                        }
+                    },
+                    failure = {
+                        Timber.e(it, "Error while cancelling account deletion")
+                        sendToast("Error while cancelling account deletion. Please, try again later.")
                     }
-                },
-                failure = {
-                    Timber.e(it, "Error while cancelling account deletion")
-                    sendToast("Error while cancelling account deletion. Please, try again later.")
-                }
-            )
+                )
+            }
+        } else {
+            sendToast(LOG_OUT_MSG)
         }
     }
 
     fun onLogoutAndClearDataClicked() {
-        proceedWithLogginOut()
+        proceedWithLoggingOut()
     }
 
-    private fun proceedWithLogginOut() {
-        viewModelScope.launch {
-            logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
-                when (status) {
-                    is Interactor.Status.Error -> {
-                        isLoggingOut.value = false
-                    }
-                    is Interactor.Status.Started -> {
-                        isLoggingOut.value = true
-                    }
-                    is Interactor.Status.Success -> {
-                        isLoggingOut.value = false
-                        commands.emit(Command.Logout)
+    private fun proceedWithLoggingOut() {
+        if (!isLoggingOut.value) {
+            viewModelScope.launch {
+                logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+                    when (status) {
+                        is Interactor.Status.Error -> {
+                            isLoggingOut.value = false
+                        }
+                        is Interactor.Status.Started -> {
+                            isLoggingOut.value = true
+                        }
+                        is Interactor.Status.Success -> {
+                            isLoggingOut.value = false
+                            commands.emit(Command.Logout)
+                        }
                     }
                 }
             }
+        } else {
+            sendToast(LOG_OUT_MSG)
         }
     }
 
@@ -125,6 +135,7 @@ class DeletedAccountViewModel(
 
     sealed class DeletionDate {
         object Unknown : DeletionDate()
+        object Deleted: DeletionDate()
         object Today : DeletionDate()
         object Tomorrow : DeletionDate()
         data class Later(val days: Int) : DeletionDate()
@@ -132,5 +143,6 @@ class DeletedAccountViewModel(
 
     companion object {
         const val DEADLINE_DURATION_IN_DAYS = 30f
+        const val LOG_OUT_MSG = "Logging out... We're almost there!"
     }
 }

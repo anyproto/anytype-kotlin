@@ -18,6 +18,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
@@ -30,6 +31,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -65,6 +67,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     vm.wallpaper.collect { setWallpaper(it) }
+                }
+                launch {
+                    vm.toasts.collect { toast(it) }
                 }
                 launch {
                     vm.commands.collect { command ->

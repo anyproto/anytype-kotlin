@@ -80,7 +80,7 @@ class DashboardBinTest : DashboardTestSetup() {
             onBlocking {
                 searchObjectsWithSubscription(
                     subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
-                    keys = ObjectSearchConstants.defaultKeys,
+                    keys = DEFAULT_KEYS,
                     filters = ObjectSearchConstants.filterTabArchive,
                     sorts = ObjectSearchConstants.sortTabArchive,
                     limit = 0,
@@ -203,7 +203,7 @@ class DashboardBinTest : DashboardTestSetup() {
             onBlocking {
                 searchObjectsWithSubscription(
                     subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
-                    keys = ObjectSearchConstants.defaultKeys,
+                    keys = DEFAULT_KEYS,
                     filters = ObjectSearchConstants.filterTabArchive,
                     sorts = ObjectSearchConstants.sortTabArchive,
                     limit = 0,
@@ -347,7 +347,7 @@ class DashboardBinTest : DashboardTestSetup() {
             onBlocking {
                 searchObjectsWithSubscription(
                     subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
-                    keys = ObjectSearchConstants.defaultKeys,
+                    keys = DEFAULT_KEYS,
                     filters = ObjectSearchConstants.filterTabArchive,
                     sorts = ObjectSearchConstants.sortTabArchive,
                     limit = 0,
@@ -468,3 +468,5 @@ class DashboardBinTest : DashboardTestSetup() {
         }
     }
 }
+
+private val DEFAULT_KEYS = ObjectSearchConstants.defaultKeys + Relations.DONE

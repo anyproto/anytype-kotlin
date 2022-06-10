@@ -1323,11 +1323,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         } else {
             ObjectIcon.None
         }
-        val name = if (inEditorAppearance.showName) {
-            obj.getProperObjectName()
-        } else {
-            null
-        }
+        val name = obj.getProperObjectName()
 
         return if (isCard) {
             val description = if (inEditorAppearance.showDescription) {

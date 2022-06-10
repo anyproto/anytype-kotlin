@@ -175,7 +175,6 @@ sealed class BlockView : ViewType {
         data class InEditor(
             val isCard: Boolean,
             val showIcon: Boolean,
-            val showName: Boolean,
             val showDescription: Boolean,
             val showCover: Boolean
         )

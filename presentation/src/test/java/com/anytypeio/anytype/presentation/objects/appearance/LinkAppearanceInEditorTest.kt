@@ -28,7 +28,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -46,7 +45,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -68,7 +66,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -88,7 +85,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = true,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -110,7 +106,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -132,7 +127,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -155,7 +149,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showName = true,
             showDescription = false,
             showCover = false,
         )
@@ -177,7 +170,6 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = true,
             showIcon = false,
-            showName = true,
             showDescription = true,
             showCover = false,
         )

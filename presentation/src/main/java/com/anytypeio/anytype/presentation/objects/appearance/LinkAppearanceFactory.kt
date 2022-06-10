@@ -31,7 +31,6 @@ internal class LinkAppearanceFactory(
         return BlockView.Appearance.InEditor(
             showIcon = withIcon,
             isCard = content.cardStyle == CardStyle.CARD,
-            showName = true,
             showDescription = withDescription && content.hasDescription,
             showCover = withCover
         )

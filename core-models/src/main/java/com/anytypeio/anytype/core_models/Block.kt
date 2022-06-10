@@ -368,7 +368,11 @@ data class Block(
 
         data class Link(
             val target: Id
-        ) : Prototype()
+        ) : Prototype() {
+            val cardStyle: Content.Link.CardStyle = Content.Link.CardStyle.CARD
+            val iconSize: Content.Link.IconSize = Content.Link.IconSize.MEDIUM
+            val description: Content.Link.Description = Content.Link.Description.CONTENT
+        }
 
         object DividerLine : Prototype()
         object DividerDots : Prototype()

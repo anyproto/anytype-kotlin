@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectAppearanceCheckboxBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationDescriptionBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationNameBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSectionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSettingBinding
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -27,9 +28,16 @@ class ObjectAppearanceSettingAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_ITEM_RELATION_NAME, TYPE_ITEM_RELATION_DESCRIPTION ->
-                ViewHolder.Relation(
-                    binding = ItemObjectPreviewRelationBinding.inflate(
+            TYPE_ITEM_RELATION_NAME -> ViewHolder.Relation.Name(
+                ItemObjectPreviewRelationNameBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
+            TYPE_ITEM_RELATION_DESCRIPTION ->
+                ViewHolder.Relation.Description(
+                    binding = ItemObjectPreviewRelationDescriptionBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {
@@ -111,8 +119,9 @@ class ObjectAppearanceSettingAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder.Relation -> {
-                holder.bind(getItem(position) as ObjectAppearanceSettingView.Relation)
+            is ViewHolder.Relation.Name -> {}
+            is ViewHolder.Relation.Description -> {
+                holder.bind(getItem(position) as ObjectAppearanceSettingView.Relation.Description)
             }
             is ViewHolder.Section -> {
                 holder.bind(getItem(position) as ObjectAppearanceSettingView.Section)
@@ -214,25 +223,21 @@ class ObjectAppearanceSettingAdapter(
             }
         }
 
-        class Relation(
-            val binding: ItemObjectPreviewRelationBinding
-        ) : ViewHolder(binding.root) {
+        sealed class Relation(root: View) : ViewHolder(root) {
 
-            fun bind(item: ObjectAppearanceSettingView.Relation) = with(binding) {
-                when (item) {
-                    is ObjectAppearanceSettingView.Relation.Description -> {
-                        relIcon.setImageResource(R.drawable.ic_relation_description)
-                        relName.text = itemView.context.getString(R.string.description)
-                        relSwitch.visible()
-                        relSwitch.isChecked = when (item.description) {
-                            MenuItem.Description.WITH -> true
-                            MenuItem.Description.WITHOUT -> false
-                        }
-                    }
-                    is ObjectAppearanceSettingView.Relation.Name -> {
-                        relIcon.setImageResource(R.drawable.ic_relation_name)
-                        relName.text = itemView.context.getString(R.string.name)
-                        relSwitch.gone()
+            class Name(
+                binding: ItemObjectPreviewRelationNameBinding,
+            ) : Relation(binding.root)
+
+
+            class Description(
+                val binding: ItemObjectPreviewRelationDescriptionBinding
+            ) : Relation(binding.root) {
+
+                fun bind(item: ObjectAppearanceSettingView.Relation.Description) = with(binding) {
+                    relSwitch.isChecked = when (item.description) {
+                        MenuItem.Description.WITH -> true
+                        MenuItem.Description.WITHOUT -> false
                     }
                 }
             }

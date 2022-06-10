@@ -1,7 +1,16 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.middleware.mappers.*
+import com.anytypeio.anytype.middleware.mappers.MBBookmark
+import com.anytypeio.anytype.middleware.mappers.MBDiv
+import com.anytypeio.anytype.middleware.mappers.MBDivStyle
+import com.anytypeio.anytype.middleware.mappers.MBFile
+import com.anytypeio.anytype.middleware.mappers.MBLink
+import com.anytypeio.anytype.middleware.mappers.MBRelation
+import com.anytypeio.anytype.middleware.mappers.MBTableOfContents
+import com.anytypeio.anytype.middleware.mappers.MBText
+import com.anytypeio.anytype.middleware.mappers.MBlock
+import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 
 class MiddlewareFactory {
 
@@ -32,7 +41,10 @@ class MiddlewareFactory {
             }
             is Block.Prototype.Link -> {
                 val link = MBLink(
-                    targetBlockId = prototype.target
+                    targetBlockId = prototype.target,
+                    cardStyle = prototype.cardStyle.toMiddlewareModel(),
+                    iconSize = prototype.iconSize.toMiddlewareModel(),
+                    description = prototype.description.toMiddlewareModel()
                 )
                 MBlock(link = link)
             }

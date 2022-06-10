@@ -1,7 +1,11 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.model.Range
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
 
 
 // ---------------------- BLOCKS ------------------------
@@ -94,11 +98,49 @@ fun Block.Content.File.toMiddlewareModel(): MBFile = MBFile(
     type = type.toMiddlewareModel()
 )
 
-fun Block.Content.Link.toMiddlewareModel(): MBLink = MBLink(
-    targetBlockId = target,
-    style = type.toMiddlewareModel(),
-    fields = fields.map
-)
+internal fun Block.Content.Link.toMiddlewareModel(): MBLink {
+    return MBLink(
+        targetBlockId = target,
+        style = type.toMiddlewareModel(),
+        iconSize = iconSize.toMiddlewareModel(),
+        cardStyle = cardStyle.toMiddlewareModel(),
+        description = description.toMiddlewareModel(),
+        relations = relations.map { it.toMiddlewareModel() }
+    )
+}
+
+internal fun Block.Content.Link.Relation.toMiddlewareModel(): String {
+    return when (this) {
+        Block.Content.Link.Relation.COVER -> "cover"
+        Block.Content.Link.Relation.NAME -> "name"
+        Block.Content.Link.Relation.TYPE -> "type"
+        is Block.Content.Link.Relation.UNKNOWN -> this.value
+    }
+}
+
+internal fun Block.Content.Link.Description.toMiddlewareModel(): MBLinkDescription {
+    return when (this) {
+        Block.Content.Link.Description.NONE -> MBLinkDescription.None
+        Block.Content.Link.Description.ADDED -> MBLinkDescription.Added
+        Block.Content.Link.Description.CONTENT -> MBLinkDescription.Content
+    }
+}
+
+internal fun Block.Content.Link.CardStyle.toMiddlewareModel(): MBLinkCardStyle {
+    return when (this) {
+        Block.Content.Link.CardStyle.TEXT -> MBLinkCardStyle.Text
+        Block.Content.Link.CardStyle.CARD -> MBLinkCardStyle.Card
+        Block.Content.Link.CardStyle.INLINE -> MBLinkCardStyle.Inline
+    }
+}
+
+internal fun Block.Content.Link.IconSize.toMiddlewareModel(): MBLinkIconSize {
+    return when (this) {
+        Block.Content.Link.IconSize.NONE -> MBLinkIconSize.SizeNone
+        Block.Content.Link.IconSize.SMALL -> MBLinkIconSize.SizeSmall
+        Block.Content.Link.IconSize.MEDIUM -> MBLinkIconSize.SizeMedium
+    }
+}
 
 fun Block.Content.Link.Type.toMiddlewareModel(): MBLinkStyle = when (this) {
     Block.Content.Link.Type.PAGE -> MBLinkStyle.Page
@@ -255,7 +297,7 @@ fun Block.Content.DataView.Viewer.toMiddlewareModel(): MDVView =
         coverRelationKey = coverRelationKey.orEmpty(),
         coverFit = coverFit,
         hideIcon = hideIcon,
-        cardSize = when(cardSize) {
+        cardSize = when (cardSize) {
             Block.Content.DataView.Viewer.Size.SMALL -> MDVViewCardSize.Small
             Block.Content.DataView.Viewer.Size.MEDIUM -> MDVViewCardSize.Medium
             Block.Content.DataView.Viewer.Size.LARGE -> MDVViewCardSize.Large

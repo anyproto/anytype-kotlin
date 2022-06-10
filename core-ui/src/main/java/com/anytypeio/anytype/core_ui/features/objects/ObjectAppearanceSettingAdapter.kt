@@ -14,9 +14,8 @@ import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSettingBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_CARD
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState
 
 class ObjectAppearanceSettingAdapter(
     private val onItemClick: (ObjectAppearanceSettingView) -> Unit,
@@ -163,10 +162,9 @@ class ObjectAppearanceSettingAdapter(
 
                 fun bind(item: ObjectAppearanceSettingView.Settings.PreviewLayout) = with(binding) {
                     settingName.text = itemView.context.getString(R.string.preview_layout)
-                    settingValue.text = if (item.style == LINK_STYLE_CARD) {
-                        itemView.context.getString(R.string.card)
-                    } else {
-                        itemView.context.getString(R.string.text)
+                    settingValue.text = when (item.previewLayoutState) {
+                        MenuItem.PreviewLayout.TEXT -> itemView.context.getString(R.string.text)
+                        MenuItem.PreviewLayout.CARD -> itemView.context.getString(R.string.card)
                     }
                 }
             }
@@ -179,12 +177,10 @@ class ObjectAppearanceSettingAdapter(
 
                 fun bind(item: ObjectAppearanceSettingView.Settings.Icon) = with(binding) {
                     settingName.text = itemView.context.getString(R.string.icon)
-                    settingValue.text = when (item.state) {
-                        ObjectAppearanceIconState.NONE -> itemView.context.getString(R.string.none)
-                        ObjectAppearanceIconState.SMALL -> itemView.context.getString(R.string.small)
-                        ObjectAppearanceIconState.MEDIUM -> itemView.context.getString(R.string.medium)
-                        ObjectAppearanceIconState.LARGE -> itemView.context.getString(R.string.large)
-                        ObjectAppearanceIconState.UNKNOWN -> itemView.context.getString(R.string.unknown)
+                    settingValue.text = when (item.icon) {
+                        MenuItem.Icon.NONE -> itemView.context.getString(R.string.none)
+                        MenuItem.Icon.SMALL -> itemView.context.getString(R.string.small)
+                        MenuItem.Icon.MEDIUM -> itemView.context.getString(R.string.medium)
                     }
                 }
             }
@@ -197,10 +193,9 @@ class ObjectAppearanceSettingAdapter(
 
                 fun bind(item: ObjectAppearanceSettingView.Settings.Cover) = with(binding) {
                     settingName.text = itemView.context.getString(R.string.cover)
-                    settingValue.text = if (item.withCover == true) {
-                        itemView.context.getString(R.string.visible)
-                    } else {
-                        itemView.context.getString(R.string.none)
+                    settingValue.text = when (item.coverState) {
+                        MenuItem.Cover.WITH -> itemView.context.getString(R.string.visible)
+                        MenuItem.Cover.WITHOUT -> itemView.context.getString(R.string.none)
                     }
                 }
             }
@@ -228,12 +223,16 @@ class ObjectAppearanceSettingAdapter(
                     is ObjectAppearanceSettingView.Relation.Description -> {
                         relIcon.setImageResource(R.drawable.ic_relation_description)
                         relName.text = itemView.context.getString(R.string.description)
-                        relSwitch.isChecked = item.withDescription ?: false
+                        relSwitch.visible()
+                        relSwitch.isChecked = when (item.description) {
+                            MenuItem.Description.WITH -> true
+                            MenuItem.Description.WITHOUT -> false
+                        }
                     }
                     is ObjectAppearanceSettingView.Relation.Name -> {
                         relIcon.setImageResource(R.drawable.ic_relation_name)
                         relName.text = itemView.context.getString(R.string.name)
-                        relSwitch.isChecked = item.withName ?: false
+                        relSwitch.gone()
                     }
                 }
             }
@@ -243,11 +242,6 @@ class ObjectAppearanceSettingAdapter(
 
             fun bind(item: ObjectAppearanceSettingView.Icon) = with(binding) {
                 when (item) {
-                    is ObjectAppearanceSettingView.Icon.Large -> {
-                        tvSize.text = itemView.context.getString(R.string.large)
-                        ivIcon.gone()
-                        if (item.isSelected) ivCheckbox.visible() else ivCheckbox.invisible()
-                    }
                     is ObjectAppearanceSettingView.Icon.Medium -> {
                         tvSize.text = itemView.context.getString(R.string.medium)
                         ivIcon.gone()

@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
@@ -726,6 +727,13 @@ object EditorUseCaseModule {
     fun provideUpdateFieldsUseCase(
         repo: BlockRepository
     ): UpdateFields = UpdateFields(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetLinkAppearance(
+        repo: BlockRepository
+    ): SetLinkAppearance = SetLinkAppearance(repo)
 
     @JvmStatic
     @Provides

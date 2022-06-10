@@ -6,7 +6,6 @@ import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,17 +32,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
     @Test
     fun `preview action should be in actions before style - when link block`() {
 
-        val link = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = MockDataFactory.randomUuid(),
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = null
-        )
+        val link = MockBlockFactory.link()
 
         val smart = Block(
             id = root,

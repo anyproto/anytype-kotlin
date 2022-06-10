@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjAppearanceBaseBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceCoverViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutViewModel
@@ -34,7 +35,10 @@ class ObjectAppearanceIconFragment : BaseBottomSheetFragment<FragmentObjAppearan
     private val adapterAppearance by lazy {
         ObjectAppearanceSettingAdapter(
             onItemClick = { item ->
-                vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+                val icon = requireNotNull(item as? ObjectAppearanceSettingView.Icon) {
+                    "item $item must be Icon"
+                }
+                vm.onItemClicked(item = icon, blockId = block, ctx = ctx)
             },
             onSettingToggleChanged = { _, _ -> }
         )
@@ -119,7 +123,10 @@ class ObjectAppearancePreviewLayoutFragment :
     private val adapterAppearance by lazy {
         ObjectAppearanceSettingAdapter(
             onItemClick = { item ->
-                vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+                val preview = requireNotNull(item as? ObjectAppearanceSettingView.PreviewLayout) {
+                    "item $item must be PreviewLayout"
+                }
+                vm.onItemClicked(item = preview, blockId = block, ctx = ctx)
             },
             onSettingToggleChanged = { _, _ -> }
         )
@@ -200,7 +207,10 @@ class ObjectAppearanceCoverFragment : BaseBottomSheetFragment<FragmentObjAppeara
     private val adapterAppearance by lazy {
         ObjectAppearanceSettingAdapter(
             onItemClick = { item ->
-                vm.onItemClicked(item = item, blockId = block, ctx = ctx)
+                val cover = requireNotNull(item as? ObjectAppearanceSettingView.Cover) {
+                    "item $item must be Cover"
+                }
+                vm.onItemClicked(item = cover, blockId = block, ctx = ctx)
             },
             onSettingToggleChanged = { _, _ -> }
         )

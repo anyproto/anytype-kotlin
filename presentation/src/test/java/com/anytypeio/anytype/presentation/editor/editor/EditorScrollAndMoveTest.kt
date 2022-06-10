@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -525,16 +526,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
             )
         )
 
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = MockDataFactory.randomUuid(),
-                fields = Block.Fields.empty(),
-                type = Block.Content.Link.Type.PAGE
-            )
-        )
+        val b = link()
 
         val page = Block(
             id = root,

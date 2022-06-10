@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectAppearanceSettingBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingViewModel
 import javax.inject.Inject
 
@@ -34,7 +35,11 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment<FragmentObjectAp
         ObjectAppearanceSettingAdapter(
             onItemClick = vm::onItemClicked,
             onSettingToggleChanged = { item, isChecked ->
-                vm.onToggleClicked(item = item, blockId = block, ctx = ctx, isChecked = isChecked)
+                val relation = requireNotNull(item as? ObjectAppearanceSettingView.Relation.Description) {
+                    "item $item must be Description"
+                }
+
+                vm.onToggleClicked(description = relation, blockId = block, ctx = ctx, isChecked = isChecked)
             }
         )
     }

@@ -2,7 +2,6 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -36,6 +35,8 @@ interface BlockDataStore {
     suspend fun updateDocumentTitle(command: Command.UpdateTitle)
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle): Payload
+
+    suspend fun setLinkAppearance(command: Command.SetLinkAppearance): Payload
 
     suspend fun updateCheckbox(command: Command.UpdateCheckbox): Payload
     suspend fun uploadBlock(command: Command.UploadBlock): Payload

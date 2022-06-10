@@ -4,19 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Block.Fields.Companion.ICON_SIZE_KEY
-import com.anytypeio.anytype.core_models.Block.Fields.Companion.ICON_WITH_KEY
-import com.anytypeio.anytype.core_models.Block.Fields.Companion.WITH_DESCRIPTION_KEY
-import com.anytypeio.anytype.core_models.Block.Fields.Companion.WITH_NAME_KEY
+import com.anytypeio.anytype.core_models.Block.Content.Link.IconSize
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.editor.ext.getAppearanceParamsOfBlockLink
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_ICON_SIZE_LARGE
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_ICON_SIZE_MEDIUM
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_ICON_SIZE_SMALL
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
+import com.anytypeio.anytype.presentation.editor.editor.ext.getLinkAppearanceMenu
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView.Icon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -26,7 +20,7 @@ import timber.log.Timber
 
 class ObjectAppearanceIconViewModel(
     private val storage: Editor.Storage,
-    private val updateFields: UpdateFields,
+    private val setLinkAppearance: SetLinkAppearance,
     private val dispatcher: Dispatcher<Payload>
 ) : ViewModel() {
 
@@ -35,21 +29,18 @@ class ObjectAppearanceIconViewModel(
 
     fun onStart(blockId: Id) {
         jobs += viewModelScope.launch {
-            val params = storage.document.get().getAppearanceParamsOfBlockLink(
+            val menu = storage.document.get().getLinkAppearanceMenu(
                 blockId = blockId,
                 details = storage.details.current()
             )
-            if (params != null) {
-                val iconState = params.getObjectAppearanceIconState()
+            if (menu != null) {
+                val iconState = menu.icon
                 state.emit(
                     State.Success(
                         items = listOf(
-                            Icon.None(isSelected = iconState == ObjectAppearanceIconState.NONE),
-                            // TODO small icons will be handled later
-                            //Icon.Small(isSelected = iconState == ObjectAppearanceIconState.SMALL),
-                            Icon.Medium(isSelected = iconState == ObjectAppearanceIconState.MEDIUM)
-                            // TODO large icons will be handled later
-                            //Icon.Large(isSelected = iconState == ObjectAppearanceIconState.LARGE)
+                            Icon.None(isSelected = iconState == MenuItem.Icon.NONE),
+                            Icon.Small(isSelected = iconState == MenuItem.Icon.SMALL),
+                            Icon.Medium(isSelected = iconState == MenuItem.Icon.MEDIUM)
                         )
                     )
                 )
@@ -64,52 +55,37 @@ class ObjectAppearanceIconViewModel(
         jobs.forEach { it.cancel() }
     }
 
-    fun onItemClicked(item: ObjectAppearanceSettingView, ctx: Id, blockId: Id) {
+    fun onItemClicked(item: Icon, ctx: Id, blockId: Id) {
         val block = storage.document.get().firstOrNull { it.id == blockId }
-        if (block != null) {
-            val fields = when (item) {
-                is Icon.Large ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(ICON_SIZE_KEY, LINK_ICON_SIZE_LARGE)
-                            put(ICON_WITH_KEY, true)
-                        }
-                    )
-                is Icon.Medium ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(ICON_SIZE_KEY, LINK_ICON_SIZE_MEDIUM)
-                            put(ICON_WITH_KEY, true)
-                        }
-                    )
+        val content = block?.content
+        if (block != null && content is Block.Content.Link) {
+            val newContent = when (item) {
+                is Icon.Medium -> content.copy(
+                    iconSize = IconSize.MEDIUM
+                )
                 is Icon.Small ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(ICON_SIZE_KEY, LINK_ICON_SIZE_SMALL)
-                            put(ICON_WITH_KEY, true)
-                        }
+                    content.copy(
+                        iconSize = IconSize.SMALL
                     )
                 is Icon.None ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(ICON_WITH_KEY, false)
-                        }
+                    content.copy(
+                        iconSize = IconSize.NONE
                     )
-                else -> throw UnsupportedOperationException("Wrong item type:$item")
             }
-            proceedWithFieldsUpdate(ctx, blockId, fields)
+            proceedWithFieldsUpdate(ctx, blockId, newContent)
         }
     }
 
-    private fun proceedWithFieldsUpdate(ctx: Id, blockId: Id, fields: Block.Fields) {
+    private fun proceedWithFieldsUpdate(ctx: Id, blockId: Id, content: Block.Content.Link) {
         viewModelScope.launch {
-            updateFields.invoke(
-                UpdateFields.Params(
-                    context = ctx,
-                    fields = listOf(Pair(blockId, fields))
+            setLinkAppearance(
+                SetLinkAppearance.Params(
+                    contextId = ctx,
+                    blockId = blockId,
+                    content = content
                 )
             ).proceed(
-                failure = { Timber.e(it, "Error while updating icon size for object") },
+                failure = { Timber.e(it, "Error while updating icon link appearance") },
                 success = {
                     dispatcher.send(it)
                     state.emit(State.Dismiss)
@@ -120,12 +96,12 @@ class ObjectAppearanceIconViewModel(
 
     class Factory(
         private val storage: Editor.Storage,
-        private val updateFields: UpdateFields,
+        private val setLinkAppearance: SetLinkAppearance,
         private val dispatcher: Dispatcher<Payload>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ObjectAppearanceIconViewModel(storage, updateFields, dispatcher) as T
+            return ObjectAppearanceIconViewModel(storage, setLinkAppearance, dispatcher) as T
         }
     }
 

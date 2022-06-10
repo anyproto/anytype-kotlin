@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.middleware.mappers.toCoreLinkRelationModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
@@ -112,7 +113,10 @@ fun anytype.Event.Message.toCoreModels(
             context = context,
             id = event.id,
             target = event.targetBlockId?.value_.orEmpty(),
-            fields = event.fields?.value_.toCoreModel()
+            iconSize = event.iconSize?.value_?.toCoreModel(),
+            cardStyle = event.cardStyle?.value_?.toCoreModel(),
+            description = event.description?.value_?.toCoreModel(),
+            relations = event.relations?.value_?.map { it.toCoreLinkRelationModel() }?.toSet()
         )
     }
     blockSetAlign != null -> {

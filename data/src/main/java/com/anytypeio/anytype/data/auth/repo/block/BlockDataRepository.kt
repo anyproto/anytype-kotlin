@@ -40,7 +40,7 @@ class BlockDataRepository(
         Result.Success(factory.remote.openObjectPreview(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
-    } catch (e : NotFoundObjectException) {
+    } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
@@ -104,6 +104,10 @@ class BlockDataRepository(
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor
     ): Payload = factory.remote.updateTextColor(command)
+
+    override suspend fun setLinkAppearance(command: Command.SetLinkAppearance): Payload {
+        return factory.remote.setLinkAppearance(command)
+    }
 
     override suspend fun updateBackgroundColor(
         command: Command.UpdateBackgroundColor

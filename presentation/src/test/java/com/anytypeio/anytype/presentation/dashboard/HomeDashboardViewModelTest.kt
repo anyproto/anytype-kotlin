@@ -32,6 +32,8 @@ import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -284,15 +286,8 @@ class HomeDashboardViewModelTest {
 
         val targetId = MockDataFactory.randomUuid()
 
-        val page = Block(
-            id = MockDataFactory.randomUuid(),
-            children = emptyList(),
-            fields = Block.Fields.empty(),
-            content = Block.Content.Link(
-                target = targetId,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            )
+        val page = link(
+            content = StubLinkContent(target = targetId)
         )
 
         val dashboard = Block(

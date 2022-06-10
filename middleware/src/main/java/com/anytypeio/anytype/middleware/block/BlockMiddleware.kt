@@ -2,7 +2,6 @@ package com.anytypeio.anytype.middleware.block
 
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -74,6 +73,10 @@ class BlockMiddleware(
             command.text,
             command.marks.map { it.toMiddlewareModel() }
         )
+    }
+
+    override suspend fun setLinkAppearance(command: Command.SetLinkAppearance): Payload {
+        return middleware.blockLinkSetAppearance(command)
     }
 
     override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
@@ -441,7 +444,7 @@ class BlockMiddleware(
 
     override suspend fun addRelationToObject(
         ctx: Id, relation: Id
-    ) : Payload = middleware.objectRelationAdd(ctx, relation)
+    ): Payload = middleware.objectRelationAdd(ctx, relation)
 
     override suspend fun addNewRelationToObject(
         ctx: Id,
@@ -527,7 +530,7 @@ class BlockMiddleware(
         isArchived = isArchived
     )
 
-    override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload =
+    override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
         middleware.objectSetLayout(ctx, layout)
 
     override suspend fun clearFileCache() = middleware.fileListOffload()

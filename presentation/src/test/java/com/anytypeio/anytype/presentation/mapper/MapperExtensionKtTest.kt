@@ -1,12 +1,10 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
@@ -82,7 +80,8 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        val expected = BlockView.MediaPlaceholder.File(id = id, indent = indent, isPreviousBlockMedia = false)
+        val expected =
+            BlockView.MediaPlaceholder.File(id = id, indent = indent, isPreviousBlockMedia = false)
         val actual = block.toFileView(id, urlBuilder, indent, mode, false, null, false)
 
         assertEquals(expected, actual)
@@ -190,7 +189,11 @@ class MapperExtensionKtTest {
 
         )
 
-        val expected = BlockView.MediaPlaceholder.Picture(id = id, indent = indent, isPreviousBlockMedia = false)
+        val expected = BlockView.MediaPlaceholder.Picture(
+            id = id,
+            indent = indent,
+            isPreviousBlockMedia = false
+        )
         val actual = block.toPictureView(id, urlBuilder, indent, mode, false, null, false)
 
         assertEquals(expected, actual)
@@ -751,164 +754,5 @@ class MapperExtensionKtTest {
                 )
             )
         )
-    }
-
-    @Test
-    fun `should create appearance params with default values`() {
-        val emptyFields = Block.Fields(mapOf())
-        val layout = ObjectType.Layout.BASIC
-
-        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
-
-        val expected = BlockView.Appearance.Params(
-            style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
-            withIcon = true,
-            withName = true,
-            withDescription = null,
-            canHaveCover = false,
-            canHaveDescription = true,
-            canHaveIcon = true
-        )
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `should create appearance params with default values when layout is null`() {
-        val emptyFields = Block.Fields(mapOf())
-        val layout = null
-
-        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
-
-        val expected = BlockView.Appearance.Params(
-            style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
-            withIcon = true,
-            withName = true,
-            withDescription = null,
-            canHaveCover = false,
-            canHaveDescription = true,
-            canHaveIcon = true
-        )
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `should create appearance params with random values`() {
-        val emptyFields = Block.Fields(
-            mapOf(
-                "withName" to false,
-                "withIcon" to null,
-                "withDescription" to true,
-                "withCover" to true,
-                "style" to BlockView.Appearance.LINK_STYLE_CARD,
-                "iconSize" to BlockView.Appearance.LINK_ICON_SIZE_MEDIUM
-            )
-        )
-        val layout = ObjectType.Layout.BASIC
-
-        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
-
-        val expected = BlockView.Appearance.Params(
-            style = BlockView.Appearance.LINK_STYLE_CARD,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
-            withIcon = true,
-            withName = false,
-            withDescription = true,
-            withCover = true,
-            canHaveCover = false,
-            canHaveDescription = true,
-            canHaveIcon = true
-        )
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `should create appearance params without cover`() {
-        val emptyFields = Block.Fields(
-            mapOf(
-                "withName" to false,
-                "withIcon" to null,
-                "withDescription" to true,
-                "withCover" to true,
-                "style" to BlockView.Appearance.LINK_STYLE_TEXT,
-                "iconSize" to BlockView.Appearance.LINK_ICON_SIZE_MEDIUM
-            )
-        )
-        val layout = ObjectType.Layout.BASIC
-
-        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
-
-        val expected = BlockView.Appearance.Params(
-            style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
-            withIcon = true,
-            withName = false,
-            withDescription = true,
-            withCover = true,
-            canHaveCover = false,
-            canHaveDescription = false,
-            canHaveIcon = true
-        )
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `should create appearance params when layout is todo`() {
-        val emptyFields = Block.Fields(
-            mapOf(
-                "withName" to false,
-                "withIcon" to false,
-                "withDescription" to true,
-                "withCover" to true,
-                "style" to BlockView.Appearance.LINK_STYLE_TEXT,
-                "iconSize" to BlockView.Appearance.LINK_ICON_SIZE_MEDIUM
-            )
-        )
-        val layout = ObjectType.Layout.TODO
-
-        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
-
-        val expected = BlockView.Appearance.Params(
-            style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
-            withIcon = true,
-            withName = false,
-            withDescription = true,
-            withCover = true,
-            canHaveCover = false,
-            canHaveDescription = false,
-            canHaveIcon = false
-        )
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `should create appearance params when layout is note`() {
-        val emptyFields = Block.Fields(
-            mapOf(
-                "withIcon" to true,
-                "withDescription" to true,
-                "withCover" to true,
-                "style" to BlockView.Appearance.LINK_STYLE_TEXT,
-                "iconSize" to BlockView.Appearance.LINK_ICON_SIZE_LARGE
-            )
-        )
-        val layout = ObjectType.Layout.NOTE
-
-        val result = emptyFields.getLinkToObjectAppearanceParams(layout)
-
-        val expected = BlockView.Appearance.Params(
-            style = BlockView.Appearance.LINK_STYLE_TEXT,
-            iconSize = BlockView.Appearance.LINK_ICON_SIZE_MEDIUM,
-            withIcon = false,
-            withName = true,
-            withDescription = false,
-            withCover = false,
-            canHaveCover = false,
-            canHaveDescription = false,
-            canHaveIcon = false
-        )
-        assertEquals(expected, result)
     }
 }

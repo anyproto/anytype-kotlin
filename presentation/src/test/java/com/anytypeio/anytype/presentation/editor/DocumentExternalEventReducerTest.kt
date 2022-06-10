@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Block.Fields.Companion.NAME_KEY
+import com.anytypeio.anytype.core_models.Block.Content.Link.IconSize
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -216,31 +218,11 @@ class DocumentExternalEventReducerTest {
     }
 
     @Test
-    fun `should update link fields`() {
-
-        val title = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.TITLE
-            )
-        )
-
-        val name = MockDataFactory.randomString()
-
-        val link = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                fields = Block.Fields(
-                    map = mapOf(NAME_KEY to name)
-                ),
-                target = MockDataFactory.randomUuid(),
-                type = Block.Content.Link.Type.PAGE
+    fun `should update link appearance`() {
+        val title = MockBlockFactory.title()
+        val link = MockBlockFactory.link(
+            content = StubLinkContent(
+                iconSize = IconSize.NONE
             )
         )
 
@@ -257,8 +239,8 @@ class DocumentExternalEventReducerTest {
 
         // TESTING
 
-        val updated = Block.Fields(
-            map = mapOf(NAME_KEY to MockDataFactory.randomString())
+        val updated = link.content.asLink().copy(
+            iconSize = IconSize.MEDIUM
         )
 
         runBlocking {
@@ -267,9 +249,7 @@ class DocumentExternalEventReducerTest {
                 page,
                 title,
                 link.copy(
-                    content = link.content<Block.Content.Link>().copy(
-                        fields = updated
-                    )
+                    content = updated
                 )
             )
 
@@ -279,7 +259,10 @@ class DocumentExternalEventReducerTest {
                     context = page.id,
                     id = link.id,
                     target = link.content<Block.Content.Link>().target,
-                    fields = updated
+                    iconSize = IconSize.MEDIUM,
+                    cardStyle = null,
+                    description = null,
+                    relations = null
                 )
             )
 

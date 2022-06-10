@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.presentation
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 object MockBlockFactory {
@@ -18,7 +20,7 @@ object MockBlockFactory {
 
     fun paragraph(
         children: List<Id> = emptyList()
-    ) : Block = Block(
+    ): Block = Block(
         id = MockDataFactory.randomUuid(),
         fields = Block.Fields.empty(),
         children = children,
@@ -197,6 +199,20 @@ object MockBlockFactory {
         )
     )
 
+    fun link(
+        id: String = MockDataFactory.randomUuid(),
+        fields: Block.Fields = Block.Fields(emptyMap()),
+        content: Link = StubLinkContent(),
+        children: List<Id> = emptyList(),
+        backgroundColor: String? = null,
+    ) = Block(
+        id = id,
+        fields = fields,
+        content = content,
+        children = children,
+        backgroundColor = backgroundColor
+    )
+
     fun makeOnePageWithTitleAndOnePageLinkBlock(
         rootId: String,
         titleBlockId: String,
@@ -223,10 +239,13 @@ object MockBlockFactory {
         Block(
             id = pageBlockId,
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Link(
+            content = Link(
                 target = MockDataFactory.randomUuid(),
-                fields = Block.Fields.empty(),
-                type = Block.Content.Link.Type.PAGE
+                type = Link.Type.PAGE,
+                iconSize = Link.IconSize.SMALL,
+                cardStyle = Link.CardStyle.TEXT,
+                description = Link.Description.NONE,
+                relations = emptySet()
             ),
             children = emptyList()
         )

@@ -9,7 +9,10 @@ import com.anytypeio.anytype.core_models.ext.set
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.common.StateReducer
-import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.*
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Event
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Reducer
+import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
 import com.anytypeio.anytype.presentation.extension.addAndSortByIds
 import com.anytypeio.anytype.presentation.extension.sortByIds
 import com.anytypeio.anytype.presentation.extension.updateDetails
@@ -106,12 +109,6 @@ sealed class HomeDashboardStateMachine {
             val children: List<String>
         ) : Event()
 
-        data class OnLinkFieldsChanged(
-            val id: String,
-            val fields: Block.Fields,
-            val builder: UrlBuilder
-        ) : Event()
-
         object OnDashboardLoadingStarted : Event()
 
         object OnStartedCreatingPage : Event()
@@ -189,16 +186,6 @@ sealed class HomeDashboardStateMachine {
                         isInitialzed = true,
                         isLoading = false,
                         blocks = state.blocks.addAndSortByIds(state.childrenIdsList, new)
-                    )
-                }
-                is Event.OnLinkFieldsChanged -> {
-                    state.copy(
-                        blocks = state.blocks.updateDetails(
-                            event.id,
-                            event.fields,
-                            event.builder,
-                            objectTypes = state.objectTypes
-                        )
                     )
                 }
                 is Event.OnDetailsUpdated -> {

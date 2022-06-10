@@ -286,6 +286,13 @@ interface MiddlewareService {
 
     //endregion
 
+    //region LINK BLOCK commands
+
+    @Throws(Exception::class)
+    fun blockLinkListSetAppearance(request: Rpc.BlockLink.ListSetAppearance.Request): Rpc.BlockLink.ListSetAppearance.Response
+
+    //endregion
+
     //region DEBUG commands
 
     @Throws(Exception::class)

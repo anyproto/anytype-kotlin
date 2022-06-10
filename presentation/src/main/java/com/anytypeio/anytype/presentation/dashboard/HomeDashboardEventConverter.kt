@@ -38,15 +38,6 @@ interface HomeDashboardEventConverter {
                     null
                 }
             }
-            is Event.Command.LinkGranularChange -> {
-                event.fields?.let { fields ->
-                    HomeDashboardStateMachine.Event.OnLinkFieldsChanged(
-                        id = event.id,
-                        fields = fields,
-                        builder = builder
-                    )
-                }
-            }
             is Event.Command.Details.Set -> {
                 HomeDashboardStateMachine.Event.OnDetailsUpdated(
                     context = event.context,
@@ -72,7 +63,7 @@ interface HomeDashboardEventConverter {
                 )
             }
             else -> {
-                Timber.d("Ignored event: $event")
+                Timber.v("Ignored event: $event")
                 null
             }
         }

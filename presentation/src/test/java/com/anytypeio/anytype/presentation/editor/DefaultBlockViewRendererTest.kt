@@ -1,7 +1,12 @@
 package com.anytypeio.anytype.presentation.editor
 
 import android.util.Log
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.Link
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -10,6 +15,8 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -2420,23 +2427,13 @@ class DefaultBlockViewRendererTest {
         val header = MockTypicalDocumentFactory.header
         val target = MockDataFactory.randomUuid()
 
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            children = listOf(),
-            content = Block.Content.Link(
+        val a = link(
+            content = StubLinkContent(
                 target = target,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            fields = Block.Fields(
-                mapOf(
-                    "withIcon" to false,
-                    "withCover" to true,
-                    "withDescription" to true,
-                    "withName" to true,
-                    "iconSize" to 1.0,
-                    "style" to 1.0
-                )
+                cardStyle = Link.CardStyle.CARD,
+                iconSize = Link.IconSize.NONE,
+                description = Link.Description.ADDED,
+                relations = setOf(Link.Relation.NAME)
             ),
             backgroundColor = "red"
         )

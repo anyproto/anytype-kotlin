@@ -9,7 +9,9 @@ import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.clipboard.Copy
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
+import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
@@ -1308,28 +1310,18 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
     fun `should start background style toolbar with null color when all blocks are not texted`() {
         val targetA = MockDataFactory.randomUuid()
         val backgroundA = "red"
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
+        val a = link(
+            content = StubLinkContent(
                 target = targetA,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
             ),
             backgroundColor = backgroundA
         )
 
         val targetB = MockDataFactory.randomUuid()
         val backgroundB = "teal"
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
+        val b = link(
+            content = StubLinkContent(
                 target = targetB,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
             ),
             backgroundColor = backgroundB
         )
@@ -1389,43 +1381,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should start background style toolbar with red color when all blocks are not texted`() {
-        val targetA = MockDataFactory.randomUuid()
         val backgroundA = "red"
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetA,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = backgroundA
-        )
-
-        val targetB = MockDataFactory.randomUuid()
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetB,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = backgroundA
-        )
-
-        val c = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File(
-                state = Block.Content.File.State.EMPTY
-            ),
-            backgroundColor = backgroundA
-        )
-
+        val a = link(backgroundColor = backgroundA)
+        val b = link(backgroundColor = backgroundA)
+        val c = link(backgroundColor = backgroundA)
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
@@ -1470,44 +1429,10 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should start background style toolbar with red color when blocks are mixed`() {
-        val targetA = MockDataFactory.randomUuid()
         val backgroundA = "red"
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetA,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = backgroundA
-        )
-
-        val targetB = MockDataFactory.randomUuid()
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetB,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = backgroundA
-        )
-
-        val c = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetA,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = backgroundA
-        )
+        val a = link(backgroundColor = backgroundA)
+        val b = link(backgroundColor = backgroundA)
+        val c = link(backgroundColor = backgroundA)
 
         val page = Block(
             id = root,
@@ -1553,42 +1478,9 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should start background style toolbar with default color when all blocks has nullable backgrounds`() {
-        val targetA = MockDataFactory.randomUuid()
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetA,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = null
-        )
-
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            ),
-            backgroundColor = null
-        )
-
-        val c = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Link(
-                target = targetA,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            backgroundColor = null
-        )
+        val a = link()
+        val b = link()
+        val c = link()
 
         val page = Block(
             id = root,

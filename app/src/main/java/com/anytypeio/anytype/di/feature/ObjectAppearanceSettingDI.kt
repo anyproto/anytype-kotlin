@@ -2,7 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceCoverViewModel
@@ -38,12 +38,12 @@ object ObjectAppearanceSettingModule {
     @PerModal
     fun provideObjectAppearanceSettingViewModelFactory(
         storage: Editor.Storage,
-        updateFields: UpdateFields,
+        setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
     ): ObjectAppearanceSettingViewModel.Factory {
         return ObjectAppearanceSettingViewModel.Factory(
             storage = storage,
-            updateFields = updateFields,
+            setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher
         )
     }
@@ -71,12 +71,12 @@ object ObjectAppearanceIconModule {
     @PerModal
     fun provideObjectAppearanceIconViewModelFactory(
         storage: Editor.Storage,
-        updateFields: UpdateFields,
+        setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
     ): ObjectAppearanceIconViewModel.Factory {
         return ObjectAppearanceIconViewModel.Factory(
             storage = storage,
-            updateFields = updateFields,
+            setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher
         )
     }
@@ -104,12 +104,12 @@ object ObjectAppearancePreviewLayoutModule {
     @PerModal
     fun provideObjectAppearancePreviewLayoutViewModelFactory(
         storage: Editor.Storage,
-        updateFields: UpdateFields,
+        setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
     ): ObjectAppearancePreviewLayoutViewModel.Factory {
         return ObjectAppearancePreviewLayoutViewModel.Factory(
             storage = storage,
-            updateFields = updateFields,
+            setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher
         )
     }
@@ -137,12 +137,12 @@ object ObjectAppearanceCoverModule {
     @PerModal
     fun provideObjectAppearanceCoverViewModelFactory(
         storage: Editor.Storage,
-        updateFields: UpdateFields,
+        setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
     ): ObjectAppearanceCoverViewModel.Factory {
         return ObjectAppearanceCoverViewModel.Factory(
             storage = storage,
-            updateFields = updateFields,
+            setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher
         )
     }

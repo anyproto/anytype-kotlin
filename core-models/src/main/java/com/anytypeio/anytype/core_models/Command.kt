@@ -79,7 +79,7 @@ sealed class Command {
     data class UpdateBlocksMark(
         val context: Id,
         val targets: List<Id>,
-        val mark : Block.Content.Text.Mark
+        val mark: Block.Content.Text.Mark
     )
 
     /**
@@ -236,7 +236,7 @@ sealed class Command {
      * @property key relation key
      */
     data class SetRelationKey(
-        val contextId : Id,
+        val contextId: Id,
         val blockId: Id,
         val key: Id
     )
@@ -354,5 +354,11 @@ sealed class Command {
     data class SetFields(
         val context: Id,
         val fields: List<Pair<Id, Block.Fields>>
+    )
+
+    data class SetLinkAppearance(
+        val contextId: String,
+        val blockId: String,
+        val content: Block.Content.Link
     )
 }

@@ -100,9 +100,16 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
         is Event.Command.LinkGranularChange -> state.replace(
             replacement = { block ->
                 val content = block.content<Block.Content.Link>()
+                val iconSize = event.iconSize ?: content.iconSize
+                val cardStyle = event.cardStyle ?: content.cardStyle
+                val description = event.description ?: content.description
+                val relations = event.relations ?: content.relations
                 block.copy(
                     content = content.copy(
-                        fields = event.fields ?: content.fields
+                        iconSize = iconSize,
+                        cardStyle = cardStyle,
+                        description = description,
+                        relations = relations
                     )
                 )
             },
@@ -138,7 +145,7 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
 typealias Flag = Int
 
 object Flags {
-    const val FLAG_REFRESH : Flag = 0
+    const val FLAG_REFRESH: Flag = 0
     val skipRefreshKeys = listOf(
         Relations.NAME,
         Relations.LAST_MODIFIED_DATE,
@@ -147,9 +154,9 @@ object Flags {
     )
 }
 
-fun List<Event>.flags(ctx: Id) : List<Flag> {
+fun List<Event>.flags(ctx: Id): List<Flag> {
     forEach { event ->
-        when(event) {
+        when (event) {
             is Event.Command.Details.Amend -> {
                 if (event.target == ctx) {
                     if (event.details.keys.any { key -> !Flags.skipRefreshKeys.contains(key) }) {

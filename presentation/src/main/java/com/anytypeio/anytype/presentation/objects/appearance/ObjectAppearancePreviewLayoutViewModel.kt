@@ -4,14 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Block.Fields.Companion.STYLE_KEY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.editor.ext.getAppearanceParamsOfBlockLink
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_CARD
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.Companion.LINK_STYLE_TEXT
+import com.anytypeio.anytype.presentation.editor.editor.ext.getLinkAppearanceMenu
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem.PreviewLayout
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -21,7 +19,7 @@ import timber.log.Timber
 
 class ObjectAppearancePreviewLayoutViewModel(
     private val storage: Editor.Storage,
-    private val updateFields: UpdateFields,
+    private val setLinkAppearance: SetLinkAppearance,
     private val dispatcher: Dispatcher<Payload>
 ) : ViewModel() {
 
@@ -30,20 +28,20 @@ class ObjectAppearancePreviewLayoutViewModel(
 
     fun onStart(blockId: Id) {
         jobs += viewModelScope.launch {
-            val params = storage.document.get().getAppearanceParamsOfBlockLink(
+            val menu = storage.document.get().getLinkAppearanceMenu(
                 blockId = blockId,
                 details = storage.details.current()
             )
-            if (params != null) {
-                val previewLayout = params.getObjectAppearancePreviewLayoutState()
+            if (menu != null) {
+                val previewLayout = menu.preview
                 state.emit(
                     State.Success(
                         items = listOf(
                             ObjectAppearanceSettingView.PreviewLayout.Text(
-                                isSelected = previewLayout == ObjectAppearancePreviewLayoutState.TEXT
+                                isSelected = previewLayout == PreviewLayout.TEXT
                             ),
                             ObjectAppearanceSettingView.PreviewLayout.Card(
-                                isSelected = previewLayout == ObjectAppearancePreviewLayoutState.CARD
+                                isSelected = previewLayout == PreviewLayout.CARD
                             )
                         )
                     )
@@ -55,37 +53,40 @@ class ObjectAppearancePreviewLayoutViewModel(
         }
     }
 
-    fun onItemClicked(item: ObjectAppearanceSettingView, ctx: Id, blockId: Id) {
+    fun onItemClicked(
+        item: ObjectAppearanceSettingView.PreviewLayout,
+        ctx: Id,
+        blockId: Id
+    ) {
         val block = storage.document.get().find { it.id == blockId }
-        if (block != null) {
-            val fields = when (item) {
+        val content = block?.content
+        if (block != null && content is Block.Content.Link) {
+            val newContent = when (item) {
                 is ObjectAppearanceSettingView.PreviewLayout.Text ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(STYLE_KEY, LINK_STYLE_TEXT)
-                        }
+                    content.copy(
+                        cardStyle = Block.Content.Link.CardStyle.TEXT
                     )
                 is ObjectAppearanceSettingView.PreviewLayout.Card ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(STYLE_KEY, LINK_STYLE_CARD)
-                        }
+                    content.copy(
+                        cardStyle = Block.Content.Link.CardStyle.CARD
                     )
-                else -> throw UnsupportedOperationException("Wrong item type:$item")
             }
-            proceedWithFieldsUpdate(ctx, blockId, fields)
+            proceedWithFieldsUpdate(ctx, blockId, newContent)
         }
     }
 
-    private fun proceedWithFieldsUpdate(ctx: Id, blockId: Id, fields: Block.Fields) {
+    private fun proceedWithFieldsUpdate(ctx: Id, blockId: Id, content: Block.Content.Link) {
         viewModelScope.launch {
-            updateFields.invoke(
-                UpdateFields.Params(
-                    context = ctx,
-                    fields = listOf(Pair(blockId, fields))
+            setLinkAppearance(
+                SetLinkAppearance.Params(
+                    contextId = ctx,
+                    blockId = blockId,
+                    content = content
                 )
             ).proceed(
-                failure = { Timber.e(it, "Error while updating preview layout visibility for block") },
+                failure = {
+                    Timber.e(it, "Error while updating preview layout visibility for block")
+                },
                 success = {
                     dispatcher.send(it)
                     state.emit(State.Dismiss)
@@ -100,12 +101,16 @@ class ObjectAppearancePreviewLayoutViewModel(
 
     class Factory(
         private val storage: Editor.Storage,
-        private val updateFields: UpdateFields,
+        private val setLinkAppearance: SetLinkAppearance,
         private val dispatcher: Dispatcher<Payload>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ObjectAppearancePreviewLayoutViewModel(storage, updateFields, dispatcher) as T
+            return ObjectAppearancePreviewLayoutViewModel(
+                storage,
+                setLinkAppearance,
+                dispatcher
+            ) as T
         }
     }
 

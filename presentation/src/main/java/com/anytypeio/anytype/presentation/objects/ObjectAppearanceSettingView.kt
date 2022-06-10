@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.objects
 
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
+
 
 sealed class ObjectAppearanceSettingView {
 
@@ -9,21 +10,20 @@ sealed class ObjectAppearanceSettingView {
     }
 
     sealed class Settings : ObjectAppearanceSettingView() {
-        data class PreviewLayout(val style: Double?) : Settings()
-        data class Icon(val state: ObjectAppearanceIconState) : Settings()
-        data class Cover(val withCover: Boolean?) : Settings()
+        data class PreviewLayout(val previewLayoutState: MenuItem.PreviewLayout) : Settings()
+        data class Icon(val icon: MenuItem.Icon) : Settings()
+        data class Cover(val coverState: MenuItem.Cover) : Settings()
     }
 
     sealed class Relation : ObjectAppearanceSettingView() {
-        data class Name(val withName: Boolean?) : Relation()
-        data class Description(val withDescription: Boolean?) : Relation()
+        object Name: Relation()
+        data class Description(val description: MenuItem.Description) : Relation()
     }
 
     sealed class Icon : ObjectAppearanceSettingView() {
+        data class None(val isSelected: Boolean) : Icon()
         data class Small(val isSelected: Boolean) : Icon()
         data class Medium(val isSelected: Boolean) : Icon()
-        data class Large(val isSelected: Boolean) : Icon()
-        data class None(val isSelected: Boolean) : Icon()
     }
 
     sealed class Cover : ObjectAppearanceSettingView() {

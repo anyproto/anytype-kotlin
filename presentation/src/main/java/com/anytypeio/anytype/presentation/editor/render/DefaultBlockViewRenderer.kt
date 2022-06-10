@@ -28,11 +28,7 @@ import com.anytypeio.anytype.presentation.mapper.toPictureView
 import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconState.NONE
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutState.CARD
-import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
-import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearanceIconState
-import com.anytypeio.anytype.presentation.objects.appearance.getObjectAppearancePreviewLayoutState
+import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.relations.view
 import timber.log.Timber
@@ -458,6 +454,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     )
                     val link = toLinks(
                         block = block,
+                        content = content,
                         indent = indent,
                         obj = obj,
                         mode = mode,
@@ -1260,6 +1257,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
     private fun toLinks(
         block: Block,
+        content: Content.Link,
         indent: Int,
         obj: ObjectWrapper.Basic,
         mode: EditorMode,
@@ -1293,6 +1291,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             } else {
                 link(
                     block = block,
+                    content = content,
                     indent = indent,
                     obj = obj,
                     mode = mode,
@@ -1306,63 +1305,66 @@ class DefaultBlockViewRenderer @Inject constructor(
     private fun link(
         mode: Editor.Mode,
         block: Block,
+        content: Content.Link,
         indent: Int,
         obj: ObjectWrapper.Basic,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean
     ): BlockView.LinkToObject.Default {
-        val appearanceParams = block.fields.getLinkToObjectAppearanceParams(obj.layout)
-        val isCard = appearanceParams.getObjectAppearancePreviewLayoutState() == CARD
-        val icon = if (appearanceParams.getObjectAppearanceIconState() == NONE) {
-            ObjectIcon.None
-        } else {
+        val factory = LinkAppearanceFactory(content, obj.layout)
+        val inEditorAppearance = factory.createInEditorLinkAppearance()
+        val isCard = inEditorAppearance.isCard
+        val icon = if (inEditorAppearance.showIcon) {
             ObjectIcon.from(
                 obj = obj,
                 layout = obj.layout,
                 builder = urlBuilder
             )
-        }
-        val name = if (!appearanceParams.withName) {
-            null
         } else {
+            ObjectIcon.None
+        }
+        val name = if (inEditorAppearance.showName) {
             obj.getProperObjectName()
-        }
-        val description = if (isCard && appearanceParams.withDescription == true) {
-            if (obj.description.isNullOrBlank()) obj.snippet else obj.description
         } else {
             null
-        }
-
-        var coverColor: CoverColor? = null
-        var coverImage: Url? = null
-        var coverGradient: String? = null
-
-        if (isCard && appearanceParams.canHaveCover && appearanceParams.withCover == true) {
-            when (val type = obj.coverType) {
-                CoverType.UPLOADED_IMAGE -> {
-                    coverImage = obj.coverId?.let { id ->
-                        urlBuilder.image(id)
-                    }
-                }
-                CoverType.BUNDLED_IMAGE -> {
-                    val hash = obj.coverId?.let { id ->
-                        coverImageHashProvider.provide(id)
-                    }
-                    if (hash != null) coverImage = urlBuilder.image(hash)
-                }
-                CoverType.COLOR -> {
-                    coverColor = obj.coverId?.let { id ->
-                        CoverColor.values().find { it.code == id }
-                    }
-                }
-                CoverType.GRADIENT -> {
-                    coverGradient = obj.coverId
-                }
-                else -> Timber.d("Missing cover type: $type")
-            }
         }
 
         return if (isCard) {
+            val description = if (inEditorAppearance.showDescription) {
+                if (obj.description.isNullOrBlank()) obj.snippet else obj.description
+            } else {
+                null
+            }
+
+            var coverColor: CoverColor? = null
+            var coverImage: Url? = null
+            var coverGradient: String? = null
+
+            if (inEditorAppearance.showCover) {
+                when (val type = obj.coverType) {
+                    CoverType.UPLOADED_IMAGE -> {
+                        coverImage = obj.coverId?.let { id ->
+                            urlBuilder.image(id)
+                        }
+                    }
+                    CoverType.BUNDLED_IMAGE -> {
+                        val hash = obj.coverId?.let { id ->
+                            coverImageHashProvider.provide(id)
+                        }
+                        if (hash != null) coverImage = urlBuilder.image(hash)
+                    }
+                    CoverType.COLOR -> {
+                        coverColor = obj.coverId?.let { id ->
+                            CoverColor.values().find { it.code == id }
+                        }
+                    }
+                    CoverType.GRADIENT -> {
+                        coverGradient = obj.coverId
+                    }
+                    else -> Timber.d("Missing cover type: $type")
+                }
+            }
+
             BlockView.LinkToObject.Default.Card(
                 id = block.id,
                 icon = icon,

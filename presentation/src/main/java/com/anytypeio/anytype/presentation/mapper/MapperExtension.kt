@@ -1,14 +1,21 @@
 package com.anytypeio.anytype.presentation.mapper
 
-import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_models.ext.textColor
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterOperator
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DocumentInfo
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.textStyle
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
-import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -20,7 +27,12 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.sets.buildGridRow
-import com.anytypeio.anytype.presentation.sets.model.*
+import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.anytypeio.anytype.presentation.sets.model.FilterExpression
+import com.anytypeio.anytype.presentation.sets.model.FilterValue
+import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.sets.model.SortingExpression
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.settings.EditorSettings
 
 fun Block.Content.File.toPictureView(
@@ -595,11 +607,11 @@ fun List<Map<String, Any?>>.filterRecordsBy(filterBy: String): List<Map<String, 
         filter { it.containsKey(filterBy) }
 
 fun List<Map<String, Any?>>.toGridRecordRows(
-        columns: List<ColumnView>,
-        relations: List<Relation>,
-        types: List<ObjectType>,
-        details: Map<Id, Block.Fields>,
-        builder: UrlBuilder
+    columns: List<ColumnView>,
+    relations: List<Relation>,
+    types: List<ObjectType>,
+    details: Map<Id, Block.Fields>,
+    builder: UrlBuilder
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { record ->
@@ -617,8 +629,8 @@ fun List<Map<String, Any?>>.toGridRecordRows(
 
 // TODO maybe rename toViewerHeaders
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
-        relations: List<Relation>,
-        filterBy: List<String>
+    relations: List<Relation>,
+    filterBy: List<String>
 ): List<ColumnView> {
     val columns = mutableListOf<ColumnView>()
     this.filter { it.key !in filterBy }

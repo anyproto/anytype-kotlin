@@ -2,7 +2,6 @@ package com.anytypeio.anytype.domain.block.repo
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
@@ -76,6 +75,7 @@ interface BlockRepository {
     suspend fun updateDocumentTitle(command: Command.UpdateTitle)
     suspend fun updateText(command: Command.UpdateText)
     suspend fun updateTextStyle(command: Command.UpdateStyle): Payload
+    suspend fun setLinkAppearance(command: Command.SetLinkAppearance): Payload
 
     suspend fun updateTextColor(command: Command.UpdateTextColor): Payload
     suspend fun updateBackgroundColor(command: Command.UpdateBackgroundColor): Payload
@@ -93,7 +93,7 @@ interface BlockRepository {
         template: Id?
     ): Id
 
-    suspend fun openObjectPreview(id: Id) : Result<Payload>
+    suspend fun openObjectPreview(id: Id): Result<Payload>
 
     suspend fun openPage(id: String): Result<Payload>
 
@@ -281,13 +281,13 @@ interface BlockRepository {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean) : Payload
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean) : Payload
+    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
 
     suspend fun deleteObjects(targets: List<Id>)
 
-    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout) : Payload
+    suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload
 
     suspend fun clearFileCache()
 

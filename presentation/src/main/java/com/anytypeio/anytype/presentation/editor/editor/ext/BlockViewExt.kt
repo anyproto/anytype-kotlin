@@ -4,14 +4,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
 import com.anytypeio.anytype.presentation.extension.shift
-import com.anytypeio.anytype.presentation.objects.appearance.getLinkToObjectAppearanceParams
+import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import timber.log.Timber
 
 fun List<BlockView>.singleStylingMode(
@@ -947,16 +946,23 @@ fun List<BlockView>.update(blockView: BlockView) = this.map {
     if (it.id == blockView.id) blockView else it
 }
 
-fun Document.getAppearanceParamsOfBlockLink(blockId: Id, details: Block.Details)
-        : BlockView.Appearance.Params? {
+fun Document.getLinkAppearanceMenu(
+    blockId: Id,
+    details: Block.Details
+): BlockView.Appearance.Menu? {
     val block = this.find { it.id == blockId }
     val content = block?.content
-    if (block != null && content is Block.Content.Link) {
+    return if (block != null && content is Block.Content.Link) {
         val target = content.asLink().target
         val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
-        return block.fields.getLinkToObjectAppearanceParams(layout = obj.layout)
+        val factory = LinkAppearanceFactory(
+            content = content,
+            layout = obj.layout
+        )
+        return factory.createAppearanceMenuItems()
+    } else {
+        null
     }
-    return null
 }
 
 fun List<BlockView>.updateTableOfContentsViews(header: BlockView.Text.Header): List<BlockView> {
@@ -1017,6 +1023,6 @@ fun List<BlockView>.fillTableOfContents(): List<BlockView> {
     }
 }
 
-fun BlockView.Text.isStyleClearable() : Boolean {
+fun BlockView.Text.isStyleClearable(): Boolean {
     return this.isListBlock || this is BlockView.Text.Highlight
 }

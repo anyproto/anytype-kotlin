@@ -3,12 +3,13 @@ package com.anytypeio.anytype.presentation.objects.appearance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.block.interactor.UpdateFields
+import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.editor.ext.getAppearanceParamsOfBlockLink
+import com.anytypeio.anytype.presentation.editor.editor.ext.getLinkAppearanceMenu
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
 import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
@@ -18,7 +19,7 @@ import timber.log.Timber
 
 class ObjectAppearanceCoverViewModel(
     private val storage: Editor.Storage,
-    private val updateFields: UpdateFields,
+    private val setLinkAppearance: SetLinkAppearance,
     private val dispatcher: Dispatcher<Payload>
 ) : ViewModel() {
 
@@ -27,20 +28,20 @@ class ObjectAppearanceCoverViewModel(
 
     fun onStart(blockId: Id) {
         jobs += viewModelScope.launch {
-            val params = storage.document.get().getAppearanceParamsOfBlockLink(
+            val menu = storage.document.get().getLinkAppearanceMenu(
                 blockId = blockId,
                 details = storage.details.current()
             )
-            if (params != null) {
-                val coverState = params.getObjectAppearanceCoverState()
+            if (menu != null) {
+                val coverState = menu.cover
                 state.emit(
                     State.Success(
                         items = listOf(
                             ObjectAppearanceSettingView.Cover.None(
-                                isSelected = coverState == ObjectAppearanceCoverState.NONE
+                                isSelected = coverState == MenuItem.Cover.WITHOUT
                             ),
                             ObjectAppearanceSettingView.Cover.Visible(
-                                isSelected = coverState == ObjectAppearanceCoverState.VISIBLE
+                                isSelected = coverState == MenuItem.Cover.WITH
                             )
                         )
                     )
@@ -52,34 +53,34 @@ class ObjectAppearanceCoverViewModel(
         }
     }
 
-    fun onItemClicked(item: ObjectAppearanceSettingView, ctx: Id, blockId: Id) {
+    fun onItemClicked(item: ObjectAppearanceSettingView.Cover, ctx: Id, blockId: Id) {
         val block = storage.document.get().firstOrNull { it.id == blockId }
-        if (block != null) {
-            val fields = when (item) {
-                is ObjectAppearanceSettingView.Cover.None ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(Block.Fields.COVER_WITH_KEY, false)
-                        }
+        val content = block?.content
+        if (block != null && content is Link) {
+            val relations = content.relations
+            val newContent: Link = when (item) {
+                is ObjectAppearanceSettingView.Cover.None -> {
+                    content.copy(
+                        relations = relations - Link.Relation.COVER
                     )
-                is ObjectAppearanceSettingView.Cover.Visible ->
-                    block.fields.copy(
-                        map = block.fields.map.toMutableMap().apply {
-                            put(Block.Fields.COVER_WITH_KEY, true)
-                        }
+                }
+                is ObjectAppearanceSettingView.Cover.Visible -> {
+                    content.copy(
+                        relations = relations + Link.Relation.COVER
                     )
-                else -> throw UnsupportedOperationException("Wrong item type:$item")
+                }
             }
-            proceedWithFieldsUpdate(ctx, blockId, fields)
+            proceedWithFieldsUpdate(ctx, blockId, newContent)
         }
     }
 
-    private fun proceedWithFieldsUpdate(ctx: Id, blockId: Id, fields: Block.Fields) {
+    private fun proceedWithFieldsUpdate(ctx: Id, blockId: Id, content: Link) {
         viewModelScope.launch {
-            updateFields.invoke(
-                UpdateFields.Params(
-                    context = ctx,
-                    fields = listOf(Pair(blockId, fields))
+            setLinkAppearance(
+                SetLinkAppearance.Params(
+                    contextId = ctx,
+                    blockId = blockId,
+                    content = content
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while updating cover visibility for block") },
@@ -97,12 +98,12 @@ class ObjectAppearanceCoverViewModel(
 
     class Factory(
         private val storage: Editor.Storage,
-        private val updateFields: UpdateFields,
+        private val setLinkAppearance: SetLinkAppearance,
         private val dispatcher: Dispatcher<Payload>
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ObjectAppearanceCoverViewModel(storage, updateFields, dispatcher) as T
+            return ObjectAppearanceCoverViewModel(storage, setLinkAppearance, dispatcher) as T
         }
     }
 

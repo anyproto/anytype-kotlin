@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -234,21 +235,9 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should navigate to target when clicking on link-to-object when page is locked`() {
-
         // SETUP
-
-        val target = MockDataFactory.randomUuid()
-
-        val link = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Link(
-                target = target,
-                type = Block.Content.Link.Type.PAGE,
-                fields = Block.Fields.empty()
-            ),
-            children = emptyList()
-        )
+        val link = MockBlockFactory.link()
+        val target = link.content.asLink().target
 
         val page = listOf(
             Block(

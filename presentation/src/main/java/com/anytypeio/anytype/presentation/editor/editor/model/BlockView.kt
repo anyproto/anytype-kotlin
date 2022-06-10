@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor.model
 
+import com.anytypeio.anytype.core_models.Block.Content.Link.*
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ui.ViewType
@@ -170,38 +171,43 @@ sealed class BlockView : ViewType {
     }
 
     interface Appearance {
-        data class Params(
-            val canHaveIcon: Boolean,
-            val canHaveCover: Boolean,
-            val canHaveDescription: Boolean,
-            val style: Double,
-            val iconSize: Double,
-            val withIcon: Boolean,
-            val withName: Boolean,
-            val withDescription: Boolean? = null,
-            val withCover: Boolean? = null
-        ) {
-            companion object {
-                fun default(): Params = Params(
-                    style = LINK_STYLE_TEXT,
-                    iconSize = LINK_ICON_SIZE_SMALL,
-                    withIcon = true,
-                    withName = true,
-                    canHaveCover = true,
-                    canHaveDescription = true,
-                    canHaveIcon = true
-                )
+
+        data class InEditor(
+            val isCard: Boolean,
+            val showIcon: Boolean,
+            val showName: Boolean,
+            val showDescription: Boolean,
+            val showCover: Boolean
+        )
+
+        data class Menu(
+            val preview: MenuItem.PreviewLayout,
+            val icon: MenuItem.Icon?,
+            val cover: MenuItem.Cover?,
+            val description: MenuItem.Description?
+        )
+
+        sealed interface MenuItem {
+            sealed interface Icon : MenuItem {
+                object NONE : Icon
+                object SMALL : Icon
+                object MEDIUM : Icon
             }
 
-            fun isCard() = style == LINK_STYLE_CARD
-        }
+            sealed interface Description : MenuItem {
+                object WITH : Description
+                object WITHOUT : Description
+            }
 
-        companion object {
-            const val LINK_STYLE_TEXT = 0.0
-            const val LINK_STYLE_CARD = 1.0
-            const val LINK_ICON_SIZE_SMALL = 1.0
-            const val LINK_ICON_SIZE_MEDIUM = 2.0
-            const val LINK_ICON_SIZE_LARGE = 3.0
+            sealed interface Cover : MenuItem {
+                object WITH : Cover
+                object WITHOUT : Cover
+            }
+
+            sealed interface PreviewLayout : MenuItem {
+                object TEXT : PreviewLayout
+                object CARD : PreviewLayout
+            }
         }
     }
 
@@ -461,9 +467,10 @@ sealed class BlockView : ViewType {
         ) : Text() {
             override fun getViewType() = HOLDER_TOGGLE
             override val body: String get() = text
-            val isCreateBlockButtonVisible : Boolean get() {
-                return mode == Mode.EDIT && toggled && isEmpty
-            }
+            val isCreateBlockButtonVisible: Boolean
+                get() {
+                    return mode == Mode.EDIT && toggled && isEmpty
+                }
         }
     }
 
@@ -895,7 +902,7 @@ sealed class BlockView : ViewType {
          * @property isDeleted this property determines whether this linked object is deleted or not.
          * Whenever isDeleted is true, we don't care about isArchived flags
          */
-        sealed class Default: LinkToObject() {
+        sealed class Default : LinkToObject() {
 
             abstract val text: String?
             abstract val description: String?
@@ -1061,7 +1068,7 @@ sealed class BlockView : ViewType {
     data class TableOfContentsItem(
         val id: Id,
         val name: String,
-        val depth : Int
+        val depth: Int
     )
 
     enum class Mode { READ, EDIT }

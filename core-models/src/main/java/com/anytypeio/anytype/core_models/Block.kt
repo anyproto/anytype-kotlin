@@ -60,20 +60,6 @@ data class Block(
                 else -> null
             }
 
-        val withName: Boolean? by default
-        val withDescription: Boolean? by default
-        val withIcon: Boolean? by default
-        val withCover: Boolean? by default
-
-        /**
-         * 0.0 - text, 1.0 - card
-         */
-        val style: Double? by default
-
-        /**
-         *  1.0 - small, 2.0 - medium, 3.0 - large
-         */
-        val iconSize: Double? by default
 
         val analyticsContext: String? by default
 
@@ -81,13 +67,7 @@ data class Block(
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
-            const val ICON_SIZE_KEY = "iconSize"
-            const val ICON_WITH_KEY = "withIcon"
             const val IS_LOCKED_KEY = "isLocked"
-            const val COVER_WITH_KEY = "withCover"
-            const val STYLE_KEY = "style"
-            const val WITH_NAME_KEY = "withName"
-            const val WITH_DESCRIPTION_KEY = "withDescription"
         }
     }
 
@@ -206,12 +186,38 @@ data class Block(
          * @property type type of the link
          * @property fields fields storing additional properties
          */
+        //
         data class Link(
             val target: Id,
             val type: Type,
-            val fields: Fields
+            val iconSize: IconSize,
+            val cardStyle: CardStyle,
+            val description: Description,
+            val relations: Set<Relation>,
         ) : Content() {
+            sealed interface Relation {
+                object COVER : Relation
+                object NAME : Relation
+                object TYPE : Relation
+                data class UNKNOWN(val value: String) : Relation
+            }
+
             enum class Type { PAGE, DATA_VIEW, DASHBOARD, ARCHIVE }
+            enum class IconSize { NONE, SMALL, MEDIUM }
+            enum class CardStyle { TEXT, CARD, INLINE }
+            enum class Description { NONE, ADDED, CONTENT }
+
+            val hasDescription: Boolean
+                get() = description != Description.NONE
+
+            val hasName: Boolean
+                get() = relations.contains(Relation.NAME)
+
+            val hasCover: Boolean
+                get() = relations.contains(Relation.COVER)
+
+            val hasType: Boolean
+                get() = relations.contains(Relation.TYPE)
         }
 
         /**

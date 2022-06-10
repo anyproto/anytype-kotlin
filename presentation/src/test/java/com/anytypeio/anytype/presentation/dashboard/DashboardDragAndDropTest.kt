@@ -1,10 +1,16 @@
 package com.anytypeio.anytype.presentation.dashboard
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.mapper.toDashboardViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
@@ -13,7 +19,11 @@ import kotlinx.coroutines.flow.flow
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyZeroInteractions
 
 class DashboardDragAndDropTest : DashboardTestSetup() {
 
@@ -35,35 +45,8 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
         )
 
         val pages = listOf(
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    target = MockDataFactory.randomUuid(),
-                    type = Block.Content.Link.Type.PAGE,
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                            "icon" to MockDataFactory.randomString()
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    target = MockDataFactory.randomUuid(),
-                    type = Block.Content.Link.Type.PAGE,
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString()
-                        )
-                    )
-                )
-            )
+            createBlockLink(),
+            createBlockLink()
         )
 
         val dashboard = Block(
@@ -144,34 +127,8 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     fun `should start dispatching drag-and-drop actions when the dragged item is dropped`() {
 
         val pages = listOf(
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString()
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            )
+            createBlockLink(),
+            createBlockLink()
         )
 
         val dashboard = Block(
@@ -227,48 +184,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     fun `should call move use-case for dropping the last block before the first block`() {
 
         val links = listOf(
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString()
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            )
+            createBlockLink(),
+            createBlockLink(),
+            createBlockLink()
         )
 
         val dashboard = Block(
@@ -324,48 +242,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     fun `should call move use-case for dropping the first block after the second block`() {
 
         val links = listOf(
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString()
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            )
+            createBlockLink(),
+            createBlockLink(),
+            createBlockLink()
         )
 
         val dashboard = Block(
@@ -421,48 +300,9 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
     fun `should call move use-case for dropping the first block after the third block`() {
 
         val links = listOf(
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString()
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            ),
-            Block(
-                id = MockDataFactory.randomUuid(),
-                children = emptyList(),
-                fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
-                content = Block.Content.Link(
-                    type = Block.Content.Link.Type.PAGE,
-                    target = MockDataFactory.randomUuid(),
-                    fields = Block.Fields(
-                        map = mapOf(
-                            "name" to MockDataFactory.randomString(),
-                        )
-                    )
-                )
-            )
+            createBlockLink(),
+            createBlockLink(),
+            createBlockLink()
         )
 
         val dashboard = Block(
@@ -513,4 +353,12 @@ class DashboardDragAndDropTest : DashboardTestSetup() {
             onResult = any()
         )
     }
+
+    fun createBlockLink(): Block =
+        link(
+            fields = Block.Fields(map = mapOf("name" to MockDataFactory.randomString())),
+            content = StubLinkContent(
+                type = Block.Content.Link.Type.PAGE,
+            )
+        )
 }

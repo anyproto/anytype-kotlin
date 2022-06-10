@@ -182,9 +182,45 @@ fun MBlock.toCoreModelsLink(): Block.Content.Link {
     val content = checkNotNull(link)
     return Block.Content.Link(
         target = content.targetBlockId,
-        fields = Block.Fields(content.fields?.toMap().orEmpty()),
-        type = content.style.toCoreModels()
+        type = content.style.toCoreModels(),
+        iconSize = content.iconSize.toCoreModel(),
+        cardStyle = content.cardStyle.toCoreModel(),
+        description = content.description.toCoreModel(),
+        relations = content.relations.map { it.toCoreLinkRelationModel() }.toSet(),
     )
+}
+
+internal fun String.toCoreLinkRelationModel(): Block.Content.Link.Relation {
+    return when (this) {
+        "cover" -> Block.Content.Link.Relation.COVER
+        "name" -> Block.Content.Link.Relation.NAME
+        "type" -> Block.Content.Link.Relation.TYPE
+        else -> Block.Content.Link.Relation.UNKNOWN(this)
+    }
+}
+
+fun MBLinkIconSize.toCoreModel(): Block.Content.Link.IconSize {
+    return when (this) {
+        MBLinkIconSize.SizeNone -> Block.Content.Link.IconSize.NONE
+        MBLinkIconSize.SizeSmall -> Block.Content.Link.IconSize.SMALL
+        MBLinkIconSize.SizeMedium -> Block.Content.Link.IconSize.MEDIUM
+    }
+}
+
+fun MBLinkCardStyle.toCoreModel(): Block.Content.Link.CardStyle {
+    return when (this) {
+        MBLinkCardStyle.Text -> Block.Content.Link.CardStyle.TEXT
+        MBLinkCardStyle.Card -> Block.Content.Link.CardStyle.CARD
+        MBLinkCardStyle.Inline -> Block.Content.Link.CardStyle.INLINE
+    }
+}
+
+fun MBLinkDescription.toCoreModel(): Block.Content.Link.Description {
+    return when (this) {
+        MBLinkDescription.None -> Block.Content.Link.Description.NONE
+        MBLinkDescription.Added -> Block.Content.Link.Description.ADDED
+        MBLinkDescription.Content -> Block.Content.Link.Description.CONTENT
+    }
 }
 
 fun MBlock.toCoreModelsDivider(): Block.Content.Divider {
@@ -334,7 +370,7 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     sorts = sorts.map { it.toCoreModels() },
     filters = filters.map { it.toCoreModels() },
     viewerRelations = relations.map { it.toCoreModels() },
-    cardSize = when(cardSize) {
+    cardSize = when (cardSize) {
         MDVViewCardSize.Small -> DVViewerCardSize.SMALL
         MDVViewCardSize.Medium -> DVViewerCardSize.MEDIUM
         MDVViewCardSize.Large -> DVViewerCardSize.LARGE

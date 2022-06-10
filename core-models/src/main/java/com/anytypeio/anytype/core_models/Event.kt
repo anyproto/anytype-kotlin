@@ -83,7 +83,10 @@ sealed class Event {
             override val context: String,
             val id: Id,
             val target: Id,
-            val fields: Block.Fields?
+            val iconSize: Block.Content.Link.IconSize?,
+            val cardStyle: Block.Content.Link.CardStyle?,
+            val description: Block.Content.Link.Description?,
+            val relations: Set<Block.Content.Link.Relation>?,
         ) : Command()
 
         /**

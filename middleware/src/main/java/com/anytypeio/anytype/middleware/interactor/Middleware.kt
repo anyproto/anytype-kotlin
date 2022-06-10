@@ -34,7 +34,6 @@ import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
-import com.anytypeio.anytype.middleware.model.CreateAccountResponse
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import timber.log.Timber
@@ -62,7 +61,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun accountDelete() : AccountStatus {
+    fun accountDelete(): AccountStatus {
         val request = Rpc.Account.Delete.Request(
             revert = false
         )
@@ -83,7 +82,7 @@ class Middleware(
     }
 
     @Throws(Exception::class)
-    fun accountRestore() : AccountStatus {
+    fun accountRestore(): AccountStatus {
         val request = Rpc.Account.Delete.Request(
             revert = true
         )
@@ -797,6 +796,27 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun blockLinkSetAppearance(
+        command: Command.SetLinkAppearance,
+    ): Payload {
+        val content = command.content
+        val request = Rpc.BlockLink.ListSetAppearance.Request(
+            contextId = command.contextId,
+            blockIds = listOf(command.blockId),
+            iconSize = content.iconSize.toMiddlewareModel(),
+            cardStyle = content.cardStyle.toMiddlewareModel(),
+            description = content.description.toMiddlewareModel(),
+            relations = content.relations.map { it.toMiddlewareModel() }
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockLinkListSetAppearance(
+            request
+        )
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
     fun blockUpload(command: Command.UploadBlock): Payload {
         val request = Rpc.Block.Upload.Request(
             filePath = command.filePath,
@@ -941,7 +961,7 @@ class Middleware(
         command.type?.let { details[Relations.TYPE] = it }
 
         val request = Rpc.Object.Create.Request(
-                details = details.toMap()
+            details = details.toMap()
         )
 
         if (BuildConfig.DEBUG) logRequest(request)

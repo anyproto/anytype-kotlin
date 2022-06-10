@@ -263,6 +263,21 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun blockLinkListSetAppearance(
+        request: Rpc.BlockLink.ListSetAppearance.Request
+    ): Rpc.BlockLink.ListSetAppearance.Response {
+        val encoded = Service.blockLinkListSetAppearance(
+            Rpc.BlockLink.ListSetAppearance.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockLink.ListSetAppearance.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockLink.ListSetAppearance.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockListDelete(request: Rpc.Block.ListDelete.Request): Rpc.Block.ListDelete.Response {
         val encoded = Service.blockListDelete(Rpc.Block.ListDelete.Request.ADAPTER.encode(request))
         val response = Rpc.Block.ListDelete.Response.ADAPTER.decode(encoded)

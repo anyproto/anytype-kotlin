@@ -497,8 +497,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
 
-        override fun applyTextColor(item: BlockView.Title) {}
-        override fun applyBackground(item: BlockView.Title) {}
+        override fun applyTextColor(item: BlockView.Title) {
+            setTextColor(item.color ?: ThemeColor.DEFAULT.code)
+        }
+        override fun applyBackground(item: BlockView.Title) {
+            binding.title.setBlockBackgroundColor(item.backgroundColor)
+        }
     }
 
     class Todo(val binding: ItemBlockTitleTodoBinding) : Title(binding.root) {

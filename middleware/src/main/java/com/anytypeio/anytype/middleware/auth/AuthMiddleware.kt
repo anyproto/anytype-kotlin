@@ -29,15 +29,11 @@ class AuthMiddleware(
         name: String,
         avatarPath: String?,
         invitationCode: String
-    ) = withContext(Dispatchers.IO) {
-        middleware.accountCreate(name, avatarPath, invitationCode).let { response ->
-            AccountEntity(
-                id = response.id,
-                name = response.name,
-                color = response.avatar?.color
-            )
-        }
-    }
+    ) : AccountSetup = middleware.accountCreate(
+        name = name,
+        path = avatarPath,
+        invitationCode = invitationCode
+    )
 
     override suspend fun deleteAccount(): AccountStatus = middleware.accountDelete()
     override suspend fun restoreAccount(): AccountStatus = middleware.accountRestore()

@@ -25,7 +25,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.middleware.BuildConfig
-import com.anytypeio.anytype.middleware.auth.core
+import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MObjectType
 import com.anytypeio.anytype.middleware.mappers.MRelation
@@ -49,29 +49,16 @@ class Middleware(
         name: String,
         path: String?,
         invitationCode: String
-    ): CreateAccountResponse {
-
+    ): AccountSetup {
         val request = Rpc.Account.Create.Request(
             name = name,
             alphaInviteCode = invitationCode,
             avatarLocalPath = path
         )
-
         if (BuildConfig.DEBUG) logRequest(request)
-
         val response = service.accountCreate(request)
-
         if (BuildConfig.DEBUG) logResponse(response)
-
-        val acc = response.account
-
-        checkNotNull(acc)
-
-        return CreateAccountResponse(
-            acc.id,
-            acc.name,
-            acc.avatar
-        )
+        return response.toAccountSetup()
     }
 
     @Throws(Exception::class)
@@ -117,7 +104,7 @@ class Middleware(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountSelect(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.core()
+        return response.toAccountSetup()
     }
 
     @Throws(Exception::class)

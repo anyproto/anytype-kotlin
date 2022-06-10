@@ -23,7 +23,11 @@ class AuthDataRepository(
         name: String,
         avatarPath: String?,
         invitationCode: String
-    ): Account = factory.remote.createAccount(name, avatarPath, invitationCode).toDomain()
+    ): AccountSetup = factory.remote.createAccount(
+        name = name,
+        avatarPath = avatarPath,
+        invitationCode = invitationCode
+    )
 
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()
     override suspend fun restoreAccount(): AccountStatus = factory.remote.restoreAccount()

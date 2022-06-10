@@ -18,4 +18,6 @@ dependencies {
 
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation unitTestDependencies.coroutineTesting
+
+    testImplementation project(":test:core-models-stub")
 }

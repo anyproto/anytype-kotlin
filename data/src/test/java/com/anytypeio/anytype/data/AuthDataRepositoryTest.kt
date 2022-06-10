@@ -1,23 +1,30 @@
 package com.anytypeio.anytype.data
 
-import com.anytypeio.anytype.core_models.Account
-import com.anytypeio.anytype.core_models.AccountSetup
-import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.StubAccount
 import com.anytypeio.anytype.core_models.StubAccountSetup
-import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubFeatureConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
-import com.anytypeio.anytype.data.auth.repo.*
+import com.anytypeio.anytype.data.auth.repo.AuthCache
+import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
+import com.anytypeio.anytype.data.auth.repo.AuthDataRepository
+import com.anytypeio.anytype.data.auth.repo.AuthDataStoreFactory
+import com.anytypeio.anytype.data.auth.repo.AuthRemote
+import com.anytypeio.anytype.data.auth.repo.AuthRemoteDataStore
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.verifyZeroInteractions
 
 class AuthDataRepositoryTest {
 
@@ -28,8 +35,6 @@ class AuthDataRepositoryTest {
     lateinit var authCache: AuthCache
 
     lateinit var repo: AuthDataRepository
-
-    val config = StubConfig()
 
     @Before
     fun setup() {
@@ -86,14 +91,16 @@ class AuthDataRepositoryTest {
 
         val name = MockDataFactory.randomString()
 
-        val account = AccountEntity(
-            id = name,
-            name = MockDataFactory.randomString(),
-            color = null
-        )
+        val setup = StubAccountSetup()
 
         authRemote.stub {
-            onBlocking { createAccount(name = name, avatarPath = path, invitationCode = "code") } doReturn account
+            onBlocking {
+                createAccount(
+                    name = name,
+                    avatarPath = path,
+                    invitationCode = "code"
+                )
+            } doReturn setup
         }
 
         repo.createAccount(

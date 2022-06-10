@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.AccountEntity
@@ -17,7 +18,11 @@ class AuthRemoteDataStore(
         name: String,
         avatarPath: String?,
         invitationCode: String
-    ) = authRemote.createAccount(name, avatarPath, invitationCode)
+    ) : AccountSetup = authRemote.createAccount(
+        name = name,
+        avatarPath = avatarPath,
+        invitationCode = invitationCode
+    )
 
     override suspend fun deleteAccount(): AccountStatus = authRemote.deleteAccount()
 

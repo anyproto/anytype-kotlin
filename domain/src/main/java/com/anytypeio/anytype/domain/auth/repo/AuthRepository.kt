@@ -17,7 +17,11 @@ interface AuthRepository {
      */
     suspend fun startAccount(id: String, path: String): AccountSetup
 
-    suspend fun createAccount(name: String, avatarPath: String?, invitationCode: String): Account
+    suspend fun createAccount(
+        name: String,
+        avatarPath: String?,
+        invitationCode: String
+    ): AccountSetup
 
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus

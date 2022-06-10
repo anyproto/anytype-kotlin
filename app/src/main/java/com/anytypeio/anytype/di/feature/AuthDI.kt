@@ -229,12 +229,12 @@ object SetupNewAccountModule {
     @Provides
     @PerScreen
     fun provideCreateAccountUseCase(
-        repository: AuthRepository
-    ): CreateAccount {
-        return CreateAccount(
-            repository = repository
-        )
-    }
+        repository: AuthRepository,
+        configStorage: ConfigStorage
+    ): CreateAccount = CreateAccount(
+            repository = repository,
+            configStorage = configStorage
+    )
 }
 
 @Module

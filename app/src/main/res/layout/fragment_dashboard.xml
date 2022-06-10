@@ -24,16 +24,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="20dp"
-        android:src="@drawable/ic_dashboard_settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.anytypeio.anytype.core_ui.widgets.AvatarWidget
         android:id="@+id/avatarContainer"
         android:layout_width="80dp"
@@ -46,25 +36,25 @@
         app:text_size="44sp" />
 
     <FrameLayout
-        android:id="@+id/btnSearch"
+        android:id="@+id/btnOpenSettings"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/background_dashboard_button"
-        app:layout_constraintEnd_toStartOf="@+id/btnMarketplace"
+        app:layout_constraintEnd_toStartOf="@+id/btnSearch"
         app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_dashboard_search" />
+            android:src="@drawable/ic_dashboard_settings" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/btnMarketplace"
+        android:id="@+id/btnSearch"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginTop="50dp"
@@ -77,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_dashboard_marketplace" />
+            android:src="@drawable/ic_dashboard_search" />
 
     </FrameLayout>
 
@@ -88,7 +78,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/background_dashboard_button"
-        app:layout_constraintStart_toEndOf="@+id/btnMarketplace"
+        app:layout_constraintStart_toEndOf="@+id/btnSearch"
         app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
 
         <ImageView
@@ -109,7 +99,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnMarketplace">
+        app:layout_constraintTop_toBottomOf="@+id/btnSearch">
 
         <FrameLayout
             android:id="@+id/topToolbarContainer"

@@ -70,17 +70,12 @@ class AccountAndDataFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun proceedWithAccountDeletion() {
-        // TODO release this feature when it's ready on all our platforms!
-        if (BuildConfig.DEBUG) {
-            val dialog = DeleteAccountWarning()
-            dialog.onDeletionAccepted = {
-                dialog.dismiss()
-                vm.onDeleteAccountClicked()
-            }
-            dialog.show(childFragmentManager, null)
-        } else {
-            toast(resources.getString(R.string.coming_soon))
+        val dialog = DeleteAccountWarning()
+        dialog.onDeletionAccepted = {
+            dialog.dismiss()
+            vm.onDeleteAccountClicked()
         }
+        dialog.show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {

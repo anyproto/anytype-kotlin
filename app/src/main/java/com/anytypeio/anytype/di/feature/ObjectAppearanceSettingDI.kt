@@ -4,15 +4,15 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingViewModel
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceCoverViewModel
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceIconViewModel
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearancePreviewLayoutViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceSettingViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseCoverViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseIconViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.objects.ObjectAppearanceCoverFragment
-import com.anytypeio.anytype.ui.objects.ObjectAppearanceIconFragment
-import com.anytypeio.anytype.ui.objects.ObjectAppearancePreviewLayoutFragment
-import com.anytypeio.anytype.ui.objects.ObjectAppearanceSettingFragment
+import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseCoverFragment
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseIconFragment
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -61,11 +61,12 @@ interface ObjectAppearanceIconSubComponent {
         fun build(): ObjectAppearanceIconSubComponent
     }
 
-    fun inject(fragment: ObjectAppearanceIconFragment)
+    fun inject(fragment: ObjectAppearanceChooseIconFragment)
 }
 
 @Module
 object ObjectAppearanceIconModule {
+
     @JvmStatic
     @Provides
     @PerModal
@@ -73,8 +74,8 @@ object ObjectAppearanceIconModule {
         storage: Editor.Storage,
         setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
-    ): ObjectAppearanceIconViewModel.Factory {
-        return ObjectAppearanceIconViewModel.Factory(
+    ): ObjectAppearanceChooseIconViewModel.Factory {
+        return ObjectAppearanceChooseIconViewModel.Factory(
             storage = storage,
             setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher
@@ -94,11 +95,12 @@ interface ObjectAppearancePreviewLayoutSubComponent {
         fun build(): ObjectAppearancePreviewLayoutSubComponent
     }
 
-    fun inject(fragment: ObjectAppearancePreviewLayoutFragment)
+    fun inject(fragment: ObjectAppearanceChoosePreviewLayoutFragment)
 }
 
 @Module
 object ObjectAppearancePreviewLayoutModule {
+
     @JvmStatic
     @Provides
     @PerModal
@@ -106,8 +108,8 @@ object ObjectAppearancePreviewLayoutModule {
         storage: Editor.Storage,
         setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
-    ): ObjectAppearancePreviewLayoutViewModel.Factory {
-        return ObjectAppearancePreviewLayoutViewModel.Factory(
+    ): ObjectAppearanceChoosePreviewLayoutViewModel.Factory {
+        return ObjectAppearanceChoosePreviewLayoutViewModel.Factory(
             storage = storage,
             setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher
@@ -127,7 +129,7 @@ interface ObjectAppearanceCoverSubComponent {
         fun build(): ObjectAppearanceCoverSubComponent
     }
 
-    fun inject(fragment: ObjectAppearanceCoverFragment)
+    fun inject(fragment: ObjectAppearanceChooseCoverFragment)
 }
 
 @Module
@@ -139,8 +141,8 @@ object ObjectAppearanceCoverModule {
         storage: Editor.Storage,
         setLinkAppearance: SetLinkAppearance,
         dispatcher: Dispatcher<Payload>
-    ): ObjectAppearanceCoverViewModel.Factory {
-        return ObjectAppearanceCoverViewModel.Factory(
+    ): ObjectAppearanceChooseCoverViewModel.Factory {
+        return ObjectAppearanceChooseCoverViewModel.Factory(
             storage = storage,
             setLinkAppearance = setLinkAppearance,
             dispatcher = dispatcher

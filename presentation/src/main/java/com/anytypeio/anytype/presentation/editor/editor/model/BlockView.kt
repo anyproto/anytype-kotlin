@@ -196,6 +196,12 @@ sealed class BlockView : ViewType {
             sealed interface Description : MenuItem {
                 object WITH : Description
                 object WITHOUT : Description
+
+                fun isChecked(): Boolean =
+                    when (this) {
+                        WITH -> true
+                        WITHOUT -> false
+                    }
             }
 
             sealed interface Cover : MenuItem {

@@ -130,11 +130,11 @@ import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
-import com.anytypeio.anytype.ui.objects.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_IS_DRAFT_KEY
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_REQUEST_KEY
 import com.anytypeio.anytype.ui.objects.ObjectTypeChangeFragment.Companion.OBJECT_TYPE_URL_KEY
+import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.relations.RelationAddBaseFragment.Companion.CTX_KEY
 import com.anytypeio.anytype.ui.relations.RelationAddResult
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment

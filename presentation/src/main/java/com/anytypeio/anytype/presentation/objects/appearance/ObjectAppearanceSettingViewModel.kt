@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.objects
+package com.anytypeio.anytype.presentation.objects.appearance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,9 +10,11 @@ import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.ext.getLinkAppearanceMenu
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView.Relation
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView.Section
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView.Settings
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Cover
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.FeaturedRelationsSection
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Icon
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.PreviewLayout
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Relation
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -59,16 +61,16 @@ class ObjectAppearanceSettingViewModel(
         }
     }
 
-    private fun initSettingsMenu(menu: BlockView.Appearance.Menu): List<ObjectAppearanceSettingView> {
+    private fun initSettingsMenu(menu: BlockView.Appearance.Menu): List<ObjectAppearanceMainSettingsView> {
         return buildList {
-            add(Settings.PreviewLayout(menu.preview))
+            add(PreviewLayout(menu.preview))
             if (menu.icon != null) {
-                add(Settings.Icon(menu.icon))
+                add(Icon(menu.icon))
             }
             if (menu.cover != null) {
-                add(Settings.Cover(menu.cover))
+                add(Cover(menu.cover))
             }
-            add(Section.FeaturedRelations)
+            add(FeaturedRelationsSection)
             add(Relation.Name)
             if (menu.description != null) {
                 add(Relation.Description(menu.description))
@@ -76,19 +78,13 @@ class ObjectAppearanceSettingViewModel(
         }
     }
 
-    fun onItemClicked(item: ObjectAppearanceSettingView) {
+    fun onItemClicked(item: ObjectAppearanceMainSettingsView) {
         viewModelScope.launch {
             when (item) {
-                is Settings.Cover -> {
-                    commands.emit(Command.CoverScreen)
-                }
-                is Settings.Icon -> {
-                    commands.emit(Command.IconScreen)
-                }
-                is Settings.PreviewLayout -> {
-                    commands.emit(Command.PreviewLayoutScreen)
-                }
-                else -> {}
+                is Cover -> commands.emit(Command.CoverScreen)
+                is Icon -> commands.emit(Command.IconScreen)
+                is PreviewLayout -> commands.emit(Command.PreviewLayoutScreen)
+                else -> throw IllegalArgumentException("Can't handle click on $item")
             }
         }
     }
@@ -102,7 +98,7 @@ class ObjectAppearanceSettingViewModel(
         val block = storage.document.get().firstOrNull { it.id == blockId }
         val content = block?.content
         if (block != null && content is Link) {
-            if (isChecked != content.hasDescription) {
+            if (isChecked != description.description.isChecked()) {
                 val newContent = content.copy(
                     description = if (isChecked) {
                         Link.Description.ADDED
@@ -132,7 +128,7 @@ class ObjectAppearanceSettingViewModel(
 
     //region STATE
     sealed class State {
-        data class Success(val data: List<ObjectAppearanceSettingView>) : State()
+        data class Success(val data: List<ObjectAppearanceMainSettingsView>) : State()
         data class Error(val msg: String) : State()
     }
 

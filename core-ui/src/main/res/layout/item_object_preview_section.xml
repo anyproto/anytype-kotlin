@@ -11,6 +11,7 @@
         android:paddingTop="26dp"
         android:paddingBottom="8dp"
         android:textSize="@dimen/sp_13"
+        android:text="@string/relations"
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/text_secondary"
         android:gravity="start|center_vertical"

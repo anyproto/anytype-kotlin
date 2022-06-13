@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.objects
+package com.anytypeio.anytype.ui.objects.appearance
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.features.objects.ObjectAppearanceSettingAdapter
+import com.anytypeio.anytype.core_ui.features.objects.appearance.ObjectAppearanceSettingAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -19,11 +19,15 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectAppearanceSettingBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingView
-import com.anytypeio.anytype.presentation.objects.ObjectAppearanceSettingViewModel
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceSettingViewModel
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseCoverFragment
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseIconFragment
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutFragment
 import javax.inject.Inject
 
-class ObjectAppearanceSettingFragment : BaseBottomSheetFragment<FragmentObjectAppearanceSettingBinding>() {
+class ObjectAppearanceSettingFragment :
+    BaseBottomSheetFragment<FragmentObjectAppearanceSettingBinding>() {
 
     @Inject
     lateinit var factory: ObjectAppearanceSettingViewModel.Factory
@@ -35,11 +39,16 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment<FragmentObjectAp
         ObjectAppearanceSettingAdapter(
             onItemClick = vm::onItemClicked,
             onSettingToggleChanged = { item, isChecked ->
-                val relation = requireNotNull(item as? ObjectAppearanceSettingView.Relation.Description) {
-                    "item $item must be Description"
+                when (item) {
+                    is ObjectAppearanceMainSettingsView.Relation.Description -> {
+                        vm.onToggleClicked(
+                            description = item,
+                            blockId = block,
+                            ctx = ctx,
+                            isChecked = isChecked
+                        )
+                    }
                 }
-
-                vm.onToggleClicked(description = relation, blockId = block, ctx = ctx, isChecked = isChecked)
             }
         )
     }
@@ -78,15 +87,15 @@ class ObjectAppearanceSettingFragment : BaseBottomSheetFragment<FragmentObjectAp
     private fun observeCommands(command: ObjectAppearanceSettingViewModel.Command) {
         when (command) {
             ObjectAppearanceSettingViewModel.Command.CoverScreen -> {
-                val fr = ObjectAppearanceCoverFragment.new(block = block, ctx = ctx)
+                val fr = ObjectAppearanceChooseCoverFragment.new(block = block, ctx = ctx)
                 fr.show(parentFragmentManager, null)
             }
             ObjectAppearanceSettingViewModel.Command.IconScreen -> {
-                val fr = ObjectAppearanceIconFragment.new(block = block, ctx = ctx)
+                val fr = ObjectAppearanceChooseIconFragment.new(block = block, ctx = ctx)
                 fr.show(parentFragmentManager, null)
             }
             ObjectAppearanceSettingViewModel.Command.PreviewLayoutScreen -> {
-                val fr = ObjectAppearancePreviewLayoutFragment.new(block = block, ctx = ctx)
+                val fr = ObjectAppearanceChoosePreviewLayoutFragment.new(block = block, ctx = ctx)
                 fr.show(parentFragmentManager, null)
             }
         }

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
@@ -43,7 +44,12 @@ class OtherSettingsViewModel(
 
     fun onObjectTypeClicked() {
         viewModelScope.launch {
-            commands.emit(Command.NavigateToObjectTypesScreen(DEFAULT_SETTINGS_SMART_BLOCK_TYPE))
+            commands.emit(
+                Command.NavigateToObjectTypesScreen(
+                    smartBlockType = DEFAULT_SETTINGS_SMART_BLOCK_TYPE,
+                    exclucedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+                )
+            )
         }
     }
 
@@ -110,7 +116,11 @@ class OtherSettingsViewModel(
     sealed class Command {
         data class SetObjectType(val name: String?) : Command()
         data class Toast(val msg: String) : Command()
-        data class NavigateToObjectTypesScreen(val smartBlockType: SmartBlockType) : Command()
+        data class NavigateToObjectTypesScreen(
+            val smartBlockType: SmartBlockType,
+            val exclucedTypes: List<Id>
+        ) : Command()
+
         object ShowClearCacheAlert : Command()
         object Exit : Command()
     }

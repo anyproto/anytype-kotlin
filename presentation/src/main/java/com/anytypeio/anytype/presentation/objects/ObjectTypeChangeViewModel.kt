@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.objects
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.domain.dataview.interactor.GetCompatibleObjectTypes
@@ -28,7 +29,7 @@ class ObjectTypeChangeViewModel(
             views.filter { view -> view.name.contains(query, true) }
     }
 
-    fun onStart(smartBlockType: SmartBlockType) {
+    fun onStart(smartBlockType: SmartBlockType, excludedTypes: List<Id> = emptyList()) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
@@ -36,7 +37,13 @@ class ObjectTypeChangeViewModel(
                 )
             ).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },
-                success = { setViews(it) }
+                success = { types ->
+                    if (excludedTypes.isEmpty()) {
+                        setViews(objectTypes = types)
+                    }  else {
+                        setViews(objectTypes = types.filter { t -> !excludedTypes.contains(t.url) })
+                    }
+                }
             )
         }
     }

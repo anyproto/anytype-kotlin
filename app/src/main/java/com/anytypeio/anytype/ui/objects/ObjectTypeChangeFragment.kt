@@ -10,6 +10,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
 
     private val smartBlockType: SmartBlockType get() = arg(ARG_SMART_BLOCK_TYPE)
+    private val excludedTypes: List<Id> = argOrNull<List<Id>>(ARG_EXCLUDED_TYPES) ?: emptyList()
 
     private val vm by viewModels<ObjectTypeChangeViewModel> { factory }
 
@@ -76,7 +78,7 @@ class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObject
             }
         }
         super.onStart()
-        vm.onStart(smartBlockType = smartBlockType)
+        vm.onStart(smartBlockType = smartBlockType, excludedTypes = excludedTypes)
     }
 
     override fun injectDependencies() {
@@ -96,6 +98,7 @@ class ObjectTypeChangeFragment : BaseBottomSheetTextInputFragment<FragmentObject
 
     companion object {
         const val ARG_SMART_BLOCK_TYPE = "arg.object-type.smart-block-type"
+        const val ARG_EXCLUDED_TYPES = "arg.object-type.excluded-types"
         const val OBJECT_TYPE_URL_KEY = "object-type-url.key"
         const val OBJECT_TYPE_NAME_KEY = "object-type-name.key"
         const val OBJECT_TYPE_REQUEST_KEY = "object-type.request"

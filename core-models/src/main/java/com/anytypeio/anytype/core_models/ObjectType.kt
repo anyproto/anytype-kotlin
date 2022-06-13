@@ -65,6 +65,7 @@ data class ObjectType(
         const val NOTE_URL = "_otnote"
         const val WORKSPACE_URL = "_otspace"
         const val DASHBOARD_TYPE = "_otdashboard"
+        const val BOOKMARK_TYPE = "_otbookmark"
 
         const val MAX_SNIPPET_SIZE = 30
     }

@@ -53,7 +53,8 @@ class TemplateViewModel(
                                 details = event.details,
                                 relations = event.relations,
                                 restrictions = event.objectRestrictions,
-                                selection = emptySet()
+                                selection = emptySet(),
+                                objectTypes = event.objectTypes
                             )
                         }
                     }

@@ -35,7 +35,10 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
@@ -138,14 +141,15 @@ class ArchiveViewModel(
             ) { models, details ->
                 models.asMap().render(
                     mode = mode,
-                    indent = 0,
-                    anchor = context,
-                    focus = Editor.Focus.empty(),
                     root = models.first { it.id == context },
+                    focus = Editor.Focus.empty(),
+                    anchor = context,
+                    indent = 0,
                     details = details,
                     relations = emptyList(),
                     restrictions = emptyList(),
-                    selection = emptySet()
+                    selection = emptySet(),
+                    objectTypes = emptyList(),
                 )
             }
             .map { views -> views.filterNot { it is BlockView.LinkToObject } }

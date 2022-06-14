@@ -19,4 +19,10 @@ sealed interface ObjectAppearanceChooseSettingsView {
         data class Text(override val isSelected: Boolean) : PreviewLayout()
         data class Card(override val isSelected: Boolean) : PreviewLayout()
     }
+
+    sealed interface Description : ObjectAppearanceChooseSettingsView {
+        data class None(override val isSelected: Boolean) : Description
+        data class Added(override val isSelected: Boolean) : Description
+        data class Content(override val isSelected: Boolean) : Description
+    }
 }

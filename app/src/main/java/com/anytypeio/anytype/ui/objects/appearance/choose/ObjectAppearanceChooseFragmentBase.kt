@@ -44,6 +44,7 @@ abstract class ObjectAppearanceChooseFragmentBase
         super.onViewCreated(view, savedInstanceState)
         binding.tvScreenTitle.text = getString(title)
         with(binding.recyclerView) {
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
             addItemDecoration(

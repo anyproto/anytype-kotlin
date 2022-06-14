@@ -144,6 +144,7 @@ interface EditorSubComponent {
     fun objectAppearanceIconComponent() : ObjectAppearanceIconSubComponent.Builder
     fun objectAppearancePreviewLayoutComponent() : ObjectAppearancePreviewLayoutSubComponent.Builder
     fun objectAppearanceCoverComponent() : ObjectAppearanceCoverSubComponent.Builder
+    fun objectAppearanceChooseDescription() : ObjectAppearanceChooseDescriptionSubComponent.Builder
 }
 
 

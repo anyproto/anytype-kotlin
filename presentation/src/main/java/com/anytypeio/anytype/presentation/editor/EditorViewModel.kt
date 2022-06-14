@@ -675,8 +675,10 @@ class EditorViewModel(
                     details = details,
                     relations = orchestrator.stores.relations.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
-                    selection = currentSelection()
-                ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
+                    selection = currentSelection(),
+                    onRenderFlag = { onRenderFlagFound -> flags.add(onRenderFlagFound) },
+                    objectTypes = orchestrator.stores.objectTypes.current()
+                )
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()
                 } else {

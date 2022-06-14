@@ -79,12 +79,31 @@
                 android:maxLines="2"
                 android:textColor="@color/text_primary"
                 android:textSize="13sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/cardType"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/cardIcon"
                 app:layout_constraintTop_toBottomOf="@+id/cardName"
                 app:layout_goneMarginStart="@dimen/dp_16"
-                tools:text="When a few objects that can be m..."
+                tools:text="When a few objects that can be mabbbyfgg"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/cardType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="19dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/inter_regular"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardIcon"
+                app:layout_constraintTop_toBottomOf="@+id/cardDescription"
+                app:layout_goneMarginStart="@dimen/dp_16"
+                tools:text="Page"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

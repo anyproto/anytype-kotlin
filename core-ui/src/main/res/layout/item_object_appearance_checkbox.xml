@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/btnCardSmall"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="@drawable/default_ripple"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:background="@drawable/default_ripple">
 
     <ImageView
-        android:id="@+id/ivIcon"
+        android:id="@+id/icon"
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_marginStart="16dp"
@@ -17,19 +17,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvSize"
+        android:id="@+id/name"
         style="@style/ViewerSettingOptionTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        app:layout_goneMarginStart="@dimen/dp_16"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ivIcon"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginStart="@dimen/dp_16"
         tools:text="Cover" />
 
     <ImageView
-        android:id="@+id/ivCheckbox"
+        android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"

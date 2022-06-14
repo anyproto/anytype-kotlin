@@ -61,7 +61,8 @@ class DefaultBlockViewRendererTest {
             details = details,
             relations = emptyList(),
             restrictions = restrictions,
-            selection = emptySet()
+            selection = emptySet(),
+            objectTypes = emptyList(),
         )
     }
 
@@ -2492,14 +2493,15 @@ class DefaultBlockViewRendererTest {
                 id = a.id,
                 icon = ObjectIcon.None,
                 text = name,
-                description = snippet,
+                description = "",
                 indent = 0,
                 isSelected = false,
                 coverColor = null,
                 coverImage = null,
                 coverGradient = null,
                 backgroundColor = a.backgroundColor,
-                isPreviousBlockMedia = false
+                isPreviousBlockMedia = false,
+                type = null,
             )
         )
 

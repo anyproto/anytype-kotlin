@@ -19,9 +19,9 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectAppearanceSettingBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceSettingViewModel
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseCoverFragment
+import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseDescriptionFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseIconFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChoosePreviewLayoutFragment
 import javax.inject.Inject
@@ -39,16 +39,12 @@ class ObjectAppearanceSettingFragment :
         ObjectAppearanceSettingAdapter(
             onItemClick = vm::onItemClicked,
             onSettingToggleChanged = { item, isChecked ->
-                when (item) {
-                    is ObjectAppearanceMainSettingsView.Relation.Description -> {
-                        vm.onToggleClicked(
-                            description = item,
-                            blockId = block,
-                            ctx = ctx,
-                            isChecked = isChecked
-                        )
-                    }
-                }
+                vm.onToggleClicked(
+                    toggle = item,
+                    blockId = block,
+                    ctx = ctx,
+                    isChecked = isChecked
+                )
             }
         )
     }
@@ -58,6 +54,7 @@ class ObjectAppearanceSettingFragment :
         with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterAppearance
+            setHasFixedSize(true)
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(drawable(R.drawable.divider_relations))
@@ -85,20 +82,21 @@ class ObjectAppearanceSettingFragment :
     }
 
     private fun observeCommands(command: ObjectAppearanceSettingViewModel.Command) {
-        when (command) {
+        val fr = when (command) {
             ObjectAppearanceSettingViewModel.Command.CoverScreen -> {
-                val fr = ObjectAppearanceChooseCoverFragment.new(block = block, ctx = ctx)
-                fr.show(parentFragmentManager, null)
+                ObjectAppearanceChooseCoverFragment.new(block = block, ctx = ctx)
             }
             ObjectAppearanceSettingViewModel.Command.IconScreen -> {
-                val fr = ObjectAppearanceChooseIconFragment.new(block = block, ctx = ctx)
-                fr.show(parentFragmentManager, null)
+                ObjectAppearanceChooseIconFragment.new(block = block, ctx = ctx)
             }
             ObjectAppearanceSettingViewModel.Command.PreviewLayoutScreen -> {
-                val fr = ObjectAppearanceChoosePreviewLayoutFragment.new(block = block, ctx = ctx)
-                fr.show(parentFragmentManager, null)
+                ObjectAppearanceChoosePreviewLayoutFragment.new(block = block, ctx = ctx)
+            }
+            ObjectAppearanceSettingViewModel.Command.DescriptionScreen -> {
+                ObjectAppearanceChooseDescriptionFragment.new(block = block, ctx = ctx)
             }
         }
+        fr.show(parentFragmentManager, null)
     }
 
     override fun injectDependencies() {

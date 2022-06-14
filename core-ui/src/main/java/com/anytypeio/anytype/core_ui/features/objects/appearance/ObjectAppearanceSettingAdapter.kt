@@ -3,23 +3,32 @@ package com.anytypeio.anytype.core_ui.features.objects.appearance
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationDescriptionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationNameBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewRelationToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSectionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectPreviewSettingBinding
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.MenuItem
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Cover
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.FeaturedRelationsSection
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Icon
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.PreviewLayout
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Relation
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Relation.Description
+import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceMainSettingsView.Toggle
 
 class ObjectAppearanceSettingAdapter(
     private val onItemClick: (ObjectAppearanceMainSettingsView) -> Unit,
-    private val onSettingToggleChanged: (ObjectAppearanceMainSettingsView.Toggle, Boolean) -> Unit
-) : ListAdapter<ObjectAppearanceMainSettingsView, ObjectAppearanceSettingAdapter.ViewHolder>(
-    ObjectPreviewDiffer
-) {
+    private val onSettingToggleChanged: (Toggle, Boolean) -> Unit
+) : RecyclerView.Adapter<ObjectAppearanceSettingAdapter.ViewHolder>() {
+
+    private val items: MutableList<ObjectAppearanceMainSettingsView> = mutableListOf()
+
+    override fun getItemCount(): Int = items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -31,9 +40,9 @@ class ObjectAppearanceSettingAdapter(
                     false
                 )
             )
-            TYPE_ITEM_RELATION_DESCRIPTION ->
-                ViewHolder.Relation.Description(
-                    binding = ItemObjectPreviewRelationDescriptionBinding.inflate(
+            TYPE_ITEM_RELATION_TOGGLE ->
+                ViewHolder.Relation.Toggle(
+                    binding = ItemObjectPreviewRelationToggleBinding.inflate(
                         inflater, parent, false
                     )
                 ).apply {
@@ -41,7 +50,7 @@ class ObjectAppearanceSettingAdapter(
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
                             onSettingToggleChanged(
-                                getItem(pos) as ObjectAppearanceMainSettingsView.Toggle,
+                                getItem(pos) as Toggle,
                                 isChecked
                             )
                         }
@@ -52,23 +61,11 @@ class ObjectAppearanceSettingAdapter(
                     inflater, parent, false
                 )
             )
-            TYPE_ITEM_SETTING_ICON -> ViewHolder.Setting.Icon(parent).apply {
-                itemView.setOnClickListener {
-                    val pos = bindingAdapterPosition
-                    if (pos != RecyclerView.NO_POSITION) {
-                        onItemClick(getItem(pos))
-                    }
-                }
-            }
-            TYPE_ITEM_SETTING_PREVIEW_LAYOUT -> ViewHolder.Setting.PreviewLayout(parent).apply {
-                itemView.setOnClickListener {
-                    val pos = bindingAdapterPosition
-                    if (pos != RecyclerView.NO_POSITION) {
-                        onItemClick(getItem(pos))
-                    }
-                }
-            }
-            TYPE_ITEM_SETTING_COVER -> ViewHolder.Setting.Cover(parent).apply {
+            TYPE_ITEM_SETTING_LIST -> ViewHolder.List(
+                ItemObjectPreviewSettingBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+            ).apply {
                 itemView.setOnClickListener {
                     val pos = bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
@@ -80,82 +77,83 @@ class ObjectAppearanceSettingAdapter(
         }
     }
 
+    private fun getItem(pos: Int): ObjectAppearanceMainSettingsView {
+        return items[pos]
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.Relation.Name -> {}
-            is ViewHolder.Relation.Description -> {
-                holder.bind(getItem(position) as ObjectAppearanceMainSettingsView.Relation.Description)
-            }
             is ViewHolder.Section -> {}
-            is ViewHolder.Setting.Cover -> {
-                holder.bind(getItem(position) as ObjectAppearanceMainSettingsView.Cover)
-            }
-            is ViewHolder.Setting.Icon -> {
-                holder.bind(getItem(position) as ObjectAppearanceMainSettingsView.Icon)
-            }
-            is ViewHolder.Setting.PreviewLayout -> {
-                holder.bind(getItem(position) as ObjectAppearanceMainSettingsView.PreviewLayout)
-            }
+            is ViewHolder.Relation.Toggle -> holder.bind(getItem(position) as Toggle)
+            is ViewHolder.List -> holder.bind(getItem(position) as ObjectAppearanceMainSettingsView.List)
         }
     }
 
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
-        ObjectAppearanceMainSettingsView.FeaturedRelationsSection -> TYPE_ITEM_SECTION
-        is ObjectAppearanceMainSettingsView.Cover -> TYPE_ITEM_SETTING_COVER
-        is ObjectAppearanceMainSettingsView.Icon -> TYPE_ITEM_SETTING_ICON
-        is ObjectAppearanceMainSettingsView.PreviewLayout -> TYPE_ITEM_SETTING_PREVIEW_LAYOUT
-        is ObjectAppearanceMainSettingsView.Relation.Description -> TYPE_ITEM_RELATION_DESCRIPTION
-        is ObjectAppearanceMainSettingsView.Relation.Name -> TYPE_ITEM_RELATION_NAME
+        FeaturedRelationsSection -> TYPE_ITEM_SECTION
+        is Description,
+        is Icon,
+        is PreviewLayout,
+        is Cover -> TYPE_ITEM_SETTING_LIST
+        is Relation.Name -> TYPE_ITEM_RELATION_NAME
+        is Relation.ObjectType -> TYPE_ITEM_RELATION_TOGGLE
+    }
+
+    fun submitList(items: List<ObjectAppearanceMainSettingsView>) {
+        this.items.clear()
+        this.items.addAll(items)
+        notifyDataSetChanged()
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        sealed class Setting(val binding: ItemObjectPreviewSettingBinding) :
-            ViewHolder(binding.root) {
-            class PreviewLayout(parent: ViewGroup) : Setting(
-                ItemObjectPreviewSettingBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
-            ) {
-
-                fun bind(item: ObjectAppearanceMainSettingsView.PreviewLayout) =
-                    with(binding) {
-                        settingName.text = itemView.context.getString(R.string.preview_layout)
-                        settingValue.text = when (item.previewLayoutState) {
-                            MenuItem.PreviewLayout.TEXT -> itemView.context.getString(R.string.text)
-                            MenuItem.PreviewLayout.CARD -> itemView.context.getString(R.string.card)
-                        }
-                    }
+        class List(val binding: ItemObjectPreviewSettingBinding) : ViewHolder(binding.root) {
+            fun bind(item: ObjectAppearanceMainSettingsView.List) {
+                with(binding) {
+                    settingName.setText(getName(item))
+                    settingValue.setText(getValue(item))
+                }
             }
 
-            class Icon(parent: ViewGroup) : Setting(
-                ItemObjectPreviewSettingBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
-            ) {
-
-                fun bind(item: ObjectAppearanceMainSettingsView.Icon) = with(binding) {
-                    settingName.text = itemView.context.getString(R.string.icon)
-                    settingValue.text = when (item.icon) {
-                        MenuItem.Icon.NONE -> itemView.context.getString(R.string.none)
-                        MenuItem.Icon.SMALL -> itemView.context.getString(R.string.small)
-                        MenuItem.Icon.MEDIUM -> itemView.context.getString(R.string.medium)
+            @StringRes
+            private fun getValue(item: ObjectAppearanceMainSettingsView.List): Int {
+                return when (item) {
+                    is Description -> when (item.description) {
+                        MenuItem.Description.ADDED -> R.string.description_added
+                        MenuItem.Description.CONTENT -> R.string.description_content
+                        MenuItem.Description.NONE -> R.string.description_none
+                    }
+                    is Cover -> {
+                        when (item.coverState) {
+                            MenuItem.Cover.WITH -> R.string.visible
+                            MenuItem.Cover.WITHOUT -> R.string.none
+                        }
+                    }
+                    is Icon -> {
+                        when (item.icon) {
+                            MenuItem.Icon.NONE -> R.string.none
+                            MenuItem.Icon.SMALL -> R.string.small
+                            MenuItem.Icon.MEDIUM -> R.string.medium
+                        }
+                    }
+                    is PreviewLayout -> {
+                        when (item.previewLayoutState) {
+                            MenuItem.PreviewLayout.TEXT -> R.string.text
+                            MenuItem.PreviewLayout.CARD -> R.string.card
+                            MenuItem.PreviewLayout.INLINE -> R.string.inline
+                        }
                     }
                 }
             }
 
-            class Cover(parent: ViewGroup) : Setting(
-                ItemObjectPreviewSettingBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
-            ) {
-
-                fun bind(item: ObjectAppearanceMainSettingsView.Cover) = with(binding) {
-                    settingName.text = itemView.context.getString(R.string.cover)
-                    settingValue.text = when (item.coverState) {
-                        MenuItem.Cover.WITH -> itemView.context.getString(R.string.visible)
-                        MenuItem.Cover.WITHOUT -> itemView.context.getString(R.string.none)
-                    }
+            @StringRes
+            private fun getName(item: ObjectAppearanceMainSettingsView.List): Int {
+                return when (item) {
+                    is Cover -> R.string.cover
+                    is Description -> R.string.description
+                    is Icon -> R.string.icon
+                    is PreviewLayout -> R.string.preview_layout
                 }
             }
         }
@@ -171,40 +169,31 @@ class ObjectAppearanceSettingAdapter(
             ) : Relation(binding.root)
 
 
-            class Description(
-                val binding: ItemObjectPreviewRelationDescriptionBinding
+            class Toggle(
+                val binding: ItemObjectPreviewRelationToggleBinding
             ) : Relation(binding.root) {
 
-                fun bind(item: ObjectAppearanceMainSettingsView.Relation.Description) =
+                fun bind(item: ObjectAppearanceMainSettingsView.Toggle) {
+                    val context = itemView.context
                     with(binding) {
-                        relSwitch.isChecked = when (item.description) {
-                            MenuItem.Description.WITH -> true
-                            MenuItem.Description.WITHOUT -> false
+                        when (item) {
+                            is ObjectAppearanceMainSettingsView.Relation.ObjectType -> {
+                                relIcon.setImageDrawable(context.drawable(R.drawable.ic_relation_type))
+                                relName.setText(R.string.object_type)
+                            }
                         }
+                        relSwitch.isChecked = item.checked
                     }
+                }
+
             }
         }
     }
 
     companion object {
         private const val TYPE_ITEM_SECTION = 1
-        private const val TYPE_ITEM_SETTING_COVER = 2
-        private const val TYPE_ITEM_SETTING_PREVIEW_LAYOUT = 3
-        private const val TYPE_ITEM_SETTING_ICON = 4
+        private const val TYPE_ITEM_SETTING_LIST = 2
         private const val TYPE_ITEM_RELATION_NAME = 5
-        private const val TYPE_ITEM_RELATION_DESCRIPTION = 6
-    }
-
-    object ObjectPreviewDiffer : DiffUtil.ItemCallback<ObjectAppearanceMainSettingsView>() {
-
-        override fun areItemsTheSame(
-            oldItem: ObjectAppearanceMainSettingsView,
-            newItem: ObjectAppearanceMainSettingsView
-        ): Boolean = oldItem == newItem
-
-        override fun areContentsTheSame(
-            oldItem: ObjectAppearanceMainSettingsView,
-            newItem: ObjectAppearanceMainSettingsView
-        ): Boolean = oldItem == newItem
+        private const val TYPE_ITEM_RELATION_TOGGLE = 6
     }
 }

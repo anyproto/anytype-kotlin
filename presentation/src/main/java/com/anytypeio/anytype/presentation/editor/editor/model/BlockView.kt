@@ -175,15 +175,23 @@ sealed class BlockView : ViewType {
         data class InEditor(
             val isCard: Boolean,
             val showIcon: Boolean,
-            val showDescription: Boolean,
-            val showCover: Boolean
-        )
+            val description: Description,
+            val showCover: Boolean,
+            val showType: Boolean,
+        ) {
+            sealed interface Description {
+                object NONE : Description
+                object SNIPPET : Description
+                object RELATION : Description
+            }
+        }
 
         data class Menu(
             val preview: MenuItem.PreviewLayout,
             val icon: MenuItem.Icon?,
             val cover: MenuItem.Cover?,
-            val description: MenuItem.Description?
+            val description: MenuItem.Description?,
+            val objectType: MenuItem.ObjectType,
         )
 
         sealed interface MenuItem {
@@ -194,14 +202,9 @@ sealed class BlockView : ViewType {
             }
 
             sealed interface Description : MenuItem {
-                object WITH : Description
-                object WITHOUT : Description
-
-                fun isChecked(): Boolean =
-                    when (this) {
-                        WITH -> true
-                        WITHOUT -> false
-                    }
+                object NONE : Description
+                object ADDED : Description
+                object CONTENT : Description
             }
 
             sealed interface Cover : MenuItem {
@@ -212,6 +215,17 @@ sealed class BlockView : ViewType {
             sealed interface PreviewLayout : MenuItem {
                 object TEXT : PreviewLayout
                 object CARD : PreviewLayout
+                object INLINE : PreviewLayout
+            }
+
+            sealed interface ObjectType : MenuItem {
+                fun isChecked(): Boolean = when (this) {
+                    WITH -> true
+                    WITHOUT -> false
+                }
+
+                object WITH : ObjectType
+                object WITHOUT : ObjectType
             }
         }
     }
@@ -936,10 +950,11 @@ sealed class BlockView : ViewType {
                 override val description: String? = null,
                 override val icon: ObjectIcon,
                 override val backgroundColor: String?,
+                val type: String?,
                 val coverColor: CoverColor? = null,
                 val coverImage: Url? = null,
                 val coverGradient: String? = null,
-                val isPreviousBlockMedia: Boolean
+                val isPreviousBlockMedia: Boolean,
             ) : Default(), Searchable {
                 override fun getViewType() = HOLDER_OBJECT_LINK_CARD
             }

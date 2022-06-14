@@ -76,11 +76,13 @@
             android:id="@+id/bottomSheet"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="46dp"
             app:layout_constraintBottom_toTopOf="@+id/selectionBottomToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
         <Constraint
             android:id="@+id/tvGreeting">
             <CustomAttribute

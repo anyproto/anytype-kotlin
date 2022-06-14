@@ -1,18 +1,41 @@
 # Change log for Android @Anytype app.
 
-## Version 0.7.1 (WIP)
+## Version 0.8.0
 
 ### New features & enhancements 🚀
 
+* App | Danger zone: allow account deletion (#2333)
 * Editor | Improved markup shortcuts supported for all basic text blocks (#2275)
+* Editor | Allowing to merge description with title in header (#2303)
+* Editor | Support palette colors for background and text in title blocks (#2326)
+* Editor | Fallback to basic paragraph when pressing backspace in empty bulleted, checkbox, toggle or numbered blocks (#2274)
+* Sets | Shortcut way for editing your view from settings panel (#2285)
+* Relations | Disable / enable relations editing based on object restrictions (locked state, read-only relations, etc.) (#2258)
+* Objects | Show menu options based on object layout type and object restrictions (#2313)
 
 ### Fixes & tech 🚒
 
-*
+* Object | Filter out already existing relations when adding relations to object (#2309)
+* Editor | Supporting tab indentation in code-snippet blocks (#2240)
+* Editor | "Preview" action for link-to-object block should be among the first visible actions (#2321)
+* Editor | Filter out current object when searching objects for move-to operation (#2304)
+* Editor | Restore media block meta data when application is destroyed by the Android OS (#2294)
+* Editor | Search results for move-to operation are now sorted by last modification date (#2269)
+* Sets | Make long text ellipsized in headers of rows (#2276)
+* Dashboard | Activated checkbox of task / todo objects is not displayed in the history (#2322)
+* Relations | Filter out already existing tags when adding values to relation (#2262)
+* Show action icon for relations URL, Email, Phone based on relation value: when value is present, action button is enabled, when not, it is disabled (#2290)
+* Search | Display profile objects in search results (#2271)
+* Auth | Fix | Disable that awful QR-code scanning sound (#2267)
+* Auth | Trim recovery phrase when needed (#2266)
+* Tech | Stop supporting Android 7 (#2268)
 
 ### Design & UX 🔳
 
-*
+* Editor | Better DND: when dropping the dragged block without changing its initial position, editor enters select mode (#2261)
+* Editor | Better support for different appearance settings of link-to-object blocks (#2342))
+* Editor | Less aggressive error state for media blocks (#2277)
+* Dashboard | Buttons reordering (#2330)
 
 ## Version 0.7.0
 

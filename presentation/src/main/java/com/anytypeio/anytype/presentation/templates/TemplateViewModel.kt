@@ -46,14 +46,15 @@ class TemplateViewModel(
                             val root = event.blocks.first { it.id == ctx }
                             event.blocks.asMap().render(
                                 mode = Editor.Mode.Read,
-                                indent = EditorViewModel.INITIAL_INDENT,
-                                anchor = ctx,
-                                focus = com.anytypeio.anytype.domain.editor.Editor.Focus.empty(),
                                 root = root,
+                                focus = com.anytypeio.anytype.domain.editor.Editor.Focus.empty(),
+                                anchor = ctx,
+                                indent = EditorViewModel.INITIAL_INDENT,
                                 details = event.details,
                                 relations = event.relations,
                                 restrictions = event.objectRestrictions,
-                                selection = emptySet()
+                                selection = emptySet(),
+                                objectTypes = event.objectTypes
                             )
                         }
                     }

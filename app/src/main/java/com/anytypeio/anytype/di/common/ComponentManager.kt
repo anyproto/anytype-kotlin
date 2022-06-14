@@ -277,6 +277,13 @@ class ComponentManager(
             .build()
     }
 
+    val objectAppearanceChooseDescriptionComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .objectAppearanceChooseDescription()
+            .build()
+    }
+
     val createBookmarkSubComponent = Component {
         main
             .createBookmarkBuilder()

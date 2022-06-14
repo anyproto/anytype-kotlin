@@ -207,9 +207,6 @@ data class Block(
             enum class CardStyle { TEXT, CARD, INLINE }
             enum class Description { NONE, ADDED, CONTENT }
 
-            val hasDescription: Boolean
-                get() = description != Description.NONE
-
             val hasName: Boolean
                 get() = relations.contains(Relation.NAME)
 

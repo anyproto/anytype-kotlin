@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block.Content.Link
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor.Description
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -28,8 +29,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
         assertEquals(expected, actual)
     }
@@ -45,8 +47,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)
@@ -66,8 +69,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)
@@ -85,8 +89,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = true,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)
@@ -106,8 +111,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)
@@ -127,8 +133,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)
@@ -149,8 +156,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = false,
             showIcon = false,
-            showDescription = false,
+            description = Description.NONE,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)
@@ -170,8 +178,9 @@ class LinkAppearanceInEditorTest {
         val expected = BlockView.Appearance.InEditor(
             isCard = true,
             showIcon = false,
-            showDescription = true,
+            description = Description.RELATION,
             showCover = false,
+            showType = false,
         )
 
         assertEquals(expected, actual)

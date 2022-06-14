@@ -75,6 +75,7 @@ class ObjectAppearanceSettingViewModel(
             if (menu.description != null) {
                 add(Relation.Description(menu.description))
             }
+            add(Relation.ObjectType(menu.objectType))
         }
     }
 
@@ -84,13 +85,14 @@ class ObjectAppearanceSettingViewModel(
                 is Cover -> commands.emit(Command.CoverScreen)
                 is Icon -> commands.emit(Command.IconScreen)
                 is PreviewLayout -> commands.emit(Command.PreviewLayoutScreen)
+                is Relation.Description -> commands.emit(Command.DescriptionScreen)
                 else -> throw IllegalArgumentException("Can't handle click on $item")
             }
         }
     }
 
     fun onToggleClicked(
-        description: Relation.Description,
+        toggle: ObjectAppearanceMainSettingsView.Toggle,
         ctx: Id,
         blockId: Id,
         isChecked: Boolean
@@ -98,14 +100,16 @@ class ObjectAppearanceSettingViewModel(
         val block = storage.document.get().firstOrNull { it.id == blockId }
         val content = block?.content
         if (block != null && content is Link) {
-            if (isChecked != description.description.isChecked()) {
-                val newContent = content.copy(
-                    description = if (isChecked) {
-                        Link.Description.ADDED
-                    } else {
-                        Link.Description.NONE
-                    }
-                )
+            if (isChecked != toggle.checked) {
+                val newContent = when (toggle) {
+                    is Relation.ObjectType -> content.copy(
+                        relations = if (isChecked) {
+                            content.relations + Link.Relation.TYPE
+                        } else {
+                            content.relations - Link.Relation.TYPE
+                        }
+                    )
+                }
                 setLinkAppearance(ctx, blockId, newContent)
             }
         }
@@ -126,7 +130,6 @@ class ObjectAppearanceSettingViewModel(
         }
     }
 
-    //region STATE
     sealed class State {
         data class Success(val data: List<ObjectAppearanceMainSettingsView>) : State()
         data class Error(val msg: String) : State()
@@ -136,10 +139,9 @@ class ObjectAppearanceSettingViewModel(
         object IconScreen : Command()
         object CoverScreen : Command()
         object PreviewLayoutScreen : Command()
+        object DescriptionScreen : Command()
     }
-    //endregion
 
-    //region FACTORY
     class Factory(
         private val storage: Editor.Storage,
         private val setLinkAppearance: SetLinkAppearance,
@@ -151,5 +153,4 @@ class ObjectAppearanceSettingViewModel(
             return ObjectAppearanceSettingViewModel(storage, setLinkAppearance, dispatcher) as T
         }
     }
-    //endregion
 }

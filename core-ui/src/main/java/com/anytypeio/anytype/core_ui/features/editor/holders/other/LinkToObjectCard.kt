@@ -41,6 +41,7 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     private val title = binding.cardName
     private val description = binding.cardDescription
     private val selected = binding.selected
+    private val type = binding.cardType
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -71,6 +72,8 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
         applySearchHighlight(item)
 
         applyImageOrEmoji(item)
+
+        applyType(item)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
@@ -251,6 +254,15 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
                         root.resources.getDimension(R.dimen.default_link_card_root_margin_top).toInt()
                 }
             }
+        }
+    }
+
+    private fun applyType(item: BlockView.LinkToObject.Default.Card) {
+        if (item.objectTypeName != null) {
+            type.text = item.objectTypeName
+            type.visible()
+        } else {
+            type.gone()
         }
     }
 }

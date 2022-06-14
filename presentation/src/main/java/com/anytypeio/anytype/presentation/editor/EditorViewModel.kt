@@ -668,14 +668,15 @@ class EditorViewModel(
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 val doc = models.asMap().render(
                     mode = mode,
-                    indent = INITIAL_INDENT,
-                    anchor = context,
-                    focus = focus,
                     root = root,
+                    focus = focus,
+                    anchor = context,
+                    indent = INITIAL_INDENT,
                     details = details,
                     relations = orchestrator.stores.relations.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
-                    selection = currentSelection()
+                    selection = currentSelection(),
+                    objectTypes = orchestrator.stores.objectTypes.current()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()

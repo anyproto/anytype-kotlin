@@ -29,7 +29,8 @@ class LinkAppearanceMenuTest {
             preview = MenuItem.PreviewLayout.TEXT,
             icon = MenuItem.Icon.SMALL,
             cover = null,
-            description = null
+            description = null,
+            objectType = MenuItem.ObjectType.WITHOUT,
         )
         assertEquals(expected, actual)
     }
@@ -46,7 +47,8 @@ class LinkAppearanceMenuTest {
             preview = MenuItem.PreviewLayout.TEXT,
             icon = null,
             cover = null,
-            description = null
+            description = null,
+            objectType = MenuItem.ObjectType.WITHOUT,
         )
         assertEquals(expected, actual)
     }
@@ -65,7 +67,8 @@ class LinkAppearanceMenuTest {
             preview = MenuItem.PreviewLayout.TEXT,
             icon = null,
             cover = null,
-            description = null
+            description = null,
+            objectType = MenuItem.ObjectType.WITHOUT,
         )
         assertEquals(expected, actual)
     }
@@ -85,7 +88,8 @@ class LinkAppearanceMenuTest {
             preview = MenuItem.PreviewLayout.CARD,
             icon = MenuItem.Icon.SMALL,
             cover = null,
-            description = MenuItem.Description.WITH
+            description = MenuItem.Description.ADDED,
+            objectType = MenuItem.ObjectType.WITHOUT,
         )
         assertEquals(expected, actual)
     }

@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.mapper.marks
@@ -52,6 +53,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int,
+        objectTypes: List<ObjectType>,
         onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit
     ): List<BlockView> {
 
@@ -112,14 +114,15 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
+                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag
                                     )
                                 )
@@ -149,15 +152,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -180,15 +184,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -210,15 +215,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -240,15 +246,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -270,15 +277,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -300,15 +308,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -330,15 +339,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -376,15 +386,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -405,15 +416,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 result.addAll(
                                     render(
                                         mode = mode,
-                                        focus = focus,
-                                        indent = indent.inc(),
-                                        anchor = block.id,
                                         root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
                                         details = details,
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        onRenderFlag = onRenderFlag
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
                                     )
                                 )
                             }
@@ -459,7 +471,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                         obj = obj,
                         mode = mode,
                         selection = selection,
-                        isPreviousBlockMedia = isPreviousBlockMedia
+                        isPreviousBlockMedia = isPreviousBlockMedia,
+                        objectTypes = objectTypes,
                     )
                     result.add(link)
                     isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
@@ -491,16 +504,17 @@ class DefaultBlockViewRenderer @Inject constructor(
                     result.addAll(
                         render(
                             mode = mode,
-                            focus = focus,
-                            indent = indent,
-                            anchor = block.id,
                             root = root,
+                            focus = focus,
+                            anchor = block.id,
+                            indent = indent,
                             details = details,
                             relations = relations,
                             restrictions = restrictions,
                             selection = selection,
                             count = mCounter,
-                            onRenderFlag = onRenderFlag
+                            objectTypes = objectTypes,
+                            onRenderFlag = onRenderFlag,
                         )
                     )
                 }
@@ -1262,7 +1276,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         obj: ObjectWrapper.Basic,
         mode: EditorMode,
         selection: Set<Id>,
-        isPreviousBlockMedia: Boolean
+        isPreviousBlockMedia: Boolean,
+        objectTypes: List<ObjectType>
     ): BlockView.LinkToObject {
         if (obj.isEmpty()) {
             return BlockView.LinkToObject.Loading(
@@ -1296,7 +1311,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     obj = obj,
                     mode = mode,
                     selection = selection,
-                    isPreviousBlockMedia = isPreviousBlockMedia
+                    isPreviousBlockMedia = isPreviousBlockMedia,
+                    objectTypes = objectTypes,
                 )
             }
         }
@@ -1309,7 +1325,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         obj: ObjectWrapper.Basic,
         selection: Set<Id>,
-        isPreviousBlockMedia: Boolean
+        isPreviousBlockMedia: Boolean,
+        objectTypes: List<ObjectType>,
     ): BlockView.LinkToObject.Default {
         val factory = LinkAppearanceFactory(content, obj.layout)
         val inEditorAppearance = factory.createInEditorLinkAppearance()
@@ -1326,8 +1343,14 @@ class DefaultBlockViewRenderer @Inject constructor(
         val name = obj.getProperObjectName()
 
         return if (isCard) {
-            val description = if (inEditorAppearance.showDescription) {
-                if (obj.description.isNullOrBlank()) obj.snippet else obj.description
+            val description = when(inEditorAppearance.description) {
+                InEditor.Description.NONE -> null
+                InEditor.Description.RELATION -> obj.description
+                InEditor.Description.SNIPPET -> obj.snippet
+            }
+            val type = if (inEditorAppearance.showType) {
+                val typeUrl = obj.type.firstOrNull()
+                objectTypes.find { it.url == typeUrl }?.name
             } else {
                 null
             }
@@ -1376,7 +1399,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 coverImage = coverImage,
                 coverGradient = coverGradient,
                 backgroundColor = block.backgroundColor,
-                isPreviousBlockMedia = isPreviousBlockMedia
+                isPreviousBlockMedia = isPreviousBlockMedia,
+                objectTypeName = type
             )
         } else {
             BlockView.LinkToObject.Default.Text(

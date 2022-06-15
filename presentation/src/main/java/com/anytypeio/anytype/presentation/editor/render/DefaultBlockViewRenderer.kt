@@ -15,6 +15,8 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -54,7 +56,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         count: Int,
         objectTypes: List<ObjectType>,
-        onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit
+        parentScheme: DecorationScheme,
+        onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit,
     ): List<BlockView> {
 
         val children = getValue(anchor)
@@ -99,6 +102,11 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.P -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent
+                            )
                             result.add(
                                 paragraph(
                                     mode = mode,
@@ -107,45 +115,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
-                                )
-                            )
-                            if (block.children.isNotEmpty()) {
-                                result.addAll(
-                                    render(
-                                        mode = mode,
-                                        root = root,
-                                        focus = focus,
-                                        anchor = block.id,
-                                        indent = indent.inc(),
-                                        details = details,
-                                        relations = relations,
-                                        restrictions = restrictions,
-                                        selection = selection,
-                                        objectTypes = objectTypes,
-                                        onRenderFlag = onRenderFlag
-                                    )
-                                )
-                            }
-                        }
-                        Content.Text.Style.NUMBERED -> {
-                            val last =
-                                result.lastOrNull { it is BlockView.Indentable && it.indent == indent }
-                            mCounter = if (last is BlockView.Text.Numbered) {
-                                last.number.inc()
-                            } else {
-                                mCounter.inc()
-                            }
-                            result.add(
-                                numbered(
-                                    mode = mode,
-                                    block = block,
-                                    content = content,
-                                    number = mCounter,
-                                    focus = focus,
-                                    indent = indent,
-                                    details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -162,12 +133,65 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
+                                    )
+                                )
+                            }
+                        }
+                        Content.Text.Style.NUMBERED -> {
+                            val last =
+                                result.lastOrNull { it is BlockView.Indentable && it.indent == indent }
+                            mCounter = if (last is BlockView.Text.Numbered) {
+                                last.number.inc()
+                            } else {
+                                mCounter.inc()
+                            }
+
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent
+                            )
+
+                            result.add(
+                                numbered(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    number = mCounter,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details,
+                                    selection = selection,
+                                    schema = blockDecorationScheme
+                                )
+                            )
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
+                                        details = details,
+                                        relations = relations,
+                                        restrictions = restrictions,
+                                        selection = selection,
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.TOGGLE -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent
+                            )
                             result.add(
                                 toggle(
                                     mode = mode,
@@ -177,7 +201,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     isEmpty = block.children.isEmpty(),
                                     focus = focus,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    scheme = blockDecorationScheme
                                 )
                             )
                             if (toggleStateHolder.isToggled(block.id)) {
@@ -192,14 +217,24 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         relations = relations,
                                         restrictions = restrictions,
                                         selection = selection,
-                                        objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme,
+                                        objectTypes = objectTypes
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.H1 -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent,
+                                currentDecoration = DecorationHolder(
+                                    style = DecorationHolder.Style.Header.H1,
+                                    background = block.backgroundColor
+                                )
+                            )
                             result.add(
                                 headerOne(
                                     mode = mode,
@@ -208,7 +243,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -225,12 +261,22 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.H2 -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent,
+                                currentDecoration = DecorationHolder(
+                                    style = DecorationHolder.Style.Header.H2,
+                                    background = block.backgroundColor
+                                )
+                            )
                             result.add(
                                 headerTwo(
                                     mode = mode,
@@ -239,7 +285,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -256,12 +303,22 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.H3, Content.Text.Style.H4 -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent,
+                                currentDecoration = DecorationHolder(
+                                    style = DecorationHolder.Style.Header.H3,
+                                    background = block.backgroundColor
+                                )
+                            )
                             result.add(
                                 headerThree(
                                     mode = mode,
@@ -270,7 +327,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -287,12 +345,28 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.QUOTE -> {
                             mCounter = 0
+                            val normalized: DecorationScheme = if (NESTED_DECORATION_ENABLED) {
+                                normalizeDecorationScheme(
+                                    block = block,
+                                    parentScheme = parentScheme
+                                )
+                            } else {
+                                emptyMap()
+                            }
+                            val current = indent to DecorationHolder(
+                                style = DecorationHolder.Style.Highlight(
+                                    start = block.id,
+                                    end = block.children.lastOrNull() ?: block.id
+                                ),
+                                background = block.backgroundColor
+                            )
                             result.add(
                                 highlight(
                                     mode = mode,
@@ -301,7 +375,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    scheme = if (NESTED_DECORATION_ENABLED) normalized else emptyMap()
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -318,12 +393,21 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = if (NESTED_DECORATION_ENABLED)
+                                            (normalized + current)
+                                        else
+                                            emptyMap()
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.BULLET -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent
+                            )
                             result.add(
                                 bulleted(
                                     mode = mode,
@@ -332,7 +416,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -349,6 +434,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -371,6 +457,11 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.CHECKBOX -> {
                             mCounter = 0
+                            val blockDecorationScheme = buildDefaultDecorationScheme(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentIndent = indent
+                            )
                             result.add(
                                 checkbox(
                                     mode = mode,
@@ -379,7 +470,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     focus = focus,
                                     indent = indent,
                                     details = details,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -396,12 +488,14 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             mCounter = 0
+                            // TODO Add block decoration scheme
                             result.add(
                                 code(
                                     mode = mode,
@@ -597,7 +691,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Paragraph {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -619,7 +714,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
@@ -650,7 +746,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Header.Three {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -672,7 +769,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
@@ -683,7 +781,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Header.Two {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -705,7 +804,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
@@ -716,7 +816,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Header.One {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -738,7 +839,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
@@ -749,7 +851,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Checkbox {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -771,7 +874,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
@@ -782,7 +886,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Bulleted {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -803,10 +908,12 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
+    // TODO add decoration style
     private fun code(
         mode: EditorMode,
         block: Block,
@@ -837,13 +944,24 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        scheme: DecorationScheme
     ): BlockView.Text.Highlight {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
             marks = marks
         )
+        val current = if (NESTED_DECORATION_ENABLED) {
+            mapOf(
+                indent to BlockView.Decor(
+                    background = block.backgroundColor,
+                    style = BlockView.Decor.Style.None
+                )
+            )
+        } else {
+            emptyMap()
+        }
         return BlockView.Text.Highlight(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
@@ -858,7 +976,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = scheme.toDecor(block) + current
         )
     }
 
@@ -870,7 +989,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         isEmpty: Boolean,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        scheme: DecorationScheme
     ): BlockView.Text.Toggle {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -893,7 +1013,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = scheme.toDecor(block)
         )
     }
 
@@ -905,7 +1026,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         indent: Int,
         details: Block.Details,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: DecorationScheme
     ): BlockView.Text.Numbered {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -927,7 +1049,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 mode = mode,
                 block = block,
                 selection = selection
-            )
+            ),
+            decoration = schema.toDecor(block)
         )
     }
 
@@ -1045,7 +1168,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             backgroundColor = block.backgroundColor,
-            isPrevBlockMedia = isPreviousBlockMedia
+            isPrevBlockMedia = isPreviousBlockMedia,
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,

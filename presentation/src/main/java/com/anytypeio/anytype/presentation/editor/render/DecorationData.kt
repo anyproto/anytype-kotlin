@@ -9,7 +9,7 @@ import com.anytypeio.anytype.presentation.editor.model.Indent
 /**
  * Mapping indent level to gathered information about parents (ancestors) styles during document graph traversal.
  */
-typealias NestedDecorationData = Map<Indent, DecorationData>
+typealias NestedDecorationData = List<DecorationData>
 
 /**
  * Used for gathering information about parents (ancestors) styles while document graph traversal.
@@ -48,87 +48,72 @@ fun buildNestedDecorationData(
         style = DecorationData.Style.None,
         background = block.backgroundColor
     )
-): NestedDecorationData = if (BuildConfig.NESTED_DECORATION_ENABLED) buildMap {
+): NestedDecorationData = if (BuildConfig.NESTED_DECORATION_ENABLED) buildList {
     // Normalizing parent scheme
-    parentScheme.forEach { (indent, holder) ->
+    parentScheme.forEach { holder ->
         when (val style = holder.style) {
             is DecorationData.Style.Highlight -> {
                 if (block.id == style.end) {
                     // Block is a closing block for a highlight style
                     if (block.children.isEmpty()) {
-                        put(
-                            key = indent,
-                            value = holder
-                        )
+                        add(holder)
                     } else {
                         // But it has children, so its last child is supposed to be a closing block.
-                        put(
-                            key = indent,
-                            value = holder.copy(style = style.copy(end = block.children.last()))
-                        )
+                        add(holder.copy(style = style.copy(end = block.children.last())))
                     }
                 } else {
                     // It is not a closing block for highlight, no need to normalize it.
-                    put(
-                        key = indent,
-                        value = holder
-                    )
+                    add(holder)
                 }
             }
-            else -> put(
-                key = indent,
-                value = holder
-            )
+            else -> add(holder)
         }
     }
     // Adding current style
-    put(
-        key = currentIndent,
-        value = currentDecoration
-    )
-} else emptyMap()
+    add(currentDecoration)
+} else emptyList()
 
-fun NestedDecorationData.toBlockViewDecoration(block: Block): Map<Indent, BlockView.Decoration> {
-    return entries.associate { (indent, holder) ->
+fun NestedDecorationData.toBlockViewDecoration(block: Block): List<BlockView.Decoration> {
+    return map { holder ->
         when (val style = holder.style) {
             is DecorationData.Style.Highlight -> {
                 if (style.start == style.end) {
-                    indent to BlockView.Decoration(
+                    BlockView.Decoration(
                         style = BlockView.Decoration.Style.Highlight.Start,
                         background = holder.background
                     )
                 } else if (style.end == block.id) {
-                    indent to BlockView.Decoration(
+                    BlockView.Decoration(
                         style = BlockView.Decoration.Style.Highlight.End,
                         background = holder.background
                     )
                 } else {
-                    indent to BlockView.Decoration(
+                    BlockView.Decoration(
                         style = BlockView.Decoration.Style.Highlight.Middle,
                         background = holder.background
                     )
                 }
             }
             is DecorationData.Style.Header.H1 -> {
-                indent to BlockView.Decoration(
+                BlockView.Decoration(
                     style = BlockView.Decoration.Style.Header.H1,
                     background = holder.background
                 )
             }
             is DecorationData.Style.Header.H2 -> {
-                indent to BlockView.Decoration(
+                BlockView.Decoration(
                     style = BlockView.Decoration.Style.Header.H2,
                     background = holder.background
                 )
             }
             is DecorationData.Style.Header.H3 -> {
-                indent to BlockView.Decoration(
+                BlockView.Decoration(
                     style = BlockView.Decoration.Style.Header.H3,
                     background = holder.background
                 )
             }
             is DecorationData.Style.None -> {
-                indent to BlockView.Decoration(
+                BlockView.Decoration(
                     style = BlockView.Decoration.Style.None,
                     background = holder.background
                 )
@@ -137,23 +122,26 @@ fun NestedDecorationData.toBlockViewDecoration(block: Block): Map<Indent, BlockV
     }
 }
 
-fun normalizeNestedDecorationData(block: Block, parentScheme: NestedDecorationData): NestedDecorationData {
-    return parentScheme.entries.associate { (indent, holder) ->
+fun normalizeNestedDecorationData(
+    block: Block,
+    parentScheme: NestedDecorationData
+): NestedDecorationData {
+    return parentScheme.map { holder ->
         when (val style = holder.style) {
             is DecorationData.Style.Highlight -> {
                 if (block.id == style.end) {
                     if (block.children.isEmpty()) {
-                        indent to holder
+                        holder
                     } else {
-                        indent to holder.copy(
+                        holder.copy(
                             style = style.copy(end = block.children.last())
                         )
                     }
                 } else {
-                    indent to holder
+                    holder
                 }
             }
-            else -> indent to holder
+            else -> holder
         }
     }
 }

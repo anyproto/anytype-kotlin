@@ -357,9 +357,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     parentScheme = parentScheme
                                 )
                             } else {
-                                emptyMap()
+                                emptyList()
                             }
-                            val current = indent to DecorationData(
+                            val current = DecorationData(
                                 style = DecorationData.Style.Highlight(
                                     start = block.id,
                                     end = block.children.lastOrNull() ?: block.id
@@ -375,7 +375,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     indent = indent,
                                     details = details,
                                     selection = selection,
-                                    scheme = if (NESTED_DECORATION_ENABLED) normalized else emptyMap()
+                                    scheme = if (NESTED_DECORATION_ENABLED) normalized else emptyList()
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -395,7 +395,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         parentScheme = if (NESTED_DECORATION_ENABLED)
                                             (normalized + current)
                                         else
-                                            emptyMap()
+                                            emptyList()
                                     )
                                 )
                             }
@@ -952,14 +952,14 @@ class DefaultBlockViewRenderer @Inject constructor(
             marks = marks
         )
         val current = if (NESTED_DECORATION_ENABLED) {
-            mapOf(
-                indent to BlockView.Decoration(
+            listOf(
+                BlockView.Decoration(
                     background = block.backgroundColor,
                     style = BlockView.Decoration.Style.None
                 )
             )
         } else {
-            emptyMap()
+            emptyList()
         }
         return BlockView.Text.Highlight(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,

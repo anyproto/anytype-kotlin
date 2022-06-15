@@ -56,7 +56,7 @@ class DefaultBlockViewRendererTest {
             focus: Editor.Focus,
             indent: Int,
             details: Block.Details,
-            schema: NestedDecorationData = emptyMap()
+            schema: NestedDecorationData = emptyList()
         ): List<BlockView> = blocks.render(
             root = root,
             focus = focus,
@@ -207,13 +207,13 @@ class DefaultBlockViewRendererTest {
                 alignment = Alignment.START,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Toggle(
@@ -227,13 +227,13 @@ class DefaultBlockViewRendererTest {
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = toggle.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -345,13 +345,13 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.END,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Toggle(
@@ -365,13 +365,13 @@ class DefaultBlockViewRendererTest {
                 text = toggle.content<Block.Content.Text>().text,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = toggle.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Checkbox(
@@ -383,16 +383,16 @@ class DefaultBlockViewRendererTest {
                 text = checkbox.content<Block.Content.Text>().text,
                 indent = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = toggle.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -477,13 +477,13 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = null,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -568,13 +568,13 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -670,13 +670,13 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -772,13 +772,13 @@ class DefaultBlockViewRendererTest {
                 text = paragraph.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -967,13 +967,13 @@ class DefaultBlockViewRendererTest {
                 text = a.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -986,16 +986,16 @@ class DefaultBlockViewRendererTest {
                 text = b.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -1008,19 +1008,19 @@ class DefaultBlockViewRendererTest {
                 text = c.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -1133,13 +1133,13 @@ class DefaultBlockViewRendererTest {
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Checkbox(
@@ -1151,16 +1151,16 @@ class DefaultBlockViewRendererTest {
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Checkbox(
@@ -1172,19 +1172,19 @@ class DefaultBlockViewRendererTest {
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -1297,13 +1297,13 @@ class DefaultBlockViewRendererTest {
                 color = a.content<Block.Content.Text>().color,
                 text = a.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Bulleted(
@@ -1315,16 +1315,16 @@ class DefaultBlockViewRendererTest {
                 color = b.content<Block.Content.Text>().color,
                 text = b.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Bulleted(
@@ -1336,19 +1336,19 @@ class DefaultBlockViewRendererTest {
                 color = c.content<Block.Content.Text>().color,
                 text = c.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -1664,13 +1664,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -1851,13 +1851,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -2039,13 +2039,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -2220,13 +2220,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -2379,13 +2379,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -2483,13 +2483,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -2670,13 +2670,13 @@ class DefaultBlockViewRendererTest {
                 isFocused = true,
                 alignment = Alignment.START,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -2890,13 +2890,13 @@ class DefaultBlockViewRendererTest {
                 text = a.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -2909,16 +2909,16 @@ class DefaultBlockViewRendererTest {
                 text = b.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -2931,19 +2931,19 @@ class DefaultBlockViewRendererTest {
                 text = c.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -2956,19 +2956,19 @@ class DefaultBlockViewRendererTest {
                 text = d.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -3128,13 +3128,13 @@ class DefaultBlockViewRendererTest {
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3147,13 +3147,13 @@ class DefaultBlockViewRendererTest {
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3166,16 +3166,16 @@ class DefaultBlockViewRendererTest {
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3188,16 +3188,16 @@ class DefaultBlockViewRendererTest {
                 text = b2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3210,16 +3210,16 @@ class DefaultBlockViewRendererTest {
                 text = b3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b3.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3232,13 +3232,13 @@ class DefaultBlockViewRendererTest {
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a3.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3251,13 +3251,13 @@ class DefaultBlockViewRendererTest {
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a4.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
         )
@@ -3393,13 +3393,13 @@ class DefaultBlockViewRendererTest {
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3412,13 +3412,13 @@ class DefaultBlockViewRendererTest {
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3431,16 +3431,16 @@ class DefaultBlockViewRendererTest {
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3453,13 +3453,13 @@ class DefaultBlockViewRendererTest {
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a3.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3472,13 +3472,13 @@ class DefaultBlockViewRendererTest {
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a4.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
         )
@@ -3606,13 +3606,13 @@ class DefaultBlockViewRendererTest {
                 text = block.content<TXT>().text,
                 number = idx.inc(),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = block.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         }
@@ -3745,13 +3745,13 @@ class DefaultBlockViewRendererTest {
                 text = block.content<TXT>().text,
                 number = idx.inc(),
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = block.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         }
@@ -3948,13 +3948,13 @@ class DefaultBlockViewRendererTest {
                 number = 1,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = div1num1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3963,13 +3963,13 @@ class DefaultBlockViewRendererTest {
                 number = 2,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = div1num2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3978,13 +3978,13 @@ class DefaultBlockViewRendererTest {
                 number = 3,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = div2num1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -3993,13 +3993,13 @@ class DefaultBlockViewRendererTest {
                 number = 4,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = div2num2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4008,16 +4008,16 @@ class DefaultBlockViewRendererTest {
                 number = 1,
                 indent = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = div2num2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = div2num2num1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4026,16 +4026,16 @@ class DefaultBlockViewRendererTest {
                 number = 2,
                 indent = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = div2num2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = div2num2num2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4044,13 +4044,13 @@ class DefaultBlockViewRendererTest {
                 number = 5,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = afterDiv2Num1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4059,13 +4059,13 @@ class DefaultBlockViewRendererTest {
                 number = 6,
                 indent = 0,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = afterDiv2Num2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -4249,13 +4249,13 @@ class DefaultBlockViewRendererTest {
                 text = a1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4268,13 +4268,13 @@ class DefaultBlockViewRendererTest {
                 text = a2.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4287,16 +4287,16 @@ class DefaultBlockViewRendererTest {
                 text = b1.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -4309,19 +4309,19 @@ class DefaultBlockViewRendererTest {
                 text = c1.content<Block.Content.Text>().text,
                 alignment = Alignment.CENTER,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4334,19 +4334,19 @@ class DefaultBlockViewRendererTest {
                 text = c2.content<Block.Content.Text>().text,
                 number = 1,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4359,19 +4359,19 @@ class DefaultBlockViewRendererTest {
                 text = c3.content<Block.Content.Text>().text,
                 number = 2,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c3.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4384,19 +4384,19 @@ class DefaultBlockViewRendererTest {
                 text = c4.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a2.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = b1.backgroundColor
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = c4.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4409,13 +4409,13 @@ class DefaultBlockViewRendererTest {
                 text = a3.content<Block.Content.Text>().text,
                 number = 3,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a3.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Numbered(
@@ -4428,13 +4428,13 @@ class DefaultBlockViewRendererTest {
                 text = a4.content<Block.Content.Text>().text,
                 number = 4,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = a4.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
         )
@@ -4510,13 +4510,13 @@ class DefaultBlockViewRendererTest {
                 color = quote.content<Block.Content.Text>().color,
                 text = quote.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -4528,17 +4528,17 @@ class DefaultBlockViewRendererTest {
                 color = child.content<Block.Content.Text>().color,
                 text = child.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = child.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
         )
@@ -4614,13 +4614,13 @@ class DefaultBlockViewRendererTest {
                 color = quote1.content<Block.Content.Text>().color,
                 text = quote1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Highlight(
@@ -4632,17 +4632,17 @@ class DefaultBlockViewRendererTest {
                 color = quote2.content<Block.Content.Text>().color,
                 text = quote2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -4731,13 +4731,13 @@ class DefaultBlockViewRendererTest {
                 color = quote1.content<Block.Content.Text>().color,
                 text = quote1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Highlight(
@@ -4749,17 +4749,17 @@ class DefaultBlockViewRendererTest {
                 color = quote2.content<Block.Content.Text>().color,
                 text = quote2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -4771,21 +4771,21 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote2.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
         )
@@ -4887,13 +4887,13 @@ class DefaultBlockViewRendererTest {
                 color = quote1.content<Block.Content.Text>().color,
                 text = quote1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Highlight(
@@ -4905,17 +4905,17 @@ class DefaultBlockViewRendererTest {
                 color = quote2.content<Block.Content.Text>().color,
                 text = quote2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -4927,21 +4927,21 @@ class DefaultBlockViewRendererTest {
                 color = paragraph1.content<Block.Content.Text>().color,
                 text = paragraph1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote2.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = paragraph1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -4953,21 +4953,21 @@ class DefaultBlockViewRendererTest {
                 color = paragraph2.content<Block.Content.Text>().color,
                 text = paragraph2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = quote1.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote2.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = paragraph2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )
@@ -5069,13 +5069,13 @@ class DefaultBlockViewRendererTest {
                 color = paragraph.content<Block.Content.Text>().color,
                 text = paragraph.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Highlight(
@@ -5087,16 +5087,16 @@ class DefaultBlockViewRendererTest {
                 color = quote.content<Block.Content.Text>().color,
                 text = quote.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -5108,20 +5108,20 @@ class DefaultBlockViewRendererTest {
                 color = paragraph1.content<Block.Content.Text>().color,
                 text = paragraph1.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor,
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.Middle
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = paragraph1.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             ),
             BlockView.Text.Paragraph(
@@ -5133,20 +5133,20 @@ class DefaultBlockViewRendererTest {
                 color = paragraph2.content<Block.Content.Text>().color,
                 text = paragraph2.content<Block.Content.Text>().text,
                 decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
-                    mapOf(
-                        0 to BlockView.Decoration(
+                    listOf(
+                        BlockView.Decoration(
                             background = paragraph.backgroundColor
                         ),
-                        1 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = quote.backgroundColor,
                             style = BlockView.Decoration.Style.Highlight.End
                         ),
-                        2 to BlockView.Decoration(
+                        BlockView.Decoration(
                             background = paragraph2.backgroundColor
                         )
                     )
                 } else {
-                    emptyMap()
+                    emptyList()
                 }
             )
         )

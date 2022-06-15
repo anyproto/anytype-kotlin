@@ -33,7 +33,7 @@ interface BlockViewRenderer {
         selection: Set<Id>,
         count: Int = 0,
         objectTypes: List<ObjectType>,
-        parentScheme: NestedDecorationData = emptyMap(),
+        parentScheme: NestedDecorationData = emptyList(),
         onRenderFlag: (RenderFlag) -> Unit = {},
     ): List<BlockView>
 

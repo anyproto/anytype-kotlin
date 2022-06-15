@@ -351,7 +351,7 @@
     <string name="slash_widget_style_highlighted">Highlighted</string>
     <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
     <string name="slash_widget_style_callout">Callout</string>
-    <string name="slash_widget_style_callout_subtitle">Small section heading</string>
+    <string name="slash_widget_style_callout_subtitle">Bordered text with icon</string>
     <string name="slash_widget_style_checkbox">Checkbox</string>
     <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
     <string name="slash_widget_style_bulleted">Bulleted</string>

@@ -135,14 +135,12 @@ sealed class BlockView : ViewType {
         val isLoading: Boolean
     }
 
-    // TODO rename to Decoratable
-    interface SupportDecoration {
-        val decoration: Map<Indent, Decor>
+    interface Decoratable {
+        val decorations: Map<Indent, Decoration>
     }
 
-    // TODO rename to Decoration
     // TODO maybe use ThemeColor for background
-    data class Decor(
+    data class Decoration(
         val style: Style = Style.None,
         val background: String? = null
     ) {
@@ -257,7 +255,7 @@ sealed class BlockView : ViewType {
         }
     }
 
-    sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection, SupportDecoration {
+    sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection, Decoratable {
 
         // Dynamic properties (expected to be synchronised with framework widget)
 
@@ -297,7 +295,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
             override val body: String get() = text
@@ -326,7 +324,7 @@ sealed class BlockView : ViewType {
                 override var cursor: Int? = null,
                 override val searchFields: List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: IntRange? = null,
-                override val decoration: Map<Indent, Decor> = emptyMap()
+                override val decorations: Map<Indent, Decoration> = emptyMap()
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
                 override val body: String get() = text
@@ -353,7 +351,7 @@ sealed class BlockView : ViewType {
                 override var cursor: Int? = null,
                 override val searchFields: List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: IntRange? = null,
-                override val decoration: Map<Indent, Decor> = emptyMap()
+                override val decorations: Map<Indent, Decoration> = emptyMap()
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
                 override val body: String get() = text
@@ -380,7 +378,7 @@ sealed class BlockView : ViewType {
                 override var cursor: Int? = null,
                 override val searchFields: List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: IntRange? = null,
-                override val decoration: Map<Indent, Decor> = emptyMap()
+                override val decorations: Map<Indent, Decoration> = emptyMap()
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
                 override val body: String get() = text
@@ -407,7 +405,7 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
             override val body: String get() = text
@@ -434,7 +432,7 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
             override val body: String get() = text
@@ -461,7 +459,7 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
             override val body: String get() = text
@@ -488,7 +486,7 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decoration: Map<Indent, Decor> = emptyMap(),
+            override val decorations: Map<Indent, Decoration> = emptyMap(),
             val number: Int
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
@@ -515,7 +513,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
-            override val decoration: Map<Indent, Decor> = emptyMap(),
+            override val decorations: Map<Indent, Decoration> = emptyMap(),
             override val ghostEditorSelection: IntRange? = null,
             val toggled: Boolean = false,
             val isEmpty: Boolean = false
@@ -780,7 +778,7 @@ sealed class BlockView : ViewType {
         }
     }
 
-    sealed class MediaPlaceholder : BlockView(), Indentable, Selectable, Permission, SupportDecoration {
+    sealed class MediaPlaceholder : BlockView(), Indentable, Selectable, Permission, Decoratable {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -800,7 +798,7 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val backgroundColor: String? = null,
             override val isPreviousBlockMedia: Boolean,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_FILE_PLACEHOLDER
         }
@@ -816,7 +814,7 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val backgroundColor: String? = null,
             override val isPreviousBlockMedia: Boolean,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_VIDEO_PLACEHOLDER
         }
@@ -831,7 +829,7 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val backgroundColor: String? = null,
             override val isPreviousBlockMedia: Boolean,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_BOOKMARK_PLACEHOLDER
         }
@@ -846,7 +844,7 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val backgroundColor: String? = null,
             override val isPreviousBlockMedia: Boolean,
-            override val decoration: Map<Indent, Decor> = emptyMap()
+            override val decorations: Map<Indent, Decoration> = emptyMap()
         ) : MediaPlaceholder() {
             override fun getViewType() = HOLDER_PICTURE_PLACEHOLDER
         }

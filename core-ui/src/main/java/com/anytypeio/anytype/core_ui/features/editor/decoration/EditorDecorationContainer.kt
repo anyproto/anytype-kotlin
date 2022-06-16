@@ -71,49 +71,46 @@ class EditorDecorationContainer @JvmOverloads constructor(
 
             // Drawing background
 
-            if (decor.background != null) {
-                val bg = ThemeColor.values().find { it.code == decor.background }
-                if (bg != null && bg != ThemeColor.DEFAULT) {
-                    val lp = LayoutParams(
-                        LayoutParams.MATCH_PARENT,
-                        LayoutParams.MATCH_PARENT
-                    ).apply {
+            if (decor.background != ThemeColor.DEFAULT) {
+                val lp = LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT
+                ).apply {
 
-                        marginStart = previousOffset
+                    marginStart = previousOffset
 
-                        // Offsets for extra space related to certain styles.
+                    // Offsets for extra space related to certain styles.
 
-                        if (indent == decorations.lastIndex) {
-                            when (decor.style) {
-                                BlockView.Decoration.Style.Header.H1 -> {
-                                    topMargin = defaultHeaderOneExtraSpaceTop
-                                    bottomOffset += defaultHeaderOneExtraSpaceBottom
-                                }
-                                BlockView.Decoration.Style.Header.H2 -> {
-                                    topMargin = defaultHeaderTwoExtraSpaceTop
-                                    bottomOffset += defaultHeaderTwoExtraSpaceBottom
-                                }
-                                BlockView.Decoration.Style.Header.H3 -> {
-                                    topMargin = defaultHeaderThreeExtraSpaceTop
-                                    bottomOffset += defaultHeaderThreeExtraSpaceBottom
-                                }
-                                else -> {
-                                    // Do nothing
-                                }
+                    if (indent == decorations.lastIndex) {
+                        when (decor.style) {
+                            BlockView.Decoration.Style.Header.H1 -> {
+                                topMargin = defaultHeaderOneExtraSpaceTop
+                                bottomOffset += defaultHeaderOneExtraSpaceBottom
+                            }
+                            BlockView.Decoration.Style.Header.H2 -> {
+                                topMargin = defaultHeaderTwoExtraSpaceTop
+                                bottomOffset += defaultHeaderTwoExtraSpaceBottom
+                            }
+                            BlockView.Decoration.Style.Header.H3 -> {
+                                topMargin = defaultHeaderThreeExtraSpaceTop
+                                bottomOffset += defaultHeaderThreeExtraSpaceBottom
+                            }
+                            else -> {
+                                // Do nothing
                             }
                         }
-
-                        bottomMargin = bottomOffset
                     }
 
-                    addView(
-                        DecorationWidget.Background(
-                            context = context,
-                            background = resources.veryLight(bg, 0)
-                        ),
-                        lp
-                    )
+                    bottomMargin = bottomOffset
                 }
+
+                addView(
+                    DecorationWidget.Background(
+                        context = context,
+                        background = resources.veryLight(decor.background, 0)
+                    ),
+                    lp
+                )
             }
 
             // Drawing highlight line inside box

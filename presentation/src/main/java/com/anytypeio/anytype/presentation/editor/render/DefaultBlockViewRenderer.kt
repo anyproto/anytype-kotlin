@@ -103,8 +103,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
-                                currentIndent = indent
+                                parentScheme = parentScheme
                             )
                             result.add(
                                 paragraph(
@@ -148,8 +147,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
-                                currentIndent = indent
+                                parentScheme = parentScheme
                             )
 
                             result.add(
@@ -188,8 +186,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
-                                currentIndent = indent
+                                parentScheme = parentScheme
                             )
                             result.add(
                                 toggle(
@@ -228,10 +225,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
                                 parentScheme = parentScheme,
-                                currentIndent = indent,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Header.H1,
-                                    background = block.backgroundColor
+                                    background = block.parseThemeBackgroundColor()
                                 )
                             )
                             result.add(
@@ -270,10 +266,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
                                 parentScheme = parentScheme,
-                                currentIndent = indent,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Header.H2,
-                                    background = block.backgroundColor
+                                    background = block.parseThemeBackgroundColor()
                                 )
                             )
                             result.add(
@@ -312,10 +307,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
                                 parentScheme = parentScheme,
-                                currentIndent = indent,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Header.H3,
-                                    background = block.backgroundColor
+                                    background = block.parseThemeBackgroundColor()
                                 )
                             )
                             result.add(
@@ -364,7 +358,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     start = block.id,
                                     end = block.children.lastOrNull() ?: block.id
                                 ),
-                                background = block.backgroundColor
+                                background = block.parseThemeBackgroundColor()
                             )
                             result.add(
                                 highlight(
@@ -404,8 +398,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
-                                currentIndent = indent
+                                parentScheme = parentScheme
                             )
                             result.add(
                                 bulleted(
@@ -458,8 +451,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
-                                currentIndent = indent
+                                parentScheme = parentScheme
                             )
                             result.add(
                                 checkbox(
@@ -954,7 +946,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val current = if (NESTED_DECORATION_ENABLED) {
             listOf(
                 BlockView.Decoration(
-                    background = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     style = BlockView.Decoration.Style.None
                 )
             )

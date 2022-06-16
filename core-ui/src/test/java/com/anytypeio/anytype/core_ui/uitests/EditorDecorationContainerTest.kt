@@ -58,7 +58,7 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = blue.code
+                    background = blue
                 )
             )
         )
@@ -98,7 +98,7 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg.code
+                    background = bg
                 )
             )
         )
@@ -140,10 +140,10 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code
+                    background = bg1
                 ),
                 BlockView.Decoration(
-                    background = bg2.code
+                    background = bg2
                 )
             )
         )
@@ -201,7 +201,7 @@ class EditorDecorationContainerTest {
                     style = BlockView.Decoration.Style.Highlight.End,
                 ),
                 BlockView.Decoration(
-                    background = bg2.code
+                    background = bg2
                 )
             )
         )
@@ -261,10 +261,10 @@ class EditorDecorationContainerTest {
             decorations = listOf(
                 BlockView.Decoration(
                     style = BlockView.Decoration.Style.Highlight.End,
-                    background = bg1.code
+                    background = bg1
                 ),
                 BlockView.Decoration(
-                    background = bg2.code
+                    background = bg2
                 )
             )
         )
@@ -323,7 +323,7 @@ class EditorDecorationContainerTest {
             decorations = listOf(
                 BlockView.Decoration(
                     style = BlockView.Decoration.Style.Highlight.End,
-                    background = bg1.code
+                    background = bg1
                 ),
                 BlockView.Decoration()
             )
@@ -385,14 +385,14 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.Highlight.End
                 ),
                 BlockView.Decoration(
-                    background = bg2.code
+                    background = bg2
                 ),
                 BlockView.Decoration(
-                    background = bg3.code
+                    background = bg3
                 )
             )
         )
@@ -472,15 +472,15 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.Highlight.End
                 ),
                 BlockView.Decoration(
-                    background = bg2.code,
+                    background = bg2,
                     style = BlockView.Decoration.Style.Highlight.End
                 ),
                 BlockView.Decoration(
-                    background = bg3.code
+                    background = bg3
                 )
             )
         )
@@ -572,18 +572,18 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.Highlight.End
                 ),
                 BlockView.Decoration(
-                    background = bg2.code
+                    background = bg2
                 ),
                 BlockView.Decoration(
-                    background = bg3.code,
+                    background = bg3,
                     style = BlockView.Decoration.Style.Highlight.End
                 ),
                 BlockView.Decoration(
-                    background = bg4.code
+                    background = bg4
                 )
             )
         )
@@ -688,12 +688,12 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.Highlight.End
                 ),
                 BlockView.Decoration(),
                 BlockView.Decoration(
-                    background = bg2.code
+                    background = bg2
                 )
             )
         )
@@ -759,11 +759,11 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.None
                 ),
                 BlockView.Decoration(
-                    background = bg2.code,
+                    background = bg2,
                     style = BlockView.Decoration.Style.Header.H2
                 ),
             )
@@ -846,11 +846,11 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.None
                 ),
                 BlockView.Decoration(
-                    background = bg2.code,
+                    background = bg2,
                     style = BlockView.Decoration.Style.Header.H3
                 ),
             )
@@ -933,11 +933,11 @@ class EditorDecorationContainerTest {
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
-                    background = bg1.code,
+                    background = bg1,
                     style = BlockView.Decoration.Style.None
                 ),
                 BlockView.Decoration(
-                    background = bg2.code,
+                    background = bg2,
                     style = BlockView.Decoration.Style.Header.H1
                 ),
             )

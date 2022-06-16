@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.render
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 
@@ -15,8 +16,8 @@ typealias NestedDecorationData = List<DecorationData>
  * Used for gathering information about parents (ancestors) styles while document graph traversal.
  */
 data class DecorationData(
-    val style: Style,
-    val background: String? = null
+    val style: Style = Style.None,
+    val background: ThemeColor = ThemeColor.DEFAULT
 ) {
     sealed class Style {
         object None : Style()
@@ -43,10 +44,9 @@ data class DecorationData(
 fun buildNestedDecorationData(
     parentScheme: NestedDecorationData,
     block: Block,
-    currentIndent: Int,
     currentDecoration: DecorationData = DecorationData(
         style = DecorationData.Style.None,
-        background = block.backgroundColor
+        background = block.parseThemeBackgroundColor()
     )
 ): NestedDecorationData = if (BuildConfig.NESTED_DECORATION_ENABLED) buildList {
     // Normalizing parent scheme
@@ -144,4 +144,8 @@ fun normalizeNestedDecorationData(
             else -> holder
         }
     }
+}
+
+fun Block.parseThemeBackgroundColor() : ThemeColor {
+    return backgroundColor?.let { ThemeColor.fromCode(it) } ?: ThemeColor.DEFAULT
 }

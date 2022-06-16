@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ui.ViewType
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_ARCHIVE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
@@ -139,10 +140,9 @@ sealed class BlockView : ViewType {
         val decorations: List<Decoration>
     }
 
-    // TODO maybe use ThemeColor for background
     data class Decoration(
         val style: Style = Style.None,
-        val background: String? = null
+        val background: ThemeColor = ThemeColor.DEFAULT
     ) {
         sealed class Style {
             object None : Style()

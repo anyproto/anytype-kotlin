@@ -12,6 +12,7 @@ android {
         targetSdkVersion config["target_sdk"]
         testInstrumentationRunner config["test_runner"]
         buildConfigField "boolean", "NESTED_DECORATION_ENABLED", "false"
+        buildConfigField "boolean", "ENABLE_LINK_APPERANCE_MENU", "false"
     }
 
     testOptions.unitTests.includeAndroidResources = true

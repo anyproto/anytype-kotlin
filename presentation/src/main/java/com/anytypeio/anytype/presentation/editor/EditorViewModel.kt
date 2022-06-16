@@ -356,7 +356,7 @@ class EditorViewModel(
 
         viewModelScope.launch {
             templateDelegateState.collect { state ->
-                Timber.d("Template delegate state: $state")
+                Timber.v("Template delegate state: $state")
                 when (state) {
                     is SelectTemplateState.Accepted -> {
                         commands.postValue(EventWrapper(Command.CloseKeyboard))
@@ -370,6 +370,8 @@ class EditorViewModel(
                             )
                         )
                     }
+                    is SelectTemplateState.Available -> {}
+                    SelectTemplateState.Idle -> {}
                 }
             }
         }
@@ -1655,10 +1657,12 @@ class EditorViewModel(
                     }
                     is Content.Link -> {
                         excludedActions.add(ActionItemType.Download)
-                        if (!isMultiMode) {
-                            var copyIndex = targetActions.indexOf(ActionItemType.Style)
-                            if (copyIndex == NO_POSITION) copyIndex = PREVIEW_POSITION
-                            targetActions.addIfNotExists(ActionItemType.Preview, copyIndex)
+                        if (BuildConfig.ENABLE_LINK_APPERANCE_MENU) {
+                            if (!isMultiMode) {
+                                var copyIndex = targetActions.indexOf(ActionItemType.Style)
+                                if (copyIndex == NO_POSITION) copyIndex = PREVIEW_POSITION
+                                targetActions.addIfNotExists(ActionItemType.Preview, copyIndex)
+                            }
                         }
                     }
                     is Content.Page -> {
@@ -1693,7 +1697,7 @@ class EditorViewModel(
         item: ActionItemType,
         position: Int = NO_POSITION
     ) {
-        if (indexOf(item) != NO_POSITION) {
+        if (contains(item)) {
             return
         }
 

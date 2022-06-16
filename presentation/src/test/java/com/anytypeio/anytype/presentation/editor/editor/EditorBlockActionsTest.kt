@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -10,6 +11,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertContains
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -31,35 +33,39 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
     @Test
     fun `preview action should be in actions before style - when link block`() {
+        if (BuildConfig.ENABLE_LINK_APPERANCE_MENU) {
+            val link = MockBlockFactory.link()
 
-        val link = MockBlockFactory.link()
-
-        val smart = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(header.id, link.id)
-        )
-
-        val document = listOf(smart, header, link)
-
-        stubDefaultMethods(document)
-
-        val vm = buildViewModel()
-
-        vm.onStart(root)
-
-
-        // Simulating long tap on link block, in order to enter multi-select mode.
-        vm.onClickListener(
-            ListenerType.LongClick(
-                target = link.id,
-                dimensions = BlockDimensions()
+            val smart = Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart(),
+                children = listOf(header.id, link.id)
             )
-        )
 
-        assertTrue {
-            vm.actions.value.indexOf(ActionItemType.Preview) == vm.actions.value.indexOf(ActionItemType.Style) - 1
+            val document = listOf(smart, header, link)
+
+            stubDefaultMethods(document)
+
+            val vm = buildViewModel()
+
+            vm.onStart(root)
+
+
+            // Simulating long tap on link block, in order to enter multi-select mode.
+            vm.onClickListener(
+                ListenerType.LongClick(
+                    target = link.id,
+                    dimensions = BlockDimensions()
+                )
+            )
+            assertContains(vm.actions.value, ActionItemType.Preview)
+            assertContains(vm.actions.value, ActionItemType.Style)
+            assertTrue {
+                vm.actions.value.indexOf(ActionItemType.Preview) == vm.actions.value.indexOf(
+                    ActionItemType.Style
+                ) - 1
+            }
         }
     }
 

@@ -124,7 +124,6 @@ class SplashViewModel(
     }
 
     private fun retryLaunchingWallet() {
-        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             launchWallet(BaseUseCase.None).process(
                 failure = { e ->

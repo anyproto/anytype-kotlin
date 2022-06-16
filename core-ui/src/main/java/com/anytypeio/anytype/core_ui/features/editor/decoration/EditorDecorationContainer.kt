@@ -46,13 +46,13 @@ class EditorDecorationContainer @JvmOverloads constructor(
 
     fun decorate(
         decorations: List<BlockView.Decoration>,
-        content: View? = null
+        onApplyContentOffset: (OffsetLeft, OffsetBottom) -> Unit = { _, _ -> }
     ) {
         if (childCount > 0) removeAllViews()
-        var bottomOffset = 0
-        var topOffset = 0
+        var bottomOffset : OffsetBottom = 0
+        var topOffset : OffsetTop = 0
         var isPreviousHighlight = false
-        var previousOffset = 0
+        var previousOffset : OffsetLeft = 0
 
         decorations.forEachIndexed { indent, decor ->
 
@@ -144,13 +144,8 @@ class EditorDecorationContainer @JvmOverloads constructor(
                 isPreviousHighlight = false
             }
 
-            // Optional offset for content
-            // TODO this code will be removed
-            // Instead of applying margin here, return offset. ViewGroup, containing content, should handle this offset.
             if (indent == decorations.lastIndex) {
-                content?.updateLayoutParams<LayoutParams> {
-                    bottomMargin = bottomOffset
-                }
+                onApplyContentOffset(previousOffset, bottomOffset)
             }
         }
     }

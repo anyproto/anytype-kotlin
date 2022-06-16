@@ -27,12 +27,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="@dimen/highlight_line_width"
-            android:layout_height="match_parent"
-            android:layout_marginStart="11dp"
-            android:background="@color/block_higlight_divider" />
+        <FrameLayout
+            android:layout_marginTop="@dimen/default_highlight_content_margin_top"
+            android:layout_width="24dp"
+            android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/block_higlight_divider" />
+
+        </FrameLayout>
 
         <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
             android:id="@+id/highlightContent"

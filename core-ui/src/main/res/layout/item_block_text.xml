@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/DefaultDocumentContainerStyle">
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         tools:background="@drawable/item_block_multi_select_selected"

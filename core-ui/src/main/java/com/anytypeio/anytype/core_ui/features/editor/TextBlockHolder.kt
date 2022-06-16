@@ -8,6 +8,7 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
 import com.anytypeio.anytype.core_ui.common.GhostEditorSelectionSpan
@@ -20,6 +21,8 @@ import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.resolveThemedTextColor
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
@@ -112,8 +115,15 @@ interface TextBlockHolder : TextHolder {
         }
     }
 
+    /**
+     * If nested decoration is enabled, [DecoratableViewHolder] should draw background for this block.
+     * @see [DecoratableViewHolder]
+     * @see [EditorDecorationContainer]
+     */
     fun setBackgroundColor(color: String? = null) {
-        root.setBlockBackgroundColor(color)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.setBlockBackgroundColor(color)
+        }
     }
 
     fun setMarkup(markup: Markup, clicked: (ListenerType) -> Unit, textColor: Int) {

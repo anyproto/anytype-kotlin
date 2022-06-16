@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
@@ -152,6 +154,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import timber.log.Timber
 import java.util.*
 
@@ -231,13 +234,7 @@ class BlockAdapter(
 
         val holder = when (viewType) {
             HOLDER_PARAGRAPH -> {
-                Paragraph(
-                    view = inflater.inflate(
-                        R.layout.item_block_text,
-                        parent,
-                        false
-                    )
-                )
+                Paragraph(ItemBlockTextBinding.inflate(inflater, parent, false))
             }
             HOLDER_TITLE -> {
                 Title.Document(
@@ -1091,6 +1088,7 @@ class BlockAdapter(
                     }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
                 }
+                checkIfDecorationChanged(holder, payloads.typeOf(), position)
             }
         }
 
@@ -1528,6 +1526,12 @@ class BlockAdapter(
 
             holder.content.clipboardInterceptor = clipboardInterceptor
         }
+
+        if (holder is DecoratableViewHolder) {
+            val block = blocks[position]
+            check(block is BlockView.Decoratable)
+            holder.applyDecorations(decorations = block.decorations)
+        }
     }
 
     // Bug workaround for losing text selection ability, see:
@@ -1547,5 +1551,17 @@ class BlockAdapter(
         val result = DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
         blocks = items
         result.dispatchUpdatesTo(this)
+    }
+
+    private fun checkIfDecorationChanged(
+        holder: BlockViewHolder,
+        payloads: List<Payload>,
+        position: Int
+    ) {
+        if (holder is DecoratableViewHolder && payloads.any { p -> p.isDecorationChanged }) {
+            val block = blocks[position]
+            check(block is BlockView.Decoratable)
+            holder.onDecorationsChanged(decorations = block.decorations)
+        }
     }
 }

@@ -3,7 +3,7 @@
 
     <style name="DefaultDocumentContainerStyle">
         <item name="android:layout_marginTop">@dimen/default_document_item_margin_top</item>
-        <item name="android:layout_marginBottom">@dimen/default_document_title_margin_bottom</item>
+        <item name="android:layout_marginBottom">@dimen/default_document_item_margin_bottom</item>
         <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
     </style>
@@ -213,7 +213,7 @@
         <item name="android:background">@null</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:lineSpacingExtra">3sp</item>
-        <item name="android:layout_marginStart">15dp</item>
+        <item name="android:layout_marginStart">@dimen/default_graphic_container_right_offset</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>

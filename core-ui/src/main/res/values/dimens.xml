@@ -110,7 +110,7 @@
     <dimen name="default_document_content_padding_start">12dp</dimen>
     <dimen name="default_document_content_padding_end">12dp</dimen>
     <dimen name="default_document_item_margin_top">1dp</dimen>
-    <dimen name="default_document_title_margin_bottom">1dp</dimen>
+    <dimen name="default_document_item_margin_bottom">1dp</dimen>
     <dimen name="bookmark_default_margin_start">@dimen/dp_8</dimen>
     <dimen name="video_default_margin_start">@dimen/dp_8</dimen>
     <dimen name="picture_default_margin_start">@dimen/dp_8</dimen>

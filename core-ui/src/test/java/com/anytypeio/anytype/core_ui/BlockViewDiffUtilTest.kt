@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.core_ui
 
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.DECORATION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.MARKUP_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -1508,6 +1511,74 @@ class BlockViewDiffUtilTest {
         assertEquals(
             actual = payload,
             expected = Payload(listOf(TEXT_CHANGED))
+        )
+    }
+
+    @Test
+    fun `should detect decoration change for paragraph`() {
+        val index = 0
+
+        val oldBlock = StubParagraphView(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = ThemeColor.DEFAULT
+                )
+            )
+        )
+
+        val newBlock = oldBlock.copy(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = ThemeColor.YELLOW
+                )
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = Payload(listOf(DECORATION_CHANGED))
+        )
+    }
+
+    @Test
+    fun `should not detect decoration change for paragraph`() {
+        val index = 0
+
+        val oldBlock = StubParagraphView(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = ThemeColor.DEFAULT
+                )
+            )
+        )
+
+        val newBlock = oldBlock.copy(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = ThemeColor.DEFAULT
+                )
+            )
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = null
         )
     }
 }

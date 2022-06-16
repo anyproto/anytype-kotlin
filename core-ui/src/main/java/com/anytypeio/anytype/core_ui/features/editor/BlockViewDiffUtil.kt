@@ -223,6 +223,12 @@ class BlockViewDiffUtil(
             }
         }
 
+        if (newBlock is BlockView.Decoratable && oldBlock is BlockView.Decoratable) {
+            if (newBlock.decorations != oldBlock.decorations) {
+                changes.add(DECORATION_CHANGED)
+            }
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -265,6 +271,8 @@ class BlockViewDiffUtil(
         val isToggleStateChanged: Boolean get() = changes.contains(TOGGLE_STATE_CHANGED)
         val isToggleEmptyStateChanged: Boolean get() = changes.contains(TOGGLE_EMPTY_STATE_CHANGED)
 
+        val isDecorationChanged: Boolean get() = changes.contains(DECORATION_CHANGED)
+
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
@@ -303,5 +311,7 @@ class BlockViewDiffUtil(
         const val OBJECT_ICON_CHANGED = 20
         const val OBJECT_COVER_CHANGED = 24
         const val OBJECT_DESCRIPTION_CHANGED = 25
+
+        const val DECORATION_CHANGED = 27
     }
 }

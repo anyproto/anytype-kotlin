@@ -16,6 +16,9 @@ enum class UiBlock {
     HIGHLIGHTED {
         override fun category() = Category.TEXT
     },
+    CALLOUT {
+        override fun category() = Category.TEXT
+    },
     CHECKBOX {
         override fun category() = Category.LIST
     },

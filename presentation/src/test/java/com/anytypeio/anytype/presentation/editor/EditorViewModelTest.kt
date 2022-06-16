@@ -4020,7 +4020,6 @@ open class EditorViewModelTest {
                 downloadFile = downloadFile,
                 undo = undo,
                 redo = redo,
-                updateTitle = updateTitle,
                 updateText = updateText,
                 updateCheckbox = updateCheckbox,
                 updateTextStyle = updateTextStyle,

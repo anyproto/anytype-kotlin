@@ -11,8 +11,6 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -21,10 +19,8 @@ import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyZeroInteractions
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -61,63 +57,10 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke error toast when clicked on Slash Item Callout`() {
-        val block = MockTypicalDocumentFactory.a
-        val page = MockTypicalDocumentFactory.page("root")
-
-        stubInterceptEvents()
-        stubUpdateText()
-        stubGetObjectTypes(objectTypes = listOf())
-        stubOpenDocument(document = page)
-        val vm = buildViewModel()
-
-        vm.onStart(root)
-
-        val toasts = mutableListOf<String>()
-
-        runBlockingTest {
-
-            val subscription = launch { vm.toasts.collect { toasts.add(it) } }
-
-            vm.apply {
-
-                onSelectionChanged(
-                    id = block.id,
-                    selection = IntRange(3, 3)
-                )
-                onBlockFocusChanged(
-                    id = block.id,
-                    hasFocus = true
-                )
-                onSlashTextWatcherEvent(
-                    event = SlashEvent.Start(
-                        cursorCoordinate = 820,
-                        slashStart = 3
-                    )
-                )
-                onSlashTextWatcherEvent(
-                    event = SlashEvent.Filter(
-                        filter = "/",
-                        viewType = 0
-                    )
-                )
-            }
-
-            //TESTING
-
-            vm.onSlashItemClicked(
-                item = SlashItem.Style.Type.Callout
-            )
-
-            verifyZeroInteractions(updateText)
-
-            assertEquals(
-                expected = 1,
-                actual = toasts.size
-            )
-
-            subscription.cancel()
-        }
+    fun `should invoke updateText useCase when clicked on Slash Item Callout`() {
+        `should invoke updateText useCase when clicked on Slash Item Style`(
+            slashItem = SlashItem.Style.Type.Callout
+        )
     }
 
     @Test

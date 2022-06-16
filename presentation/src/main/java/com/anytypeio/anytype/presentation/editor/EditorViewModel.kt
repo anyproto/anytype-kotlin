@@ -2520,7 +2520,8 @@ class EditorViewModel(
             UiBlock.HEADER_TWO, UiBlock.HEADER_THREE,
             UiBlock.HIGHLIGHTED, UiBlock.CHECKBOX,
             UiBlock.BULLETED, UiBlock.NUMBERED,
-            UiBlock.TOGGLE, UiBlock.CODE -> {
+            UiBlock.TOGGLE, UiBlock.CODE,
+            UiBlock.CALLOUT -> {
                 action?.invoke()
                 proceedWithTurnIntoStyle(targets, uiBlock.style())
             }
@@ -2536,12 +2537,12 @@ class EditorViewModel(
                 action?.invoke()
                 proceedUpdateDividerStyle(targets, Content.Divider.Style.DOTS)
             }
-            UiBlock.LINK_TO_OBJECT -> errorAction?.invoke()
-            UiBlock.FILE -> errorAction?.invoke()
-            UiBlock.IMAGE -> errorAction?.invoke()
-            UiBlock.VIDEO -> errorAction?.invoke()
-            UiBlock.BOOKMARK -> errorAction?.invoke()
-            else -> Timber.e("Unexpected style update")
+            UiBlock.LINK_TO_OBJECT,
+            UiBlock.FILE,
+            UiBlock.IMAGE,
+            UiBlock.VIDEO,
+            UiBlock.BOOKMARK,
+            UiBlock.RELATION -> errorAction?.invoke()
         }
     }
 
@@ -4011,7 +4012,7 @@ class EditorViewModel(
     }
 
     fun onSlashItemClicked(item: SlashItem) {
-        Timber.d("onSlashItemClicked, item:[$item]")
+        Timber.v("onSlashItemClicked, item:[$item]")
         val target = orchestrator.stores.focus.current()
         if (!target.isEmpty) {
             proceedWithSlashItem(item, target.id)
@@ -4489,18 +4490,11 @@ class EditorViewModel(
     }
 
     private fun onSlashStyleTypeItemClicked(item: SlashItem.Style.Type, targetId: Id) {
-        when (item) {
-            is SlashItem.Style.Type.Callout -> {
-                sendToast("Callout not implemented")
-            }
-            else -> {
-                val uiBlock = item.convertToUiBlock()
-                onTurnIntoBlockClicked(
-                    target = targetId,
-                    uiBlock = uiBlock
-                )
-            }
-        }
+        val uiBlock = item.convertToUiBlock()
+        onTurnIntoBlockClicked(
+            target = targetId,
+            uiBlock = uiBlock
+        )
     }
 
     private fun onSlashActionItemClicked(item: SlashItem.Actions, targetId: Id) {

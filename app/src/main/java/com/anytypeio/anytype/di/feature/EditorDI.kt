@@ -302,7 +302,6 @@ object EditorSessionModule {
         turnInto: TurnIntoStyle,
         updateCheckbox: UpdateCheckbox,
         downloadFile: DownloadFile,
-        updateTitle: UpdateTitle,
         updateText: UpdateText,
         uploadBlock: UploadBlock,
         updateFields: UpdateFields,
@@ -339,7 +338,6 @@ object EditorSessionModule {
         updateDivider = updateDivider,
         memory = memory,
         downloadFile = downloadFile,
-        updateTitle = updateTitle,
         turnIntoDocument = turnIntoDocument,
         textInteractor = Interactor.TextInteractor(
             proxies = proxer,

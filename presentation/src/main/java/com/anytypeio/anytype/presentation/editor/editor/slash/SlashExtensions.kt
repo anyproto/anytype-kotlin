@@ -18,7 +18,7 @@ fun List<ObjectType>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType
 
 fun SlashItem.Style.Type.convertToUiBlock() = when (this) {
     SlashItem.Style.Type.Bulleted -> UiBlock.BULLETED
-    SlashItem.Style.Type.Callout -> TODO()
+    SlashItem.Style.Type.Callout -> UiBlock.CALLOUT
     SlashItem.Style.Type.Checkbox -> UiBlock.CHECKBOX
     SlashItem.Style.Type.Heading -> UiBlock.HEADER_TWO
     SlashItem.Style.Type.Highlighted -> UiBlock.HIGHLIGHTED

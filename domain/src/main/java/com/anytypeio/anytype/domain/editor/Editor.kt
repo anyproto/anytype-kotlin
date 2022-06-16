@@ -11,7 +11,7 @@ interface Editor {
      * @property isPending focus is pending if we do not know whether the target widget has gained focus.
      */
     data class Focus(
-        val id: String,
+        val id: Id,
         val cursor: Cursor?,
         val isPending: Boolean = true
     ) : Editor {
@@ -36,7 +36,7 @@ interface Editor {
     data class TextSelection(
         val id: String,
         val selection: IntRange?
-    ): Editor {
+    ) : Editor {
         val isNotEmpty: Boolean get() = id != EMPTY_FOCUS
 
         companion object {

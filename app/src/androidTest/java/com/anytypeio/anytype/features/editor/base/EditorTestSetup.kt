@@ -66,7 +66,6 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -114,7 +113,6 @@ open class EditorTestSetup {
     lateinit var redo: Redo
     lateinit var copy: Copy
     lateinit var paste: Paste
-    lateinit var updateTitle: UpdateTitle
     lateinit var updateAlignment: UpdateAlignment
     lateinit var replaceBlock: ReplaceBlock
     lateinit var setupBookmark: SetupBookmark
@@ -259,7 +257,6 @@ open class EditorTestSetup {
         replaceBlock = ReplaceBlock(repo)
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
-        updateTitle = UpdateTitle(repo)
         uploadBlock = UploadBlock(repo)
         createObject = CreateObject(repo, documentEmojiIconProvider)
         setRelationKey = SetRelationKey(repo)
@@ -344,7 +341,6 @@ open class EditorTestSetup {
                 updateAlignment = updateAlignment,
                 downloadFile = downloadFile,
                 mergeBlocks = mergeBlocks,
-                updateTitle = updateTitle,
                 updateTextColor = updateTextColor,
                 replaceBlock = replaceBlock,
                 setupBookmark = setupBookmark,

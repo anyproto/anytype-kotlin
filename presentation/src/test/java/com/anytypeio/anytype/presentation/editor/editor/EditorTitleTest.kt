@@ -25,7 +25,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyZeroInteractions
 import kotlin.test.assertEquals
 
 class EditorTitleTest : EditorPresentationTestSetup() {
@@ -219,12 +222,9 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         vm.onTitleBlockTextChanged(title.id, update)
 
-        verifyZeroInteractions(updateTitle)
         verifyZeroInteractions(updateText)
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
-
-        verifyZeroInteractions(updateTitle)
 
         verifyBlocking(updateText) {
             invoke(

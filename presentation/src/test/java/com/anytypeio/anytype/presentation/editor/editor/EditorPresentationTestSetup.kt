@@ -57,7 +57,6 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -197,9 +196,6 @@ open class EditorPresentationTestSetup {
     lateinit var replaceBlock: ReplaceBlock
 
     @Mock
-    lateinit var updateTitle: UpdateTitle
-
-    @Mock
     lateinit var move: Move
 
     @Mock
@@ -281,7 +277,6 @@ open class EditorPresentationTestSetup {
             downloadFile = downloadFile,
             undo = undo,
             redo = redo,
-            updateTitle = updateTitle,
             updateText = updateText,
             updateCheckbox = updateCheckbox,
             updateTextStyle = updateTextStyle,

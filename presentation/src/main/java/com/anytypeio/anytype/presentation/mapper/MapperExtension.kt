@@ -416,7 +416,16 @@ fun UiBlock.style(): Block.Content.Text.Style = when (this) {
     UiBlock.NUMBERED -> Block.Content.Text.Style.NUMBERED
     UiBlock.TOGGLE -> Block.Content.Text.Style.TOGGLE
     UiBlock.CODE -> Block.Content.Text.Style.CODE_SNIPPET
-    else -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.CALLOUT -> Block.Content.Text.Style.CALLOUT
+    UiBlock.PAGE -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.LINK_TO_OBJECT -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.FILE -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.IMAGE -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.VIDEO -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.BOOKMARK -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.LINE_DIVIDER -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.THREE_DOTS -> throw IllegalStateException("Could not extract style from block: $this")
+    UiBlock.RELATION -> throw IllegalStateException("Could not extract style from block: $this")
 }
 
 fun DebugSettings.toView(): EditorSettings =

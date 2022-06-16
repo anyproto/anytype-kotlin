@@ -31,7 +31,6 @@ import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -62,7 +61,6 @@ class Orchestrator(
     private val updateTextStyle: UpdateTextStyle,
     private val turnIntoStyle: TurnIntoStyle,
     private val updateCheckbox: UpdateCheckbox,
-    private val updateTitle: UpdateTitle,
     private val downloadFile: DownloadFile,
     val updateText: UpdateText,
     private val updateAlignment: UpdateAlignment,

@@ -27,7 +27,7 @@ class Paragraph(
 
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent
-    override val decoratableContainer : EditorDecorationContainer = binding.decoratableContainer
+    override val decoratableContainer : EditorDecorationContainer = binding.decorationContainer
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int

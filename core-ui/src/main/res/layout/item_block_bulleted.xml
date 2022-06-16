@@ -13,6 +13,7 @@
         android:id="@+id/bulletBlockContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:addStatesFromChildren="true"
         android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
         android:paddingEnd="@dimen/default_document_content_padding_end"

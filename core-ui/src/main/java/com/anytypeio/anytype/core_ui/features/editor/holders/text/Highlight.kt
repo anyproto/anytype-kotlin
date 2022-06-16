@@ -8,6 +8,7 @@ import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -19,7 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Highlight(
     val binding: ItemBlockHighlightBinding
-) : Text(binding.root), BlockViewHolder.IndentableHolder {
+) : Text(binding.root), BlockViewHolder.IndentableHolder, SupportNesting {
 
     override val content: TextInputWidget = binding.highlightContent
     override val root: View = itemView

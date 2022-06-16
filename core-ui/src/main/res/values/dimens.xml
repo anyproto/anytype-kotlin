@@ -105,8 +105,6 @@
     <dimen name="default_dashboard_item_spacing">20dp</dimen>
     <dimen name="cover_gallery_item_spacing">8dp</dimen>
 
-    <dimen name="indent">28dp</dimen>
-
     <dimen name="default_block_type_width">24dp</dimen>
     <dimen name="block_style_toolbar_circle_size">52dp</dimen>
     <dimen name="default_document_content_padding_start">12dp</dimen>
@@ -253,5 +251,24 @@
     <dimen name="drag_shadow_padding_width_other">10dp</dimen>
     <dimen name="drag_shadow_max_size">150dp</dimen>
 
+    <!-- Editor, block: headers -->
+    <dimen name="default_header_one_extra_space_top">16dp</dimen>
+    <dimen name="default_header_one_extra_space_bottom">2dp</dimen>
+    <dimen name="default_header_two_extra_space_top">16dp</dimen>
+    <dimen name="default_header_two_extra_space_bottom">2dp</dimen>
+    <dimen name="default_header_three_extra_space_top">16dp</dimen>
+    <dimen name="default_header_three_extra_space_bottom">2dp</dimen>
+
+    <!-- Editor, block: highlight -->
+
+    <dimen name="default_highlight_content_margin_top">6dp</dimen>
+    <dimen name="highlight_line_width">2dp</dimen>
+
+    <!-- Editor, indentation -->
+    <dimen name="indent">28dp</dimen>
+    <dimen name="default_indent">20dp</dimen>
+    <dimen name="default_graphic_container_width">24dp</dimen>
+    <dimen name="default_graphic_container_height">24dp</dimen>
+    <dimen name="default_graphic_container_right_offset">4dp</dimen>
 
 </resources>

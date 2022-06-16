@@ -28,7 +28,7 @@
 
         <View
             android:id="@+id/divider"
-            android:layout_width="2dp"
+            android:layout_width="@dimen/highlight_line_width"
             android:layout_height="match_parent"
             android:layout_marginStart="11dp"
             android:background="@color/block_higlight_divider" />

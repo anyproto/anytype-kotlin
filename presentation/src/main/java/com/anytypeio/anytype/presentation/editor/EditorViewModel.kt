@@ -3354,7 +3354,7 @@ class EditorViewModel(
             }
             is ListenerType.Picture.Error -> {
                 when (mode) {
-                    EditorMode.Edit -> Unit
+                    EditorMode.Edit -> onAddLocalPictureClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3382,7 +3382,7 @@ class EditorViewModel(
             }
             is ListenerType.Video.Error -> {
                 when (mode) {
-                    EditorMode.Edit -> Unit
+                    EditorMode.Edit -> onAddLocalVideoClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }

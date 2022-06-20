@@ -9,8 +9,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.base.Either
@@ -108,11 +112,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.RETURNS_MOCKS
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -291,8 +297,7 @@ open class EditorViewModelTest {
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
-    @Mock
-    lateinit var editorTemplateDelegate: EditorTemplateDelegate
+    private lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -331,6 +336,7 @@ open class EditorViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
+        editorTemplateDelegate = mock(defaultAnswer = RETURNS_MOCKS)
     }
 
     @Test
@@ -3824,6 +3830,241 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(300)
 
         testObserver.assertValue(ViewState.Success(listOf(titleView) + initial))
+    }
+
+    @Test
+    fun `open select picture - when error in edit mode`() {
+
+        val picture = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.File(
+                hash = MockDataFactory.randomString(),
+                type = Block.Content.File.Type.IMAGE,
+                state = Block.Content.File.State.ERROR
+            ),
+            children = emptyList()
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    mapOf(Block.Fields.IS_LOCKED_KEY to false)
+                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, picture.id)
+            ),
+            header,
+            title,
+            picture
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        givenOpenDocument(
+            document = page
+        )
+
+        buildViewModel()
+
+
+        vm.onStart(root)
+
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                text = title.content<TXT>().text,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.Error.Picture(
+                id = picture.id,
+                mode = BlockView.Mode.EDIT,
+                indent = 0
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = vm.views
+        )
+
+        val testObserver = vm.commands.test()
+
+        vm.onClickListener(ListenerType.Picture.Error(picture.id))
+
+        testObserver.assertValue { value ->
+            value is EventWrapper && value.peekContent() == Command.OpenGallery(
+                mimeType = Mimetype.MIME_IMAGE_ALL
+            )
+        }
+    }
+
+    @Test
+    fun `open select video - when error in edit mode`() {
+
+        val video = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.File(
+                hash = MockDataFactory.randomString(),
+                type = Block.Content.File.Type.VIDEO,
+                state = Block.Content.File.State.ERROR
+            ),
+            children = emptyList()
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    mapOf(Block.Fields.IS_LOCKED_KEY to false)
+                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, video.id)
+            ),
+            header,
+            title,
+            video
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        givenOpenDocument(
+            document = page
+        )
+
+        buildViewModel()
+
+
+        vm.onStart(root)
+
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                text = title.content<TXT>().text,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.Error.Video(
+                id = video.id,
+                mode = BlockView.Mode.EDIT,
+                indent = 0
+            )
+        )
+
+
+        assertEquals(
+            expected = expected,
+            actual = vm.views
+        )
+
+        val testObserver = vm.commands.test()
+
+        vm.onClickListener(ListenerType.Video.Error(video.id))
+
+        testObserver.assertValue { value ->
+            value is EventWrapper && value.peekContent() == Command.OpenGallery(
+                mimeType = Mimetype.MIME_VIDEO_ALL
+            )
+        }
+    }
+
+    @Test
+    fun `open select file - when error in edit mode`() {
+
+        val file = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.File(
+                hash = MockDataFactory.randomString(),
+                type = Block.Content.File.Type.FILE,
+                state = Block.Content.File.State.ERROR
+            ),
+            children = emptyList()
+        )
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields(
+                    mapOf(Block.Fields.IS_LOCKED_KEY to false)
+                ),
+                content = Block.Content.Smart(SmartBlockType.PAGE),
+                children = listOf(header.id, file.id)
+            ),
+            header,
+            title,
+            file
+        )
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        givenOpenDocument(
+            document = page
+        )
+
+        buildViewModel()
+
+
+        vm.onStart(root)
+
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                text = title.content<TXT>().text,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.Error.File(
+                id = file.id,
+                mode = BlockView.Mode.EDIT,
+                indent = 0
+            )
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = vm.views
+        )
+
+        val testObserver = vm.commands.test()
+
+        vm.onClickListener(ListenerType.File.Error(file.id))
+
+        testObserver.assertValue { value ->
+            value is EventWrapper && value.peekContent() == Command.OpenGallery(
+                mimeType = Mimetype.MIME_FILE_ALL
+            )
+        }
+    }
+
+    private fun givenOpenDocument(
+        document: List<Block> = emptyList(),
+        details: Block.Details = Block.Details(),
+        relations: List<Relation> = emptyList(),
+        objectRestrictions: List<ObjectRestriction> = emptyList()
+    ) {
+        openPage.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Result.Success(
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.ShowObject(
+                                context = root,
+                                root = root,
+                                details = details,
+                                relations = relations,
+                                blocks = document,
+                                objectRestrictions = objectRestrictions
+                            )
+                        )
+                    )
+                )
+            )
+        }
     }
 
     private fun stubClosePage(

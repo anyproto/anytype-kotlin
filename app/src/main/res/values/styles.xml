@@ -274,4 +274,13 @@
         <item name="maxLines">4</item>
     </style>
 
+    <style name="DashboardGreetingTextStyle">
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
 </resources>

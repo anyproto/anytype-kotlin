@@ -1,6 +1,6 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android">
     <translate
-        android:duration="@android:integer/config_mediumAnimTime"
+        android:duration="300"
         android:fromYDelta="0%p"
         android:interpolator="@android:interpolator/decelerate_quint"
         android:toYDelta="100%p" />

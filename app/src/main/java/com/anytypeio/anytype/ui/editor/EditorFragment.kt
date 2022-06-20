@@ -872,16 +872,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         )
                     )
                 }
-                is Command.OpenAddBlockPanel -> {
-//                    hideKeyboard()
-//                    AddBlockFragment.newInstance(command.ctx).show(childFragmentManager, null)
-                }
-                is Command.OpenMultiSelectTurnIntoPanel -> {
-//                    TurnIntoFragment.multiple(
-//                        excludedTypes = command.excludedTypes,
-//                        excludedCategories = command.excludedCategories
-//                    ).show(childFragmentManager, null)
-                }
                 is Command.OpenBookmarkSetter -> {
                     CreateBookmarkFragment.newInstance(
                         target = command.target
@@ -898,25 +888,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.ScrollToActionMenu -> {
                     proceedWithScrollingToActionMenu(command)
-                }
-                is Command.Measure -> {
-                    val views = blockAdapter.views
-                    val position = views.indexOfFirst { it.id == command.target }
-                    val lm = binding.recycler.layoutManager as? LinearLayoutManager
-                    val target = lm?.findViewByPosition(position)
-                    val rect = calculateRectInWindow(target)
-                    val dimensions = BlockDimensions(
-                        left = rect.left,
-                        top = rect.top,
-                        bottom = rect.bottom,
-                        right = rect.right,
-                        height = binding.root.height,
-                        width = binding.root.width
-                    )
-                    vm.onMeasure(
-                        target = command.target,
-                        dimensions = dimensions
-                    )
                 }
                 is Command.Browse -> {
                     try {

@@ -2429,20 +2429,6 @@ class EditorViewModel(
         }
     }
 
-    @Deprecated("To be deleted")
-    fun onMeasure(target: Id, dimensions: BlockDimensions) {
-        Timber.d("onMeasure, target:[$target] dimensions:[$dimensions]")
-        proceedWithClearingFocus()
-        proceedWithEnteringActionMode(target)
-    }
-
-    @Deprecated("To be deleted")
-    fun onAddBlockToolbarClicked() {
-        Timber.d("onAddBlockToolbarClicked, ")
-
-        dispatch(Command.OpenAddBlockPanel(ctx = context))
-    }
-
     fun onEnterScrollAndMoveClicked() {
         Timber.d("onEnterScrollAndMoveClicked, ")
         mode = EditorMode.SAM

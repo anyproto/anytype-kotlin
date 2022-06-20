@@ -9,22 +9,24 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
     private val details: Flow<Map<Id, Block.Fields>>,
     private val restrictions: Flow<List<ObjectRestriction>>,
 ) : ObjectMenuOptionsProvider {
 
-    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> {
-        return details
-            .map { details ->
-                val fields = requireNotNull(details[ctx]) {
-                    "Can't find details by objectId=$ctx"
-                }
+    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = details
+        .mapNotNull { details ->
+            val fields = details[ctx]
+            if (fields != null) {
                 ObjectWrapper.Basic(fields.map).layout
+            } else {
+                Timber.w("Details missing for object: $ctx")
+                null
             }
-
-    }
+        }
 
     override fun provide(ctx: Id, isLocked: Boolean): Flow<Options> {
         return combine(observeLayout(ctx), restrictions) { layout, restrictions ->

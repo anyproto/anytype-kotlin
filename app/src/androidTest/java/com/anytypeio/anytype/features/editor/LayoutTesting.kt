@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
+import com.anytypeio.anytype.presentation.MockBlockContentFactory
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -38,15 +40,12 @@ class LayoutTesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+    private val title = MockBlockFactory.text(
+        content = MockBlockContentFactory.StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "Object's layout testing",
             marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
+        )
     )
 
     private val header = Block(
@@ -58,15 +57,8 @@ class LayoutTesting : EditorTestSetup() {
         children = listOf(title.id)
     )
 
-    private val paragraph = Block(
-        id = MockDataFactory.randomUuid(),
-        fields = Block.Fields.empty(),
-        children = emptyList(),
-        content = Block.Content.Text(
-            text = "Testing started...",
-            marks = emptyList(),
-            style = Block.Content.Text.Style.P
-        )
+    private val paragraph = MockBlockFactory.paragraph(
+        text = "Testing started...",
     )
 
     @Before

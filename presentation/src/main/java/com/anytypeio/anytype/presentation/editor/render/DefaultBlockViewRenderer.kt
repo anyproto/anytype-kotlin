@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
@@ -515,6 +516,42 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 )
                             }
                         }
+                        Content.Text.Style.CALLOUT -> {
+                            mCounter = 0
+                            // TODO support nesting background
+                            val normalized = emptyList<DecorationData>()
+                            result.add(
+                                callout(
+                                    mode = mode,
+                                    block = block,
+                                    content = content,
+                                    focus = focus,
+                                    indent = indent,
+                                    details = details,
+                                    selection = selection,
+                                    scheme = normalized
+                                )
+                            )
+                            if (block.children.isNotEmpty()) {
+                                result.addAll(
+                                    render(
+                                        mode = mode,
+                                        root = root,
+                                        focus = focus,
+                                        anchor = block.id,
+                                        indent = indent.inc(),
+                                        details = details,
+                                        relations = relations,
+                                        restrictions = restrictions,
+                                        selection = selection,
+                                        objectTypes = objectTypes,
+                                        onRenderFlag = onRenderFlag,
+                                        // TODO support nesting background
+                                        parentScheme = emptyList()
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
                 is Content.Bookmark -> {
@@ -969,6 +1006,50 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             decorations = scheme.toBlockViewDecoration(block) + current
+        )
+    }
+
+    private fun callout(
+        mode: EditorMode,
+        block: Block,
+        focus: Focus,
+        content: Content.Text,
+        indent: Int,
+        details: Block.Details,
+        selection: Set<Id>,
+        scheme: NestedDecorationData
+    ): BlockView.Text.Callout {
+        val marks = content.marks(details = details, urlBuilder = urlBuilder)
+        val (normalizedText, normalizedMarks) = content.getTextAndMarks(
+            details = details,
+            marks = marks
+        )
+        // TODO support nesting
+        val current = emptyList<BlockView.Decoration>()
+        val iconImage = content.iconImage
+        val iconEmoji = content.iconEmoji
+        val icon = when {
+            !iconImage.isNullOrBlank() -> ObjectIcon.Basic.Image(urlBuilder.thumbnail(iconImage))
+            !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(iconEmoji)
+            else -> ObjectIcon.Basic.Emoji("💡")
+        }
+        return BlockView.Text.Callout(
+            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+            id = block.id,
+            isFocused = block.id == focus.id,
+            text = normalizedText,
+            marks = normalizedMarks,
+            indent = indent,
+            alignment = content.align?.toView(), color = content.color,
+            backgroundColor = block.backgroundColor ?: ThemeColor.GREY.code,
+            cursor = if (block.id == focus.id) setCursor(focus, content) else null,
+            isSelected = checkIfSelected(
+                mode = mode,
+                block = block,
+                selection = selection
+            ),
+            decorations = scheme.toBlockViewDecoration(block) + current,
+            icon = icon
         )
     }
 
@@ -1457,7 +1538,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val name = obj.getProperObjectName()
 
         return if (isCard) {
-            val description = when(inEditorAppearance.description) {
+            val description = when (inEditorAppearance.description) {
                 InEditor.Description.NONE -> null
                 InEditor.Description.RELATION -> obj.description
                 InEditor.Description.SNIPPET -> obj.snippet

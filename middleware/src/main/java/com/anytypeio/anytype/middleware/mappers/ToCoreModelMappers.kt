@@ -167,7 +167,9 @@ fun MBlock.toCoreModelsText(): Block.Content.Text {
         marks = content.marks?.marks?.map { it.toCoreModels() }.orEmpty(),
         isChecked = content.checked,
         color = content.color.ifEmpty { null },
-        align = align.toCoreModelsAlign()
+        align = align.toCoreModelsAlign(),
+        iconEmoji = content.iconEmoji,
+        iconImage = content.iconImage,
     )
 }
 

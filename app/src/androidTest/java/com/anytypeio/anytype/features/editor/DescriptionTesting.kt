@@ -13,6 +13,8 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
@@ -34,15 +36,20 @@ class DescriptionTesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+    private val title = MockBlockFactory.text(
+        content = MockBlockContentFactory.StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "Description in Editor.",
             marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
+        )
+    )
+
+    private val description = MockBlockFactory.text(
+        content = MockBlockContentFactory.StubTextContent(
+            text = "A lighthouse is a tower, building, or another type of structure designed to emit light from a system of lamps and lenses and to serve as a navigational aid for maritime pilots at sea or on inland waterways.",
+            marks = emptyList(),
+            style = Block.Content.Text.Style.DESCRIPTION
+        )
     )
 
     @Before
@@ -54,17 +61,6 @@ class DescriptionTesting : EditorTestSetup() {
     fun shouldNotRenderDescriptionAfterTitleBecauseDescriptionIsNotFeatured() {
 
         // SETUP
-
-        val description = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = "A lighthouse is a tower, building, or another type of structure designed to emit light from a system of lamps and lenses and to serve as a navigational aid for maritime pilots at sea or on inland waterways.",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.DESCRIPTION
-            ),
-            fields = Block.Fields.empty(),
-            children = emptyList()
-        )
 
         val header = Block(
             id = MockDataFactory.randomUuid(),
@@ -105,18 +101,6 @@ class DescriptionTesting : EditorTestSetup() {
     fun shouldRenderDescriptionAfterTitleBecauseDescriptionIsFeatured() {
 
         // SETUP
-
-        val description = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.Text(
-                text = "A lighthouse is a tower, building, or another type of structure designed to emit light from a system of lamps and lenses and to serve as a navigational aid for maritime pilots at sea or on inland waterways.",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.DESCRIPTION
-            ),
-            fields = Block.Fields.empty(),
-            children = emptyList()
-        )
-
         val header = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.Layout(

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
@@ -37,7 +38,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "Scroll-and-move UI testing",
             marks = emptyList()
@@ -70,7 +71,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Should enter multi-select mode",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.NUMBERED
@@ -81,7 +82,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Should enter scroll-and-move mode",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.NUMBERED

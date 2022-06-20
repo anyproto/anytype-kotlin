@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
@@ -50,6 +51,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.BookmarkError
@@ -81,6 +83,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoP
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Callout
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Description
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderOne
@@ -109,6 +112,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CALLOUT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
@@ -154,7 +158,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
-import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import timber.log.Timber
 import java.util.*
 
@@ -624,6 +627,9 @@ class BlockAdapter(
                     )
                 )
             }
+            HOLDER_CALLOUT -> {
+                Callout(ItemBlockCalloutBinding.inflate(inflater, parent, false))
+            }
             HOLDER_RELATION_DEFAULT -> {
                 RelationViewHolder.Default(
                     view = inflater.inflate(
@@ -942,6 +948,17 @@ class BlockAdapter(
                             onSlashEvent = onSlashEvent
                         )
                     }
+                    is Callout -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position],
+                            onTextChanged = onTextBlockTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            clicked = onClickListener,
+                            onMentionEvent = onMentionEvent,
+                            onSlashEvent = onSlashEvent
+                        )
+                    }
                     is File -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1243,6 +1260,19 @@ class BlockAdapter(
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
                     onTextInputClicked = onTextInputClicked,
+                    onBackPressedCallback = onBackPressedCallback
+                )
+            }
+            is Callout -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Text.Callout,
+                    onTextBlockTextChanged = onTextBlockTextChanged,
+                    clicked = onClickListener,
+                    onMentionEvent = onMentionEvent,
+                    onSlashEvent = onSlashEvent,
+                    onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
+                    onSplitLineEnterClicked = onSplitLineEnterClicked,
+                    onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
                     onBackPressedCallback = onBackPressedCallback
                 )
             }

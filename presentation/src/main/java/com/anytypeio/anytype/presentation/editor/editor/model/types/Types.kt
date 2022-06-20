@@ -60,4 +60,5 @@ object Types {
     const val HOLDER_UNSUPPORTED = 49
     const val HOLDER_LATEX = 51
     const val HOLDER_TOC = 54
+    const val HOLDER_CALLOUT = 55
 }

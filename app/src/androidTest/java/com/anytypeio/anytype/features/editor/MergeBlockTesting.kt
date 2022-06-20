@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
@@ -192,7 +193,7 @@ class MergeBlockTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = style
@@ -203,7 +204,7 @@ class MergeBlockTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Bar",
                 marks = emptyList(),
                 style = style

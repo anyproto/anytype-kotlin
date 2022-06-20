@@ -939,6 +939,11 @@ fun BlockView.Text.cutPartOfText(
             marks = updatedMarks,
             cursor = updatedCursor
         )
+        is BlockView.Text.Callout -> copy(
+            text = updatedText,
+            marks = updatedMarks,
+            cursor = updatedCursor
+        )
     }
 }
 

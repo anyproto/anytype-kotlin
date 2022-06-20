@@ -22,8 +22,9 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -88,28 +89,21 @@ class ListBlockTesting : EditorTestSetup() {
     ) {
 
         // SETUP
-        
-        val text ="Should create a new list item with the same style by pressing ENTER at the end of the target list item"
 
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val text =
+            "Should create a new list item with the same style by pressing ENTER at the end of the target list item"
+
+        val a = MockBlockFactory.text(
+            content = StubTextContent(
                 text = text,
-                marks = emptyList(),
-                style = style
+                style = style,
             )
         )
 
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val new = MockBlockFactory.text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
-                style = style
+                style = style,
             )
         )
 
@@ -257,27 +251,20 @@ class ListBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val description ="Should replace the target list item by a paragraph on enter press if its text is empty"
+        val description =
+            "Should replace the target list item by a paragraph on enter press if its text is empty"
 
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val a = MockBlockFactory.text(
+            content = StubTextContent(
                 text = description,
-                marks = emptyList(),
-                style = style
+                style = style,
             )
         )
 
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val b = MockBlockFactory.text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
-                style = style
+                style = style,
             )
         )
 

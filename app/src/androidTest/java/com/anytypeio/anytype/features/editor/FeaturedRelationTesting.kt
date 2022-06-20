@@ -13,6 +13,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasViewGroupChildWithText
 import com.anytypeio.anytype.test_utils.utils.matchView
@@ -30,20 +32,14 @@ class FeaturedRelationTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-//    @get:Rule
-//    val coroutineTestRule = CoroutinesTestRule()
-
     private val args = bundleOf(EditorFragment.ID_KEY to root)
 
-    private val title = Block(
-        id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+    private val title = MockBlockFactory.text(
+        content = MockBlockContentFactory.StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "Relation Block UI Testing",
             marks = emptyList()
-        ),
-        children = emptyList(),
-        fields = Block.Fields.empty()
+        )
     )
 
     private val header = Block(
@@ -124,16 +120,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
             )
         )
 
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = MockBlockFactory.paragraph()
 
         val block1 = Block(
             id = MockDataFactory.randomUuid(),
@@ -236,16 +223,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
             )
         )
 
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = MockBlockFactory.paragraph(text = "Foo")
 
         val block1 = Block(
             id = MockDataFactory.randomUuid(),

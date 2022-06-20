@@ -2592,7 +2592,7 @@ open class EditorViewModelTest {
     fun `should create a new text block after currently focused block`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -2660,7 +2660,7 @@ open class EditorViewModelTest {
     @Test
     fun `should create a new page block after currently focused block`() {
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
         val page = listOf(
             Block(
@@ -2714,7 +2714,7 @@ open class EditorViewModelTest {
     @Test
     fun `should create a new object block after currently focused block`() {
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
         val page = listOf(
             Block(
@@ -2771,7 +2771,7 @@ open class EditorViewModelTest {
     fun `should create a new bookmark block after currently focused block`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -2838,7 +2838,7 @@ open class EditorViewModelTest {
     fun `should create a new line divider block after currently focused block`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -2898,7 +2898,7 @@ open class EditorViewModelTest {
     fun `should create a new dots divider block after currently focused block`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -2958,7 +2958,7 @@ open class EditorViewModelTest {
     fun `should proceed with undo`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -3023,7 +3023,7 @@ open class EditorViewModelTest {
     fun `should proceed with redo`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -3228,7 +3228,7 @@ open class EditorViewModelTest {
         // SETUP
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -3388,7 +3388,7 @@ open class EditorViewModelTest {
         // SETUP
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
         val title = MockBlockFactory.makeTitleBlock()
 
         val page = listOf(
@@ -3450,7 +3450,7 @@ open class EditorViewModelTest {
     fun `should update focus after block duplication`() {
 
         val root = MockDataFactory.randomUuid()
-        val paragraph = MockBlockFactory.makeParagraphBlock()
+        val paragraph = MockBlockFactory.paragraph()
 
         val page = listOf(
             Block(

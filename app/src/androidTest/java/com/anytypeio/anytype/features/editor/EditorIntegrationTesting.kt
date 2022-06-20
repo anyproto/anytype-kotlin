@@ -38,8 +38,8 @@ import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_NUMBERED_1
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_TOGGLE
+import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.scrollTo
@@ -255,16 +255,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         val text = "FooBar"
 
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = text,
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = text)
 
         val document = listOf(
             Block(
@@ -278,16 +269,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
             paragraph
         )
 
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val new = paragraph(text = "Bar")
 
         val events = listOf(
             Event.Command.GranularChange(

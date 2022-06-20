@@ -10,6 +10,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -49,11 +51,8 @@ class MarkupTesting : EditorTestSetup() {
 
         val mentionTarget = MockDataFactory.randomUuid()
 
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val a = MockBlockFactory.text(
+            content = StubTextContent(
                 text = text,
                 marks = listOf(
                     Block.Content.Text.Mark(

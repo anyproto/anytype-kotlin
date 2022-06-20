@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CALLOUT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
@@ -56,7 +57,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
-import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 
@@ -408,6 +408,27 @@ sealed class BlockView : ViewType {
             override val decorations: List<Decoration> = emptyList()
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
+            override val body: String get() = text
+        }
+
+        data class Callout(
+            override val id: String,
+            override var isFocused: Boolean = false,
+            override var text: String,
+            override val color: String? = null,
+            override val backgroundColor: String? = null,
+            override val indent: Int = 0,
+            override var marks: List<Markup.Mark> = emptyList(),
+            override val mode: Mode = Mode.EDIT,
+            override val isSelected: Boolean = false,
+            override var cursor: Int? = null,
+            override val alignment: Alignment? = null,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val ghostEditorSelection: IntRange? = null,
+            override val decorations: List<Decoration>,
+            val icon: ObjectIcon,
+        ) : Text() {
+            override fun getViewType() = HOLDER_CALLOUT
             override val body: String get() = text
         }
 

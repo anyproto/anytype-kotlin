@@ -17,7 +17,7 @@ fun Block.toMiddlewareModel(): MBlock = when (val content = content) {
             backgroundColor = backgroundColor.orEmpty(),
             align = content.align.toMiddlewareModel(),
             childrenIds = children,
-            fields = fields.toMiddlewareModel()
+            fields = fields.toMiddlewareModel(),
         )
     }
     is Block.Content.Bookmark -> {
@@ -155,7 +155,9 @@ fun Block.Content.Text.toMiddlewareModel(): MBText =
         marks = toMiddlewareModelMarks(),
         style = style.toMiddlewareModel(),
         color = color.orEmpty(),
-        checked = isChecked ?: false
+        checked = isChecked ?: false,
+        iconEmoji = iconEmoji.orEmpty(),
+        iconImage = iconImage.orEmpty()
     )
 
 fun Block.Content.Text.toMiddlewareModelMarks(): MBMarks =

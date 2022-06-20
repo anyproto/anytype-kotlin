@@ -218,6 +218,12 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="BlockCalloutContentStyle" parent="DefaultEditorTextStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:background">@null</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
     <style name="ModalRowTestStyle">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">16sp</item>

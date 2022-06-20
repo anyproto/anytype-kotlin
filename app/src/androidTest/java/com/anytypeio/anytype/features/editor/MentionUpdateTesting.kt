@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -52,7 +53,7 @@ class MentionUpdateTesting : EditorTestSetup() {
     fun shouldSetCursorAtTheEndOfDescription() {
         val title = Block(
             id = "title",
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Title ",
                 style = Block.Content.Text.Style.TITLE,
                 marks = emptyList()
@@ -76,7 +77,7 @@ class MentionUpdateTesting : EditorTestSetup() {
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Start $originalText end",
                 marks = listOf(
                     Block.Content.Text.Mark(

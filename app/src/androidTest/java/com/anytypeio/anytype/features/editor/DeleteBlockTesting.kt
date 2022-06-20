@@ -21,6 +21,8 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.text
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
@@ -269,25 +271,15 @@ class DeleteBlockTesting : EditorTestSetup() {
     ) {
 
         // SETUP
-
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val a = text(
+            content = StubTextContent(
                 text = "Foo",
-                marks = emptyList(),
                 style = firstStyle
             )
         )
-
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val b = text(
+            content = StubTextContent(
                 text = "Bar",
-                marks = emptyList(),
                 style = secondStyle
             )
         )
@@ -483,17 +475,13 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val titleBlock = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+
+        val titleBlock = text(
+            content = StubTextContent(
                 text = title,
-                marks = emptyList(),
                 style = Block.Content.Text.Style.TITLE
             )
         )
-
         val header = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.Layout(
@@ -503,24 +491,16 @@ class DeleteBlockTesting : EditorTestSetup() {
             children = listOf(titleBlock.id)
         )
 
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val a = text(
+            content = StubTextContent(
                 text = "Foo",
-                marks = emptyList(),
                 style = firstStyle
             )
         )
 
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val b = text(
+            content = StubTextContent(
                 text = "Bar",
-                marks = emptyList(),
                 style = secondStyle
             )
         )

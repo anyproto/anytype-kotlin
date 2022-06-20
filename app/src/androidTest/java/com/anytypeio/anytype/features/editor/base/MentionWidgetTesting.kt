@@ -10,6 +10,7 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
@@ -51,7 +52,7 @@ class MentionWidgetTesting : EditorTestSetup() {
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "MentionTextWatcherTesting",
             marks = emptyList()
@@ -80,7 +81,7 @@ class MentionWidgetTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -131,7 +132,7 @@ class MentionWidgetTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "test ",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -183,7 +184,7 @@ class MentionWidgetTesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "test ",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P

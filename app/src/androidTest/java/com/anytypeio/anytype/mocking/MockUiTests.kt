@@ -1,13 +1,14 @@
 package com.anytypeio.anytype.mocking
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 
 object MockUiTests {
 
     val BLOCK_H1 = Block(
         id = "id_h1",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "H1 block, marks should not render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -25,7 +26,7 @@ object MockUiTests {
     val BLOCK_H2 = Block(
         id = "id_h2",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "H2 block, marks should not render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -43,7 +44,7 @@ object MockUiTests {
     val BLOCK_H3 = Block(
         id = "id_h3",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "H3 block, marks should not render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -58,46 +59,10 @@ object MockUiTests {
         )
     )
 
-    val BLOCK_H4 = Block(
-        id = "id_h4",
-        children = emptyList(),
-        content = Block.Content.Text(
-            text = "H4 block, marks should not render",
-            marks = listOf(
-                Block.Content.Text.Mark(
-                    type = Block.Content.Text.Mark.Type.KEYBOARD,
-                    range = IntRange(0, 15)
-                )
-            ),
-            style = Block.Content.Text.Style.H4
-        ),
-        fields = Block.Fields(
-            mapOf("name" to "NAME")
-        )
-    )
-
-    val BLOCK_TITLE = Block(
-        id = "id_title",
-        children = emptyList(),
-        content = Block.Content.Text(
-            text = "Title block, marks should not render",
-            marks = listOf(
-                Block.Content.Text.Mark(
-                    type = Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                    range = IntRange(0, 15)
-                )
-            ),
-            style = Block.Content.Text.Style.TITLE
-        ),
-        fields = Block.Fields(
-            mapOf("name" to "NAME")
-        )
-    )
-
     val BLOCK_PARAGRAPH = Block(
         id = "id_paragraph",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Paragraph block, boldMarkup, italicMarkup, strikethroughMarkup, keyboardMarkup, linkMarkup, backgroundColorMarkup, textColorMarkup",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -133,7 +98,7 @@ object MockUiTests {
     val BLOCK_PARAGRAPH_1 = Block(
         id = "id_paragraph_1",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Paragraph block.",
             marks = listOf(),
             style = Block.Content.Text.Style.P
@@ -146,7 +111,7 @@ object MockUiTests {
     val BLOCK_HIGHLIGHT = Block(
         id = "id_quote",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Quote block, marks should render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -161,28 +126,10 @@ object MockUiTests {
         )
     )
 
-    val BLOCK_CODE = Block(
-        id = "id_code",
-        children = emptyList(),
-        content = Block.Content.Text(
-            text = "Code block, marks should not render",
-            marks = listOf(
-                Block.Content.Text.Mark(
-                    type = Block.Content.Text.Mark.Type.STRIKETHROUGH,
-                    range = IntRange(0, 15)
-                )
-            ),
-            style = Block.Content.Text.Style.CODE_SNIPPET
-        ),
-        fields = Block.Fields(
-            mapOf("name" to "NAME")
-        )
-    )
-
     val BLOCK_BULLET = Block(
         id = "id_bullet",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Bullet block, marks should render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -200,7 +147,7 @@ object MockUiTests {
     val BLOCK_NUMBERED_1 = Block(
         id = "id_numbered_1",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Numbered 1 block, marks should not render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -218,7 +165,7 @@ object MockUiTests {
     val BLOCK_TOGGLE = Block(
         id = "id_toggle",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Toggle block, marks should not render",
             marks = listOf(
                 Block.Content.Text.Mark(
@@ -236,7 +183,7 @@ object MockUiTests {
     val BLOCK_CHECKBOX = Block(
         id = "id_checkbox",
         children = emptyList(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             text = "Checkbox block, marks should render",
             marks = listOf(
                 Block.Content.Text.Mark(

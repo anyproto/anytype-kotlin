@@ -23,6 +23,8 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -66,7 +68,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "SlashTextWatcherTesting",
             marks = emptyList()
@@ -113,16 +115,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 1}
     @Test
     fun testShouldShowMainItems() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "")
 
         val page = Block(
             id = root,
@@ -163,16 +156,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 2}
     @Test
     fun testShouldAlsoShowMainItems() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -213,16 +197,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 3}
     @Test
     fun testShouldShowStyleItems() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -268,16 +243,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 4}
     @Test
     fun testShouldNavigateFromStyleToMain() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -323,16 +289,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 5}
     @Test
     fun testShouldShowMediaItems() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -378,16 +335,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 6}
     @Test
     fun testShouldNavigateFromMediaToMain() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -433,16 +381,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 7}
     @Test
     fun testShouldShowRelations() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -526,16 +465,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 8}
     @Test
     fun testShouldShowObjectTypes() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -605,28 +535,8 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 9}
     @Test
     fun shouldCreateFileBlockBelowSlash() {
-
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val paragraph2 = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Second",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
+        val paragraph2 = paragraph(text = "Second")
 
         val file = Block(
             id = MockDataFactory.randomUuid(),
@@ -698,27 +608,8 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 10}
     @Test
     fun shouldCreatePictureBlockBelowSlash() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val paragraph2 = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Second",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
+        val paragraph2 = paragraph(text = "Second")
 
         val picture = Block(
             id = MockDataFactory.randomUuid(),
@@ -795,27 +686,9 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 11}
     @Test
     fun shouldCreateVideoBlockBelowSlash() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
-        val paragraph2 = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Second",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph2 = paragraph(text = "Second")
 
         val video = Block(
             id = MockDataFactory.randomUuid(),
@@ -892,27 +765,8 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 12}
     @Test
     fun shouldCreateBookmarkBlockBelowSlash() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val paragraph2 = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Second",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
+        val paragraph2 = paragraph(text = "Second")
 
         val bookmark = Block(
             id = MockDataFactory.randomUuid(),
@@ -985,16 +839,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 13}
     @Test
     fun shouldShowOtherItems() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -1042,16 +887,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 14}
     @Test
     fun shouldAddSlashToTextOnSlashButtonClicked() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,
@@ -1088,16 +924,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     //region {Test 15}
     @Test
     fun shouldShowSlashWidgetOnSlashButtonClicked() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "FooBar")
 
         val page = Block(
             id = root,

@@ -96,6 +96,8 @@ data class Block(
          * @property marks markup related to [text],
          * @property isChecked whether this block is checked or not (see [Style.CHECKBOX])
          * @property color text color, which should be applied to the whole block (as opposed to [Mark.Type.TEXT_COLOR])
+         * @property iconEmoji used for [Style.CALLOUT] could be empty
+         * @property iconImage used for [Style.CALLOUT] could be empty
          */
         data class Text(
             val text: String,
@@ -103,7 +105,9 @@ data class Block(
             val marks: List<Mark>,
             val isChecked: Boolean? = null,
             val color: String? = null,
-            val align: Align? = null
+            val align: Align? = null,
+            val iconEmoji: String? = null,
+            val iconImage: String? = null,
         ) : Content() {
 
             /**

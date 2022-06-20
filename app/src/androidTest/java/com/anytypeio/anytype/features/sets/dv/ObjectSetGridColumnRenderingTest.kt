@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
@@ -30,7 +31,7 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
 
     override val title: Block = Block(
         id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "Data View UI Testing",
             marks = emptyList()

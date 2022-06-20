@@ -13,6 +13,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
@@ -52,7 +54,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "SlashTextWatcherTesting",
             marks = emptyList()
@@ -77,16 +79,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldShowSlashWidgetOnSlashInEmptyText() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "")
 
         val page = Block(
             id = root,
@@ -117,16 +110,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldShowSlashWidgetOnSlashAfterSpace() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo")
 
         val page = Block(
             id = root,
@@ -159,16 +143,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldShowSlashWidgetOnSlashAfterText() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo")
 
         val page = Block(
             id = root,
@@ -199,16 +174,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldShowSlashWidgetOnSlashBeforeText() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo")
 
         val page = Block(
             id = root,
@@ -240,16 +206,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldShowSlashWidgetOnSlashAfterSlash() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "")
 
         val page = Block(
             id = root,
@@ -282,16 +239,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldShowSlashWidgetOnInsertTextWithSlashAfterSlash() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo/",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo/")
 
         val page = Block(
             id = root,
@@ -322,16 +270,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldCloseMenuWhenCharSlashDeleted() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo")
 
         val page = Block(
             id = root,
@@ -364,16 +303,7 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldCloseMenuWhenClickInBlock() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo Bar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo Bar")
 
         val page = Block(
             id = root,
@@ -410,27 +340,9 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     @Test
     fun testShouldCloseMenuWhenFocusIsChanged() {
-        val paragraph = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph = paragraph(text = "Foo")
 
-        val paragraph2 = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
+        val paragraph2 = paragraph(text = "Bar")
 
         val page = Block(
             id = root,

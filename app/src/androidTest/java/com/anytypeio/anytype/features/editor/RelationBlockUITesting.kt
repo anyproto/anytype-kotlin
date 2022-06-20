@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -64,7 +65,7 @@ class RelationBlockUITesting : EditorTestSetup() {
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
-        content = Block.Content.Text(
+        content = StubTextContent(
             style = Block.Content.Text.Style.TITLE,
             text = "Relation Block UI Testing",
             marks = emptyList()
@@ -94,7 +95,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -202,7 +203,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -248,10 +249,19 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(header.id, paragraph.id, block1.id, block2.id, block3.id, block4.id, block5.id)
+            children = listOf(
+                header.id,
+                paragraph.id,
+                block1.id,
+                block2.id,
+                block3.id,
+                block4.id,
+                block5.id
+            )
         )
 
-        val document = listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
+        val document =
+            listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -270,7 +280,10 @@ class RelationBlockUITesting : EditorTestSetup() {
         with(R.id.recycler.rVMatcher()) {
             checkIsRecyclerSize(7)
             onItemView(0, R.id.title).checkHasText(title.content<Block.Content.Text>().text)
-            onItemView(1, R.id.textContent).checkHasText(paragraph.content<Block.Content.Text>().text)
+            onItemView(
+                1,
+                R.id.textContent
+            ).checkHasText(paragraph.content<Block.Content.Text>().text)
             onItemView(2, R.id.tvRelationTitle).checkHasText(relation1.name)
             onItemView(2, R.id.tvRelationValue).checkHasText(value1)
             onItemView(3, R.id.tvRelationTitle).checkHasText(relation2.name)
@@ -354,7 +367,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -412,10 +425,19 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(header.id, paragraph.id, block1.id, block2.id, block3.id, block4.id, block5.id)
+            children = listOf(
+                header.id,
+                paragraph.id,
+                block1.id,
+                block2.id,
+                block3.id,
+                block4.id,
+                block5.id
+            )
         )
 
-        val document = listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
+        val document =
+            listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -475,7 +497,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -564,7 +586,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -620,7 +642,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -658,7 +680,10 @@ class RelationBlockUITesting : EditorTestSetup() {
         with(rvMatcher) {
             checkIsRecyclerSize(3)
             onItemView(0, R.id.title).checkHasText(title.content<Block.Content.Text>().text)
-            onItemView(1, R.id.textContent).checkHasText(paragraph.content<Block.Content.Text>().text)
+            onItemView(
+                1,
+                R.id.textContent
+            ).checkHasText(paragraph.content<Block.Content.Text>().text)
             onItemView(1, R.id.textContent).checkIsNotSelected()
             onItemView(2, R.id.tvPlaceholder).checkHasText(R.string.set_new_relation)
             onItemView(2, R.id.tvPlaceholder).checkIsNotSelected()
@@ -690,7 +715,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(block.id),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -718,7 +743,8 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         val rvMatcher = R.id.recycler.rVMatcher()
 
-        rvMatcher.onItemView(2, R.id.relationIcon).checkHasMarginStart(dimen = R.dimen.indent, coefficient = 1)
+        rvMatcher.onItemView(2, R.id.relationIcon)
+            .checkHasMarginStart(dimen = R.dimen.indent, coefficient = 1)
 
         advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
@@ -821,7 +847,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(block1.id, block2.id, block3.id, block4.id, block5.id),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -835,7 +861,8 @@ class RelationBlockUITesting : EditorTestSetup() {
             children = listOf(header.id, paragraph.id)
         )
 
-        val document = listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
+        val document =
+            listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -902,7 +929,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = listOf(block1.id),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -1003,7 +1030,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields.empty(),
             children = emptyList(),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Foo",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -1049,10 +1076,19 @@ class RelationBlockUITesting : EditorTestSetup() {
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart(),
-            children = listOf(header.id, paragraph.id, block1.id, block2.id, block3.id, block4.id, block5.id)
+            children = listOf(
+                header.id,
+                paragraph.id,
+                block1.id,
+                block2.id,
+                block3.id,
+                block4.id,
+                block5.id
+            )
         )
 
-        val document = listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
+        val document =
+            listOf(page, header, title, paragraph, block1, block2, block3, block4, block5)
 
         stubInterceptEvents()
         stubInterceptThreadStatus()

@@ -18,8 +18,9 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.MockBlockFactory.text
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
@@ -59,13 +60,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.P
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -78,17 +82,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -210,13 +203,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.H1
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -229,17 +225,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -359,13 +344,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.H2
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -378,17 +366,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -508,13 +485,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.H3
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -527,17 +507,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -657,13 +626,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.QUOTE
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -676,17 +648,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -808,13 +769,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.CHECKBOX
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -827,17 +791,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -959,13 +912,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.BULLET
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -978,17 +934,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -1110,13 +1055,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.NUMBERED
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -1129,17 +1077,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(
@@ -1261,13 +1198,16 @@ class SplitBlockTesting : EditorTestSetup() {
 
         val style = Block.Content.Text.Style.TOGGLE
 
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
+        val block = text(
+            content = StubTextContent(
                 text = "",
-                marks = emptyList(),
+                style = style
+            )
+        )
+
+        val new = text(
+            content = StubTextContent(
+                text = "Bar",
                 style = style
             )
         )
@@ -1280,17 +1220,6 @@ class SplitBlockTesting : EditorTestSetup() {
         )
 
         val document = listOf(page, block)
-
-        val new = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Bar",
-                marks = emptyList(),
-                style = style
-            )
-        )
 
         val events = listOf(
             Event.Command.GranularChange(

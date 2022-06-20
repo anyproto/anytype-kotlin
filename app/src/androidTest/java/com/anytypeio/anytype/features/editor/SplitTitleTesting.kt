@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -58,7 +59,7 @@ class SplitTitleTesting : EditorTestSetup() {
     fun shouldSetCursorAtTheEndOfDescription() {
         val title = Block(
             id = "title",
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Title " + "83O6sVya",
                 style = Block.Content.Text.Style.TITLE,
                 marks = emptyList()
@@ -74,7 +75,7 @@ class SplitTitleTesting : EditorTestSetup() {
         )
         val description = Block(
             id = Relations.DESCRIPTION,
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Description " + "6HJ36U",
                 style = Block.Content.Text.Style.DESCRIPTION,
                 marks = emptyList()
@@ -93,7 +94,7 @@ class SplitTitleTesting : EditorTestSetup() {
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Text Block " + "D8T09",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P
@@ -168,7 +169,7 @@ class SplitTitleTesting : EditorTestSetup() {
     fun shouldSetCursorAtTheStartOfDescriptionAfterTitleSplit() {
         val title = Block(
             id = "title",
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Title " + "83O6sVya",
                 style = Block.Content.Text.Style.TITLE,
                 marks = emptyList()
@@ -184,7 +185,7 @@ class SplitTitleTesting : EditorTestSetup() {
         )
         val description = Block(
             id = Relations.DESCRIPTION,
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Description " + "6HJ36U",
                 style = Block.Content.Text.Style.DESCRIPTION,
                 marks = emptyList()
@@ -203,7 +204,7 @@ class SplitTitleTesting : EditorTestSetup() {
         val block = Block(
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
+            content = StubTextContent(
                 text = "Text Block " + "D8T09",
                 marks = emptyList(),
                 style = Block.Content.Text.Style.P

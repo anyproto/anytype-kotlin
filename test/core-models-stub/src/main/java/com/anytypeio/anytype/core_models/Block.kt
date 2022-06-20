@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubHeader(
@@ -17,10 +18,9 @@ fun StubTitle(
     text: String = MockDataFactory.randomString()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
-        style = Block.Content.Text.Style.TITLE,
-        marks = emptyList()
+        style = Block.Content.Text.Style.TITLE
     ),
     children = emptyList(),
     fields = Block.Fields.empty()
@@ -40,10 +40,9 @@ fun StubDescription(
     text: String = MockDataFactory.randomString()
 ): Block = Block(
     id = id,
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
-        style = Block.Content.Text.Style.DESCRIPTION,
-        marks = emptyList()
+        style = Block.Content.Text.Style.DESCRIPTION
     ),
     children = emptyList(),
     fields = Block.Fields.empty()
@@ -56,7 +55,7 @@ fun StubCheckbox(
     isChecked: Boolean = MockDataFactory.randomBoolean()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.CHECKBOX,
         marks = marks,
@@ -73,7 +72,7 @@ fun StubParagraph(
     marks: List<Block.Content.Text.Mark> = emptyList()
 ): Block = Block(
     id = id,
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.P,
         marks = marks
@@ -89,7 +88,7 @@ fun StubBulleted(
     isChecked: Boolean = MockDataFactory.randomBoolean()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.BULLET,
         marks = marks,
@@ -105,7 +104,7 @@ fun StubToggle(
     marks: List<Block.Content.Text.Mark> = emptyList()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.TOGGLE,
         marks = marks
@@ -120,7 +119,7 @@ fun StubNumbered(
     marks: List<Block.Content.Text.Mark> = emptyList()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.NUMBERED,
         marks = marks
@@ -135,7 +134,7 @@ fun StubQuote(
     marks: List<Block.Content.Text.Mark> = emptyList()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.QUOTE,
         marks = marks
@@ -150,7 +149,7 @@ fun StubCallout(
     marks: List<Block.Content.Text.Mark> = emptyList()
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
-    content = Block.Content.Text(
+    content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.CALLOUT,
         marks = marks

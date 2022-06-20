@@ -4,12 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.view.marginRight
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_ui.databinding.WidgetStyleToolbarMainBinding
-import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
@@ -25,15 +23,6 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
-    init {
-        binding.callout.setOnClickListener {
-            context.toast(
-                msg = "Will be implemented later",
-                duration = Toast.LENGTH_SHORT
-            )
-        }
-    }
-
     val styles = merge(
         binding.tvStyleTitle.clicks().map { UiBlock.HEADER_ONE },
         binding.tvStyleHeading.clicks().map { UiBlock.HEADER_TWO },
@@ -44,6 +33,7 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
         binding.numbered.clicks().map { UiBlock.NUMBERED },
         binding.toggle.clicks().map { UiBlock.TOGGLE },
         binding.highlight.clicks().map { UiBlock.HIGHLIGHTED },
+        binding.callout.clicks().map { UiBlock.CALLOUT },
     )
 
     val other = binding.dots.clicks()

@@ -190,6 +190,12 @@ fun List<BlockView>.enterSAM(
             isFocused = false,
             cursor = null
         )
+        is BlockView.Text.Callout -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
         is BlockView.Text.Header.One -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected,

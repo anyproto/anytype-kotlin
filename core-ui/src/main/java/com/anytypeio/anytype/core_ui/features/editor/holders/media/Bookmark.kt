@@ -3,17 +3,22 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.view.View
-import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.decoration.OffsetBottom
+import com.anytypeio.anytype.core_ui.features.editor.decoration.OffsetLeft
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -30,7 +35,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import timber.log.Timber
 
-class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
+class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), DecoratableViewHolder {
 
     override val root: View = itemView
     override val container = binding.containerWithBackground
@@ -44,12 +49,26 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
     private val card = binding.bookmarkRoot
     override val clickContainer: View = card
 
+    override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
+
     override val editorTouchProcessor: EditorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> clickContainer.onTouchEvent(e) }
     )
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
+    }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.root.updatePadding(
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
+                bottomMargin = dimen(R.dimen.default_card_block_extra_space_bottom)
+            }
+        }
     }
 
     private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
@@ -167,9 +186,10 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        val leftPadding =
-            dimen(R.dimen.default_document_item_padding_start) + item.indent * dimen(R.dimen.indent)
-        root.updatePadding(left = leftPadding)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            val leftPadding = dimen(R.dimen.default_document_item_padding_start) + item.indent * dimen(R.dimen.indent)
+            root.updatePadding(left = leftPadding)
+        }
     }
 
     override fun select(isSelected: Boolean) {
@@ -177,17 +197,43 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root) {
     }
 
     private fun applyRootMargins(item: BlockView.Media.Bookmark) {
-        if (item.isPreviousBlockMedia) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                apply { topMargin = 0 }
-            }
-        } else {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                apply {
-                    topMargin =
-                        root.resources.getDimension(R.dimen.default_link_card_root_margin_top).toInt()
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            if (item.isPreviousBlockMedia) {
+                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                    apply { topMargin = 0 }
+                }
+            } else {
+                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                    apply {
+                        topMargin =
+                            root.resources.getDimension(R.dimen.default_link_card_root_margin_top)
+                                .toInt()
+                    }
                 }
             }
         }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations = decorations) { leftOffset: OffsetLeft, bottomOffset: OffsetBottom ->
+                binding.bookmarkRoot.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.default_indent) + leftOffset
+                    topMargin = dimen(R.dimen.default_card_block_extra_space_top)
+                    bottomMargin =
+                        bottomOffset + dimen(R.dimen.default_card_block_extra_space_bottom)
+                    marginEnd = dimen(R.dimen.default_indent)
+                }
+                binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
+                    leftMargin = leftOffset + dimen(R.dimen.default_selected_view_offset)
+                    rightMargin = dimen(R.dimen.default_document_item_padding_end)
+                    // TODO handle top and bottom offsets
+                }
+            }
+        }
+    }
+
+    override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {
+        applyDecorations(decorations)
     }
 }

@@ -69,7 +69,8 @@ fun StubParagraph(
     id: Id = MockDataFactory.randomUuid(),
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
-    marks: List<Block.Content.Text.Mark> = emptyList()
+    marks: List<Block.Content.Text.Mark> = emptyList(),
+    backgroundColor: String? = null
 ): Block = Block(
     id = id,
     content = StubTextContent(
@@ -78,7 +79,8 @@ fun StubParagraph(
         marks = marks
     ),
     children = children,
-    fields = Block.Fields.empty()
+    fields = Block.Fields.empty(),
+    backgroundColor = backgroundColor
 )
 
 fun StubBulleted(
@@ -166,4 +168,37 @@ fun StubRelation(
     name = MockDataFactory.randomString(),
     format = format,
     source = Relation.Source.values().random()
+)
+
+fun StubBookmark(
+    id: Id = MockDataFactory.randomString(),
+    url: Url? = MockDataFactory.randomString(),
+    description: String? = MockDataFactory.randomString(),
+    image: Hash? = null,
+    favicon: Hash? = null,
+    title: String? = MockDataFactory.randomString(),
+    fields: Block.Fields = Block.Fields.empty(),
+    backgroundColor: String? = null
+) : Block = Block(
+    id = id,
+    content = Block.Content.Bookmark(
+        title = title,
+        url = url,
+        description = description,
+        image = image,
+        favicon = favicon
+    ),
+    children = emptyList(),
+    fields = fields,
+    backgroundColor = backgroundColor
+)
+
+fun StubSmartBlock(
+    id: Id = MockDataFactory.randomString(),
+    children: List<Id> = emptyList()
+) : Block = Block(
+    id = id,
+    children = children,
+    fields = Block.Fields.empty(),
+    content = Block.Content.Smart()
 )

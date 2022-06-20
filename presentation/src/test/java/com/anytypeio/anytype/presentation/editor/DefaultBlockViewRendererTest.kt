@@ -7,6 +7,9 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.StubBookmark
+import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -26,8 +29,9 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
-import com.anytypeio.anytype.presentation.editor.render.NestedDecorationData
+import com.anytypeio.anytype.presentation.editor.render.DecorationData
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.render.NestedDecorationData
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -5144,6 +5148,236 @@ class DefaultBlockViewRendererTest {
                         ),
                         BlockView.Decoration(
                             background = paragraph2.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    /**
+     * P with background
+     * ...Bookmark with background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a paragraph with background contains a bookmark with background`() {
+
+        val bookmark = StubBookmark(
+            backgroundColor = ThemeColor.ORANGE.code
+        )
+
+        val paragraph = StubParagraph(
+            children = listOf(bookmark.id),
+            backgroundColor = ThemeColor.YELLOW.code
+        )
+
+        val page = StubSmartBlock(children = listOf(paragraph.id))
+
+        val blocks = listOf(page, paragraph, bookmark)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details()
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Paragraph(
+                indent = 0,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(background = ThemeColor.YELLOW)
+                    )
+                } else {
+                    emptyList()
+                }
+            ),
+            BlockView.Media.Bookmark(
+                id = bookmark.id,
+                indent = 1,
+                title = bookmark.content<Block.Content.Bookmark>().title,
+                url = bookmark.content<Block.Content.Bookmark>().url.orEmpty(),
+                description = bookmark.content<Block.Content.Bookmark>().description,
+                isPreviousBlockMedia = false,
+                backgroundColor = bookmark.backgroundColor,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(background = ThemeColor.YELLOW),
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Card,
+                            background = ThemeColor.ORANGE
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    /**
+     * P without background
+     * ...Bookmark with background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a paragraph without background contains a bookmark with background`() {
+
+        val bookmark = StubBookmark(
+            backgroundColor = ThemeColor.ORANGE.code
+        )
+
+        val paragraph = StubParagraph(
+            children = listOf(bookmark.id)
+        )
+
+        val page = StubSmartBlock(children = listOf(paragraph.id))
+
+        val blocks = listOf(page, paragraph, bookmark)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details()
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Paragraph(
+                indent = 0,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(background = ThemeColor.DEFAULT)
+                    )
+                } else {
+                    emptyList()
+                }
+            ),
+            BlockView.Media.Bookmark(
+                id = bookmark.id,
+                indent = 1,
+                title = bookmark.content<Block.Content.Bookmark>().title,
+                url = bookmark.content<Block.Content.Bookmark>().url.orEmpty(),
+                description = bookmark.content<Block.Content.Bookmark>().description,
+                isPreviousBlockMedia = false,
+                backgroundColor = bookmark.backgroundColor,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(background = ThemeColor.DEFAULT),
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Card,
+                            background = ThemeColor.ORANGE
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    /**
+     * P without background
+     * ...Bookmark without background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a paragraph without background contains a bookmark without background`() {
+
+        val bookmark = StubBookmark()
+
+        val paragraph = StubParagraph(
+            children = listOf(bookmark.id)
+        )
+
+        val page = StubSmartBlock(children = listOf(paragraph.id))
+
+        val blocks = listOf(page, paragraph, bookmark)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details()
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Paragraph(
+                indent = 0,
+                id = paragraph.id,
+                marks = emptyList(),
+                backgroundColor = paragraph.backgroundColor,
+                color = paragraph.content<Block.Content.Text>().color,
+                text = paragraph.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(background = ThemeColor.DEFAULT)
+                    )
+                } else {
+                    emptyList()
+                }
+            ),
+            BlockView.Media.Bookmark(
+                id = bookmark.id,
+                indent = 1,
+                title = bookmark.content<Block.Content.Bookmark>().title,
+                url = bookmark.content<Block.Content.Bookmark>().url.orEmpty(),
+                description = bookmark.content<Block.Content.Bookmark>().description,
+                isPreviousBlockMedia = false,
+                backgroundColor = bookmark.backgroundColor,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(background = ThemeColor.DEFAULT),
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Card,
+                            background = ThemeColor.DEFAULT
                         )
                     )
                 } else {

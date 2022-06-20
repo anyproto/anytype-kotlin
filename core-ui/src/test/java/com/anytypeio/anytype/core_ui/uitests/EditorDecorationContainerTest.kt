@@ -225,7 +225,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
+                .toInt(),
             actual = rectWithVerticalQuoteLine.marginBottom
         )
 
@@ -240,7 +241,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
+                .toInt(),
             actual = backgroundView.marginBottom
         )
     }
@@ -288,7 +290,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
+                .toInt(),
             actual = rectWithVerticalQuoteLine.marginBottom
         )
 
@@ -303,7 +306,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
+                .toInt(),
             actual = backgroundView.marginBottom
         )
     }
@@ -348,7 +352,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
+                .toInt(),
             actual = rectWithVerticalQuoteLine.marginBottom
         )
 
@@ -449,7 +454,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
+                .toInt(),
             actual = view4.marginBottom
         )
     }
@@ -646,7 +652,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.dp_48).toInt() + context.resources.getDimension(R.dimen.default_indent).toInt(),
+            expected = context.resources.getDimension(R.dimen.dp_48)
+                .toInt() + context.resources.getDimension(R.dimen.default_indent).toInt(),
             actual = view4.marginStart
         )
 
@@ -666,7 +673,9 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.dp_48).toInt() + context.resources.getDimension(R.dimen.default_indent).toInt() + context.resources.getDimension(R.dimen.dp_48).toInt(),
+            expected = context.resources.getDimension(R.dimen.dp_48)
+                .toInt() + context.resources.getDimension(R.dimen.default_indent)
+                .toInt() + context.resources.getDimension(R.dimen.dp_48).toInt(),
             actual = view6.marginStart
         )
     }
@@ -738,7 +747,8 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.dp_48).toInt() + context.resources.getDimension(R.dimen.default_indent).toInt(),
+            expected = context.resources.getDimension(R.dimen.dp_48)
+                .toInt() + context.resources.getDimension(R.dimen.default_indent).toInt(),
             actual = view3.marginStart
         )
     }
@@ -820,12 +830,14 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_two_extra_space_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_header_two_extra_space_top)
+                .toInt(),
             actual = view2.marginTop
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_two_extra_space_bottom).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_header_two_extra_space_bottom)
+                .toInt(),
             actual = view2.marginBottom
         )
     }
@@ -907,12 +919,14 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_three_extra_space_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_header_three_extra_space_top)
+                .toInt(),
             actual = view2.marginTop
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_three_extra_space_bottom).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_header_three_extra_space_bottom)
+                .toInt(),
             actual = view2.marginBottom
         )
     }
@@ -994,13 +1008,99 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_one_extra_space_top).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_header_one_extra_space_top)
+                .toInt(),
             actual = view2.marginTop
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_one_extra_space_bottom).toInt(),
+            expected = context.resources.getDimension(R.dimen.default_header_one_extra_space_bottom)
+                .toInt(),
             actual = view2.marginBottom
+        )
+    }
+
+    /**
+     *   Q with background.
+     */
+    fun `should not draw background for bookmark block without children`() {
+        val layout = EditorDecorationContainer(context)
+
+        val bg = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+
+        layout.decorate(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = bg,
+                    style = BlockView.Decoration.Style.Card
+                )
+            )
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = layout.childCount
+        )
+    }
+
+    /**
+     *   P with background (A)
+     *   ...Q with background (B - rendered block, child of A)
+     */
+    @Test
+    fun `should draw background of parent and do not draw background of bookmark block - when a block without style with background has one bookmark with background`() {
+        val layout = EditorDecorationContainer(context)
+
+        val bg1 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+        val bg2 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+
+        layout.decorate(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = bg1,
+                    style = BlockView.Decoration.Style.None
+                ),
+                BlockView.Decoration(
+                    background = bg2,
+                    style = BlockView.Decoration.Style.Card
+                )
+            )
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = layout.childCount
+        )
+
+        val view1 = layout.getChildAt(0) // background of A
+
+        assertIs<DecorationWidget.Background>(view1)
+
+        // Background of A and its offsets
+
+        assertEquals(
+            expected = context.resources.veryLight(bg1, 0),
+            actual = (view1.background as ColorDrawable).color
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view1.marginStart
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view1.marginBottom
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view1.marginTop
+        )
+
+        assertEquals(
+            expected = layout.height,
+            actual = view1.height
         )
     }
 }

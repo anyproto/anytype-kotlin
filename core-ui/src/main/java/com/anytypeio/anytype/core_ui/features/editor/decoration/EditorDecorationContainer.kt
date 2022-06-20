@@ -56,6 +56,8 @@ class EditorDecorationContainer @JvmOverloads constructor(
 
         decorations.forEachIndexed { indent, decor ->
 
+            val isLastDecoration = indent == decorations.lastIndex
+
             when (indent) {
                 0 -> {
                     previousOffset = 0
@@ -71,7 +73,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
 
             // Drawing background
 
-            if (decor.background != ThemeColor.DEFAULT) {
+            if (decor.background != ThemeColor.DEFAULT && !decor.style.isCard()) {
                 val lp = LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT
@@ -94,6 +96,9 @@ class EditorDecorationContainer @JvmOverloads constructor(
                             BlockView.Decoration.Style.Header.H3 -> {
                                 topMargin = defaultHeaderThreeExtraSpaceTop
                                 bottomOffset += defaultHeaderThreeExtraSpaceBottom
+                            }
+                            BlockView.Decoration.Style.Card -> {
+
                             }
                             else -> {
                                 // Do nothing
@@ -144,7 +149,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
                 isPreviousHighlight = false
             }
 
-            if (indent == decorations.lastIndex) {
+            if (isLastDecoration) {
                 onApplyContentOffset(previousOffset, bottomOffset)
             }
         }

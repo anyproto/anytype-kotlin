@@ -33,6 +33,7 @@ data class DecorationData(
             object H2 : Header()
             object H3 : Header()
         }
+        object Card : Style()
         /**
          * Add style for [Block.Content.Text.Style.CALLOUT] when it is supported by [DefaultBlockViewRenderer]
          */
@@ -109,6 +110,12 @@ fun NestedDecorationData.toBlockViewDecoration(block: Block): List<BlockView.Dec
             is DecorationData.Style.Header.H3 -> {
                 BlockView.Decoration(
                     style = BlockView.Decoration.Style.Header.H3,
+                    background = holder.background
+                )
+            }
+            is DecorationData.Style.Card -> {
+                BlockView.Decoration(
+                    style = BlockView.Decoration.Style.Card,
                     background = holder.background
                 )
             }

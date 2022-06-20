@@ -145,6 +145,7 @@ sealed class BlockView : ViewType {
         val background: ThemeColor = ThemeColor.DEFAULT
     ) {
         sealed class Style {
+            fun isCard() = this is Card
             object None : Style()
             sealed class Highlight : Style() {
                 object Start : Highlight()
@@ -156,6 +157,7 @@ sealed class BlockView : ViewType {
                 object H2 : Header()
                 object H3 : Header()
             }
+            object Card : Style()
         }
     }
 
@@ -933,13 +935,14 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList(),
             val url: String,
             val title: String?,
             val description: String?,
             val faviconUrl: String? = null,
             val imageUrl: String? = null,
             val isPreviousBlockMedia: Boolean
-        ) : Media(), Searchable {
+        ) : Media(), Searchable, Decoratable {
             override fun getViewType() = HOLDER_BOOKMARK
 
             companion object {

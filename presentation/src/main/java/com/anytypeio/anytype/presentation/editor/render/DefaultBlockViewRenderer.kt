@@ -556,6 +556,14 @@ class DefaultBlockViewRenderer @Inject constructor(
                 }
                 is Content.Bookmark -> {
                     mCounter = 0
+                    val blockDecorationScheme = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentScheme,
+                        currentDecoration = DecorationData(
+                            style = DecorationData.Style.Card,
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
                     result.add(
                         bookmark(
                             mode = mode,
@@ -563,7 +571,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             block = block,
                             indent = indent,
                             selection = selection,
-                            isPreviousBlockMedia = isPreviousBlockMedia
+                            isPreviousBlockMedia = isPreviousBlockMedia,
+                            schema = blockDecorationScheme
                         )
                     )
                     isPreviousBlockMedia = true
@@ -1132,7 +1141,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         indent: Int,
         selection: Set<Id>,
-        isPreviousBlockMedia: Boolean
+        isPreviousBlockMedia: Boolean,
+        schema: NestedDecorationData
     ): BlockView = content.url?.let { url ->
         if (content.title != null && content.description != null) {
             BlockView.Media.Bookmark(
@@ -1150,7 +1160,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     selection = selection
                 ),
                 backgroundColor = block.backgroundColor,
-                isPreviousBlockMedia = isPreviousBlockMedia
+                isPreviousBlockMedia = isPreviousBlockMedia,
+                decorations = schema.toBlockViewDecoration(block)
             )
         } else {
             // TODO maybe refact: if title is null, it does not mean that we have an error state.

@@ -259,9 +259,15 @@
     <dimen name="default_header_three_extra_space_top">16dp</dimen>
     <dimen name="default_header_three_extra_space_bottom">2dp</dimen>
 
+
+    <!-- Editor, block: bookmark -->
+    <dimen name="default_card_block_extra_space_top">10dp</dimen>
+    <dimen name="default_card_block_extra_space_bottom">10dp</dimen>
+
     <!-- Editor, block: highlight -->
 
     <dimen name="default_highlight_content_margin_top">6dp</dimen>
+    <dimen name="default_highlight_content_margin_bottom">6dp</dimen>
     <dimen name="highlight_line_width">2dp</dimen>
 
     <!-- Editor, indentation -->
@@ -270,5 +276,6 @@
     <dimen name="default_graphic_container_width">24dp</dimen>
     <dimen name="default_graphic_container_height">24dp</dimen>
     <dimen name="default_graphic_container_right_offset">4dp</dimen>
+    <dimen name="default_selected_view_offset">8dp</dimen>
 
 </resources>

@@ -2,11 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="6dp"
-    android:layout_marginBottom="6dp"
-    android:paddingStart="@dimen/default_document_item_padding_start"
-    android:paddingEnd="@dimen/default_document_item_padding_end">
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         android:id="@+id/highlightBlockContentContainer"
@@ -17,8 +18,6 @@
         android:addStatesFromChildren="true"
         android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/default_document_content_padding_start"
-        android:paddingEnd="@dimen/default_document_content_padding_end"
         tools:background="@drawable/item_block_multi_select_selected"
         tools:ignore="UselessParent">
 
@@ -28,8 +27,10 @@
             android:layout_height="wrap_content" />
 
         <FrameLayout
+            android:id="@+id/highlightGlyphContainer"
             android:layout_marginTop="@dimen/default_highlight_content_margin_top"
             android:layout_width="24dp"
+            android:background="@drawable/rectangle_debug"
             android:layout_height="match_parent">
 
             <View

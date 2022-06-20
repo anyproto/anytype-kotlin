@@ -8,8 +8,8 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
@@ -18,14 +18,14 @@ class ObjectMenuOptionsProviderImpl(
 ) : ObjectMenuOptionsProvider {
 
     private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = details
-        .mapNotNull { details ->
-            val fields = details[ctx]
-            if (fields != null) {
-                ObjectWrapper.Basic(fields.map).layout
-            } else {
-                Timber.w("Details missing for object: $ctx")
-                null
+        .filter { details ->
+            details.containsKey(ctx).also { present ->
+                if (!present) Timber.w("Details missing for object: $ctx")
             }
+        }
+        .map { details ->
+            val fields = requireNotNull(details[ctx])
+            ObjectWrapper.Basic(fields.map).layout
         }
 
     override fun provide(ctx: Id, isLocked: Boolean): Flow<Options> {

@@ -19,6 +19,8 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
     private var _binding: T? = null
     val binding: T get() = _binding!!
 
+    val sheet: FrameLayout? get() = dialog?.findViewById(BOTTOM_SHEET_ID)
+
     protected val jobs = mutableListOf<Job>()
 
     override fun onCreateView(
@@ -53,8 +55,16 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
         if (fragmentScope) releaseDependencies()
     }
 
+    fun skipCollapsed() {
+        sheet?.let { sheet ->
+            BottomSheetBehavior.from(sheet).apply {
+                skipCollapsed = true
+            }
+        }
+    }
+
     fun expand() {
-        dialog?.findViewById<FrameLayout>(BOTTOM_SHEET_ID)?.let { sheet ->
+        sheet?.let { sheet ->
             BottomSheetBehavior.from(sheet).apply {
                 state = BottomSheetBehavior.STATE_EXPANDED
             }

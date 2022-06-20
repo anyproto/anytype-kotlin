@@ -20,7 +20,13 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.editor.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.GetImageContract
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.core_utils.ext.showSnackbar
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentDocCoverGalleryBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -128,6 +134,8 @@ abstract class SelectCoverGalleryFragment :
                 }
             )
         }
+
+        skipCollapsed()
     }
 
     override fun onStart() {

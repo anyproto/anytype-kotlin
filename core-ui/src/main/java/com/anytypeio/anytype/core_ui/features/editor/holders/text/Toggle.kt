@@ -3,12 +3,19 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -20,14 +27,14 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Toggle(
     val binding: ItemBlockToggleBinding,
     clicked: (ListenerType) -> Unit,
-) : Text(binding.root, clicked), SupportNesting {
+) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     private var mode = BlockView.Mode.EDIT
 
     val toggle = binding.toggle
     private val line = binding.guideline
     private val placeholder = binding.togglePlaceholder
-    private val container = binding.toolbarBlockContentContainer
+    private val container = binding.graphicPlusTextContainer
     override val content: TextInputWidget = binding.toggleContent
     override val root: View = itemView
 
@@ -36,6 +43,8 @@ class Toggle(
     private val mentionCheckedIcon: Drawable?
     private val mentionUncheckedIcon: Drawable?
     private val mentionInitialsSize: Float
+
+    override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
     init {
         setup()
@@ -47,6 +56,24 @@ class Toggle(
             mentionUncheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_0_text_16)
             mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
             mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_default)
+        }
+        applyDefaultOffsets()
+    }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.root.updatePadding(
+                left = dimen(R.dimen.default_document_item_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
+                topMargin = dimen(R.dimen.default_document_item_margin_top)
+                bottomMargin = dimen(R.dimen.default_document_item_margin_bottom)
+            }
+            binding.graphicPlusTextContainer.updatePadding(
+                left = dimen(R.dimen.default_document_content_padding_start),
+                right = dimen(R.dimen.default_document_content_padding_end),
+            )
         }
     }
 
@@ -94,7 +121,9 @@ class Toggle(
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
 
     override fun indentize(item: BlockView.Indentable) {
-        line.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            line.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        }
     }
 
     override fun select(item: BlockView.Selectable) {
@@ -146,6 +175,25 @@ class Toggle(
                 placeholder.isVisible = item.isCreateBlockButtonVisible
             }
         }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(
+                decorations = decorations
+            ) { offsetLeft, offsetBottom ->
+                binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.default_indent) + offsetLeft
+                    marginEnd = dimen(R.dimen.dp_8)
+                    bottomMargin = offsetBottom
+                    // TODO handle top and bottom offsets
+                }
+            }
+        }
+    }
+
+    override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {
+        applyDecorations(decorations = decorations)
     }
 
     companion object {

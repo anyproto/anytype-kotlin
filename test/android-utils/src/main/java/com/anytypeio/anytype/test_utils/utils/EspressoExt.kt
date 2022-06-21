@@ -16,8 +16,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withInputType
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.test_utils.utils.espresso.HasChildViewWithText
 import com.anytypeio.anytype.test_utils.utils.espresso.HasViewGroupChildViewWithText
+import com.anytypeio.anytype.test_utils.utils.espresso.HasViewGroupChildWithBackground
+import com.anytypeio.anytype.test_utils.utils.espresso.HasViewGroupChildWithMarginLeft
 import com.anytypeio.anytype.test_utils.utils.espresso.WithBackgroundColor
 import com.anytypeio.anytype.test_utils.utils.espresso.WithChildViewCount
+import com.anytypeio.anytype.test_utils.utils.espresso.WithMarginStart
 import com.anytypeio.anytype.test_utils.utils.espresso.WithTextColor
 import com.anytypeio.anytype.test_utils.utils.espresso.WithoutBackgroundColor
 import org.hamcrest.Matchers.not
@@ -83,6 +86,16 @@ fun ViewInteraction.checkHasNoBackground() {
     check(matches(WithoutBackgroundColor()))
 }
 
+fun ViewInteraction.checkHasMarginStart(marginStart: Int) {
+    check(
+        matches(
+            WithMarginStart(
+                marginStartExpected = marginStart
+            )
+        )
+    )
+}
+
 fun ViewInteraction.checkHasChildViewCount(count: Int) : ViewInteraction {
     return check(matches(WithChildViewCount(count)))
 }
@@ -102,6 +115,34 @@ fun ViewInteraction.checkHasChildViewWithText(
     target: Int
 ) : ViewInteraction {
     return check(matches(HasChildViewWithText(pos, text, target)))
+}
+
+fun ViewInteraction.checkHasViewGroupChildWithBackground(
+    pos: Int,
+    background: Int
+) : ViewInteraction {
+    return check(
+        matches(
+            HasViewGroupChildWithBackground(
+                pos = pos,
+                background = background
+            )
+        )
+    )
+}
+
+fun ViewInteraction.checkHasViewGroupChildWithMarginLeft(
+    pos: Int,
+    margin: Int
+) : ViewInteraction {
+    return check(
+        matches(
+            HasViewGroupChildWithMarginLeft(
+                pos = pos,
+                margin = margin
+            )
+        )
+    )
 }
 
 fun ViewInteraction.checkHasViewGroupChildWithText(

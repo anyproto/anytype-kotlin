@@ -2,9 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.decoration
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.FrameLayout
-import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -43,6 +41,8 @@ class EditorDecorationContainer @JvmOverloads constructor(
         resources.getDimension(R.dimen.default_header_three_extra_space_bottom)
             .toInt()
     private val defaultGraphicContainerWidth = resources.getDimensionPixelSize(R.dimen.default_graphic_container_width)
+
+    private val defaultTextBottomExtraSpace = resources.getDimension(R.dimen.default_text_bottom_extra_space).toInt()
 
     fun decorate(
         decorations: List<BlockView.Decoration>,
@@ -97,11 +97,8 @@ class EditorDecorationContainer @JvmOverloads constructor(
                                 topMargin = defaultHeaderThreeExtraSpaceTop
                                 bottomOffset += defaultHeaderThreeExtraSpaceBottom
                             }
-                            BlockView.Decoration.Style.Card -> {
-
-                            }
                             else -> {
-                                // Do nothing
+                                // TODO
                             }
                         }
                     }

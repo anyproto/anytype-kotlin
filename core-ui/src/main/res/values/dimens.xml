@@ -277,5 +277,6 @@
     <dimen name="default_graphic_container_height">24dp</dimen>
     <dimen name="default_graphic_container_right_offset">4dp</dimen>
     <dimen name="default_selected_view_offset">8dp</dimen>
+    <dimen name="default_text_bottom_extra_space">2dp</dimen>
 
 </resources>

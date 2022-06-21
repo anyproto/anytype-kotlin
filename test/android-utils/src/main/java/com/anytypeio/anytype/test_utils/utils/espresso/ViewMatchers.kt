@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -22,8 +23,7 @@ import org.hamcrest.TypeSafeMatcher
 class WithTextColor(
     @ColorInt
     private val expectedColor: Int
-) :
-    BoundedMatcher<View, TextView>(TextView::class.java) {
+) : BoundedMatcher<View, TextView>(TextView::class.java) {
     override fun matchesSafely(item: TextView) = item.currentTextColor == expectedColor
     override fun describeTo(description: Description) {
         description.appendText("with text color:")
@@ -64,8 +64,24 @@ class WithChildViewCount(private val expectedCount: Int) :
     }
 }
 
-class HasViewGroupChildViewWithText(private val pos: Int, val text: String) :
-    BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+class WithMarginStart(
+    private val marginStartExpected: Int
+) : BoundedMatcher<View, View>(View::class.java) {
+    override fun describeTo(description: Description) {
+        description.appendText("with margin start:")
+        description.appendValue(marginStartExpected)
+    }
+
+    override fun matchesSafely(item: View): Boolean {
+        val actual = item.marginStart
+        return actual == marginStartExpected
+    }
+}
+
+class HasViewGroupChildViewWithText(
+    private val pos: Int,
+    val text: String
+) : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
 
     private var actual: String? = null
 
@@ -80,6 +96,48 @@ class HasViewGroupChildViewWithText(private val pos: Int, val text: String) :
     override fun describeTo(description: Description) {
         if (actual != null) {
             description.appendText("Should have text [$text] at position: $pos but was: $actual");
+        }
+    }
+}
+
+class HasViewGroupChildWithBackground(
+    private val pos: Int,
+    private val background: Int
+) : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+
+    private var actual: Int? = null
+
+    override fun matchesSafely(item: ViewGroup): Boolean {
+        val child = item.getChildAt(pos)
+        checkNotNull(child) { throw IllegalStateException("No view child at position: $pos") }
+        actual = (child.background as ColorDrawable).color
+        return actual == background
+    }
+
+    override fun describeTo(description: Description) {
+        if (actual != null) {
+            description.appendText("Should have background [${background}] at position: $pos but was: [$actual]");
+        }
+    }
+}
+
+class HasViewGroupChildWithMarginLeft(
+    private val pos: Int,
+    private val margin: Int
+) : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+
+    private var actual: Int? = null
+
+    override fun matchesSafely(item: ViewGroup): Boolean {
+        val child = item.getChildAt(pos)
+        checkNotNull(child) { throw IllegalStateException("No view child at position: $pos") }
+        actual = child.marginStart
+        return actual == margin
+    }
+
+    override fun describeTo(description: Description) {
+        if (actual != null) {
+            description.appendText("Should have margin [${margin}] at position: $pos but was: [$actual]");
         }
     }
 }

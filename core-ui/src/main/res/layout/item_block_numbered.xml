@@ -2,18 +2,20 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/DefaultDocumentContainerStyle">
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
-        android:id="@+id/numberedBlockContentContainer"
+        android:id="@+id/graphicPlusTextContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:addStatesFromChildren="true"
         android:background="@drawable/item_block_multi_select_mode_selector"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/default_document_content_padding_start"
-        android:paddingEnd="@dimen/default_document_content_padding_end"
         tools:background="@drawable/item_block_multi_select_selected"
         tools:ignore="UselessParent">
 
@@ -32,7 +34,7 @@
         <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
             android:id="@+id/numberedListContent"
             style="@style/BlockNumberedContentStyle"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="@dimen/default_graphic_container_right_offset"
             android:hint="@string/hint_numbered_list"
             tools:text="@string/default_text_placeholder" />
 

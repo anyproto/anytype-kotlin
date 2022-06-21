@@ -11,7 +11,7 @@
             app:layout_constraintBottom_toTopOf="@+id/selectionBottomToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnSearch" />
+            app:layout_constraintTop_toBottomOf="@+id/btnMarketplace" />
         <Constraint
             android:id="@+id/tvGreeting">
             <CustomAttribute
@@ -25,19 +25,19 @@
                 app:customFloatValue="1.0" />
         </Constraint>
         <Constraint
-            android:id="@+id/btnOpenSettings"
+            android:id="@+id/btnSearch"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginTop="50dp"
             android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/btnSearch"
+            app:layout_constraintEnd_toStartOf="@+id/btnMarketplace"
             app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
             <CustomAttribute
                 app:attributeName="alpha"
                 app:customFloatValue="1.0" />
         </Constraint>
         <Constraint
-            android:id="@+id/btnSearch"
+            android:id="@+id/btnMarketplace"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginTop="50dp"
@@ -54,7 +54,7 @@
             android:layout_height="52dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="50dp"
-            app:layout_constraintStart_toEndOf="@+id/btnSearch"
+            app:layout_constraintStart_toEndOf="@+id/btnMarketplace"
             app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
             <CustomAttribute
                 app:attributeName="alpha"
@@ -76,13 +76,11 @@
             android:id="@+id/bottomSheet"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="46dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintBottom_toTopOf="@+id/selectionBottomToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/ivSettings" />
         <Constraint
             android:id="@+id/tvGreeting">
             <CustomAttribute
@@ -96,19 +94,19 @@
                 app:customFloatValue="0.0" />
         </Constraint>
         <Constraint
-            android:id="@+id/btnOpenSettings"
+            android:id="@+id/btnSearch"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/btnSearch"
+            app:layout_constraintEnd_toStartOf="@+id/btnMarketplace"
             app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
             <CustomAttribute
                 app:attributeName="alpha"
                 app:customFloatValue="0.0" />
         </Constraint>
         <Constraint
-            android:id="@+id/btnSearch"
+            android:id="@+id/btnMarketplace"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
@@ -125,7 +123,7 @@
             android:layout_height="52dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintStart_toEndOf="@+id/btnSearch"
+            app:layout_constraintStart_toEndOf="@+id/btnMarketplace"
             app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
             <CustomAttribute
                 app:attributeName="alpha"

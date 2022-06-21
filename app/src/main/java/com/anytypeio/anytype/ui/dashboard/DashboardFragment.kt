@@ -418,7 +418,12 @@ class DashboardFragment :
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
-        binding.btnOpenSettings
+        binding.btnMarketplace
+            .clicks()
+            .onEach { toast(getString(R.string.coming_soon)) }
+            .launchIn(lifecycleScope)
+
+        binding.ivSettings
             .clicks()
             .throttleFirst()
             .onEach { vm.onSettingsClicked() }

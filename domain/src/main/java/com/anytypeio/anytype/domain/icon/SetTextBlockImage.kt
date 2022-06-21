@@ -2,24 +2,26 @@ package com.anytypeio.anytype.domain.icon
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class SetDocumentImageIcon(
+class SetTextBlockImage(
     private val repo: BlockRepository
-) : SetImageIcon<Id>() {
+) : SetImageIcon<TextBlockTarget>() {
 
-    override suspend fun run(params: Params<Id>) = safe {
+    override suspend fun run(
+        params: Params<TextBlockTarget>
+    ) = safe {
         val hash = repo.uploadFile(
             command = Command.UploadFile(
                 path = params.path,
                 type = Block.Content.File.Type.IMAGE
             )
         )
-        val payload = repo.setDocumentImageIcon(
-            command = Command.SetDocumentImageIcon(
-                hash = hash,
-                context = params.target
+        val payload = repo.setTextIcon(
+            command = Command.SetTextIcon(
+                icon = Command.SetTextIcon.Icon.Image(hash),
+                context = params.target.context,
+                blockId = params.target.blockId
             )
         )
         Pair(payload, hash)

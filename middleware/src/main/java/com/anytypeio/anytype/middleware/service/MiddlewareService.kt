@@ -284,6 +284,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockTextListSetStyle(request: Rpc.BlockText.ListSetStyle.Request): Rpc.BlockText.ListSetStyle.Response
 
+    @Throws(Exception::class)
+    fun blockTextSetIcon(request: Rpc.BlockText.SetIcon.Request): Rpc.BlockText.SetIcon.Response
+
     //endregion
 
     //region LINK BLOCK commands

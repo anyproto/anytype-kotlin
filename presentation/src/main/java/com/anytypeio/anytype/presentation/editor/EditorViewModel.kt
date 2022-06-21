@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
+import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -79,7 +80,6 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
-import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Intent
@@ -380,8 +380,8 @@ class EditorViewModel(
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
         viewModelScope.launch {
             setDocImageIcon(
-                SetDocumentImageIcon.Params(
-                    context = ctx,
+                SetImageIcon.Params(
+                    target = ctx,
                     path = path
                 )
             ).process(
@@ -3657,6 +3657,9 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.Callout.Icon -> {
+                dispatch(Command.OpenTextBlockIconPicker(clicked.blockId))
+            }
         }
     }
 
@@ -3722,7 +3725,7 @@ class EditorViewModel(
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-            dispatch(Command.OpenDocumentEmojiIconPicker(target = context))
+            dispatch(Command.OpenDocumentEmojiIconPicker)
         } else {
             sendToast(NOT_ALLOWED_FOR_OBJECT)
         }

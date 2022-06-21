@@ -9,9 +9,9 @@ sealed class Command {
 
     data class OpenDocumentImagePicker(val mimeType: Mimetype) : Command()
 
-    data class OpenDocumentEmojiIconPicker(
-        val target: String
-    ) : Command()
+    object OpenDocumentEmojiIconPicker : Command()
+
+    data class OpenTextBlockIconPicker(val block: Id) : Command()
 
     data class OpenGallery(
         val mimeType: Mimetype

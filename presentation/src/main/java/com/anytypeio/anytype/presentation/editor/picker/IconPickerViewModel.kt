@@ -5,11 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.icon.RemoveDocumentIcon
-import com.anytypeio.anytype.domain.icon.SetDocumentEmojiIcon
-import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
+import com.anytypeio.anytype.domain.icon.RemoveIcon
+import com.anytypeio.anytype.domain.icon.SetEmojiIcon
+import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
@@ -17,15 +16,21 @@ import com.anytypeio.anytype.emojifier.suggest.model.EmojiSuggest
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-abstract class ObjectIconPickerBaseViewModel(
-    private val setEmojiIcon: SetDocumentEmojiIcon,
-    private val setImageIcon: SetDocumentImageIcon,
-    private val removeDocumentIcon: RemoveDocumentIcon,
+class IconPickerViewModel<Iconable>(
+    private val setEmojiIcon: SetEmojiIcon<Iconable>,
+    private val setImageIcon: SetImageIcon<Iconable>,
+    private val removeDocumentIcon: RemoveIcon<Iconable>,
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
     private val dispatcher: Dispatcher<Payload>,
@@ -126,13 +131,22 @@ abstract class ObjectIconPickerBaseViewModel(
 
     fun state(): StateFlow<ViewState> = state
 
-    fun onEmojiClicked(unicode: String, target: Id, context: Id) {
+    fun onEmojiClicked(unicode: String, iconable: Iconable) {
+        setEmoji(iconable, unicode)
+    }
+
+    fun onRandomEmoji(iconable: Iconable) {
+        setEmoji(iconable, provider.emojis.random().random())
+    }
+
+    private fun setEmoji(
+        iconable: Iconable, emojiUnicode: String
+    ) {
         viewModelScope.launch {
             setEmojiIcon(
-                params = SetDocumentEmojiIcon.Params(
-                    emoji = unicode,
-                    target = target,
-                    context = context
+                params = SetEmojiIcon.Params(
+                    emoji = emojiUnicode,
+                    target = iconable
                 )
             ).process(
                 failure = { Timber.e(it, "Error while setting emoji") },
@@ -148,28 +162,10 @@ abstract class ObjectIconPickerBaseViewModel(
         }
     }
 
-    fun onRandomEmoji(ctx: Id, target: Id) {
+    fun onRemoveClicked(iconable: Iconable) {
         viewModelScope.launch {
-            setEmojiIcon(
-                params = SetDocumentEmojiIcon.Params(
-                    emoji = provider.emojis.random().random(),
-                    target = target,
-                    context = ctx
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while setting emoji") },
-                success = { payload ->
-                    if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    state.value = ViewState.Exit
-                }
-            )
-        }
-    }
-
-    fun onRemoveClicked(ctx: Id) {
-        viewModelScope.launch {
-            removeDocumentIcon(RemoveDocumentIcon.Params(ctx = ctx)).process(
-                failure = { Timber.e(it, "Error while setting emoji") },
+            removeDocumentIcon(iconable).process(
+                failure = { Timber.e(it, "Error while removing icon") },
                 success = { payload ->
                     sendEvent(
                         analytics = analytics,
@@ -182,20 +178,22 @@ abstract class ObjectIconPickerBaseViewModel(
         }
     }
 
-    fun onPickedFromDevice(ctx: Id, path: String) {
+    fun onPickedFromDevice(iconable: Iconable, path: String) {
         viewModelScope.launch {
             state.value = ViewState.Loading
             setImageIcon(
-                SetDocumentImageIcon.Params(
-                    context = ctx,
+                SetImageIcon.Params(
+                    target = iconable,
                     path = path
                 )
             ).process(
                 failure = {
-                    Timber.e("Error while setting image icon").also { state.value = ViewState.Init }
+                    Timber.e("Error while setting image icon")
+                    state.value = ViewState.Init
                 },
                 success = { (payload, _) ->
-                    dispatcher.send(payload).also { state.value = ViewState.Exit }
+                    dispatcher.send(payload)
+                    state.value = ViewState.Exit
                 }
             )
         }
@@ -216,39 +214,3 @@ abstract class ObjectIconPickerBaseViewModel(
         const val DEBOUNCE_DURATION = 300L
     }
 }
-
-class ObjectIconPickerViewModel(
-    setEmojiIcon: SetDocumentEmojiIcon,
-    setImageIcon: SetDocumentImageIcon,
-    removeDocumentIcon: RemoveDocumentIcon,
-    provider: EmojiProvider,
-    suggester: EmojiSuggester,
-    dispatcher: Dispatcher<Payload>,
-    analytics: Analytics
-) : ObjectIconPickerBaseViewModel(
-    setEmojiIcon = setEmojiIcon,
-    setImageIcon = setImageIcon,
-    removeDocumentIcon = removeDocumentIcon,
-    provider = provider,
-    suggester = suggester,
-    dispatcher = dispatcher,
-    analytics = analytics
-)
-
-class ObjectSetIconPickerViewModel(
-    setEmojiIcon: SetDocumentEmojiIcon,
-    setImageIcon: SetDocumentImageIcon,
-    removeDocumentIcon: RemoveDocumentIcon,
-    provider: EmojiProvider,
-    suggester: EmojiSuggester,
-    dispatcher: Dispatcher<Payload>,
-    analytics: Analytics
-) : ObjectIconPickerBaseViewModel(
-    setEmojiIcon = setEmojiIcon,
-    setImageIcon = setImageIcon,
-    removeDocumentIcon = removeDocumentIcon,
-    provider = provider,
-    suggester = suggester,
-    dispatcher = dispatcher,
-    analytics = analytics
-)

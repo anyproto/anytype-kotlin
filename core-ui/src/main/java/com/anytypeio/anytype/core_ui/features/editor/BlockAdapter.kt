@@ -237,7 +237,10 @@ class BlockAdapter(
 
         val holder = when (viewType) {
             HOLDER_PARAGRAPH -> {
-                Paragraph(ItemBlockTextBinding.inflate(inflater, parent, false))
+                Paragraph(
+                    ItemBlockTextBinding.inflate(inflater, parent, false),
+                    clicked = onClickListener
+                )
             }
             HOLDER_TITLE -> {
                 Title.Document(
@@ -369,17 +372,20 @@ class BlockAdapter(
             }
             HOLDER_HEADER_ONE -> {
                 HeaderOne(
-                    binding = ItemBlockHeaderOneBinding.inflate(inflater, parent, false)
+                    binding = ItemBlockHeaderOneBinding.inflate(inflater, parent, false),
+                    clicked = onClickListener,
                 )
             }
             HOLDER_HEADER_TWO -> {
                 HeaderTwo(
-                    binding = ItemBlockHeaderTwoBinding.inflate(inflater, parent, false)
+                    binding = ItemBlockHeaderTwoBinding.inflate(inflater, parent, false),
+                    clicked = onClickListener,
                 )
             }
             HOLDER_HEADER_THREE -> {
                 HeaderThree(
-                    binding = ItemBlockHeaderThreeBinding.inflate(inflater, parent, false)
+                    binding = ItemBlockHeaderThreeBinding.inflate(inflater, parent, false),
+                    clicked = onClickListener,
                 )
             }
             HOLDER_CODE_SNIPPET -> {
@@ -391,28 +397,28 @@ class BlockAdapter(
                 Checkbox(
                     binding = ItemBlockCheckboxBinding.inflate(
                         inflater, parent, false
-                    )
+                    ), clicked = onClickListener
                 )
             }
             HOLDER_BULLET -> {
                 Bulleted(
                     binding = ItemBlockBulletedBinding.inflate(
                         inflater, parent, false
-                    )
+                    ), clicked = onClickListener
                 )
             }
             HOLDER_NUMBERED -> {
                 Numbered(
                     binding = ItemBlockNumberedBinding.inflate(
                         inflater, parent, false
-                    )
+                    ), clicked = onClickListener
                 )
             }
             HOLDER_TOGGLE -> {
                 Toggle(
                     binding = ItemBlockToggleBinding.inflate(
                         inflater, parent, false
-                    )
+                    ), clicked = onClickListener
                 )
             }
             HOLDER_DESCRIPTION -> {
@@ -624,11 +630,14 @@ class BlockAdapter(
                 Highlight(
                     binding = ItemBlockHighlightBinding.inflate(
                         inflater, parent, false
-                    )
+                    ), clicked = onClickListener
                 )
             }
             HOLDER_CALLOUT -> {
-                Callout(ItemBlockCalloutBinding.inflate(inflater, parent, false))
+                Callout(
+                    binding = ItemBlockCalloutBinding.inflate(inflater, parent, false),
+                    clicked = onClickListener
+                )
             }
             HOLDER_RELATION_DEFAULT -> {
                 RelationViewHolder.Default(
@@ -724,9 +733,6 @@ class BlockAdapter(
             holder.content.setOnClickListener { view ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
-//                    if (view.hasFocus()) {
-//                        view.context.imm().showSoftInput(view, InputMethodManager.SHOW_FORCED)
-//                    }
                     onTextInputClicked(blocks[pos].id)
                 }
             }
@@ -738,11 +744,6 @@ class BlockAdapter(
                         item.isFocused = hasFocus
                     }
                     onFocusChanged(item.id, hasFocus)
-//                    if (hasFocus) {
-//                        holder.content.context
-//                            .imm()
-//                            .showSoftInput(holder.content, InputMethodManager.SHOW_FORCED)
-//                    }
                 }
             }
             holder.content.selectionWatcher = { selection ->
@@ -1141,14 +1142,11 @@ class BlockAdapter(
                             onTextBlockTextChanged(item)
                         }
                     },
-                    onSelectionChanged = onSelectionChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked,
                     onBackPressedCallback = onBackPressedCallback
                 )
             }
@@ -1156,7 +1154,6 @@ class BlockAdapter(
                 holder.bind(
                     block = blocks[position] as BlockView.Text.Header.One,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -1169,7 +1166,6 @@ class BlockAdapter(
                 holder.bind(
                     block = blocks[position] as BlockView.Text.Header.Two,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -1182,7 +1178,6 @@ class BlockAdapter(
                 holder.bind(
                     block = blocks[position] as BlockView.Text.Header.Three,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -1196,14 +1191,11 @@ class BlockAdapter(
                     item = blocks[position] as BlockView.Text.Checkbox,
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onCheckboxClicked = onCheckboxClicked,
-                    onSelectionChanged = onSelectionChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked,
                     onBackPressedCallback = onBackPressedCallback
                 )
             }
@@ -1211,7 +1203,6 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Text.Bulleted,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -1224,7 +1215,6 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Text.Numbered,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -1239,7 +1229,6 @@ class BlockAdapter(
                     onTextBlockTextChanged = onTextBlockTextChanged,
                     onTogglePlaceholderClicked = onTogglePlaceholderClicked,
                     onToggleClicked = onToggleClicked,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
@@ -1255,11 +1244,9 @@ class BlockAdapter(
                     clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
-                    onSelectionChanged = onSelectionChanged,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
                     onSplitLineEnterClicked = onSplitLineEnterClicked,
                     onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
-                    onTextInputClicked = onTextInputClicked,
                     onBackPressedCallback = onBackPressedCallback
                 )
             }
@@ -1267,7 +1254,6 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.Text.Callout,
                     onTextBlockTextChanged = onTextBlockTextChanged,
-                    clicked = onClickListener,
                     onMentionEvent = onMentionEvent,
                     onSlashEvent = onSlashEvent,
                     onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

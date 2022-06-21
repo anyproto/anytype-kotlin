@@ -86,6 +86,10 @@ class BlockMiddleware(
         command: Command.UpdateStyle
     ): Payload = middleware.blockTextListSetStyle(command)
 
+    override suspend fun setTextIcon(
+        command: Command.SetTextIcon
+    ): Payload = middleware.blockTextSetIcon(command)
+
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor
     ): Payload = middleware.blockTextListSetColor(command)
@@ -467,7 +471,8 @@ class BlockMiddleware(
     )
 
     override suspend fun debugSync(): String = middleware.debugSync()
-    override suspend fun debugLocalStore(path: String): String = middleware.debugExportLocalStore(path)
+    override suspend fun debugLocalStore(path: String): String =
+        middleware.debugExportLocalStore(path)
 
     override suspend fun turnInto(
         context: String,

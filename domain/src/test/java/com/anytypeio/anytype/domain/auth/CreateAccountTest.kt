@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.domain.auth
 
-import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount

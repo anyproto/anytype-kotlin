@@ -67,6 +67,10 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.UpdateStyle
     ): Payload = remote.updateTextStyle(command)
 
+    override suspend fun setTextIcon(command: Command.SetTextIcon): Payload {
+        return remote.setTextIcon(command)
+    }
+
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor
     ): Payload = remote.updateTextColor(command)

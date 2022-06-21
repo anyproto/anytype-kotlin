@@ -17,8 +17,12 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Callout(
-    val binding: ItemBlockCalloutBinding
-) : Text(binding.root), BlockViewHolder.IndentableHolder {
+    val binding: ItemBlockCalloutBinding,
+    clicked: (ListenerType) -> Unit,
+) : Text(
+    view = binding.root,
+    clicked = clicked
+), BlockViewHolder.IndentableHolder {
 
     override val root: View = itemView
     override val content: TextInputWidget = binding.calloutText
@@ -48,7 +52,6 @@ class Callout(
     fun bind(
         item: BlockView.Text.Callout,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -64,13 +67,15 @@ class Callout(
             }
             onTextBlockTextChanged(item)
         },
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
         onBackPressedCallback = onBackPressedCallback
     ).also {
         icon.setIcon(item.icon)
+        icon.setOnClickListener {
+            clicked(ListenerType.Callout.Icon(item.id))
+        }
         setupMentionWatcher(onMentionEvent)
         setupSlashWatcher(onSlashEvent, item.getViewType())
     }

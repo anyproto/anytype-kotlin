@@ -6,10 +6,12 @@ import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 
 class HeaderTwo(
-    val binding: ItemBlockHeaderTwoBinding
-) : Header(binding.root) {
+    val binding: ItemBlockHeaderTwoBinding,
+    clicked: (ListenerType) -> Unit,
+) : Header(binding.root, clicked) {
 
     override val header: TextInputWidget = binding.headerTwo
     override val content: TextInputWidget get() = header

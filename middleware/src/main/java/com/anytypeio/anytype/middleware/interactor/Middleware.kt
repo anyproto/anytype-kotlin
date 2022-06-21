@@ -759,6 +759,25 @@ class Middleware(
     }
 
     @Throws(Exception::class)
+    fun blockTextSetIcon(command: Command.SetTextIcon): Payload {
+        val (image, emoji) = when (val icon = command.icon) {
+            is Command.SetTextIcon.Icon.Emoji -> "" to icon.unicode
+            is Command.SetTextIcon.Icon.Image -> icon.hash to ""
+            Command.SetTextIcon.Icon.None -> "" to ""
+        }
+        val request = Rpc.BlockText.SetIcon.Request(
+            contextId = command.context,
+            blockId = command.blockId,
+            iconImage = image,
+            iconEmoji = emoji,
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTextSetIcon(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
     fun blockTextSetChecked(
         context: String,
         target: String,

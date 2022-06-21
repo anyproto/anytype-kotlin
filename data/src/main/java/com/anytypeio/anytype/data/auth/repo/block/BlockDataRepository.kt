@@ -28,16 +28,16 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 
 class BlockDataRepository(
-    private val factory: BlockDataStoreFactory
+    private val remote: BlockDataStore
 ) : BlockRepository {
 
     override suspend fun openDashboard(
         contextId: String,
         id: String
-    ) = factory.remote.openDashboard(id = id, contextId = contextId)
+    ) = remote.openDashboard(id = id, contextId = contextId)
 
     override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
-        Result.Success(factory.remote.openObjectPreview(id))
+        Result.Success(remote.openObjectPreview(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
@@ -45,7 +45,7 @@ class BlockDataRepository(
     }
 
     override suspend fun openPage(id: String): Result<Payload> = try {
-        Result.Success(factory.remote.openPage(id))
+        Result.Success(remote.openPage(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
@@ -53,10 +53,10 @@ class BlockDataRepository(
     }
 
     override suspend fun openProfile(id: String): Payload =
-        factory.remote.openProfile(id)
+        remote.openProfile(id)
 
     override suspend fun openObjectSet(id: String): Result<Payload> = try {
-        Result.Success(factory.remote.openObjectSet(id))
+        Result.Success(remote.openObjectSet(id))
     } catch (e: BackwardCompatilityNotSupportedException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
@@ -64,12 +64,12 @@ class BlockDataRepository(
     }
 
     override suspend fun closeDashboard(id: String) {
-        factory.remote.closeDashboard(id)
+        remote.closeDashboard(id)
     }
 
     override suspend fun updateAlignment(
         command: Command.UpdateAlignment
-    ): Payload = factory.remote.updateAlignment(command)
+    ): Payload = remote.updateAlignment(command)
 
     override suspend fun createPage(
         ctx: Id?,
@@ -77,7 +77,7 @@ class BlockDataRepository(
         isDraft: Boolean?,
         type: String?,
         template: Id?
-    ) = factory.remote.createPage(
+    ) = remote.createPage(
         ctx = ctx,
         emoji = emoji,
         isDraft = isDraft,
@@ -86,59 +86,62 @@ class BlockDataRepository(
     )
 
     override suspend fun closePage(id: String) {
-        factory.remote.closePage(id)
+        remote.closePage(id)
     }
 
     override suspend fun updateDocumentTitle(
         command: Command.UpdateTitle
-    ) = factory.remote.updateDocumentTitle(command)
+    ) = remote.updateDocumentTitle(command)
 
     override suspend fun updateText(command: Command.UpdateText) {
-        factory.remote.updateText(command)
+        remote.updateText(command)
     }
 
     override suspend fun updateTextStyle(
         command: Command.UpdateStyle
-    ): Payload = factory.remote.updateTextStyle(command)
+    ): Payload = remote.updateTextStyle(command)
+
+    override suspend fun setTextIcon(command: Command.SetTextIcon): Payload =
+        remote.setTextIcon(command)
 
     override suspend fun updateTextColor(
         command: Command.UpdateTextColor
-    ): Payload = factory.remote.updateTextColor(command)
+    ): Payload = remote.updateTextColor(command)
 
     override suspend fun setLinkAppearance(command: Command.SetLinkAppearance): Payload {
-        return factory.remote.setLinkAppearance(command)
+        return remote.setLinkAppearance(command)
     }
 
     override suspend fun updateBackgroundColor(
         command: Command.UpdateBackgroundColor
-    ): Payload = factory.remote.updateBackroundColor(command)
+    ): Payload = remote.updateBackroundColor(command)
 
     override suspend fun updateCheckbox(
         command: Command.UpdateCheckbox
-    ): Payload = factory.remote.updateCheckbox(command)
+    ): Payload = remote.updateCheckbox(command)
 
     override suspend fun create(command: Command.Create): Pair<Id, Payload> {
-        return factory.remote.create(command).let { (id, payload) ->
+        return remote.create(command).let { (id, payload) ->
             Pair(id, payload)
         }
     }
 
     override suspend fun replace(
         command: Command.Replace
-    ): Pair<Id, Payload> = factory.remote.replace(command).let { (id, payload) ->
+    ): Pair<Id, Payload> = remote.replace(command).let { (id, payload) ->
         Pair(id, payload)
     }
 
     override suspend fun duplicate(
         command: Command.Duplicate
-    ): Pair<List<Id>, Payload> = factory.remote.duplicate(command).let { (ids, payload) ->
+    ): Pair<List<Id>, Payload> = remote.duplicate(command).let { (ids, payload) ->
         Pair(ids, payload)
     }
 
     override suspend fun createDocument(
         command: Command.CreateDocument
     ): Triple<String, String, Payload> {
-        return factory.remote.createDocument(
+        return remote.createDocument(
             command
         ).let { (id, target, payload) ->
             Triple(id, target, payload)
@@ -148,73 +151,73 @@ class BlockDataRepository(
     override suspend fun createNewDocument(
         command: Command.CreateNewDocument
     ): Id {
-        return factory.remote.createNewDocument(command)
+        return remote.createNewDocument(command)
     }
 
     override suspend fun move(command: Command.Move): Payload {
-        return factory.remote.move(command)
+        return remote.move(command)
     }
 
     override suspend fun unlink(
         command: Command.Unlink
-    ): Payload = factory.remote.unlink(command)
+    ): Payload = remote.unlink(command)
 
     override suspend fun merge(
         command: Command.Merge
-    ): Payload = factory.remote.merge(command)
+    ): Payload = remote.merge(command)
 
     override suspend fun split(
         command: Command.Split
-    ): Pair<Id, Payload> = factory.remote.split(command).let { (id, payload) ->
+    ): Pair<Id, Payload> = remote.split(command).let { (id, payload) ->
         Pair(id, payload)
     }
 
     override suspend fun setDocumentEmojiIcon(
         command: Command.SetDocumentEmojiIcon
-    ): Payload = factory.remote.setDocumentEmojiIcon(command)
+    ): Payload = remote.setDocumentEmojiIcon(command)
 
     override suspend fun setDocumentImageIcon(
         command: Command.SetDocumentImageIcon
-    ): Payload = factory.remote.setDocumentImageIcon(command)
+    ): Payload = remote.setDocumentImageIcon(command)
 
     override suspend fun setDocumentCoverColor(
         ctx: String,
         color: String
-    ): Payload = factory.remote.setDocumentCoverColor(ctx = ctx, color = color)
+    ): Payload = remote.setDocumentCoverColor(ctx = ctx, color = color)
 
     override suspend fun setDocumentCoverGradient(
         ctx: String,
         gradient: String
-    ): Payload = factory.remote.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
+    ): Payload = remote.setDocumentCoverGradient(ctx = ctx, gradient = gradient)
 
     override suspend fun setDocumentCoverImage(
         ctx: String,
         hash: String
-    ): Payload = factory.remote.setDocumentCoverImage(ctx = ctx, hash = hash)
+    ): Payload = remote.setDocumentCoverImage(ctx = ctx, hash = hash)
 
     override suspend fun removeDocumentCover(
         ctx: String
-    ): Payload = factory.remote.removeDocumentCover(ctx)
+    ): Payload = remote.removeDocumentCover(ctx)
 
     override suspend fun removeDocumentIcon(
         ctx: Id
-    ): Payload = factory.remote.removeDocumentIcon(ctx)
+    ): Payload = remote.removeDocumentIcon(ctx)
 
     override suspend fun setupBookmark(
         command: Command.SetupBookmark
-    ): Payload = factory.remote.setupBookmark(command)
+    ): Payload = remote.setupBookmark(command)
 
     override suspend fun createBookmark(
         command: Command.CreateBookmark
-    ): Payload = factory.remote.createBookmark(command)
+    ): Payload = remote.createBookmark(command)
 
     override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
-        factory.remote.uploadBlock(command)
+        remote.uploadBlock(command)
 
     override suspend fun undo(
         command: Command.Undo
     ): Undo.Result = try {
-        Undo.Result.Success(factory.remote.undo(command))
+        Undo.Result.Success(remote.undo(command))
     } catch (e: UndoRedoExhaustedException) {
         Undo.Result.Exhausted
     }
@@ -222,43 +225,43 @@ class BlockDataRepository(
     override suspend fun redo(
         command: Command.Redo
     ): Redo.Result = try {
-        Redo.Result.Success(factory.remote.redo(command))
+        Redo.Result.Success(remote.redo(command))
     } catch (e: UndoRedoExhaustedException) {
         Redo.Result.Exhausted
     }
 
     override suspend fun turnIntoDocument(
         command: Command.TurnIntoDocument
-    ): List<Id> = factory.remote.turnIntoDocument(command)
+    ): List<Id> = remote.turnIntoDocument(command)
 
     override suspend fun paste(
         command: Command.Paste
-    ): Response.Clipboard.Paste = factory.remote.paste(command)
+    ): Response.Clipboard.Paste = remote.paste(command)
 
     override suspend fun copy(
         command: Command.Copy
-    ): Response.Clipboard.Copy = factory.remote.copy(command)
+    ): Response.Clipboard.Copy = remote.copy(command)
 
     override suspend fun uploadFile(
         command: Command.UploadFile
-    ): Hash = factory.remote.uploadFile(command)
+    ): Hash = remote.uploadFile(command)
 
     override suspend fun getObjectInfoWithLinks(
         pageId: String
-    ): ObjectInfoWithLinks = factory.remote.getObjectInfoWithLinks(pageId)
+    ): ObjectInfoWithLinks = remote.getObjectInfoWithLinks(pageId)
 
-    override suspend fun getListPages(): List<DocumentInfo> = factory.remote.getListPages()
+    override suspend fun getListPages(): List<DocumentInfo> = remote.getListPages()
 
     override suspend fun setRelationKey(command: Command.SetRelationKey): Payload =
-        factory.remote.setRelationKey(command)
+        remote.setRelationKey(command)
 
     override suspend fun updateDivider(
         command: Command.UpdateDivider
-    ): Payload = factory.remote.updateDivider(command = command)
+    ): Payload = remote.updateDivider(command = command)
 
     override suspend fun setFields(
         command: Command.SetFields
-    ): Payload = factory.remote.setFields(
+    ): Payload = remote.setFields(
         command = Command.SetFields(
             context = command.context,
             fields = command.fields.map { (id, fields) ->
@@ -271,19 +274,19 @@ class BlockDataRepository(
         context: Id,
         targets: List<Id>,
         style: Block.Content.Text.Style
-    ): Payload = factory.remote.turnInto(
+    ): Payload = remote.turnInto(
         context = context,
         targets = targets,
         style = style
     )
 
     override suspend fun getObjectTypes(): List<ObjectType> {
-        return factory.remote.getObjectTypes()
+        return remote.getObjectTypes()
     }
 
     override suspend fun createObjectType(
         prototype: ObjectType.Prototype
-    ): ObjectType = factory.remote.createObjectType(
+    ): ObjectType = remote.createObjectType(
         ObjectType.Prototype(
             name = prototype.name,
             emoji = prototype.emoji,
@@ -297,7 +300,7 @@ class BlockDataRepository(
         position: Position?,
         objectType: String?
     ): CreateObjectSet.Response {
-        val result = factory.remote.createSet(
+        val result = remote.createSet(
             contextId = context,
             targetId = target,
             objectType = objectType,
@@ -316,7 +319,7 @@ class BlockDataRepository(
         view: Id,
         offset: Int,
         limit: Int
-    ): Payload = factory.remote.setActiveDataViewViewer(
+    ): Payload = remote.setActiveDataViewViewer(
         context = context,
         block = block,
         view = view,
@@ -330,7 +333,7 @@ class BlockDataRepository(
         name: String,
         format: Relation.Format,
         limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = factory.remote.addNewRelationToDataView(
+    ): Pair<Id, Payload> = remote.addNewRelationToDataView(
         context = context,
         target = target,
         name = name,
@@ -342,7 +345,7 @@ class BlockDataRepository(
         ctx: Id,
         dv: Id,
         relation: Id
-    ): Payload = factory.remote.addRelationToDataView(
+    ): Payload = remote.addRelationToDataView(
         ctx = ctx,
         dv = dv,
         relation = relation
@@ -352,7 +355,7 @@ class BlockDataRepository(
         ctx: Id,
         dv: Id,
         relation: Id
-    ): Payload = factory.remote.deleteRelationFromDataView(
+    ): Payload = remote.deleteRelationFromDataView(
         ctx = ctx,
         dv = dv,
         relation = relation
@@ -362,7 +365,7 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         viewer: DVViewer
-    ): Payload = factory.remote.updateDataViewViewer(
+    ): Payload = remote.updateDataViewViewer(
         context = context,
         target = target,
         viewer = viewer
@@ -372,7 +375,7 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         viewer: DVViewer
-    ): Payload = factory.remote.duplicateDataViewViewer(
+    ): Payload = remote.duplicateDataViewViewer(
         context = context,
         target = target,
         viewer = viewer
@@ -383,7 +386,7 @@ class BlockDataRepository(
         target: String,
         name: String,
         type: DVViewerType
-    ): Payload = factory.remote.addDataViewViewer(
+    ): Payload = remote.addDataViewViewer(
         ctx = ctx,
         target = target,
         name = name,
@@ -394,7 +397,7 @@ class BlockDataRepository(
         ctx: Id,
         dataview: Id,
         viewer: Id
-    ): Payload = factory.remote.removeDataViewViewer(
+    ): Payload = remote.removeDataViewViewer(
         ctx = ctx,
         dataview = dataview,
         viewer = viewer
@@ -405,7 +408,7 @@ class BlockDataRepository(
         target: Id,
         record: Id,
         values: Map<String, Any?>
-    ) = factory.remote.updateDataViewRecord(
+    ) = remote.updateDataViewRecord(
         context = context,
         target = target,
         record = record,
@@ -416,7 +419,7 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         template: Id?
-    ): Map<String, Any?> = factory.remote.createDataViewRecord(
+    ): Map<String, Any?> = remote.createDataViewRecord(
         context = context,
         target = target,
         template = template
@@ -429,7 +432,7 @@ class BlockDataRepository(
         record: Id,
         name: Id,
         color: String
-    ): Pair<Payload, Id?> = factory.remote.addDataViewRelationOption(
+    ): Pair<Payload, Id?> = remote.addDataViewRelationOption(
         ctx = ctx,
         dataview = dataview,
         relation = relation,
@@ -443,7 +446,7 @@ class BlockDataRepository(
         relation: Id,
         name: String,
         color: String
-    ): Pair<Payload, Id?> = factory.remote.addObjectRelationOption(
+    ): Pair<Payload, Id?> = remote.addObjectRelationOption(
         ctx = ctx,
         relation = relation,
         name = name,
@@ -457,7 +460,7 @@ class BlockDataRepository(
         offset: Int,
         limit: Int,
         keys: List<Id>
-    ): List<Map<String, Any?>> = factory.remote.searchObjects(
+    ): List<Map<String, Any?>> = remote.searchObjects(
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
@@ -475,7 +478,7 @@ class BlockDataRepository(
         limit: Long,
         beforeId: Id?,
         afterId: Id?
-    ): SearchResult = factory.remote.searchObjectsWithSubscription(
+    ): SearchResult = remote.searchObjectsWithSubscription(
         subscription = subscription,
         sorts = sorts,
         filters = filters,
@@ -490,7 +493,7 @@ class BlockDataRepository(
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
-    ): SearchResult = factory.remote.searchObjectsByIdWithSubscription(
+    ): SearchResult = remote.searchObjectsByIdWithSubscription(
         subscription = subscription,
         ids = ids,
         keys = keys
@@ -498,16 +501,16 @@ class BlockDataRepository(
 
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
-    ) = factory.remote.cancelObjectSearchSubscription(subscriptions)
+    ) = remote.cancelObjectSearchSubscription(subscriptions)
 
-    override suspend fun relationListAvailable(ctx: Id) = factory.remote.relationListAvailable(ctx)
+    override suspend fun relationListAvailable(ctx: Id) = remote.relationListAvailable(ctx)
 
     override suspend fun addRelationToObject(
         ctx: Id, relation: Id
-    ): Payload = factory.remote.addRelationToObject(ctx, relation)
+    ): Payload = remote.addRelationToObject(ctx, relation)
 
     override suspend fun deleteRelationFromObject(ctx: Id, relation: Id): Payload {
-        return factory.remote.deleteRelationFromObject(ctx = ctx, relation = relation)
+        return remote.deleteRelationFromObject(ctx = ctx, relation = relation)
     }
 
     override suspend fun addNewRelationToObject(
@@ -515,78 +518,78 @@ class BlockDataRepository(
         name: String,
         format: RelationFormat,
         limitObjectTypes: List<Id>
-    ): Pair<Id, Payload> = factory.remote.addNewRelationToObject(
+    ): Pair<Id, Payload> = remote.addNewRelationToObject(
         ctx = ctx,
         format = format,
         name = name,
         limitObjectTypes = limitObjectTypes
     )
 
-    override suspend fun debugSync(): String = factory.remote.debugSync()
+    override suspend fun debugSync(): String = remote.debugSync()
     override suspend fun debugLocalStore(path: String): String =
-        factory.remote.debugLocalStore(path)
+        remote.debugLocalStore(path)
 
     override suspend fun updateDetail(
         ctx: Id,
         key: String,
         value: Any?
-    ): Payload = factory.remote.updateDetail(
+    ): Payload = remote.updateDetail(
         ctx = ctx,
         key = key,
         value = value
     )
 
     override suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload =
-        factory.remote.updateBlocksMark(command)
+        remote.updateBlocksMark(command)
 
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
-        factory.remote.addRelationToBlock(command)
+        remote.addRelationToBlock(command)
 
     override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
-        factory.remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
+        remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
 
     override suspend fun addToFeaturedRelations(
         ctx: Id,
         relations: List<Id>
-    ): Payload = factory.remote.addToFeaturedRelations(ctx, relations)
+    ): Payload = remote.addToFeaturedRelations(ctx, relations)
 
     override suspend fun removeFromFeaturedRelations(
         ctx: Id,
         relations: List<Id>
-    ): Payload = factory.remote.removeFromFeaturedRelations(ctx, relations)
+    ): Payload = remote.removeFromFeaturedRelations(ctx, relations)
 
     override suspend fun setObjectIsFavorite(
         ctx: Id,
         isFavorite: Boolean
-    ): Payload = factory.remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
+    ): Payload = remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
 
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload = factory.remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+    ): Payload = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun setObjectListIsArchived(
         targets: List<Id>,
         isArchived: Boolean
-    ) = factory.remote.setObjectListIsArchived(
+    ) = remote.setObjectListIsArchived(
         targets = targets,
         isArchived = isArchived
     )
 
     override suspend fun deleteObjects(targets: List<Id>) =
-        factory.remote.deleteObjects(targets = targets)
+        remote.deleteObjects(targets = targets)
 
     override suspend fun setObjectLayout(ctx: Id, layout: ObjectType.Layout): Payload =
-        factory.remote.setObjectLayout(ctx, layout)
+        remote.setObjectLayout(ctx, layout)
 
-    override suspend fun clearFileCache() = factory.remote.clearFileCache()
+    override suspend fun clearFileCache() = remote.clearFileCache()
 
-    override suspend fun applyTemplate(ctx: Id, template: Id) = factory.remote.applyTemplate(
+    override suspend fun applyTemplate(ctx: Id, template: Id) = remote.applyTemplate(
         ctx = ctx,
         template = template
     )
 
     override suspend fun duplicateObject(id: Id): Id {
-        return factory.remote.duplicateObject(id)
+        return remote.duplicateObject(id)
     }
 }

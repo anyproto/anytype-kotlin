@@ -43,7 +43,16 @@ import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.OnSwipeListener
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
@@ -57,14 +66,18 @@ import com.anytypeio.anytype.presentation.sets.model.SortingExpression
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
-import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
+import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
-import com.anytypeio.anytype.ui.sets.modals.*
+import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
+import com.anytypeio.anytype.ui.sets.modals.ViewerRelationsFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.flow.filterNotNull
@@ -615,8 +628,7 @@ open class ObjectSetFragment :
                 findNavController().navigate(
                     R.id.action_objectSetScreen_to_objectSetIconPickerScreen,
                     bundleOf(
-                        ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
-                        ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to command.target
+                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
                     )
                 )
             }

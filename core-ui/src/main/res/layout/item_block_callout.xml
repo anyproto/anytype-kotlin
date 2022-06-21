@@ -11,12 +11,12 @@
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/callout_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         app:emojiSize="20dp"
         app:imageSize="20dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         android:padding="2dp"
         tools:background="@color/black" />
 

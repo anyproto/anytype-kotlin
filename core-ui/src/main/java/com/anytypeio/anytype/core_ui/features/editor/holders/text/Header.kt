@@ -15,15 +15,15 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 abstract class Header(
-    view: View
-) : Text(view), TextBlockHolder, BlockViewHolder.IndentableHolder {
+    view: View,
+    clicked: (ListenerType) -> Unit,
+) : Text(view, clicked), TextBlockHolder, BlockViewHolder.IndentableHolder {
 
     abstract val header: TextInputWidget
 
     fun bind(
         block: BlockView.Text.Header,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -39,7 +39,6 @@ abstract class Header(
             }
             onTextBlockTextChanged(block)
         },
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

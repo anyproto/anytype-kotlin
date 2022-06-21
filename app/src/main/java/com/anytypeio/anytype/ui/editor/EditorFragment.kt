@@ -100,7 +100,6 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.Snack
-import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
@@ -119,10 +118,11 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
-import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
+import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
 import com.anytypeio.anytype.ui.editor.modals.SetLinkFragment
+import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
@@ -862,13 +862,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentImagePicker -> {
                     pickerDelegate.openFilePicker(command.mimeType, REQUEST_PROFILE_IMAGE_CODE)
                 }
-                is Command.OpenDocumentEmojiIconPicker -> {
+                is Command.OpenTextBlockIconPicker -> {
+                    TextBlockIconPickerFragment.new(
+                        context = ctx, blockId = command.block
+                    ).show(childFragmentManager, null)
+                }
+                Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
                     findNavController().navigate(
                         R.id.action_pageScreen_to_objectIconPickerScreen,
                         bundleOf(
-                            ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
-                            ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to command.target
+                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
                         )
                     )
                 }
@@ -1893,8 +1897,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         findNavController().navigate(
             R.id.objectIconPickerScreen,
             bundleOf(
-                ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
-                ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to ctx,
+                IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
             )
         )
     }

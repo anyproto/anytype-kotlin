@@ -18,8 +18,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Checkbox(
-    val binding: ItemBlockCheckboxBinding
-) : Text(binding.root), SupportNesting {
+    val binding: ItemBlockCheckboxBinding,
+    clicked: (ListenerType) -> Unit,
+) : Text(binding.root, clicked), SupportNesting {
 
     var mode = BlockView.Mode.EDIT
 
@@ -51,14 +52,11 @@ class Checkbox(
         item: BlockView.Text.Checkbox,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
         onCheckboxClicked: (BlockView.Text.Checkbox) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
@@ -69,7 +67,6 @@ class Checkbox(
             }
             onTextBlockTextChanged(item)
         },
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

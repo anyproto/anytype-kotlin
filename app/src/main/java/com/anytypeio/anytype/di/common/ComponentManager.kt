@@ -56,6 +56,7 @@ import com.anytypeio.anytype.di.feature.SetupNewAccountModule
 import com.anytypeio.anytype.di.feature.SetupSelectedAccountModule
 import com.anytypeio.anytype.di.feature.SplashModule
 import com.anytypeio.anytype.di.feature.StartLoginModule
+import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerCustomizeModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerRelationsModule
@@ -225,6 +226,14 @@ class ComponentManager(
             .objectIconPickerComponent()
             .base(ObjectIconPickerBaseModule)
             .module(ObjectIconPickerModule)
+            .build()
+    }
+
+    val textBlockIconPickerComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .textBlockIconPickerComponent()
+            .module(TextBlockIconPickerModule)
             .build()
     }
 

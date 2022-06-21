@@ -487,6 +487,18 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun blockTextSetIcon(request: Rpc.BlockText.SetIcon.Request): Rpc.BlockText.SetIcon.Response {
+        val encoded =
+            Service.blockTextSetIcon(Rpc.BlockText.SetIcon.Request.ADAPTER.encode(request))
+        val response = Rpc.BlockText.SetIcon.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockText.SetIcon.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockTextSetChecked(request: Rpc.BlockText.SetChecked.Request): Rpc.BlockText.SetChecked.Response {
         val encoded = Service.blockTextSetChecked(
             Rpc.BlockText.SetChecked.Request.ADAPTER.encode(request)

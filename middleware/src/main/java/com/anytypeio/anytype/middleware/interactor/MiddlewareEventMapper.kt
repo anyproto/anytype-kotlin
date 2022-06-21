@@ -50,7 +50,9 @@ fun anytype.Event.Message.toCoreModels(
             style = event.style?.value_?.toCoreModels(),
             color = event.color?.value_,
             marks = event.marks?.value_?.marks?.map { it.toCoreModels() },
-            checked = event.checked?.value_
+            checked = event.checked?.value_,
+            emojiIcon = event.iconEmoji?.value_,
+            imageIcon = event.iconImage?.value_,
         )
     }
     blockSetBackgroundColor != null -> {

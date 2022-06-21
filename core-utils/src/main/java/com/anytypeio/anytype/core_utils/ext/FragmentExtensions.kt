@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 inline fun <reified T> Fragment.arg(key: String): T {
-    return requireArguments().get(key) as T
+    return checkNotNull(requireArguments().get(key)) {
+        "Fragment args missing value for $key"
+    } as T
 }
 
 inline fun <reified T> Fragment.argOrNull(key: String): T? {

@@ -14,8 +14,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.decoration.OffsetBottom
-import com.anytypeio.anytype.core_ui.features.editor.decoration.OffsetLeft
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -26,8 +24,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Highlight(
-    val binding: ItemBlockHighlightBinding
-) : Text(binding.root), BlockViewHolder.IndentableHolder, SupportNesting, DecoratableViewHolder {
+    val binding: ItemBlockHighlightBinding,
+    clicked: (ListenerType) -> Unit,
+) : Text(binding.root, clicked), BlockViewHolder.IndentableHolder, SupportNesting, DecoratableViewHolder {
 
     override val content: TextInputWidget = binding.highlightContent
     override val root: View = itemView
@@ -78,14 +77,12 @@ class Highlight(
     fun bind(
         item: BlockView.Text.Highlight,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
         clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
@@ -96,7 +93,6 @@ class Highlight(
             }
             onTextBlockTextChanged(item)
         },
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

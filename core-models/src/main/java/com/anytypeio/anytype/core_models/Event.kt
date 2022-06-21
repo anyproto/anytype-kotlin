@@ -69,7 +69,9 @@ sealed class Event {
             val backgroundColor: String? = null,
             val marks: List<Text.Mark>? = null,
             val alignment: Block.Align? = null,
-            val checked: Boolean? = null
+            val checked: Boolean? = null,
+            val emojiIcon: String? = null,
+            val imageIcon: String? = null,
         ) : Command()
 
         /**

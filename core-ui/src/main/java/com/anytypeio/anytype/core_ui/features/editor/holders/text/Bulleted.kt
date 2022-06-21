@@ -20,8 +20,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Bulleted(
-    val binding: ItemBlockBulletedBinding
-) : Text(binding.root), SupportNesting {
+    val binding: ItemBlockBulletedBinding,
+    clicked: (ListenerType) -> Unit,
+) : Text(binding.root, clicked), SupportNesting {
 
     val indent: View = binding.bulletIndent
     val bullet = binding.bullet
@@ -51,7 +52,6 @@ class Bulleted(
     fun bind(
         item: BlockView.Text.Bulleted,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -67,7 +67,6 @@ class Bulleted(
             }
             onTextBlockTextChanged(item)
         },
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

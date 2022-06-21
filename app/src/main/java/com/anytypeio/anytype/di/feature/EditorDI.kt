@@ -124,6 +124,7 @@ interface EditorSubComponent {
     fun inject(fragment: EditorFragment)
 
     fun objectIconPickerComponent(): ObjectIconPickerComponent.Builder
+    fun textBlockIconPickerComponent(): TextBlockIconPickerComponent.Builder
 
     // Relations
 

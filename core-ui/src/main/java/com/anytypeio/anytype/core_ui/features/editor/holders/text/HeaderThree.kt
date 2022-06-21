@@ -6,10 +6,12 @@ import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 
 class HeaderThree(
-    val binding: ItemBlockHeaderThreeBinding
-) : Header(binding.root) {
+    val binding: ItemBlockHeaderThreeBinding,
+    clicked: (ListenerType) -> Unit,
+) : Header(binding.root, clicked) {
 
     override val header: TextInputWidget = binding.headerThree
     override val content: TextInputWidget get() = header

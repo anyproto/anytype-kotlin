@@ -16,15 +16,15 @@ import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.addDot
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Numbered(
-    val binding: ItemBlockNumberedBinding
-) : Text(binding.root), SupportNesting {
+    val binding: ItemBlockNumberedBinding,
+    clicked: (ListenerType) -> Unit,
+) : Text(binding.root, clicked), SupportNesting {
 
     private val container = binding.numberedBlockContentContainer
     val number = binding.number
@@ -53,7 +53,6 @@ class Numbered(
     fun bind(
         item: BlockView.Text.Numbered,
         onTextBlockTextChanged: (BlockView.Text) -> Unit,
-        clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
@@ -69,7 +68,6 @@ class Numbered(
             }
             onTextBlockTextChanged(item)
         },
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

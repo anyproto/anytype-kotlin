@@ -118,6 +118,24 @@ sealed class Command {
     )
 
     /**
+     * Command for set icon to text block
+     * @property context context id
+     * @property blockId text block id
+     * @property icon
+     */
+    data class SetTextIcon(
+        val context: Id,
+        val blockId: Id,
+        val icon: Icon,
+    ) {
+        sealed interface Icon {
+            object None : Icon
+            data class Emoji(val unicode: String) : Icon
+            data class Image(val hash: Hash) : Icon
+        }
+    }
+
+    /**
      * Command for creating a block
      * @property context id of the context of the block (i.e. page, dashboard or something else)
      * @property target id of the block associated with the block we need to create
@@ -250,12 +268,10 @@ sealed class Command {
     /**
      * Command for setting document's emoji icon
      * @property emoji emoji's unicode
-     * @property target id of the target block (icon)
      * @property context id of the context for this operation
      */
     data class SetDocumentEmojiIcon(
         val context: Id,
-        val target: Id,
         val emoji: String
     )
 

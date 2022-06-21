@@ -15,7 +15,12 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -213,7 +218,6 @@ class MiddlewareTest {
 
         val command = Command.SetDocumentEmojiIcon(
             context = MockDataFactory.randomUuid(),
-            target = MockDataFactory.randomUuid(),
             emoji = MockDataFactory.randomString()
         )
 

@@ -13,7 +13,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Checkable
 
 abstract class Text(
-    view: View
+    view: View,
+    protected val clicked: (ListenerType) -> Unit,
 ) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder {
 
@@ -21,7 +22,6 @@ abstract class Text(
 
     fun bind(
         item: BlockView.TextBlockProps,
-        clicked: (ListenerType) -> Unit,
         onTextChanged: (String, Editable) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,

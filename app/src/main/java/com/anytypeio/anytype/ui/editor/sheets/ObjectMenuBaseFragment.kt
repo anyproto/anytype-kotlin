@@ -22,7 +22,7 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
-import com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment
+import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.relations.RelationListFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -133,8 +133,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
                 findNavController().navigate(
                     R.id.objectIconPickerScreen,
                     bundleOf(
-                        ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
-                        ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to ctx,
+                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
                     )
                 )
             }
@@ -163,8 +162,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
                 findNavController().navigate(
                     R.id.objectSetIconPickerScreen,
                     bundleOf(
-                        ObjectIconPickerBaseFragment.ARG_CONTEXT_ID_KEY to ctx,
-                        ObjectIconPickerBaseFragment.ARG_TARGET_ID_KEY to ctx,
+                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
                     )
                 )
             }

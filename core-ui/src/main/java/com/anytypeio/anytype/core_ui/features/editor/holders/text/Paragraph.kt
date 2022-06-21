@@ -22,8 +22,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Paragraph(
-    val binding: ItemBlockTextBinding
-) : Text(binding.root), SupportNesting, DecoratableViewHolder {
+    val binding: ItemBlockTextBinding,
+    clicked: (ListenerType) -> Unit,
+) : Text(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent
@@ -65,19 +66,15 @@ class Paragraph(
     fun bind(
         item: BlockView.Text.Paragraph,
         onTextChanged: (String, Editable) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
-        clicked: (ListenerType) -> Unit,
         onMentionEvent: (MentionEvent) -> Unit,
         onSlashEvent: (SlashEvent) -> Unit,
         onSplitLineEnterClicked: (String, Editable, IntRange) -> Unit,
         onEmptyBlockBackspaceClicked: (String) -> Unit,
         onNonEmptyBlockBackspaceClicked: (String, Editable) -> Unit,
-        onTextInputClicked: (String) -> Unit,
         onBackPressedCallback: () -> Boolean
     ) = super.bind(
         item = item,
         onTextChanged = onTextChanged,
-        clicked = clicked,
         onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
         onSplitLineEnterClicked = onSplitLineEnterClicked,
         onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,

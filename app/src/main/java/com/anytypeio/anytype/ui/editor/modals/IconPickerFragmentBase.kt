@@ -10,13 +10,13 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.showSnackbar
@@ -25,31 +25,27 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
-import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
-import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseViewModel
-import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerBaseViewModel.ViewState
-import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModel
-import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel
+import com.anytypeio.anytype.presentation.editor.picker.IconPickerViewModel.ViewState
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
-import javax.inject.Inject
 
-abstract class ObjectIconPickerBaseFragment : BaseBottomSheetTextInputFragment<FragmentPageIconPickerBinding>() {
+abstract class IconPickerFragmentBase<T> :
+    BaseBottomSheetTextInputFragment<FragmentPageIconPickerBinding>() {
 
-    protected val target: String
-        get() = requireArguments()
-            .getString(ARG_TARGET_ID_KEY)
-            ?: throw IllegalStateException(MISSING_TARGET_ERROR)
+    protected val context: Id
+        get() = arg(ARG_CONTEXT_ID_KEY)
 
-    protected val context: String
-        get() = requireArguments()
-            .getString(ARG_CONTEXT_ID_KEY)
-            ?: throw IllegalStateException(MISSING_CONTEXT_ERROR)
+    /**
+     * The target for which we choose icon
+     * i.e. Object, callout text block
+     */
+    protected abstract val target: T
 
-    abstract val vm : ObjectIconPickerBaseViewModel
+    abstract val vm: IconPickerViewModel<T>
 
     private val emojiPickerAdapter by lazy {
         DocumentEmojiIconPickerAdapter(
@@ -57,8 +53,7 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetTextInputFragment<F
             onEmojiClicked = { unicode ->
                 vm.onEmojiClicked(
                     unicode = unicode,
-                    target = target,
-                    context = context
+                    iconable = target
                 )
             }
         )
@@ -75,8 +70,8 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetTextInputFragment<F
                 clearSearchText.invisible()
             }
             filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
-            btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(context) }
-            tvTabRandom.setOnClickListener { vm.onRandomEmoji(ctx = context, target = target) }
+            btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(target) }
+            tvTabRandom.setOnClickListener { vm.onRandomEmoji(target) }
             tvTabUpload.setOnClickListener { proceedWithImagePick() }
         }
         skipCollapsed()
@@ -160,12 +155,12 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetTextInputFragment<F
             }
         }
 
-    val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
+    private val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
                 vm.onPickedFromDevice(
-                    ctx = context,
+                    iconable = target,
                     path = path
                 )
             } catch (e: Exception) {
@@ -193,39 +188,12 @@ abstract class ObjectIconPickerBaseFragment : BaseBottomSheetTextInputFragment<F
         private const val EMPTY_FILTER_TEXT = ""
         private const val PAGE_ICON_PICKER_DEFAULT_SPAN_COUNT = 6
         private const val EMOJI_RECYCLER_ITEM_VIEW_CACHE_SIZE = 2000
-        private const val MISSING_TARGET_ERROR = "Missing target id"
         private const val MISSING_CONTEXT_ERROR = "Missing context id"
         private const val UNEXPECTED_VIEW_TYPE_MESSAGE = "Unexpected view type"
 
         const val ARG_CONTEXT_ID_KEY = "arg.picker.context.id"
-        const val ARG_TARGET_ID_KEY = "arg.picker.target.id"
 
         private const val SELECT_IMAGE_CODE = 1
-        private const val COULD_NOT_PARSE_PATH_ERROR = "Could not parse path to your image"
-        private const val REQUEST_PERMISSION_CODE = 2
     }
 }
 
-open class ObjectIconPickerFragment : ObjectIconPickerBaseFragment() {
-
-    @Inject
-    lateinit var factory: ObjectIconPickerViewModelFactory
-    override val vm by viewModels<ObjectIconPickerViewModel> { factory }
-
-    override fun injectDependencies() {
-        componentManager().objectIconPickerComponent.get(context).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().objectIconPickerComponent.release(context)
-    }
-
-    companion object {
-        fun new(context: String, target: String) = ObjectIconPickerFragment().apply {
-            arguments = bundleOf(
-                ARG_CONTEXT_ID_KEY to context,
-                ARG_TARGET_ID_KEY to target
-            )
-        }
-    }
-}

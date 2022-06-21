@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerBaseFragment">
+    tools:context="com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase">
 
     <FrameLayout
         android:layout_width="match_parent"

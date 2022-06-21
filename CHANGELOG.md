@@ -35,7 +35,6 @@
 * Editor | Better DND: when dropping the dragged block without changing its initial position, editor enters select mode (#2261)
 * Editor | Better support for different appearance settings of link-to-object blocks (#2342))
 * Editor | Less aggressive error state for media blocks (#2277)
-* Dashboard | Buttons reordering (#2330)
 
 ## Version 0.7.0
 

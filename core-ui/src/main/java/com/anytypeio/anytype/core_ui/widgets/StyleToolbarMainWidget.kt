@@ -51,6 +51,7 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
             TextStyle.NUMBERED -> select(binding.numbered.id)
             TextStyle.TOGGLE -> select(binding.toggle.id)
             TextStyle.CHECKBOX -> select(binding.checkbox.id)
+            TextStyle.CALLOUT -> select(binding.callout.id)
             else -> select(View.NO_ID)
         }
     }
@@ -87,5 +88,6 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
         numbered.apply { isSelected = id == selectedViewId }
         toggle.apply { isSelected = id == selectedViewId }
         highlight.apply { isSelected = id == selectedViewId }
+        callout.apply { isSelected = id == selectedViewId }
     }
 }

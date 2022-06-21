@@ -3,15 +3,21 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
+import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundTintColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -35,6 +41,8 @@ class Callout(
     private val mentionCheckedIcon: Drawable?
     private val mentionUncheckedIcon: Drawable?
     private val mentionInitialsSize: Float
+
+    private val indentOffset = dimen(R.dimen.default_indent)
 
     init {
         content.setSpannableFactory(DefaultSpannableFactory())
@@ -86,7 +94,21 @@ class Callout(
     }
 
     override fun indentize(item: BlockView.Indentable) {
-//        indent.updateLayoutParams { width = item.indent * dimen(R.dimen.indent) }
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.calloutCardContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = indentOffset + (item.indent * indentOffset)
+                marginEnd = indentOffset
+            }
+        }
+    }
+
+    override fun setBackgroundColor(color: String?) {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.calloutCardContainer.setBlockBackgroundTintColor(
+                color = color,
+                default = ThemeColor.GREY
+            )
+        }
     }
 
     override fun getMentionIconSize(): Int = mentionIconSize

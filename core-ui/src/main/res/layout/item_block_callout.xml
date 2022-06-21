@@ -1,35 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/callout_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="7dp"
-    android:layout_marginBottom="7dp"
     tools:background="@color/palette_light_grey">
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-        android:id="@+id/callout_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        app:emojiSize="20dp"
-        app:imageSize="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="18dp"
-        android:padding="2dp"
-        tools:background="@color/black" />
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-        android:id="@+id/callout_text"
-        style="@style/BlockCalloutContentStyle"
+    <LinearLayout
+        android:id="@+id/calloutCardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:hint="Enter the text"
-        tools:text="Some very very big text in callout block Some very very big text in callout block Some very very big text in callout block" />
+        android:layout_marginTop="@dimen/callout_block_extra_space_top"
+        android:layout_marginBottom="@dimen/callout_block_extra_space_bottom"
+        android:background="@drawable/rect_callout_full"
+        android:orientation="horizontal">
+
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/callout_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:padding="2dp"
+            app:emojiSize="@dimen/default_callout_icon_size"
+            app:imageSize="@dimen/default_callout_icon_size"
+            tools:background="@color/black" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/callout_text"
+            style="@style/BlockCalloutContentStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_graphic_container_right_offset"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:hint="Enter the text"
+            tools:text="Some very very big text in callout block Some very very big text in callout block Some very very big text in callout block" />
+
+    </LinearLayout>
 
 </FrameLayout>

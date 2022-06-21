@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
@@ -102,6 +103,34 @@ fun View.setBlockBackgroundColor(color: String?) {
     }
 }
 
+/**
+ * @param [color] color code, @see [ThemeColor]
+ */
+fun View.setBlockBackgroundTintColor(
+    color: String?,
+    default: ThemeColor = ThemeColor.DEFAULT
+) {
+    if (background == null) return
+    if (!color.isNullOrEmpty()) {
+        val value = ThemeColor.values().find { value -> value.code == color }
+        if (value != null && value != ThemeColor.DEFAULT) {
+            DrawableCompat.setTint(
+                background,
+                resources.veryLight(value, 0)
+            )
+        } else {
+            DrawableCompat.setTint(
+                background,
+                resources.veryLight(default, 0)
+            )
+        }
+    } else {
+        DrawableCompat.setTint(
+            background,
+            resources.veryLight(default, 0)
+        )
+    }
+}
 
 /**
  * @param [color] color code, @see [ThemeColor]

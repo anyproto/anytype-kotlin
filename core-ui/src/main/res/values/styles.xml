@@ -133,8 +133,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:layout_marginStart">4dp</item>
-        <item name="android:paddingTop">3dp</item>
-        <item name="android:paddingBottom">3dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
     </style>
 
     <style name="BlockNumberedContentStyle" parent="DefaultEditorTextStyle">
@@ -195,19 +195,6 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
-    <style name="BlockContactContentStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:layout_marginStart">28dp</item>
-        <item name="android:layout_marginEnd">28dp</item>
-        <item name="android:paddingTop">3dp</item>
-        <item name="android:paddingBottom">3dp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="BlockHighlightContentStyle" parent="DefaultEditorTextStyle">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:background">@null</item>
@@ -222,6 +209,9 @@
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:background">@null</item>
         <item name="android:textColor">@color/text_primary</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
     </style>
 
     <style name="ModalRowTestStyle">
@@ -868,7 +858,8 @@
     <!-- root -->
     <style name="DefaultGraphicTextBlockRootStyle">
         <item name="android:layout_marginTop">@dimen/default_graphic_text_root_margin_top</item>
-        <item name="android:layout_marginBottom">@dimen/default_graphic_text_root_margin_bottom</item>
+        <item name="android:layout_marginBottom">@dimen/default_graphic_text_root_margin_bottom
+        </item>
         <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
     </style>
@@ -903,7 +894,9 @@
     <!-- Media placeholder {root {card {title}} selected}-->
     <!-- root -->
     <style name="DefaultMediaPlaceholderBlockRootStyle">
-        <item name="android:layout_marginBottom">@dimen/default_media_placeholder_root_margin_bottom</item>
+        <item name="android:layout_marginBottom">
+            @dimen/default_media_placeholder_root_margin_bottom
+        </item>
         <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
     </style>
@@ -914,8 +907,10 @@
         <item name="cardElevation">0dp</item>
         <item name="strokeColor">@color/shape_primary</item>
         <item name="strokeWidth">0.5dp</item>
-        <item name="android:layout_marginEnd">@dimen/default_media_placeholder_card_margin_end</item>
-        <item name="android:layout_marginStart">@dimen/default_media_placeholder_card_margin_start</item>
+        <item name="android:layout_marginEnd">@dimen/default_media_placeholder_card_margin_end
+        </item>
+        <item name="android:layout_marginStart">@dimen/default_media_placeholder_card_margin_start
+        </item>
         <item name="android:paddingStart">@dimen/default_media_placeholder_card_padding_start</item>
         <item name="android:paddingEnd">@dimen/default_media_placeholder_card_padding_end</item>
     </style>

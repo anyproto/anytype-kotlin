@@ -278,5 +278,9 @@
     <dimen name="default_graphic_container_right_offset">4dp</dimen>
     <dimen name="default_selected_view_offset">8dp</dimen>
     <dimen name="default_text_bottom_extra_space">2dp</dimen>
+    <dimen name="callout_block_extra_space_top">7dp</dimen>
+    <dimen name="callout_block_extra_space_bottom">7dp</dimen>
+    <dimen name="default_callout_card_radius">2dp</dimen>
+    <dimen name="default_callout_icon_size">20dp</dimen>
 
 </resources>

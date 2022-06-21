@@ -72,6 +72,12 @@ fun List<BlockView>.singleStylingMode(
             isFocused = false,
             cursor = null
         )
+        is BlockView.Text.Callout -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected,
+            isFocused = false,
+            cursor = null
+        )
         is BlockView.Code -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected
@@ -151,7 +157,9 @@ fun List<BlockView>.singleStylingMode(
         is BlockView.Description -> view.copy(
             mode = BlockView.Mode.READ
         )
-        else -> view.also { check(view !is BlockView.Permission) }
+        else -> view.also {
+            check(view !is BlockView.Permission) { "Actual type was: ${view.getViewType()}" }
+        }
     }
 }
 
@@ -393,6 +401,12 @@ fun List<BlockView>.updateCursorAndEditMode(
             isFocused = isTarget,
             cursor = if (isTarget) cursor else null
         )
+        is BlockView.Text.Callout -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false,
+            isFocused = isTarget,
+            cursor = if (isTarget) cursor else null
+        )
         is BlockView.Code -> view.copy(
             mode = BlockView.Mode.EDIT,
             isSelected = false,
@@ -423,7 +437,9 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
-        else -> view.also { check(view !is BlockView.Permission) }
+        else -> view.also {
+            check(view !is BlockView.Permission) { "Actual type is: ${view.getViewType()}" }
+        }
     }
 }
 

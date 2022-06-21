@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -22,7 +23,7 @@ class Callout(
 ) : Text(
     view = binding.root,
     clicked = clicked
-), BlockViewHolder.IndentableHolder {
+), BlockViewHolder.IndentableHolder, SupportNesting {
 
     override val root: View = itemView
     override val content: TextInputWidget = binding.calloutText

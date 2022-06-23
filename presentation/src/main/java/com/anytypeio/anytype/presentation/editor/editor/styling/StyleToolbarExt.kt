@@ -119,7 +119,8 @@ private fun Block.Content.Text.alignmentSupport(): List<Alignment> = when (this.
 fun Block.Content.Text.getSupportedMarkupTypes(): List<Markup.Type> = when (style) {
     Block.Content.Text.Style.P, Block.Content.Text.Style.QUOTE,
     Block.Content.Text.Style.BULLET, Block.Content.Text.Style.NUMBERED,
-    Block.Content.Text.Style.TOGGLE, Block.Content.Text.Style.CHECKBOX -> {
+    Block.Content.Text.Style.TOGGLE, Block.Content.Text.Style.CHECKBOX,
+    Block.Content.Text.Style.CALLOUT -> {
         listOf(
             Markup.Type.BOLD,
             Markup.Type.ITALIC,

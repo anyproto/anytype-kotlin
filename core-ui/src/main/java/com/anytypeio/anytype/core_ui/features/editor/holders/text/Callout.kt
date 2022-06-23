@@ -90,7 +90,7 @@ class Callout(
     }
 
     override fun select(item: BlockView.Selectable) {
-        container.isSelected = item.isSelected
+        binding.selectionView.isSelected = item.isSelected
     }
 
     override fun indentize(item: BlockView.Indentable) {

@@ -1,0 +1,45 @@
+on:
+  workflow_dispatch:
+name: Build signed release APK
+jobs:
+  setup-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup middleware dependency
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug
+
+      - name: Decrypt secrets
+        run: ./scripts/release/decrypt-secrets.sh
+        env:
+          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
+
+      - name: Setup keystore
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PWD: ${{ secrets.RELEASE_KEY_PWD }}
+          RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
+        run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
+
+      - name: Build APKS
+        run: ./gradlew :app:assembleRelease
+
+      - name: Build AAB
+        run: ./gradlew :app:bundleRelease
+
+      - name: Clean secrets
+        if: always()
+        run: ./scripts/release/clean-secrets.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: APK + BUNDLE
+          path: |
+            app/build/outputs/apk/release/
+            app/build/outputs/bundle/release/

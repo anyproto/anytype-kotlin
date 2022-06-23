@@ -10,9 +10,7 @@ def apikeyPropertiesFile = rootProject.file("apikeys.properties")
 def apikeyProperties = new Properties()
 apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
-//def keystorePropertiesFile = rootProject.file("signing.properties")
-//def keystoreProperties = new Properties()
-//keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+def useReleaseKeystore = rootProject.file("scripts/release/app-release.jks").exists()
 
 android {
     def config = rootProject.ext
@@ -36,32 +34,32 @@ android {
     }
 
 
-//    signingConfigs {
-//        //For proper signing, use debuggable false for a build.
-//        release {
-//            keyAlias keystoreProperties['RELEASE_KEY_ALIAS']
-//            keyPassword keystoreProperties['RELEASE_KEY_PASSWORD']
-//            storeFile file(keystoreProperties['RELEASE_STORE_FILE'])
-//            storePassword keystoreProperties['RELEASE_STORE_PASSWORD']
-//            v1SigningEnabled true
-//            v2SigningEnabled true
-//        }
-//        debug {
-//            keyAlias keystoreProperties['DEBUG_KEY_ALIAS']
-//            keyPassword keystoreProperties['DEBUG_KEY_PASSWORD']
-//            storeFile file(keystoreProperties['DEBUG_STORE_FILE'])
-//            storePassword keystoreProperties['DEBUG_STORE_PASSWORD']
-//            v1SigningEnabled true
-//            v2SigningEnabled true
-//        }
-//    }
+    signingConfigs {
+        release {
+            if (useReleaseKeystore) {
+                def keystorePropertiesFile = rootProject.file("signing.properties")
+                def keystoreProperties = new Properties()
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+                storeFile rootProject.file("scripts/release/app-release.jks")
+                keyAlias keystoreProperties['RELEASE_KEY_ALIAS']
+                keyPassword keystoreProperties['RELEASE_KEY_PASSWORD']
+                storePassword keystoreProperties['RELEASE_STORE_PASSWORD']
+                v1SigningEnabled true
+                v2SigningEnabled true
+            }
+        }
+    }
 
     buildTypes {
         release {
             minifyEnabled false
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
-            //signingConfig signingConfigs.release
+            if (useReleaseKeystore) {
+                signingConfig signingConfigs.release
+            }
         }
 
         debug {

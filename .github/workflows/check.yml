@@ -9,6 +9,7 @@ jobs:
   setup-android:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@master
       - name: Setup middleware dependency
         env:
@@ -17,10 +18,13 @@ jobs:
           amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
           amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
         run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug
+
       - name: Compile android test sources
         run: ./gradlew compileDebugAndroidTestSources -q
+
       - name: Run unit tests
         run: ./gradlew testDebugAll -Dpre-dex=false -q
+
       - name: Android test report
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }} # IMPORTANT: run Android Test Report regardless

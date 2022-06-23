@@ -259,7 +259,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private val blockAdapter by lazy {
         BlockAdapter(
             restore = vm.restore,
-            blocks = mutableListOf(),
+            initialBlock = mutableListOf(),
             onTextChanged = { id, editable ->
                 vm.onTextChanged(
                     id = id,

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundTintColor
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.marks
@@ -87,6 +88,34 @@ class Callout(
         }
         setupMentionWatcher(onMentionEvent)
         setupSlashWatcher(onSlashEvent, item.getViewType())
+    }
+
+    override fun processChangePayload(
+        payloads: List<BlockViewDiffUtil.Payload>,
+        item: BlockView,
+        onTextChanged: (BlockView.Text) -> Unit,
+        onSelectionChanged: (String, IntRange) -> Unit,
+        clicked: (ListenerType) -> Unit,
+        onMentionEvent: (MentionEvent) -> Unit,
+        onSlashEvent: (SlashEvent) -> Unit
+    ) {
+        val callout = requireNotNull(item as? BlockView.Text.Callout) {
+            "Failed to processChangePayload. $item must be Callout"
+        }
+        payloads.forEach {payload ->
+            if(payload.isCalloutIconChanged) {
+                icon.setIcon(callout.icon)
+            }
+        }
+        super.processChangePayload(
+            payloads,
+            item,
+            onTextChanged,
+            onSelectionChanged,
+            clicked,
+            onMentionEvent,
+            onSlashEvent
+        )
     }
 
     override fun select(item: BlockView.Selectable) {

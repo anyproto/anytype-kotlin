@@ -8,6 +8,7 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import androidx.annotation.CallSuper
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.CheckedCheckboxColorSpan
@@ -20,9 +21,9 @@ import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.extensions.resolveThemedTextColor
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
-import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
@@ -277,6 +278,7 @@ interface TextBlockHolder : TextHolder {
         )
     }
 
+    @CallSuper
     fun processChangePayload(
         payloads: List<BlockViewDiffUtil.Payload>,
         item: BlockView,

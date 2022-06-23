@@ -9,7 +9,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_ui.features.editor.holders.text.*
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderOne
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderThree
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.HeaderTwo
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Highlight
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Numbered
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
+import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BULLET
@@ -371,7 +379,7 @@ class BlockAdapterCursorBindingTest {
     ): BlockAdapter {
         return BlockAdapter(
             restore = LinkedList(),
-            blocks = views,
+            initialBlock = views,
             onNonEmptyBlockBackspaceClicked = { _, _ -> },
             onEmptyBlockBackspaceClicked = {},
             onSplitLineEnterClicked = { _, _, _ -> },

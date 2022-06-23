@@ -34,7 +34,7 @@ open class BlockAdapterTestSetup {
     ): BlockAdapter {
         return BlockAdapter(
             restore = LinkedList(),
-            blocks = views,
+            initialBlock = views,
             onNonEmptyBlockBackspaceClicked = onNonEmptyBlockBackspaceClicked,
             onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,
             onSplitLineEnterClicked = onSplitLineEnterClicked,

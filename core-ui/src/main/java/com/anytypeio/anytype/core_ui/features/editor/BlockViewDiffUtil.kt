@@ -229,6 +229,12 @@ class BlockViewDiffUtil(
             }
         }
 
+        if(newBlock is BlockView.Text.Callout && oldBlock is BlockView.Text.Callout) {
+            if(newBlock.icon != oldBlock.icon) {
+                changes.add(CALLOUT_ICON_CHANGED)
+            }
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -273,6 +279,8 @@ class BlockViewDiffUtil(
 
         val isDecorationChanged: Boolean get() = changes.contains(DECORATION_CHANGED)
 
+        val isCalloutIconChanged: Boolean get() = changes.contains(CALLOUT_ICON_CHANGED)
+
         fun markupChanged() = changes.contains(MARKUP_CHANGED)
         fun textChanged() = changes.contains(TEXT_CHANGED)
         fun textColorChanged() = changes.contains(TEXT_COLOR_CHANGED)
@@ -313,5 +321,6 @@ class BlockViewDiffUtil(
         const val OBJECT_DESCRIPTION_CHANGED = 25
 
         const val DECORATION_CHANGED = 27
+        const val CALLOUT_ICON_CHANGED = 28
     }
 }

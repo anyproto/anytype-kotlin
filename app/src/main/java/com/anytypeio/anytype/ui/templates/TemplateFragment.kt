@@ -37,7 +37,7 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
     private val templateAdapter by lazy {
         BlockAdapter(
             restore = LinkedList(),
-            blocks = mutableListOf(),
+            initialBlock = mutableListOf(),
             onTextChanged = { _, _ -> },
             onTextBlockTextChanged = {},
             onDescriptionChanged = { },

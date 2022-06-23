@@ -170,7 +170,7 @@ import java.util.*
  */
 class BlockAdapter(
     private var restore: Queue<Editor.Restore>,
-    private var blocks: List<BlockView>,
+    initialBlock: List<BlockView>,
     private val onDescriptionChanged: (BlockView.Description) -> Unit = {},
     private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
     private val onTextChanged: (String, Editable) -> Unit,
@@ -201,6 +201,7 @@ class BlockAdapter(
     private val dragAndDropSelector: DragAndDropSelector,
 ) : RecyclerView.Adapter<BlockViewHolder>(), DragAndDropSelector by dragAndDropSelector {
 
+    private var blocks: List<BlockView> = initialBlock
     val views: List<BlockView> get() = blocks
 
     private var isInDragAndDropMode = false

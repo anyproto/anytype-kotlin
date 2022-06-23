@@ -29,7 +29,7 @@ fun givenAdapter(
 ): BlockAdapter {
     return BlockAdapter(
         restore = LinkedList(),
-        blocks = views,
+        initialBlock = views,
         onNonEmptyBlockBackspaceClicked = { _, _ -> },
         onEmptyBlockBackspaceClicked = {},
         onSplitLineEnterClicked = onSplitLineEnterClicked,

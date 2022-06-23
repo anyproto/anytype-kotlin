@@ -148,7 +148,8 @@ fun StubQuote(
 fun StubCallout(
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
-    marks: List<Block.Content.Text.Mark> = emptyList()
+    marks: List<Block.Content.Text.Mark> = emptyList(),
+    backgroundColor: String? = null
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
     content = StubTextContent(
@@ -157,7 +158,8 @@ fun StubCallout(
         marks = marks
     ),
     children = children,
-    fields = Block.Fields.empty()
+    fields = Block.Fields.empty(),
+    backgroundColor = backgroundColor
 )
 
 fun StubRelation(

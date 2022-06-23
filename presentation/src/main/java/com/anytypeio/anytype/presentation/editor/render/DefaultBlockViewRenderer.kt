@@ -518,8 +518,17 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.CALLOUT -> {
                             mCounter = 0
-                            // TODO support nesting background
-                            val normalized = emptyList<DecorationData>()
+                            val blockDecorationScheme: NestedDecorationData = buildNestedDecorationData(
+                                block = block,
+                                parentScheme = parentScheme,
+                                currentDecoration = DecorationData(
+                                    style = DecorationData.Style.Callout(
+                                        start = block.id,
+                                        end = block.children.lastOrNull() ?: block.id
+                                    ),
+                                    background = block.parseThemeBackgroundColor()
+                                )
+                            )
                             result.add(
                                 callout(
                                     mode = mode,
@@ -529,7 +538,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     indent = indent,
                                     details = details,
                                     selection = selection,
-                                    scheme = normalized
+                                    scheme = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -546,8 +555,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        // TODO support nesting background
-                                        parentScheme = emptyList()
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -1033,8 +1041,6 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details,
             marks = marks
         )
-        // TODO support nesting
-        val current = emptyList<BlockView.Decoration>()
         val iconImage = content.iconImage
         val iconEmoji = content.iconEmoji
         val icon = when {
@@ -1057,7 +1063,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            decorations = scheme.toBlockViewDecoration(block) + current,
+            decorations = scheme.toBlockViewDecoration(block),
             icon = icon
         )
     }

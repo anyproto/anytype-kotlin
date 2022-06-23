@@ -152,6 +152,12 @@ sealed class BlockView : ViewType {
                 object Middle: Highlight()
                 object End : Highlight()
             }
+            sealed class Callout : Style() {
+                object Start : Callout()
+                object Middle: Callout()
+                object End : Callout()
+                object Full : Callout()
+            }
             sealed class Header: Style() {
                 object H1 : Header()
                 object H2 : Header()

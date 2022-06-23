@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.model.Indent
 
 /**
  * Mapping indent level to gathered information about parents (ancestors) styles during document graph traversal.
@@ -28,17 +27,18 @@ data class DecorationData(
          * [end] value is calculated while graph traversal and depends on the depth / indent level.
          */
         data class Highlight(val start: Id, val end: Id) : Style()
+        /**
+         * @property [start] id of the starting block for callout style
+         * @property [end] id of the last block for callout style.
+         * [end] value is calculated while graph traversal and depends on the depth / indent level.
+         */
+        data class Callout(val start: Id, val end: Id) : Style()
         sealed class Header : Style() {
             object H1 : Header()
             object H2 : Header()
             object H3 : Header()
         }
         object Card : Style()
-        /**
-         * Add style for [Block.Content.Text.Style.CALLOUT] when it is supported by [DefaultBlockViewRenderer]
-         */
-        //
-        //data class Callout(val start: Id, val end: Id) : Style()
     }
 }
 
@@ -67,6 +67,20 @@ fun buildNestedDecorationData(
                     add(holder)
                 }
             }
+            is DecorationData.Style.Callout -> {
+                if (block.id == style.end) {
+                    // Block is a closing block for a callout style
+                    if (block.children.isEmpty()) {
+                        add(holder)
+                    } else {
+                        // But it has children, so its last child is supposed to be a closing block.
+                        add(holder.copy(style = style.copy(end = block.children.last())))
+                    }
+                } else {
+                    // It is not a closing block for callout, no need to normalize it.
+                    add(holder)
+                }
+            }
             else -> add(holder)
         }
     }
@@ -91,6 +105,29 @@ fun NestedDecorationData.toBlockViewDecoration(block: Block): List<BlockView.Dec
                 } else {
                     BlockView.Decoration(
                         style = BlockView.Decoration.Style.Highlight.Middle,
+                        background = holder.background
+                    )
+                }
+            }
+            is DecorationData.Style.Callout -> {
+                if (style.start == style.end) {
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Full,
+                        background = holder.background
+                    )
+                } else if (style.start == block.id) {
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Start,
+                        background = holder.background
+                    )
+                } else if (style.end == block.id) {
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.End,
+                        background = holder.background
+                    )
+                } else {
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.Callout.Middle,
                         background = holder.background
                     )
                 }
@@ -136,6 +173,19 @@ fun normalizeNestedDecorationData(
     return parentScheme.map { holder ->
         when (val style = holder.style) {
             is DecorationData.Style.Highlight -> {
+                if (block.id == style.end) {
+                    if (block.children.isEmpty()) {
+                        holder
+                    } else {
+                        holder.copy(
+                            style = style.copy(end = block.children.last())
+                        )
+                    }
+                } else {
+                    holder
+                }
+            }
+            is DecorationData.Style.Callout -> {
                 if (block.id == style.end) {
                     if (block.children.isEmpty()) {
                         holder

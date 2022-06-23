@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubBookmark
+import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.ext.asMap
@@ -29,7 +30,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
-import com.anytypeio.anytype.presentation.editor.render.DecorationData
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.NestedDecorationData
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
@@ -4451,6 +4451,10 @@ class DefaultBlockViewRendererTest {
 
     // Quote nesting
 
+    /**
+     * Q with background
+     * ...P with background
+     */
     @Test
     fun `should return blocks with expected decoration - when a quote contains a paragraph`() {
         val child = Block(
@@ -5388,4 +5392,258 @@ class DefaultBlockViewRendererTest {
 
         assertEquals(expected = expected, actual = result)
     }
+
+    //region Callout nesting
+
+    /**
+     * C with background. No children.
+     */
+
+    @Test
+    fun `should return blocks with expected decoration - when a callout without children has background`() {
+
+        val callout = StubCallout(backgroundColor = ThemeColor.BLUE.code)
+        val page = StubSmartBlock(children = listOf(callout.id))
+        val details = mapOf(page.id to Block.Fields.empty())
+        val blocks = listOf(page, callout)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Callout(
+                indent = 0,
+                isFocused = false,
+                id = callout.id,
+                marks = emptyList(),
+                backgroundColor = callout.backgroundColor,
+                color = callout.content<Block.Content.Text>().color,
+                text = callout.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Callout.Full,
+                            background = callout.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                },
+                icon = ObjectIcon.Basic.Emoji("💡")
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+
+    /**
+     * C with background
+     * ...P with background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a callout contains a paragraph`() {
+
+        val child = StubParagraph(backgroundColor = ThemeColor.ORANGE.code)
+
+        val callout = StubCallout(
+            children = listOf(child.id),
+            backgroundColor = ThemeColor.BLUE.code
+        )
+
+        val page = StubSmartBlock(children = listOf(callout.id))
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, callout, child)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Callout(
+                indent = 0,
+                isFocused = false,
+                id = callout.id,
+                marks = emptyList(),
+                backgroundColor = callout.backgroundColor,
+                color = callout.content<Block.Content.Text>().color,
+                text = callout.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Callout.Start,
+                            background = callout.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                },
+                icon = ObjectIcon.Basic.Emoji("💡")
+            ),
+            BlockView.Text.Paragraph(
+                indent = 1,
+                isFocused = false,
+                id = child.id,
+                marks = emptyList(),
+                backgroundColor = child.backgroundColor,
+                color = child.content<Block.Content.Text>().color,
+                text = child.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = callout.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Callout.End
+                        ),
+                        BlockView.Decoration(
+                            background = child.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    /**
+     * C with background
+     * ...P with background
+     * ...P with background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a callout with background contains two paragraphs, each paragraph has its own background`() {
+
+        val child1 = StubParagraph(backgroundColor = ThemeColor.ORANGE.code)
+        val child2 = StubParagraph(backgroundColor = ThemeColor.ORANGE.code)
+
+        val callout = StubCallout(
+            children = listOf(child1.id, child2.id),
+            backgroundColor = ThemeColor.BLUE.code
+        )
+
+        val page = StubSmartBlock(children = listOf(callout.id))
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, callout, child1, child2)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Callout(
+                indent = 0,
+                isFocused = false,
+                id = callout.id,
+                marks = emptyList(),
+                backgroundColor = callout.backgroundColor,
+                color = callout.content<Block.Content.Text>().color,
+                text = callout.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Callout.Start,
+                            background = callout.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                },
+                icon = ObjectIcon.Basic.Emoji("💡")
+            ),
+            BlockView.Text.Paragraph(
+                indent = 1,
+                isFocused = false,
+                id = child1.id,
+                marks = emptyList(),
+                backgroundColor = child1.backgroundColor,
+                color = child1.content<Block.Content.Text>().color,
+                text = child1.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = callout.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Callout.Middle
+                        ),
+                        BlockView.Decoration(
+                            background = child1.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            ),
+            BlockView.Text.Paragraph(
+                indent = 1,
+                isFocused = false,
+                id = child2.id,
+                marks = emptyList(),
+                backgroundColor = child2.backgroundColor,
+                color = child2.content<Block.Content.Text>().color,
+                text = child2.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = callout.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Callout.End
+                        ),
+                        BlockView.Decoration(
+                            background = child2.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    //endregion
 }

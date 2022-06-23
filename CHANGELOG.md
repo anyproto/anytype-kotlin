@@ -1,6 +1,6 @@
 # Change log for Android @Anytype app.
 
-## Version 0.8.1
+## Version 0.8.2
 
 ### New features & enhancements 🚀
 

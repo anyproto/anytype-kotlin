@@ -430,12 +430,12 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override var cursor: Int? = null,
-            override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
             override val decorations: List<Decoration>,
             val icon: ObjectIcon,
         ) : Text() {
+            override val alignment: Alignment? = null
             override fun getViewType() = HOLDER_CALLOUT
             override val body: String get() = text
         }

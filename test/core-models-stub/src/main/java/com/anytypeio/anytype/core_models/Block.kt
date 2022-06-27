@@ -149,13 +149,17 @@ fun StubCallout(
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
     marks: List<Block.Content.Text.Mark> = emptyList(),
-    backgroundColor: String? = null
+    backgroundColor: String? = null,
+    iconEmoji: String? = null,
+    iconImage: String? = null,
 ): Block = Block(
     id = MockDataFactory.randomUuid(),
     content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.CALLOUT,
-        marks = marks
+        marks = marks,
+        iconEmoji = iconEmoji,
+        iconImage = iconImage,
     ),
     children = children,
     fields = Block.Fields.empty(),

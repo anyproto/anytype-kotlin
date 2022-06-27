@@ -1055,7 +1055,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             marks = normalizedMarks,
             indent = indent,
-            alignment = content.align?.toView(), color = content.color,
+            color = content.color,
             backgroundColor = block.backgroundColor ?: ThemeColor.GREY.code,
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(

@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.presentation.editor
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.Store
+import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import kotlinx.coroutines.flow.Flow
@@ -13,21 +15,66 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 interface Editor {
 
+    /**
+     * Mode of user interaction with the editor.
+     */
     sealed class Mode {
+
+        /**
+         * Default mode of interaction with the editor: content editing is fully enabled.
+         */
         object Edit : Mode()
+
+        /**
+         * Editor in preview state.
+         * Currently used for templates, which can't be edited.
+         */
         object Read : Mode()
+
+        /**
+         * Editor in locked state.
+         * Locked mode is toggled in object menu.
+         */
+        object Locked: Mode()
+
+        /**
+         * Editor in select mode: when one or multiple blocks are selected.
+         * To enter this mode, user long-clicks a block.
+         */
         object Select : Mode()
+
+        /**
+         * Editor in scroll-and-move mode: one or multiple blocks are selected, then moved to new position by scrolling.
+         * @see [ActionItemType.SAM]
+         */
         object SAM : Mode()
-        object Action: Mode()
+
+        /**
+         * Editor in search-on-page state: searching plain text through blocks.
+         * @see [Block.Content.Text.Style]
+         */
         object Search : Mode()
+
+        /**
+         * Editor in text styling mode.
+         */
         sealed class Styling : Mode() {
+            /**
+             * Enabled when user selects “style” option in BlockToolbar for focused block.
+             * @property [target] id of the selected block
+             * @property [cursor] cursor position before selection (we might need to restore cursor position after unselecting [target] block)
+             */
             data class Single(
                 val target: Id,
                 val cursor: Int?
             ) : Styling()
+
+            /**
+             * Enabled when user selects multiple blocks and choose [ActionItemType.Style] from ActionToolbar
+             * @property [targets] ids of the selected blocks.
+             */
             data class Multi(val targets: Set<Id>) : Styling()
         }
-        object Locked: Mode()
     }
 
     class Storage {

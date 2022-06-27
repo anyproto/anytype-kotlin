@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
@@ -47,127 +46,6 @@ class EditorTurnIntoTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-    }
-
-    @Test
-    fun `should start turning text block into page in edit mode`() {
-
-        // SETUP
-
-        val child = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomUuid(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
-            )
-        )
-
-        val parent = Block(
-            id = "PARENT",
-            fields = Block.Fields.empty(),
-            children = listOf(child.id),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(parent.id)
-        )
-
-        val document = listOf(page, parent, child)
-
-        val params = TurnIntoDocument.Params(context = root, targets = listOf(child.id))
-
-        stubOpenDocument(document = document)
-        stubInterceptThreadStatus()
-        stubInterceptEvents(InterceptEvents.Params(context = root))
-        stubTurnIntoDocument(params)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.apply {
-            onStart(root)
-            onBlockFocusChanged(
-                id = child.id,
-                hasFocus = true
-            )
-            onTurnIntoBlockClicked(
-                target = child.id,
-                uiBlock = UiBlock.PAGE
-            )
-        }
-
-        verifyBlocking(turnIntoDocument, times(1)) { invoke(params) }
-    }
-
-    @Test
-    fun `should start turning into page in multi-select mode`() {
-
-        // SETUP
-
-        val child = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomUuid(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.values().random()
-            )
-        )
-
-        val parent = Block(
-            id = "PARENT",
-            fields = Block.Fields.empty(),
-            children = listOf(child.id),
-            content = Block.Content.Text(
-                text = MockDataFactory.randomString(),
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(header.id, parent.id)
-        )
-
-        val document = listOf(page, header, title, parent, child)
-
-        val params = TurnIntoDocument.Params(context = root, targets = listOf(child.id))
-
-        stubOpenDocument(document = document)
-        stubInterceptEvents(InterceptEvents.Params(context = root))
-        stubInterceptThreadStatus()
-        stubTurnIntoDocument(params)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.apply {
-            onStart(root)
-            onBlockFocusChanged(id = child.id, hasFocus = true)
-            onEnterMultiSelectModeClicked()
-            coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
-            onTextInputClicked(child.id)
-            onTurnIntoMultiSelectBlockClicked(UiBlock.PAGE)
-        }
-
-        verifyBlocking(turnIntoDocument, times(1)) { invoke(params) }
     }
 
     @Test

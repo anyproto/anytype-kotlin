@@ -35,7 +35,6 @@ class Callout(
     override val root: View = itemView
     override val content: TextInputWidget = binding.calloutText
     private val icon: ObjectIconWidget = binding.calloutIcon
-    private val container = binding.calloutContainer
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int

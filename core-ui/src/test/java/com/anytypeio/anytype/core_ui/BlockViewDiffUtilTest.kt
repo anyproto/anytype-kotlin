@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.core_ui
 
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.CALLOUT_ICON_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.DECORATION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.MARKUP_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
@@ -1567,6 +1567,56 @@ class BlockViewDiffUtilTest {
                 )
             )
         )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = null
+        )
+    }
+
+    @Test
+    fun `should detect icon change for callout`() {
+        val index = 0
+
+        val oldBlock = StubCalloutView(
+            icon = ObjectIcon.Basic.Emoji("stub")
+        )
+
+        val newBlock = oldBlock.copy(
+            icon = ObjectIcon.None
+        )
+
+        val old = listOf(oldBlock)
+
+        val new = listOf(newBlock)
+
+        val diff = BlockViewDiffUtil(old = old, new = new)
+
+        val payload = diff.getChangePayload(index, index)
+
+        assertEquals(
+            actual = payload,
+            expected = Payload(listOf(CALLOUT_ICON_CHANGED))
+        )
+    }
+
+    @Test
+    fun `should not detect icon change for callout`() {
+        val index = 0
+
+        val oldBlock = StubCalloutView(
+            icon = ObjectIcon.Basic.Emoji("stub")
+        )
+
+        val newBlock = oldBlock
 
         val old = listOf(oldBlock)
 

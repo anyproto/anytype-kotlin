@@ -57,7 +57,6 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
-import com.anytypeio.anytype.core_ui.features.editor.TurnIntoActionReceiver
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
@@ -106,7 +105,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
@@ -164,7 +162,6 @@ import kotlin.math.abs
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
-    TurnIntoActionReceiver,
     SelectProgrammingLanguageReceiver,
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver,
@@ -737,14 +734,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     override fun onAddBookmarkUrlClicked(target: String, url: String) {
         vm.onAddBookmarkUrl(target = target, url = url)
-    }
-
-    override fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
-        vm.onTurnIntoBlockClicked(target, uiBlock)
-    }
-
-    override fun onTurnIntoMultiSelectBlockClicked(block: UiBlock) {
-        vm.onTurnIntoMultiSelectBlockClicked(block)
     }
 
     override fun onAddMarkupLinkClicked(blockId: String, link: String, range: IntRange) {

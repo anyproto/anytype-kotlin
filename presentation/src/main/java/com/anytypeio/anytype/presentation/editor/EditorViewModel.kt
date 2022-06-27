@@ -2460,7 +2460,7 @@ class EditorViewModel(
 
     // ----------------- Turn Into -----------------------------------------
 
-    fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
+    private fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
         Timber.d("onTurnIntoBlockClicked, taget:[$target] uiBlock:[$uiBlock]")
         proceedUpdateBlockStyle(
             targets = listOf(target),
@@ -5069,19 +5069,6 @@ class EditorViewModel(
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
         }
-    }
-
-    fun onTurnIntoMultiSelectBlockClicked(uiBlock: UiBlock) {
-        Timber.d("onTurnIntoMultiSelectBlockClicked, uiBlock:[$uiBlock]")
-        proceedUpdateBlockStyle(
-            targets = currentSelection().toList(),
-            uiBlock = uiBlock,
-            action = {
-                clearSelections()
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnTurnInto)
-            },
-            errorAction = { sendToast("Cannot convert selected blocks to $uiBlock") }
-        )
     }
 
     //endregion

@@ -54,11 +54,7 @@ abstract class Interactor<in P>(
 abstract class ResultInteractor<in P, R> {
     operator fun invoke(params: P): Flow<R> = flow { emit(doWork(params)) }
     suspend fun run(params: P) = doWork(params)
-    suspend fun execute(params: P): Result<R> = try {
-        Result.success(doWork(params))
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
+    suspend fun execute(params: P): Result<R> = runCatching { doWork(params) }
 
     protected abstract suspend fun doWork(params: P): R
 }

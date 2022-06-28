@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.DebugSettings
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
@@ -22,13 +21,12 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -71,9 +69,6 @@ open class DashboardTestSetup {
     lateinit var setObjectListIsArchived: SetObjectListIsArchived
 
     @Mock
-    lateinit var createPage: CreatePage
-
-    @Mock
     lateinit var interceptEvents: InterceptEvents
 
     @Mock
@@ -95,12 +90,6 @@ open class DashboardTestSetup {
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
-    lateinit var featuresConfigProvider: FeaturesConfigProvider
-
-    @Mock
-    lateinit var getDefaultEditorType: GetDefaultEditorType
-
-    @Mock
     lateinit var cancelSearchSubscription: CancelSearchSubscription
 
     @Mock
@@ -112,7 +101,8 @@ open class DashboardTestSetup {
     @Mock
     lateinit var getTemplates: GetTemplates
 
-    lateinit var objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer
+    @Mock
+    lateinit var createNewObject: CreateNewObject
 
     lateinit var objectStore: ObjectStore
 
@@ -132,7 +122,6 @@ open class DashboardTestSetup {
             getProfile = getProfile,
             openDashboard = openDashboard,
             closeDashboard = closeDashboard,
-            createPage = createPage,
             getConfig = getConfig,
             move = move,
             interceptEvents = interceptEvents,
@@ -144,10 +133,8 @@ open class DashboardTestSetup {
             analytics = analytics,
             searchObjects = searchObjects,
             urlBuilder = builder,
-            getDefaultEditorType = getDefaultEditorType,
             setObjectListIsArchived = setObjectListIsArchived,
             deleteObjects = deleteObjects,
-            featuresConfigProvider = featuresConfigProvider,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             objectSearchSubscriptionContainer = ObjectSearchSubscriptionContainer(
@@ -160,7 +147,7 @@ open class DashboardTestSetup {
                     main = coroutineTestRule.testDispatcher
                 )
             ),
-            getTemplates = getTemplates
+            createNewObject = createNewObject
         )
     }
 
@@ -189,14 +176,6 @@ open class DashboardTestSetup {
     ) {
         openDashboard.stub {
             onBlocking { invoke(params = null) } doReturn Either.Right(payload)
-        }
-    }
-
-    fun stubCreatePage(id: String) {
-        createPage.stub {
-            onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Right(id))
-            }
         }
     }
 

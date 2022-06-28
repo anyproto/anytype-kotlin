@@ -21,36 +21,40 @@ class GetTemplates(
 
     override suspend fun doWork(params: Params): List<ObjectWrapper.Basic> {
         return withContext(dispatchers.io) {
-            repo.searchObjects(
-                filters = listOf(
-                    DVFilter(
-                        relationKey = Relations.IS_ARCHIVED,
-                        condition = DVFilterCondition.EQUAL,
-                        value = false
+            try {
+                repo.searchObjects(
+                    filters = listOf(
+                        DVFilter(
+                            relationKey = Relations.IS_ARCHIVED,
+                            condition = DVFilterCondition.EQUAL,
+                            value = false
+                        ),
+                        DVFilter(
+                            relationKey = Relations.IS_DELETED,
+                            condition = DVFilterCondition.EQUAL,
+                            value = false
+                        ),
+                        DVFilter(
+                            relationKey = Relations.TYPE,
+                            condition = DVFilterCondition.EQUAL,
+                            value = ObjectType.TEMPLATE_URL
+                        ),
+                        DVFilter(
+                            relationKey = Relations.TARGET_OBJECT_TYPE,
+                            condition = DVFilterCondition.EQUAL,
+                            value = params.type
+                        )
                     ),
-                    DVFilter(
-                        relationKey = Relations.IS_DELETED,
-                        condition = DVFilterCondition.EQUAL,
-                        value = false
-                    ),
-                    DVFilter(
-                        relationKey = Relations.TYPE,
-                        condition = DVFilterCondition.EQUAL,
-                        value = ObjectType.TEMPLATE_URL
-                    ),
-                    DVFilter(
-                        relationKey = Relations.TARGET_OBJECT_TYPE,
-                        condition = DVFilterCondition.EQUAL,
-                        value = params.type
-                    )
-                ),
-                keys = listOf(Relations.ID, Relations.NAME),
-                sorts = emptyList(),
-                fulltext = "",
-                offset = 0,
-                limit = 0
-            ).map { obj ->
-                ObjectWrapper.Basic(obj)
+                    keys = listOf(Relations.ID, Relations.NAME),
+                    sorts = emptyList(),
+                    fulltext = "",
+                    offset = 0,
+                    limit = 0
+                ).map { obj ->
+                    ObjectWrapper.Basic(obj)
+                }
+            } catch (e: Exception) {
+                emptyList()
             }
         }
     }

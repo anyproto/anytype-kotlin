@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -83,6 +84,9 @@ abstract class TestObjectSetSetup {
     lateinit var threadStatusChannel: ThreadStatusChannel
     @Mock
     lateinit var analytics: Analytics
+
+    @Mock
+    lateinit var createNewObject: CreateNewObject
 
     lateinit var getTemplates: GetTemplates
 
@@ -160,7 +164,8 @@ abstract class TestObjectSetSetup {
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
-            getTemplates = getTemplates
+            getTemplates = getTemplates,
+            createNewObject = createNewObject
         )
     }
 

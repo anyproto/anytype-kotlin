@@ -79,7 +79,7 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -180,7 +180,7 @@ class ObjectSetAddOrUpdateViewerTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

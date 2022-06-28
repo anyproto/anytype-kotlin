@@ -9,7 +9,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
@@ -29,6 +28,7 @@ import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardEventConverter
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardViewModelFactory
 import com.anytypeio.anytype.ui.dashboard.DashboardFragment
@@ -62,7 +62,6 @@ object HomeDashboardModule {
     fun provideDesktopViewModelFactory(
         getProfile: GetProfile,
         openDashboard: OpenDashboard,
-        createPage: CreatePage,
         closeDashboard: CloseDashboard,
         getConfig: GetConfig,
         move: Move,
@@ -71,19 +70,16 @@ object HomeDashboardModule {
         getDebugSettings: GetDebugSettings,
         analytics: Analytics,
         searchObjects: SearchObjects,
-        getDefaultEditorType: GetDefaultEditorType,
         urlBuilder: UrlBuilder,
         setObjectListIsArchived: SetObjectListIsArchived,
         deleteObjects: DeleteObjects,
-        featuresConfigProvider: FeaturesConfigProvider,
         objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
         cancelSearchSubscription: CancelSearchSubscription,
         objectStore: ObjectStore,
-        getTemplates: GetTemplates
+        createNewObject: CreateNewObject
     ): HomeDashboardViewModelFactory = HomeDashboardViewModelFactory(
         getProfile = getProfile,
         openDashboard = openDashboard,
-        createPage = createPage,
         closeDashboard = closeDashboard,
         getConfig = getConfig,
         move = move,
@@ -95,12 +91,23 @@ object HomeDashboardModule {
         urlBuilder = urlBuilder,
         setObjectListIsArchived = setObjectListIsArchived,
         deleteObjects = deleteObjects,
-        getDefaultEditorType = getDefaultEditorType,
-        featuresConfigProvider = featuresConfigProvider,
         objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
         cancelSearchSubscription = cancelSearchSubscription,
         objectStore = objectStore,
-        getTemplates = getTemplates
+        createNewObject = createNewObject
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateNewObject(
+        getDefaultEditorType: GetDefaultEditorType,
+        getTemplates: GetTemplates,
+        createPage: CreatePage,
+    ) : CreateNewObject = CreateNewObject(
+        getDefaultEditorType,
+        getTemplates,
+        createPage
     )
 
     @JvmStatic

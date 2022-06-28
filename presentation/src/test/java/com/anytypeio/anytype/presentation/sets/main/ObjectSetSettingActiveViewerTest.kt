@@ -109,7 +109,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
             )
         }
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

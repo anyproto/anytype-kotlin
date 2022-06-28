@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.AddNewRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewRecord
@@ -29,9 +30,11 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
+import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -42,6 +45,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -135,7 +139,8 @@ object ObjectSetModule {
         analytics: Analytics,
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        createNewObject: CreateNewObject
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -156,8 +161,37 @@ object ObjectSetModule {
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        getTemplates = getTemplates
+        getTemplates = getTemplates,
+        createNewObject = createNewObject
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateNewObject(
+        getDefaultEditorType: GetDefaultEditorType,
+        getTemplates: GetTemplates,
+        createPage: CreatePage,
+    ) : CreateNewObject = CreateNewObject(
+        getDefaultEditorType,
+        getTemplates,
+        createPage
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreatePageUseCase(
+        repo: BlockRepository
+    ): CreatePage = CreatePage(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetDefaultPageType(repo: UserSettingsRepository): GetDefaultEditorType =
+        GetDefaultEditorType(repo)
 
     @JvmStatic
     @Provides

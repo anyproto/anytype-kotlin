@@ -26,22 +26,19 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.Interactor
 import com.anytypeio.anytype.presentation.dashboard.HomeDashboardStateMachine.State
@@ -74,7 +71,6 @@ class HomeDashboardViewModel(
     private val getProfile: GetProfile,
     private val openDashboard: OpenDashboard,
     private val closeDashboard: CloseDashboard,
-    private val createPage: CreatePage,
     private val getConfig: GetConfig,
     private val move: Move,
     private val interceptEvents: InterceptEvents,
@@ -82,15 +78,13 @@ class HomeDashboardViewModel(
     private val getDebugSettings: GetDebugSettings,
     private val analytics: Analytics,
     private val searchObjects: SearchObjects,
-    private val getDefaultEditorType: GetDefaultEditorType,
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val deleteObjects: DeleteObjects,
-    private val featuresConfigProvider: FeaturesConfigProvider,
     private val objectSearchSubscriptionContainer: ObjectSearchSubscriptionContainer,
     private val cancelSearchSubscription: CancelSearchSubscription,
     private val objectStore: ObjectStore,
-    private val getTemplates: GetTemplates
+    private val createNewObject: CreateNewObject
 ) : ViewStateViewModel<State>(),
     HomeDashboardEventConverter by eventConverter,
     SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -264,7 +258,15 @@ class HomeDashboardViewModel(
 
     fun onAddNewDocumentClicked() {
         Timber.d("onAddNewDocumentClicked, ")
-        proceedWithGettingDefaultPageType()
+        subscriptions += viewModelScope.launch {
+            createNewObject.execute(Unit).fold(
+                onSuccess = { id ->
+                    machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
+                    proceedWithOpeningDocument(id)
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
+        }
     }
 
     /**
@@ -753,61 +755,6 @@ class HomeDashboardViewModel(
     )
 
     enum class TAB { FAVOURITE, RECENT, SETS, SHARED, BIN }
-
-    //region CREATE PAGE
-    private fun proceedWithGettingDefaultPageType() {
-        viewModelScope.launch {
-            getDefaultEditorType.invoke(Unit).proceed(
-                failure = {
-                    Timber.e(it, "Error while getting default page type")
-                    proceedWithCreatingNewObject(type = null)
-                },
-                success = { response -> proceedWithCreatingNewObject(type = response.type) }
-            )
-        }
-    }
-
-    private fun proceedWithCreatingNewObject(type: String?) {
-        if (type != null) {
-            viewModelScope.launch {
-                val templates = try {
-                    getTemplates.run(GetTemplates.Params(type))
-                } catch (e: Exception) {
-                    emptyList()
-                }
-                val template = if (templates.size == 1) templates.first().id else null
-                val params = CreatePage.Params(
-                    ctx = null,
-                    isDraft = template == null,
-                    type = type,
-                    emoji = null,
-                    template = template
-                )
-                createNewObject(params)
-            }
-        } else {
-            val params = CreatePage.Params(
-                ctx = null,
-                isDraft = true,
-                type = type,
-                emoji = null
-            )
-            createNewObject(params)
-        }
-    }
-
-    private fun createNewObject(params: CreatePage.Params) {
-        viewModelScope.launch {
-            createPage.invoke(params).proceed(
-                failure = { e -> Timber.e(e, "Error while creating a new page") },
-                success = { id ->
-                    machine.onEvents(listOf(Machine.Event.OnFinishedCreatingPage))
-                    proceedWithOpeningDocument(id)
-                }
-            )
-        }
-    }
-    //endregion
 
     enum class Mode { DEFAULT, SELECTION }
 

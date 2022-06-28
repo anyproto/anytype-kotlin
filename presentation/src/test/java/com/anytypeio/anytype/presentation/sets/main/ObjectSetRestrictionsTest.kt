@@ -58,7 +58,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -94,7 +94,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -130,7 +130,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -166,7 +166,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -202,7 +202,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

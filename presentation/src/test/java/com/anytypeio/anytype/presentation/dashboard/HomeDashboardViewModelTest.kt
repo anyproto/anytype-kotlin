@@ -5,7 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.DebugSettings
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.GetConfig
 import com.anytypeio.anytype.domain.config.GetDebugSettings
@@ -23,24 +22,25 @@ import com.anytypeio.anytype.domain.dashboard.interactor.CloseDashboard
 import com.anytypeio.anytype.domain.dashboard.interactor.OpenDashboard
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.page.CreatePage
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -57,7 +57,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyZeroInteractions
 import kotlin.test.assertContains
 
@@ -80,9 +79,6 @@ class HomeDashboardViewModelTest {
 
     @Mock
     lateinit var closeDashboard: CloseDashboard
-
-    @Mock
-    lateinit var createPage: CreatePage
 
     @Mock
     lateinit var searchObjects: SearchObjects
@@ -112,12 +108,6 @@ class HomeDashboardViewModelTest {
     lateinit var objectTypesProvider: ObjectTypesProvider
 
     @Mock
-    lateinit var featuresConfigProvider: FeaturesConfigProvider
-
-    @Mock
-    lateinit var getDefaultEditorType: GetDefaultEditorType
-
-    @Mock
     lateinit var cancelSearchSubscription: CancelSearchSubscription
 
     @Mock
@@ -127,7 +117,7 @@ class HomeDashboardViewModelTest {
     lateinit var objectStore: ObjectStore
 
     @Mock
-    lateinit var getTemplates: GetTemplates
+    lateinit var createNewObject: CreateNewObject
 
     private lateinit var vm: HomeDashboardViewModel
 
@@ -149,7 +139,6 @@ class HomeDashboardViewModelTest {
             getProfile = getProfile,
             openDashboard = openDashboard,
             closeDashboard = closeDashboard,
-            createPage = createPage,
             getConfig = getConfig,
             move = move,
             interceptEvents = interceptEvents,
@@ -163,12 +152,10 @@ class HomeDashboardViewModelTest {
             deleteObjects = deleteObjects,
             setObjectListIsArchived = setObjectListIsArchived,
             urlBuilder = builder,
-            getDefaultEditorType = getDefaultEditorType,
-            featuresConfigProvider = featuresConfigProvider,
             cancelSearchSubscription = cancelSearchSubscription,
             objectStore = objectStore,
             objectSearchSubscriptionContainer = objectSearchSubscriptionContainer,
-            getTemplates = getTemplates
+            createNewObject = createNewObject
         )
     }
 
@@ -362,19 +349,6 @@ class HomeDashboardViewModelTest {
     }
 
     @Test
-    fun `should start creating page when requested from UI`() {
-
-        stubObserveEvents()
-        stubGetDefaultObjectType()
-
-        vm = givenViewModel()
-
-        vm.onAddNewDocumentClicked()
-
-        verifyBlocking(createPage, times(1)) { invoke(any()) }
-    }
-
-    @Test
     fun `should close dashboard and navigate to page screen when page is created`() {
 
         val id = MockDataFactory.randomUuid()
@@ -382,12 +356,10 @@ class HomeDashboardViewModelTest {
         stubObserveEvents()
         stubGetEditorSettings()
         stubCloseDashboard()
-        stubCreatePage(id)
-        stubGetTemplates()
-        stubGetDefaultObjectType()
 
         vm = givenViewModel()
 
+        givenDelegateId(id)
         vm.onAddNewDocumentClicked()
 
         vm.navigation
@@ -398,58 +370,10 @@ class HomeDashboardViewModelTest {
             }
     }
 
-    @Test
-    fun `should create new object with null template and isDraft true params`() {
-
-        val type = MockDataFactory.randomString()
-
-        stubObserveEvents()
-        stubGetEditorSettings()
-        stubCloseDashboard()
-        stubGetTemplates()
-        stubGetDefaultObjectType(type = type)
-
-        vm = givenViewModel()
-
-        vm.onAddNewDocumentClicked()
-
-        val params = CreatePage.Params(
-            ctx = null,
-            type = type,
-            emoji = null,
-            isDraft = true,
-            template = null
-        )
-
-        verifyBlocking(createPage, times(1)) { invoke(params) }
-    }
-
-    @Test
-    fun `should create new object with non nullable template and isDraft false params`() {
-
-        val templateId = MockDataFactory.randomUuid()
-        val type = MockDataFactory.randomString()
-        val obj = ObjectWrapper.Basic(mapOf("id" to templateId))
-
-        stubObserveEvents()
-        stubGetEditorSettings()
-        stubCloseDashboard()
-        stubGetTemplates(objects = listOf(obj))
-        stubGetDefaultObjectType(type = type)
-
-        vm = givenViewModel()
-
-        vm.onAddNewDocumentClicked()
-
-        val params = CreatePage.Params(
-            ctx = null,
-            type = type,
-            emoji = null,
-            isDraft = false,
-            template = templateId
-        )
-
-        verifyBlocking(createPage, times(1)) { invoke(params) }
+    private fun givenDelegateId(id: String) {
+        createNewObject.stub {
+            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(id)
+        }
     }
 
     private fun stubGetConfig(response: Either.Right<Config>) {
@@ -480,12 +404,6 @@ class HomeDashboardViewModelTest {
         }
     }
 
-    private fun stubCreatePage(id: String) {
-        createPage.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(id)
-        }
-    }
-
     private fun stubCloseDashboard() {
         closeDashboard.stub {
             onBlocking { invoke(any(), any(), any()) } doAnswer { answer ->
@@ -500,17 +418,6 @@ class HomeDashboardViewModelTest {
         }
     }
 
-    private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
-        getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(
-                GetDefaultEditorType.Response(
-                    type,
-                    name
-                )
-            )
-        }
-    }
-
     private fun stubObserveProfile() {
         getProfile.stub {
             on {
@@ -520,12 +427,6 @@ class HomeDashboardViewModelTest {
                     dispatcher = any()
                 )
             } doReturn emptyFlow()
-        }
-    }
-
-    private fun stubGetTemplates(objects: List<ObjectWrapper.Basic> = listOf()) {
-        getTemplates.stub {
-            onBlocking { run(any()) } doReturn objects
         }
     }
 }

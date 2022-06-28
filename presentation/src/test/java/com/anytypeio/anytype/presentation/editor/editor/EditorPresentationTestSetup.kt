@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -78,11 +79,13 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -244,6 +247,9 @@ open class EditorPresentationTestSetup {
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     @Mock
+    lateinit var createNewObject: CreateNewObject
+
+    @Mock
     lateinit var getTemplates: GetTemplates
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
@@ -343,7 +349,8 @@ open class EditorPresentationTestSetup {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             downloadUnsplashImage = downloadUnsplashImage,
-            templateDelegate = editorTemplateDelegate
+            templateDelegate = editorTemplateDelegate,
+            createNewObject = createNewObject
         )
     }
 
@@ -594,7 +601,12 @@ open class EditorPresentationTestSetup {
 
     fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(GetDefaultEditorType.Response(type, name))
+            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(
+                GetDefaultEditorType.Response(
+                    type,
+                    name
+                )
+            )
         }
     }
 

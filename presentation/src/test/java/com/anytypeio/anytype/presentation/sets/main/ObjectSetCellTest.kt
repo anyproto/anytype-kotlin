@@ -181,7 +181,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         stubSetActiveViewer()
         stubUpdateDataViewViewer()
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

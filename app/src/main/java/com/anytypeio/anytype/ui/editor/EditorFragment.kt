@@ -595,6 +595,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
+        binding.bottomToolbar
+            .addDocClicks()
+            .onEach { vm.onAddNewDocumentClicked() }
+            .launchIn(lifecycleScope)
+
         binding.topToolbar.menu
             .clicks()
             .onEach { vm.onDocumentMenuClicked() }

@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -203,7 +204,8 @@ object EditorSessionModule {
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
         setDocImageIcon: SetDocumentImageIcon,
-        editorTemplateDelegate: EditorTemplateDelegate
+        editorTemplateDelegate: EditorTemplateDelegate,
+        createNewObject: CreateNewObject
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -234,7 +236,21 @@ object EditorSessionModule {
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
         setDocImageIcon = setDocImageIcon,
-        editorTemplateDelegate = editorTemplateDelegate
+        editorTemplateDelegate = editorTemplateDelegate,
+        createNewObject = createNewObject
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateNewObject(
+        getDefaultEditorType: GetDefaultEditorType,
+        getTemplates: GetTemplates,
+        createPage: CreatePage,
+    ) : CreateNewObject = CreateNewObject(
+        getDefaultEditorType,
+        getTemplates,
+        createPage
     )
 
     @JvmStatic

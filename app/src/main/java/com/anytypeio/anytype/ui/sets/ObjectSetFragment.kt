@@ -212,6 +212,7 @@ open class ObjectSetFragment :
             subscribe(binding.bottomToolbar.homeClicks()) { vm.onHomeButtonClicked() }
             subscribe(binding.bottomToolbar.backClicks()) { vm.onBackButtonClicked() }
             subscribe(binding.bottomToolbar.searchClicks()) { vm.onSearchButtonClicked() }
+            subscribe(binding.bottomToolbar.addDocClicks()) { vm.onAddNewDocumentClicked() }
         }
 
         with(binding.paginatorToolbar) {

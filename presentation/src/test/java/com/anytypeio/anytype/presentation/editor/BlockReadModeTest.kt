@@ -148,7 +148,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -196,7 +196,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -230,7 +230,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -280,7 +280,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -317,7 +317,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 

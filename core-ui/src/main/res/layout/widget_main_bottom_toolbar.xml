@@ -53,4 +53,21 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/btnAddDoc"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icAddDoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_desc_add_doc_button"
+            app:srcCompat="@drawable/ic_page_toolbar_add_doc" />
+
+    </FrameLayout>
+
 </merge>

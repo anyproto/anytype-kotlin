@@ -85,7 +85,7 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -153,7 +153,7 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -229,7 +229,7 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -301,7 +301,7 @@ class ObjectSetRecordCreateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

@@ -71,7 +71,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
             )
         }
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

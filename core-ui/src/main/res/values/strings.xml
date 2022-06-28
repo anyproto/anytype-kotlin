@@ -445,6 +445,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
+    <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Unsupported block</string>
     <string name="new_relation">New relation</string>
     <string name="change_type">Change type</string>

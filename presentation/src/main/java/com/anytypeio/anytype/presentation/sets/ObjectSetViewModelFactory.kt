@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
@@ -42,7 +43,8 @@ class ObjectSetViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
-    private val getTemplates: GetTemplates
+    private val getTemplates: GetTemplates,
+    private val createNewObject: CreateNewObject
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -66,7 +68,8 @@ class ObjectSetViewModelFactory(
             urlBuilder = urlBuilder,
             session = session,
             analytics = analytics,
-            getTemplates = getTemplates
+            getTemplates = getTemplates,
+            createNewObject = createNewObject
         ) as T
     }
 }

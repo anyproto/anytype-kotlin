@@ -47,6 +47,11 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
         vm.onStart(mType)
     }
 
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
+    }
+
     override fun injectDependencies() {
         componentManager().createObjectComponent.get().inject(this)
     }

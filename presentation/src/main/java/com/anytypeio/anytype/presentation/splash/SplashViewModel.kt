@@ -54,12 +54,12 @@ class SplashViewModel(
 
     private fun proceedWithUserSettings() {
         viewModelScope.launch {
-            getDefaultEditorType.invoke(Unit).process(
-                failure = {
-                    Timber.e(it, "Error while getting default page type")
+            getDefaultEditorType.execute(Unit).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while getting default page type")
                     checkAuthorizationStatus()
                 },
-                success = { result ->
+                onSuccess = { result ->
                     Timber.d("getDefaultPageType: ${result.type}")
                     if (result.type == null) {
                         commands.emit(Command.CheckFirstInstall)
@@ -169,16 +169,18 @@ class SplashViewModel(
 
     fun onIntentCreateNewObject(type: Id) {
         viewModelScope.launch {
-            createPage(
+            createPage.execute(
                 CreatePage.Params(
                     ctx = null,
                     emoji = null,
                     isDraft = true,
                     type = type
                 )
-            ).process(
-                failure = { proceedWithNavigation() },
-                success = { target ->
+            ).fold(
+                onFailure = { e ->
+                    proceedWithNavigation()
+                },
+                onSuccess = { target ->
                     commands.emit(Command.NavigateToObject(target))
                 }
             )

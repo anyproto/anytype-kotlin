@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -35,9 +36,13 @@ class OtherSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultEditorType.invoke(Unit).proceed(
-                failure = { Timber.e(it, "Error while getting user settings") },
-                success = { commands.emit(Command.SetObjectType(name = it.name)) }
+            getDefaultEditorType.execute(Unit).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while getting user settings")
+                },
+                onSuccess = {
+                    commands.emit(Command.SetObjectType(name = it.name))
+                }
             )
         }
     }

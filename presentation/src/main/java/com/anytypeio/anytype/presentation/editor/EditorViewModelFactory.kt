@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.editor.DetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -67,7 +68,8 @@ open class EditorViewModelFactory(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
-    private val editorTemplateDelegate: EditorTemplateDelegate
+    private val editorTemplateDelegate: EditorTemplateDelegate,
+    private val createNewObject: CreateNewObject
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -102,7 +104,8 @@ open class EditorViewModelFactory(
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            templateDelegate = editorTemplateDelegate
+            templateDelegate = editorTemplateDelegate,
+            createNewObject = createNewObject
         ) as T
     }
 }

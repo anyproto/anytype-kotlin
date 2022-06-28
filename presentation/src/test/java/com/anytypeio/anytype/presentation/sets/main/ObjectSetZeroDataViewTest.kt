@@ -58,7 +58,7 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -97,7 +97,7 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -127,7 +127,7 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -164,7 +164,7 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

@@ -79,7 +79,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 
@@ -141,7 +141,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         // TESTING
 

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.page
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
@@ -10,17 +10,15 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  */
 class CreatePage(
     private val repo: BlockRepository
-) : BaseUseCase<Id, CreatePage.Params>() {
+) : ResultInteractor<CreatePage.Params, Id>() {
 
-    override suspend fun run(params: Params) = safe {
-        repo.createPage(
-            ctx = params.ctx,
-            emoji = null,
-            isDraft = params.isDraft,
-            type = params.type,
-            template = params.template
-        )
-    }
+    override suspend fun doWork(params: Params): Id = repo.createPage(
+        ctx = params.ctx,
+        emoji = null,
+        isDraft = params.isDraft,
+        type = params.type,
+        template = params.template
+    )
 
     /**
      * @property [ctx] context (parent) for this new page.
@@ -34,5 +32,14 @@ class CreatePage(
         val emoji: String?,
         val isDraft: Boolean?,
         val template: Id? = null
-    )
+    ) {
+        constructor(
+            isDraft: Boolean?,
+        ) : this(
+            ctx = null,
+            type = null,
+            emoji = null,
+            isDraft = isDraft,
+            template = null)
+    }
 }

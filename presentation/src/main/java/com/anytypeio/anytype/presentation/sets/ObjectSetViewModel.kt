@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewerRelation
@@ -37,6 +40,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
@@ -94,7 +98,8 @@ class ObjectSetViewModel(
     private val urlBuilder: UrlBuilder,
     private val session: ObjectSetSession,
     private val analytics: Analytics,
-    private val getTemplates: GetTemplates
+    private val getTemplates: GetTemplates,
+    private val createNewObject: CreateNewObject
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -143,6 +148,7 @@ class ObjectSetViewModel(
     private lateinit var context: Id
 
     init {
+
         viewModelScope.launch {
             dispatcher.flow().collect { defaultPayloadConsumer(it) }
         }
@@ -496,9 +502,10 @@ class ObjectSetViewModel(
             is CellView.Tag, is CellView.Status, is CellView.Object, is CellView.File -> {
                 val targetObjectTypes = mutableListOf<String>()
                 if (cell is CellView.Object) {
-                    val relation = reducer.state.value.dataview.content<DV>().relations.find { relation ->
-                        relation.key == cell.key
-                    }
+                    val relation =
+                        reducer.state.value.dataview.content<DV>().relations.find { relation ->
+                            relation.key == cell.key
+                        }
                     if (relation != null) {
                         targetObjectTypes.addAll(relation.objectTypes)
                     }
@@ -736,11 +743,11 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun resolveTemplateForNewRecord() : Id? {
+    private suspend fun resolveTemplateForNewRecord(): Id? {
         val obj = ObjectWrapper.Basic(reducer.state.value.details[context]?.map ?: emptyMap())
         val type = if (obj.setOf.size == 1) obj.setOf.first() else null
         return if (type != null) {
-            val templates  = try {
+            val templates = try {
                 getTemplates.run(GetTemplates.Params(type))
             } catch (e: Exception) {
                 emptyList()
@@ -757,7 +764,9 @@ class ObjectSetViewModel(
     private suspend fun proceedWithRefreshingViewerAfterObjectCreation() {
         val set = reducer.state.value
         if (set.isInitialized) {
-            val viewer = try { set.viewerById(session.currentViewerId).id } catch (e: Exception) {
+            val viewer = try {
+                set.viewerById(session.currentViewerId).id
+            } catch (e: Exception) {
                 null
             }
             if (viewer != null) {
@@ -1042,6 +1051,20 @@ class ObjectSetViewModel(
 
     //region NAVIGATION
 
+    private fun proceedWithOpeningPage(target: Id) {
+        jobs += viewModelScope.launch {
+            closeBlock(CloseBlock.Params(context)).process(
+                success = {
+                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
+                },
+                failure = {
+                    Timber.e(it, "Error while closing object set: $context")
+                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
+                }
+            )
+        }
+    }
+
     private fun proceedWithNavigation(target: Id, layout: ObjectType.Layout?) {
         when (layout) {
             ObjectType.Layout.BASIC,
@@ -1049,19 +1072,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.TODO,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
-            ObjectType.Layout.FILE -> {
-                viewModelScope.launch {
-                    closeBlock(CloseBlock.Params(context)).process(
-                        success = {
-                            navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
-                        },
-                        failure = {
-                            Timber.e(it, "Error while closing object set: $context")
-                            navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
-                        }
-                    )
-                }
-            }
+            ObjectType.Layout.FILE -> proceedWithOpeningPage(target)
             ObjectType.Layout.SET -> {
                 viewModelScope.launch {
                     closeBlock(CloseBlock.Params(context)).process(
@@ -1118,6 +1129,24 @@ class ObjectSetViewModel(
         proceedWithExiting()
     }
 
+    fun onAddNewDocumentClicked() {
+        Timber.d("onAddNewDocumentClicked, ")
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.createObjectNavBar,
+            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
+        )
+        jobs += viewModelScope.launch {
+            createNewObject.execute(Unit).fold(
+                onSuccess = { id ->
+                    proceedWithOpeningPage(id)
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
+        }
+    }
+
     fun onSearchButtonClicked() {
         viewModelScope.launch {
             closeBlock(CloseBlock.Params(context)).process(
@@ -1133,8 +1162,10 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val OBJECT_TYPE_UNKNOWN = "Can't open object, object type unknown"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
-        const val DATA_VIEW_NOT_FOUND_ERROR = "Content missing for this set. Please, try again later."
-        const val OBJECT_SET_HAS_EMPTY_SOURCE_ERROR = "Object type is not defined for this set. Please, setup object type on Desktop."
+        const val DATA_VIEW_NOT_FOUND_ERROR =
+            "Content missing for this set. Please, try again later."
+        const val OBJECT_SET_HAS_EMPTY_SOURCE_ERROR =
+            "Object type is not defined for this set. Please, setup object type on Desktop."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
     }
 }

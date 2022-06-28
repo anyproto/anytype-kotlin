@@ -12,13 +12,20 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import kotlin.test.assertEquals
@@ -139,7 +146,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         vm.onStart(root)
 
@@ -238,7 +245,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         vm.onStart(root)
 
@@ -320,7 +327,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         vm.onStart(root)
 
@@ -401,7 +408,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         vm.onStart(root)
 
@@ -480,7 +487,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        val vm = buildViewModel()
+        val vm = givenViewModel()
 
         vm.onStart(root)
 
@@ -504,6 +511,34 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         testObserver.assertValue { value ->
             val content = value.peekContent()
             content == AppNavigation.Command.OpenObjectSet(linkedProjectTargetId)
+        }
+    }
+
+    @Test
+    fun `should close editor and navigate to page screen - when page is created`() {
+
+        val id = MockDataFactory.randomUuid()
+        stubCloseBlock()
+        val vm = givenViewModel()
+
+
+        vm.onStart(root)
+
+
+        givenDelegateId(id)
+        vm.onAddNewDocumentClicked()
+
+        vm.navigation
+            .test()
+            .assertHasValue()
+            .assertValue { value ->
+                (value.peekContent() as AppNavigation.Command.OpenObject).id == id
+            }
+    }
+
+    private fun givenDelegateId(id: String) {
+        createNewObject.stub {
+            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(id)
         }
     }
 }

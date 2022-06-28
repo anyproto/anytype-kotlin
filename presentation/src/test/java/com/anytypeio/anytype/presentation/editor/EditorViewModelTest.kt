@@ -67,11 +67,14 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
@@ -90,6 +93,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarStat
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -98,6 +102,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -111,13 +116,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.RETURNS_MOCKS
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -296,7 +301,16 @@ open class EditorViewModelTest {
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
+    @Mock
+    lateinit var getTemplates: GetTemplates
+
+    @Mock
+    lateinit var applyTemplate: ApplyTemplate
+
     private lateinit var editorTemplateDelegate: EditorTemplateDelegate
+
+    @Mock
+    lateinit var createNewObject: CreateNewObject
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -335,12 +349,15 @@ open class EditorViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
-        editorTemplateDelegate = mock(defaultAnswer = RETURNS_MOCKS)
+        editorTemplateDelegate = DefaultEditorTemplateDelegate(
+            getTemplates = getTemplates,
+            applyTemplate = applyTemplate
+        )
     }
 
     @Test
     fun `should not start observing events when view model is initialized`() {
-        buildViewModel()
+        givenViewModel()
         verifyZeroInteractions(interceptEvents)
     }
 
@@ -349,7 +366,7 @@ open class EditorViewModelTest {
         val param = OpenPage.Params(id = root)
 
         stubInterceptEvents()
-        buildViewModel()
+        givenViewModel()
         stubOpenPage(context = root)
 
         vm.onStart(root)
@@ -398,7 +415,7 @@ open class EditorViewModelTest {
 
         stubInterceptEvents()
 
-        buildViewModel(builder)
+        givenViewModel(builder)
 
         vm.onStart(root)
 
@@ -428,7 +445,7 @@ open class EditorViewModelTest {
         stubOpenPage(root)
         stubInterceptEvents()
 
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -448,7 +465,7 @@ open class EditorViewModelTest {
 
         stubInterceptEvents()
         stubClosePage(response)
-        buildViewModel()
+        givenViewModel()
 
         val testObserver = vm.navigation.test()
 
@@ -473,7 +490,7 @@ open class EditorViewModelTest {
         stubOpenPage(root)
         stubClosePage(response)
         stubInterceptEvents()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -494,7 +511,7 @@ open class EditorViewModelTest {
         val text = MockDataFactory.randomString()
 
         stubInterceptEvents()
-        buildViewModel()
+        givenViewModel()
         stubOpenPage(context = pageId)
         stubUpdateText()
 
@@ -520,7 +537,7 @@ open class EditorViewModelTest {
         stubObserveEvents()
         stubUpdateText()
         stubOpenPage(context = pageId)
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(pageId)
 
@@ -615,7 +632,7 @@ open class EditorViewModelTest {
         )
 
         stubOpenPage()
-        buildViewModel(builder)
+        givenViewModel(builder)
         vm.onStart(root)
 
         coroutineTestRule.advanceTime(200)
@@ -681,7 +698,7 @@ open class EditorViewModelTest {
 
         stubCreateBlock(root)
 
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -751,7 +768,7 @@ open class EditorViewModelTest {
         }
 
         stubOpenPage()
-        buildViewModel(builder)
+        givenViewModel(builder)
 
         vm.onStart(root)
 
@@ -788,7 +805,7 @@ open class EditorViewModelTest {
 
         stubOpenPage()
         stubObserveEvents()
-        buildViewModel()
+        givenViewModel()
 
         val testObserver = vm.state.test()
 
@@ -849,7 +866,7 @@ open class EditorViewModelTest {
 
         stubUpdateText()
 
-        buildViewModel(builder)
+        givenViewModel(builder)
 
         vm.onStart(root)
 
@@ -989,7 +1006,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(events)
         stubOpenPage()
-        buildViewModel(builder)
+        givenViewModel(builder)
 
         vm.onStart(root)
 
@@ -1133,7 +1150,7 @@ open class EditorViewModelTest {
         stubObserveEvents(events)
         stubUpdateText()
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -1221,7 +1238,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(events)
         stubOpenPage()
-        buildViewModel(builder)
+        givenViewModel(builder)
         stubUpdateText()
 
         val testObserver = vm.state.test()
@@ -1321,7 +1338,7 @@ open class EditorViewModelTest {
         stubObserveEvents(events)
         stubOpenPage()
 
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -1407,7 +1424,7 @@ open class EditorViewModelTest {
 
         stubUpdateText()
 
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -1461,7 +1478,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -1543,7 +1560,7 @@ open class EditorViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
 
-        buildViewModel(builder)
+        givenViewModel(builder)
 
         vm.onStart(root)
 
@@ -1616,7 +1633,7 @@ open class EditorViewModelTest {
 
         stubOpenPage()
         stubObserveEvents(events)
-        buildViewModel()
+        givenViewModel()
         stubDuplicateBlock(
             newBlockId = MockDataFactory.randomString(),
             root = root
@@ -1687,7 +1704,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         stubUnlinkBlocks(root = root)
         stubObserveEvents(events)
-        buildViewModel()
+        givenViewModel()
 
         // TESTING
 
@@ -1779,7 +1796,7 @@ open class EditorViewModelTest {
 
         stubOpenPage()
         stubObserveEvents(events)
-        buildViewModel(builder)
+        givenViewModel(builder)
         stubUnlinkBlocks(root)
 
         vm.onStart(root)
@@ -1882,7 +1899,7 @@ open class EditorViewModelTest {
 
         stubOpenPage()
         stubObserveEvents(events)
-        buildViewModel()
+        givenViewModel()
         stubUnlinkBlocks(root)
 
         vm.onStart(root)
@@ -1941,7 +1958,7 @@ open class EditorViewModelTest {
 
         stubOpenPage()
         stubObserveEvents(events)
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -1999,7 +2016,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         stubObserveEvents(events)
         stubCreateBlock(root)
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -2056,7 +2073,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         stubTurnIntoStyle()
 
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -2111,7 +2128,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         stubUpdateTextColor(root)
 
@@ -2185,7 +2202,7 @@ open class EditorViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         stubCreateBlock(root)
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -2250,7 +2267,7 @@ open class EditorViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUpdateTextStyle()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -2330,7 +2347,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
         stubUpdateText()
         stubSplitBlocks(root)
 
@@ -2437,7 +2454,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
         stubUpdateText()
         stubSplitBlocks(root)
 
@@ -2518,7 +2535,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel(builder)
+        givenViewModel(builder)
 
         stubDownloadFile()
 
@@ -2579,7 +2596,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage(context = root)
-        buildViewModel()
+        givenViewModel()
 
         undo.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -2644,7 +2661,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         redo.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -2707,7 +2724,7 @@ open class EditorViewModelTest {
 
         stubArchiveDocument()
 
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -2762,7 +2779,7 @@ open class EditorViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         stubClosePage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -2848,7 +2865,7 @@ open class EditorViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage()
         stubReplaceBlock(root = root)
-        buildViewModel()
+        givenViewModel()
         stubReplaceBlock(root)
 
         vm.onStart(root)
@@ -2926,7 +2943,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -3007,7 +3024,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
         stubUpdateText()
         stubReplaceBlock(root)
 
@@ -3067,7 +3084,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -3189,7 +3206,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -3356,7 +3373,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -3450,7 +3467,7 @@ open class EditorViewModelTest {
             document = page
         )
 
-        buildViewModel()
+        givenViewModel()
 
 
         vm.onStart(root)
@@ -3519,7 +3536,7 @@ open class EditorViewModelTest {
             document = page
         )
 
-        buildViewModel()
+        givenViewModel()
 
 
         vm.onStart(root)
@@ -3589,7 +3606,7 @@ open class EditorViewModelTest {
             document = page
         )
 
-        buildViewModel()
+        givenViewModel()
 
 
         vm.onStart(root)
@@ -3796,16 +3813,18 @@ open class EditorViewModelTest {
 
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultEditorType.stub {
-            onBlocking { invoke(Unit) } doReturn Either.Right(
-                GetDefaultEditorType.Response(
-                    type,
-                    null
+            onBlocking { invoke(Unit) } doReturn flow {
+                emit(
+                    GetDefaultEditorType.Response(
+                        type,
+                        name
+                    )
                 )
-            )
+            }
         }
     }
 
-    fun buildViewModel(urlBuilder: UrlBuilder = builder) {
+    fun givenViewModel(urlBuilder: UrlBuilder = builder) {
 
         val storage = Editor.Storage()
         val proxies = Editor.Proxer()
@@ -3889,7 +3908,8 @@ open class EditorViewModelTest {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             delegator = delegator,
-            templateDelegate = editorTemplateDelegate
+            templateDelegate = editorTemplateDelegate,
+            createNewObject = createNewObject
         )
     }
 
@@ -3956,7 +3976,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -4071,7 +4091,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -4194,7 +4214,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -4320,7 +4340,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(flow)
         stubOpenPage()
-        buildViewModel()
+        givenViewModel()
 
         vm.onStart(root)
 
@@ -4366,5 +4386,33 @@ open class EditorViewModelTest {
         verifyNoMoreInteractions(updateText)
 
         coroutineTestRule.advanceTime(200)
+    }
+
+    @Test
+    fun `should close editor and navigate to page screen - when page is created`() {
+
+        val id = MockDataFactory.randomUuid()
+        stubOpenPage(root)
+        stubInterceptEvents()
+        stubClosePage()
+        givenViewModel()
+        vm.onStart(root)
+
+
+        givenDelegateId(id)
+        vm.onAddNewDocumentClicked()
+
+        vm.navigation
+            .test()
+            .assertHasValue()
+            .assertValue { value ->
+                (value.peekContent() as AppNavigation.Command.OpenObject).id == id
+            }
+    }
+
+    private fun givenDelegateId(id: String) {
+        createNewObject.stub {
+            onBlocking { execute(Unit) } doAnswer ValueClassAnswer(id)
+        }
     }
 }

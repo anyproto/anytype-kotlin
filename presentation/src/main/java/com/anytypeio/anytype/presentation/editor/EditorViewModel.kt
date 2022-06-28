@@ -78,6 +78,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
@@ -235,7 +236,8 @@ class EditorViewModel(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
-    private val templateDelegate: EditorTemplateDelegate
+    private val templateDelegate: EditorTemplateDelegate,
+    private val createNewObject: CreateNewObject
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -2858,6 +2860,28 @@ class EditorViewModel(
         }
     }
 
+
+    fun onAddNewDocumentClicked() {
+
+        Timber.d("onAddNewDocumentClicked, ")
+
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.createObjectNavBar,
+            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
+        )
+
+        jobs += viewModelScope.launch {
+            createNewObject.execute(Unit).fold(
+                onSuccess = { id ->
+                    proceedWithOpeningPage(id)
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
+        }
+    }
+
+    @Deprecated("Not used")
     fun onAddNewPageClicked() {
         Timber.d("onAddNewPageClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
@@ -5125,12 +5149,12 @@ class EditorViewModel(
     fun onAddMentionNewPageClicked(mentionText: String) {
         Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
         viewModelScope.launch {
-            getDefaultEditorType.invoke(Unit).proceed(
-                failure = {
+            getDefaultEditorType.execute(Unit).fold(
+                onFailure = {
                     Timber.e(it, "Error while getting default object type")
                     proceedWithCreateNewObject(objectType = null, mentionText = mentionText)
                 },
-                success = {
+                onSuccess = {
                     proceedWithCreateNewObject(objectType = it.type, mentionText = mentionText)
                 }
             )
@@ -5407,9 +5431,11 @@ class EditorViewModel(
     }
 
     private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView.Item>) {
-        getDefaultEditorType.invoke(Unit).proceed(
-            failure = { Timber.e(it, "Error while getting default object type") },
-            success = { response ->
+        getDefaultEditorType.execute(Unit).fold(
+            onFailure = {
+                Timber.e(it, "Error while getting default object type")
+            },
+            onSuccess = { response ->
                 val filtered = views.filter { it.id != response.type }
                 val result = listOf(ObjectTypeView.Search) + filtered
                 controlPanelInteractor.onEvent(
@@ -5498,9 +5524,11 @@ class EditorViewModel(
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
         viewModelScope.launch {
-            getDefaultEditorType.invoke(Unit).proceed(
-                failure = { Timber.e(it, "Error while getting default object type") },
-                success = { response ->
+            getDefaultEditorType.execute(Unit).fold(
+                onFailure = {
+                    Timber.e(it, "Error while getting default object type")
+                },
+                onSuccess = { response ->
                     createObjectAddProceedToAddToTextAsLink(
                         name = name,
                         type = response.type

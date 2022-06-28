@@ -22,6 +22,7 @@ class MainBottomToolbar @JvmOverloads constructor(
     }
 
     fun searchClicks() = binding.btnSearch.clicks()
+    fun addDocClicks() = binding.btnAddDoc.clicks()
     fun homeClicks() = binding.btnHome.clicks()
     fun backClicks() = binding.btnBack.clicks()
 }

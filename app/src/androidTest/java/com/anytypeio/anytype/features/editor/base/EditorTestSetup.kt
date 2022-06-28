@@ -76,6 +76,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -161,6 +162,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var mergeBlocks: MergeBlocks
+
+    @Mock
+    lateinit var createNewObject: CreateNewObject
 
     lateinit var editorTemplateDelegate: EditorTemplateDelegate
     lateinit var getTemplates: GetTemplates
@@ -383,7 +387,8 @@ open class EditorTestSetup {
             delegator = Delegator.Default(),
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            editorTemplateDelegate = editorTemplateDelegate
+            editorTemplateDelegate = editorTemplateDelegate,
+            createNewObject = createNewObject
         )
     }
 

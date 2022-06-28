@@ -15,6 +15,7 @@ dependencies {
     testImplementation project(":test:utils")
     testImplementation unitTestDependencies.kotlinTest
     testImplementation unitTestDependencies.turbine
+    testImplementation unitTestDependencies.mockitoKotlin
 
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation unitTestDependencies.coroutineTesting

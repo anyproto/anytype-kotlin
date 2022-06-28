@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetReducer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -92,6 +93,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getTemplates: GetTemplates
 
+    @Mock
+    lateinit var createNewObject: CreateNewObject
+
     val dispatcher = Dispatcher.Default<Payload>()
     val delegator = Delegator.Default<Action>()
     val reducer = ObjectSetReducer()
@@ -101,7 +105,7 @@ open class ObjectSetViewModelTestSetup {
     val urlBuilder: UrlBuilder
         get() = UrlBuilder(gateway)
 
-    fun buildViewModel(): ObjectSetViewModel = ObjectSetViewModel(
+    fun givenViewModel(): ObjectSetViewModel = ObjectSetViewModel(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
         addDataViewRelation = addDataViewRelation,
@@ -121,7 +125,8 @@ open class ObjectSetViewModelTestSetup {
         analytics = analytics,
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
-        getTemplates = getTemplates
+        getTemplates = getTemplates,
+        createNewObject = createNewObject
     )
 
     fun stubInterceptEvents(

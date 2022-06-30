@@ -38,9 +38,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_graphic_container_right_offset"
-            android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="@dimen/default_callout_internal_top_padding"
+            android:layout_marginBottom="@dimen/default_callout_internal_bottom_padding"
             android:hint="Enter the text"
             tools:text="Some very very big text in callout block Some very very big text in callout block Some very very big text in callout block" />
 

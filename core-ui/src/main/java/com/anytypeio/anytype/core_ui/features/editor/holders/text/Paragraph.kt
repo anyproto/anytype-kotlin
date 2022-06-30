@@ -106,11 +106,11 @@ class Paragraph(
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
             decoratableContainer.decorate(
                 decorations = decorations
-            ) { offsetLeft, offsetBottom ->
+            ) { rect ->
                 content.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.dp_8) + offsetLeft
-                    marginEnd = dimen(R.dimen.dp_8)
-                    bottomMargin = offsetBottom
+                    marginStart = dimen(R.dimen.dp_8) + rect.left
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = rect.bottom
                 }
             }
         }

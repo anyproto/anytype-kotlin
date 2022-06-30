@@ -282,5 +282,8 @@
     <dimen name="callout_block_extra_space_bottom">7dp</dimen>
     <dimen name="default_callout_card_radius">2dp</dimen>
     <dimen name="default_callout_icon_size">20dp</dimen>
+    <dimen name="default_callout_internal_top_padding">12dp</dimen>
+    <dimen name="default_callout_internal_bottom_padding">12dp</dimen>
+    <dimen name="callout_background_offset">20dp</dimen>
 
 </resources>

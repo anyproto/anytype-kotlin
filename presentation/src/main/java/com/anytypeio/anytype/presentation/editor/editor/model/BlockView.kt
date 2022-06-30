@@ -145,7 +145,7 @@ sealed class BlockView : ViewType {
         val background: ThemeColor = ThemeColor.DEFAULT
     ) {
         sealed class Style {
-            fun isCard() = this is Card
+            fun isCard() = this is Card || this is Callout
             object None : Style()
             sealed class Highlight : Style() {
                 object Start : Highlight()

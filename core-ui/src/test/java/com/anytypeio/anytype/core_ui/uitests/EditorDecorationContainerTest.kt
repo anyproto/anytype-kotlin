@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.uitests
 
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import androidx.core.view.marginBottom
 import androidx.core.view.marginStart
@@ -183,6 +184,8 @@ class EditorDecorationContainerTest {
         )
     }
 
+
+    //region quote nesting
 
     /**
      *   Quote block (A) without background
@@ -754,6 +757,92 @@ class EditorDecorationContainerTest {
     }
 
     /**
+     *   P with background (A)
+     *   ...Q with background (B - rendered block, child of A)
+     */
+    @Test
+    fun `should draw background of parent and do not draw background of bookmark block - when a block without style with background has one bookmark with background`() {
+        val layout = EditorDecorationContainer(context)
+
+        val bg1 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+        val bg2 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+
+        layout.decorate(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = bg1,
+                    style = BlockView.Decoration.Style.None
+                ),
+                BlockView.Decoration(
+                    background = bg2,
+                    style = BlockView.Decoration.Style.Card
+                )
+            )
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = layout.childCount
+        )
+
+        val view1 = layout.getChildAt(0) // background of A
+
+        assertIs<DecorationWidget.Background>(view1)
+
+        // Background of A and its offsets
+
+        assertEquals(
+            expected = context.resources.veryLight(bg1, 0),
+            actual = (view1.background as ColorDrawable).color
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view1.marginStart
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view1.marginBottom
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view1.marginTop
+        )
+
+        assertEquals(
+            expected = layout.height,
+            actual = view1.height
+        )
+    }
+
+    /**
+     *   Q with background.
+     */
+    fun `should not draw background for bookmark block without children`() {
+        val layout = EditorDecorationContainer(context)
+
+        val bg = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+
+        layout.decorate(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = bg,
+                    style = BlockView.Decoration.Style.Card
+                )
+            )
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = layout.childCount
+        )
+    }
+
+    //endregion
+
+    /**
      *   A - Simple text block with background
      *   ...B - H2-block with its own background.
      *   H2 block should have extra space above and below.
@@ -1020,71 +1109,58 @@ class EditorDecorationContainerTest {
         )
     }
 
-    /**
-     *   Q with background.
-     */
-    fun `should not draw background for bookmark block without children`() {
-        val layout = EditorDecorationContainer(context)
-
-        val bg = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
-
-        layout.decorate(
-            decorations = listOf(
-                BlockView.Decoration(
-                    background = bg,
-                    style = BlockView.Decoration.Style.Card
-                )
-            )
-        )
-
-        assertEquals(
-            expected = 0,
-            actual = layout.childCount
-        )
-    }
+    //region callout nesting
 
     /**
-     *   P with background (A)
-     *   ...Q with background (B - rendered block, child of A)
+     *   Callout with background (A)
+     *   ...P with background (B - rendered block, child of A)
      */
+
     @Test
-    fun `should draw background of parent and do not draw background of bookmark block - when a block without style with background has one bookmark with background`() {
+    fun `should draw background of callout and background of paragraph - when callout with background contains one paragraph with background`() {
         val layout = EditorDecorationContainer(context)
 
         val bg1 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
         val bg2 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
 
+        val calloutBackgroundOffset = context.resources.getDimension(R.dimen.callout_background_offset)
+        val graphicOffset = context.resources.getDimension(R.dimen.default_graphic_container_right_offset)
+        val graphicWidth = context.resources.getDimension(R.dimen.default_graphic_container_width)
+        val calloutBottomContentPadding = context.resources.getDimension(R.dimen.default_callout_internal_bottom_padding)
+
         layout.decorate(
             decorations = listOf(
                 BlockView.Decoration(
                     background = bg1,
-                    style = BlockView.Decoration.Style.None
+                    style = BlockView.Decoration.Style.Callout.End
                 ),
                 BlockView.Decoration(
                     background = bg2,
-                    style = BlockView.Decoration.Style.Card
+                    style = BlockView.Decoration.Style.None
                 )
             )
         )
 
         assertEquals(
-            expected = 1,
+            expected = 2,
             actual = layout.childCount
         )
 
         val view1 = layout.getChildAt(0) // background of A
+        val view2 = layout.getChildAt(1) // background of B
 
-        assertIs<DecorationWidget.Background>(view1)
+        assertIs<DecorationWidget.EndingCallout>(view1)
+        assertIs<DecorationWidget.Background>(view2)
 
         // Background of A and its offsets
 
         assertEquals(
             expected = context.resources.veryLight(bg1, 0),
-            actual = (view1.background as ColorDrawable).color
+            actual = (view1.background as GradientDrawable).color!!.defaultColor
         )
 
         assertEquals(
-            expected = 0,
+            expected = calloutBackgroundOffset.toInt(),
             actual = view1.marginStart
         )
 
@@ -1102,5 +1178,98 @@ class EditorDecorationContainerTest {
             expected = layout.height,
             actual = view1.height
         )
+
+        // Background of B and its offsets
+
+        assertEquals(
+            expected = context.resources.veryLight(bg2, 0),
+            actual = (view2.background as ColorDrawable).color
+        )
+
+        assertEquals(
+            expected = (calloutBackgroundOffset + graphicOffset + graphicWidth).toInt(),
+            actual = view2.marginStart
+        )
+
+        assertEquals(
+            expected = calloutBottomContentPadding.toInt(),
+            actual = view2.marginBottom
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = view2.marginTop
+        )
+
+        assertEquals(
+            expected = layout.height,
+            actual = view2.height
+        )
     }
+
+    /**
+     *   Callout with background (A)
+     *   ...Callout with background (B - rendered block, child of A)
+     */
+
+    @Test
+    fun `should draw background of callout and background of child callout - when callout with background contains one callout with background`() {
+        val layout = EditorDecorationContainer(context)
+
+        val bg1 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+        val bg2 = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+
+        var offsetBottom = 0
+
+        layout.decorate(
+            decorations = listOf(
+                BlockView.Decoration(
+                    background = bg1,
+                    style = BlockView.Decoration.Style.Callout.End
+                ),
+                BlockView.Decoration(
+                    background = bg2,
+                    style = BlockView.Decoration.Style.Callout.Full
+                )
+            )
+        ) { rect ->
+            offsetBottom = rect.bottom
+        }
+
+        assertEquals(
+            expected = 1,
+            actual = layout.childCount
+        )
+
+        val view1 = layout.getChildAt(0) // background of A
+
+        assertIs<DecorationWidget.EndingCallout>(view1)
+
+        // Background of A and its offsets
+
+        assertEquals(
+            expected = context.resources.veryLight(bg1, 0),
+            actual = (view1.background as GradientDrawable).color!!.defaultColor
+        )
+
+        assertEquals(
+            expected = context.resources.getDimension(R.dimen.callout_background_offset).toInt(),
+            actual = view1.marginStart
+        )
+
+        assertEquals(
+            expected = layout.height,
+            actual = view1.height
+        )
+
+        val calloutBottomPadding = context.resources.getDimension(R.dimen.default_callout_internal_bottom_padding)
+        val calloutExtraSpaceBottom = context.resources.getDimension(R.dimen.callout_block_extra_space_bottom)
+
+        assertEquals(
+            expected = (calloutBottomPadding + calloutExtraSpaceBottom).toInt(),
+            actual = offsetBottom
+        )
+    }
+
+    //endregion
 }

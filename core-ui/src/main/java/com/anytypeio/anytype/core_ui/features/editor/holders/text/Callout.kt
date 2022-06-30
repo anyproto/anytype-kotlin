@@ -13,6 +13,8 @@ import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundTintColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -30,7 +32,7 @@ class Callout(
 ) : Text(
     view = binding.root,
     clicked = clicked
-), BlockViewHolder.IndentableHolder, SupportNesting {
+), BlockViewHolder.IndentableHolder, SupportNesting, DecoratableViewHolder {
 
     override val root: View = itemView
     override val content: TextInputWidget = binding.calloutText
@@ -43,6 +45,8 @@ class Callout(
     private val mentionInitialsSize: Float
 
     private val indentOffset = dimen(R.dimen.default_indent)
+
+    override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
     init {
         content.setSpannableFactory(DefaultSpannableFactory())
@@ -101,8 +105,8 @@ class Callout(
         val callout = requireNotNull(item as? BlockView.Text.Callout) {
             "Failed to processChangePayload. $item must be Callout"
         }
-        payloads.forEach {payload ->
-            if(payload.isCalloutIconChanged) {
+        payloads.forEach { payload ->
+            if (payload.isCalloutIconChanged) {
                 icon.setIcon(callout.icon)
             }
         }
@@ -144,4 +148,34 @@ class Callout(
     override fun getMentionCheckedIcon(): Drawable? = mentionCheckedIcon
     override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            val indent = decorations.lastIndex
+            val last = decorations.last()
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.calloutCardContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = if (indent == 0) rect.left + indentOffset else rect.left
+                    marginEnd = rect.right
+                    bottomMargin = rect.bottom
+                }
+            }
+            when (last.style) {
+                is BlockView.Decoration.Style.Callout.Start -> {
+                    binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_start)
+                }
+                is BlockView.Decoration.Style.Callout.Full -> {
+                    binding.calloutCardContainer.setBackgroundResource(R.drawable.rect_callout_full)
+                }
+            }
+            binding.calloutCardContainer.setBlockBackgroundTintColor(
+                color = last.background,
+                default = itemView.resources.getColor(R.color.palette_very_light_grey, null)
+            )
+        }
+    }
+
+    override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {
+        applyDecorations(decorations)
+    }
 }

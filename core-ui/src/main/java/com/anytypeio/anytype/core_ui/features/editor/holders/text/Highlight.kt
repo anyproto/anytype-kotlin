@@ -120,9 +120,9 @@ class Highlight(
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { leftOffset, bottomOffset ->
+            decoratableContainer.decorate(decorations) { rect ->
                 indent.updateLayoutParams {
-                    width = dimen(R.dimen.default_indent) + leftOffset
+                    width = dimen(R.dimen.default_indent) + rect.left
                 }
             }
         }

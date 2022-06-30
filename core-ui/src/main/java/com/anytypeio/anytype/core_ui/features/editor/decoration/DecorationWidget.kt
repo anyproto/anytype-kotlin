@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.decoration
 
 import android.content.Context
-import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -35,6 +35,17 @@ interface DecorationWidget {
                 setBackgroundResource(R.color.block_higlight_divider)
             }
             addView(line, lp)
+        }
+    }
+
+    class EndingCallout @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        background: Int
+    ) : View(context, attrs), DecorationWidget {
+        init {
+            setBackgroundResource(R.drawable.rect_callout_end)
+            (this.background as GradientDrawable).setColor(background)
         }
     }
 }

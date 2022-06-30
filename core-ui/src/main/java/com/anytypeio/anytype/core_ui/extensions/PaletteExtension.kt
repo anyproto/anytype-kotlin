@@ -135,6 +135,19 @@ fun View.setBlockBackgroundTintColor(
 /**
  * @param [color] color code, @see [ThemeColor]
  */
+fun View.setBlockBackgroundTintColor(
+    color: ThemeColor,
+    default: Int
+) {
+    DrawableCompat.setTint(
+        background,
+        resources.veryLight(color, default)
+    )
+}
+
+/**
+ * @param [color] color code, @see [ThemeColor]
+ */
 fun Context.resolveThemedTextColor(color: String?, defaultColor: Int): Int {
     val value = ThemeColor.values().find { value -> value.code == color }
     return if (value != null && value != ThemeColor.DEFAULT) {

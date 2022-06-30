@@ -17,8 +17,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.decoration.OffsetBottom
-import com.anytypeio.anytype.core_ui.features.editor.decoration.OffsetLeft
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -216,16 +214,16 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations = decorations) { leftOffset: OffsetLeft, bottomOffset: OffsetBottom ->
+            decoratableContainer.decorate(decorations) { rect ->
                 binding.bookmarkRoot.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + leftOffset
+                    marginStart = dimen(R.dimen.default_indent) + rect.left
                     topMargin = dimen(R.dimen.default_card_block_extra_space_top)
                     bottomMargin =
-                        bottomOffset + dimen(R.dimen.default_card_block_extra_space_bottom)
+                        rect.bottom + dimen(R.dimen.default_card_block_extra_space_bottom)
                     marginEnd = dimen(R.dimen.default_indent)
                 }
                 binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
-                    leftMargin = leftOffset + dimen(R.dimen.default_selected_view_offset)
+                    leftMargin = rect.left + dimen(R.dimen.default_selected_view_offset)
                     rightMargin = dimen(R.dimen.default_document_item_padding_end)
                     // TODO handle top and bottom offsets
                 }

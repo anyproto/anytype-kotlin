@@ -4,20 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context="com.anytypeio.anytype.ui.dashboard.DashboardMnemonicReminderDialog">
+
+    <ImageView
+        android:id="@+id/drag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp"
+        android:src="@drawable/ic_drag"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
         style="@style/KeychainDialogTitleStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="23dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="23dp"
         android:layout_marginEnd="20dp"
         android:text="@string/do_not_forget_mnemonic_phrase"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/drag"  />
 
     <TextView
         android:id="@+id/subtitle"
@@ -40,8 +51,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="20dp"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:paddingStart="20dp"
         android:paddingTop="12dp"
         android:paddingEnd="20dp"
@@ -50,21 +61,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/subtitle"
-        tools:text="@string/keychain_mock" />
 
-    <TextView
-        android:id="@+id/btnCopy"
-        style="@style/DefaultStrokeButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/auth_default_button_height"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:text="Copy to clipboard"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keychain" />
+        tools:text="@string/keychain_mock" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

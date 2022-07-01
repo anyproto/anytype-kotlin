@@ -153,10 +153,10 @@
     </style>
 
     <style name="KeychainDialogKeychainStyle">
-        <item name="android:background">@drawable/rectangle_keychain_background</item>
+        <item name="android:background">@drawable/keychain_ripple</item>
         <item name="android:fontFamily">monospace</item>
         <item name="android:lineSpacingExtra">2sp</item>
-        <item name="android:textColor">#1BA0EB</item>
+        <item name="android:textColor">@color/keychain_text_color</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textSize">15sp</item>
     </style>

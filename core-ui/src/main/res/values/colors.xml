@@ -110,6 +110,7 @@
     <color name="RelationPlaceholderTextColor">#929082</color>
     <color name="default_status_text_color">#929082</color>
     <color name="default_grey">#929082</color>
+    <color name="keychain_text_color">#1BA0EB</color>
 
     <color name="orange_button_background_color">#FFB522</color>
     <color name="editor_default_hint_text_color">#CBC9BD</color>

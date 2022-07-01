@@ -10,7 +10,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.keychainPhraseScree
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import timber.log.Timber
@@ -18,10 +17,13 @@ import timber.log.Timber
 class KeychainPhraseViewModel(
     private val getMnemonic: GetMnemonic,
     private val analytics: Analytics
-) : ViewStateViewModel<ViewState<String>>() {
+) : ViewStateViewModel<KeychainViewState>() {
+
+    private var mnemonic: String = ""
 
     init {
         proceedWithGettingMnemonic()
+        stateData.postValue(KeychainViewState.Blurred)
     }
 
     fun sendShowEvent(type: String) {
@@ -34,7 +36,7 @@ class KeychainPhraseViewModel(
         )
     }
 
-    fun onCopyClickedFromScreenSettings() {
+    private fun copyClickedFromScreenSettings() {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = keychainCopy,
@@ -44,21 +46,23 @@ class KeychainPhraseViewModel(
         )
     }
 
-    fun onCopyClickedFromLogout() {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = keychainCopy,
-            props = Props(
-                mapOf(EventsPropertiesKey.type to EventsDictionary.Type.beforeLogout)
-            )
-        )
+    fun onKeychainClicked() {
+        stateData.postValue(KeychainViewState.Displayed(mnemonic))
+        copyClickedFromScreenSettings()
+    }
+
+    fun onRootClicked() {
+        stateData.postValue(KeychainViewState.Blurred)
     }
 
     private fun proceedWithGettingMnemonic() {
         getMnemonic.invoke(viewModelScope, Unit) { result ->
             result.either(
                 fnL = { e -> Timber.e(e, "Error while getting mnemonic") },
-                fnR = { stateData.postValue(ViewState.Success(it)) }
+                fnR = { mnemonic ->
+                    this.mnemonic = mnemonic
+                    Any()
+                }
             )
         }
     }

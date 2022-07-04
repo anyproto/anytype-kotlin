@@ -78,8 +78,6 @@ class ObjectMenuViewModel(
         if (!isProfile) {
             add(ObjectAction.DUPLICATE)
         }
-
-        add(ObjectAction.USE_AS_TEMPLATE)
     }
 
     override fun onIconClicked(ctx: Id) {
@@ -146,10 +144,6 @@ class ObjectMenuViewModel(
         }
     }
 
-    override fun onHistoryClicked() {
-        viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-    }
-
     override fun onActionClicked(ctx: Id, action: ObjectAction) {
         when (action) {
             ObjectAction.DELETE -> {
@@ -185,8 +179,9 @@ class ObjectMenuViewModel(
                 }
                 isDismissed.value = true
             }
-            else -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
+            ObjectAction.MOVE_TO,
+            ObjectAction.USE_AS_TEMPLATE -> {
+                throw IllegalStateException("$action is unsupported")
             }
         }
     }

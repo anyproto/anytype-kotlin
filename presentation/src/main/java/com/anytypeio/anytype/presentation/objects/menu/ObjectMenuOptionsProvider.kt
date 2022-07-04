@@ -10,15 +10,14 @@ interface ObjectMenuOptionsProvider {
         val hasCover: Boolean,
         val hasLayout: Boolean,
         val hasRelations: Boolean,
-        val hasHistory: Boolean
     ) {
+        val hasHistory: Boolean = false
         companion object {
             val ALL = Options(
                 hasIcon = true,
                 hasCover = true,
                 hasLayout = true,
                 hasRelations = true,
-                hasHistory = true
             )
         }
     }

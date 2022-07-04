@@ -63,7 +63,6 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = hasCover,
                     hasLayout = hasLayout,
                     hasRelations = true,
-                    hasHistory = true
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -71,7 +70,6 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = false,
                     hasLayout = hasLayout,
                     hasRelations = true,
-                    hasHistory = true
                 )
             }
         } else {

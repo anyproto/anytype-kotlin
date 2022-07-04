@@ -98,10 +98,6 @@ class ObjectSetMenuViewModel(
         }
     }
 
-    override fun onHistoryClicked() {
-        viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-    }
-
     override fun buildActions(
         ctx: Id,
         isArchived: Boolean,
@@ -134,9 +130,13 @@ class ObjectSetMenuViewModel(
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
                 proceedWithRemovingFromFavorites(ctx)
             }
-            else -> {
-                viewModelScope.launch { _toasts.emit(COMING_SOON_MSG) }
-            }
+            ObjectAction.MOVE_TO,
+            ObjectAction.SEARCH_ON_PAGE,
+            ObjectAction.UNDO_REDO,
+            ObjectAction.DUPLICATE,
+            ObjectAction.LOCK,
+            ObjectAction.UNLOCK,
+            ObjectAction.USE_AS_TEMPLATE -> throw IllegalStateException("$action is unsupported")
         }
     }
 }

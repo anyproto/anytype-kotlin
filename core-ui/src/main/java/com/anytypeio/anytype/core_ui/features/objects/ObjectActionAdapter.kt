@@ -56,10 +56,6 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_search)
                     tvActionTitle.setText(R.string.search)
                 }
-                ObjectAction.USE_AS_TEMPLATE -> {
-                    ivActionIcon.setImageResource(R.drawable.ic_object_action_template)
-                    tvActionTitle.setText(R.string.template)
-                }
                 ObjectAction.RESTORE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_restore)
                     tvActionTitle.setText(R.string.restore)

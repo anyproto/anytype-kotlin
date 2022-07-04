@@ -41,7 +41,6 @@ abstract class ObjectMenuViewModelBase(
             hasCover = false,
             hasLayout = false,
             hasRelations = false,
-            hasHistory = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
@@ -50,7 +49,10 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onCoverClicked(ctx: Id)
     abstract fun onLayoutClicked(ctx: Id)
     abstract fun onRelationsClicked()
-    abstract fun onHistoryClicked()
+
+    fun onHistoryClicked() {
+        throw IllegalStateException("History isn't supported yet")
+    }
 
     fun onStop() {
         jobs.forEach(Job::cancel)

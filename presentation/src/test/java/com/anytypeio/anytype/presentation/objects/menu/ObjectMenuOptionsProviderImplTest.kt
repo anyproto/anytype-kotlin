@@ -30,8 +30,6 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = false,
             hasLayout = true,
             hasRelations = true,
-            hasHistory = true
-
         )
 
         assertOptions(
@@ -49,8 +47,6 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = true,
             hasLayout = true,
             hasRelations = true,
-            hasHistory = true
-
         )
 
         assertOptions(
@@ -106,7 +102,6 @@ class ObjectMenuOptionsProviderImplTest {
                 hasCover = false,
                 hasLayout = false,
                 hasRelations = true,
-                hasHistory = true,
             )
         )
     }

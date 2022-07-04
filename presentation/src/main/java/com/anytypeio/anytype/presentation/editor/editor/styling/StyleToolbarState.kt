@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor.styling
 
 import com.anytypeio.anytype.core_models.TextStyle
-import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 
 sealed class StyleToolbarState {
 
@@ -34,7 +33,10 @@ sealed class StyleToolbarState {
         }
     }
 
-    data class ColorBackground(val color: String?, val background: String?) : StyleToolbarState() {
+    data class ColorBackground(
+        val color: String?,
+        val background: String?
+    ) : StyleToolbarState() {
         companion object {
             fun empty() = ColorBackground(null, null)
         }

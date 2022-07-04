@@ -21,7 +21,12 @@ import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
-import com.anytypeio.anytype.core_ui.tools.*
+import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
+import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
+import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
+import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
+import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.anytypeio.anytype.core_utils.ext.imm
@@ -193,8 +198,6 @@ class TextInputWidget : AppCompatEditText {
         if (isFocused && !isSelectionWatcherBlocked) {
             Timber.d("New selection: $selStart - $selEnd")
             selectionWatcher?.invoke(selStart..selEnd)
-        } else {
-            //Timber.d("Ignored selection change: focused: $isFocused, watcherBlocked: $isSelectionWatcherBlocked")
         }
         super.onSelectionChanged(selStart, selEnd)
     }

@@ -1,17 +1,19 @@
 package com.anytypeio.anytype.presentation.editor
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.Text.Style
 import com.anytypeio.anytype.core_models.TextBlock
-import com.anytypeio.anytype.core_models.misc.Overlap
 import com.anytypeio.anytype.presentation.common.StateReducer
-import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.*
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Reducer
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Companion.init
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getSupportedMarkupTypes
-import com.anytypeio.anytype.presentation.extension.*
+import com.anytypeio.anytype.presentation.extension.style
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import kotlinx.coroutines.CoroutineScope
@@ -105,7 +107,7 @@ sealed class ControlPanelMachine {
          */
         data class OnFocusChanged(
             val id: String,
-            val style: Block.Content.Text.Style
+            val style: Style
         ) : Event()
 
         sealed class SearchToolbar : Event() {
@@ -125,11 +127,14 @@ sealed class ControlPanelMachine {
 
         sealed class StylingToolbar : Event() {
             data class OnUpdateTextToolbar(val state: StyleToolbarState.Text) : StylingToolbar()
-            data class OnUpdateBackgroundToolbar(val state: StyleToolbarState.Background) :
-                StylingToolbar()
+            data class OnUpdateBackgroundToolbar(
+                val state: StyleToolbarState.Background
+            ) : StylingToolbar()
 
-            data class OnUpdateColorBackgroundToolbar(val state: StyleToolbarState.ColorBackground) :
-                StylingToolbar()
+            data class OnUpdateColorBackgroundToolbar(
+                val state: StyleToolbarState.ColorBackground,
+                val navigateFromStylingTextToolbar: Boolean,
+            ) : StylingToolbar()
 
             data class OnUpdateOtherToolbar(val state: StyleToolbarState.Other) : StylingToolbar()
             object OnExtraClosed : StylingToolbar()
@@ -214,16 +219,6 @@ sealed class ControlPanelMachine {
      */
     class Reducer : StateReducer<ControlPanelState, Event> {
 
-        private val excl = listOf(Overlap.LEFT, Overlap.RIGHT, Overlap.OUTER)
-        private val incl = listOf(
-            Overlap.EQUAL,
-            Overlap.INNER,
-            Overlap.LEFT,
-            Overlap.RIGHT,
-            Overlap.INNER_RIGHT,
-            Overlap.INNER_LEFT
-        )
-
         override val function: suspend (ControlPanelState, Event) -> ControlPanelState
             get() = { state, event ->
                 logEvent(event)
@@ -235,80 +230,90 @@ sealed class ControlPanelMachine {
 
         override suspend fun reduce(state: ControlPanelState, event: Event) = when (event) {
             is Event.OnSelectionChanged -> {
+                val content = event.target.content
                 when {
-                    state.mainToolbar.isVisible -> {
-                        if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
-                            state.copy(
-                                markupMainToolbar = Toolbar.MarkupMainToolbar.reset()
-                            )
-                        } else {
-                            state.copy(
-                                mainToolbar = state.mainToolbar.copy(
-                                    isVisible = false
-                                ),
-                                markupMainToolbar = state.markupMainToolbar.copy(
-                                    isVisible = true,
-                                    style = event.target.style(event.selection),
-                                    supportedTypes = event.target.content.let { content ->
-                                        if (content is TextBlock) {
-                                            content.getSupportedMarkupTypes()
-                                        } else {
-                                            emptyList()
-                                        }
-                                    }
-                                ),
-                                objectTypesToolbar = state.objectTypesToolbar.copy(
-                                    isVisible = false
-                                )
-                            )
-                        }
-                    }
-                    state.markupMainToolbar.isVisible -> {
-                        if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
-                            state.copy(
-                                mainToolbar = state.mainToolbar.copy(
-                                    isVisible = true
-                                ),
-                                markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
-                                markupColorToolbar = state.markupColorToolbar.copy(
-                                    isVisible = false
-                                ),
-                                objectTypesToolbar = state.objectTypesToolbar.copy(
-                                    isVisible = false
-                                )
-                            )
-                        } else {
-                            state.copy(
-                                markupMainToolbar = state.markupMainToolbar.copy(
-                                    style = event.target.style(event.selection)
-                                ),
-                                objectTypesToolbar = state.objectTypesToolbar.copy(
-                                    isVisible = false
-                                )
-                            )
-                        }
-                    }
-                    state.mentionToolbar.isVisible -> {
-                        val newMentionToolbarState = handleOnSelectionChangedForMentionState(
-                            state = state.mentionToolbar,
-                            start = event.selection.first
-                        )
-                        state.copy(
-                            mentionToolbar = newMentionToolbarState,
-                            mainToolbar = state.mainToolbar.copy(
-                                isVisible = !newMentionToolbarState.isVisible
-                            )
-                        )
+                    content is TextBlock && content.style == Style.TITLE -> {
+                        // ignore event for Title
+                        state
                     }
                     else -> {
-                        state.copy(
-                            mainToolbar = state.mainToolbar.copy(
-                                isVisible = true
-                            ),
-                            navigationToolbar = state.navigationToolbar.copy(
-                                isVisible = false
-                            )
-                        )
+                        when {
+                            state.mainToolbar.isVisible -> {
+                                if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
+                                    state.copy(
+                                        markupMainToolbar = Toolbar.MarkupMainToolbar.reset()
+                                    )
+                                } else {
+                                    state.copy(
+                                        mainToolbar = state.mainToolbar.copy(
+                                            isVisible = false
+                                        ),
+                                        markupMainToolbar = state.markupMainToolbar.copy(
+                                            isVisible = true,
+                                            style = event.target.style(event.selection),
+                                            supportedTypes = event.target.content.let { content ->
+                                                if (content is TextBlock) {
+                                                    content.getSupportedMarkupTypes()
+                                                } else {
+                                                    emptyList()
+                                                }
+                                            }
+                                        ),
+                                        objectTypesToolbar = state.objectTypesToolbar.copy(
+                                            isVisible = false
+                                        )
+                                    )
+                                }
+                            }
+                            state.markupMainToolbar.isVisible -> {
+                                if (event.selection.isEmpty() || event.selection.first == event.selection.last) {
+                                    state.copy(
+                                        mainToolbar = state.mainToolbar.copy(
+                                            isVisible = true
+                                        ),
+                                        markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
+                                        markupColorToolbar = state.markupColorToolbar.copy(
+                                            isVisible = false
+                                        ),
+                                        objectTypesToolbar = state.objectTypesToolbar.copy(
+                                            isVisible = false
+                                        )
+                                    )
+                                } else {
+                                    state.copy(
+                                        markupMainToolbar = state.markupMainToolbar.copy(
+                                            style = event.target.style(event.selection)
+                                        ),
+                                        objectTypesToolbar = state.objectTypesToolbar.copy(
+                                            isVisible = false
+                                        )
+                                    )
+                                }
+                            }
+                            state.mentionToolbar.isVisible -> {
+                                val newMentionToolbarState =
+                                    handleOnSelectionChangedForMentionState(
+                                        state = state.mentionToolbar,
+                                        start = event.selection.first
+                                    )
+                                state.copy(
+                                    mentionToolbar = newMentionToolbarState,
+                                    mainToolbar = state.mainToolbar.copy(
+                                        isVisible = !newMentionToolbarState.isVisible
+                                    )
+                                )
+                            }
+                            else -> {
+                                state.copy(
+                                    mainToolbar = state.mainToolbar.copy(
+                                        isVisible = true
+                                    ),
+                                    navigationToolbar = state.navigationToolbar.copy(
+                                        isVisible = false
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -490,16 +495,12 @@ sealed class ControlPanelMachine {
         ): ControlPanelState = when (event) {
             is Event.StylingToolbar.OnUpdateTextToolbar -> {
                 state.copy(
-                    mainToolbar = state.mainToolbar.copy(
-                        isVisible = false
-                    ),
+                    mainToolbar = Toolbar.Main.reset(),
                     styleTextToolbar = state.styleTextToolbar.copy(
                         isVisible = true,
                         state = event.state
                     ),
-                    navigationToolbar = state.navigationToolbar.copy(
-                        isVisible = false
-                    ),
+                    navigationToolbar = Toolbar.Navigation.reset(),
                     objectTypesToolbar = Toolbar.ObjectTypes.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
@@ -561,7 +562,7 @@ sealed class ControlPanelMachine {
             is Event.StylingToolbar.OnColorBackgroundClosed -> {
                 state.copy(
                     styleTextToolbar = state.styleTextToolbar.copy(
-                        isVisible = true
+                        isVisible = state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar
                     ),
                     styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
@@ -591,10 +592,13 @@ sealed class ControlPanelMachine {
             }
             is Event.StylingToolbar.OnUpdateColorBackgroundToolbar -> {
                 state.copy(
+                    mainToolbar = Toolbar.Main.reset(),
                     styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground(
                         isVisible = true,
-                        state = event.state
+                        state = event.state,
+                        navigatedFromStylingTextToolbar = event.navigateFromStylingTextToolbar,
                     ),
+                    navigationToolbar = Toolbar.Navigation.reset(),
                     styleTextToolbar = Toolbar.Styling.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
                     styleExtraToolbar = Toolbar.Styling.Extra.reset()

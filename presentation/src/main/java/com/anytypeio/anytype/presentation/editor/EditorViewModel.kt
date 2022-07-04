@@ -68,6 +68,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -78,7 +79,6 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
-import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
@@ -722,7 +722,10 @@ class EditorViewModel(
             if (state.styleColorBackgroundToolbar.isVisible) {
                 val ids = mode.getIds()
                 if (ids.isNullOrEmpty()) return
-                onSendUpdateStyleColorBackgroundToolbarEvent(ids)
+                onSendUpdateStyleColorBackgroundToolbarEvent(
+                    ids,
+                    state.styleColorBackgroundToolbar.navigatedFromStylingTextToolbar
+                )
             }
             if (state.styleExtraToolbar.isVisible) {
                 val ids = mode.getIds()
@@ -751,11 +754,17 @@ class EditorViewModel(
         )
     }
 
-    private fun onSendUpdateStyleColorBackgroundToolbarEvent(ids: List<Id>) {
+    private fun onSendUpdateStyleColorBackgroundToolbarEvent(
+        ids: List<Id>,
+        navigateFromStylingTextToolbar: Boolean,
+    ) {
         val selected = blocks.filter { ids.contains(it.id) }
         val state = selected.getStyleColorBackgroundToolbarState()
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.StylingToolbar.OnUpdateColorBackgroundToolbar(state)
+            ControlPanelMachine.Event.StylingToolbar.OnUpdateColorBackgroundToolbar(
+                state,
+                navigateFromStylingTextToolbar
+            )
         )
     }
 
@@ -2251,58 +2260,74 @@ class EditorViewModel(
     fun onBlockToolbarStyleClicked() {
         Timber.d("onBlockToolbarStyleClicked, ")
         val focus = orchestrator.stores.focus.current()
-        val target = focus.id
-        if (target.isNotEmpty()) {
-            when (views.find { it.id == target }) {
-                is BlockView.Title -> sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR)
+        val targetId = focus.id
+        if (targetId.isNotEmpty()) {
+            when (val targetView = views.singleOrNull { it.id == targetId }) {
                 is BlockView.Description -> sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION)
                 is BlockView.Code -> {
                     val selection = orchestrator.stores.textSelection.current().selection
                     if (selection != null && selection.first != selection.last) {
                         sendToast(CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR)
                     } else {
-                        proceedWithStyleToolbarEvent()
+                        proceedWithStyleToolbarEvent(targetView)
                     }
                 }
+                is BlockView -> proceedWithStyleToolbarEvent(targetView)
                 else -> {
-                    proceedWithStyleToolbarEvent()
+                    Timber.w("Failed to handle toolbar style click. Can't find targetView by id $targetId")
                 }
             }
         } else {
-            Timber.e("Unknown focus for style toolbar: $focus")
+            Timber.w("Failed to handle toolbar style click. Unknown focus for style toolbar: $focus")
         }
     }
 
-    private fun proceedWithStyleToolbarEvent() {
-        val target = orchestrator.stores.focus.current().id
-        val targetBlock = blocks.find { it.id == target }
-        val isText = targetBlock?.content is Content.Text
-        if (targetBlock != null && isText) {
-            mode = EditorMode.Styling.Single(
-                target = target,
-                cursor = orchestrator.stores.textSelection.current().selection?.first
-            )
-            viewModelScope.launch {
-                orchestrator.stores.focus.update(Editor.Focus.empty())
-                orchestrator.stores.views.update(views.singleStylingMode(target))
-                renderCommand.send(Unit)
-            }
-
-            if ((targetBlock.content as Content.Text).style == Content.Text.Style.CODE_SNIPPET) {
-                val state = listOf(targetBlock).getStyleBackgroundToolbarState()
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(state)
-                )
-            } else {
-                val styleState =
-                    listOf(targetBlock).map { it.content.asText() }.getStyleTextToolbarState()
-                controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(styleState)
-                )
+    private fun proceedWithStyleToolbarEvent(target: BlockView) {
+        val targetId = target.id
+        val targetBlock = blocks.find { it.id == targetId }
+        if (targetBlock != null) {
+            when (val content = targetBlock.content) {
+                is Content.Text -> {
+                    mode = EditorMode.Styling.Single(
+                        target = targetId,
+                        cursor = orchestrator.stores.textSelection.current().selection?.first
+                    )
+                    viewModelScope.launch {
+                        orchestrator.stores.focus.update(Editor.Focus.empty())
+                        orchestrator.stores.views.update(views.singleStylingMode(targetId))
+                        renderCommand.send(Unit)
+                    }
+                    when {
+                        target is BlockView.Title -> onSendUpdateStyleColorBackgroundToolbarEvent(
+                            ids = listOf(targetId),
+                            navigateFromStylingTextToolbar = false
+                        )
+                        content.style == Content.Text.Style.CODE_SNIPPET -> {
+                            val state = targetBlock.getStyleBackgroundToolbarState()
+                            controlPanelInteractor.onEvent(
+                                ControlPanelMachine.Event.StylingToolbar.OnUpdateBackgroundToolbar(
+                                    state
+                                )
+                            )
+                        }
+                        else -> {
+                            val styleState = content.getStyleTextToolbarState()
+                            controlPanelInteractor.onEvent(
+                                ControlPanelMachine.Event.StylingToolbar.OnUpdateTextToolbar(
+                                    styleState
+                                )
+                            )
+                        }
+                    }
+                }
+                else -> {
+                    Timber.w("Failed to open style menu. Block content must be Text but was ${content.javaClass}")
+                    sendToast("Failed to open style menu. Block content mustbe Text")
+                }
             }
         } else {
-            Timber.e("Target block for style menu not found. Target id: $target")
-            sendToast("Couldn't show style menu")
+            Timber.w("Failed to open style menu. Can't find target block: $target")
+            sendToast("Failed to open style menu. Can't find target block")
         }
     }
 
@@ -2494,7 +2519,10 @@ class EditorViewModel(
         Timber.d("onBlockStyleToolbarColorClicked, ")
         val ids = mode.getIds()
         if (ids.isNullOrEmpty()) return
-        onSendUpdateStyleColorBackgroundToolbarEvent(ids)
+        onSendUpdateStyleColorBackgroundToolbarEvent(
+            ids = ids,
+            navigateFromStylingTextToolbar = true
+        )
     }
 
     private fun proceedUpdateBlockStyle(
@@ -3974,8 +4002,6 @@ class EditorViewModel(
             "Opening action menu for title currently not supported"
         const val CANNOT_OPEN_ACTION_MENU_FOR_DESCRIPTION =
             "Cannot open action menu for description"
-        const val CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR =
-            "Opening style panel for title currently not supported"
         const val CANNOT_OPEN_STYLE_PANEL_FOR_DESCRIPTION =
             "Description block is text primitive and therefore no styling can be applied."
         const val CANNOT_OPEN_STYLE_PANEL_FOR_CODE_BLOCK_ERROR =

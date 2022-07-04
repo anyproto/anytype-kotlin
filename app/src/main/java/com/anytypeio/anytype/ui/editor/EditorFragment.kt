@@ -1188,8 +1188,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Basic -> {
                     resetTopToolbarTitle(
                         text = view.text,
-                        emoji = view.emoji,
-                        image = view.image
                     )
                     if (view.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1204,8 +1202,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Profile -> {
                     resetTopToolbarTitle(
                         text = view.text,
-                        emoji = null,
-                        image = view.image
                     )
                     if (view.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1220,8 +1216,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Todo -> {
                     resetTopToolbarTitle(
                         text = view.text,
-                        emoji = null,
-                        image = view.image
                     )
                     if (view.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1239,32 +1233,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
+    private fun resetTopToolbarTitle(text: String?) {
         binding.topToolbar.title.text = text
-//        when {
-//            emoji != null && emoji.isNotEmpty() -> {
-//                try {
-//                    topToolbar.emoji.invisible()
-//                    Glide.with(topToolbar.image).load(Emojifier.uri(emoji)).into(topToolbar.image)
-//                } catch (e: Exception) {
-//                    topToolbar.emoji.visible()
-//                    topToolbar.emoji.text = emoji
-//                }
-//            }
-//            image != null -> {
-//                topToolbar.emoji.invisible()
-//                topToolbar.image.visible()
-//                Glide
-//                    .with(topToolbar.image)
-//                    .load(image)
-//                    .centerInside()
-//                    .circleCrop()
-//                    .into(topToolbar.image)
-//            }
-//            else -> {
-//                topToolbar.image.setImageDrawable(null)
-//            }
-//        }
     }
 
     private fun render(state: ControlPanelState) {
@@ -1321,13 +1291,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     if (behavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                         keyboardDelayJobs += lifecycleScope.launch {
                             binding.blockActionToolbar.scrollToPosition(0)
-                            if (insets != null) {
-                                if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                                    delay(DELAY_HIDE_KEYBOARD)
-                                }
-                            } else {
-                                delay(DELAY_HIDE_KEYBOARD)
-                            }
+                            delayKeyboardHide(insets)
                             behavior.apply {
                                 setState(BottomSheetBehavior.STATE_EXPANDED)
                                 addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1363,13 +1327,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
                         proceedWithHidingSoftInput()
-                        if (insets != null) {
-                            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                                delay(DELAY_HIDE_KEYBOARD)
-                            }
-                        } else {
-                            delay(DELAY_HIDE_KEYBOARD)
-                        }
+                        delayKeyboardHide(insets)
                         behavior.apply {
                             setState(BottomSheetBehavior.STATE_EXPANDED)
                             addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1403,14 +1361,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
 
         state.styleColorBackgroundToolbar.apply {
+            val behavior = BottomSheetBehavior.from(binding.styleToolbarColors)
             if (isVisible) {
                 binding.styleToolbarColors.update(state.styleColorBackgroundToolbar.state)
-                BottomSheetBehavior.from(binding.styleToolbarColors).apply {
-                    setState(BottomSheetBehavior.STATE_EXPANDED)
-                    addBottomSheetCallback(onHideBottomSheetCallback)
+                if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    keyboardDelayJobs += lifecycleScope.launch {
+                        proceedWithHidingSoftInput()
+                        delayKeyboardHide(insets)
+                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                    }
                 }
             } else {
-                BottomSheetBehavior.from(binding.styleToolbarColors).apply {
+                behavior.apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
@@ -1429,13 +1392,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
                         proceedWithHidingSoftInput()
-                        if (insets != null) {
-                            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                                delay(DELAY_HIDE_KEYBOARD)
-                            }
-                        } else {
-                            delay(DELAY_HIDE_KEYBOARD)
-                        }
+                        delayKeyboardHide(insets)
                         behavior.apply {
                             setState(BottomSheetBehavior.STATE_EXPANDED)
                             addBottomSheetCallback(onHideBottomSheetCallback)
@@ -1538,6 +1495,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 //            hideSoftInput()
 //        }
         hideSoftInput()
+    }
+
+    private suspend fun delayKeyboardHide(insets: WindowInsetsCompat?) {
+        if (insets != null) {
+            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                delay(DELAY_HIDE_KEYBOARD)
+            }
+        } else {
+            delay(DELAY_HIDE_KEYBOARD)
+        }
     }
 
     private fun hideBlockActionPanel() {

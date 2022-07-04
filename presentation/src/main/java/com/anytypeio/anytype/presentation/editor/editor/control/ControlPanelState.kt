@@ -124,13 +124,15 @@ data class ControlPanelState(
             }
 
             data class ColorBackground(
-                override val isVisible: Boolean = false,
-                val state: StyleToolbarState.ColorBackground
+                override val isVisible: Boolean,
+                val state: StyleToolbarState.ColorBackground,
+                val navigatedFromStylingTextToolbar: Boolean,
             ) : Toolbar() {
                 companion object {
                     fun reset() = ColorBackground(
                         isVisible = false,
-                        state = StyleToolbarState.ColorBackground.empty()
+                        state = StyleToolbarState.ColorBackground.empty(),
+                        navigatedFromStylingTextToolbar = false,
                     )
                 }
             }

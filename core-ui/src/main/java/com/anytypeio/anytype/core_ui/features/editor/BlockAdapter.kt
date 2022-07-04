@@ -106,6 +106,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.LongClick
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BOOKMARK
@@ -725,7 +726,7 @@ class BlockAdapter(
             holder.content.editorTouchProcessor.onLongClick = {
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
-                    onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                    onClickListener(LongClick(target = blocks[pos].id))
                 }
             }
             holder.content.editorTouchProcessor.onDragAndDropTrigger = {
@@ -766,7 +767,7 @@ class BlockAdapter(
                             onLongClick = {
                                 val pos = holder.bindingAdapterPosition
                                 if (pos != RecyclerView.NO_POSITION) {
-                                    onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                                    onClickListener(LongClick(target = blocks[pos].id))
                                 }
                             },
                             onDragAndDropTrigger = { onDragAndDropTrigger(holder, it) }
@@ -777,7 +778,7 @@ class BlockAdapter(
                         holder.editorTouchProcessor.onLongClick = {
                             val pos = holder.bindingAdapterPosition
                             if (pos != RecyclerView.NO_POSITION) {
-                                onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                                onClickListener(LongClick(target = blocks[pos].id))
                             }
                         }
                         holder.editorTouchProcessor.onDragAndDropTrigger = {
@@ -793,7 +794,7 @@ class BlockAdapter(
                         holder.itemView.setOnLongClickListener {
                             val pos = holder.bindingAdapterPosition
                             if (pos != RecyclerView.NO_POSITION) {
-                                onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                                onClickListener(LongClick(target = blocks[pos].id))
                             }
                             true
                         }
@@ -803,7 +804,7 @@ class BlockAdapter(
                 holder.editorTouchProcessor.onLongClick = {
                     val pos = holder.bindingAdapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
-                        onClickListener(ListenerType.LongClick(target = blocks[pos].id))
+                        onClickListener(LongClick(target = blocks[pos].id))
                     }
                 }
                 holder.editorTouchProcessor.onDragAndDropTrigger = {

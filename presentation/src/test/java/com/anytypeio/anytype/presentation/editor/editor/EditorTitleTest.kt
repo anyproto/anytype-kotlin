@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -119,72 +118,6 @@ class EditorTitleTest : EditorPresentationTestSetup() {
             )
             assertEquals(
                 expected = EditorViewModel.CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR,
-                actual = toasts.first()
-            )
-
-            toastSubscription.cancel()
-        }
-    }
-
-    @Test
-    fun `should not open style panel for title block`() {
-
-        // SETUP
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart(),
-            children = listOf(header.id)
-        )
-
-        val document = listOf(page, header, title)
-
-        stubOpenDocument(document = document)
-        stubInterceptEvents(InterceptEvents.Params(context = root))
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        val toasts = mutableListOf<String>()
-
-        runBlockingTest {
-
-            val toastSubscription = launch { vm.toasts.collect { toasts.add(it) } }
-
-            val commandTestObserver = vm.commands.test()
-            val controlPanelObserver = vm.controlPanelViewState.test()
-
-            vm.apply {
-                onStart(root)
-                onBlockFocusChanged(title.id, true)
-                onBlockToolbarStyleClicked()
-            }
-
-            commandTestObserver.assertNoValue().assertHistorySize(0)
-            controlPanelObserver.assertValue(
-                ControlPanelState(
-                    mainToolbar = ControlPanelState.Toolbar.Main(
-                        isVisible = true
-                    ),
-                    styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
-                    multiSelect = ControlPanelState.Toolbar.MultiSelect(
-                        isVisible = false,
-                        isScrollAndMoveEnabled = false
-                    ),
-                    mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
-                    navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
-                    slashWidget = ControlPanelState.Toolbar.SlashWidget.reset()
-                )
-            )
-
-            assertEquals(
-                expected = 1,
-                actual = toasts.size
-            )
-            assertEquals(
-                expected = EditorViewModel.CANNOT_OPEN_STYLE_PANEL_FOR_TITLE_ERROR,
                 actual = toasts.first()
             )
 

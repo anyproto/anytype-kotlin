@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import org.junit.Before
@@ -24,6 +25,9 @@ class KeychainPhraseViewModelTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
+
     @Mock
     lateinit var getMnemonic: GetMnemonic
 
@@ -39,13 +43,40 @@ class KeychainPhraseViewModelTest {
 
     @Test
     fun `should proceed with getting mnemonic when vm is created`() {
-        vm = buildViewModel()
+        vm = givenViewModel()
         verify(getMnemonic, times(1)).invoke(any(), any(), any())
     }
 
     @Test
-    fun `should emit mnemonic when it is received`() {
+    fun `should emit blurred - when started`() {
+        givenMnemonic()
 
+        vm = givenViewModel()
+
+        vm.state.test().assertValue(KeychainViewState.Blurred)
+    }
+
+    @Test
+    fun `should emit displayed - when keychain clicked`() {
+        val mnemonic = givenMnemonic()
+
+        vm = givenViewModel()
+        vm.onKeychainClicked()
+
+        vm.state.test().assertValue(KeychainViewState.Displayed(mnemonic))
+    }
+
+    @Test
+    fun `should emit blurred - when root clicked`() {
+        givenMnemonic()
+
+        vm = givenViewModel()
+        vm.onRootClicked()
+
+        vm.state.test().assertValue(KeychainViewState.Blurred)
+    }
+
+    private fun givenMnemonic(): String {
         val mnemonic = MockDataFactory.randomString()
 
         getMnemonic.stub {
@@ -53,28 +84,11 @@ class KeychainPhraseViewModelTest {
                 answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Right(mnemonic))
             }
         }
-
-        vm = buildViewModel()
-
-//        vm.state.test().assertValue(ViewState.Success(mnemonic))
+        return mnemonic
     }
 
-    @Test
-    @Ignore
-    fun `should emit nothing when error occurs`() {
-
-        val exception = Exception()
-
-        getMnemonic.stub {
-            on { invoke(any(), any(), any()) } doAnswer { answer ->
-                answer.getArgument<(Either<Throwable, String>) -> Unit>(2)(Either.Left(exception))
-            }
-        }
-
-        vm = buildViewModel()
-
-        vm.state.test().assertNoValue()
-    }
-
-    private fun buildViewModel() = KeychainPhraseViewModel(getMnemonic = getMnemonic, analytics = analytics)
+    private fun givenViewModel() = KeychainPhraseViewModel(
+        getMnemonic = getMnemonic,
+        analytics = analytics
+    )
 }

@@ -8,10 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTopToolbarBinding
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 
 class ObjectTopToolbar @JvmOverloads constructor(
@@ -29,7 +29,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
     val menu: View get() = binding.threeDotsButton
     val container: ViewGroup get() = binding.titleContainer
     val title: TextView get() = binding.tvTopToolbarTitle
-    val image: ImageView get() = binding.ivTopToolbarIcon
+    val icon: ObjectIconWidget get() = binding.ivTopToolbarIcon
 
     init {
         container.alpha = 0f

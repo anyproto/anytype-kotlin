@@ -112,6 +112,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
@@ -1183,15 +1184,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun resetDocumentTitle(state: ViewState.Success) {
-        state.blocks.firstOrNull { view ->
+        val title = state.blocks.firstOrNull { view ->
             view is BlockView.Title.Basic || view is BlockView.Title.Profile || view is BlockView.Title.Todo
-        }?.let { view ->
-            when (view) {
+        }
+        if (title != null) {
+            when (title) {
                 is BlockView.Title.Basic -> {
                     resetTopToolbarTitle(
-                        text = view.text,
+                        text = title.text,
+                        emoji = title.emoji,
+                        image = title.image,
                     )
-                    if (view.hasCover) {
+                    if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
                         if (pos == -1 || pos == 0) {
@@ -1203,9 +1207,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is BlockView.Title.Profile -> {
                     resetTopToolbarTitle(
-                        text = view.text,
+                        text = title.text,
+                        emoji = null,
+                        image = title.image,
                     )
-                    if (view.hasCover) {
+                    if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
                         if (pos == -1 || pos == 0) {
@@ -1217,9 +1223,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is BlockView.Title.Todo -> {
                     resetTopToolbarTitle(
-                        text = view.text,
+                        text = title.text,
+                        emoji = null,
+                        image = title.image,
                     )
-                    if (view.hasCover) {
+                    if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
                         if (pos == -1 || pos == 0) {
@@ -1235,8 +1243,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetTopToolbarTitle(text: String?) {
+    private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
         binding.topToolbar.title.text = text
+        val iconView = binding.topToolbar.icon
+        when {
+            text.isNullOrBlank() -> {
+                iconView.setIcon(ObjectIcon.None)
+                iconView.gone()
+            }
+            !emoji.isNullOrBlank() -> {
+                iconView.setIcon(ObjectIcon.Basic.Emoji(emoji))
+                iconView.visible()
+            }
+            !image.isNullOrBlank()-> {
+                iconView.setIcon(ObjectIcon.Basic.Image(image))
+                iconView.visible()
+            }
+            else -> {
+                iconView.setIcon(ObjectIcon.None)
+                iconView.gone()
+            }
+        }
     }
 
     private fun render(state: ControlPanelState) {

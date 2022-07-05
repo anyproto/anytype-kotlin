@@ -56,7 +56,10 @@ class WallpaperSelectFragment : BaseBottomSheetFragment<FragmentWallpaperSelectB
                             outRect.top = spacing * 2
                             outRect.bottom = 0
                         }
-                        // Drawing space at the bottom of the two last wallpapers. TODO refact.
+                        // Drawing space at the bottom of the two last wallpapers. TODO refactor
+                        if (position == state.itemCount - 3) {
+                            outRect.bottom = spacing * 2
+                        }
                         if (position == state.itemCount - 2) {
                             outRect.bottom = spacing * 2
                         }

@@ -761,7 +761,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         vm.controlPanelViewState.test().assertValue(
             ControlPanelState(
-                mainToolbar = ControlPanelState.Toolbar.Main(),
+                mainToolbar = ControlPanelState.Toolbar.Main.reset(),
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
@@ -779,7 +779,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         vm.controlPanelViewState.test().assertValue(
             ControlPanelState(
-                mainToolbar = ControlPanelState.Toolbar.Main(),
+                mainToolbar = ControlPanelState.Toolbar.Main.reset(),
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = true),
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),
@@ -850,7 +850,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         vm.controlPanelViewState.test().assertValue(
             ControlPanelState(
-                mainToolbar = ControlPanelState.Toolbar.Main(),
+                mainToolbar = ControlPanelState.Toolbar.Main.reset(),
                 navigationToolbar = ControlPanelState.Toolbar.Navigation(isVisible = false),
                 mentionToolbar = ControlPanelState.Toolbar.MentionToolbar.reset(),
                 slashWidget = ControlPanelState.Toolbar.SlashWidget.reset(),

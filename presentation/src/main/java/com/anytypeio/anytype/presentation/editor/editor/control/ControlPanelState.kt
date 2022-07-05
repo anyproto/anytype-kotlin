@@ -55,10 +55,23 @@ data class ControlPanelState(
          * @property isVisible defines whether the toolbar is visible or not
          */
         data class Main(
-            override val isVisible: Boolean = false
+            override val isVisible: Boolean,
+            val targetBlockType: TargetBlockType = TargetBlockType.Any
         ) : Toolbar() {
+
+            sealed interface TargetBlockType {
+                /**
+                 * Toolbar is shown for Any block type except Title
+                 */
+                object Any: TargetBlockType
+                /**
+                 * Toolbar is shown for Any block type except Title
+                 */
+                object Title: TargetBlockType
+            }
+
             companion object {
-                fun reset(): Main = Main(false)
+                fun reset(): Main = Main(false, TargetBlockType.Any)
             }
         }
 
@@ -262,9 +275,7 @@ data class ControlPanelState(
             navigationToolbar = Toolbar.Navigation(
                 isVisible = true
             ),
-            mainToolbar = Toolbar.Main(
-                isVisible = false
-            ),
+            mainToolbar = Toolbar.Main.reset(),
             markupMainToolbar = Toolbar.MarkupMainToolbar(
                 isVisible = false
             ),

@@ -71,6 +71,7 @@ import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
 import com.anytypeio.anytype.core_ui.tools.SlashWidgetFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.StyleToolbarItemDecorator
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_PROFILE_IMAGE_CODE
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
@@ -104,6 +105,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar.Main
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
@@ -1251,10 +1253,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             binding.bottomToolbar.gone()
         }
 
-        if (state.mainToolbar.isVisible)
+        if (state.mainToolbar.isVisible) {
             binding.toolbar.visible()
-        else
+            binding.toolbar.state = when(state.mainToolbar.targetBlockType) {
+                Main.TargetBlockType.Any -> BlockToolbarWidget.State.Any
+                Main.TargetBlockType.Title -> BlockToolbarWidget.State.Title
+            }
+        } else {
             binding.toolbar.invisible()
+        }
 
         setMainMarkupToolbarState(state)
 

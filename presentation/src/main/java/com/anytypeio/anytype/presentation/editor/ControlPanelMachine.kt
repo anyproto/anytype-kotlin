@@ -245,9 +245,7 @@ sealed class ControlPanelMachine {
                                     )
                                 } else {
                                     state.copy(
-                                        mainToolbar = state.mainToolbar.copy(
-                                            isVisible = false
-                                        ),
+                                        mainToolbar = Toolbar.Main.reset(),
                                         markupMainToolbar = state.markupMainToolbar.copy(
                                             isVisible = true,
                                             style = event.target.style(event.selection),
@@ -306,7 +304,7 @@ sealed class ControlPanelMachine {
                             else -> {
                                 state.copy(
                                     mainToolbar = state.mainToolbar.copy(
-                                        isVisible = true
+                                        isVisible = true,
                                     ),
                                     navigationToolbar = state.navigationToolbar.copy(
                                         isVisible = false
@@ -400,7 +398,7 @@ sealed class ControlPanelMachine {
             }
             is Event.SearchToolbar.OnEnterSearchMode -> state.copy(
                 searchToolbar = Toolbar.SearchToolbar(isVisible = true),
-                mainToolbar = Toolbar.Main(isVisible = false),
+                mainToolbar = Toolbar.Main.reset(),
                 multiSelect = Toolbar.MultiSelect(
                     isVisible = false,
                     isScrollAndMoveEnabled = false,
@@ -435,7 +433,11 @@ sealed class ControlPanelMachine {
                     )
                     !state.mainToolbar.isVisible -> state.copy(
                         mainToolbar = state.mainToolbar.copy(
-                            isVisible = true
+                            isVisible = true,
+                            targetBlockType = when(event.style) {
+                                Style.TITLE -> Toolbar.Main.TargetBlockType.Title
+                                else -> Toolbar.Main.TargetBlockType.Any
+                            }
                         ),
                         styleTextToolbar = Toolbar.Styling.reset(),
                         mentionToolbar = Toolbar.MentionToolbar.reset(),
@@ -448,6 +450,12 @@ sealed class ControlPanelMachine {
                     )
                     else -> {
                         state.copy(
+                            mainToolbar = state.mainToolbar.copy(
+                                targetBlockType = when(event.style) {
+                                    Style.TITLE -> Toolbar.Main.TargetBlockType.Title
+                                    else -> Toolbar.Main.TargetBlockType.Any
+                                }
+                            ),
                             styleTextToolbar = state.styleTextToolbar.copy(
                                 isVisible = false
                             ),

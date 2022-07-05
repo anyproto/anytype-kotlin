@@ -240,7 +240,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // Unfocusing
 
-        onView(withId(R.id.hideKeyboardButton)).perform(click())
+        onView(withId(R.id.done)).perform(click())
 
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
         target.check(matches(not(hasFocus())))

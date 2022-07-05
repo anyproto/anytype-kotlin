@@ -52,7 +52,7 @@
         android:layout_weight="1"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/hideKeyboardButton"
+        app:layout_constraintEnd_toStartOf="@+id/done"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/blockActionsButton"
         app:layout_constraintTop_toTopOf="parent"
@@ -90,7 +90,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/hideKeyboardButton"
+        android:id="@+id/done"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"

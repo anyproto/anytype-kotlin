@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -23,9 +22,9 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 fun List<ColumnView>.buildGridRow(
+    showIcon: Boolean,
     record: Map<String, Any?>,
     relations: List<Relation>,
-    objectTypes: List<ObjectType> = emptyList(),
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder
 ): Viewer.GridView.Row {
@@ -180,7 +179,8 @@ fun List<ColumnView>.buildGridRow(
         image = image?.let { if (it.isEmpty()) null else builder.thumbnail(it) },
         cells = cells,
         layout = layout,
-        isChecked = done
+        isChecked = done,
+        showIcon = showIcon,
     )
 }
 

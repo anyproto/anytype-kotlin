@@ -43,6 +43,7 @@ import com.anytypeio.anytype.di.feature.ObjectSetIconPickerModule
 import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
 import com.anytypeio.anytype.di.feature.ObjectSetModule
 import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
+import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
 import com.anytypeio.anytype.di.feature.OtherSettingsModule
 import com.anytypeio.anytype.di.feature.PageNavigationModule
@@ -59,7 +60,6 @@ import com.anytypeio.anytype.di.feature.StartLoginModule
 import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerCustomizeModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
-import com.anytypeio.anytype.di.feature.ViewerRelationsModule
 import com.anytypeio.anytype.di.feature.ViewerSortByModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountModule
@@ -515,11 +515,11 @@ class ComponentManager(
             .build()
     }
 
-    val viewerRelationsComponent = DependentComponentMap { ctx ->
+    val objectsSetSettingsComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
-            .viewerRelationsComponent()
-            .module(ViewerRelationsModule)
+            .objectSetSettingsComponent()
+            .module(ObjectSetSettingsModule)
             .build()
     }
 

@@ -76,8 +76,8 @@ import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
-import com.anytypeio.anytype.ui.sets.modals.ViewerRelationsFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.flow.filterNotNull
@@ -170,7 +170,7 @@ open class ObjectSetFragment :
 
         setupWindowInsetAnimation()
 
-        setupGridAdapters(view)
+        setupGridAdapters()
         title.clearFocus()
         topToolbarTitle.alpha = 0f
         binding.root.setTransitionListener(transitionListener)
@@ -193,9 +193,9 @@ open class ObjectSetFragment :
                 vm.onViewerFiltersClicked()
             }
             subscribe(
-                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnRelations).clicks()
+                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
             ) {
-                vm.onViewerRelationsClicked()
+                vm.onViewerSettingsClicked()
             }
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()) {
                 vm.onViewerSortsClicked()
@@ -249,7 +249,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupGridAdapters(view: View) {
+    private fun setupGridAdapters() {
 
         val horizontalDivider = drawable(R.drawable.divider_dv_horizontal)
         val verticalDivider = drawable(R.drawable.divider_dv_grid)
@@ -589,8 +589,8 @@ open class ObjectSetFragment :
                 val fr = ManageViewerFragment.new(ctx = command.ctx, dataview = command.dataview)
                 fr.show(childFragmentManager, EMPTY_TAG)
             }
-            is ObjectSetCommand.Modal.ModifyViewerRelationOrder -> {
-                val fr = ViewerRelationsFragment.new(
+            is ObjectSetCommand.Modal.OpenSettings -> {
+                val fr = ObjectSetSettingsFragment.new(
                     ctx = command.ctx,
                     dv = command.dv,
                     viewer = command.viewer

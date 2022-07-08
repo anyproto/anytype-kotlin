@@ -4,14 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
@@ -21,12 +24,11 @@ import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ViewerRelationsViewModel(
+class ObjectSetSettingsViewModel(
     private val objectSetState: StateFlow<ObjectSet>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
@@ -83,7 +85,8 @@ class ViewerRelationsViewModel(
                         result.add(ViewerRelationListView.Setting.Toggle.FitImage(toggled = viewer.coverFit))
                     }
                     Block.Content.DataView.Viewer.Type.GRID -> {
-                        // TODO in the next PR
+                        result.add(ViewerRelationListView.Section.Settings)
+                        result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
                     }
                     Block.Content.DataView.Viewer.Type.LIST -> {
                         result.add(ViewerRelationListView.Section.Settings)
@@ -147,7 +150,7 @@ class ViewerRelationsViewModel(
                     )
                 ).process(
                     success = { dispatcher.send(it) },
-                    failure = { Timber.e("Error while updating") }
+                    failure = { Timber.w("Error while updating") }
                 )
             }
         }
@@ -267,7 +270,7 @@ class ViewerRelationsViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ViewerRelationsViewModel(
+            return ObjectSetSettingsViewModel(
                 objectSetState = state,
                 session = session,
                 dispatcher = dispatcher,

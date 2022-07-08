@@ -6,7 +6,11 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.sets.model.*
+import com.anytypeio.anytype.presentation.sets.model.CellView
+import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.anytypeio.anytype.presentation.sets.model.StatusView
+import com.anytypeio.anytype.presentation.sets.model.TagView
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test
@@ -133,13 +137,15 @@ class TagAndStatusTests {
             record = records,
             relations = dataViewRelations,
             builder = UrlBuilder(gateway),
-            details = emptyMap()
+            details = emptyMap(),
+            showIcon = false,
         )
 
         val expected = Viewer.GridView.Row(
             id = recordId,
             name = "",
             type = "Type111",
+            showIcon = false,
             cells = listOf(
                 CellView.Description(
                     id = recordId,
@@ -276,13 +282,15 @@ class TagAndStatusTests {
             record = records,
             relations = dataViewRelations,
             builder = UrlBuilder(gateway),
-            details = emptyMap()
+            details = emptyMap(),
+            showIcon = false,
         )
 
         val expected = Viewer.GridView.Row(
             id = recordId,
             name = "",
             type = "Type111",
+            showIcon = false,
             cells = listOf(
                 CellView.Description(
                     id = recordId,

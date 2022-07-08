@@ -19,24 +19,27 @@ import com.anytypeio.anytype.core_ui.features.dataview.ViewerRelationsAdapter
 import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDragAndDropBehavior
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.databinding.FragmentViewerRelationsListBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.ViewerRelationsViewModel
-import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
+import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
 import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment
 import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment
 import javax.inject.Inject
 
-class ViewerRelationsFragment : BaseBottomSheetFragment<FragmentViewerRelationsListBinding>(),
+class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelationsListBinding>(),
     OnStartDragListener {
 
     @Inject
-    lateinit var factory: ViewerRelationsViewModel.Factory
-    private val vm: ViewerRelationsViewModel by viewModels { factory }
+    lateinit var factory: ObjectSetSettingsViewModel.Factory
+    private val vm: ObjectSetSettingsViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CTX_KEY)
     private val viewer get() = arg<String>(VIEWER_KEY)
@@ -151,9 +154,9 @@ class ViewerRelationsFragment : BaseBottomSheetFragment<FragmentViewerRelationsL
         }
     }
 
-    private fun render(state: ViewerRelationsViewModel.ScreenState) {
+    private fun render(state: ObjectSetSettingsViewModel.ScreenState) {
         when (state) {
-            ViewerRelationsViewModel.ScreenState.LIST -> {
+            ObjectSetSettingsViewModel.ScreenState.LIST -> {
                 with(binding) {
                     recycler.apply {
                         dndItemTouchHelper.attachToRecyclerView(null)
@@ -168,7 +171,7 @@ class ViewerRelationsFragment : BaseBottomSheetFragment<FragmentViewerRelationsL
                     }
                 }
             }
-            ViewerRelationsViewModel.ScreenState.EDIT -> {
+            ObjectSetSettingsViewModel.ScreenState.EDIT -> {
                 with(binding) {
                     recycler.apply {
                         dndItemTouchHelper.attachToRecyclerView(this)
@@ -186,26 +189,16 @@ class ViewerRelationsFragment : BaseBottomSheetFragment<FragmentViewerRelationsL
         }
     }
 
-    private fun navigateToOptions(item: SimpleRelationView) {
-        val dialog = ViewerRelationOptionFragment.new(
-            ctx = ctx,
-            relation = item.key,
-            title = item.title,
-            format = item.format
-        )
-        dialog.show(parentFragmentManager, null)
-    }
-
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
         dndItemTouchHelper.startDrag(viewHolder)
     }
 
     override fun injectDependencies() {
-        componentManager().viewerRelationsComponent.get(ctx).inject(this)
+        componentManager().objectsSetSettingsComponent.get(ctx).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerRelationsComponent.release(ctx)
+        componentManager().objectsSetSettingsComponent.release(ctx)
     }
 
     override fun inflateBinding(
@@ -216,7 +209,7 @@ class ViewerRelationsFragment : BaseBottomSheetFragment<FragmentViewerRelationsL
     )
 
     companion object {
-        fun new(ctx: Id, dv: Id, viewer: Id) = ViewerRelationsFragment().apply {
+        fun new(ctx: Id, dv: Id, viewer: Id) = ObjectSetSettingsFragment().apply {
             arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, VIEWER_KEY to viewer)
         }
 

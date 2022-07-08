@@ -130,11 +130,11 @@ fun ObjectSet.render(
     viewerDb[viewer.id]?.let { data ->
         rows.addAll(
             data.records.toGridRecordRows(
+                showIcon = !viewer.hideIcon,
                 columns = columns,
                 relations = relations,
                 details = details,
                 builder = builder,
-                types = objectTypes
             )
         )
     }

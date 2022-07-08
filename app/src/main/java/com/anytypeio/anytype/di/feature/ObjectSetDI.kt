@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreatePage
 import com.anytypeio.anytype.domain.relations.AddFileToRecord
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
@@ -45,7 +46,6 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -85,7 +85,7 @@ interface ObjectSetSubComponent {
     fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
     fun objectRelationValueComponent(): ObjectSetObjectRelationValueSubComponent.Builder
     fun manageViewerComponent(): ManageViewerSubComponent.Builder
-    fun viewerRelationsComponent(): ViewerRelationsSubComponent.Builder
+    fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
     fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
     fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
     fun relationAddToDataViewComponent() : RelationAddToDataViewSubComponent.Builder

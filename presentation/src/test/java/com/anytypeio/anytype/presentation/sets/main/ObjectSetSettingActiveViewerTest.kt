@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
@@ -149,6 +150,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 emoji = null,
                 image = null,
                 type = doc.firstRecordType,
+                showIcon = true,
                 cells = listOf(
                     CellView.Description(
                         id = doc.firstRecordId,
@@ -168,6 +170,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 emoji = null,
                 image = null,
                 type = doc.secondRecordType,
+                showIcon = true,
                 cells = listOf(
                     CellView.Description(
                         id = doc.secondRecordId,
@@ -183,9 +186,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        assertTrue { valueBefore is Viewer.GridView }
-
-        check(valueBefore is Viewer.GridView)
+        assertIs<Viewer.GridView>(valueBefore)
 
         assertEquals(
             expected = expectedColumnsBefore,
@@ -215,6 +216,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 emoji = null,
                 image = null,
                 type = doc.secondRecordType,
+                showIcon = true,
                 cells = listOf(
                     CellView.Description(
                         id = doc.secondRecordId,
@@ -229,6 +231,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
                 emoji = null,
                 image = null,
                 type = doc.firstRecordType,
+                showIcon = true,
                 cells = listOf(
                     CellView.Description(
                         id = doc.firstRecordId,

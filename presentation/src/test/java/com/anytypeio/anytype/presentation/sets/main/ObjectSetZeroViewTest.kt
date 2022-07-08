@@ -133,6 +133,6 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
         vm.onViewerCustomizeButtonClicked()
         vm.onViewerSortsClicked()
         vm.onViewerFiltersClicked()
-        vm.onViewerRelationsClicked()
+        vm.onViewerSettingsClicked()
     }
 }

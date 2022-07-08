@@ -208,7 +208,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
         vm.onStart(root)
 
-        vm.onViewerRelationsClicked()
+        vm.onViewerSettingsClicked()
 
         val result = vm.toasts.stream().first()
 

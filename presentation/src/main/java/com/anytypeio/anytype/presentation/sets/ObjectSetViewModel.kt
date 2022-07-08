@@ -34,13 +34,13 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
@@ -891,7 +891,7 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onViewerRelationsClicked() {
+    fun onViewerSettingsClicked() {
         Timber.d("onViewerRelationsClicked, ")
         if (isRestrictionPresent(DataViewRestriction.RELATION)) {
             toast(NOT_ALLOWED)
@@ -904,7 +904,7 @@ class ObjectSetViewModel(
                     val viewer =
                         dv.viewers.find { it.id == session.currentViewerId } ?: dv.viewers.first()
                     dispatch(
-                        ObjectSetCommand.Modal.ModifyViewerRelationOrder(
+                        ObjectSetCommand.Modal.OpenSettings(
                             ctx = context,
                             dv = block.id,
                             viewer = viewer.id

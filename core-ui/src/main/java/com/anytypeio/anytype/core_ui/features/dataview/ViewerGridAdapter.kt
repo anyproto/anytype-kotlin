@@ -118,7 +118,7 @@ class ViewerGridAdapter(
                     binding.objectIcon.setCheckbox(row.isChecked)
                 }
                 ObjectType.Layout.BASIC -> {
-                    if (row.image != null || row.emoji != null) {
+                    if ((row.image != null || row.emoji != null) && row.showIcon) {
                         binding.objectIcon.visible()
                         if (row.image != null) {
                             binding.objectIcon.setRectangularImage(row.image)
@@ -130,15 +130,23 @@ class ViewerGridAdapter(
                     }
                 }
                 ObjectType.Layout.PROFILE -> {
-                    binding.objectIcon.visible()
-                    if (row.image != null) {
-                        binding.objectIcon.setCircularImage(row.image)
+                    if (row.showIcon) {
+                        binding.objectIcon.visible()
+                        if (row.image != null) {
+                            binding.objectIcon.setCircularImage(row.image)
+                        } else {
+                            binding.objectIcon.setProfileInitials(row.name.orEmpty())
+                        }
                     } else {
-                        binding.objectIcon.setProfileInitials(row.name.orEmpty())
+                        binding.objectIcon.gone()
                     }
                 }
                 else -> {
-                    binding.objectIcon.gone()
+                    if (row.showIcon) {
+                        binding.objectIcon.visible()
+                    } else {
+                        binding.objectIcon.gone()
+                    }
                 }
             }
             binding.tvTitle.text = row.name
@@ -163,10 +171,12 @@ class ViewerGridAdapter(
         override fun getChangePayload(
             oldItem: Viewer.GridView.Row,
             newItem: Viewer.GridView.Row
-        ): Any {
+        ): List<Int>? {
             val payload = mutableListOf<Int>()
             if (isHeaderChanged(oldItem, newItem)) payload.add(OBJECT_HEADER_CHANGED)
-            return payload
+            return if (payload.isEmpty()) {
+                null
+            } else payload
         }
 
         private fun isHeaderChanged(
@@ -176,7 +186,8 @@ class ViewerGridAdapter(
                 || oldItem.image != newItem.image
                 || oldItem.name != newItem.name
                 || oldItem.isChecked != newItem.isChecked
-                || oldItem.layout != newItem.layout)
+                || oldItem.layout != newItem.layout
+                || oldItem.showIcon != newItem.showIcon)
 
         const val OBJECT_HEADER_CHANGED = 0
     }

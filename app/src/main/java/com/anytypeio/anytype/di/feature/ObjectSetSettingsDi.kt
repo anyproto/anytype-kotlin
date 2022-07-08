@@ -7,35 +7,35 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.ModifyDataViewViewerRelationOrder
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
-import com.anytypeio.anytype.presentation.relations.ViewerRelationsViewModel
+import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.sets.modals.ViewerRelationsFragment
+import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.flow.StateFlow
 
-@Subcomponent(modules = [ViewerRelationsModule::class])
+@Subcomponent(modules = [ObjectSetSettingsModule::class])
 @PerModal
-interface ViewerRelationsSubComponent {
+interface ObjectSetSettingsSubComponent {
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: ViewerRelationsModule): Builder
-        fun build(): ViewerRelationsSubComponent
+        fun module(module: ObjectSetSettingsModule): Builder
+        fun build(): ObjectSetSettingsSubComponent
     }
 
-    fun inject(fragment: ViewerRelationsFragment)
+    fun inject(fragment: ObjectSetSettingsFragment)
 }
 
 @Module
-object ViewerRelationsModule {
+object ObjectSetSettingsModule {
 
     @JvmStatic
     @Provides
     @PerModal
-    fun provideViewerRelationsListViewModelFactory(
+    fun provideViewModelFactory(
         state: StateFlow<ObjectSet>,
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
@@ -43,7 +43,7 @@ object ViewerRelationsModule {
         updateDataViewViewer: UpdateDataViewViewer,
         deleteRelationFromDataView: DeleteRelationFromDataView,
         analytics: Analytics
-    ): ViewerRelationsViewModel.Factory = ViewerRelationsViewModel.Factory(
+    ): ObjectSetSettingsViewModel.Factory = ObjectSetSettingsViewModel.Factory(
         state = state,
         session = session,
         dispatcher = dispatcher,

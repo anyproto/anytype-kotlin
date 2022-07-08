@@ -612,24 +612,21 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
     is Viewer.Filter.Condition.Text.None -> DVFilterCondition.NONE
 }
 
-fun List<Map<String, Any?>>.filterRecordsBy(filterBy: String): List<Map<String, Any?>> =
-        filter { it.containsKey(filterBy) }
-
 fun List<Map<String, Any?>>.toGridRecordRows(
+    showIcon: Boolean,
     columns: List<ColumnView>,
     relations: List<Relation>,
-    types: List<ObjectType>,
     details: Map<Id, Block.Fields>,
     builder: UrlBuilder
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { record ->
         val row = columns.buildGridRow(
+                showIcon = showIcon,
                 record = record,
                 relations = relations,
                 details = details,
                 builder = builder,
-                objectTypes = types
         )
         rows.add(row)
     }

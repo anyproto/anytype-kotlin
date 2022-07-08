@@ -48,7 +48,7 @@
             android:layout_height="52dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/rect_data_view_customize_view_button"
-            app:layout_constraintEnd_toStartOf="@+id/btnRelations"
+            app:layout_constraintEnd_toStartOf="@+id/btnSettings"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dragger">
@@ -62,7 +62,7 @@
         </FrameLayout>
 
         <FrameLayout
-            android:id="@+id/btnRelations"
+            android:id="@+id/btnSettings"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginTop="12dp"
@@ -88,7 +88,7 @@
             android:background="@drawable/rect_data_view_customize_view_button"
             app:layout_constraintEnd_toStartOf="@+id/btnFilter"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btnRelations"
+            app:layout_constraintStart_toEndOf="@+id/btnSettings"
             app:layout_constraintTop_toBottomOf="@+id/dragger">
 
             <ImageView
@@ -132,7 +132,7 @@
             app:layout_constraintTop_toBottomOf="@+id/btnView" />
 
         <TextView
-            android:id="@+id/tvRelations"
+            android:id="@+id/tvSettings"
             style="@style/DataViewCustomizePanelTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -140,9 +140,9 @@
             android:layout_marginBottom="10dp"
             android:text="@string/settings"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btnRelations"
-            app:layout_constraintStart_toStartOf="@+id/btnRelations"
-            app:layout_constraintTop_toBottomOf="@+id/btnRelations" />
+            app:layout_constraintEnd_toEndOf="@+id/btnSettings"
+            app:layout_constraintStart_toStartOf="@+id/btnSettings"
+            app:layout_constraintTop_toBottomOf="@+id/btnSettings" />
 
         <TextView
             android:id="@+id/tvSort"

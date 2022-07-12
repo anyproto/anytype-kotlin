@@ -33,6 +33,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
 
     private val defaultTextSize: Float = context.dimen(R.dimen.sp_13)
     private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
+    private val defaultTextColor = resources.getColor(R.color.text_secondary, null)
 
     fun set(
         item: BlockView.FeaturedRelation,
@@ -64,6 +65,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
+                        setTextColor(defaultTextColor)
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
@@ -93,6 +95,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             isSingleLine = true
                             maxLines = 1
                             ellipsize = TextUtils.TruncateAt.END
+                            setTextColor(defaultTextColor)
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                             setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
@@ -117,6 +120,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
+                                setTextColor(defaultTextColor)
                                 setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                                 setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                             }
@@ -129,6 +133,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                                 isSingleLine = true
                                 maxLines = 1
                                 ellipsize = TextUtils.TruncateAt.END
+                                setTextColor(defaultTextColor)
                                 setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                                 setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                             }
@@ -148,7 +153,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.Status -> {
                     relation.status.forEach { status ->
                         val color = ThemeColor.values().find { v -> v.code == status.color }
-                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val view = TextView(context).apply {
                             id = generateViewId()
                             text = status.status
@@ -178,7 +182,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is DocumentRelationView.Tags -> {
                     relation.tags.forEach { tag ->
                         val color = ThemeColor.values().find { v -> v.code == tag.color }
-                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val defaultBackground = resources.getColor(R.color.shape_primary, null)
                         val view = TextView(context).apply {
                             id = generateViewId()
@@ -216,6 +219,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
+                        setTextColor(defaultTextColor)
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
                     }
                     view.setOnClickListener {
@@ -272,6 +276,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         alpha = 0.5f
         maxLines = 1
         ellipsize = TextUtils.TruncateAt.END
+        setTextColor(defaultTextColor)
         setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultTextSize)
     }
 

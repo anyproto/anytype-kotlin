@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
-        android:background="@drawable/rectangle_block_media_background">
+        android:background="@drawable/rectangle_media_block_placeholder">
 
         <ImageView
             android:id="@+id/icFile"
@@ -33,8 +33,8 @@
             android:layout_marginStart="5dp"
             android:inputType="none"
             android:fontFamily="@font/inter_regular"
-            android:text="Loading, please wait"
-            android:textColor="#ACA996"
+            android:text="@string/loading_wait"
+            android:textColor="@color/glyph_active"
             app:layout_constraintBottom_toBottomOf="@+id/icFile"
             app:layout_constraintStart_toEndOf="@+id/icFile"
             app:layout_constraintTop_toTopOf="@+id/icFile" />

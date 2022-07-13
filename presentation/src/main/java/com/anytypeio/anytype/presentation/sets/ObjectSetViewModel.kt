@@ -155,7 +155,7 @@ class ObjectSetViewModel(
 
         viewModelScope.launch {
             reducer.state.filter { it.isInitialized }.collect { set ->
-                Timber.d("Set updated!")
+                Timber.d("Got ObjectSetViewModel new state")
                 if (set.viewers.isNotEmpty()) {
                     _viewerTabs.value = set.tabs(session.currentViewerId)
                     val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
@@ -168,7 +168,7 @@ class ObjectSetViewModel(
                         urlBuilder = urlBuilder
                     )
                 } else {
-                    Timber.e("Data view contained no view")
+                    Timber.w("Data view contained no view")
                     error.value = DATA_VIEW_HAS_NO_VIEW_MSG
                     _header.value = set.title(
                         ctx = context,

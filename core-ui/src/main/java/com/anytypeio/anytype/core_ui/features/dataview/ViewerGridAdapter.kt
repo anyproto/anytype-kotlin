@@ -9,12 +9,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
@@ -112,14 +113,25 @@ class ViewerGridAdapter(
         val adapter get() = binding.rowCellRecycler.adapter as ViewerGridCellsAdapter
 
         fun bindObjectHeader(row: Viewer.GridView.Row) {
+            if (row.showIcon) {
+                showIcon(row)
+            } else {
+                hideIcon()
+            }
+            binding.tvTitle.text = row.name
+        }
+
+        private fun hideIcon() {
+            binding.objectIcon.gone()
+            binding.objectIcon.setIcon(ObjectIcon.None)
+        }
+
+        private fun showIcon(row: Viewer.GridView.Row) {
+            binding.objectIcon.visible()
             when (row.layout) {
-                ObjectType.Layout.TODO -> {
-                    binding.objectIcon.visible()
-                    binding.objectIcon.setCheckbox(row.isChecked)
-                }
-                ObjectType.Layout.BASIC -> {
-                    if ((row.image != null || row.emoji != null) && row.showIcon) {
-                        binding.objectIcon.visible()
+                Layout.TODO -> binding.objectIcon.setCheckbox(row.isChecked)
+                Layout.BASIC -> {
+                    if ((row.image != null || row.emoji != null)) {
                         if (row.image != null) {
                             binding.objectIcon.setRectangularImage(row.image)
                         } else if (row.emoji != null) {
@@ -129,27 +141,15 @@ class ViewerGridAdapter(
                         binding.objectIcon.gone()
                     }
                 }
-                ObjectType.Layout.PROFILE -> {
-                    if (row.showIcon) {
-                        binding.objectIcon.visible()
-                        if (row.image != null) {
-                            binding.objectIcon.setCircularImage(row.image)
-                        } else {
-                            binding.objectIcon.setProfileInitials(row.name.orEmpty())
-                        }
+                Layout.PROFILE -> {
+                    if (row.image != null) {
+                        binding.objectIcon.setCircularImage(row.image)
                     } else {
-                        binding.objectIcon.gone()
+                        binding.objectIcon.setProfileInitials(row.name.orEmpty())
                     }
                 }
-                else -> {
-                    if (row.showIcon) {
-                        binding.objectIcon.visible()
-                    } else {
-                        binding.objectIcon.gone()
-                    }
-                }
+                else -> binding.objectIcon.gone()
             }
-            binding.tvTitle.text = row.name
         }
 
         fun bindObjectCells(row: Viewer.GridView.Row) {

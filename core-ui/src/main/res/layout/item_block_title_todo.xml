@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <FrameLayout
-        android:minHeight="@dimen/todoToolbarHeaderMinHeight"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/todoToolbarHeaderMinHeight">
 
         <ImageView
             android:id="@+id/cover"
@@ -18,12 +18,11 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_document_cover"
             android:scaleType="fitXY"
-            tools:visibility="visible"
+            android:visibility="gone"
             tools:background="@color/orange"
-            android:visibility="gone" />
+            tools:visibility="visible" />
 
         <FrameLayout
-            android:visibility="gone"
             android:id="@+id/documentIconContainer"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -31,7 +30,8 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/rectangle_default_page_logo_background"
-            android:transitionName="@string/logo_transition">
+            android:transitionName="@string/logo_transition"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/emojiIcon"
@@ -48,36 +48,49 @@
 
     </FrameLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/titleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
         android:layout_marginTop="@dimen/space_between_header_container_and_title"
-        android:paddingEnd="20dp"
-        android:orientation="horizontal">
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
 
-        <View
+        <ImageView
             android:id="@+id/todoTitleCheckbox"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_gravity="top"
-            android:layout_marginTop="1dp"
-            android:background="@drawable/ic_todo_title_checkbox_selector" />
+            android:src="@drawable/ic_todo_title_checkbox_selector"
+            app:layout_constraintBottom_toBottomOf="@id/dummyView"
+            app:layout_constraintEnd_toStartOf="@id/title"
+            app:layout_constraintTop_toTopOf="@id/dummyView" />
 
         <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
             android:id="@+id/title"
             style="@style/BlockTitleContentStyle"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="36dp"
             android:layout_marginTop="0dp"
             android:hint="@string/untitled"
-            android:textColorHint="@color/editor_default_hint_text_color"
             android:includeFontPadding="false"
             android:letterSpacing="-0.02"
             android:paddingTop="0dp"
+            android:textColorHint="@color/editor_default_hint_text_color"
             app:ignoreDragAndDrop="true"
+            app:layout_constraintStart_toEndOf="@id/todoTitleCheckbox"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:onlyPasteAsPlaneText="true"
-            tools:text="Check new Android version" />
-    </LinearLayout>
+            tools:text="Check new Android version multiline" />
+
+        <TextView
+            android:id="@+id/dummyView"
+            style="@style/BlockTitleContentStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:letterSpacing="-0.02"
+            app:layout_constraintBaseline_toBaselineOf="@id/title"
+            app:layout_constraintStart_toStartOf="@id/title" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

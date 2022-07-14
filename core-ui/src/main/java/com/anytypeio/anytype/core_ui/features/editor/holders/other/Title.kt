@@ -42,7 +42,10 @@ import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
-    val ivCover: ImageView? get() = itemView.findViewById(R.id.cover)
+    val ivCover: ImageView? = itemView.findViewById(R.id.cover)
+    private val title: View = itemView.findViewById(R.id.title)
+    private val coverAndIconContainer: ViewGroup? = itemView.findViewById(R.id.coverAndIconContainer)
+    private val cover: ImageView? = itemView.findViewById(R.id.cover)
 
     abstract val icon: FrameLayout
     abstract val image: ImageView
@@ -78,9 +81,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 if (hasFocus) showKeyboard()
             }
         }
-        itemView.findViewById<ImageView?>(R.id.cover)?.apply {
-            setOnClickListener { onCoverClicked() }
-        }
+        cover?.setOnClickListener { onCoverClicked() }
     }
 
     private fun setCover(
@@ -89,69 +90,68 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         coverGradient: String?
     ) {
         when {
-            coverColor != null -> {
-                ivCover?.apply {
-                    visible()
-                    setImageDrawable(null)
-                    setBackgroundColor(coverColor.color)
-                }
-                itemView.findViewById<View>(R.id.title)
-                    .updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_8)
-                    }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
-                    ?.updatePadding(top = 0)
-            }
-            coverImage != null -> {
-                ivCover?.apply {
-                    visible()
-                    setBackgroundColor(0)
-                    Glide
-                        .with(itemView)
-                        .load(coverImage)
-                        .centerCrop()
-                        .into(this)
-                }
-                itemView.findViewById<View>(R.id.title)
-                    .updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_8)
-                    }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
-                    ?.updatePadding(top = 0)
-            }
-            coverGradient != null -> {
-                ivCover?.apply {
-                    setImageDrawable(null)
-                    setBackgroundColor(0)
-                    when (coverGradient) {
-                        CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow)
-                        CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
-                        CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
-                        CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal)
-                        CoverGradient.PINK_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_1)
-                        CoverGradient.BLUE_PINK -> setBackgroundResource(R.drawable.wallpaper_gradient_2)
-                        CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
-                        CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
-                    }
-                    visible()
-                }
-                itemView.findViewById<View>(R.id.title)
-                    .updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_8)
-                    }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
-                    ?.updatePadding(top = 0)
-            }
-            else -> {
-                ivCover?.apply {
-                    setImageDrawable(null)
-                    setBackgroundColor(0)
-                    gone()
-                }
-                itemView.findViewById<ViewGroup?>(R.id.coverAndIconContainer)
-                    ?.updatePadding(top = dimen(R.dimen.dp_48))
-            }
+            coverColor != null -> setColorCover(coverColor)
+            coverImage != null -> setCoverImage(coverImage)
+            coverGradient != null -> setCoverGradient(coverGradient)
+            else -> setCoverless()
         }
+    }
+
+    private fun setCoverless() {
+        ivCover?.apply {
+            setImageDrawable(null)
+            setBackgroundColor(0)
+            gone()
+        }
+        coverAndIconContainer?.updatePadding(top = dimen(R.dimen.dp_48))
+    }
+
+    private fun setCoverGradient(coverGradient: String) {
+        ivCover?.apply {
+            setImageDrawable(null)
+            setBackgroundColor(0)
+            when (coverGradient) {
+                CoverGradient.YELLOW -> setBackgroundResource(R.drawable.cover_gradient_yellow)
+                CoverGradient.RED -> setBackgroundResource(R.drawable.cover_gradient_red)
+                CoverGradient.BLUE -> setBackgroundResource(R.drawable.cover_gradient_blue)
+                CoverGradient.TEAL -> setBackgroundResource(R.drawable.cover_gradient_teal)
+                CoverGradient.PINK_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_1)
+                CoverGradient.BLUE_PINK -> setBackgroundResource(R.drawable.wallpaper_gradient_2)
+                CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
+                CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
+            }
+            visible()
+        }
+        addPaddingForCover()
+    }
+
+    private fun setCoverImage(coverImage: String) {
+        ivCover?.apply {
+            visible()
+            setBackgroundColor(0)
+            Glide
+                .with(itemView)
+                .load(coverImage)
+                .centerCrop()
+                .into(this)
+        }
+        addPaddingForCover()
+    }
+
+    private fun setColorCover(coverColor: CoverColor) {
+        ivCover?.apply {
+            visible()
+            setImageDrawable(null)
+            setBackgroundColor(coverColor.color)
+        }
+        addPaddingForCover()
+    }
+
+    protected open fun addPaddingForCover() {
+        title.updateLayoutParams<LinearLayout.LayoutParams> {
+            topMargin = dimen(R.dimen.dp_8)
+        }
+        coverAndIconContainer?.updatePadding(top = 0)
     }
 
     fun applySearchHighlights(item: BlockView.Searchable) {
@@ -500,6 +500,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override fun applyTextColor(item: BlockView.Title) {
             setTextColor(item.color ?: ThemeColor.DEFAULT.code)
         }
+
         override fun applyBackground(item: BlockView.Title) {
             binding.title.setBlockBackgroundColor(item.backgroundColor)
         }
@@ -539,6 +540,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
 
+        override fun addPaddingForCover() {}
+
         private fun setLocked(mode: BlockView.Mode) {
             isLocked = mode == BlockView.Mode.READ
         }
@@ -566,6 +569,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override fun applyTextColor(item: BlockView.Title) {
             setTextColor(item.color ?: ThemeColor.DEFAULT.code)
         }
+
         override fun applyBackground(item: BlockView.Title) {
             binding.titleContainer.setBlockBackgroundColor(item.backgroundColor)
         }

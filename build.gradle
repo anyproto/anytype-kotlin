@@ -56,3 +56,15 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+tasks.register("installGitHooks") {
+    setGroup("Build Setup")
+    setDescription("Install local repository git hooks")
+    exec {
+        commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+    }
+}
+
+var initialTaskNames = getProject().getGradle().getStartParameter().getTaskNames()
+getProject().getGradle().getStartParameter().setTaskNames(
+        initialTaskNames + Collections.singletonList("installGitHooks"))

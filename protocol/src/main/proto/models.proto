@@ -51,6 +51,7 @@ message Block {
     repeated string childrenIds = 4;
     string backgroundColor = 5;
     Align align = 6;
+    VerticalAlign verticalAlign = 7;
 
     oneof content {
         Content.Smartblock smartblock = 11;
@@ -67,6 +68,9 @@ message Block {
         Content.FeaturedRelations featuredRelations = 23;
         Content.Latex latex = 24;
         Content.TableOfContents tableOfContents = 25;
+        Content.Table table = 26;
+        Content.TableColumn tableColumn = 27;
+        Content.TableRow tableRow = 28;
     }
 
     message Restrictions {
@@ -101,6 +105,12 @@ message Block {
         AlignRight = 2;
     }
 
+    enum VerticalAlign {
+        VerticalAlignTop = 0;
+        VerticalAlignMiddle = 1;
+        VerticalAlignBottom = 2;
+    }
+
     message Content {
         /*
         * Layout have no visual representation, but affects on blocks, that it contains.
@@ -114,6 +124,8 @@ message Block {
                 Column = 1;
                 Div = 2;
                 Header = 3;
+                TableRows = 4;
+                TableColumns = 5;
             }
         }
 
@@ -178,6 +190,16 @@ message Block {
             string imageHash = 4;
             string faviconHash = 5;
             LinkPreview.Type type = 6;
+            string targetObjectId = 7;
+
+            State state = 8;
+
+            enum State {
+                Empty = 0;
+                Fetching = 1;
+                Done = 2;
+                Error = 3;
+            }
         }
 
         message Icon {
@@ -282,6 +304,8 @@ message Block {
             // index 3 is deprecated, was used for schemaURL in old-format sets
             repeated model.Relation relations = 4;
             string activeView = 3; // saved within a session
+            repeated GroupOrder groupOrders = 12;
+            repeated ObjectOrder objectOrders = 13;
 
             message View {
                 string id = 1;
@@ -290,10 +314,11 @@ message Block {
                 repeated Sort sorts = 4;
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
-				string coverRelationKey = 7; // Relation used for cover in gallery
+				        string coverRelationKey = 7; // Relation used for cover in gallery
                 bool hideIcon = 8; // Hide icon near name
                 Size cardSize = 9; // Gallery card size
                 bool coverFit = 10; // Image fits container
+                string groupRelationKey = 11;
 
                 enum Type {
                     Table = 0;
@@ -372,6 +397,8 @@ message Block {
                     NotEmpty = 12;
                     AllIn = 13;
                     NotAllIn = 14;
+                    ExactIn = 15;
+                    NotExactIn = 16;
                 }
 
                 enum QuickOption {
@@ -389,6 +416,48 @@ message Block {
                     NumberOfDaysNow = 11;
                 }
             }
+
+            message GroupOrder {
+                string viewId = 1;
+                repeated ViewGroup viewGroups = 2;
+            }
+
+            message ViewGroup {
+                string groupId = 1;
+                int32 index = 2;
+                bool hidden = 3;
+            }
+
+            message ObjectOrder {
+                string viewId = 1;
+                string groupId = 2;
+                repeated string objectIds = 3;
+            }
+
+            message Group {
+                string id = 1;
+                oneof Value {
+                    Status status = 2;
+                    Tag tag = 3;
+                    Checkbox checkbox = 4;
+                    Date date = 5;
+                }
+            }
+
+            message Status {
+                string id = 1;
+            }
+
+            message Tag {
+                repeated string ids = 1;
+            }
+
+            message Checkbox {
+                bool checked = 1;
+            }
+
+            message Date {
+            }
         }
 
         message Relation {
@@ -400,6 +469,12 @@ message Block {
         }
 
         message TableOfContents {
+        }
+
+        message Table {}
+		    message TableColumn {}
+		    message TableRow {
+            bool isHeader = 1;
         }
     }
 }
@@ -470,6 +545,8 @@ message Account {
         string marketplaceTemplateObjectId = 7; // marketplace template id
         string deviceId = 8;
         string gatewayUrl = 101; // gateway url for fetching static files
+        string localStoragePath = 103; // path to local storage
+        string timeZone = 104; // time zone from config
     }
 
 }
@@ -504,9 +581,14 @@ message Restrictions {
         Blocks = 3;
         // restricts work with details
         Details = 4;
+        // restricts type changing
         TypeChange = 5;
+        // restricts layout changing
         LayoutChange = 6;
+        // restricts template creation from this object
         Template = 7;
+        // restricts duplicate object
+        Duplicate = 8;
     }
 
 
@@ -557,6 +639,7 @@ message ObjectType {
         image = 8;
         note = 9;
         space = 10;
+        bookmark = 11;
 
         database = 20; // to be released later
     }
@@ -657,3 +740,14 @@ message RelationOptions {
     repeated Relation.Option options = 1;
 }
 
+message InternalFlag {
+    Value value = 1;
+
+    // Use such a weird construction due to the issue with imported repeated enum type
+    // Look https://github.com/golang/protobuf/issues/1135 for more information.
+    enum Value {
+        editorDeleteEmpty = 0;
+        editorSelectType = 1;
+        editorSelectTemplate = 2;
+    }
+}

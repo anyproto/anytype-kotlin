@@ -260,21 +260,6 @@ fun String?.getMimeIcon(name: String?): Int {
     }
 }
 
-fun ObjectLayoutView.getIconSize24(): Int? = when (this) {
-    is ObjectLayoutView.Basic -> R.drawable.ic_layout_basic
-    is ObjectLayoutView.Image -> null
-    is ObjectLayoutView.Note -> null
-    is ObjectLayoutView.Profile -> R.drawable.ic_layout_profile
-    is ObjectLayoutView.Set -> R.drawable.ic_layout_set
-    is ObjectLayoutView.Todo -> R.drawable.ic_layout_todo
-    is ObjectLayoutView.Dashboard -> null
-    is ObjectLayoutView.Database -> null
-    is ObjectLayoutView.File -> null
-    is ObjectLayoutView.ObjectType -> null
-    is ObjectLayoutView.Relation -> null
-    is ObjectLayoutView.Space -> null
-}
-
 fun ObjectLayoutView.getName(): Int? = when (this) {
     is ObjectLayoutView.Basic -> R.string.name_layout_basic
     is ObjectLayoutView.Image -> null
@@ -288,4 +273,5 @@ fun ObjectLayoutView.getName(): Int? = when (this) {
     is ObjectLayoutView.ObjectType -> null
     is ObjectLayoutView.Relation -> null
     is ObjectLayoutView.Space -> null
+    is ObjectLayoutView.Bookmark -> null
 }

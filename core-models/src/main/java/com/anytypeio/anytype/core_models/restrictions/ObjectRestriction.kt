@@ -35,6 +35,8 @@ enum class ObjectRestriction {
      */
     LAYOUT_CHANGE,
 
-    TEMPLATE
+    TEMPLATE,
+
+    DUPLICATE
 
 }

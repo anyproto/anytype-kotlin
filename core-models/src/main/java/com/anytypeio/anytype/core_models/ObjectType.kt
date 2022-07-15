@@ -33,6 +33,7 @@ data class ObjectType(
         IMAGE(8),
         NOTE(9),
         SPACE(10),
+        BOOKMARK(11),
         DATABASE(20),
     }
 

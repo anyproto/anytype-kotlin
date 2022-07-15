@@ -149,4 +149,6 @@ private fun DVFilterCondition.toView(
             DVFilterConditionType.CHECKBOX -> Viewer.Filter.Condition.Checkbox.None()
         }
     }
+    DVFilterCondition.EXACT_IN -> TODO()
+    DVFilterCondition.NOT_EXACT_IN -> TODO()
 }

@@ -189,6 +189,8 @@ fun DVFilterCondition.getPropName() = when (this) {
     Block.Content.DataView.Filter.Condition.ALL_IN -> "allin"
     Block.Content.DataView.Filter.Condition.NOT_ALL_IN -> "notallin"
     Block.Content.DataView.Filter.Condition.NONE -> "none"
+    Block.Content.DataView.Filter.Condition.EXACT_IN -> "exactin"
+    Block.Content.DataView.Filter.Condition.NOT_EXACT_IN -> "notexactin"
 }
 
 fun Relation.Format.getPropName() = when (this) {

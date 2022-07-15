@@ -93,4 +93,11 @@ sealed class ObjectLayoutView {
     ) : ObjectLayoutView() {
         override fun copy(isSelected: Boolean) = copy(id = id, isSelected = isSelected)
     }
+
+    data class Bookmark(
+        override val id: Int,
+        override val isSelected: Boolean
+    ) : ObjectLayoutView() {
+        override fun copy(isSelected: Boolean) = copy(id = id, isSelected = isSelected)
+    }
 }

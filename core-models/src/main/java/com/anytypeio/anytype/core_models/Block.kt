@@ -176,7 +176,7 @@ data class Block(
         }
 
         data class Layout(val type: Type) : Content() {
-            enum class Type { ROW, COLUMN, DIV, HEADER }
+            enum class Type { ROW, COLUMN, DIV, HEADER, TABLE_ROW, TABLE_COLUMN }
         }
 
         @Deprecated("Legacy class")
@@ -334,7 +334,8 @@ data class Block(
                 enum class Operator { AND, OR }
                 enum class Condition {
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,
-                    LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE
+                    LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE,
+                    EXACT_IN, NOT_EXACT_IN
                 }
 
                 enum class ConditionType { TEXT, NUMBER, SELECT, CHECKBOX }

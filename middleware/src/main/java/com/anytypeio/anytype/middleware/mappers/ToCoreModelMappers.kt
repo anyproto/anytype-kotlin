@@ -324,6 +324,8 @@ fun MBLayoutStyle.toCoreModels(): Block.Content.Layout.Type = when (this) {
     MBLayoutStyle.Column -> Block.Content.Layout.Type.COLUMN
     MBLayoutStyle.Div -> Block.Content.Layout.Type.DIV
     MBLayoutStyle.Header -> Block.Content.Layout.Type.HEADER
+    MBLayoutStyle.TableRows -> Block.Content.Layout.Type.TABLE_ROW
+    MBLayoutStyle.TableColumns -> Block.Content.Layout.Type.TABLE_COLUMN
 }
 
 fun MBAlign.toCoreModelsAlign(): Block.Align = when (this) {
@@ -434,6 +436,8 @@ fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {
     MDVFilterCondition.AllIn -> DVFilterCondition.ALL_IN
     MDVFilterCondition.NotAllIn -> DVFilterCondition.NOT_ALL_IN
     MDVFilterCondition.None -> DVFilterCondition.NONE
+    MDVFilterCondition.ExactIn -> DVFilterCondition.EXACT_IN
+    MDVFilterCondition.NotExactIn -> DVFilterCondition.NOT_EXACT_IN
 }
 
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {
@@ -492,6 +496,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.image -> ObjectType.Layout.IMAGE
     MOTypeLayout.note -> ObjectType.Layout.NOTE
     MOTypeLayout.space -> ObjectType.Layout.SPACE
+    MOTypeLayout.bookmark -> ObjectType.Layout.BOOKMARK
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -590,6 +595,7 @@ fun MObjectRestriction.toCoreModel(): ObjectRestriction? = when (this) {
     MObjectRestriction.LayoutChange -> ObjectRestriction.LAYOUT_CHANGE
     MObjectRestriction.Template -> ObjectRestriction.TEMPLATE
     MObjectRestriction.None -> null
+    MObjectRestriction.Duplicate -> ObjectRestriction.DUPLICATE
 }
 
 fun MDVRestrictions.toCoreModel(): DataViewRestrictions {

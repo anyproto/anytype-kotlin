@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.textStyle
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
@@ -727,6 +726,7 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = map { layout ->
         ObjectType.Layout.NOTE -> ObjectLayoutView.Note(id = layout.code, isSelected = false)
         ObjectType.Layout.DATABASE -> ObjectLayoutView.Database(id = layout.code, isSelected = false)
         ObjectType.Layout.SPACE -> ObjectLayoutView.Space(id = layout.code, isSelected = false)
+        ObjectType.Layout.BOOKMARK -> ObjectLayoutView.Bookmark(id = layout.code, isSelected = false)
     }
 }
 
@@ -743,9 +743,5 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Set -> ObjectType.Layout.SET
     is ObjectLayoutView.Space -> ObjectType.Layout.SPACE
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
-}
-
-fun List<Block>.getTextStyleForSelectedTextBlocks(): Block.Content.Text.Style? {
-    val styles = map { it.textStyle() }.distinct()
-    return if (styles.size == 1) styles[0] else null
+    is ObjectLayoutView.Bookmark -> ObjectType.Layout.BOOKMARK
 }

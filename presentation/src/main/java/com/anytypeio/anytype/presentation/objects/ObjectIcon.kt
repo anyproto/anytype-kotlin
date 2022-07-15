@@ -63,6 +63,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.DASHBOARD -> None
                 ObjectType.Layout.SPACE -> None
                 ObjectType.Layout.DATABASE -> None
+                ObjectType.Layout.BOOKMARK -> None
                 null -> None
             }
         }

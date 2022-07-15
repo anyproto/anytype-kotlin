@@ -53,6 +53,7 @@ class ObjectMenuOptionsProviderImpl(
                 ObjectType.Layout.IMAGE,
                 ObjectType.Layout.SPACE,
                 ObjectType.Layout.SET,
+                ObjectType.Layout.BOOKMARK,
                 ObjectType.Layout.DATABASE -> Options.ALL.copy(
                     hasIcon = hasIcon,
                     hasCover = hasCover,

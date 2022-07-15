@@ -79,6 +79,8 @@ fun Block.Content.Layout.toMiddlewareModel(): MBLayout = when (type) {
     Block.Content.Layout.Type.COLUMN -> MBLayout(style = MBLayoutStyle.Column)
     Block.Content.Layout.Type.DIV -> MBLayout(style = MBLayoutStyle.Div)
     Block.Content.Layout.Type.HEADER -> MBLayout(style = MBLayoutStyle.Header)
+    Block.Content.Layout.Type.TABLE_ROW -> MBLayout(style = MBLayoutStyle.TableRows)
+    Block.Content.Layout.Type.TABLE_COLUMN -> MBLayout(style = MBLayoutStyle.TableColumns)
 }
 
 fun Block.Content.Bookmark.toMiddlewareModel(): MBBookmark = MBBookmark(
@@ -353,6 +355,8 @@ fun Block.Content.DataView.Filter.Condition.toMiddlewareModel(): MDVFilterCondit
     Block.Content.DataView.Filter.Condition.ALL_IN -> MDVFilterCondition.AllIn
     Block.Content.DataView.Filter.Condition.NOT_ALL_IN -> MDVFilterCondition.NotAllIn
     Block.Content.DataView.Filter.Condition.NONE -> MDVFilterCondition.None
+    Block.Content.DataView.Filter.Condition.EXACT_IN -> MDVFilterCondition.ExactIn
+    Block.Content.DataView.Filter.Condition.NOT_EXACT_IN -> MDVFilterCondition.NotExactIn
 }
 
 fun Block.Content.DataView.DateFormat?.toMiddlewareModel(): MDVDateFormat = when (this) {
@@ -395,6 +399,7 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.IMAGE -> MOTypeLayout.image
     ObjectType.Layout.NOTE -> MOTypeLayout.note
     ObjectType.Layout.SPACE -> MOTypeLayout.space
+    ObjectType.Layout.BOOKMARK -> MOTypeLayout.bookmark
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

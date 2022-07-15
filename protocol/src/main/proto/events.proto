@@ -54,6 +54,8 @@ message Event {
             Block.Set.Div blockSetDiv = 17;
             Block.Set.Relation blockSetRelation = 21;
             Block.Set.Latex blockSetLatex = 25;
+            Block.Set.VerticalAlign blockSetVerticalAlign = 36;
+            Block.Set.TableRow blockSetTableRow = 37;
 
             Block.Dataview.RecordsSet blockDataviewRecordsSet = 18;
             Block.Dataview.RecordsUpdate blockDataviewRecordsUpdate = 26;
@@ -66,6 +68,7 @@ message Event {
             Block.Dataview.ViewOrder blockDataviewViewOrder = 29;
             Block.Dataview.RelationDelete blockDataviewRelationDelete = 24;
             Block.Dataview.RelationSet blockDataviewRelationSet = 23;
+            Block.Dataview.GroupOrderUpdate blockDataViewGroupOrderUpdate = 38;
 
 
             User.Block.Join userBlockJoin = 31;
@@ -220,6 +223,12 @@ message Event {
             repeated anytype.model.ObjectType objectTypes = 5; // objectTypes contains ONLY to get layouts for the actual and all dependent objects. Relations are currently omitted // todo: switch to other pb model
             repeated anytype.model.Relation relations = 7; // combined relations of object's type + extra relations. If object doesn't has some relation key in the details this means client should hide it and only suggest when adding existing one
             anytype.model.Restrictions restrictions = 8; // object restrictions
+            HistorySize history = 9;
+
+            message HistorySize {
+                int32 undo = 1;
+                int32 redo = 2;
+            }
         }
 
         message Remove {
@@ -299,6 +308,11 @@ message Event {
             message Align {
                 string id = 1;
                 anytype.model.Block.Align align = 2;
+            }
+
+            message VerticalAlign {
+                string id = 1;
+                anytype.model.Block.VerticalAlign verticalAlign = 2;
             }
 
 
@@ -450,6 +464,8 @@ message Event {
                 ImageHash imageHash = 5;
                 FaviconHash faviconHash = 6;
                 Type type = 7;
+                TargetObjectId targetObjectId = 8;
+                State state = 9;
 
                 message Url {
                     string value = 1;
@@ -475,6 +491,22 @@ message Event {
                     anytype.model.LinkPreview.Type value = 1;
                 }
 
+                message TargetObjectId {
+                    string value = 1;
+                }
+
+                message State {
+                    anytype.model.Block.Content.Bookmark.State value = 1;
+                }
+            }
+
+            message TableRow {
+                string id = 1;
+                IsHeader isHeader = 2;
+
+                message IsHeader {
+                    bool value = 1;
+                }
             }
         }
 
@@ -629,6 +661,8 @@ message Event {
                 ImageHash imageHash = 5;
                 FaviconHash faviconHash = 6;
                 Type type = 7;
+                TargetObjectId targetObjectId = 8;
+                
 
                 message Url {
                     string value = 1;
@@ -654,6 +688,9 @@ message Event {
                     anytype.model.LinkPreview.Type value = 1;
                 }
 
+                message TargetObjectId {
+                    string value = 1;
+                }
             }
         }
 
@@ -723,6 +760,11 @@ message Event {
                 string id = 1; // dataview block's id
                 string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
                 repeated string removed = 6;
+            }
+
+            message GroupOrderUpdate {
+                string id = 1; // dataview block's id
+                anytype.model.Block.Content.Dataview.GroupOrder groupOrder = 2;
             }
         }
     }

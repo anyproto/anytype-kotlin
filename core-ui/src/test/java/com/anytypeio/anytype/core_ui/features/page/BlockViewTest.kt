@@ -39,7 +39,8 @@ class BlockViewTest {
             size = MockDataFactory.randomLong(),
             mime = MockDataFactory.randomString(),
             name = MockDataFactory.randomString(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            decorations = emptyList()
         )
         assertEquals(HOLDER_VIDEO, block.getViewType())
     }

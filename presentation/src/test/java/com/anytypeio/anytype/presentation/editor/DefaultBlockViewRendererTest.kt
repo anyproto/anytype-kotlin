@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubCallout
+import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.ext.asMap
@@ -5639,6 +5640,181 @@ class DefaultBlockViewRendererTest {
                 } else {
                     emptyList()
                 }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    /**
+     * C with background
+     * ...P with background
+     * ...P with background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a callout with background contains one file in unploading state`() {
+
+        val child1 = StubFile(
+            backgroundColor = null,
+            state = Block.Content.File.State.UPLOADING,
+            type = Block.Content.File.Type.FILE
+        )
+
+        val callout = StubCallout(
+            children = listOf(child1.id),
+            backgroundColor = ThemeColor.BLUE.code
+        )
+
+        val page = StubSmartBlock(children = listOf(callout.id))
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, callout, child1)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Callout(
+                indent = 0,
+                isFocused = false,
+                id = callout.id,
+                marks = emptyList(),
+                backgroundColor = callout.backgroundColor,
+                color = callout.content<Block.Content.Text>().color,
+                text = callout.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Callout.Start,
+                            background = callout.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                },
+                icon = ObjectIcon.Basic.Emoji("💡")
+            ),
+            BlockView.Upload.File(
+                indent = 1,
+                id = child1.id,
+                backgroundColor = child1.backgroundColor,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = callout.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Callout.End
+                        ),
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Card,
+                            background = child1.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    /**
+     * C with background
+     * ...P with background
+     * ...P with background
+     */
+    @Test
+    fun `should return blocks with expected decoration - when a callout with background contains one file in empty state`() {
+
+        val child1 = StubFile(
+            backgroundColor = null,
+            state = Block.Content.File.State.EMPTY,
+            type = Block.Content.File.Type.FILE
+        )
+
+        val callout = StubCallout(
+            children = listOf(child1.id),
+            backgroundColor = ThemeColor.BLUE.code
+        )
+
+        val page = StubSmartBlock(children = listOf(callout.id))
+
+        val details = mapOf(page.id to Block.Fields.empty())
+
+        val blocks = listOf(page, callout, child1)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Callout(
+                indent = 0,
+                isFocused = false,
+                id = callout.id,
+                marks = emptyList(),
+                backgroundColor = callout.backgroundColor,
+                color = callout.content<Block.Content.Text>().color,
+                text = callout.content<Block.Content.Text>().text,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Callout.Start,
+                            background = callout.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                },
+                icon = ObjectIcon.Basic.Emoji("💡")
+            ),
+            BlockView.MediaPlaceholder.File(
+                indent = 1,
+                id = child1.id,
+                backgroundColor = child1.backgroundColor,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = callout.parseThemeBackgroundColor(),
+                            style = BlockView.Decoration.Style.Callout.End
+                        ),
+                        BlockView.Decoration(
+                            style = BlockView.Decoration.Style.Card,
+                            background = child1.parseThemeBackgroundColor()
+                        )
+                    )
+                } else {
+                    emptyList()
+                },
+                isPreviousBlockMedia = false
             )
         )
 

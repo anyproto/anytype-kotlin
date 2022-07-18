@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -566,7 +567,17 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 mime = null,
                 name = null,
                 size = null,
-                url = builder.file(file.content<Block.Content.File>().hash)
+                url = builder.file(file.content<Block.Content.File>().hash),
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT,
+                            style = BlockView.Decoration.Style.None
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -650,7 +661,17 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 name = null,
                 size = null,
                 url = builder.image(picture.content<Block.Content.File>().hash),
-                indent = 0
+                indent = 0,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT,
+                            style = BlockView.Decoration.Style.None
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 

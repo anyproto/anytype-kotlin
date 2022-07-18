@@ -1034,7 +1034,8 @@ class BlockAdapterTest {
 
         val view = BlockView.Error.File(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            decorations = emptyList()
         )
 
         val views = listOf(view)
@@ -1182,7 +1183,8 @@ class BlockAdapterTest {
 
         val view = BlockView.Error.Video(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            decorations = emptyList()
         )
 
         val views = listOf(view)
@@ -1315,7 +1317,8 @@ class BlockAdapterTest {
             mime = MockDataFactory.randomString(),
             name = MockDataFactory.randomString(),
             size = MockDataFactory.randomLong(),
-            url = MockDataFactory.randomString()
+            url = MockDataFactory.randomString(),
+            decorations = emptyList()
         )
 
         val views = listOf(view)
@@ -1357,8 +1360,7 @@ class BlockAdapterTest {
 
         val adapter = buildAdapter(views)
 
-        val holder =
-            adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_PLACEHOLDER)
+        val holder = adapter.onCreateViewHolder(recycler, Types.HOLDER_PICTURE_PLACEHOLDER)
 
         adapter.bindViewHolder(holder, 0)
 
@@ -1366,8 +1368,7 @@ class BlockAdapterTest {
 
         val actual = holder.itemView.paddingLeft
 
-        val expected =
-            holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
+        val expected = holder.dimen(R.dimen.default_document_item_padding_start) + view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1377,7 +1378,8 @@ class BlockAdapterTest {
 
         val view = BlockView.Error.Picture(
             id = MockDataFactory.randomUuid(),
-            indent = MockDataFactory.randomInt()
+            indent = MockDataFactory.randomInt(),
+            decorations = emptyList()
         )
 
         val views = listOf(view)
@@ -3200,7 +3202,8 @@ class BlockAdapterTest {
                 size = MockDataFactory.randomLong(),
                 name = MockDataFactory.randomString(),
                 url = MockDataFactory.randomString(),
-                isSelected = false
+                isSelected = false,
+                decorations = emptyList()
             ),
             BlockView.Media.File(
                 id = MockDataFactory.randomString(),
@@ -3210,7 +3213,8 @@ class BlockAdapterTest {
                 size = MockDataFactory.randomLong(),
                 name = MockDataFactory.randomString(),
                 url = MockDataFactory.randomString(),
-                isSelected = true
+                isSelected = true,
+                decorations = emptyList()
             )
         )
 
@@ -3247,7 +3251,8 @@ class BlockAdapterTest {
             size = MockDataFactory.randomLong(),
             name = MockDataFactory.randomString(),
             url = MockDataFactory.randomString(),
-            isSelected = false
+            isSelected = false,
+            decorations = emptyList()
         )
 
         val updated = file.copy(isSelected = true)
@@ -3502,7 +3507,8 @@ class BlockAdapterTest {
         mime = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
         size = MockDataFactory.randomLong(),
-        url = MockDataFactory.randomString()
+        url = MockDataFactory.randomString(),
+        decorations = emptyList()
     )
 
     private fun givenVideo() = BlockView.Media.Video(
@@ -3512,7 +3518,8 @@ class BlockAdapterTest {
         url = MockDataFactory.randomString(),
         mime = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
-        size = MockDataFactory.randomLong()
+        size = MockDataFactory.randomLong(),
+        decorations = emptyList()
     )
 
     private fun buildAdapter(

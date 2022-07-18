@@ -6,6 +6,11 @@
     android:background="@drawable/item_block_multi_select_mode_selector"
     android:layout_height="wrap_content">
 
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"

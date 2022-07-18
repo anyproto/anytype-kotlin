@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fileUploadingPlaceholderRoot"
-    style="@style/BlockMediaRootLayoutStyle"
     android:background="@drawable/item_block_multi_select_mode_selector"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:background="@drawable/rectangle_media_block_placeholder">
@@ -61,4 +67,11 @@
             app:layout_constraintTop_toTopOf="@+id/editUrl" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 </FrameLayout>

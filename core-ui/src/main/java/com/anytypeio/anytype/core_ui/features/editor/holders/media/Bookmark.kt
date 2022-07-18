@@ -15,8 +15,9 @@ import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
-import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -33,7 +34,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import timber.log.Timber
 
-class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), DecoratableViewHolder {
+class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), DecoratableCardViewHolder {
 
     override val root: View = itemView
     override val container = binding.containerWithBackground
@@ -48,6 +49,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
     override val clickContainer: View = card
 
     override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
+    override val decoratableCard: View = binding.bookmarkRoot
 
     override val editorTouchProcessor: EditorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> clickContainer.onTouchEvent(e) }
@@ -64,7 +66,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
                 right = dimen(R.dimen.default_document_item_padding_end)
             )
             binding.root.updateLayoutParams<RecyclerView.LayoutParams> {
-                bottomMargin = dimen(R.dimen.default_card_block_extra_space_bottom)
+                bottomMargin = dimen(R.dimen.card_block_extra_space_bottom)
             }
         }
     }
@@ -213,21 +215,12 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        super.applyDecorations(decorations)
         if (BuildConfig.NESTED_DECORATION_ENABLED) {
-            decoratableContainer.decorate(decorations) { rect ->
-                binding.bookmarkRoot.updateLayoutParams<FrameLayout.LayoutParams> {
-                    marginStart = dimen(R.dimen.default_indent) + rect.left
-                    topMargin = dimen(R.dimen.default_card_block_extra_space_top)
-                    bottomMargin =
-                        rect.bottom + dimen(R.dimen.default_card_block_extra_space_bottom)
-                    marginEnd = dimen(R.dimen.default_indent)
-                }
-                binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
-                    leftMargin = rect.left + dimen(R.dimen.default_selected_view_offset)
-                    rightMargin = dimen(R.dimen.default_document_item_padding_end)
-                    // TODO handle top and bottom offsets
-                }
-            }
+            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+                content = binding.bookmarkRoot,
+                res = itemView.resources
+            )
         }
     }
 

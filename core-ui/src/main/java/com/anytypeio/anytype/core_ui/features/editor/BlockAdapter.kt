@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFeaturedRelationsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
@@ -39,6 +40,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
@@ -51,6 +53,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoUploadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
@@ -494,11 +497,7 @@ class BlockAdapter(
             }
             HOLDER_FILE_UPLOAD -> {
                 FileUpload(
-                    view = inflater.inflate(
-                        R.layout.item_block_file_uploading,
-                        parent,
-                        false
-                    )
+                    ItemBlockFileUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_FILE_ERROR -> {
@@ -522,11 +521,7 @@ class BlockAdapter(
             }
             HOLDER_VIDEO_UPLOAD -> {
                 VideoUpload(
-                    view = inflater.inflate(
-                        R.layout.item_block_video_uploading,
-                        parent,
-                        false
-                    )
+                    ItemBlockVideoUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO_ERROR -> {
@@ -598,11 +593,7 @@ class BlockAdapter(
             }
             HOLDER_PICTURE_UPLOAD -> {
                 PictureUpload(
-                    view = inflater.inflate(
-                        R.layout.item_block_picture_uploading,
-                        parent,
-                        false
-                    )
+                    ItemBlockPictureUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE_ERROR -> {

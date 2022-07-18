@@ -83,6 +83,29 @@ fun StubParagraph(
     backgroundColor = backgroundColor
 )
 
+fun StubFile(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+    backgroundColor: String? = null,
+    hash: String = MockDataFactory.randomString(),
+    name: String = MockDataFactory.randomString(),
+    size: Long = MockDataFactory.randomLong(),
+    type: Block.Content.File.Type? = null,
+    state: Block.Content.File.State? = null
+) : Block = Block(
+    id = id,
+    children = children,
+    fields = Block.Fields.empty(),
+    backgroundColor = backgroundColor,
+    content = Block.Content.File(
+        size = size,
+        name = name,
+        hash = hash,
+        type = type,
+        state = state
+    )
+)
+
 fun StubBulleted(
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),

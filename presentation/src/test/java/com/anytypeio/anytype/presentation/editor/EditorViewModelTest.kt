@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
@@ -71,10 +72,10 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
@@ -82,6 +83,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -119,7 +121,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -3482,7 +3483,17 @@ open class EditorViewModelTest {
             BlockView.Error.Picture(
                 id = picture.id,
                 mode = BlockView.Mode.EDIT,
-                indent = 0
+                indent = 0,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT,
+                            style = BlockView.Decoration.Style.None
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -3551,7 +3562,17 @@ open class EditorViewModelTest {
             BlockView.Error.Video(
                 id = video.id,
                 mode = BlockView.Mode.EDIT,
-                indent = 0
+                indent = 0,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT,
+                            style = BlockView.Decoration.Style.None
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 
@@ -3621,7 +3642,17 @@ open class EditorViewModelTest {
             BlockView.Error.File(
                 id = file.id,
                 mode = BlockView.Mode.EDIT,
-                indent = 0
+                indent = 0,
+                decorations = if (BuildConfig.NESTED_DECORATION_ENABLED) {
+                    listOf(
+                        BlockView.Decoration(
+                            background = ThemeColor.DEFAULT,
+                            style = BlockView.Decoration.Style.None
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
             )
         )
 

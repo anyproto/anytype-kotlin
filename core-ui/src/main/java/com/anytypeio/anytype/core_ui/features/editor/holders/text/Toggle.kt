@@ -192,10 +192,6 @@ class Toggle(
         }
     }
 
-    override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {
-        applyDecorations(decorations = decorations)
-    }
-
     companion object {
         /**
          * Rotation value for a toggle icon for expanded state.

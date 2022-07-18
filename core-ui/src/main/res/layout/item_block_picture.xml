@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/BlockMediaRootLayoutStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:clipToPadding="false"
     android:background="@drawable/item_block_multi_select_mode_selector">
 
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="8dp">
 
         <ImageView
@@ -34,5 +41,12 @@
             style="@style/BlockImageErrorTextStyle" />
 
     </androidx.cardview.widget.CardView>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

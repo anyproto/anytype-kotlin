@@ -261,8 +261,8 @@
 
 
     <!-- Editor, block: bookmark -->
-    <dimen name="default_card_block_extra_space_top">10dp</dimen>
-    <dimen name="default_card_block_extra_space_bottom">10dp</dimen>
+    <dimen name="card_block_extra_space_top">10dp</dimen>
+    <dimen name="card_block_extra_space_bottom">10dp</dimen>
 
     <!-- Editor, block: highlight -->
 
@@ -285,5 +285,6 @@
     <dimen name="default_callout_internal_top_padding">12dp</dimen>
     <dimen name="default_callout_internal_bottom_padding">12dp</dimen>
     <dimen name="callout_background_offset">20dp</dimen>
+    <dimen name="selection_left_right_offset">12dp</dimen>
 
 </resources>

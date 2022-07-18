@@ -618,6 +618,14 @@ class DefaultBlockViewRenderer @Inject constructor(
                 }
                 is Content.File -> {
                     mCounter = 0
+                    val blockDecorationScheme = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentScheme,
+                        currentDecoration = DecorationData(
+                            style = DecorationData.Style.Card,
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
                     result.add(
                         file(
                             mode = mode,
@@ -625,7 +633,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             block = block,
                             indent = indent,
                             selection = selection,
-                            isPreviousBlockMedia = isPreviousBlockMedia
+                            isPreviousBlockMedia = isPreviousBlockMedia,
+                            schema = blockDecorationScheme
                         )
                     )
                     isPreviousBlockMedia = true
@@ -1180,7 +1189,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = mode,
                     block = block,
                     selection = selection
-                )
+                ),
+                decorations = schema.toBlockViewDecoration(block)
             )
         }
     } ?: BlockView.MediaPlaceholder.Bookmark(
@@ -1193,7 +1203,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             selection = selection
         ),
         backgroundColor = block.backgroundColor,
-        isPreviousBlockMedia = isPreviousBlockMedia
+        isPreviousBlockMedia = isPreviousBlockMedia,
+        decorations = schema.toBlockViewDecoration(block)
     )
 
     private fun divider(
@@ -1231,7 +1242,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         indent: Int,
         selection: Set<Id>,
-        isPreviousBlockMedia: Boolean
+        isPreviousBlockMedia: Boolean,
+        schema: NestedDecorationData
     ): BlockView = when (content.type) {
         Content.File.Type.IMAGE -> content.toPictureView(
             id = block.id,
@@ -1244,7 +1256,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             backgroundColor = block.backgroundColor,
-            isPreviousBlockMedia = isPreviousBlockMedia
+            isPreviousBlockMedia = isPreviousBlockMedia,
+            decorations = schema.toBlockViewDecoration(block)
         )
         Content.File.Type.FILE -> content.toFileView(
             id = block.id,
@@ -1258,6 +1271,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             backgroundColor = block.backgroundColor,
             isPrevBlockMedia = isPreviousBlockMedia,
+            decorations = schema.toBlockViewDecoration(block)
         )
         Content.File.Type.VIDEO -> content.toVideoView(
             id = block.id,
@@ -1270,7 +1284,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             backgroundColor = block.backgroundColor,
-            isPrevBlockMedia = isPreviousBlockMedia
+            isPrevBlockMedia = isPreviousBlockMedia,
+            decorations = schema.toBlockViewDecoration(block)
         )
         Content.File.Type.AUDIO -> content.toFileView(
             id = block.id,
@@ -1283,7 +1298,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             backgroundColor = block.backgroundColor,
-            isPrevBlockMedia = isPreviousBlockMedia
+            isPrevBlockMedia = isPreviousBlockMedia,
+            decorations = schema.toBlockViewDecoration(block)
         )
         Content.File.Type.PDF -> content.toFileView(
             id = block.id,
@@ -1296,7 +1312,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             backgroundColor = block.backgroundColor,
-            isPrevBlockMedia = isPreviousBlockMedia
+            isPrevBlockMedia = isPreviousBlockMedia,
+            decorations = schema.toBlockViewDecoration(block)
         )
         Content.File.Type.NONE -> content.toFileView(
             id = block.id,
@@ -1309,7 +1326,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 selection = selection
             ),
             backgroundColor = block.backgroundColor,
-            isPrevBlockMedia = isPreviousBlockMedia
+            isPrevBlockMedia = isPreviousBlockMedia,
+            decorations = schema.toBlockViewDecoration(block)
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }
@@ -1395,10 +1413,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     id = block.id,
                     text = content.text,
                     emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                        if (name.isNotEmpty())
-                            name
-                        else
-                            null
+                        name.ifEmpty { null }
                     },
                     image = details.details[root.id]?.iconImage?.let { name ->
                         if (name.isNotEmpty())
@@ -1457,10 +1472,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     id = block.id,
                     text = content.text,
                     emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                        if (name.isNotEmpty())
-                            name
-                        else
-                            null
+                        name.ifEmpty { null }
                     },
                     image = details.details[root.id]?.iconImage?.let { name ->
                         if (name.isNotEmpty())

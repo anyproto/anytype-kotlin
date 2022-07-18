@@ -436,7 +436,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decorations: List<Decoration>,
+            override val decorations: List<Decoration> = emptyList(),
             val icon: ObjectIcon,
         ) : Text() {
             override val alignment: Alignment? = null
@@ -696,7 +696,7 @@ sealed class BlockView : ViewType {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 
-    sealed class Error : BlockView(), Indentable, Selectable, Permission {
+    sealed class Error : BlockView(), Indentable, Selectable, Permission, Decoratable {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -713,7 +713,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Error() {
             override fun getViewType() = HOLDER_FILE_ERROR
         }
@@ -727,7 +728,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Error() {
             override fun getViewType() = HOLDER_VIDEO_ERROR
         }
@@ -740,7 +742,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Error() {
             override fun getViewType() = HOLDER_PICTURE_ERROR
         }
@@ -755,13 +758,14 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             val url: String,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Error() {
             override fun getViewType(): Int = HOLDER_BOOKMARK_ERROR
         }
     }
 
-    sealed class Upload : BlockView(), Indentable, Selectable, Permission {
+    sealed class Upload : BlockView(), Indentable, Selectable, Permission, Decoratable {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -778,7 +782,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Upload() {
             override fun getViewType() = HOLDER_FILE_UPLOAD
         }
@@ -792,7 +797,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Upload() {
             override fun getViewType() = HOLDER_VIDEO_UPLOAD
         }
@@ -805,7 +811,8 @@ sealed class BlockView : ViewType {
             override val indent: Int,
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
-            override val backgroundColor: String? = null
+            override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList()
         ) : Upload() {
             override fun getViewType() = HOLDER_PICTURE_UPLOAD
         }
@@ -884,7 +891,7 @@ sealed class BlockView : ViewType {
 
     }
 
-    sealed class Media : BlockView(), Indentable, Selectable, Permission {
+    sealed class Media : BlockView(), Indentable, Selectable, Permission, Decoratable {
 
         abstract override val id: String
         abstract override val indent: Int
@@ -903,6 +910,7 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList(),
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -921,6 +929,7 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList(),
             val size: Long?,
             val name: String?,
             val mime: String?,
@@ -952,7 +961,7 @@ sealed class BlockView : ViewType {
             val faviconUrl: String? = null,
             val imageUrl: String? = null,
             val isPreviousBlockMedia: Boolean
-        ) : Media(), Searchable, Decoratable {
+        ) : Media(), Searchable {
             override fun getViewType() = HOLDER_BOOKMARK
 
             companion object {
@@ -971,6 +980,7 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val backgroundColor: String? = null,
+            override val decorations: List<Decoration> = emptyList(),
             val size: Long?,
             val name: String?,
             val mime: String?,

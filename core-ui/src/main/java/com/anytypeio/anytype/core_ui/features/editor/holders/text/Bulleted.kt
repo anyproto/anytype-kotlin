@@ -151,8 +151,4 @@ class Bulleted(
             }
         }
     }
-
-    override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {
-        applyDecorations(decorations = decorations)
-    }
 }

@@ -174,8 +174,4 @@ class Callout(
             )
         }
     }
-
-    override fun onDecorationsChanged(decorations: List<BlockView.Decoration>) {
-        applyDecorations(decorations)
-    }
 }

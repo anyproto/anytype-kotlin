@@ -10,8 +10,6 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -198,6 +196,94 @@ class DeleteAccountViewModelTest {
         val tenHoursElapsed = Duration.ofHours(10).toMillis()
 
         val deadlineInMillis = nowInMillis + Duration.ofDays(30).toMillis()
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + tenSecondsElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + fiveHoursElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + tenHoursElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        verifyZeroInteractions(repo)
+    }
+
+    @Test
+    fun `should display 30 days until deletion - when account is deleted today with some extra time added`() {
+        val nowInMillis = System.currentTimeMillis()
+
+        val tenSecondsElapsed = Duration.ofSeconds(10).toMillis()
+        val fiveHoursElapsed = Duration.ofHours(5).toMillis()
+        val tenHoursElapsed = Duration.ofHours(10).toMillis()
+        val extraInMillis = Duration.ofMinutes(1).toMillis()
+
+        val deadlineInMillis = nowInMillis + Duration.ofDays(30).toMillis() + extraInMillis
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + tenSecondsElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + fiveHoursElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        vm.onStart(
+            deadlineInMillis = deadlineInMillis,
+            nowInMillis = nowInMillis + tenHoursElapsed
+        )
+
+        assertEquals(
+            expected = DeletedAccountViewModel.DeletionDate.Later(30),
+            actual = vm.date.value
+        )
+
+        verifyZeroInteractions(repo)
+    }
+
+    @Test
+    fun `should display 30 days until deletion - when account is deleted today with some extra time removed`() {
+        val nowInMillis = System.currentTimeMillis()
+
+        val tenSecondsElapsed = Duration.ofSeconds(10).toMillis()
+        val fiveHoursElapsed = Duration.ofHours(5).toMillis()
+        val tenHoursElapsed = Duration.ofHours(10).toMillis()
+        val extraInMillis = Duration.ofMinutes(1).toMillis()
+
+        val deadlineInMillis = nowInMillis + Duration.ofDays(30).toMillis() - extraInMillis
 
         vm.onStart(
             deadlineInMillis = deadlineInMillis,

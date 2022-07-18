@@ -43,7 +43,7 @@ class DeletedAccountViewModel(
                 }
                 else -> {
                     date.value = DeletionDate.Later(
-                        days = days.toBigDecimal().setScale(0, RoundingMode.UP).toInt()
+                        days = days.toBigDecimal().setScale(0, RoundingMode.HALF_EVEN).toInt()
                     )
                 }
             }

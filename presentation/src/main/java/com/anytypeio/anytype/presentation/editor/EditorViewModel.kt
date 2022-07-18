@@ -1936,11 +1936,11 @@ class EditorViewModel(
 
     fun onActionUndoClicked() {
         Timber.d("onActionUndoClicked, ")
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Undo(
                     context = context,
-                    onUndoExhausted = { sendToast("Nothing to undo.") }
+                    onUndoExhausted = { sendSnack(Snack.UndoRedo("Nothing to undo.")) }
                 )
             )
         }
@@ -1948,11 +1948,11 @@ class EditorViewModel(
 
     fun onActionRedoClicked() {
         Timber.d("onActionRedoClicked, ")
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
                     context = context,
-                    onRedoExhausted = { sendToast("Nothing to redo.") }
+                    onRedoExhausted = { sendSnack(Snack.UndoRedo("Nothing to redo.")) }
                 )
             )
         }
@@ -3886,8 +3886,14 @@ class EditorViewModel(
     }
 
     private fun sendToast(msg: String) {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             _toasts.emit(msg)
+        }
+    }
+
+    private fun sendSnack(snack: Snack) {
+        jobs += viewModelScope.launch {
+            snacks.emit(snack)
         }
     }
 

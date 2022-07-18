@@ -23,6 +23,5 @@ if [[ "$ISSUE_ID" != "DROID-"* ]]; then
 fi
 
 if [[ "$COMMIT_TEXT" != "DROID-"* ]]; then
-  echo "$ISSUE_ID " > "$COMMIT_MSG_FILE"
-  echo "$COMMIT_TEXT" >> "$COMMIT_MSG_FILE"
+  echo "$ISSUE_ID" "$COMMIT_TEXT" > "$COMMIT_MSG_FILE"
 fi

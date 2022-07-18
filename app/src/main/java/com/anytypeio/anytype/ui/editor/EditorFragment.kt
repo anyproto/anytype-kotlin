@@ -434,6 +434,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             .setAction(R.string.create_new_set) { vm.onCreateNewSetForType(snack.type) }
                             .show()
                     }
+                    is Snack.UndoRedo -> {
+                        Snackbar.make(requireView(), snack.message, Snackbar.LENGTH_SHORT).apply {
+                            anchorView = binding.undoRedoToolbar
+                        }.show()
+                    }
                 }
             }
             jobs += subscribe(vm.footers) { footer ->
@@ -1255,7 +1260,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 iconView.setIcon(ObjectIcon.Basic.Emoji(emoji))
                 iconView.visible()
             }
-            !image.isNullOrBlank()-> {
+            !image.isNullOrBlank() -> {
                 iconView.setIcon(ObjectIcon.Basic.Image(image))
                 iconView.visible()
             }
@@ -1282,7 +1287,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         if (state.mainToolbar.isVisible) {
             binding.toolbar.visible()
-            binding.toolbar.state = when(state.mainToolbar.targetBlockType) {
+            binding.toolbar.state = when (state.mainToolbar.targetBlockType) {
                 Main.TargetBlockType.Any -> BlockToolbarWidget.State.Any
                 Main.TargetBlockType.Title -> BlockToolbarWidget.State.Title
             }

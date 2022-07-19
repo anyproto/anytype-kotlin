@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -123,6 +124,10 @@ class Highlight(
             decoratableContainer.decorate(decorations) { rect ->
                 indent.updateLayoutParams {
                     width = dimen(R.dimen.default_indent) + rect.left
+                }
+                binding.highlightBlockContentContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = rect.bottom
                 }
             }
         }

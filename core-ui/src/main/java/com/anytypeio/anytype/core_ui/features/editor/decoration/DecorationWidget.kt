@@ -32,7 +32,7 @@ interface DecorationWidget {
                 gravity = Gravity.CENTER
             }
             val line = View(context).apply {
-                setBackgroundResource(R.color.block_higlight_divider)
+                setBackgroundResource(R.color.block_highlight_divider)
             }
             addView(line, lp)
         }

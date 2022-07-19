@@ -30,7 +30,6 @@
             android:id="@+id/highlightGlyphContainer"
             android:layout_marginTop="@dimen/default_highlight_content_margin_top"
             android:layout_width="24dp"
-            android:background="@drawable/rectangle_debug"
             android:layout_height="match_parent">
 
             <View
@@ -38,7 +37,7 @@
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/block_higlight_divider" />
+                android:background="@color/block_highlight_divider" />
 
         </FrameLayout>
 

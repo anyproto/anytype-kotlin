@@ -176,7 +176,7 @@ class Numbered(
             ) { rect ->
                 binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                     marginStart = dimen(R.dimen.default_indent) + rect.left
-                    marginEnd = dimen(R.dimen.dp_8)
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
                     bottomMargin = rect.bottom
                     // TODO handle top and bottom offsets
                 }

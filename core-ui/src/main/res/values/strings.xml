@@ -304,6 +304,8 @@
     <string name="sort_from_last_to_first">Last → First</string>
     <string name="sort_from_one_to_nine">1 → 9</string>
     <string name="sort_from_nine_to_one">9 → 1</string>
+    <string name="sort_from_checked_to_unchecked">Checked → Unchecked</string>
+    <string name="sort_from_unchecked_to_checked">Unchecked → Checked</string>
     <string name="sort_from_a_to_z">A → Z</string>
     <string name="sort_from_z_to_a">Z → A</string>
     <string name="value_quotes">\"%1$s\"</string>

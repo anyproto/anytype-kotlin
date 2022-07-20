@@ -233,6 +233,12 @@ fun DVSortType.text(format: Relation.Format): Int = when (format) {
         else
             R.string.sort_from_nine_to_one
     }
+    Relation.Format.CHECKBOX -> {
+        if (this == DVSortType.ASC)
+            R.string.sort_from_unchecked_to_checked
+        else
+            R.string.sort_from_checked_to_unchecked
+    }
     else -> {
         if (this == DVSortType.ASC)
             R.string.sort_from_a_to_z

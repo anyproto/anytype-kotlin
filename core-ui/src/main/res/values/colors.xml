@@ -176,6 +176,7 @@
     <color name="palette_very_light_teal">#D9F6F4</color>
     <color name="palette_very_light_lime">#E5F8D6</color>
     <color name="palette_very_light_grey">#F1F0ED</color>
+    <color name="palette_system_red">#F55522</color>
 
     <color name="dashboard_tab_color">#CC0066C3</color>
 

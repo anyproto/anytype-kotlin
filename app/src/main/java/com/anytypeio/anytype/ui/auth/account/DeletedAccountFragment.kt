@@ -147,7 +147,7 @@ fun DeletedAccountScreen(
             ) {
                 Column {
                     Chart(
-                        chartColor = colorResource(R.color.palette_dark_red),
+                        chartColor = colorResource(R.color.palette_system_red),
                         actualProgress = progress
                     )
                     Text(

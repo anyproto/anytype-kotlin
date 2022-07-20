@@ -175,7 +175,7 @@ fun Warning(
             Spacer(modifier = Modifier.width(10.dp))
             Box(
                 modifier = Modifier.height(48.dp).background(
-                    color = colorResource(R.color.palette_dark_red),
+                    color = colorResource(R.color.palette_system_red),
                     shape = RoundedCornerShape(10.dp)
                 ).weight(1.0f, true).clickable(onClick = onPositiveClick),
                 contentAlignment = Alignment.Center

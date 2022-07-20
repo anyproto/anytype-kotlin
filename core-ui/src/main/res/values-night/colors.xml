@@ -61,5 +61,6 @@
     <color name="palette_very_light_teal">#022724</color>
     <color name="palette_very_light_lime">#172A08</color>
     <color name="palette_very_light_grey">#1D1D1B</color>
+    <color name="palette_system_red">#F55522</color>
 
 </resources>

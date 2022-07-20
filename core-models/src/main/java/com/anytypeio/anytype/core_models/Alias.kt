@@ -16,7 +16,6 @@ typealias DVViewerType = Block.Content.DataView.Viewer.Type
 typealias DVViewerCardSize= Block.Content.DataView.Viewer.Size
 typealias DVFilter = Block.Content.DataView.Filter
 typealias DVFilterCondition = Block.Content.DataView.Filter.Condition
-typealias DVFilterConditionType = Block.Content.DataView.Filter.ConditionType
 typealias DVFilterOperator = Block.Content.DataView.Filter.Operator
 typealias DVSort = Block.Content.DataView.Sort
 typealias DVSortType = Block.Content.DataView.Sort.Type

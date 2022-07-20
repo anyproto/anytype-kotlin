@@ -337,8 +337,6 @@ data class Block(
                     LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE,
                     EXACT_IN, NOT_EXACT_IN
                 }
-
-                enum class ConditionType { TEXT, NUMBER, SELECT, CHECKBOX }
             }
         }
 

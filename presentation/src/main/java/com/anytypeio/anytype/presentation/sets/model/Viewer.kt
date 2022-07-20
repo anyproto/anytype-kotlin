@@ -176,8 +176,15 @@ sealed class Viewer {
                 }
 
                 companion object {
-                    fun textConditions() =
-                        listOf(Equal(), NotEqual(), Like(), NotLike(), Empty(), NotEmpty(), None())
+                    fun textConditions() = listOf(
+                        Equal(),
+                        NotEqual(),
+                        Like(),
+                        NotLike(),
+                        Empty(),
+                        NotEmpty(),
+                        None()
+                    )
                 }
             }
 
@@ -282,8 +289,15 @@ sealed class Viewer {
                 }
 
                 companion object {
-                    fun selectConditions() =
-                        listOf(In(), AllIn(), Equal(), NotIn(), Empty(), NotEmpty(), None())
+                    fun selectConditions() = listOf(
+                        In(),
+                        AllIn(),
+                        Equal(),
+                        NotIn(),
+                        Empty(),
+                        NotEmpty(),
+                        None()
+                    )
                 }
             }
 
@@ -304,7 +318,11 @@ sealed class Viewer {
                 }
 
                 companion object {
-                    fun checkboxConditions() = listOf(Equal(), NotEqual(), None())
+                    fun checkboxConditions() = listOf(
+                        Equal(),
+                        NotEqual(),
+                        None()
+                    )
                 }
             }
         }

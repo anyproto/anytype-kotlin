@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.DVFilterConditionType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.presentation.sets.filter.DVFilterConditionCategory
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import timber.log.Timber
 
 fun Viewer.Filter.Condition.index(): Int = this.getConditions().indexOf(this)
 
@@ -28,127 +29,133 @@ fun Relation.toConditionView(condition: DVFilterCondition?): Viewer.Filter.Condi
         Relation.Format.URL,
         Relation.Format.EMAIL,
         Relation.Format.PHONE -> {
-            condition?.toView(conditionType = DVFilterConditionType.TEXT)
+            condition?.toView(category = DVFilterConditionCategory.TEXT)
                 ?: Viewer.Filter.Condition.Text.textConditions().first()
         }
         Relation.Format.NUMBER,
         Relation.Format.DATE -> {
-            condition?.toView(conditionType = DVFilterConditionType.NUMBER)
+            condition?.toView(category = DVFilterConditionCategory.NUMBER)
                 ?: Viewer.Filter.Condition.Number.numberConditions().first()
         }
         Relation.Format.STATUS,
         Relation.Format.TAG,
         Relation.Format.OBJECT -> {
-            condition?.toView(conditionType = DVFilterConditionType.SELECT)
+            condition?.toView(category = DVFilterConditionCategory.SELECT)
                 ?: Viewer.Filter.Condition.Selected.selectConditions().first()
         }
         Relation.Format.CHECKBOX -> {
-            condition?.toView(conditionType = DVFilterConditionType.CHECKBOX)
+            condition?.toView(category = DVFilterConditionCategory.CHECKBOX)
                 ?: Viewer.Filter.Condition.Checkbox.checkboxConditions().first()
         }
         else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
     }
 
 private fun DVFilterCondition.toView(
-    conditionType: DVFilterConditionType
-): Viewer.Filter.Condition = when (this) {
+    category: DVFilterConditionCategory
+): Viewer.Filter.Condition? = when (this) {
     DVFilterCondition.EQUAL -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.Equal()
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.Equal()
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.Equal()
-            DVFilterConditionType.CHECKBOX -> Viewer.Filter.Condition.Checkbox.Equal()
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.Equal()
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Equal()
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.Equal()
+            DVFilterConditionCategory.CHECKBOX -> Viewer.Filter.Condition.Checkbox.Equal()
         }
     }
     DVFilterCondition.NOT_EQUAL -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.NotEqual()
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.NotEqual()
-            DVFilterConditionType.CHECKBOX -> Viewer.Filter.Condition.Checkbox.NotEqual()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.NotEqual()
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.NotEqual()
+            DVFilterConditionCategory.CHECKBOX -> Viewer.Filter.Condition.Checkbox.NotEqual()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.GREATER -> {
-        when (conditionType) {
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.Greater()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Greater()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.LESS -> {
-        when (conditionType) {
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.Less()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Less()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.GREATER_OR_EQUAL -> {
-        when (conditionType) {
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.GreaterOrEqual()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.GreaterOrEqual()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.LESS_OR_EQUAL -> {
-        when (conditionType) {
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.LessOrEqual()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.LessOrEqual()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.LIKE -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.Like()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.Like()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.NOT_LIKE -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.NotLike()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.NotLike()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.IN -> {
-        when (conditionType) {
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.In()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.In()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.NOT_IN -> {
-        when (conditionType) {
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.NotIn()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.NotIn()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.EMPTY -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.Empty()
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.Empty()
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.Empty()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.Empty()
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.Empty()
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Empty()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.NOT_EMPTY -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.NotEmpty()
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.NotEmpty()
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.NotEmpty()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.NotEmpty()
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.NotEmpty()
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.NotEmpty()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.ALL_IN -> {
-        when (conditionType) {
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.AllIn()
-            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        when (category) {
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.AllIn()
+            else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.NOT_ALL_IN -> {
-        throw IllegalArgumentException("Condition ${this.name} is not present in $conditionType")
+        throw IllegalArgumentException("Condition ${this.name} is not present in $category")
     }
     DVFilterCondition.NONE -> {
-        when (conditionType) {
-            DVFilterConditionType.TEXT -> Viewer.Filter.Condition.Text.None()
-            DVFilterConditionType.NUMBER -> Viewer.Filter.Condition.Number.None()
-            DVFilterConditionType.SELECT -> Viewer.Filter.Condition.Selected.None()
-            DVFilterConditionType.CHECKBOX -> Viewer.Filter.Condition.Checkbox.None()
+        when (category) {
+            DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.None()
+            DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.None()
+            DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.None()
+            DVFilterConditionCategory.CHECKBOX -> Viewer.Filter.Condition.Checkbox.None()
         }
     }
-    DVFilterCondition.EXACT_IN -> TODO()
-    DVFilterCondition.NOT_EXACT_IN -> TODO()
+    DVFilterCondition.EXACT_IN -> {
+        Timber.w("Unexpected filter condition: EXACT IN")
+        null
+    }
+    DVFilterCondition.NOT_EXACT_IN -> {
+        Timber.w("Unexpected filter condition: NOT EXACT IN")
+        null
+    }
 }

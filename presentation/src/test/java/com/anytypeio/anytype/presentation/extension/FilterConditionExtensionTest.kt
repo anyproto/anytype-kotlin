@@ -1453,4 +1453,222 @@ class FilterConditionExtensionTest {
             relationCheckbox.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
         }
     }
+
+    @Test
+    fun `should return default values for exact-in condition`() {
+        val relationTextLong = Relation(
+            key = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            format = Relation.Format.LONG_TEXT,
+            source = Relation.Source.ACCOUNT,
+            isHidden = false,
+            isReadOnly = false,
+            isMulti = false,
+            selections = emptyList(),
+            defaultValue = MockDataFactory.randomString()
+        )
+        val relationTextShort = relationTextLong.copy(
+            format = Relation.Format.SHORT_TEXT
+        )
+        val relationUrl = relationTextLong.copy(
+            format = Relation.Format.URL
+        )
+        val relationPhone = relationTextLong.copy(
+            format = Relation.Format.PHONE
+        )
+        val relationEmail = relationTextLong.copy(
+            format = Relation.Format.EMAIL
+        )
+        val relationNumber = relationTextLong.copy(
+            format = Relation.Format.NUMBER
+        )
+        val relationDate = relationTextLong.copy(
+            format = Relation.Format.DATE
+        )
+        val relationTag = relationTextLong.copy(
+            format = Relation.Format.TAG
+        )
+        val relationStatus = relationTextLong.copy(
+            format = Relation.Format.STATUS
+        )
+        val relationObject = relationTextLong.copy(
+            format = Relation.Format.OBJECT
+        )
+        val relationCheckbox = relationTextLong.copy(
+            format = Relation.Format.CHECKBOX
+        )
+
+        val expectedText = Viewer.Filter.Condition.Text.Equal()
+        val expectedSelected = Viewer.Filter.Condition.Selected.In()
+        val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationTextLong.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationTextShort.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationPhone.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationEmail.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationUrl.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedNumber,
+            actual = relationNumber.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedNumber,
+            actual = relationDate.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedSelected,
+            actual = relationTag.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedSelected,
+            actual = relationStatus.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedSelected,
+            actual = relationObject.toConditionView(condition = DVFilterCondition.EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedCheckbox,
+            actual = relationCheckbox.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+    }
+
+    @Test
+    fun `should return default values for not-exact-in condition`() {
+        val relationTextLong = Relation(
+            key = MockDataFactory.randomUuid(),
+            name = MockDataFactory.randomString(),
+            format = Relation.Format.LONG_TEXT,
+            source = Relation.Source.ACCOUNT,
+            isHidden = false,
+            isReadOnly = false,
+            isMulti = false,
+            selections = emptyList(),
+            defaultValue = MockDataFactory.randomString()
+        )
+        val relationTextShort = relationTextLong.copy(
+            format = Relation.Format.SHORT_TEXT
+        )
+        val relationUrl = relationTextLong.copy(
+            format = Relation.Format.URL
+        )
+        val relationPhone = relationTextLong.copy(
+            format = Relation.Format.PHONE
+        )
+        val relationEmail = relationTextLong.copy(
+            format = Relation.Format.EMAIL
+        )
+        val relationNumber = relationTextLong.copy(
+            format = Relation.Format.NUMBER
+        )
+        val relationDate = relationTextLong.copy(
+            format = Relation.Format.DATE
+        )
+        val relationTag = relationTextLong.copy(
+            format = Relation.Format.TAG
+        )
+        val relationStatus = relationTextLong.copy(
+            format = Relation.Format.STATUS
+        )
+        val relationObject = relationTextLong.copy(
+            format = Relation.Format.OBJECT
+        )
+        val relationCheckbox = relationTextLong.copy(
+            format = Relation.Format.CHECKBOX
+        )
+
+        val expectedText = Viewer.Filter.Condition.Text.Equal()
+        val expectedSelected = Viewer.Filter.Condition.Selected.In()
+        val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationTextLong.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationTextShort.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationPhone.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationEmail.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedText,
+            actual = relationUrl.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedNumber,
+            actual = relationNumber.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedNumber,
+            actual = relationDate.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+
+        asserter.assertEquals(
+            message = null,
+            expected = expectedSelected,
+            actual = relationTag.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedSelected,
+            actual = relationStatus.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedSelected,
+            actual = relationObject.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+        asserter.assertEquals(
+            message = null,
+            expected = expectedCheckbox,
+            actual = relationCheckbox.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
+        )
+    }
 }

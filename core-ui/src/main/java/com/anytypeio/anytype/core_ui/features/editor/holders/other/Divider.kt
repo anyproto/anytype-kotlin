@@ -3,6 +3,9 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -43,12 +46,33 @@ abstract class Divider(view: View) : BlockViewHolder(view),
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        divider.updateLayoutParams<FrameLayout.LayoutParams> {
-            marginStart = item.indent * dimen(R.dimen.indent)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            divider.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 
     private fun applyBackground(background: String?) {
-        root.setBlockBackgroundColor(background)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.setBlockBackgroundColor(background)
+        }
     }
+
+    protected fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            container.updatePadding(
+                left = dimen(R.dimen.default_document_item_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            root.updatePadding(
+                left = dimen(R.dimen.default_document_item_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                bottomMargin = dimen(R.dimen.dp_2)
+            }
+        }
+    }
+
 }

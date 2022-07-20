@@ -588,13 +588,22 @@ class DefaultBlockViewRenderer @Inject constructor(
                 is Content.Divider -> {
                     isPreviousBlockMedia = false
                     mCounter = 0
+                    val blockDecorationScheme = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentScheme,
+                        currentDecoration = DecorationData(
+                            style = DecorationData.Style.None,
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
                     result.add(
                         divider(
                             block = block,
                             content = content,
                             indent = indent,
                             mode = mode,
-                            selection = selection
+                            selection = selection,
+                            schema = blockDecorationScheme
                         )
                     )
                 }
@@ -1212,7 +1221,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Divider,
         indent: Int,
         mode: EditorMode,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: NestedDecorationData
     ): BlockView = when (content.style) {
         Content.Divider.Style.LINE -> BlockView.DividerLine(
             id = block.id,
@@ -1222,7 +1232,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor
+            backgroundColor = block.backgroundColor,
+            decorations = schema.toBlockViewDecoration(block)
         )
         Content.Divider.Style.DOTS -> BlockView.DividerDots(
             id = block.id,
@@ -1232,7 +1243,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor
+            backgroundColor = block.backgroundColor,
+            decorations = schema.toBlockViewDecoration(block)
         )
     }
 

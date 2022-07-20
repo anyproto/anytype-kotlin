@@ -1087,8 +1087,9 @@ sealed class BlockView : ViewType {
         override val id: String,
         override val isSelected: Boolean = false,
         override val indent: Int = 0,
+        override val decorations: List<Decoration> = emptyList(),
         val backgroundColor: String? = null
-    ) : BlockView(), Selectable, Indentable {
+    ) : BlockView(), Selectable, Indentable, Decoratable {
         override fun getViewType() = HOLDER_DIVIDER_LINE
     }
 
@@ -1100,8 +1101,9 @@ sealed class BlockView : ViewType {
         override val id: String,
         override val isSelected: Boolean = false,
         override val indent: Int = 0,
+        override val decorations: List<Decoration> = emptyList(),
         val backgroundColor: String? = null
-    ) : BlockView(), Selectable, Indentable {
+    ) : BlockView(), Selectable, Indentable, Decoratable {
         override fun getViewType() = HOLDER_DIVIDER_DOTS
     }
 

@@ -286,5 +286,6 @@
     <dimen name="default_callout_internal_bottom_padding">12dp</dimen>
     <dimen name="callout_background_offset">20dp</dimen>
     <dimen name="selection_left_right_offset">12dp</dimen>
+    <dimen name="divider_extra_space_bottom">2dp</dimen>
 
 </resources>

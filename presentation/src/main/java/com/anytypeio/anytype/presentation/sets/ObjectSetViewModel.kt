@@ -701,41 +701,49 @@ class ObjectSetViewModel(
 
     fun onCreateNewRecord() {
         Timber.d("onCreateNewRecord, ")
-        if (reducer.state.value.isInitialized) {
+        val currentState = reducer.state.value
+        if (currentState.isInitialized) {
             if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
                 toast(NOT_ALLOWED)
             } else {
-                val startTime = System.currentTimeMillis()
-                viewModelScope.launch {
-                    val template = resolveTemplateForNewRecord()
-                    createDataViewRecord(
-                        CreateDataViewRecord.Params(
-                            context = context,
-                            target = reducer.state.value.dataview.id,
-                            template = template
-                        )
-                    ).process(
-                        failure = { Timber.e(it, "Error while creating new record") },
-                        success = { record ->
-                            val middleTime = System.currentTimeMillis()
-                            val wrapper = ObjectWrapper.Basic(record)
-                            total.value = total.value.inc()
-                            proceedWithRefreshingViewerAfterObjectCreation()
-                            sendAnalyticsObjectCreateEvent(
-                                analytics = analytics,
-                                objType = wrapper.type.firstOrNull(),
-                                layout = wrapper.layout?.code?.toDouble(),
-                                route = EventsDictionary.Routes.objCreateSet,
-                                startTime = startTime,
-                                middleTime = middleTime,
-                                context = analyticsContext
+                val setObject =
+                    ObjectWrapper.Basic(currentState.details[context]?.map ?: emptyMap())
+                val setOfTypeId = setObject.setOf.singleOrNull()
+                if (setOfTypeId == "_otbookmark") {
+                    dispatch(ObjectSetCommand.Modal.CreateBookmark(context))
+                } else {
+                    val startTime = System.currentTimeMillis()
+                    viewModelScope.launch {
+                        val template = resolveTemplateForNewRecord()
+                        createDataViewRecord(
+                            CreateDataViewRecord.Params(
+                                context = context,
+                                target = currentState.dataview.id,
+                                template = template
                             )
-                            if (wrapper.layout != ObjectType.Layout.NOTE) {
-                                objectSetRecordCache.map[context] = record
-                                dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
+                        ).process(
+                            failure = { Timber.e(it, "Error while creating new record") },
+                            success = { record ->
+                                val middleTime = System.currentTimeMillis()
+                                val wrapper = ObjectWrapper.Basic(record)
+                                total.value = total.value.inc()
+                                proceedWithRefreshingViewerAfterObjectCreation()
+                                sendAnalyticsObjectCreateEvent(
+                                    analytics = analytics,
+                                    objType = wrapper.type.firstOrNull(),
+                                    layout = wrapper.layout?.code?.toDouble(),
+                                    route = EventsDictionary.Routes.objCreateSet,
+                                    startTime = startTime,
+                                    middleTime = middleTime,
+                                    context = analyticsContext
+                                )
+                                if (wrapper.layout != ObjectType.Layout.NOTE) {
+                                    objectSetRecordCache.map[context] = record
+                                    dispatch(ObjectSetCommand.Modal.SetNameForCreatedRecord(context))
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         } else {
@@ -745,17 +753,14 @@ class ObjectSetViewModel(
 
     private suspend fun resolveTemplateForNewRecord(): Id? {
         val obj = ObjectWrapper.Basic(reducer.state.value.details[context]?.map ?: emptyMap())
-        val type = if (obj.setOf.size == 1) obj.setOf.first() else null
+        val type = obj.setOf.singleOrNull()
         return if (type != null) {
             val templates = try {
                 getTemplates.run(GetTemplates.Params(type))
             } catch (e: Exception) {
                 emptyList()
             }
-            if (templates.size == 1)
-                templates.first().id
-            else
-                null
+            templates.singleOrNull()?.id
         } else {
             null
         }

@@ -78,6 +78,7 @@ interface ObjectSetSubComponent {
     fun inject(fragment: ObjectSetFragment)
 
     fun objectSetRecordComponent(): ObjectSetRecordSubComponent.Builder
+    fun objectSetCreateBookmarkRecordComponent(): ObjectSetCreateBookmarkRecordSubComponent.Builder
     fun viewerCustomizeSubComponent(): ViewerCustomizeSubComponent.Builder
     fun viewerSortBySubComponent(): ViewerSortBySubComponent.Builder
     fun viewerFilterBySubComponent(): ViewerFilterSubComponent.Builder

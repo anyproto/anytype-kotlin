@@ -68,6 +68,8 @@ sealed class ObjectSetCommand {
 
         data class SetNameForCreatedRecord(val ctx: String) : Modal()
 
+        data class CreateBookmark(val ctx: String) : Modal()
+
         data class OpenIconActionMenu(
             val target: Id
         ) : Modal()

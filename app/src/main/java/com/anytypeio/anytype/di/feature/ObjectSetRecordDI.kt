@@ -4,7 +4,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordCache
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
-import com.anytypeio.anytype.ui.sets.SetObjectSetRecordNameFragment
+import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

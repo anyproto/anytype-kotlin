@@ -1,7 +1,11 @@
 package com.anytypeio.anytype.presentation.sets
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -14,7 +18,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyZeroInteractions
 import kotlin.test.assertEquals
 
 class ObjectSetRecordViewModelTest {
@@ -191,7 +199,7 @@ class ObjectSetRecordViewModelTest {
         // TESTING
 
         vm.commands.test {
-            vm.onExpandButtonClicked(
+            vm.onButtonClicked(
                 ctx = ctx,
                 input = input
             )
@@ -244,7 +252,7 @@ class ObjectSetRecordViewModelTest {
         // TESTING
 
         vm.commands.test {
-            vm.onExpandButtonClicked(
+            vm.onButtonClicked(
                 ctx = ctx,
                 input = emptyInput
             )

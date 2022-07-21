@@ -39,6 +39,7 @@ import com.anytypeio.anytype.di.feature.ObjectMenuModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
 import com.anytypeio.anytype.di.feature.ObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.ObjectSearchModule
+import com.anytypeio.anytype.di.feature.ObjectSetCreateBookmarkRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetIconPickerModule
 import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
 import com.anytypeio.anytype.di.feature.ObjectSetModule
@@ -424,6 +425,14 @@ class ComponentManager(
             .get(ctx)
             .objectSetRecordComponent()
             .module(ObjectSetRecordModule)
+            .build()
+    }
+
+    val objectSetCreateBookmarkRecordComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .objectSetCreateBookmarkRecordComponent()
+            .module(ObjectSetCreateBookmarkRecordModule)
             .build()
     }
 

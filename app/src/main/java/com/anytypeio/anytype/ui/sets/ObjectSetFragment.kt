@@ -78,6 +78,7 @@ import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
+import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment
 import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.bumptech.glide.Glide
@@ -661,6 +662,9 @@ open class ObjectSetFragment :
                     R.id.action_objectSetScreen_to_objectSetCoverScreen,
                     bundleOf(SelectCoverObjectSetFragment.CTX_KEY to command.ctx)
                 )
+            }
+            is ObjectSetCommand.Modal.CreateBookmark -> {
+                TODO()
             }
         }
     }

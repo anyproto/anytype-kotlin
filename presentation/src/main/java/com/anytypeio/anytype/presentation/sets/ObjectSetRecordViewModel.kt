@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewRecord
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -17,12 +16,11 @@ class ObjectSetRecordViewModel(
     private val updateDataViewRecord: UpdateDataViewRecord,
     private val objectSetState: StateFlow<ObjectSet>,
     private val objectSetRecordCache: ObjectSetRecordCache
-) : ViewModel() {
+) : ObjectSetCreateRecordViewModelBase() {
 
-    val isCompleted = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    fun onComplete(ctx: Id, input: String) {
+    override fun onComplete(ctx: Id, input: String) {
         val record = objectSetRecordCache.map[ctx]
         val id = record?.get(ObjectSetConfig.ID_KEY) as String?
         if (record != null && id != null) {
@@ -46,7 +44,7 @@ class ObjectSetRecordViewModel(
         }
     }
 
-    fun onExpandButtonClicked(ctx: Id, input: String) {
+    override fun onButtonClicked(ctx: Id, input: String) {
         viewModelScope.launch {
             val record = objectSetRecordCache.map[ctx]
             val id = record?.get(ObjectSetConfig.ID_KEY) as String?

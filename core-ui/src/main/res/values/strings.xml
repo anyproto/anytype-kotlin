@@ -168,6 +168,7 @@
     <string name="hint_numbered_list">Numbered list item</string>
     <string name="hint_toggle">Toggle block</string>
     <string name="hint_empty">Empty</string>
+    <string name="hint_paste_link">Paste link</string>
 
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
 

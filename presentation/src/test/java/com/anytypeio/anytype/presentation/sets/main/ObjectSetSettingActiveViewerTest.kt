@@ -116,7 +116,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
         vm.onStart(root)
 
-        val valueBefore = vm.viewerGrid.value
+        val valueBefore = vm.currentViewer.value
 
         // Expecting that all columns are visibile (number of columns == number of relations)
 
@@ -202,7 +202,7 @@ class ObjectSetSettingActiveViewerTest : ObjectSetViewModelTestSetup() {
 
         vm.onViewerTabClicked(doc.viewer2.id)
 
-        val valueAfter = vm.viewerGrid.value
+        val valueAfter = vm.currentViewer.value
 
         val expectedColumnsAfter = listOf(expectedColumnsBefore[1])
 

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Url
 
 class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
 
@@ -160,9 +161,13 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         command: Command.SetupBookmark
     ): Payload = remote.setupBookmark(command)
 
-    override suspend fun createBookmark(
+    override suspend fun createAndFetchBookmarkBlock(
         command: Command.CreateBookmark
-    ): Payload = remote.createBookmark(command)
+    ): Payload = remote.createAndFetchBookmarkBlock(command)
+
+    override suspend fun createBookmarkObject(url: Url): Id = remote.createBookmarkObject(
+        url = url
+    )
 
     override suspend fun undo(command: Command.Undo) = remote.undo(command)
 

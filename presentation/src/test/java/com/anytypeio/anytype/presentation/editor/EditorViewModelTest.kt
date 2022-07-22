@@ -64,7 +64,7 @@ import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
-import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -234,7 +234,7 @@ open class EditorViewModelTest {
     lateinit var setupBookmark: SetupBookmark
 
     @Mock
-    lateinit var createBookmark: CreateBookmark
+    lateinit var createBookmarkBlock: CreateBookmarkBlock
 
     @Mock
     lateinit var createDocument: CreateDocument
@@ -3914,7 +3914,7 @@ open class EditorViewModelTest {
                 ),
                 updateAlignment = updateAlignment,
                 setupBookmark = setupBookmark,
-                createBookmark = createBookmark,
+                createBookmarkBlock = createBookmarkBlock,
                 paste = paste,
                 copy = copy,
                 move = move,

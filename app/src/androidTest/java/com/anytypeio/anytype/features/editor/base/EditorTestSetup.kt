@@ -62,11 +62,12 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -76,7 +77,6 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -117,7 +117,7 @@ open class EditorTestSetup {
     lateinit var updateAlignment: UpdateAlignment
     lateinit var replaceBlock: ReplaceBlock
     lateinit var setupBookmark: SetupBookmark
-    lateinit var createBookmark: CreateBookmark
+    lateinit var createBookmarkBlock: CreateBookmarkBlock
     lateinit var uploadBlock: UploadBlock
     lateinit var splitBlock: SplitBlock
     lateinit var updateBackgroundColor: UpdateBackgroundColor
@@ -298,7 +298,7 @@ open class EditorTestSetup {
         getDefaultEditorType = GetDefaultEditorType(userSettingsRepository)
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
-        createBookmark = CreateBookmark(repo)
+        createBookmarkBlock = CreateBookmarkBlock(repo)
         applyTemplate = ApplyTemplate(
             repo = repo,
             dispatchers = dispatchers
@@ -368,7 +368,7 @@ open class EditorTestSetup {
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
                 setObjectType = setObjectType,
-                createBookmark = createBookmark
+                createBookmarkBlock = createBookmarkBlock
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,

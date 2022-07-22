@@ -12,6 +12,7 @@ import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateRecordViewModelBase
 import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment.Companion.CONTEXT_KEY
@@ -55,7 +56,12 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
         with(scope) {
             launch { subscribeTextInputActions() }
             launch { subscribeIsCompleted() }
+            launch { subscribeToasts() }
         }
+    }
+
+    private suspend fun subscribeToasts() {
+        vm.toasts.collect { toast(it) }
     }
 
     private suspend fun subscribeTextInputActions() {

@@ -78,6 +78,7 @@ import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
+import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment
 import com.anytypeio.anytype.ui.sets.modals.ViewerBottomSheetRootFragment
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
@@ -342,7 +343,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun observeGrid(viewer: Viewer) {
+    private fun setupViewer(viewer: Viewer) {
         binding.dataViewHeader.root.findViewById<TextView>(R.id.tvCurrentViewerName).text =
             viewer.title
         when (viewer) {
@@ -664,7 +665,12 @@ open class ObjectSetFragment :
                 )
             }
             is ObjectSetCommand.Modal.CreateBookmark -> {
-                TODO()
+                findNavController().navigate(
+                    R.id.setUrlForNewBookmark,
+                    bundleOf(
+                        SetObjectCreateBookmarkRecordFragment.CTX_KEY to command.ctx
+                    )
+                )
             }
         }
     }
@@ -724,7 +730,7 @@ open class ObjectSetFragment :
         super.onStart()
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header.filterNotNull()) { bindHeader(it) }
-        jobs += lifecycleScope.subscribe(vm.viewerGrid) { observeGrid(it) }
+        jobs += lifecycleScope.subscribe(vm.currentViewer) { setupViewer(it) }
         jobs += lifecycleScope.subscribe(vm.error) { binding.tvError.text = it }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
             binding.paginatorToolbar.set(count = count, index = index)

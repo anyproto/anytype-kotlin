@@ -630,6 +630,17 @@ class MiddlewareServiceImplementation : MiddlewareService {
         }
     }
 
+    override fun objectCreateBookmark(request: Rpc.Object.CreateBookmark.Request): Rpc.Object.CreateBookmark.Response {
+        val encoded = Service.objectCreateBookmark(Rpc.Object.CreateBookmark.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.CreateBookmark.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CreateBookmark.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response {
         val encoded = Service.objectCreateSet(Rpc.Object.CreateSet.Request.ADAPTER.encode(request))
         val response = Rpc.Object.CreateSet.Response.ADAPTER.decode(encoded)

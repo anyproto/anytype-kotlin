@@ -2,7 +2,14 @@ package com.anytypeio.anytype.presentation.sets.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -14,17 +21,13 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.ValueClassAnswer
 import com.jraska.livedata.test
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
@@ -152,7 +155,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.viewerGrid.value
+        val state = vm.currentViewer.value
 
         assertIs<Viewer.GridView>(state)
 
@@ -251,7 +254,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.viewerGrid.value
+        val state = vm.currentViewer.value
 
         assertIs<Viewer.GridView>(state)
 
@@ -333,7 +336,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.viewerGrid.value
+        val state = vm.currentViewer.value
 
         assertIs<Viewer.GridView>(state)
 
@@ -414,7 +417,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.viewerGrid.value
+        val state = vm.currentViewer.value
 
         assertIs<Viewer.GridView>(state)
 
@@ -493,7 +496,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        val state = vm.viewerGrid.value
+        val state = vm.currentViewer.value
 
         assertIs<Viewer.GridView>(state)
 

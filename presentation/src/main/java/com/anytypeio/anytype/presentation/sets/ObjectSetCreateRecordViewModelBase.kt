@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.sets
 
-import androidx.lifecycle.ViewModel
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
-abstract class ObjectSetCreateRecordViewModelBase : ViewModel() {
+abstract class ObjectSetCreateRecordViewModelBase : BaseViewModel() {
 
     val isCompleted = MutableStateFlow(false)
 

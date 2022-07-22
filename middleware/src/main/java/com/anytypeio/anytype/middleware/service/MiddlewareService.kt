@@ -61,6 +61,9 @@ interface MiddlewareService {
     fun objectCreate(request: Rpc.Object.Create.Request): Rpc.Object.Create.Response
 
     @Throws(Exception::class)
+    fun objectCreateBookmark(request: Rpc.Object.CreateBookmark.Request) : Rpc.Object.CreateBookmark.Response
+
+    @Throws(Exception::class)
     fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response
 
     @Throws(Exception::class)

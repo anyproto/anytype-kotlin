@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
@@ -985,6 +986,15 @@ class Middleware(
 
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.pageId
+    }
+
+    @Throws(Exception::class)
+    fun objectCreateBookmark(url: Url): Id {
+        val request = Rpc.Object.CreateBookmark.Request(url = url)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectCreateBookmark(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.pageId
     }

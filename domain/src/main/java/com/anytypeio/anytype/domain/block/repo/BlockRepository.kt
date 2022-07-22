@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
@@ -120,7 +121,12 @@ interface BlockRepository {
     suspend fun removeDocumentIcon(ctx: Id): Payload
 
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
-    suspend fun createBookmark(command: Command.CreateBookmark): Payload
+    suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
+
+    /**
+     * Creates bookmark object from url and returns its id.
+     */
+    suspend fun createBookmarkObject(url: Url) : Id
 
     suspend fun undo(command: Command.Undo): Undo.Result
     suspend fun redo(command: Command.Redo): Redo.Result

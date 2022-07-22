@@ -130,6 +130,9 @@
         <dialog
             android:id="@+id/setNameForNewRecordScreen"
             android:name="com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment" />
+        <dialog
+            android:id="@+id/setUrlForNewBookmark"
+            android:name="com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment" />
     </navigation>
 
     <fragment

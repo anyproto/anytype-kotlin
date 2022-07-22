@@ -133,8 +133,8 @@ class ObjectSetViewModel(
     val commands: SharedFlow<ObjectSetCommand> = _commands
     val toasts = Proxy.Subject<String>()
 
-    private val _viewerGrid = MutableStateFlow(Viewer.GridView.empty())
-    val viewerGrid = _viewerGrid
+    private val _currentViewer = MutableStateFlow(Viewer.GridView.empty())
+    val currentViewer = _currentViewer
 
     private val _header = MutableStateFlow<BlockView.Title.Basic?>(null)
     val header: StateFlow<BlockView.Title.Basic?> = _header
@@ -160,7 +160,7 @@ class ObjectSetViewModel(
                     _viewerTabs.value = set.tabs(session.currentViewerId)
                     val viewerIndex = set.viewers.indexOfFirst { it.id == session.currentViewerId }
                     set.render(viewerIndex, context, urlBuilder).let { vs ->
-                        _viewerGrid.value = vs.viewer
+                        _currentViewer.value = vs.viewer
                         _header.value = vs.title
                     }
                     featured.value = set.featuredRelations(
@@ -577,13 +577,26 @@ class ObjectSetViewModel(
             val record = records.records.find { rec -> rec[Relations.ID] == target }
             if (record != null) {
                 val obj = ObjectWrapper.Basic(record)
-                proceedWithNavigation(
-                    target = target,
-                    layout = obj.layout
-                )
+                if (obj.layout != ObjectType.Layout.BOOKMARK) {
+                    proceedWithNavigation(
+                        target = target,
+                        layout = obj.layout
+                    )
+                } else {
+                    proceedWithBrowsingBookmarkObject(obj)
+                }
             } else {
                 toast("Record not found. Please, try again later.")
             }
+        }
+    }
+
+    private fun proceedWithBrowsingBookmarkObject(obj: ObjectWrapper.Basic) {
+        val url = obj.url
+        if (url.isNullOrEmpty()) {
+            toast("Url is empty.")
+        } else {
+            dispatch(ObjectSetCommand.Intent.GoTo(url))
         }
     }
 
@@ -706,10 +719,11 @@ class ObjectSetViewModel(
             if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
                 toast(NOT_ALLOWED)
             } else {
-                val setObject =
-                    ObjectWrapper.Basic(currentState.details[context]?.map ?: emptyMap())
+                val setObject = ObjectWrapper.Basic(
+                    currentState.details[context]?.map ?: emptyMap()
+                )
                 val setOfTypeId = setObject.setOf.singleOrNull()
-                if (setOfTypeId == "_otbookmark") {
+                if (setOfTypeId == ObjectType.BOOKMARK_TYPE) {
                     dispatch(ObjectSetCommand.Modal.CreateBookmark(context))
                 } else {
                     val startTime = System.currentTimeMillis()
@@ -1110,7 +1124,7 @@ class ObjectSetViewModel(
                 builder = urlBuilder,
                 useFallbackView = true
             )
-            _viewerGrid.value = state.viewer
+            _currentViewer.value = state.viewer
             _header.value = state.title
         }
     }

@@ -1,6 +1,11 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -20,7 +25,8 @@ fun DVViewer.buildListViews(
         ObjectType.Layout.RELATION,
         ObjectType.Layout.FILE,
         ObjectType.Layout.IMAGE,
-        ObjectType.Layout.NOTE -> {
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.BOOKMARK -> {
             Viewer.ListView.Item.Default(
                 objectId = obj.id,
                 relations = obj.valuesFilteredByHidden(

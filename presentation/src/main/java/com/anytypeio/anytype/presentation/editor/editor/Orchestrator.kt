@@ -31,7 +31,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeTextBlockStyleEvent
@@ -66,7 +66,7 @@ class Orchestrator(
     private val updateAlignment: UpdateAlignment,
     private val uploadBlock: UploadBlock,
     private val setupBookmark: SetupBookmark,
-    private val createBookmark: CreateBookmark,
+    private val createBookmarkBlock: CreateBookmarkBlock,
     private val turnIntoDocument: TurnIntoDocument,
     private val updateFields: UpdateFields,
     private val move: Move,
@@ -462,8 +462,8 @@ class Orchestrator(
                 }
                 is Intent.Bookmark.CreateBookmark -> {
                     val startTime = System.currentTimeMillis()
-                    createBookmark(
-                        params = CreateBookmark.Params(
+                    createBookmarkBlock(
+                        params = CreateBookmarkBlock.Params(
                             context = intent.context,
                             target = intent.target,
                             url = intent.url,

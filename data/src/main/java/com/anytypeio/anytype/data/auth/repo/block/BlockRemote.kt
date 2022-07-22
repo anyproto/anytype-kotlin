@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Url
 
 interface BlockRemote {
 
@@ -64,7 +65,8 @@ interface BlockRemote {
     suspend fun removeDocumentIcon(ctx: Id): Payload
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark) : Payload
-    suspend fun createBookmark(command: Command.CreateBookmark): Payload
+    suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
+    suspend fun createBookmarkObject(url: Url) : Id
     suspend fun undo(command: Command.Undo) : Payload
     suspend fun redo(command: Command.Redo) : Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.viewModels
-import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.databinding.FragmentSetObjectCreateBookmarkRecordBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
@@ -21,7 +21,7 @@ class SetObjectCreateBookmarkRecordFragment : SetObjectCreateRecordFragmentBase<
     override val button: TextView
         get() = binding.button
 
-    private val ctx: String get() = argString(CONTEXT_KEY)
+    private val ctx: String get() = arg(CTX_KEY)
 
     @Inject
     lateinit var factory: ObjectSetCreateBookmarkRecordViewModel.Factory
@@ -44,6 +44,6 @@ class SetObjectCreateBookmarkRecordFragment : SetObjectCreateRecordFragmentBase<
     )
 
     companion object {
-        const val CONTEXT_KEY = "arg.object-set-record.context"
+        const val CTX_KEY = "arg.object-set-record.context"
     }
 }

@@ -11,12 +11,12 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 /**
  * Use-case for creating a bookmark block from url.
  */
-class CreateBookmark(
+class CreateBookmarkBlock(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, CreateBookmark.Params>() {
+) : BaseUseCase<Payload, CreateBookmarkBlock.Params>() {
 
     override suspend fun run(params: Params) = try {
-        repo.createBookmark(
+        repo.createAndFetchBookmarkBlock(
             command = Command.CreateBookmark(
                 context = params.context,
                 target = params.target,

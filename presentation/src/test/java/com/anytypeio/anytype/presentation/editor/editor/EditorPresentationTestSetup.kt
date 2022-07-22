@@ -53,11 +53,12 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
+import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
-import com.anytypeio.anytype.domain.page.bookmark.CreateBookmark
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
@@ -66,7 +67,6 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
-import com.anytypeio.anytype.domain.page.CreateNewObject
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -181,7 +181,7 @@ open class EditorPresentationTestSetup {
     lateinit var setupBookmark: SetupBookmark
 
     @Mock
-    lateinit var createBookmark: CreateBookmark
+    lateinit var createBookmarkBlock: CreateBookmarkBlock
 
     @Mock
     lateinit var createDocument: CreateDocument
@@ -302,7 +302,7 @@ open class EditorPresentationTestSetup {
             ),
             updateAlignment = updateAlignment,
             setupBookmark = setupBookmark,
-            createBookmark = createBookmark,
+            createBookmarkBlock = createBookmarkBlock,
             paste = paste,
             copy = copy,
             move = move,

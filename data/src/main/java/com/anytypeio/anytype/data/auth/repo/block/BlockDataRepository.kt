@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -207,9 +208,13 @@ class BlockDataRepository(
         command: Command.SetupBookmark
     ): Payload = remote.setupBookmark(command)
 
-    override suspend fun createBookmark(
+    override suspend fun createAndFetchBookmarkBlock(
         command: Command.CreateBookmark
-    ): Payload = remote.createBookmark(command)
+    ): Payload = remote.createAndFetchBookmarkBlock(command)
+
+    override suspend fun createBookmarkObject(url: Url): Id = remote.createBookmarkObject(
+        url = url
+    )
 
     override suspend fun uploadBlock(command: Command.UploadBlock): Payload =
         remote.uploadBlock(command)

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
@@ -180,9 +181,13 @@ class BlockMiddleware(
         command: Command.SetupBookmark
     ): Payload = middleware.blockBookmarkFetch(command)
 
-    override suspend fun createBookmark(
+    override suspend fun createAndFetchBookmarkBlock(
         command: Command.CreateBookmark
     ): Payload = middleware.blockBookmarkCreateAndFetch(command)
+
+    override suspend fun createBookmarkObject(url: Url): Id = middleware.objectCreateBookmark(
+        url = url
+    )
 
     override suspend fun undo(
         command: Command.Undo

@@ -18,7 +18,7 @@ class ObjectSetReducer {
     private val eventChannel: Channel<List<Event>> = Channel()
 
     val state = MutableStateFlow(ObjectSet.init())
-    val effects = MutableSharedFlow<List<SideEffect>>()
+    val effects = MutableSharedFlow<List<SideEffect>>(0)
 
     suspend fun run() {
         eventChannel
@@ -199,6 +199,7 @@ class ObjectSetReducer {
     sealed class SideEffect {
         data class ResetOffset(val offset: Int) : SideEffect()
         data class ResetCount(val count: Int) : SideEffect()
+        object ResetViewer : SideEffect()
     }
 
     fun clear() {

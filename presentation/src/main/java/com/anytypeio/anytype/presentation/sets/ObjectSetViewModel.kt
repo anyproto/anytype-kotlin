@@ -192,6 +192,9 @@ class ObjectSetViewModel(
                         is ObjectSetReducer.SideEffect.ResetCount -> {
                             total.value = effect.count
                         }
+                        is ObjectSetReducer.SideEffect.ResetViewer -> {
+                            proceedWithRefreshingViewerAfterObjectCreation()
+                        }
                     }
                 }
             }

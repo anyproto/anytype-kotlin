@@ -454,6 +454,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Two -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Text.Callout -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
@@ -490,6 +491,7 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Two -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Text.Header.Three -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Text.Toggle -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Text.Callout -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Code -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Error.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Error.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
@@ -526,6 +528,7 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.Text.Header.Two -> view.copy(searchFields = emptyList())
         is BlockView.Text.Header.Three -> view.copy(searchFields = emptyList())
         is BlockView.Text.Highlight -> view.copy(searchFields = emptyList())
+        is BlockView.Text.Callout -> view.copy(searchFields = emptyList())
         is BlockView.Title.Basic -> view.copy(searchFields = emptyList())
         is BlockView.Title.Profile -> view.copy(searchFields = emptyList())
         is BlockView.Title.Todo -> view.copy(searchFields = emptyList())
@@ -630,6 +633,7 @@ fun BlockView.setHighlight(
     is BlockView.Text.Header.Two -> copy(searchFields = highlights)
     is BlockView.Text.Header.Three -> copy(searchFields = highlights)
     is BlockView.Text.Highlight -> copy(searchFields = highlights)
+    is BlockView.Text.Callout -> copy(searchFields = highlights)
     is BlockView.Title.Basic -> copy(searchFields = highlights)
     is BlockView.Title.Profile -> copy(searchFields = highlights)
     is BlockView.Title.Todo -> copy(searchFields = highlights)
@@ -653,6 +657,7 @@ fun BlockView.setGhostEditorSelection(
     is BlockView.Text.Header.Two -> copy(ghostEditorSelection = ghostEditorSelection)
     is BlockView.Text.Header.Three -> copy(ghostEditorSelection = ghostEditorSelection)
     is BlockView.Text.Highlight -> copy(ghostEditorSelection = ghostEditorSelection)
+    is BlockView.Text.Callout -> copy(ghostEditorSelection = ghostEditorSelection)
     else -> this.also { check(this !is BlockView.SupportGhostEditorSelection) }
 }
 
@@ -860,6 +865,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Text.Bulleted -> copy(isSelected = newSelection)
     is BlockView.Text.Numbered -> copy(isSelected = newSelection)
     is BlockView.Text.Toggle -> copy(isSelected = newSelection)
+    is BlockView.Text.Callout -> copy(isSelected = newSelection)
     is BlockView.Media.File -> copy(isSelected = newSelection)
     is BlockView.Upload.File -> copy(isSelected = newSelection)
     is BlockView.MediaPlaceholder.File -> copy(isSelected = newSelection)

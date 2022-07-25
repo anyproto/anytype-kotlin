@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -52,7 +51,7 @@ class OtherSettingsViewModel(
             commands.emit(
                 Command.NavigateToObjectTypesScreen(
                     smartBlockType = DEFAULT_SETTINGS_SMART_BLOCK_TYPE,
-                    exclucedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+                    excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
                 )
             )
         }
@@ -123,7 +122,7 @@ class OtherSettingsViewModel(
         data class Toast(val msg: String) : Command()
         data class NavigateToObjectTypesScreen(
             val smartBlockType: SmartBlockType,
-            val exclucedTypes: List<Id>
+            val excludedTypes: List<Id>
         ) : Command()
 
         object ShowClearCacheAlert : Command()

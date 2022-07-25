@@ -4099,7 +4099,7 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                getObjectTypes { objectTypes ->
+                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4179,7 +4179,9 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                getObjectTypes { proceedWithObjectTypes(it) }
+                getObjectTypes(excluded = listOf(ObjectType.BOOKMARK_TYPE)) {
+                    proceedWithObjectTypes(it)
+                }
             }
             is SlashItem.Main.Other -> {
                 val items =
@@ -4424,11 +4426,12 @@ class EditorViewModel(
         }
     }
 
-    private fun getObjectTypes(action: (List<ObjectType>) -> Unit) {
+    private fun getObjectTypes(excluded: List<Id>, action: (List<ObjectType>) -> Unit) {
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
-                    smartBlockType = blocks.first { it.id == context }.content<Content.Smart>().type
+                    smartBlockType = blocks.first { it.id == context }.content<Content.Smart>().type,
+                    excludedTypes = excluded
                 )
             ).proceed(
                 failure = {
@@ -5449,7 +5452,10 @@ class EditorViewModel(
 
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
         val smartBlockType = getObjectSmartBlockType()
-        val params = GetCompatibleObjectTypes.Params(smartBlockType)
+        val params = GetCompatibleObjectTypes.Params(
+            smartBlockType = smartBlockType,
+            excludedTypes = listOf(ObjectType.BOOKMARK_TYPE)
+        )
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(params).proceed(
                 failure = { Timber.e(it, "Error while getting object types") },

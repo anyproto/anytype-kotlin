@@ -301,4 +301,14 @@ interface BlockRepository {
     suspend fun duplicateObject(id: Id): Id
 
     suspend fun applyTemplate(ctx: Id, template: Id)
+
+    suspend fun createTable(
+        ctx: String,
+        target: String,
+        position: Position,
+        rowCount: Int,
+        columnCount: Int
+    ): Payload
+
+    suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload
 }

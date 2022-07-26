@@ -337,6 +337,9 @@ fun List<BlockView>.enterSAM(
         is BlockView.TableOfContents -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.Table -> view.copy(
+            isSelected = isSelected
+        )
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }
@@ -892,6 +895,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
     is BlockView.Latex -> copy(isSelected = newSelection)
     is BlockView.TableOfContents -> copy(isSelected = newSelection)
+    is BlockView.Table -> copy(isSelected = newSelection)
     else -> this.also {
         if (this is BlockView.Selectable)
             Timber.e("Error when change selection for Selectable BlockView $this")
@@ -1058,4 +1062,57 @@ fun List<BlockView>.fillTableOfContents(): List<BlockView> {
 
 fun BlockView.Text.isStyleClearable(): Boolean {
     return this.isListBlock || this is BlockView.Text.Highlight
+}
+
+fun List<BlockView>.applyBordersToSelectedCells(
+    tableId: Id,
+    selection: Set<Id>
+): List<BlockView> = map { view ->
+    if (view.id == tableId && view is BlockView.Table) {
+        val updatedCells = view.cells.map { cell ->
+            when (cell) {
+                is BlockView.Table.Cell.Empty -> {
+                    if (selection.contains(cell.getId())) {
+                        val settings = cell.settings.applyAllBorders()
+                        cell.copy(settings = settings)
+                    } else {
+                        cell
+                    }
+                }
+                is BlockView.Table.Cell.Text -> {
+                    if (selection.contains(cell.getId())) {
+                        val settings = cell.settings.applyAllBorders()
+                        cell.copy(settings = settings)
+                    } else {
+                        cell
+                    }
+                }
+                BlockView.Table.Cell.Space -> cell
+            }
+        }
+        view.copy(cells = updatedCells)
+    } else {
+        view
+    }
+}
+
+fun List<BlockView>.removeBordersFromCells(): List<BlockView> = map { view ->
+    if (view is BlockView.Table) {
+        val updatedCells = view.cells.map { cell ->
+            when (cell) {
+                is BlockView.Table.Cell.Empty -> {
+                    val settings = cell.settings.removeAllBorders()
+                    cell.copy(settings = settings)
+                }
+                is BlockView.Table.Cell.Text -> {
+                    val settings = cell.settings.removeAllBorders()
+                    cell.copy(settings = settings)
+                }
+                BlockView.Table.Cell.Space -> cell
+            }
+        }
+        view.copy(cells = updatedCells)
+    } else {
+        view
+    }
 }

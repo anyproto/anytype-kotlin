@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.anytypeio.anytype.core_ui.widgets.toolbar.table.SimpleTableSettingWidget">
+
+    <View
+        android:id="@+id/dragger"
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/dragger" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabGravity="center"
+        app:tabBackground="@null"
+        app:tabMode="fixed"
+        app:tabIndicator="@null"
+        app:tabSelectedTextColor="@color/text_primary"
+        app:tabTextAppearance="@style/BlockTableWidgetTabsStyle"
+        app:tabTextColor="@color/text_tertiary" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:paddingTop="@dimen/dp_20"
+        android:overScrollMode="never" />
+
+</LinearLayout>

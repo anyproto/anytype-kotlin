@@ -30,6 +30,7 @@ abstract class Text(
     ) {
         indentize(item)
         select(item)
+        inputAction(item)
 
         if (item.mode == BlockView.Mode.READ) {
             enableReadMode()
@@ -141,6 +142,10 @@ abstract class Text(
 
     fun selection(item: BlockView.Selectable) {
         select(item)
+    }
+
+    fun inputAction(item: BlockView.TextBlockProps) {
+        content.setInputAction(item.inputAction)
     }
 
     override fun getDefaultTextColor(): Int = defTextColor

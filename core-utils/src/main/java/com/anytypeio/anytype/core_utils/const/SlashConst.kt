@@ -31,6 +31,7 @@ object SlashConst {
     const val SLASH_OTHER_LINE = "Line divider"
     const val SLASH_OTHER_TOC = "Table of contents"
     const val SLASH_OTHER_TOC_ABBREVIATION = "toc"
+    const val SLASH_OTHER_SIMPLE_TABLE = "Simple table"
 
     const val SLASH_ALIGN_LEFT = "Left"
     const val SLASH_ALIGN_CENTER = "Center"

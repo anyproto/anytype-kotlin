@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
@@ -63,6 +64,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.VideoError
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setup
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.setupPlaceholder
+import com.anytypeio.anytype.core_ui.features.editor.holders.ext.toIMECode
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Bookmark
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.File
 import com.anytypeio.anytype.core_ui.features.editor.holders.media.Picture
@@ -85,6 +87,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.Pictur
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
+import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Callout
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
@@ -151,6 +154,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TABLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOC
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
@@ -459,7 +463,7 @@ class BlockAdapter(
                             }
                         }
                         setOnEditorActionListener { v, actionId, _ ->
-                            if (actionId == TextInputWidget.TEXT_INPUT_WIDGET_ACTION_GO) {
+                            if (actionId == BlockView.InputAction.NewLine.toIMECode()) {
                                 val pos = bindingAdapterPosition
                                 if (pos != RecyclerView.NO_POSITION) {
                                     onSplitDescription(
@@ -708,6 +712,10 @@ class BlockAdapter(
             }
             HOLDER_UNSUPPORTED -> Unsupported(
                 ItemBlockUnsupportedBinding.inflate(inflater, parent, false)
+            )
+            HOLDER_TABLE -> TableBlockHolder(
+                ItemBlockTableBinding.inflate(inflater, parent, false),
+                clickListener = onClickListener
             )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
@@ -1095,6 +1103,12 @@ class BlockAdapter(
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
                             item = blocks[position] as BlockView.TableOfContents
+                        )
+                    }
+                    is TableBlockHolder -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Table
                         )
                     }
                     else -> throw IllegalStateException("Unexpected view holder: $holder")
@@ -1520,6 +1534,9 @@ class BlockAdapter(
             }
             is Unsupported -> {
                 holder.bind(item = blocks[position] as BlockView.Unsupported)
+            }
+            is TableBlockHolder -> {
+                holder.bind(item = blocks[position] as BlockView.Table)
             }
         }
 

@@ -2,9 +2,15 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_utils.ext.parseMatchedInt
+import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_COLUMN_COUNT
+import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_COLUMN_COUNT
+import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_ROW_COUNT
+import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_ROW_COUNT
 import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem.Other.Table.Companion.DEFAULT_PATTERN
 
 fun List<ObjectType>.toSlashItemView(): List<SlashItem.ObjectType> = map { oType ->
     SlashItem.ObjectType(
@@ -94,7 +100,8 @@ object SlashExtensions {
     fun getSlashWidgetOtherItems() = listOf(
         SlashItem.Other.Line,
         SlashItem.Other.Dots,
-        SlashItem.Other.TOC
+        SlashItem.Other.TOC,
+        SlashItem.Other.Table()
     )
 
     fun getSlashWidgetActionItems() = listOf(
@@ -281,12 +288,32 @@ object SlashExtensions {
         subheading: String
     ): List<SlashItem> {
         val filtered = items.filter { item ->
-            searchBySubheadingOrName(
-                filter = filter,
-                subheading = subheading,
-                name = item.getSearchName(),
-                abbreviation = item.getAbbreviation()
-            )
+            if (item is SlashItem.Other.Table) {
+                val matchResults = DEFAULT_PATTERN.toRegex().findAll(filter)
+                if (matchResults.none()) {
+                    searchBySubheadingOrName(
+                        filter = filter,
+                        subheading = subheading,
+                        name = item.getSearchName(),
+                        abbreviation = item.getAbbreviation()
+                    )
+                } else {
+                    val matchResult = matchResults.firstOrNull()
+                    val rowCount = matchResult.parseMatchedInt(1) ?: DEFAULT_ROW_COUNT
+                    val columnCount = matchResult.parseMatchedInt(2) ?: DEFAULT_COLUMN_COUNT
+                    item.rowCount = 1.coerceAtLeast(DEFAULT_MAX_ROW_COUNT.coerceAtMost(rowCount))
+                    item.columnCount =
+                        1.coerceAtLeast(DEFAULT_MAX_COLUMN_COUNT.coerceAtMost(columnCount))
+                    true
+                }
+            } else {
+                searchBySubheadingOrName(
+                    filter = filter,
+                    subheading = subheading,
+                    name = item.getSearchName(),
+                    abbreviation = item.getAbbreviation()
+                )
+            }
         }
         return updateWithSubheader(items = filtered)
     }

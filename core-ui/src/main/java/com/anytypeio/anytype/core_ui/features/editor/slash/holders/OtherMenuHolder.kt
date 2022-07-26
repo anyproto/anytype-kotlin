@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetStyleBinding
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
 class OtherMenuHolder(
@@ -26,6 +27,23 @@ class OtherMenuHolder(
                 tvTitle.setText(R.string.slash_widget_other_toc)
                 ivIcon.setImageResource(R.drawable.ic_slash_toc)
                 tvSubtitle.gone()
+            }
+            is SlashItem.Other.Table -> {
+                val rowCount = item.rowCount
+                val columnCount = item.columnCount
+                if (rowCount != null && columnCount != null) {
+                    tvTitle.text = binding.root.resources.getString(
+                        R.string.slash_widgth_other_simple_table_rows_columns_count,
+                        rowCount,
+                        columnCount
+                    )
+                    tvSubtitle.visible()
+                    tvSubtitle.setText(R.string.slash_widget_other_simple_table_subtitle)
+                } else {
+                    tvTitle.setText(R.string.slash_widget_other_simple_table)
+                    tvSubtitle.gone()
+                }
+                ivIcon.setImageResource(R.drawable.ic_slash_simple_tables)
             }
         }
     }

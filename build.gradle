@@ -18,6 +18,7 @@ buildscript {
     ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'
 
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }

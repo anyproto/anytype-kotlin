@@ -4,9 +4,10 @@ import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextConten
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubHeader(
+    id: Id = MockDataFactory.randomUuid(),
     children: List<Id> = emptyList()
 ): Block = Block(
-    id = MockDataFactory.randomUuid(),
+    id = id,
     content = Block.Content.Layout(
         type = Block.Content.Layout.Type.HEADER
     ),
@@ -15,9 +16,10 @@ fun StubHeader(
 )
 
 fun StubTitle(
+    id: Id = MockDataFactory.randomUuid(),
     text: String = MockDataFactory.randomString()
 ): Block = Block(
-    id = MockDataFactory.randomUuid(),
+    id = id,
     content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.TITLE
@@ -107,12 +109,13 @@ fun StubFile(
 )
 
 fun StubBulleted(
+    id: Id = MockDataFactory.randomUuid(),
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
     marks: List<Block.Content.Text.Mark> = emptyList(),
     isChecked: Boolean = MockDataFactory.randomBoolean()
 ): Block = Block(
-    id = MockDataFactory.randomUuid(),
+    id = id,
     content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.BULLET,
@@ -139,11 +142,12 @@ fun StubToggle(
 )
 
 fun StubNumbered(
+    id: Id = MockDataFactory.randomUuid(),
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),
     marks: List<Block.Content.Text.Mark> = emptyList()
 ): Block = Block(
-    id = MockDataFactory.randomUuid(),
+    id = id,
     content = StubTextContent(
         text = text,
         style = Block.Content.Text.Style.NUMBERED,
@@ -230,4 +234,58 @@ fun StubSmartBlock(
     children = children,
     fields = Block.Fields.empty(),
     content = Block.Content.Smart()
+)
+
+fun StubTable(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+    background: String? = null
+): Block = Block(
+    id = id,
+    content = Block.Content.Table,
+    children = children,
+    fields = Block.Fields.empty(),
+    backgroundColor = background
+)
+
+fun StubLayoutRows(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+): Block = Block(
+    id = id,
+    content = Block.Content.Layout(type = Block.Content.Layout.Type.TABLE_ROW),
+    children = children,
+    fields = Block.Fields.empty(),
+)
+
+fun StubLayoutColumns(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+): Block = Block(
+    id = id,
+    content = Block.Content.Layout(type = Block.Content.Layout.Type.TABLE_COLUMN),
+    children = children,
+    fields = Block.Fields.empty(),
+)
+
+fun StubTableRow(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+): Block = Block(
+    id = id,
+    content = Block.Content.TableRow(false),
+    children = children,
+    fields = Block.Fields.empty(),
+)
+
+fun StubTableColumn(
+    id: Id = MockDataFactory.randomUuid(),
+    children: List<Id> = emptyList(),
+    background: String? = null
+): Block = Block(
+    id = id,
+    content = Block.Content.TableColumn,
+    children = children,
+    fields = Block.Fields.empty(),
+    backgroundColor = background
 )

@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TABLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOC
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
@@ -105,6 +106,19 @@ sealed class BlockView : ViewType {
      */
     interface Selectable {
         val isSelected: Boolean
+    }
+
+    /**
+     * Views implementing this interface can change IME action on keyboard
+     * @property inputAction -
+     */
+    interface SupportInputAction {
+        val inputAction: InputAction
+    }
+
+    sealed interface InputAction {
+        object NewLine : InputAction
+        object Done : InputAction
     }
 
     /**
@@ -203,7 +217,8 @@ sealed class BlockView : ViewType {
         Indentable,
         Permission,
         Alignable,
-        Selectable {
+        Selectable,
+        SupportInputAction {
         val id: String
     }
 
@@ -267,7 +282,8 @@ sealed class BlockView : ViewType {
         }
     }
 
-    sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection, Decoratable {
+    sealed class Text : BlockView(), TextBlockProps, Searchable, SupportGhostEditorSelection,
+        Decoratable {
 
         // Dynamic properties (expected to be synchronised with framework widget)
 
@@ -307,7 +323,8 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text() {
             override fun getViewType() = HOLDER_PARAGRAPH
             override val body: String get() = text
@@ -336,7 +353,8 @@ sealed class BlockView : ViewType {
                 override var cursor: Int? = null,
                 override val searchFields: List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: IntRange? = null,
-                override val decorations: List<Decoration> = emptyList()
+                override val decorations: List<Decoration> = emptyList(),
+                override var inputAction: InputAction = InputAction.NewLine
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_ONE
                 override val body: String get() = text
@@ -363,7 +381,8 @@ sealed class BlockView : ViewType {
                 override var cursor: Int? = null,
                 override val searchFields: List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: IntRange? = null,
-                override val decorations: List<Decoration> = emptyList()
+                override val decorations: List<Decoration> = emptyList(),
+                override var inputAction: InputAction = InputAction.NewLine
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_TWO
                 override val body: String get() = text
@@ -390,7 +409,8 @@ sealed class BlockView : ViewType {
                 override var cursor: Int? = null,
                 override val searchFields: List<Searchable.Field> = emptyList(),
                 override val ghostEditorSelection: IntRange? = null,
-                override val decorations: List<Decoration> = emptyList()
+                override val decorations: List<Decoration> = emptyList(),
+                override var inputAction: InputAction = InputAction.NewLine
             ) : Header() {
                 override fun getViewType() = HOLDER_HEADER_THREE
                 override val body: String get() = text
@@ -417,7 +437,8 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text() {
             override fun getViewType() = HOLDER_HIGHLIGHT
             override val body: String get() = text
@@ -438,6 +459,7 @@ sealed class BlockView : ViewType {
             override val ghostEditorSelection: IntRange? = null,
             override val decorations: List<Decoration> = emptyList(),
             val icon: ObjectIcon,
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text() {
             override val alignment: Alignment? = null
             override fun getViewType() = HOLDER_CALLOUT
@@ -465,7 +487,8 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text(), Checkable {
             override fun getViewType() = HOLDER_CHECKBOX
             override val body: String get() = text
@@ -492,7 +515,8 @@ sealed class BlockView : ViewType {
             override val alignment: Alignment? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text() {
             override fun getViewType() = HOLDER_BULLET
             override val body: String get() = text
@@ -520,7 +544,8 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
             override val decorations: List<Decoration> = emptyList(),
-            val number: Int
+            val number: Int,
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text() {
             override fun getViewType() = HOLDER_NUMBERED
             override val body: String get() = text
@@ -549,7 +574,8 @@ sealed class BlockView : ViewType {
             override val decorations: List<Decoration> = emptyList(),
             override val ghostEditorSelection: IntRange? = null,
             val toggled: Boolean = false,
-            val isEmpty: Boolean = false
+            val isEmpty: Boolean = false,
+            override var inputAction: InputAction = InputAction.NewLine
         ) : Text() {
             override fun getViewType() = HOLDER_TOGGLE
             override val body: String get() = text
@@ -1176,4 +1202,58 @@ sealed class BlockView : ViewType {
     )
 
     enum class Mode { READ, EDIT }
+
+    data class Table(
+        override val id: String,
+        override val isSelected: Boolean,
+        val backgroundColor: String? = null,
+        val columns: List<Column>,
+        val cells: List<Cell>,
+        val rowCount: Int
+    ) : BlockView(), Selectable {
+        override fun getViewType(): Int = HOLDER_TABLE
+
+        data class Column(val id: String, val backgroundColor: String?)
+
+        sealed interface Cell {
+
+            data class Text(
+                val rowId: Id,
+                val columnId: Id,
+                val settings: CellSettings = CellSettings.empty(),
+                val block: BlockView.Text.Paragraph
+            ) : Cell {
+                fun getId() = "$rowId-$columnId"
+            }
+
+            data class Empty(
+                val rowId: Id,
+                val columnId: Id,
+                val settings: CellSettings = CellSettings.empty(),
+            ) : Cell {
+                fun getId() = "$rowId-$columnId"
+            }
+
+            object Space : Cell
+        }
+
+        data class CellSettings(
+            val width: Int = 0,
+            val isHeader: Boolean = false,
+            val top: Boolean = false,
+            val left: Boolean = false,
+            val right: Boolean = false,
+            val bottom: Boolean = false
+        ) {
+            fun applyAllBorders() = this.copy(left = true, top = true, right = true, bottom = true)
+            fun removeAllBorders() =
+                this.copy(left = false, top = false, right = false, bottom = false)
+
+            fun isAllBordersApply() = left && top && right && bottom
+
+            companion object {
+                fun empty() = CellSettings()
+            }
+        }
+    }
 }

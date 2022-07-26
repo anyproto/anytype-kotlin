@@ -1646,6 +1646,39 @@ class Middleware(
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
+    @Throws(Exception::class)
+    fun createTable(
+        ctx: String,
+        target: String,
+        position: Position,
+        rowCount: Int,
+        columnCount: Int
+    ): Payload {
+        val request = Rpc.BlockTable.Create.Request(
+            contextId = ctx,
+            targetId = target,
+            position = position.toMiddlewareModel(),
+            rows = rowCount,
+            columns = columnCount
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.createTable(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun fillTableRow(ctx: String, targetIds: List<String>): Payload {
+        val request = Rpc.BlockTable.RowListFill.Request(
+            contextId = ctx,
+            blockIds = targetIds
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockTableRowListFill(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     private fun logRequest(any: Any) {
         val message = "===> " + any::class.java.canonicalName + ":" + "\n" + any.toString()
         Timber.d(message)

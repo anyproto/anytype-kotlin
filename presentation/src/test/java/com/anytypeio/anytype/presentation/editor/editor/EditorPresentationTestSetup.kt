@@ -62,6 +62,8 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -72,6 +74,8 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
@@ -252,6 +256,14 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var getTemplates: GetTemplates
 
+    @Mock
+    lateinit var createTable: CreateTable
+
+    @Mock
+    lateinit var fillTableRow: FillTableRow
+
+    lateinit var simpleTableDelegate: SimpleTableDelegate
+
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
     private lateinit var updateDetail: UpdateDetail
@@ -274,6 +286,7 @@ open class EditorPresentationTestSetup {
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
+        simpleTableDelegate = DefaultSimpleTableDelegate()
 
         orchestrator = Orchestrator(
             createBlock = createBlock,
@@ -312,7 +325,9 @@ open class EditorPresentationTestSetup {
             setRelationKey = setRelationKey,
             turnIntoStyle = turnIntoStyle,
             updateBlocksMark = updateBlocksMark,
-            setObjectType = setObjectType
+            setObjectType = setObjectType,
+            createTable = createTable,
+            fillTableRow = fillTableRow
         )
 
         return EditorViewModel(
@@ -350,7 +365,8 @@ open class EditorPresentationTestSetup {
             setDocImageIcon = setDocImageIcon,
             downloadUnsplashImage = downloadUnsplashImage,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            simpleTableDelegate = simpleTableDelegate
         )
     }
 

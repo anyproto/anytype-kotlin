@@ -108,6 +108,8 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.toReadMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
+import com.anytypeio.anytype.presentation.editor.editor.ext.applyBordersToSelectedCells
+import com.anytypeio.anytype.presentation.editor.editor.ext.removeBordersFromCells
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
@@ -140,6 +142,10 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleBackgrou
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleColorBackgroundToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleOtherToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleTextToolbarState
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetEvent
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetState
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetViewState
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
@@ -237,6 +243,7 @@ class EditorViewModel(
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
     private val templateDelegate: EditorTemplateDelegate,
+    private val simpleTableDelegate: SimpleTableDelegate,
     private val createNewObject: CreateNewObject
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
@@ -246,6 +253,7 @@ class EditorViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     EditorTemplateDelegate by templateDelegate,
+    SimpleTableDelegate by simpleTableDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
@@ -265,6 +273,17 @@ class EditorViewModel(
                 )
             }
             else -> SelectTemplateViewState.Idle
+        }
+    }
+
+    val simpleTablesViewState = simpleTableDelegateState.map { state ->
+        when (state) {
+            is SimpleTableWidgetState.UpdateItems -> {
+                SimpleTableWidgetViewState.Active(
+                    state = state
+                )
+            }
+            SimpleTableWidgetState.Idle -> SimpleTableWidgetViewState.Idle
         }
     }
 
@@ -1688,6 +1707,11 @@ class EditorViewModel(
                     is Content.Text -> {
                         excludedActions.add(ActionItemType.Download)
                     }
+                    is Content.Table -> {
+                        excludedActions.add(ActionItemType.Paste)
+                        excludedActions.add(ActionItemType.Copy)
+                        excludedActions.add(ActionItemType.Style)
+                    }
                     else -> {
                         // do nothing
                     }
@@ -1964,6 +1988,10 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(views.toReadMode()) }
         viewModelScope.launch { renderCommand.send(Unit) }
         viewModelScope.launch { controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnEnterSearchMode) }
+    }
+
+    fun onSetTextBlockValue() {
+        viewModelScope.launch { refresh() }
     }
 
     fun onDocRelationsClicked() {
@@ -2710,6 +2738,86 @@ class EditorViewModel(
                 )
             }
         }
+    }
+
+    private fun addSimpleTableBlock(item: SlashItem.Other.Table) {
+
+        val focused = blocks.first { it.id == orchestrator.stores.focus.current().id }
+        val content = focused.content
+
+        if (content is Content.Text && content.text.isEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Table.CreateTable(
+                        ctx = context,
+                        target = focused.id,
+                        position = Position.REPLACE,
+                        rows = item.rowCount,
+                        columns = item.columnCount
+                    )
+                )
+            }
+        } else {
+
+            val position: Position
+
+            var target: Id = focused.id
+
+            if (focused.id == context) {
+                if (focused.children.isEmpty()) {
+                    position = Position.INNER
+                } else {
+                    position = Position.TOP
+                    target = focused.children.first()
+                }
+            } else {
+                position = Position.BOTTOM
+            }
+
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Table.CreateTable(
+                        ctx = context,
+                        target = target,
+                        position = position
+                    )
+                )
+            }
+        }
+    }
+
+    private fun onTableRowEmptyCellClicked(cellId: Id, rowId: Id, tableId: Id) {
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    id = cellId,
+                    cursor = Editor.Cursor.Start
+                )
+            )
+        }
+        fillTableBlockRow(
+            cellId = cellId,
+            targetIds = listOf(rowId),
+            tableId = tableId
+        )
+    }
+
+    private fun fillTableBlockRow(cellId: Id, targetIds: List<Id>, tableId: Id) {
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Table.FillTableRow(
+                    ctx = context,
+                    targetIds = targetIds
+                )
+            )
+        }
+        dispatch(
+            Command.OpenSetBlockTextValueScreen(
+                ctx = context,
+                block = cellId,
+                table = tableId
+            )
+        )
     }
 
     fun onAddDividerBlockClicked(style: Content.Divider.Style) {
@@ -3712,6 +3820,46 @@ class EditorViewModel(
             is ListenerType.Callout.Icon -> {
                 dispatch(Command.OpenTextBlockIconPicker(clicked.blockId))
             }
+            is ListenerType.TableEmptyCell -> {
+                when (mode) {
+                    EditorMode.Edit -> {
+                        proceedWithSelectingCell(
+                            cellId = clicked.cellId,
+                            tableId = clicked.tableId
+                        )
+                        onTableRowEmptyCellClicked(
+                            cellId = clicked.cellId,
+                            rowId = clicked.rowId,
+                            tableId = clicked.tableId
+                        )
+                    }
+                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.tableId)
+                    else -> Unit
+                }
+            }
+            is ListenerType.TableTextCell -> {
+                when (mode) {
+                    EditorMode.Edit -> {
+                        proceedWithSelectingCell(
+                            cellId = clicked.cellId,
+                            tableId = clicked.tableId
+                        )
+                        dispatch(
+                            Command.OpenSetBlockTextValueScreen(
+                                ctx = context,
+                                block = clicked.cellId,
+                                table = clicked.tableId
+                            )
+                        )
+                    }
+                    EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.tableId)
+                    else -> Unit
+                }
+            }
+            is ListenerType.TableEmptyCellMenu -> {}
+            is ListenerType.TableTextCellMenu -> {
+                onShowSimpleTableWidgetClicked(id = clicked.cellId)
+            }
         }
     }
 
@@ -4340,6 +4488,12 @@ class EditorViewModel(
                 dispatch(
                     Command.OpenAddRelationScreen(ctx = context, target = targetId)
                 )
+            }
+            is SlashItem.Other.Table -> {
+                cutSlashFilter(targetId = targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                onHideKeyboardClicked()
+                addSimpleTableBlock(item)
             }
         }
     }
@@ -5290,7 +5444,7 @@ class EditorViewModel(
         }
     }
 
-    private fun onMentionClicked(target: String) {
+    fun onMentionClicked(target: String) {
         proceedWithOpeningObjectByLayout(target)
     }
 
@@ -5737,6 +5891,42 @@ class EditorViewModel(
         }
     }
 
+    //endregion
+
+    //region SIMPLE TABLES
+    private fun onShowSimpleTableWidgetClicked(id: Id) {
+        viewModelScope.launch {
+            onSimpleTableEvent(SimpleTableWidgetEvent.onStart(id = id))
+        }
+    }
+
+    fun onHideSimpleTableWidget() {}
+
+    private fun proceedWithSelectingCell(cellId:Id, tableId: Id) {
+
+        clearSelections()
+        select(listOf(cellId))
+
+        val updated = views.applyBordersToSelectedCells(
+            tableId = tableId,
+            selection = currentSelection()
+        )
+
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            orchestrator.stores.views.update(updated)
+            renderCommand.send(Unit)
+        }
+    }
+
+    fun onSetBlockTextValueScreenDismiss() {
+        clearSelections()
+        val updated = views.removeBordersFromCells()
+        viewModelScope.launch {
+            orchestrator.stores.views.update(updated)
+            renderCommand.send(Unit)
+        }
+    }
     //endregion
 }
 

@@ -513,4 +513,21 @@ class BlockRemoteDataStore(private val remote: BlockRemote) : BlockDataStore {
         ctx = ctx,
         template = template
     )
+
+    override suspend fun createTable(
+        ctx: String,
+        target: String,
+        position: Position,
+        rowCount: Int,
+        columCount: Int
+    ): Payload = remote.createTable(
+        ctx = ctx,
+        target = target,
+        position = position,
+        rows = rowCount,
+        columns = columCount
+    )
+
+    override suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload =
+        remote.fillTableRow(ctx, targetIds)
 }

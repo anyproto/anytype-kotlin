@@ -343,6 +343,10 @@ data class Block(
         data class Latex(val latex: String) : Content()
         object TableOfContents : Content()
         object Unsupported : Content()
+
+        object Table: Content()
+        data class TableRow(val isHeader: Boolean): Content()
+        object TableColumn: Content()
     }
 
     /**

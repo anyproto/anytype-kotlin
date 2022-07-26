@@ -332,6 +332,22 @@ sealed class SlashItem {
             override fun getSearchName(): String = SlashConst.SLASH_OTHER_TOC
             override fun getAbbreviation(): List<String> = listOf(SLASH_OTHER_TOC_ABBREVIATION)
         }
+
+        /**
+         * Simple table
+         */
+        data class Table(
+            var rowCount: Int? = null,
+            var columnCount: Int? = null
+        ) : Other() {
+            override fun getSearchName(): String = SlashConst.SLASH_OTHER_SIMPLE_TABLE
+            override fun getAbbreviation(): List<String> = emptyList()
+
+            companion object {
+                const val DEFAULT_PATTERN = "table(\\d+)(?:[^\\d]{1}([\\d]+))?"
+            }
+        }
+
     }
     //endregion
 

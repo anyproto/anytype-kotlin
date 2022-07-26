@@ -72,6 +72,8 @@ import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
@@ -86,6 +88,7 @@ import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificati
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -228,6 +231,15 @@ open class EditorTestSetup {
     @Mock
     lateinit var objectTypesProvider: ObjectTypesProvider
 
+    @Mock
+    lateinit var createTable: CreateTable
+
+    @Mock
+    lateinit var fillTableRow: FillTableRow
+
+    @Mock
+    lateinit var simpleTableDelegate: SimpleTableDelegate
+
     val root: String = "rootId123"
 
     private val urlBuilder by lazy {
@@ -368,7 +380,9 @@ open class EditorTestSetup {
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
                 setObjectType = setObjectType,
-                createBookmarkBlock = createBookmarkBlock
+                createBookmarkBlock = createBookmarkBlock,
+                createTable = createTable,
+                fillTableRow = fillTableRow
             ),
             createNewDocument = createNewDocument,
             interceptThreadStatus = interceptThreadStatus,
@@ -388,7 +402,8 @@ open class EditorTestSetup {
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
             editorTemplateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            simpleTablesDelegate = simpleTableDelegate
         )
     }
 

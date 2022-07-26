@@ -241,4 +241,14 @@ interface BlockDataStore {
     suspend fun duplicateObject(id: Id): Id
 
     suspend fun applyTemplate(ctx: Id, template: Id)
+
+    suspend fun createTable(
+        ctx: String,
+        target: String,
+        position: Position,
+        rows: Int,
+        columns: Int
+    ): Payload
+
+    suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload
 }

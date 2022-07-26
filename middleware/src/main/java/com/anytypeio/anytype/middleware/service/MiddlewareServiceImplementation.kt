@@ -1046,4 +1046,28 @@ class MiddlewareServiceImplementation : MiddlewareService {
             return response
         }
     }
+
+    override fun createTable(request: Rpc.BlockTable.Create.Request): Rpc.BlockTable.Create.Response {
+        val encoded =
+            Service.blockTableCreate(Rpc.BlockTable.Create.Request.ADAPTER.encode(request))
+        val response = Rpc.BlockTable.Create.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.Create.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockTableRowListFill(request: Rpc.BlockTable.RowListFill.Request): Rpc.BlockTable.RowListFill.Response {
+        val encoded =
+            Service.blockTableRowListFill(Rpc.BlockTable.RowListFill.Request.ADAPTER.encode(request))
+        val response = Rpc.BlockTable.RowListFill.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockTable.RowListFill.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

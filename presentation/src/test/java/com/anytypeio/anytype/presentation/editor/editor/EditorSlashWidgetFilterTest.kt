@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
@@ -1243,7 +1244,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.Subheader.Other,
             SlashItem.Other.Line,
             SlashItem.Other.Dots,
-            SlashItem.Other.TOC
+            SlashItem.Other.TOC,
+            SlashItem.Other.Table()
         )
         assertEquals(expected = expectedItems, actual = command.otherItems)
     }
@@ -1551,7 +1553,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return table of contents on table filter`() {
+    fun `should return table of contents and simple table on table filter`() {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
@@ -1582,8 +1584,225 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val expectedItems = listOf(
             SlashItem.Subheader.Other,
-            SlashItem.Other.TOC
+            SlashItem.Other.TOC,
+            SlashItem.Other.Table()
         )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `slash item should have 9 rows and 7 columns`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf())
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/table9x7", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.Table(
+                rowCount = 9,
+                columnCount = 7
+            )
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `slash item should have 19 rows and default max columns`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf())
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/table19x78t", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.Table(
+                rowCount = 19,
+                columnCount = 25
+            )
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `slash item should have default max rows and default max columns`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf())
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/table199x78", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.Table(
+                rowCount = CreateTable.DEFAULT_MAX_ROW_COUNT,
+                columnCount = CreateTable.DEFAULT_MAX_COLUMN_COUNT
+            )
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `slash item should have 5 rows and default min columns`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf())
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/table5", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.Table(
+                rowCount = 5,
+                columnCount = CreateTable.DEFAULT_COLUMN_COUNT
+            )
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `slash item should have default max rows and default min columns`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf())
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/table26", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = listOf(
+            SlashItem.Subheader.Other,
+            SlashItem.Other.Table(
+                rowCount = CreateTable.DEFAULT_MAX_ROW_COUNT,
+                columnCount = CreateTable.DEFAULT_COLUMN_COUNT
+            )
+        )
+        assertEquals(expected = expectedItems, actual = command.otherItems)
+    }
+
+    @Test
+    fun `slash item tables should not be present`() {
+        // SETUP
+        val doc = MockTypicalDocumentFactory.page(root)
+        val a = MockTypicalDocumentFactory.a
+        val fields = Block.Fields.empty()
+        val customDetails = Block.Details(mapOf(root to fields))
+
+        stubInterceptEvents()
+        stubGetObjectTypes(listOf())
+        stubOpenDocument(doc, customDetails)
+
+        val vm = buildViewModel()
+        vm.onStart(root)
+        vm.apply {
+            onBlockFocusChanged(a.id, true)
+            onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+        }
+
+        // TESTING
+
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/", HOLDER_NUMBERED))
+        vm.onSlashTextWatcherEvent(SlashEvent.Filter("/tablee5x8", HOLDER_NUMBERED))
+
+        val state = vm.controlPanelViewState.value
+        val command = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+
+        val expectedItems = emptyList<SlashItem>()
         assertEquals(expected = expectedItems, actual = command.otherItems)
     }
 }

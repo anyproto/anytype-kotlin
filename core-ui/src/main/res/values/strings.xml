@@ -384,6 +384,9 @@
     <string name="slash_widget_other_line">Line divider</string>
     <string name="slash_widget_other_dots">Dots divider</string>
     <string name="slash_widget_other_toc">Table of contents</string>
+    <string name="slash_widget_other_simple_table">Simple table</string>
+    <string name="slash_widgth_other_simple_table_rows_columns_count">Simple table %1$dx%2$d</string>
+    <string name="slash_widget_other_simple_table_subtitle">Create a simple table</string>
 
     <string name="slash_widget_actions_delete">Delete</string>
     <string name="slash_widget_actions_duplicate">Duplicate</string>
@@ -524,5 +527,21 @@
 
     <string name="item_relation_create_from_scratch_title">Type</string>
     <string name="btn_restore">Restore</string>
+
+    <string name="simple_tables_widget_item_clear_contents">Clear contents</string>
+    <string name="simple_tables_widget_item_clear_color">Color</string>
+    <string name="simple_tables_widget_item_clear_style">Style</string>
+    <string name="simple_tables_widget_item_clear_clear_style">Clear style</string>
+    <string name="simple_tables_widget_item_insert_left">Insert left</string>
+    <string name="simple_tables_widget_item_insert_right">Insert right</string>
+    <string name="simple_tables_widget_item_move_left">Move left</string>
+    <string name="simple_tables_widget_item_move_right">Move right</string>
+    <string name="simple_tables_widget_item_insert_above">Insert above</string>
+    <string name="simple_tables_widget_item_insert_below">Insert below</string>
+    <string name="simple_tables_widget_item_move_up">Move up</string>
+    <string name="simple_tables_widget_item_move_down">Move down</string>
+    <string name="simple_tables_widget_tab_cell">Cell</string>
+    <string name="simple_tables_widget_tab_row">Row</string>
+    <string name="simple_tables_widget_tab_column">Column</string>
 
 </resources>

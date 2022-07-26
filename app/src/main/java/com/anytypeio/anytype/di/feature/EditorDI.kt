@@ -75,6 +75,8 @@ import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
@@ -90,6 +92,8 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
+import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -147,6 +151,8 @@ interface EditorSubComponent {
     fun objectAppearancePreviewLayoutComponent() : ObjectAppearancePreviewLayoutSubComponent.Builder
     fun objectAppearanceCoverComponent() : ObjectAppearanceCoverSubComponent.Builder
     fun objectAppearanceChooseDescription() : ObjectAppearanceChooseDescriptionSubComponent.Builder
+
+    fun setBlockTextValueComponent(): SetBlockTextValueSubComponent.Builder
 }
 
 
@@ -205,7 +211,8 @@ object EditorSessionModule {
         setDocCoverImage: SetDocCoverImage,
         setDocImageIcon: SetDocumentImageIcon,
         editorTemplateDelegate: EditorTemplateDelegate,
-        createNewObject: CreateNewObject
+        createNewObject: CreateNewObject,
+        simpleTableDelegate: SimpleTableDelegate
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -237,7 +244,8 @@ object EditorSessionModule {
         setDocCoverImage = setDocCoverImage,
         setDocImageIcon = setDocImageIcon,
         editorTemplateDelegate = editorTemplateDelegate,
-        createNewObject = createNewObject
+        createNewObject = createNewObject,
+        simpleTablesDelegate = simpleTableDelegate
     )
 
     @JvmStatic
@@ -263,6 +271,12 @@ object EditorSessionModule {
         getTemplates = getTemplates,
         applyTemplate = applyTemplate
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSimpleTableDelegate(
+    ) : SimpleTableDelegate = DefaultSimpleTableDelegate()
 
     @JvmStatic
     @Provides
@@ -326,6 +340,8 @@ object EditorSessionModule {
         setupBookmark: SetupBookmark,
         createBookmarkBlock: CreateBookmarkBlock,
         turnIntoDocument: TurnIntoDocument,
+        createTable: CreateTable,
+        fillTableRow: FillTableRow,
         setObjectType: SetObjectType,
         matcher: DefaultPatternMatcher,
         move: Move,
@@ -373,7 +389,9 @@ object EditorSessionModule {
         updateFields = updateFields,
         turnIntoStyle = turnInto,
         updateBlocksMark = updateBlocksMark,
-        setObjectType = setObjectType
+        setObjectType = setObjectType,
+        createTable = createTable,
+        fillTableRow = fillTableRow
     )
 }
 
@@ -750,6 +768,24 @@ object EditorUseCaseModule {
     fun provideSetLinkAppearance(
         repo: BlockRepository
     ): SetLinkAppearance = SetLinkAppearance(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateTableUseCase(
+        repo: BlockRepository
+    ): CreateTable = CreateTable(
+        repo = repo
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTableRowFill(
+        repo: BlockRepository
+    ): FillTableRow = FillTableRow(
+        repo = repo
+    )
 
     @JvmStatic
     @Provides

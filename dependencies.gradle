@@ -121,7 +121,7 @@ ext {
             retrofit:                   "com.squareup.retrofit2:converter-gson:$retrofit_version",
             okhttpLoggingInterceptor:   "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version",
             timber:                     "com.jakewharton.timber:timber:$timber_version",
-            tableView:                  "com.evrencoskun.library:tableview:$table_view_version",
+            tableView:                  "com.github.evrencoskun:TableView:$table_view_version",
             exoPlayerCore:              "com.google.android.exoplayer:exoplayer-core:$exoplayer_version",
             exoPlayerUi:                "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version",
             pickT:                      "com.github.HBiSoft:PickiT:$pickt_version",

@@ -294,6 +294,13 @@ class ComponentManager(
             .build()
     }
 
+    val setTextBlockValueComponent = DependentComponentMap { ctx ->
+        editorComponent
+            .get(ctx)
+            .setBlockTextValueComponent()
+            .build()
+    }
+
     val createBookmarkSubComponent = Component {
         main
             .createBookmarkBuilder()

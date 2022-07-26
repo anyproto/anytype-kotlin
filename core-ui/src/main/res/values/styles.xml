@@ -983,4 +983,30 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <!-- Editor, table block style, {root {container {recycler}} selected}-->
+    <style name="DefaultTableBlockRootStyle">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
+    </style>
+
+    <style name="DefaultTableBlockContainerStyle">
+        <item name="android:paddingStart">@dimen/default_graphic_text_container_padding_start</item>
+    </style>
+
+    <style name="BlockCellTextContentStyle" parent="DefaultEditorTextStyle">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="android:paddingStart">@dimen/default_document_content_padding_start</item>
+        <item name="android:paddingEnd">@dimen/default_document_content_padding_end</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="BlockTableWidgetTabsStyle">
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
 </resources>

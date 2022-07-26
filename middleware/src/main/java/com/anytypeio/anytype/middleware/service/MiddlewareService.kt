@@ -299,6 +299,16 @@ interface MiddlewareService {
 
     //endregion
 
+    //region SIMPLE TABLE commands
+
+    @Throws(Exception::class)
+    fun createTable(request: Rpc.BlockTable.Create.Request) : Rpc.BlockTable.Create.Response
+
+    @Throws(Exception::class)
+    fun blockTableRowListFill(request: Rpc.BlockTable.RowListFill.Request): Rpc.BlockTable.RowListFill.Response
+
+    //endregion
+
     //region DEBUG commands
 
     @Throws(Exception::class)

@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.ext
 
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.updatePadding
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
-import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
+import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -56,4 +58,9 @@ fun RelationViewHolder.setupPlaceholder(adapter: BlockAdapter): RelationViewHold
         }
     }
     return this
+}
+
+fun BlockView.InputAction.toIMECode(): Int = when (this) {
+    BlockView.InputAction.Done -> EditorInfo.IME_ACTION_DONE
+    BlockView.InputAction.NewLine -> EditorInfo.IME_ACTION_GO
 }

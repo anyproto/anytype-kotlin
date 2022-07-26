@@ -33,6 +33,8 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeTextBlockStyleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCopyBlockEvent
@@ -69,6 +71,8 @@ class Orchestrator(
     private val createBookmarkBlock: CreateBookmarkBlock,
     private val turnIntoDocument: TurnIntoDocument,
     private val updateFields: UpdateFields,
+    private val createTable: CreateTable,
+    private val fillTableRow: FillTableRow,
     private val move: Move,
     private val copy: Copy,
     private val paste: Paste,
@@ -567,6 +571,31 @@ class Orchestrator(
                         success = { payload ->
                             proxies.payloads.send(payload)
                         }
+                    )
+                }
+                is Intent.Table.CreateTable -> {
+                    createTable(
+                        params = CreateTable.Params(
+                            ctx = intent.ctx,
+                            target = intent.target,
+                            position = intent.position,
+                            rowCount = intent.rows,
+                            columnCount = intent.columns
+                        )
+                    ).process(
+                        failure = defaultOnError,
+                        success = { payload -> proxies.payloads.send(payload) }
+                    )
+                }
+                is Intent.Table.FillTableRow -> {
+                    fillTableRow(
+                        params = FillTableRow.Params(
+                            ctx = intent.ctx,
+                            targetIds = intent.targetIds
+                        )
+                    ).process(
+                        failure = defaultOnError,
+                        success = { payload -> proxies.payloads.send(payload) }
                     )
                 }
             }

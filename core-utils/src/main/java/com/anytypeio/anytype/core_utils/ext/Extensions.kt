@@ -76,3 +76,5 @@ inline fun <reified T> Fragment.withParent(action: T.() -> Unit) {
     check(parentFragment is T) { "Parent is not ${T::class.java}. Please specify correct type" }
     (parentFragment as T).action()
 }
+
+fun MatchResult?.parseMatchedInt(index: Int): Int? = this?.groups?.get(index)?.value?.toIntOrNull()

@@ -179,5 +179,7 @@
     <color name="palette_system_red">#F55522</color>
 
     <color name="dashboard_tab_color">#CC0066C3</color>
+    <color name="amber_80">#FFC532</color>
+    <color name="table_row_header_background">#1A50491C</color>
 
 </resources>

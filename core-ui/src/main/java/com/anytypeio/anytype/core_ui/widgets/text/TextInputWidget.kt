@@ -21,6 +21,7 @@ import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.holders.ext.toIMECode
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeRe
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.multilineIme
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
 
 class TextInputWidget : AppCompatEditText {
@@ -42,7 +44,8 @@ class TextInputWidget : AppCompatEditText {
         setOnLongClickListener { view -> view != null && !view.hasFocus() }
         context.obtainStyledAttributes(attrs, R.styleable.TextInputWidget).apply {
             ignoreDragAndDrop = getBoolean(R.styleable.TextInputWidget_ignoreDragAndDrop, false)
-            pasteAsPlainTextOnly = getBoolean(R.styleable.TextInputWidget_onlyPasteAsPlaneText, false)
+            pasteAsPlainTextOnly =
+                getBoolean(R.styleable.TextInputWidget_onlyPasteAsPlaneText, false)
             recycle()
         }
     }
@@ -85,12 +88,20 @@ class TextInputWidget : AppCompatEditText {
 
     private var isSelectionWatcherBlocked = false
 
+    private var inputAction: BlockView.InputAction = DEFAULT_INPUT_WIDGET_ACTION
+
+    fun setInputAction(action: BlockView.InputAction) {
+        if (inputAction != action) {
+            inputAction = action
+        }
+    }
+
     private fun setup() {
         enableEditMode()
     }
 
     fun enableEditMode() {
-        multilineIme(action = TEXT_INPUT_WIDGET_ACTION_GO)
+        multilineIme(action = inputAction.toIMECode())
         setTextIsSelectable(true)
     }
 
@@ -307,7 +318,7 @@ class TextInputWidget : AppCompatEditText {
         onEnterClicked: (IntRange) -> Unit
     ) {
         setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == TEXT_INPUT_WIDGET_ACTION_GO) {
+            if (actionId == inputAction.toIMECode()) {
                 onEnterClicked.invoke(v.selectionStart..v.selectionEnd)
                 return@setOnEditorActionListener true
             }
@@ -336,6 +347,6 @@ class TextInputWidget : AppCompatEditText {
     }
 
     companion object {
-        const val TEXT_INPUT_WIDGET_ACTION_GO = EditorInfo.IME_ACTION_GO
+        val DEFAULT_INPUT_WIDGET_ACTION = BlockView.InputAction.NewLine
     }
 }

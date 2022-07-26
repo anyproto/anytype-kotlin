@@ -109,6 +109,7 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTarget
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetViewState
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
@@ -123,6 +124,7 @@ import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
 import com.anytypeio.anytype.ui.editor.modals.SetLinkFragment
+import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
@@ -213,6 +215,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                     binding.typeHasTemplateToolbar.id -> {
                         vm.onTypeHasTemplateToolbarHidden()
+                    }
+                    binding.simpleTableWidget.id -> {
+                        vm.onHideSimpleTableWidget()
                     }
                 }
             }
@@ -467,6 +472,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         behavior.addBottomSheetCallback(onHideBottomSheetCallback)
                     }
                     SelectTemplateViewState.Idle -> {
+                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
+                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
+                }
+            }
+            jobs += subscribe(vm.simpleTablesViewState) { state ->
+                val behavior = BottomSheetBehavior.from(binding.simpleTableWidget)
+                when (state) {
+                    is SimpleTableWidgetViewState.Active -> {
+                        binding.simpleTableWidget.onStateChanged(state = state.state)
+                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                    }
+                    SimpleTableWidgetViewState.Idle -> {
                         behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                         behavior.state = BottomSheetBehavior.STATE_HIDDEN
                     }
@@ -1111,6 +1130,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val lm = binding.recycler.layoutManager as LinearLayoutManager
                     val margin = resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
                     lm.scrollToPositionWithOffset(command.pos, margin)
+                }
+                is Command.OpenSetBlockTextValueScreen -> {
+                    val fr = SetBlockTextValueFragment.new(
+                        ctx = command.ctx,
+                        block = command.block,
+                        table = command.table
+                    ).apply {
+                        onDismissListener = {
+                            vm.onSetBlockTextValueScreenDismiss()
+                            hideKeyboard()
+                        }
+                    }
+                    fr.show(childFragmentManager, null)
                 }
             }
         }
@@ -1881,6 +1913,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onEnterSearchModeClicked()
     }
 
+    override fun onSetTextBlockValue() {
+        vm.onSetTextBlockValue()
+    }
+
+    override fun onMentionClicked(target: Id) {
+        vm.onMentionClicked(target = target)
+    }
+
     override fun onUndoRedoClicked() {
         vm.onUndoRedoActionClicked()
     }
@@ -2073,4 +2113,6 @@ interface OnFragmentInteractionListener {
     fun onSetObjectLink(id: Id)
     fun onSetWebLink(uri: String)
     fun onCreateObject(name: String)
+    fun onSetTextBlockValue()
+    fun onMentionClicked(target: Id)
 }

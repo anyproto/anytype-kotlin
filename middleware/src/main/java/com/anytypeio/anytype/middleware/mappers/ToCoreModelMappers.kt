@@ -145,6 +145,33 @@ fun List<MBlock>.toCoreModels(
                 backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
+        block.table != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = Block.Content.Table,
+                backgroundColor = block.backgroundColor
+            )
+        }
+        block.tableColumn != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = Block.Content.TableColumn,
+                backgroundColor = block.backgroundColor
+            )
+        }
+        block.tableRow != null -> {
+            Block(
+                id = block.id,
+                fields = block.toCoreModelsFields(),
+                children = block.childrenIds,
+                content = block.toCoreModelsTableRowBlock(),
+                backgroundColor = block.backgroundColor
+            )
+        }
         else -> {
             Block(
                 id = block.id,
@@ -275,6 +302,13 @@ fun MBlock.toCoreModelsRelationBlock(): Block.Content.RelationBlock {
     val content = checkNotNull(relation)
     return Block.Content.RelationBlock(
         key = content.key.ifEmpty { null }
+    )
+}
+
+fun MBlock.toCoreModelsTableRowBlock(): Block.Content.TableRow {
+    val content = checkNotNull(tableRow)
+    return Block.Content.TableRow(
+        isHeader = content.isHeader
     )
 }
 

@@ -70,6 +70,8 @@ import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.table.CreateTable
+import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -93,6 +95,8 @@ import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMa
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
+import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
@@ -308,10 +312,18 @@ open class EditorViewModelTest {
     @Mock
     lateinit var applyTemplate: ApplyTemplate
 
+    @Mock
+    lateinit var fillTableRow: FillTableRow
+
     private lateinit var editorTemplateDelegate: EditorTemplateDelegate
+
+    private lateinit var simpleTableDelegate: SimpleTableDelegate
 
     @Mock
     lateinit var createNewObject: CreateNewObject
+
+    @Mock
+    lateinit var createTable: CreateTable
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -354,6 +366,7 @@ open class EditorViewModelTest {
             getTemplates = getTemplates,
             applyTemplate = applyTemplate
         )
+        simpleTableDelegate = DefaultSimpleTableDelegate()
     }
 
     @Test
@@ -3925,6 +3938,8 @@ open class EditorViewModelTest {
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
                 setObjectType = setObjectType,
+                createTable = createTable,
+                fillTableRow = fillTableRow
             ),
             dispatcher = Dispatcher.Default(),
             detailModificationManager = InternalDetailModificationManager(storage.details),
@@ -3940,7 +3955,8 @@ open class EditorViewModelTest {
             setDocImageIcon = setDocImageIcon,
             delegator = delegator,
             templateDelegate = editorTemplateDelegate,
-            createNewObject = createNewObject
+            createNewObject = createNewObject,
+            simpleTableDelegate = simpleTableDelegate
         )
     }
 

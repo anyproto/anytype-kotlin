@@ -140,4 +140,10 @@ sealed class Command {
     ) : Command()
 
     data class ScrollToPosition(val pos: Int) : Command()
+
+    data class OpenSetBlockTextValueScreen(
+        val ctx: Id,
+        val table: Id,
+        val block: Id
+    ) : Command()
 }

@@ -597,4 +597,21 @@ class BlockDataRepository(
     override suspend fun duplicateObject(id: Id): Id {
         return remote.duplicateObject(id)
     }
+
+    override suspend fun createTable(
+        ctx: String,
+        target: String,
+        position: Position,
+        rowCount: Int,
+        columnCount: Int
+    ): Payload = remote.createTable(
+        ctx = ctx,
+        target = target,
+        position = position,
+        rows = rowCount,
+        columns = columnCount
+    )
+
+    override suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload =
+        remote.fillTableRow(ctx, targetIds)
 }

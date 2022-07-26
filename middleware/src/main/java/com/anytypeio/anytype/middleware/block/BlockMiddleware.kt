@@ -549,4 +549,21 @@ class BlockMiddleware(
         ctx = ctx,
         template = template
     )
+
+    override suspend fun createTable(
+        ctx: String,
+        target: String,
+        position: Position,
+        rowCount: Int,
+        columnCount: Int
+    ): Payload = middleware.createTable(
+        ctx = ctx,
+        target = target,
+        position = position,
+        rowCount = rowCount,
+        columnCount = columnCount
+    )
+
+    override suspend fun fillTableRow(ctx: String, targetIds: List<String>): Payload =
+        middleware.fillTableRow(ctx, targetIds)
 }

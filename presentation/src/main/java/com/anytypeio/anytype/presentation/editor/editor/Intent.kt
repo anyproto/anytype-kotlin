@@ -211,4 +211,20 @@ sealed class Intent {
             val style: Block.Content.Divider.Style
         ) : Divider()
     }
+
+    sealed class Table : Intent() {
+
+        class CreateTable(
+            val ctx: Id,
+            val target: Id,
+            val position: Position,
+            val rows: Int? = null,
+            val columns: Int? = null
+        ) : Table()
+
+        class FillTableRow(
+            val ctx: Id,
+            val targetIds: List<Id>
+        ) : Table()
+    }
 }

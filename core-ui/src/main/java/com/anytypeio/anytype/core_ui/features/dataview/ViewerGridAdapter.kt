@@ -130,7 +130,7 @@ class ViewerGridAdapter(
             binding.objectIcon.visible()
             when (row.layout) {
                 Layout.TODO -> binding.objectIcon.setCheckbox(row.isChecked)
-                Layout.BASIC -> {
+                Layout.BASIC, Layout.BOOKMARK -> {
                     if ((row.image != null || row.emoji != null)) {
                         if (row.image != null) {
                             binding.objectIcon.setRectangularImage(row.image)

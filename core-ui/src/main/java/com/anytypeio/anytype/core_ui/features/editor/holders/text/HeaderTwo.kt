@@ -2,11 +2,16 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 class HeaderTwo(
     val binding: ItemBlockHeaderTwoBinding,
@@ -16,6 +21,9 @@ class HeaderTwo(
     override val header: TextInputWidget = binding.headerTwo
     override val content: TextInputWidget get() = header
     override val root: View = itemView
+
+    override val decoratableContainer: EditorDecorationContainer
+        get() = binding.decorationContainer
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -42,4 +50,17 @@ class HeaderTwo(
     override fun getMentionCheckedIcon(): Drawable? = mentionCheckedIcon
     override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.box.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = rect.left
+                    marginEnd = rect.right
+                    bottomMargin = rect.bottom
+                    // TODO handle top and bottom offsets
+                }
+            }
+        }
+    }
 }

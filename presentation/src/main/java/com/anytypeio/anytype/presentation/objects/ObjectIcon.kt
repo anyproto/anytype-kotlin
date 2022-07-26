@@ -59,11 +59,15 @@ sealed class ObjectIcon {
                 ObjectType.Layout.TODO -> Task(isChecked = obj.done ?: false)
                 ObjectType.Layout.NOTE -> Basic.Avatar(obj.snippet.orEmpty())
                 ObjectType.Layout.FILE -> Basic.Avatar(obj.name.orEmpty())
+                ObjectType.Layout.BOOKMARK -> when {
+                    !img.isNullOrBlank() -> Basic.Image(hash = builder.thumbnail(img))
+                    !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
+                    else -> None
+                }
                 ObjectType.Layout.RELATION -> None
                 ObjectType.Layout.DASHBOARD -> None
                 ObjectType.Layout.SPACE -> None
                 ObjectType.Layout.DATABASE -> None
-                ObjectType.Layout.BOOKMARK -> None
                 null -> None
             }
         }

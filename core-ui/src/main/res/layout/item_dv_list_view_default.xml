@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="20dp"
+    android:paddingTop="20dp"
     android:orientation="vertical">
 
     <TextView
@@ -13,7 +15,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:hint="@string/untitled"
-        android:layout_marginTop="19dp"
         app:layout_goneMarginStart="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/icon"
@@ -37,7 +38,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:paddingBottom="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSecondary"
@@ -47,8 +47,8 @@
         android:id="@+id/icon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginTop="20dp"
         app:checkboxSize="20dp"
+        android:layout_marginTop="1dp"
         app:hasEmojiRounded8Background="false"
         app:emojiSize="20dp"
         app:imageSize="20dp"

@@ -74,7 +74,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingStart="@dimen/dp_20"
-        android:paddingTop="10dp"
         android:paddingEnd="@dimen/dp_20"
         app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
         app:layout_constraintEnd_toEndOf="parent"

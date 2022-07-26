@@ -3,16 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    style="@style/DefaultGraphicTextBlockRootStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context="com.anytypeio.anytype.core_ui.features.editor.holders.other.LinkToObject">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/DefaultGraphicTextBlockContainerStyle"
+        android:background="@drawable/item_block_multi_select_mode_selector"
         tools:background="@drawable/item_block_multi_select_selected">
 
         <androidx.constraintlayout.widget.Guideline
@@ -37,8 +41,8 @@
                 app:emojiSize="20dp"
                 app:hasEmojiRounded8Background="false"
                 app:hasInitialRounded8Background="true"
-                app:imageSize="20dp"
                 app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+                app:imageSize="20dp"
                 app:initialTextSize="13sp" />
 
         </FrameLayout>

@@ -3,9 +3,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -16,6 +19,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -30,6 +34,7 @@ class LinkToObject(
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
+    DecoratableViewHolder,
     SupportCustomTouchProcessor,
     SupportNesting {
 
@@ -44,8 +49,24 @@ class LinkToObject(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 
+    override val decoratableContainer = binding.decorationContainer
+
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.updatePadding(
+                left = dimen(R.dimen.default_document_item_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                bottomMargin = dimen(R.dimen.default_graphic_text_root_margin_bottom)
+                topMargin = dimen(R.dimen.default_graphic_text_root_margin_top)
+            }
+            container.updatePadding(
+                left = dimen(R.dimen.default_graphic_text_container_padding_start),
+                right = dimen(R.dimen.default_graphic_text_container_padding_end)
+            )
+        }
     }
 
     fun bind(
@@ -134,8 +155,10 @@ class LinkToObject(
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        root.updateLayoutParams<RecyclerView.LayoutParams> {
-            marginStart = item.indent * dimen(R.dimen.indent)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginStart = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 
@@ -158,6 +181,21 @@ class LinkToObject(
     }
 
     private fun applyBackground(background: String?) {
-        root.setBlockBackgroundColor(background)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.setBlockBackgroundColor(background)
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.container.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.default_indent) + rect.left
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = rect.bottom
+                    // TODO handle top and bottom offsets
+                }
+            }
+        }
     }
 }

@@ -1017,7 +1017,7 @@ sealed class BlockView : ViewType {
         }
     }
 
-    sealed class LinkToObject : BlockView(), Indentable, Selectable {
+    sealed class LinkToObject : BlockView(), Indentable, Selectable, Decoratable {
 
         /**
          * UI-model for blocks containing links to objects.
@@ -1044,7 +1044,8 @@ sealed class BlockView : ViewType {
                 override val text: String? = null,
                 override val description: String? = null,
                 override val icon: ObjectIcon,
-                override val backgroundColor: String?
+                override val backgroundColor: String?,
+                override val decorations: List<Decoration> = emptyList()
             ) : Default(), Searchable {
                 override fun getViewType() = HOLDER_OBJECT_LINK_DEFAULT
             }
@@ -1058,6 +1059,7 @@ sealed class BlockView : ViewType {
                 override val description: String? = null,
                 override val icon: ObjectIcon,
                 override val backgroundColor: String?,
+                override val decorations: List<Decoration> = emptyList(),
                 val objectTypeName: String?,
                 val coverColor: CoverColor? = null,
                 val coverImage: Url? = null,
@@ -1080,6 +1082,7 @@ sealed class BlockView : ViewType {
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
             override val searchFields: List<Searchable.Field> = emptyList(),
+            override val decorations: List<Decoration> = emptyList(),
             var text: String? = null,
             val emoji: String? = null,
             val image: String? = null,
@@ -1091,7 +1094,8 @@ sealed class BlockView : ViewType {
         data class Deleted(
             override val id: String,
             override val indent: Int = 0,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val decorations: List<Decoration> = emptyList()
         ) : LinkToObject() {
             override fun getViewType() = HOLDER_OBJECT_LINK_DELETED
         }
@@ -1099,7 +1103,8 @@ sealed class BlockView : ViewType {
         data class Loading(
             override val id: String,
             override val indent: Int = 0,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val decorations: List<Decoration> = emptyList()
         ) : LinkToObject() {
             override fun getViewType() = HOLDER_OBJECT_LINK_LOADING
         }

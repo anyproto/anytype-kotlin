@@ -1,11 +1,17 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
+import android.widget.FrameLayout
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -15,9 +21,13 @@ class LinkToObjectDelete(
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
+    DecoratableViewHolder,
     SupportCustomTouchProcessor {
 
     private val guideline = binding.pageGuideline
+
+    override val decoratableContainer: EditorDecorationContainer
+        get() = binding.decorationContainer
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
@@ -25,6 +35,7 @@ class LinkToObjectDelete(
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
     }
 
     fun bind(
@@ -37,7 +48,9 @@ class LinkToObjectDelete(
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            guideline.setGuidelineBegin(item.indent * dimen(R.dimen.indent))
+        }
     }
 
     fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {
@@ -45,6 +58,34 @@ class LinkToObjectDelete(
         payloads.forEach { payload ->
             if (payload.changes.contains(BlockViewDiffUtil.SELECTION_CHANGED)) {
                 itemView.isSelected = item.isSelected
+            }
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.default_indent) + rect.left
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = rect.bottom
+                    // TODO handle top and bottom offsets
+                }
+            }
+        }
+    }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.content.updatePadding(
+                left = dimen(R.dimen.default_document_content_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.default_document_item_padding_start)
+                marginEnd = dimen(R.dimen.default_document_item_padding_end)
+                topMargin = dimen(R.dimen.dp_1)
+                bottomMargin = dimen(R.dimen.dp_1)
             }
         }
     }

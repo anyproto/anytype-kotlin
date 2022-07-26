@@ -2,13 +2,23 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
-import com.anytypeio.anytype.core_ui.features.editor.*
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -26,6 +36,7 @@ class LinkToObjectArchive(
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
+    DecoratableViewHolder,
     SupportCustomTouchProcessor,
     SupportNesting {
 
@@ -41,8 +52,12 @@ class LinkToObjectArchive(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 
+    override val decoratableContainer: EditorDecorationContainer
+        get() = binding.decorationContainer
+
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
     }
 
     fun bind(
@@ -113,9 +128,11 @@ class LinkToObjectArchive(
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        guideline.setGuidelineBegin(
-            item.indent * dimen(R.dimen.indent)
-        )
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            guideline.setGuidelineBegin(
+                item.indent * dimen(R.dimen.indent)
+            )
+        }
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {
@@ -158,6 +175,34 @@ class LinkToObjectArchive(
             }
             if (payload.isSearchHighlightChanged) {
                 applySearchHighlight(item)
+            }
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = dimen(R.dimen.default_indent) + rect.left
+                    marginEnd = dimen(R.dimen.dp_8) + rect.right
+                    bottomMargin = rect.bottom
+                    // TODO handle top and bottom offsets
+                }
+            }
+        }
+    }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.content.updatePadding(
+                left = dimen(R.dimen.default_document_content_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.default_document_item_padding_start)
+                marginEnd = dimen(R.dimen.default_document_item_padding_end)
+                topMargin = dimen(R.dimen.dp_1)
+                bottomMargin = dimen(R.dimen.dp_1)
             }
         }
     }

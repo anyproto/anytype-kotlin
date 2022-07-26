@@ -1,62 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="1dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="1dp"
-    android:background="@drawable/item_block_multi_select_mode_selector"
-    android:paddingStart="12dp"
-    android:paddingEnd="12dp">
+    android:layout_width="match_parent">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/pageGuideline"
-        android:layout_width="wrap_content"
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="0dp" />
+        android:background="@drawable/item_block_multi_select_mode_selector">
 
-    <FrameLayout
-        android:id="@+id/pageIconContainer"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/pageGuideline"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/pageIcon"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pageGuideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/content_description_page_icon" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="0dp" />
 
-        <ImageView
-            android:id="@+id/linkImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <FrameLayout
+            android:id="@+id/pageIconContainer"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/pageGuideline"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/linkEmoji"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center" />
+            <ImageView
+                android:id="@+id/pageIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/content_description_page_icon" />
 
-    </FrameLayout>
+            <ImageView
+                android:id="@+id/linkImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-    <com.anytypeio.anytype.core_ui.widgets.text.TextHighlightWidget
-        android:id="@+id/pageTitle"
-        style="@style/BlockPageArchivedContentStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/pageIconContainer"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Partnership terms Partnership terms Partnership terms Partnership terms" />
+            <ImageView
+                android:id="@+id/linkEmoji"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TextHighlightWidget
+            android:id="@+id/pageTitle"
+            style="@style/BlockPageArchivedContentStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pageIconContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Partnership terms Partnership terms Partnership terms Partnership terms" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

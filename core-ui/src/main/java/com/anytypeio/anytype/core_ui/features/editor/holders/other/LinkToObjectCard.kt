@@ -2,9 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
 import android.text.SpannableString
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -15,6 +18,8 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -26,10 +31,12 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 
-class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
-    BlockViewHolder(binding.root),
+class LinkToObjectCard(
+    private val binding: ItemBlockObjectLinkCardBinding
+) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder,
+    DecoratableCardViewHolder,
     SupportCustomTouchProcessor,
     SupportNesting {
 
@@ -43,12 +50,16 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     private val selected = binding.selected
     private val type = binding.cardType
 
+    override val decoratableContainer = binding.decorationContainer
+    override val decoratableCard = binding.card
+
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 
     init {
         itemView.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        applyDefaultOffsets()
     }
 
     fun bind(
@@ -159,8 +170,10 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     }
 
     override fun indentize(item: BlockView.Indentable) {
-        root.updateLayoutParams<RecyclerView.LayoutParams> {
-            marginStart = item.indent * dimen(R.dimen.indent)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginStart = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 
@@ -243,15 +256,18 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
     }
 
     private fun applyRootMargins(item: BlockView.LinkToObject.Default.Card) {
-        if (item.isPreviousBlockMedia) {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                apply { topMargin = 0 }
-            }
-        } else {
-            root.updateLayoutParams<RecyclerView.LayoutParams> {
-                apply {
-                    topMargin =
-                        root.resources.getDimension(R.dimen.default_link_card_root_margin_top).toInt()
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            if (item.isPreviousBlockMedia) {
+                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                    apply { topMargin = 0 }
+                }
+            } else {
+                root.updateLayoutParams<RecyclerView.LayoutParams> {
+                    apply {
+                        topMargin =
+                            root.resources.getDimension(R.dimen.default_link_card_root_margin_top)
+                                .toInt()
+                    }
                 }
             }
         }
@@ -263,6 +279,32 @@ class LinkToObjectCard(binding: ItemBlockObjectLinkCardBinding) :
             type.visible()
         } else {
             type.gone()
+        }
+    }
+
+    private fun applyDefaultOffsets() {
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            root.updatePadding(
+                left = dimen(R.dimen.default_document_item_padding_start),
+                right = dimen(R.dimen.default_document_item_padding_end)
+            )
+            root.updateLayoutParams<RecyclerView.LayoutParams> {
+                bottomMargin = dimen(R.dimen.dp_10)
+            }
+            binding.card.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_12)
+                marginEnd = dimen(R.dimen.dp_12)
+            }
+        }
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        super.applyDecorations(decorations)
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+                content = binding.card,
+                res = itemView.resources
+            )
         }
     }
 }

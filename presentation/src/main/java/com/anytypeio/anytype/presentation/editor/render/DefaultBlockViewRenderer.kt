@@ -56,7 +56,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         count: Int,
         objectTypes: List<ObjectType>,
-        parentScheme: NestedDecorationData,
+        parentSchema: NestedDecorationData,
         onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit,
     ): List<BlockView> {
 
@@ -104,7 +104,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme
+                                parentScheme = parentSchema
                             )
                             result.add(
                                 paragraph(
@@ -132,7 +132,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -148,7 +148,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme
+                                parentScheme = parentSchema
                             )
 
                             result.add(
@@ -178,7 +178,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -187,7 +187,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme
+                                parentScheme = parentSchema
                             )
                             result.add(
                                 toggle(
@@ -215,7 +215,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
+                                        parentSchema = blockDecorationScheme,
                                         objectTypes = objectTypes
                                     )
                                 )
@@ -225,7 +225,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
+                                parentScheme = parentSchema,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Header.H1,
                                     background = block.parseThemeBackgroundColor()
@@ -257,7 +257,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -266,7 +266,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
+                                parentScheme = parentSchema,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Header.H2,
                                     background = block.parseThemeBackgroundColor()
@@ -298,7 +298,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -307,7 +307,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
+                                parentScheme = parentSchema,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Header.H3,
                                     background = block.parseThemeBackgroundColor()
@@ -339,7 +339,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -349,7 +349,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             val normalized: NestedDecorationData = if (NESTED_DECORATION_ENABLED) {
                                 normalizeNestedDecorationData(
                                     block = block,
-                                    parentScheme = parentScheme
+                                    parentScheme = parentSchema
                                 )
                             } else {
                                 emptyList()
@@ -387,7 +387,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = if (NESTED_DECORATION_ENABLED)
+                                        parentSchema = if (NESTED_DECORATION_ENABLED)
                                             (normalized + current)
                                         else
                                             emptyList()
@@ -399,7 +399,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme
+                                parentScheme = parentSchema
                             )
                             result.add(
                                 bulleted(
@@ -427,7 +427,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -452,7 +452,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme
+                                parentScheme = parentSchema
                             )
                             result.add(
                                 checkbox(
@@ -480,7 +480,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -520,7 +520,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             val blockDecorationScheme: NestedDecorationData = buildNestedDecorationData(
                                 block = block,
-                                parentScheme = parentScheme,
+                                parentScheme = parentSchema,
                                 currentDecoration = DecorationData(
                                     style = DecorationData.Style.Callout(
                                         start = block.id,
@@ -555,7 +555,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -566,7 +566,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mCounter = 0
                     val blockDecorationScheme = buildNestedDecorationData(
                         block = block,
-                        parentScheme = parentScheme,
+                        parentScheme = parentSchema,
                         currentDecoration = DecorationData(
                             style = DecorationData.Style.Card,
                             background = block.parseThemeBackgroundColor()
@@ -590,7 +590,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mCounter = 0
                     val blockDecorationScheme = buildNestedDecorationData(
                         block = block,
-                        parentScheme = parentScheme,
+                        parentScheme = parentSchema,
                         currentDecoration = DecorationData(
                             style = DecorationData.Style.None,
                             background = block.parseThemeBackgroundColor()
@@ -621,6 +621,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         selection = selection,
                         isPreviousBlockMedia = isPreviousBlockMedia,
                         objectTypes = objectTypes,
+                        parentSchema = parentSchema
                     )
                     result.add(link)
                     isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
@@ -629,7 +630,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mCounter = 0
                     val blockDecorationScheme = buildNestedDecorationData(
                         block = block,
-                        parentScheme = parentScheme,
+                        parentScheme = parentSchema,
                         currentDecoration = DecorationData(
                             style = DecorationData.Style.Card,
                             background = block.parseThemeBackgroundColor()
@@ -1528,7 +1529,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
-        objectTypes: List<ObjectType>
+        objectTypes: List<ObjectType>,
+        parentSchema: NestedDecorationData
     ): BlockView.LinkToObject {
         if (obj.isEmpty()) {
             return BlockView.LinkToObject.Loading(
@@ -1543,7 +1545,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 indent = indent,
                 mode = mode,
-                selection = selection
+                selection = selection,
+                parentSchema = parentSchema
             )
         } else {
             if (isArchived == true) {
@@ -1552,7 +1555,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     indent = indent,
                     obj = obj,
                     mode = mode,
-                    selection = selection
+                    selection = selection,
+                    parentSchema = parentSchema
                 )
             } else {
                 link(
@@ -1564,6 +1568,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     selection = selection,
                     isPreviousBlockMedia = isPreviousBlockMedia,
                     objectTypes = objectTypes,
+                    parentSchema = parentSchema
                 )
             }
         }
@@ -1578,6 +1583,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         objectTypes: List<ObjectType>,
+        parentSchema: NestedDecorationData
     ): BlockView.LinkToObject.Default {
         val factory = LinkAppearanceFactory(content, obj.layout)
         val inEditorAppearance = factory.createInEditorLinkAppearance()
@@ -1651,7 +1657,15 @@ class DefaultBlockViewRenderer @Inject constructor(
                 coverGradient = coverGradient,
                 backgroundColor = block.backgroundColor,
                 isPreviousBlockMedia = isPreviousBlockMedia,
-                objectTypeName = type
+                objectTypeName = type,
+                decorations = buildNestedDecorationData(
+                    block = block,
+                    parentScheme = parentSchema,
+                    currentDecoration = DecorationData(
+                        style = DecorationData.Style.Card,
+                        background = block.parseThemeBackgroundColor()
+                    )
+                ).toBlockViewDecoration(block)
             )
         } else {
             BlockView.LinkToObject.Default.Text(
@@ -1664,7 +1678,15 @@ class DefaultBlockViewRenderer @Inject constructor(
                     block = block,
                     selection = selection
                 ),
-                backgroundColor = block.backgroundColor
+                backgroundColor = block.backgroundColor,
+                decorations = buildNestedDecorationData(
+                    block = block,
+                    parentScheme = parentSchema,
+                    currentDecoration = DecorationData(
+                        style = DecorationData.Style.None,
+                        background = block.parseThemeBackgroundColor()
+                    )
+                ).toBlockViewDecoration(block)
             )
         }
     }
@@ -1674,7 +1696,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         obj: ObjectWrapper.Basic,
         mode: EditorMode,
-        selection: Set<Id>
+        selection: Set<Id>,
+        parentSchema: NestedDecorationData
     ): BlockView.LinkToObject.Archived = BlockView.LinkToObject.Archived(
         id = block.id,
         isEmpty = true,
@@ -1693,14 +1716,23 @@ class DefaultBlockViewRenderer @Inject constructor(
             mode = mode,
             block = block,
             selection = selection
-        )
+        ),
+        decorations = buildNestedDecorationData(
+            block = block,
+            parentScheme = parentSchema,
+            currentDecoration = DecorationData(
+                style = DecorationData.Style.None,
+                background = block.parseThemeBackgroundColor()
+            )
+        ).toBlockViewDecoration(block)
     )
 
     private fun linkDeleted(
         block: Block,
         indent: Int,
         mode: EditorMode,
-        selection: Set<Id>
+        selection: Set<Id>,
+        parentSchema: NestedDecorationData
     ): BlockView.LinkToObject.Deleted = BlockView.LinkToObject.Deleted(
         id = block.id,
         indent = indent,
@@ -1708,7 +1740,15 @@ class DefaultBlockViewRenderer @Inject constructor(
             mode = mode,
             block = block,
             selection = selection
-        )
+        ),
+        decorations = buildNestedDecorationData(
+            block = block,
+            parentScheme = parentSchema,
+            currentDecoration = DecorationData(
+                style = DecorationData.Style.None,
+                background = block.parseThemeBackgroundColor()
+            )
+        ).toBlockViewDecoration(block)
     )
 
     private fun unsupported(

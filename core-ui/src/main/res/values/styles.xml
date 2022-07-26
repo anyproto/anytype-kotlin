@@ -921,14 +921,6 @@
         <item name="android:layout_height">1dp</item>
     </style>
 
-    <!-- Editor, link as card block style, {root {card {containerWithBackground {cover, guideline, icon, name, descr}}}, selected}-->
-    <style name="DefaultLinkCardBlockRootStyle">
-        <item name="android:layout_marginTop">0dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:paddingStart">@dimen/default_document_item_padding_start</item>
-        <item name="android:paddingEnd">@dimen/default_document_item_padding_end</item>
-    </style>
-
     <!-- card -->
     <style name="DefaultLinkCardBlockCardStyle">
         <item name="android:minHeight">96dp</item>
@@ -937,8 +929,6 @@
         <item name="rippleColor">@android:color/transparent</item>
         <item name="strokeColor">@color/shape_primary</item>
         <item name="strokeWidth">0.5dp</item>
-        <item name="android:layout_marginEnd">12dp</item>
-        <item name="android:layout_marginStart">12dp</item>
     </style>
 
     <!-- Editor, Table of Contents block -->

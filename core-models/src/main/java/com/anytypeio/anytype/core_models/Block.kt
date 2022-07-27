@@ -344,9 +344,9 @@ data class Block(
         object TableOfContents : Content()
         object Unsupported : Content()
 
-        object Table: Content()
-        data class TableRow(val isHeader: Boolean): Content()
-        object TableColumn: Content()
+        object Table : Content()
+        data class TableRow(val isHeader: Boolean) : Content()
+        object TableColumn : Content()
     }
 
     /**
@@ -385,7 +385,9 @@ data class Block(
         data class Relation(
             val key: Id
         ) : Prototype()
+
         object TableOfContents : Prototype()
+        object SimpleTable : Prototype()
     }
 
     /**

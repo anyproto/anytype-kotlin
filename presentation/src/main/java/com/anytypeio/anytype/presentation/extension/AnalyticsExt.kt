@@ -81,6 +81,9 @@ fun Block.Prototype.getAnalyticsEvent(
         Block.Prototype.TableOfContents -> {
             Props(mapOf(EventsPropertiesKey.type to "table_of_contents"))
         }
+        Block.Prototype.SimpleTable -> {
+            Props(mapOf(EventsPropertiesKey.type to "simple_table"))
+        }
     }
 
     return EventAnalytics.Anytype(

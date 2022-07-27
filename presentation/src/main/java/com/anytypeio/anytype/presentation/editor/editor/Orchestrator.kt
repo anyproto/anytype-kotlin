@@ -574,6 +574,7 @@ class Orchestrator(
                     )
                 }
                 is Intent.Table.CreateTable -> {
+                    val startTime = System.currentTimeMillis()
                     createTable(
                         params = CreateTable.Params(
                             ctx = intent.ctx,
@@ -584,7 +585,15 @@ class Orchestrator(
                         )
                     ).process(
                         failure = defaultOnError,
-                        success = { payload -> proxies.payloads.send(payload) }
+                        success = { payload ->
+                            val middlewareTime = System.currentTimeMillis()
+                            proxies.payloads.send(payload)
+                            analytics.sendAnalyticsCreateBlockEvent(
+                                prototype = Block.Prototype.SimpleTable,
+                                startTime = startTime,
+                                middlewareTime = middlewareTime
+                            )
+                        }
                     )
                 }
                 is Intent.Table.FillTableRow -> {

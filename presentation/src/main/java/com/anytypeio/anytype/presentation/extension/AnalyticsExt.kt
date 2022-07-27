@@ -82,7 +82,7 @@ fun Block.Prototype.getAnalyticsEvent(
             Props(mapOf(EventsPropertiesKey.type to "table_of_contents"))
         }
         Block.Prototype.SimpleTable -> {
-            Props(mapOf(EventsPropertiesKey.type to "simple_table"))
+            Props(mapOf(EventsPropertiesKey.type to "table"))
         }
     }
 

@@ -2,8 +2,6 @@ on:
   schedule:
     - cron: '59 23 * * *'
   workflow_dispatch:
-  push:
-    branches: [develop]
 name: Distribute nightly debug build
 jobs:
   setup-android:

@@ -59,6 +59,14 @@ fun Block.toMiddlewareModel(): MBlock = when (val content = content) {
             fields = fields.toMiddlewareModel()
         )
     }
+    is Block.Content.TableOfContents -> {
+        MBlock(
+            id = id,
+            backgroundColor = backgroundColor.orEmpty(),
+            fields = fields.toMiddlewareModel(),
+            tableOfContents = MBTableOfContents()
+        )
+    }
     else -> MBlock()
 }
 

@@ -53,7 +53,7 @@ class Paragraph(
     private fun applyDefaultOffsets() {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             binding.root.updatePadding(
-                left = dimen(R.dimen.default_document_content_padding_start),
+                left = dimen(R.dimen.default_document_item_padding_start),
                 right = dimen(R.dimen.default_document_item_padding_end)
             )
             binding.root.updateLayoutParams<RecyclerView.LayoutParams> {

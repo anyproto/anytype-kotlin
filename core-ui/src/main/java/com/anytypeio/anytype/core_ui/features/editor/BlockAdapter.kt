@@ -86,7 +86,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePl
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
-import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationBlockViewHolder
 import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Callout
@@ -106,7 +106,6 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
-import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -637,7 +636,7 @@ class BlockAdapter(
                 )
             }
             HOLDER_RELATION_DEFAULT -> {
-                RelationViewHolder.Default(
+                RelationBlockViewHolder.Default(
                     view = inflater.inflate(
                         R.layout.item_block_relation_default,
                         parent,
@@ -646,12 +645,12 @@ class BlockAdapter(
                 ).setup(this)
             }
             HOLDER_RELATION_PLACEHOLDER -> {
-                RelationViewHolder.Placeholder(
+                RelationBlockViewHolder.Placeholder(
                     ItemBlockRelationPlaceholderBinding.inflate(inflater, parent, false)
                 ).setupPlaceholder(this)
             }
             HOLDER_RELATION_STATUS -> {
-                RelationViewHolder.Status(
+                RelationBlockViewHolder.Status(
                     view = inflater.inflate(
                         R.layout.item_block_relation_status,
                         parent,
@@ -660,22 +659,22 @@ class BlockAdapter(
                 ).setup(this)
             }
             HOLDER_RELATION_TAGS -> {
-                RelationViewHolder.Tags(
+                RelationBlockViewHolder.Tags(
                     ItemBlockRelationTagBinding.inflate(inflater, parent, false)
                 ).setup(this)
             }
             HOLDER_RELATION_OBJECT -> {
-                RelationViewHolder.Object(
+                RelationBlockViewHolder.Object(
                     ItemBlockRelationObjectBinding.inflate(inflater, parent, false)
                 ).setup(this)
             }
             HOLDER_RELATION_FILE -> {
-                RelationViewHolder.File(
+                RelationBlockViewHolder.File(
                     ItemBlockRelationFileBinding.inflate(inflater, parent, false)
                 ).setup(this)
             }
             HOLDER_RELATION_CHECKBOX -> {
-                RelationViewHolder.Checkbox(
+                RelationBlockViewHolder.Checkbox(
                     view = inflater.inflate(
                         R.layout.item_block_relation_checkbox,
                         parent,
@@ -760,7 +759,7 @@ class BlockAdapter(
         } else {
             if (holder !is SupportCustomTouchProcessor) {
                 when (holder) {
-                    is RelationViewHolder -> {
+                    is RelationBlockViewHolder -> {
                         val processor = EditorTouchProcessor(
                             fallback = { holder.itemView.onTouchEvent(it) },
                             onLongClick = {
@@ -1085,8 +1084,8 @@ class BlockAdapter(
                     }
                     is DividerLine -> onBindViewHolder(holder, position)
                     is DividerDots -> onBindViewHolder(holder, position)
-                    is RelationViewHolder.Placeholder -> onBindViewHolder(holder, position)
-                    is RelationViewHolder -> onBindViewHolder(holder, position)
+                    is RelationBlockViewHolder.Placeholder -> onBindViewHolder(holder, position)
+                    is RelationBlockViewHolder -> onBindViewHolder(holder, position)
                     is Description -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1465,11 +1464,11 @@ class BlockAdapter(
                     clicked = onClickListener
                 )
             }
-            is RelationViewHolder.Placeholder -> {
+            is RelationBlockViewHolder.Placeholder -> {
                 val item = (blocks[position] as BlockView.Relation.Placeholder)
                 holder.bind(item = item)
             }
-            is RelationViewHolder.Default -> {
+            is RelationBlockViewHolder.Default -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
                 holder.indentize(item = item)
@@ -1477,7 +1476,7 @@ class BlockAdapter(
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
-            is RelationViewHolder.Status -> {
+            is RelationBlockViewHolder.Status -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view as DocumentRelationView.Status)
                 holder.indentize(item = item)
@@ -1485,7 +1484,7 @@ class BlockAdapter(
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
-            is RelationViewHolder.Tags -> {
+            is RelationBlockViewHolder.Tags -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view as DocumentRelationView.Tags)
                 holder.indentize(item = item)
@@ -1493,7 +1492,7 @@ class BlockAdapter(
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
-            is RelationViewHolder.Object -> {
+            is RelationBlockViewHolder.Object -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view as DocumentRelationView.Object)
                 holder.indentize(item = item)
@@ -1501,7 +1500,7 @@ class BlockAdapter(
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
-            is RelationViewHolder.File -> {
+            is RelationBlockViewHolder.File -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view as DocumentRelationView.File)
                 holder.indentize(item = item)
@@ -1509,7 +1508,7 @@ class BlockAdapter(
                 val container = holder.itemView.findViewById<ViewGroup>(R.id.content)
                 container.isSelected = item.isSelected
             }
-            is RelationViewHolder.Checkbox -> {
+            is RelationBlockViewHolder.Checkbox -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view as DocumentRelationView.Checkbox)
                 holder.indentize(item = item)

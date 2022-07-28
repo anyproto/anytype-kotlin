@@ -4,18 +4,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationStatusBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
-import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.relations.ListRelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
-import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
@@ -31,105 +34,71 @@ class SlashRelationsAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             R.layout.item_relation_list_relation_default -> {
-                RelationViewHolder.Default(view = inflater.inflate(viewType, parent, false)).apply {
+                val binding =
+                    ItemRelationListRelationDefaultBinding.inflate(inflater, parent, false)
+                ListRelationViewHolder.Default(binding).apply {
+                    updateHeight(binding.root)
+                    binding.divider.visible()
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is SlashRelationView.Item)
-                        clicks(SlashItem.Relation(view))
-                    }
-                    itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-                        gone()
-                    }
-                    itemView.findViewById<View>(R.id.divider).apply {
-                        visible()
+                        onItemClicked(bindingAdapterPosition)
                     }
                 }
             }
             R.layout.item_relation_list_relation_checkbox -> {
-                RelationViewHolder.Checkbox(view = inflater.inflate(viewType, parent, false))
+                val binding =
+                    ItemRelationListRelationCheckboxBinding.inflate(inflater, parent, false)
+                ListRelationViewHolder.Checkbox(binding)
                     .apply {
+                        updateHeight(binding.root)
+                        binding.divider.visible()
                         itemView.setOnClickListener {
-                            val view = items[bindingAdapterPosition]
-                            check(view is SlashRelationView.Item)
-                            clicks(SlashItem.Relation(view))
-                        }
-                        itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-                            gone()
-                        }
-                        itemView.findViewById<View>(R.id.divider).apply {
-                            visible()
+                            onItemClicked(bindingAdapterPosition)
                         }
                     }
             }
             R.layout.item_relation_list_relation_object -> {
-                RelationViewHolder.Object(
-                    binding = ItemRelationListRelationObjectBinding.inflate(
-                        inflater, parent, false
-                    )
-                ).apply {
+                val binding = ItemRelationListRelationObjectBinding.inflate(
+                    inflater, parent, false
+                )
+                ListRelationViewHolder.Object(binding).apply {
+                    updateHeight(binding.root)
+                    binding.divider.visible()
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is SlashRelationView.Item)
-                        clicks(SlashItem.Relation(view))
-                    }
-                    itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-                        gone()
-                    }
-                    itemView.findViewById<View>(R.id.divider).apply {
-                        visible()
+                        onItemClicked(bindingAdapterPosition)
                     }
                 }
             }
             R.layout.item_relation_list_relation_status -> {
-                RelationViewHolder.Status(view = inflater.inflate(viewType, parent, false)).apply {
+                val binding = ItemRelationListRelationStatusBinding.inflate(inflater, parent, false)
+                ListRelationViewHolder.Status(binding).apply {
+                    updateHeight(binding.root)
+                    binding.divider.visible()
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is SlashRelationView.Item)
-                        clicks(SlashItem.Relation(view))
-                    }
-                    itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-                        gone()
-                    }
-                    itemView.findViewById<View>(R.id.divider).apply {
-                        visible()
+                        onItemClicked(bindingAdapterPosition)
                     }
                 }
             }
             R.layout.item_relation_list_relation_tag -> {
-                RelationViewHolder.Tags(
-                    binding = ItemRelationListRelationTagBinding.inflate(
-                        inflater, parent, false
-                    )
-                ).apply {
+                val binding = ItemRelationListRelationTagBinding.inflate(
+                    inflater, parent, false
+                )
+                ListRelationViewHolder.Tags(binding).apply {
+                    updateHeight(binding.root)
+                    binding.divider.visible()
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is SlashRelationView.Item)
-                        clicks(SlashItem.Relation(view))
-                    }
-                    itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-                        gone()
-                    }
-                    itemView.findViewById<View>(R.id.divider).apply {
-                        visible()
+                        onItemClicked(bindingAdapterPosition)
                     }
                 }
             }
             R.layout.item_relation_list_relation_file -> {
-                RelationViewHolder.File(
-                    ItemRelationListRelationFileBinding.inflate(
-                        inflater, parent, false
-                    )
-                ).apply {
+                val binding = ItemRelationListRelationFileBinding.inflate(
+                    inflater, parent, false
+                )
+                ListRelationViewHolder.File(binding).apply {
+                    updateHeight(binding.root)
+                    binding.divider.visible()
                     itemView.setOnClickListener {
-                        val view = items[bindingAdapterPosition]
-                        check(view is SlashRelationView.Item)
-                        clicks(SlashItem.Relation(view))
-                    }
-                    itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-                        gone()
-                    }
-                    itemView.findViewById<View>(R.id.divider).apply {
-                        visible()
+                        onItemClicked(bindingAdapterPosition)
                     }
                 }
             }
@@ -157,40 +126,55 @@ class SlashRelationsAdapter(
         }
     }
 
+    private fun onItemClicked(position: Int) {
+        if (position != RecyclerView.NO_POSITION) {
+            val view = items[position]
+            check(view is SlashRelationView.Item)
+            clicks(SlashItem.Relation(view))
+        }
+    }
+
+    private fun updateHeight(root: View) {
+        root.updateLayoutParams {
+            height =
+                root.resources.getDimensionPixelSize(R.dimen.object_slash_menu_relations_item_height)
+        }
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
         when (holder) {
-            is RelationViewHolder.Status -> {
+            is ListRelationViewHolder.Status -> {
                 check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Status)
                 holder.bind(view)
             }
-            is RelationViewHolder.Checkbox -> {
+            is ListRelationViewHolder.Checkbox -> {
                 check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Checkbox)
                 holder.bind(view)
             }
-            is RelationViewHolder.Tags -> {
+            is ListRelationViewHolder.Tags -> {
                 check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Tags)
                 holder.bind(view)
             }
-            is RelationViewHolder.Object -> {
+            is ListRelationViewHolder.Object -> {
                 check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Object)
                 holder.bind(view)
             }
-            is RelationViewHolder.File -> {
+            is ListRelationViewHolder.File -> {
                 check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.File)
                 holder.bind(view)
             }
-            is RelationViewHolder.Default -> {
+            is ListRelationViewHolder.Default -> {
                 check(item is SlashRelationView.Item)
                 val view = item.view
                 check(view is DocumentRelationView.Default)

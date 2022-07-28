@@ -3,16 +3,14 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.ext
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.updatePadding
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
-import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationViewHolder
-import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
+import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationBlockViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
-fun RelationViewHolder.setup(adapter: BlockAdapter): RelationViewHolder {
+fun RelationBlockViewHolder.setup(adapter: BlockAdapter): RelationBlockViewHolder {
     with(itemView) {
         findViewById<ViewGroup?>(R.id.itemContainer)?.updatePadding(
             top = dimen(R.dimen.relation_view_padding_top),
@@ -33,7 +31,7 @@ fun RelationViewHolder.setup(adapter: BlockAdapter): RelationViewHolder {
     return this
 }
 
-fun RelationViewHolder.setupPlaceholder(adapter: BlockAdapter): RelationViewHolder {
+fun RelationBlockViewHolder.setupPlaceholder(adapter: BlockAdapter): RelationBlockViewHolder {
     with(itemView) {
         val paddingStart = context.dimen(R.dimen.default_document_content_padding_start)
         val paddingEnd = context.dimen(R.dimen.default_document_content_padding_end)

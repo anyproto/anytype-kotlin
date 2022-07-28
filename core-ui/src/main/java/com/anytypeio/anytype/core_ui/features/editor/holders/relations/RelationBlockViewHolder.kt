@@ -30,29 +30,17 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
-sealed class RelationViewHolder(
+sealed class RelationBlockViewHolder(
     view: View
 ) : BlockViewHolder(view),
     BlockViewHolder.DragAndDropHolder,
     BlockViewHolder.IndentableHolder {
 
-    fun setIsFeatured(isFeatured: Boolean) {
-        itemView.findViewById<View>(R.id.featuredRelationCheckbox).apply {
-            isSelected = isFeatured
-        }
-    }
-
-    fun setIsRemovable(isRemoveable: Boolean) {
-        itemView.findViewById<View>(R.id.actionsLeftContainer).apply {
-            if (isRemoveable) visible() else gone()
-        }
-    }
-
     fun setBackgroundColor(color: String? = null) {
         itemView.setBlockBackgroundColor(color)
     }
 
-    class Placeholder(val binding: ItemBlockRelationPlaceholderBinding) : RelationViewHolder(binding.root) {
+    class Placeholder(val binding: ItemBlockRelationPlaceholderBinding) : RelationBlockViewHolder(binding.root) {
 
         val icon: View get() = itemView.findViewById(R.id.relationIcon)
 
@@ -68,7 +56,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Default(view: View) : RelationViewHolder(view) {
+    class Default(view: View) : RelationBlockViewHolder(view) {
         fun bind(item: DocumentRelationView) : Unit = with(itemView) {
             findViewById<TextView>(R.id.tvRelationTitle).text = item.name
             findViewById<TextView>(R.id.tvRelationValue).apply {
@@ -95,7 +83,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Checkbox(view: View) : RelationViewHolder(view) {
+    class Checkbox(view: View) : RelationBlockViewHolder(view) {
         fun bind(item: DocumentRelationView.Checkbox) = with(itemView) {
             findViewById<TextView>(R.id.tvRelationTitle).text = item.name
             findViewById<ImageView>(R.id.ivRelationCheckbox).isSelected = item.isChecked
@@ -108,7 +96,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Status(view: View) : RelationViewHolder(view) {
+    class Status(view: View) : RelationBlockViewHolder(view) {
 
         fun bind(item: DocumentRelationView.Status) {
             itemView.findViewById<TextView>(R.id.tvRelationTitle).text = item.name
@@ -136,7 +124,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Tags(val binding: ViewBinding) : RelationViewHolder(binding.root) {
+    class Tags(val binding: ViewBinding) : RelationBlockViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -196,7 +184,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class Object(val binding: ViewBinding) : RelationViewHolder(binding.root) {
+    class Object(val binding: ViewBinding) : RelationBlockViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 
@@ -258,7 +246,7 @@ sealed class RelationViewHolder(
         }
     }
 
-    class File(val binding: ViewBinding) : RelationViewHolder(binding.root) {
+    class File(val binding: ViewBinding) : RelationBlockViewHolder(binding.root) {
 
         private val placeholder : TextView get() = itemView.findViewById(R.id.tvPlaceholder)
 

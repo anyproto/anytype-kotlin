@@ -1,0 +1,34 @@
+on:
+  schedule:
+    - cron: '59 23 * * *'
+  workflow_dispatch:
+  push:
+    branches: [develop]
+name: Distribute nightly debug build
+jobs:
+  setup-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup middleware dependency
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug
+
+      - name: Enable dated version for night distribution build
+        run: make enable_dated_version_name
+
+      - name: Decrypt secrets
+        run: ./scripts/distribution/decrypt-secrets.sh
+        env:
+            ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY_FIREBASE_DISTRIBUTION }}
+
+      - name: Distribute debug build
+        run: make distribute_debug
+
+      - name: Clean secrets
+        if: always()
+        run: ./scripts/distribution/clean-secrets.sh

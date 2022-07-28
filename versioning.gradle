@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 tasks.register("incrementVersionMajor") {
     doLast {
         incrementVersion true, false, false
@@ -13,6 +15,12 @@ tasks.register("incrementVersionMinor") {
 tasks.register("incrementVersionPatch") {
     doLast {
         incrementVersion false, false, true
+    }
+}
+
+tasks.register("enableDatedVersionName") {
+    doLast {
+        enableDatedVersionName()
     }
 }
 
@@ -56,20 +64,55 @@ def incrementVersion(maj, min, patch) {
     file.text = sb.toString()
 }
 
-ext.getBuildVersionName = {
+def enableDatedVersionName() {
+    def file = file('gradle.properties')
+    def sb = new StringBuilder()
+
     def versionMajor = getProperty('version.versionMajor').toInteger()
     def versionMinor = getProperty('version.versionMinor').toInteger()
     def versionPatch = getProperty('version.versionPatch').toInteger()
 
-    def name = "${versionMajor}.${versionMinor}.${versionPatch}"
+    file.eachLine {line ->
+        if(line.startsWith('version.versionMajor=')){
+            sb.append("version.versionMajor=${versionMajor}")
+        }else if(line.startsWith('version.versionMinor=')){
+            sb.append("version.versionMinor=${versionMinor}")
+        }else if(line.startsWith('version.versionPatch=')){
+            sb.append("version.versionPatch=${versionPatch}")
+        } else if(line.startsWith('version.useDatedVersionName=false')){
+            sb.append("version.useDatedVersionName=true")
+        }else{
+            sb.append(line)
+        }
 
-    return name
+        sb.append(System.getProperty("line.separator"))
+    }
+
+    file.text = sb.toString()
+}
+
+ext.getBuildVersionName = {
+    def versionMajor = getProperty('version.versionMajor').toInteger()
+    def versionMinor = getProperty('version.versionMinor').toInteger()
+    def versionPatch = getProperty('version.versionPatch').toInteger()
+    def isDatedVersionNameEnabled = getProperty('version.useDatedVersionName').toBoolean()
+    if (isDatedVersionNameEnabled) {
+        def date = getCurrentDate()
+        return "${versionMajor}.${versionMinor}.${versionPatch}-${date}"
+    } else {
+        return "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
 }
 
 ext.getBuildVersionCode = {
     def versionMajor = getProperty('version.versionMajor').toInteger()
     def versionMinor = getProperty('version.versionMinor').toInteger()
     def versionPatch = getProperty('version.versionPatch').toInteger()
-
     return versionMajor * 1000 + versionMinor * 100 + versionPatch
+}
+
+static def getCurrentDate() {
+    def date = new Date()
+    def sdf = new SimpleDateFormat("MM-dd-yyyy")
+    return sdf.format(date)
 }

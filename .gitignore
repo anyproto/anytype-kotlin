@@ -9,6 +9,7 @@
 /github.properties
 /apikeys.properties
 /scripts/release/app-release.jks
+/scripts/distribution/anytype-debug-service-account-key.json
 .DS_Store
 **/build
 /libs

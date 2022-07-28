@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.appdistribution'
 
 apply from: "$rootDir/versioning.gradle"
 
@@ -27,12 +28,12 @@ android {
         testInstrumentationRunner config.test_runner
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
     }
+
     packagingOptions {
         resources {
             excludes += ['LICENSE.txt', 'META-INF/DEPENDENCIES', 'META-INF/ASL2.0', 'META-INF/NOTICE', 'META-INF/LICENSE']
         }
     }
-
 
     signingConfigs {
         release {
@@ -67,6 +68,11 @@ android {
             debuggable true
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
             //signingConfig signingConfigs.debug
+            firebaseAppDistribution {
+                artifactType="AAB"
+                groups="anytype-q&a"
+                serviceCredentialsFile="$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
+            }
         }
     }
 

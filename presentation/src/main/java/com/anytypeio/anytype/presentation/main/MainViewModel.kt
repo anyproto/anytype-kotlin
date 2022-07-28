@@ -3,15 +3,13 @@ package com.anytypeio.anytype.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
-import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
@@ -19,10 +17,11 @@ import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class MainViewModel(
-    private val launchAccount: LaunchAccount,
+    private val resumeAccount: ResumeAccount,
     private val observeWallpaper: ObserveWallpaper,
     private val restoreWallpaper: RestoreWallpaper,
     private val analytics: Analytics,
@@ -81,32 +80,28 @@ class MainViewModel(
     }
 
     fun onRestore() {
-        val startTime = System.currentTimeMillis()
-        viewModelScope.launch {
-            launchAccount(BaseUseCase.None).either(
-                fnR = { id ->
+        /***
+         * Before fragment backstack and screen states are restored by the OS,
+         * We need to resume account session in a blocking manner.
+         * Otherwise, we might run into illegal states, where account is not ready when we try:
+         * 1) to open an object, profile or dashboard
+         * 2) to execute queries and searches
+         * etc.
+         */
+        runBlocking {
+            resumeAccount.run(params = BaseUseCase.None).process(
+                success = { id ->
                     updateUserProperties(
                         analytics = analytics,
                         userProperty = UserProperty.AccountId(id)
                     )
                     Timber.d("Restored account after activity recreation")
-                    sendAuthEvent(startTime, id)
                 },
-                fnL = { error ->
+                failure = { error ->
                     Timber.e(error, "Error while launching account after activity recreation")
                 }
             )
         }
-    }
-
-    private fun sendAuthEvent(start: Long, id: String) {
-        val middle = System.currentTimeMillis()
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            startTime = start,
-            middleTime = middle,
-            eventName = openAccount
-        )
     }
 
     sealed class Command {

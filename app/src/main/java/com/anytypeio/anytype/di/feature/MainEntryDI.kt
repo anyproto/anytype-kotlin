@@ -4,8 +4,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
-import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -44,14 +44,14 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideMainViewModelFactory(
-        launchAccount: LaunchAccount,
+        resumeAccount: ResumeAccount,
         analytics: Analytics,
         observeWallpaper: ObserveWallpaper,
         restoreWallpaper: RestoreWallpaper,
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout
     ): MainViewModelFactory = MainViewModelFactory(
-        launchAccount = launchAccount,
+        resumeAccount = resumeAccount,
         analytics = analytics,
         observeWallpaper = observeWallpaper,
         restoreWallpaper = restoreWallpaper,
@@ -62,12 +62,12 @@ object MainEntryModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideLaunchAccountUseCase(
+    fun provideResumeAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider
-    ): LaunchAccount = LaunchAccount(
+    ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,

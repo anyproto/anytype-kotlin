@@ -7,25 +7,24 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
+        style="@style/RelationViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="top"
         android:layout_weight="0.4"
-        style="@style/RelationViewTitleStyle"
+        android:gravity="top"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingBottom="@dimen/dp_6"
         tools:text="Description of something" />
 
     <TextView
         android:id="@+id/tvRelationValue"
+        style="@style/RelationViewValueStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="0.6"
-        android:ellipsize="end"
         android:hint="@string/select_status"
-        android:textColorHint="@color/text_tertiary"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textColor="@color/text_primary"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

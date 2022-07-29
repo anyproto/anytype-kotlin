@@ -1145,11 +1145,12 @@ sealed class BlockView : ViewType {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }
 
-    sealed class Relation : BlockView(), Selectable, Indentable {
+    sealed class Relation : BlockView(), Selectable, Indentable, Decoratable {
         data class Placeholder(
             override val id: String,
             override val indent: Int = 0,
-            override val isSelected: Boolean = false
+            override val isSelected: Boolean = false,
+            override val decorations: List<Decoration>
         ) : Relation() {
             override fun getViewType(): Int = HOLDER_RELATION_PLACEHOLDER
         }
@@ -1159,7 +1160,8 @@ sealed class BlockView : ViewType {
             override val indent: Int = 0,
             override val isSelected: Boolean = false,
             val background: String? = null,
-            val view: DocumentRelationView
+            val view: DocumentRelationView,
+            override val decorations: List<Decoration>
         ) : Relation() {
             override fun getViewType(): Int = when (view) {
                 is DocumentRelationView.Default -> HOLDER_RELATION_DEFAULT

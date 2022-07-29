@@ -130,7 +130,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                                 name = relation.name,
                                 value = value,
                                 format = relation.format
-                            )
+                            ),
+                            decorations = listOf()
                         )
                     )
                 )
@@ -232,7 +233,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 BlockView.Relation.Placeholder(
                     id = relationBlock.id,
                     indent = 0,
-                    isSelected = false
+                    isSelected = false,
+                    decorations = listOf()
                 )
             )
 
@@ -343,7 +345,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                         value = value2,
                         isFeatured = false,
                         format = r2.format
-                    )
+                    ),
+                    decorations = listOf()
                 )
             )
 
@@ -448,7 +451,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 BlockView.Relation.Placeholder(
                     id = relationBlock.id,
                     indent = 0,
-                    isSelected = false
+                    isSelected = false,
+                    decorations = listOf()
                 )
             )
 

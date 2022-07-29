@@ -41,9 +41,12 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBindin
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureUploadingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationPlaceholderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationStatusBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
@@ -636,13 +639,8 @@ class BlockAdapter(
                 )
             }
             HOLDER_RELATION_DEFAULT -> {
-                RelationBlockViewHolder.Default(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_default,
-                        parent,
-                        false
-                    )
-                ).setup(this)
+                val binding = ItemBlockRelationDefaultBinding.inflate(inflater, parent, false)
+                RelationBlockViewHolder.Default(binding).setup(this)
             }
             HOLDER_RELATION_PLACEHOLDER -> {
                 RelationBlockViewHolder.Placeholder(
@@ -650,13 +648,8 @@ class BlockAdapter(
                 ).setupPlaceholder(this)
             }
             HOLDER_RELATION_STATUS -> {
-                RelationBlockViewHolder.Status(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_status,
-                        parent,
-                        false
-                    )
-                ).setup(this)
+                val binding = ItemBlockRelationStatusBinding.inflate(inflater, parent, false)
+                RelationBlockViewHolder.Status(binding).setup(this)
             }
             HOLDER_RELATION_TAGS -> {
                 RelationBlockViewHolder.Tags(
@@ -674,13 +667,8 @@ class BlockAdapter(
                 ).setup(this)
             }
             HOLDER_RELATION_CHECKBOX -> {
-                RelationBlockViewHolder.Checkbox(
-                    view = inflater.inflate(
-                        R.layout.item_block_relation_checkbox,
-                        parent,
-                        false
-                    )
-                ).setup(this)
+                val binding = ItemBlockRelationCheckboxBinding.inflate(inflater, parent, false)
+                RelationBlockViewHolder.Checkbox(binding).setup(this)
             }
             HOLDER_FEATURED_RELATION -> {
                 FeaturedRelationListViewHolder(

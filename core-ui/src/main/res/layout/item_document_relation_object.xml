@@ -7,26 +7,28 @@
 
     <TextView
         android:id="@+id/tvRelationTitle"
+        style="@style/RelationViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        style="@style/RelationViewTitleStyle"
+        android:layout_gravity="top"
+        android:gravity="top"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingBottom="@dimen/dp_6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Description of something"
-        tools:visibility="visible" />
+        tools:text="Description of something" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tvPlaceholder"
+        style="@style/RelationPlaceholderTextStyle"
         android:text="@string/select_objects"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline3"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/default_text_placeholder"
-        style="@style/RelationPlaceholderTextStyle" />
+        tools:text="@string/default_text_placeholder" />
 
     <com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
         android:id="@+id/obj0"

@@ -1060,7 +1060,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = view
+            view = view,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -1103,7 +1104,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = view
+            view = view,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -1145,7 +1147,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = view
+            view = view,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -1199,7 +1202,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = oldView
+            view = oldView,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -1253,7 +1257,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = oldView
+            view = oldView,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -1306,7 +1311,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = oldView
+            view = oldView,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(
@@ -1359,7 +1365,8 @@ class BlockViewDiffUtilTest {
             id = MockDataFactory.randomUuid(),
             isSelected = MockDataFactory.randomBoolean(),
             indent = MockDataFactory.randomInt(),
-            view = oldView
+            view = oldView,
+            decorations = emptyList()
         )
 
         val newBlock: BlockView = oldBlock.copy(

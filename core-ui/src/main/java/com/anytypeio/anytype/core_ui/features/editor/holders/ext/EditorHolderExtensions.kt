@@ -35,7 +35,7 @@ fun RelationBlockViewHolder.setupPlaceholder(adapter: BlockAdapter): RelationBlo
     with(itemView) {
         val paddingStart = context.dimen(R.dimen.default_document_content_padding_start)
         val paddingEnd = context.dimen(R.dimen.default_document_content_padding_end)
-        findViewById<ViewGroup>(R.id.placeholderContainer).apply {
+        findViewById<ViewGroup>(R.id.content).apply {
             setBackgroundResource(R.drawable.item_block_code_multi_select_mode_selector)
             updatePadding(left = paddingStart.toInt(), right = paddingEnd.toInt())
         }

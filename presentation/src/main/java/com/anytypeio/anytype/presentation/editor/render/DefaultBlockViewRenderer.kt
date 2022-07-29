@@ -518,17 +518,18 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.CALLOUT -> {
                             mCounter = 0
-                            val blockDecorationScheme: NestedDecorationData = buildNestedDecorationData(
-                                block = block,
-                                parentScheme = parentSchema,
-                                currentDecoration = DecorationData(
-                                    style = DecorationData.Style.Callout(
-                                        start = block.id,
-                                        end = block.children.lastOrNull() ?: block.id
-                                    ),
-                                    background = block.parseThemeBackgroundColor()
+                            val blockDecorationScheme: NestedDecorationData =
+                                buildNestedDecorationData(
+                                    block = block,
+                                    parentScheme = parentSchema,
+                                    currentDecoration = DecorationData(
+                                        style = DecorationData.Style.Callout(
+                                            start = block.id,
+                                            end = block.children.lastOrNull() ?: block.id
+                                        ),
+                                        background = block.parseThemeBackgroundColor()
+                                    )
                                 )
-                            )
                             result.add(
                                 callout(
                                     mode = mode,
@@ -679,6 +680,10 @@ class DefaultBlockViewRenderer @Inject constructor(
                 is Content.RelationBlock -> {
                     isPreviousBlockMedia = false
                     mCounter = 0
+                    val blockDecorationScheme = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentSchema
+                    )
                     result.add(
                         relation(
                             ctx = root.id,
@@ -687,7 +692,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             details = details,
                             relations = relations,
-                            urlBuilder = urlBuilder
+                            urlBuilder = urlBuilder,
+                            schema = blockDecorationScheme
                         )
                     )
                 }
@@ -1949,12 +1955,14 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         details: Block.Details,
         relations: List<Relation>,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        schema: NestedDecorationData
     ): BlockView.Relation {
         if (content.key.isNullOrEmpty()) {
             return BlockView.Relation.Placeholder(
                 id = block.id,
-                indent = indent
+                indent = indent,
+                decorations = schema.toBlockViewDecoration(block)
             )
         } else {
             val relation = relations.firstOrNull { it.key == content.key }
@@ -1969,18 +1977,21 @@ class DefaultBlockViewRenderer @Inject constructor(
                         id = block.id,
                         view = view,
                         indent = indent,
-                        background = block.backgroundColor
+                        background = block.backgroundColor,
+                        decorations = schema.toBlockViewDecoration(block)
                     )
                 } else {
                     BlockView.Relation.Placeholder(
                         id = block.id,
-                        indent = indent
+                        indent = indent,
+                        decorations = schema.toBlockViewDecoration(block)
                     )
                 }
             } else {
                 return BlockView.Relation.Placeholder(
                     id = block.id,
-                    indent = indent
+                    indent = indent,
+                    decorations = schema.toBlockViewDecoration(block)
                 )
             }
         }

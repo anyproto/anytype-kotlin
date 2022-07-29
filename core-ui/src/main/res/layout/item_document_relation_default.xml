@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/itemContainer"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <TextView
         android:id="@+id/tvRelationTitle"
+        style="@style/RelationViewTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="top"
         android:layout_weight="0.4"
-        style="@style/RelationViewTitleStyle"
+        android:gravity="top"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingBottom="@dimen/dp_6"
         tools:text="Description of something" />
 
     <TextView
         android:id="@+id/tvRelationValue"
+        style="@style/RelationViewValueStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="top"
+        android:layout_marginStart="@dimen/dp_2"
         android:layout_weight="0.6"
-        android:ellipsize="end"
-        android:maxLines="1"
         android:hint="@string/enter_value"
-        android:singleLine="true"
-        android:textColorHint="@color/text_tertiary"
-        android:textColor="@color/text_primary"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingBottom="@dimen/dp_6"
         tools:text="@string/default_text_placeholder" />
 
 </LinearLayout>

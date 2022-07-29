@@ -696,7 +696,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         advance(EditorViewModel.DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
 
         rvMatcher.onItemView(1, R.id.textContent).perform(click())
-        rvMatcher.onItemView(2, R.id.placeholderContainer).perform(click())
+        rvMatcher.onItemView(2, R.id.content).perform(click())
 
         advance(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }

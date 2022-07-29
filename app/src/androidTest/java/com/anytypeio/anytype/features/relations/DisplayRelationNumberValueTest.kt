@@ -76,7 +76,7 @@ class DisplayRelationNumberValueTest {
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
         val relationText = "Number"
-        val valueText = "345.09"
+        val valueText = 345.09
 
         val record: Map<String, Any?> = mapOf(
             ObjectSetConfig.ID_KEY to target,
@@ -129,8 +129,8 @@ class DisplayRelationNumberValueTest {
                 RelationTextValueFragment.CONTEXT_ID to root,
                 RelationTextValueFragment.RELATION_ID to relationKey,
                 RelationTextValueFragment.OBJECT_ID to target,
-                RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW
-
+                RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW,
+                RelationTextValueFragment.LOCKED_KEY to DEFAULT_IS_LOCKED
             )
         )
 
@@ -149,7 +149,7 @@ class DisplayRelationNumberValueTest {
         val relationKey = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
         val relationText = "Number"
-        val valueText = "345.0"
+        val valueText = 345.0
 
         val record: Map<String, Any?> = mapOf(
             ObjectSetConfig.ID_KEY to target,
@@ -202,8 +202,8 @@ class DisplayRelationNumberValueTest {
                 RelationTextValueFragment.CONTEXT_ID to root,
                 RelationTextValueFragment.RELATION_ID to relationKey,
                 RelationTextValueFragment.OBJECT_ID to target,
-                RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW
-
+                RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW,
+                RelationTextValueFragment.LOCKED_KEY to DEFAULT_IS_LOCKED
             )
         )
 
@@ -215,7 +215,7 @@ class DisplayRelationNumberValueTest {
     }
 
     @Test
-    fun shouldRenderУьзенNumberValue() {
+    fun shouldRenderNumberValue() {
 
         // SETUP
 
@@ -275,8 +275,8 @@ class DisplayRelationNumberValueTest {
                 RelationTextValueFragment.CONTEXT_ID to root,
                 RelationTextValueFragment.RELATION_ID to relationKey,
                 RelationTextValueFragment.OBJECT_ID to target,
-                RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW
-
+                RelationTextValueFragment.FLOW_KEY to FLOW_DATAVIEW,
+                RelationTextValueFragment.LOCKED_KEY to DEFAULT_IS_LOCKED
             )
         )
 
@@ -292,5 +292,9 @@ class DisplayRelationNumberValueTest {
             fragmentArgs = args,
             themeResId = R.style.AppTheme
         )
+    }
+
+    companion object {
+        const val DEFAULT_IS_LOCKED = false
     }
 }

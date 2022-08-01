@@ -38,6 +38,7 @@ data class DecorationData(
             object H2 : Header()
             object H3 : Header()
         }
+        object Code: Style()
         object Card : Style()
     }
 }
@@ -153,6 +154,12 @@ fun NestedDecorationData.toBlockViewDecoration(block: Block): List<BlockView.Dec
             is DecorationData.Style.Card -> {
                 BlockView.Decoration(
                     style = BlockView.Decoration.Style.Card,
+                    background = holder.background
+                )
+            }
+            is DecorationData.Style.Code -> {
+                BlockView.Decoration(
+                    style = BlockView.Decoration.Style.Code,
                     background = holder.background
                 )
             }

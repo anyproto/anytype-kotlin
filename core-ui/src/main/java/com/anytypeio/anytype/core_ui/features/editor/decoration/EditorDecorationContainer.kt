@@ -81,7 +81,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
 
             // Drawing background
 
-            if (decor.background != ThemeColor.DEFAULT && !decor.style.isCard()) {
+            if (decor.background != ThemeColor.DEFAULT && !decor.style.isCard() && !decor.style.isCode()) {
                 val lp = LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT

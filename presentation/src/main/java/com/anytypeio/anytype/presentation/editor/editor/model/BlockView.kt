@@ -160,6 +160,7 @@ sealed class BlockView : ViewType {
     ) {
         sealed class Style {
             fun isCard() = this is Card || this is Callout
+            fun isCode() = this is Code
 
             object None : Style()
             sealed class Highlight : Style() {
@@ -180,7 +181,7 @@ sealed class BlockView : ViewType {
                 object H2 : Header()
                 object H3 : Header()
             }
-
+            object Code : Style()
             object Card : Style()
         }
     }
@@ -717,8 +718,9 @@ sealed class BlockView : ViewType {
         override var cursor: Int? = null,
         override val backgroundColor: String? = null,
         override val indent: Int = 0,
+        override val decorations: List<Decoration> = emptyList(),
         val lang: String? = null
-    ) : BlockView(), Permission, Selectable, Focusable, Cursor, Indentable, TextSupport {
+    ) : BlockView(), Permission, Selectable, Focusable, Cursor, Indentable, TextSupport, Decoratable {
         override fun getViewType() = HOLDER_CODE_SNIPPET
     }
 

@@ -7,15 +7,18 @@ import android.os.Build.VERSION_CODES.N_MR1
 import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
+import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -28,8 +31,12 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import timber.log.Timber
 
-class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.root),
-    BlockViewHolder.DragAndDropHolder {
+class Code(
+    val binding: ItemBlockCodeSnippetBinding
+) : BlockViewHolder(binding.root),
+    BlockViewHolder.DragAndDropHolder,
+    DecoratableViewHolder
+{
 
     val menu: TextView
         get() = binding.codeMenu
@@ -41,6 +48,9 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }
     )
+
+    override val decoratableContainer: EditorDecorationContainer
+        get() = binding.decorationContainer
 
     init {
         content.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
@@ -116,8 +126,10 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     }
 
     fun indentize(item: BlockView.Indentable) {
-        root.updateLayoutParams<RecyclerView.LayoutParams> {
-            leftMargin = item.indent * dimen(R.dimen.indent)
+        if (!BuildConfig.NESTED_DECORATION_ENABLED) {
+            binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                leftMargin = item.indent * dimen(R.dimen.indent)
+            }
         }
     }
 
@@ -216,11 +228,11 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
     private fun setBackgroundColor(color: String? = null) {
         val value = ThemeColor.values().find { value -> value.code == color }
         if (value != null && value != ThemeColor.DEFAULT) {
-            (root.background as? ColorDrawable)?.color = root.resources.veryLight(value, 0)
+            (binding.content.background as? ColorDrawable)?.color = root.resources.veryLight(value, 0)
         } else {
             val defaultBackgroundColor =
                 content.context.resources.getColor(R.color.shape_tertiary, null)
-            (root.background as? ColorDrawable)?.color = defaultBackgroundColor
+            (binding.content.background as? ColorDrawable)?.color = defaultBackgroundColor
         }
     }
 
@@ -237,5 +249,17 @@ class Code(val binding: ItemBlockCodeSnippetBinding) : BlockViewHolder(binding.r
                 }
             }
         )
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        if (BuildConfig.NESTED_DECORATION_ENABLED) {
+            decoratableContainer.decorate(decorations) { rect ->
+                binding.content.updateLayoutParams<FrameLayout.LayoutParams> {
+                    marginStart = rect.left
+                    marginEnd = rect.right
+                    bottomMargin = rect.bottom
+                }
+            }
+        }
     }
 }

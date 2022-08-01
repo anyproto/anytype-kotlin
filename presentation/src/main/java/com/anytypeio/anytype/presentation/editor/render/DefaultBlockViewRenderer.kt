@@ -487,7 +487,14 @@ class DefaultBlockViewRenderer @Inject constructor(
                         }
                         Content.Text.Style.CODE_SNIPPET -> {
                             mCounter = 0
-                            // TODO Add block decoration scheme
+                            val blockDecorationScheme = buildNestedDecorationData(
+                                block = block,
+                                parentScheme = parentSchema,
+                                currentDecoration = DecorationData(
+                                    style = DecorationData.Style.Code,
+                                    background = block.parseThemeBackgroundColor()
+                                )
+                            )
                             result.add(
                                 code(
                                     mode = mode,
@@ -495,7 +502,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                     content = content,
                                     focus = focus,
                                     indent = indent,
-                                    selection = selection
+                                    selection = selection,
+                                    schema = blockDecorationScheme
                                 )
                             )
                             if (block.children.isNotEmpty()) {
@@ -512,6 +520,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         selection = selection,
                                         objectTypes = objectTypes,
                                         onRenderFlag = onRenderFlag,
+                                        parentSchema = blockDecorationScheme
                                     )
                                 )
                             }
@@ -998,14 +1007,14 @@ class DefaultBlockViewRenderer @Inject constructor(
         )
     }
 
-    // TODO add decoration style
     private fun code(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        selection: Set<Id>
+        selection: Set<Id>,
+        schema: NestedDecorationData
     ): BlockView.Code = BlockView.Code(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
@@ -1019,7 +1028,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             mode = mode,
             block = block,
             selection = selection
-        )
+        ),
+        decorations = schema.toBlockViewDecoration(block)
     )
 
     private fun highlight(

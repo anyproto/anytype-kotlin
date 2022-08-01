@@ -247,9 +247,6 @@ open class EditorViewModelTest {
     lateinit var createNewDocument: CreateNewDocument
 
     @Mock
-    lateinit var setObjectIsArchived: SetObjectIsArchived
-
-    @Mock
     lateinit var replaceBlock: ReplaceBlock
 
     @Mock
@@ -2706,59 +2703,6 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should start archiving document on on-archive-this-page-clicked event`() {
-
-        // SETUP
-
-        val title = MockBlockFactory.makeTitleBlock()
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(
-                    map = mapOf("icon" to "")
-                ),
-                content = Block.Content.Smart(),
-                children = listOf(title.id)
-            ),
-            title
-        )
-
-        stubInterceptEvents()
-
-        stubOpenPage(
-            events = listOf(
-                Event.Command.ShowObject(
-                    root = root,
-                    blocks = page,
-                    context = root
-                )
-            )
-        )
-
-        stubArchiveDocument()
-
-        givenViewModel()
-
-        vm.onStart(root)
-
-        // TESTING
-
-        vm.onArchiveThisObjectClicked()
-
-        runBlockingTest {
-            verify(setObjectIsArchived, times(1)).invoke(
-                params = eq(
-                    SetObjectIsArchived.Params(
-                        context = root,
-                        isArchived = true
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
     fun `should start closing page after successful archive operation`() {
 
         // SETUP
@@ -2799,45 +2743,18 @@ open class EditorViewModelTest {
 
         coroutineTestRule.advanceTime(100)
 
-        stubArchiveDocument()
         stubClosePage()
 
         // TESTING
 
-        vm.onArchiveThisObjectClicked()
+        vm.proceedWithExitingBack()
 
         runBlockingTest {
-            verify(setObjectIsArchived, times(1)).invoke(
-                params = eq(
-                    SetObjectIsArchived.Params(
-                        context = root,
-                        isArchived = true
-                    )
-                )
-            )
-
             verify(closePage, times(1)).invoke(
                 params = eq(
                     CloseBlock.Params(
                         id = root
                     )
-                )
-            )
-        }
-    }
-
-    private fun stubArchiveDocument(
-        params: SetObjectIsArchived.Params =
-            SetObjectIsArchived.Params(
-                context = root,
-                isArchived = true
-            )
-    ) {
-        setObjectIsArchived.stub {
-            onBlocking { invoke(params = params) } doReturn Either.Right(
-                Payload(
-                    context = root,
-                    events = emptyList()
                 )
             )
         }
@@ -3895,7 +3812,6 @@ open class EditorViewModelTest {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            setObjectIsArchived = setObjectIsArchived,
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             analytics = analytics,

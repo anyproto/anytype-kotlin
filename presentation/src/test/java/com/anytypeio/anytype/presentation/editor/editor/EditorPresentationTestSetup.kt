@@ -49,7 +49,6 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -64,6 +63,7 @@ import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -78,6 +78,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTable
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -197,9 +198,6 @@ open class EditorPresentationTestSetup {
     lateinit var createNewDocument: CreateNewDocument
 
     @Mock
-    lateinit var setObjectIsArchived: SetObjectIsArchived
-
-    @Mock
     lateinit var replaceBlock: ReplaceBlock
 
     @Mock
@@ -236,6 +234,9 @@ open class EditorPresentationTestSetup {
     lateinit var searchObjects: SearchObjects
 
     @Mock
+    lateinit var applyTemplate: ApplyTemplate
+
+    @Mock
     lateinit var getDefaultEditorType: GetDefaultEditorType
 
     @Mock
@@ -246,9 +247,6 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
-
-    @Mock
-    lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     @Mock
     lateinit var createNewObject: CreateNewObject
@@ -263,6 +261,8 @@ open class EditorPresentationTestSetup {
     lateinit var fillTableRow: FillTableRow
 
     lateinit var simpleTableDelegate: SimpleTableDelegate
+
+    lateinit var editorTemplateDelegate: EditorTemplateDelegate
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -287,6 +287,10 @@ open class EditorPresentationTestSetup {
         setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         simpleTableDelegate = DefaultSimpleTableDelegate()
+        editorTemplateDelegate = DefaultEditorTemplateDelegate(
+            getTemplates = getTemplates,
+            applyTemplate = applyTemplate
+        )
 
         orchestrator = Orchestrator(
             createBlock = createBlock,
@@ -345,7 +349,6 @@ open class EditorPresentationTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider
             ),
-            setObjectIsArchived = setObjectIsArchived,
             createDocument = createDocument,
             createNewDocument = createNewDocument,
             analytics = analytics,

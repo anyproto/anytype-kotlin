@@ -218,7 +218,6 @@ class EditorViewModel(
     private val createDocument: CreateDocument,
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
-    private val setObjectIsArchived: SetObjectIsArchived,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -1028,7 +1027,7 @@ class EditorViewModel(
         proceedWithExitingToDashboard()
     }
 
-    private fun proceedWithExitingBack() {
+    fun proceedWithExitingBack() {
         val update = pendingTextUpdate
         if (update != null) {
             viewModelScope.launch {
@@ -3054,30 +3053,6 @@ class EditorViewModel(
                     orchestrator.proxies.payloads.send(result.payload)
                     proceedWithOpeningPage(result.target)
                 }
-            )
-        }
-    }
-
-    fun onArchiveThisObjectClicked() {
-        proceedWithChangingIsArchivedStatus(isArchived = true)
-    }
-
-    fun onRestoreThisObjectFromArchive() {
-        proceedWithChangingIsArchivedStatus(isArchived = false)
-    }
-
-    private fun proceedWithChangingIsArchivedStatus(isArchived: Boolean) {
-        Timber.d("onArchiveThisPageClicked, ")
-        dispatch(command = Command.CloseKeyboard)
-        viewModelScope.launch {
-            setObjectIsArchived(
-                SetObjectIsArchived.Params(
-                    context = context,
-                    isArchived = isArchived
-                )
-            ).proceed(
-                failure = { Timber.e(it, "Error while archiving page") },
-                success = { proceedWithExitingBack() }
             )
         }
     }

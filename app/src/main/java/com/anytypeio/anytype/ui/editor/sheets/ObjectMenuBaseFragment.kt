@@ -192,8 +192,7 @@ abstract class ObjectMenuBaseFragment : BaseBottomSheetFragment<FragmentObjectMe
     }
 
     interface DocumentMenuActionReceiver {
-        fun onArchiveClicked()
-        fun onRestoreFromArchiveClicked()
+        fun onMoveToBinSuccess()
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()

@@ -128,6 +128,7 @@ import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
+import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
@@ -927,16 +928,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
-                    findNavController().navigate(
-                        R.id.objectMainMenuScreen,
-                        bundleOf(
-                            ObjectMenuBaseFragment.CTX_KEY to ctx,
-                            ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
-                            ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
-                            ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
-                            ObjectMenuBaseFragment.IS_PROFILE_KEY to false
-                        )
+                    val fr = ObjectMenuFragment.new(
+                        ctx = ctx,
+                        isArchived = command.isArchived,
+                        isFavorite = command.isFavorite,
+                        isLocked = command.isLocked,
+                        isProfile = false
                     )
+                    fr.show(childFragmentManager, null)
                 }
                 is Command.OpenProfileMenu -> {
                     hideKeyboard()
@@ -1901,12 +1900,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onSelectProgrammingLanguageClicked(target, key)
     }
 
-    override fun onArchiveClicked() {
-        vm.onArchiveThisObjectClicked()
-    }
-
-    override fun onRestoreFromArchiveClicked() {
-        vm.onRestoreThisObjectFromArchive()
+    override fun onMoveToBinSuccess() {
+        vm.proceedWithExitingBack()
     }
 
     override fun onSearchOnPageClicked() {

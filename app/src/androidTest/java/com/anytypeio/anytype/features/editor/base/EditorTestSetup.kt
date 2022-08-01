@@ -58,7 +58,6 @@ import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -110,7 +109,6 @@ import org.mockito.kotlin.stub
 open class EditorTestSetup {
 
     lateinit var createObject: CreateObject
-    lateinit var setObjectIsArchived: SetObjectIsArchived
     lateinit var createDocument: CreateDocument
     lateinit var downloadFile: DownloadFile
     lateinit var undo: Undo
@@ -266,7 +264,6 @@ open class EditorTestSetup {
         )
 
         splitBlock = SplitBlock(repo)
-        setObjectIsArchived = SetObjectIsArchived(repo)
         createDocument = CreateDocument(repo, documentEmojiIconProvider)
         undo = Undo(repo)
         redo = Redo(repo)
@@ -333,7 +330,6 @@ open class EditorTestSetup {
             removeLinkMark = removeLinkMark,
             createObject = createObject,
             documentEventReducer = DocumentExternalEventReducer(),
-            setObjectIsArchived = setObjectIsArchived,
             createDocument = createDocument,
             urlBuilder = urlBuilder,
             renderer = DefaultBlockViewRenderer(

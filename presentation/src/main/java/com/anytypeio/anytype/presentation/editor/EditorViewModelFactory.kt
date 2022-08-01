@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -46,7 +45,6 @@ open class EditorViewModelFactory(
     private val createObjectSet: CreateObjectSet,
     private val createObject: CreateObject,
     private val createNewDocument: CreateNewDocument,
-    private val setObjectIsArchived: SetObjectIsArchived,
     private val interceptEvents: InterceptEvents,
     private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
@@ -79,7 +77,6 @@ open class EditorViewModelFactory(
         return EditorViewModel(
             openPage = openPage,
             closePage = closeObject,
-            setObjectIsArchived = setObjectIsArchived,
             interceptEvents = interceptEvents,
             interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,

@@ -620,7 +620,7 @@ class MiddlewareServiceImplementation : MiddlewareService {
     }
 
     override fun objectCreate(request: Rpc.Object.Create.Request): Rpc.Object.Create.Response {
-        val encoded = Service.blockCreate(Rpc.Object.Create.Request.ADAPTER.encode(request))
+        val encoded = Service.objectCreate(Rpc.Object.Create.Request.ADAPTER.encode(request))
         val response = Rpc.Object.Create.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.Create.Response.Error.Code.NULL) {

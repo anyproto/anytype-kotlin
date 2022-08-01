@@ -18,6 +18,7 @@ class MentionAdapter(
     fun setData(mentions: List<DefaultObjectView>) {
         if (mentions.isEmpty()) {
             data.clear()
+            notifyDataSetChanged()
         } else {
             data.clear()
             data.addAll(mentions)

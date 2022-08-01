@@ -17,6 +17,8 @@
 * Editor | Add possibility to upload a file into a media block in error state (#2351)
 * Editor | Should not trigger keyboard opening when tapping on object's top toolbar (#2399)
 * Editor | Copy/paste is not working for table of contents (#2441)
+* Editor | Can't create an object using the @ mention option due to an internal error (#2455)
+* Editor | Creating objects in objects via the mention (@) option might crash app (#2456)
 * Search | Keyboard should be dismissed when navigating from search results to sets of objects (#2416)
 * Sets | Grid View headers should show or hide object icon in row headers according to the view settings (#2408)
 * Sets | Updated screen text for sorts for checkbox relations (#2424)

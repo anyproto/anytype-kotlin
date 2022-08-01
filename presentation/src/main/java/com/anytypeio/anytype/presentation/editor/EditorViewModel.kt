@@ -2786,14 +2786,6 @@ class EditorViewModel(
     }
 
     private fun onTableRowEmptyCellClicked(cellId: Id, rowId: Id, tableId: Id) {
-        viewModelScope.launch {
-            orchestrator.stores.focus.update(
-                Editor.Focus(
-                    id = cellId,
-                    cursor = Editor.Cursor.Start
-                )
-            )
-        }
         fillTableBlockRow(
             cellId = cellId,
             targetIds = listOf(rowId),
@@ -4559,7 +4551,8 @@ class EditorViewModel(
         viewModelScope.launch {
             getCompatibleObjectTypes.invoke(
                 GetCompatibleObjectTypes.Params(
-                    smartBlockType = blocks.first { it.id == context }.content<Content.Smart>().type,
+                    smartBlockType = blocks.first { it.id == context }
+                        .content<Content.Smart>().type,
                     excludedTypes = excluded
                 )
             ).proceed(
@@ -5877,7 +5870,7 @@ class EditorViewModel(
 
     fun onHideSimpleTableWidget() {}
 
-    private fun proceedWithSelectingCell(cellId:Id, tableId: Id) {
+    private fun proceedWithSelectingCell(cellId: Id, tableId: Id) {
 
         clearSelections()
         select(listOf(cellId))

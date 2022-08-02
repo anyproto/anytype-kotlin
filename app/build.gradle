@@ -70,7 +70,7 @@ android {
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
                 artifactType="AAB"
-                groups="anytype-q&a"
+                groups="anytype-q&a, product-review"
                 serviceCredentialsFile="$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
         }

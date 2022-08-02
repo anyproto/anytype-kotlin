@@ -34,7 +34,7 @@ class MentionAdapter(
         mentionFilter = ""
         val size = data.size
         data.clear()
-        notifyItemRangeRemoved(0, size)
+        notifyItemRangeRemoved(0, size + 1)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -54,7 +54,7 @@ class MentionAdapter(
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            onClicked(data[pos - 1], mentionFilter, pos)
+                            onClicked(data[pos], mentionFilter, pos)
                         }
                     }
                 }
@@ -64,21 +64,19 @@ class MentionAdapter(
 
     override fun getItemCount(): Int = data.size + 1
 
-    override fun getItemViewType(position: Int): Int = when (position) {
-        POSITION_NEW_PAGE -> TYPE_NEW_PAGE
-        else -> TYPE_MENTION
+    override fun getItemViewType(position: Int): Int {
+        return if (position > data.lastIndex) TYPE_NEW_PAGE else TYPE_MENTION
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is DefaultObjectViewAdapter.ObjectViewHolder) {
-            holder.bind(data[position - 1])
+            holder.bind(data[position])
         }
     }
 
     class NewPageViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     companion object {
-        const val POSITION_NEW_PAGE = 0
         const val TYPE_NEW_PAGE = 1
         const val TYPE_MENTION = 2
     }

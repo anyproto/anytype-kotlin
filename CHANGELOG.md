@@ -6,6 +6,7 @@
 
 * Editor | Introduced simple tables (#2427)
 * Editor | Introduced callout block (#2432)
+* Editor | Introduced nested styles: children blocks inheriting styles from parent blocks (#2459)
 * Editor | Enabled text and background color pickers for title block (#2392)
 * Sets | Introduced bookmark set for creating and browsing bookmark objects (#2428)
 
@@ -13,6 +14,8 @@
 
 * Objects | Hide unavailable actions in object menu (#2393)
 * Objects | Object with cover and todo layout might have invalid layout (#2403)
+* Objects | When moving an object to bin the confirmation message shows "Archived" instead of "Moved to bin" (#2461)
+* Objects | Close current object after moving it to bin (#2451)
 * Editor | Do not show unavailable actions for title block (#2395)
 * Editor | Add possibility to upload a file into a media block in error state (#2351)
 * Editor | Should not trigger keyboard opening when tapping on object's top toolbar (#2399)
@@ -22,6 +25,7 @@
 * Search | Keyboard should be dismissed when navigating from search results to sets of objects (#2416)
 * Sets | Grid View headers should show or hide object icon in row headers according to the view settings (#2408)
 * Sets | Updated screen text for sorts for checkbox relations (#2424)
+* App | Fixed application startup error when resuming Anytype after app is killed by the Android OS to release resources (#2447) 
 * App | Resolved flaking remaining days count issue after account deletion (#2414)
 
 ### Design & UX 🔳
@@ -30,6 +34,7 @@
 * Editor | File block in uploading state has incorrect border color in dark mode (#2406)
 * Editor | Object icon is displayed in object's top toolbar when header is collapsed (#2397)
 * Objects | Fix wrong text color in feature relations (#2407)
+* Editor | Dark mode fixes (#2450)
 * Settings | Some items have incorrect bottom offset on wallpaper-picker screen (#2398)
 * Settings | Using skeleton view instead of blurring recovery phrase (#2394)
 * App | Updated color for warning buttons (#2418)

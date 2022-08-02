@@ -113,6 +113,6 @@ ext.getBuildVersionCode = {
 
 static def getCurrentDate() {
     def date = new Date()
-    def sdf = new SimpleDateFormat("MM-dd-yyyy")
+    def sdf = new SimpleDateFormat("dd.MM.yy")
     return sdf.format(date)
 }

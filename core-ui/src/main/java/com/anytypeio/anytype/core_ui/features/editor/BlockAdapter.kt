@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFeaturedRelationsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
@@ -57,6 +59,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoUploadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
@@ -90,7 +93,6 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.Pictur
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.RelationBlockViewHolder
-import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Bulleted
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Callout
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
@@ -106,6 +108,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
+import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
@@ -508,11 +511,7 @@ class BlockAdapter(
             }
             HOLDER_FILE_ERROR -> {
                 FileError(
-                    view = inflater.inflate(
-                        R.layout.item_block_file_error,
-                        parent,
-                        false
-                    )
+                    ItemBlockFileErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO -> {
@@ -532,11 +531,7 @@ class BlockAdapter(
             }
             HOLDER_VIDEO_ERROR -> {
                 VideoError(
-                    view = inflater.inflate(
-                        R.layout.item_block_video_error,
-                        parent,
-                        false
-                    )
+                    ItemBlockVideoErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_DEFAULT -> {
@@ -604,11 +599,7 @@ class BlockAdapter(
             }
             HOLDER_PICTURE_ERROR -> {
                 PictureError(
-                    view = inflater.inflate(
-                        R.layout.item_block_picture_error,
-                        parent,
-                        false
-                    )
+                    ItemBlockPictureErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_DIVIDER_LINE -> {

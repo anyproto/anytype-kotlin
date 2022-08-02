@@ -3,13 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bookmarkErrorRoot"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/BlockMediaRootLayoutStyle"
-    android:background="@drawable/item_block_multi_select_mode_selector">
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <FrameLayout
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginStart="@dimen/default_indent"
+        android:layout_marginEnd="@dimen/default_indent"
         android:background="@drawable/rectangle_media_block_placeholder">
 
         <TextView
@@ -28,5 +36,12 @@
             tools:text="error url medium.com/s/story/The Akari pull request as ready for review" />
 
     </FrameLayout>
+
+    <View
+        android:id="@+id/selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

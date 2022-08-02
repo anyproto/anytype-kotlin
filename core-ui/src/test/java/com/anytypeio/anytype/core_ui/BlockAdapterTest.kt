@@ -1054,8 +1054,7 @@ class BlockAdapterTest {
 
         val actual = holder.itemView.marginLeft
 
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+        val expected = view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1203,8 +1202,7 @@ class BlockAdapterTest {
 
         val actual = holder.itemView.marginLeft
 
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+        val expected = view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }
@@ -1398,8 +1396,7 @@ class BlockAdapterTest {
 
         val actual = holder.itemView.marginLeft
 
-        val expected =
-            holder.dimen(R.dimen.bookmark_default_margin_start) + view.indent * holder.dimen(R.dimen.indent)
+        val expected = view.indent * holder.dimen(R.dimen.indent)
 
         assertEquals(expected, actual)
     }

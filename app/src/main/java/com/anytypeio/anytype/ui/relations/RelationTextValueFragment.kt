@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.normalizeUrl
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -42,6 +43,8 @@ open class RelationTextValueFragment :
     private val objectId get() = arg<String>(OBJECT_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
     private val isLocked get() = arg<Boolean>(LOCKED_KEY)
+    private val value get() = argOrNull<Long?>(KEY_VALUE)
+    private val name get() = arg<String>(KEY_NAME)
 
     private val relationValueAdapter by lazy {
         RelationTextValueAdapter(
@@ -78,11 +81,19 @@ open class RelationTextValueFragment :
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.title) { binding.tvRelationHeader.text = it }
         super.onStart()
-        vm.onStart(
-            relationId = relationId,
-            recordId = objectId,
-            isLocked = isLocked
-        )
+
+        if (flow == FLOW_CHANGE_DATE) {
+            vm.onDateStart(
+                name = name,
+                value = value
+            )
+        } else {
+            vm.onStart(
+                relationId = relationId,
+                recordId = objectId,
+                isLocked = isLocked,
+            )
+        }
     }
 
     override fun onStop() {
@@ -177,7 +188,7 @@ open class RelationTextValueFragment :
     }
 
     override fun injectDependencies() {
-        if (flow == FLOW_DATAVIEW) {
+        if (flow == FLOW_DATAVIEW || flow == FLOW_CHANGE_DATE) {
             componentManager().relationTextValueDVComponent.get(ctx).inject(this)
         } else {
             componentManager().relationTextValueComponent.get(ctx).inject(this)
@@ -185,7 +196,7 @@ open class RelationTextValueFragment :
     }
 
     override fun releaseDependencies() {
-        if (flow == FLOW_DATAVIEW) {
+        if (flow == FLOW_DATAVIEW || flow == FLOW_CHANGE_DATE) {
             componentManager().relationTextValueDVComponent.release(ctx)
         } else {
             componentManager().relationTextValueComponent.release(ctx)
@@ -206,7 +217,7 @@ open class RelationTextValueFragment :
             relationId: Id,
             objectId: Id,
             flow: Int = FLOW_DEFAULT,
-            isLocked: Boolean = false
+            isLocked: Boolean = false,
         ) = RelationTextValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
@@ -217,14 +228,29 @@ open class RelationTextValueFragment :
             )
         }
 
+        fun new(
+            ctx: Id,
+            name: String = "",
+            value: Long? = null
+        ) = new(ctx, "", "", FLOW_CHANGE_DATE)
+            .apply {
+                arguments?.apply {
+                    putString(KEY_NAME, name)
+                    value?.let { putLong(KEY_VALUE, it) }
+                }
+            }
+
         const val CONTEXT_ID = "arg.edit-relation-value.context"
         const val RELATION_ID = "arg.edit-relation-value.relation.id"
         const val OBJECT_ID = "arg.edit-relation-value.object.id"
         const val FLOW_KEY = "arg.edit-relation-value.flow"
         const val LOCKED_KEY = "arg.edit-relation-value.locked"
+        const val KEY_VALUE = "arg.edit-relation-value.value"
+        const val KEY_NAME = "arg.edit-relation-value.name"
 
         const val FLOW_DEFAULT = 0
         const val FLOW_DATAVIEW = 1
+        const val FLOW_CHANGE_DATE = 2
     }
 
     interface TextValueEditReceiver {

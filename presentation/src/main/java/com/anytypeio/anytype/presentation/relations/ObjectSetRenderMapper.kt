@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -14,28 +16,24 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.title
-import com.anytypeio.anytype.core_utils.ext.EMPTY_TIMESTAMP
+import com.anytypeio.anytype.core_utils.ext.CURRENT_MONTH
+import com.anytypeio.anytype.core_utils.ext.CURRENT_WEEK
 import com.anytypeio.anytype.core_utils.ext.EXACT_DAY
+import com.anytypeio.anytype.core_utils.ext.LAST_WEEK
 import com.anytypeio.anytype.core_utils.ext.MONTH_AGO
 import com.anytypeio.anytype.core_utils.ext.MONTH_AHEAD
+import com.anytypeio.anytype.core_utils.ext.NEXT_WEEK
+import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_AGO
+import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_FROM_NOW
 import com.anytypeio.anytype.core_utils.ext.TODAY
 import com.anytypeio.anytype.core_utils.ext.TOMORROW
-import com.anytypeio.anytype.core_utils.ext.WEEK_AGO
-import com.anytypeio.anytype.core_utils.ext.WEEK_AHEAD
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
-import com.anytypeio.anytype.core_utils.ext.getMonthAgoTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getMonthAheadTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getTodayTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getTomorrowTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getWeekAgoTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getWeekAheadTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getYesterdayTimeUnit
-import com.anytypeio.anytype.core_utils.ext.isSameDay
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.toCheckboxView
+import com.anytypeio.anytype.presentation.mapper.toDateView
 import com.anytypeio.anytype.presentation.mapper.toGridRecordRows
 import com.anytypeio.anytype.presentation.mapper.toNumberView
 import com.anytypeio.anytype.presentation.mapper.toSelectedView
@@ -62,7 +60,6 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import timber.log.Timber
-import java.util.*
 
 
 fun ObjectSet.tabs(activeViewerId: String? = null): List<ViewerTabView> {
@@ -160,7 +157,8 @@ fun ObjectSet.render(
             Viewer.ListView(
                 id = viewer.id,
                 items = viewer.buildListViews(
-                    objects = (viewerDb[viewer.id]?.records ?: emptyList()).map { ObjectWrapper.Basic(it) },
+                    objects = (viewerDb[viewer.id]?.records
+                        ?: emptyList()).map { ObjectWrapper.Basic(it) },
                     details = details,
                     relations = relations,
                     urlBuilder = builder
@@ -301,93 +299,104 @@ fun Relation.toCreateFilterStatusView(ids: List<*>? = null): List<CreateFilterVi
             )
         }
 
-fun Relation.toCreateFilterDateView(exactDayTimestamp: Long): List<CreateFilterView.Date> {
-    val filterTime = Calendar.getInstance()
-    if (exactDayTimestamp != EMPTY_TIMESTAMP) {
-        filterTime.timeInMillis = exactDayTimestamp * 1000
-    }
-    val today = getTodayTimeUnit()
-    val tomorrow = getTomorrowTimeUnit()
-    val yesterday = getYesterdayTimeUnit()
-    val weekAgo = getWeekAgoTimeUnit()
-    val weekForward = getWeekAheadTimeUnit()
-    val monthAgo = getMonthAgoTimeUnit()
-    val monthForward = getMonthAheadTimeUnit()
-
-    val isToday = filterTime.isSameDay(today)
-    val isTomorrow = filterTime.isSameDay(tomorrow)
-    val isYesterday = filterTime.isSameDay(yesterday)
-    val isWeekAgo = filterTime.isSameDay(weekAgo)
-    val isWeekAhead = filterTime.isSameDay(weekForward)
-    val isMonthAgo = filterTime.isSameDay(monthAgo)
-    val isMonthAhead = filterTime.isSameDay(monthForward)
-    val isExactDay = !isToday && !isTomorrow && !isYesterday && !isWeekAgo && !isWeekAhead
-            && !isMonthAgo && !isMonthAhead
-
-    return listOf(
+fun Relation.toCreateFilterDateView(
+    quickOption: DVFilterQuickOption?,
+    condition: DVFilterCondition,
+    value: Long
+) = quickOptionOrderMap.getOrDefault(condition, quickOptionDefaultOrder)
+    .map {
+        val isSelected = quickOption.isSelected(it, value)
         CreateFilterView.Date(
             id = key,
-            description = TODAY,
-            type = DateDescription.TODAY,
-            timeInMillis = today.timeInMillis,
-            isSelected = isToday
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = TOMORROW,
-            type = DateDescription.TOMORROW,
-            timeInMillis = tomorrow.timeInMillis,
-            isSelected = isTomorrow
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = YESTERDAY,
-            type = DateDescription.YESTERDAY,
-            timeInMillis = yesterday.timeInMillis,
-            isSelected = isYesterday
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = WEEK_AGO,
-            type = DateDescription.ONE_WEEK_AGO,
-            timeInMillis = weekAgo.timeInMillis,
-            isSelected = isWeekAgo
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = WEEK_AHEAD,
-            type = DateDescription.ONE_WEEK_FORWARD,
-            timeInMillis = weekForward.timeInMillis,
-            isSelected = isWeekAhead
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = MONTH_AGO,
-            type = DateDescription.ONE_MONTH_AGO,
-            timeInMillis = monthAgo.timeInMillis,
-            isSelected = isMonthAgo
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = MONTH_AHEAD,
-            type = DateDescription.ONE_MONTH_FORWARD,
-            timeInMillis = monthForward.timeInMillis,
-            isSelected = isMonthAhead
-        ),
-        CreateFilterView.Date(
-            id = key,
-            description = EXACT_DAY,
-            type = DateDescription.EXACT_DAY,
-            timeInMillis = filterTime.timeInMillis,
-            isSelected = isExactDay
+            description = it.toName(),
+            type = it,
+            condition = condition,
+            value = if (isSelected) value else CreateFilterView.Date.NO_VALUE,
+            isSelected = isSelected
         )
+    }
+
+private fun DVFilterQuickOption?.isSelected(
+    quickOption: DVFilterQuickOption,
+    value: Long
+) = if (this == quickOption) {
+    if (quickOption == DVFilterQuickOption.EXACT_DATE) {
+        value > 0
+    } else {
+        true
+    }
+} else {
+    false
+}
+
+
+private val quickOptionDefaultOrder by lazy {
+    listOf(
+        DVFilterQuickOption.TODAY,
+        DVFilterQuickOption.TOMORROW,
+        DVFilterQuickOption.YESTERDAY,
+        DVFilterQuickOption.CURRENT_WEEK,
+        DVFilterQuickOption.LAST_WEEK,
+        DVFilterQuickOption.NEXT_WEEK,
+        DVFilterQuickOption.CURRENT_MONTH,
+        DVFilterQuickOption.LAST_MONTH,
+        DVFilterQuickOption.NEXT_MONTH,
+        DVFilterQuickOption.DAYS_AGO,
+        DVFilterQuickOption.DAYS_AHEAD,
+        DVFilterQuickOption.EXACT_DATE,
     )
 }
 
-enum class DateDescription {
-    TODAY, TOMORROW, YESTERDAY, ONE_WEEK_AGO,
-    ONE_WEEK_FORWARD, ONE_MONTH_AGO, ONE_MONTH_FORWARD, EXACT_DAY
+private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption>> by lazy {
+    buildMap {
+        put(
+            DVFilterCondition.EQUAL, listOf(
+                DVFilterQuickOption.TODAY,
+                DVFilterQuickOption.TOMORROW,
+                DVFilterQuickOption.YESTERDAY,
+                DVFilterQuickOption.DAYS_AGO,
+                DVFilterQuickOption.DAYS_AHEAD,
+                DVFilterQuickOption.EXACT_DATE,
+            )
+        )
+
+        put(
+            DVFilterCondition.IN, listOf(
+                DVFilterQuickOption.TODAY,
+                DVFilterQuickOption.TOMORROW,
+                DVFilterQuickOption.YESTERDAY,
+                DVFilterQuickOption.LAST_WEEK,
+                DVFilterQuickOption.CURRENT_WEEK,
+                DVFilterQuickOption.NEXT_WEEK,
+                DVFilterQuickOption.LAST_MONTH,
+                DVFilterQuickOption.CURRENT_MONTH,
+                DVFilterQuickOption.NEXT_MONTH,
+            )
+        )
+
+        put(DVFilterCondition.EMPTY, emptyList())
+        put(DVFilterCondition.NOT_EMPTY, emptyList())
+    }
 }
+
+private val quickOptionToNameMapping: Map<DVFilterQuickOption, String> by lazy {
+    buildMap {
+        put(DVFilterQuickOption.EXACT_DATE, EXACT_DAY)
+        put(DVFilterQuickOption.YESTERDAY, YESTERDAY)
+        put(DVFilterQuickOption.TODAY, TODAY)
+        put(DVFilterQuickOption.TOMORROW, TOMORROW)
+        put(DVFilterQuickOption.LAST_WEEK, LAST_WEEK)
+        put(DVFilterQuickOption.CURRENT_WEEK, CURRENT_WEEK)
+        put(DVFilterQuickOption.NEXT_WEEK, NEXT_WEEK)
+        put(DVFilterQuickOption.LAST_MONTH, MONTH_AGO)
+        put(DVFilterQuickOption.CURRENT_MONTH, CURRENT_MONTH)
+        put(DVFilterQuickOption.NEXT_MONTH, MONTH_AHEAD)
+        put(DVFilterQuickOption.DAYS_AGO, NUMBER_OF_DAYS_AGO)
+        put(DVFilterQuickOption.DAYS_AHEAD, NUMBER_OF_DAYS_FROM_NOW)
+    }
+}
+
+fun DVFilterQuickOption.toName() = quickOptionToNameMapping.getOrDefault(this, "Error")
 
 fun ObjectSet.columns(viewerId: Id): ArrayList<ColumnView> {
 
@@ -617,7 +626,8 @@ fun DVFilter.toView(
             key = relationKey,
             title = relation.name,
             operator = operator.toView(),
-            condition = condition.toNumberView(),
+            condition = condition.toDateView(),
+            quickOption = quickOption,
             filterValue = FilterValue.Date(DateParser.parse(value)),
             format = relation.format.toView(),
             isValueRequired = condition.isValueRequired(),

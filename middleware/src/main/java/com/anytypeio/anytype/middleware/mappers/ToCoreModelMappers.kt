@@ -451,10 +451,12 @@ fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
     relationKey = RelationKey,
     operator = operator_.toCoreModels(),
     condition = condition.toCoreModels(),
+    quickOption = quickOption.toCoreModels(),
     value = value_
 )
 
 fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {
+    MDVFilterCondition.None -> DVFilterCondition.NONE
     MDVFilterCondition.Equal -> DVFilterCondition.EQUAL
     MDVFilterCondition.NotEqual -> DVFilterCondition.NOT_EQUAL
     MDVFilterCondition.Greater -> DVFilterCondition.GREATER
@@ -469,9 +471,23 @@ fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {
     MDVFilterCondition.NotEmpty -> DVFilterCondition.NOT_EMPTY
     MDVFilterCondition.AllIn -> DVFilterCondition.ALL_IN
     MDVFilterCondition.NotAllIn -> DVFilterCondition.NOT_ALL_IN
-    MDVFilterCondition.None -> DVFilterCondition.NONE
     MDVFilterCondition.ExactIn -> DVFilterCondition.EXACT_IN
     MDVFilterCondition.NotExactIn -> DVFilterCondition.NOT_EXACT_IN
+}
+
+fun MDVFilterQuickOption.toCoreModels(): DVFilterQuickOption = when (this) {
+    MDVFilterQuickOption.ExactDate -> DVFilterQuickOption.EXACT_DATE
+    MDVFilterQuickOption.Yesterday -> DVFilterQuickOption.YESTERDAY
+    MDVFilterQuickOption.Today -> DVFilterQuickOption.TODAY
+    MDVFilterQuickOption.Tomorrow -> DVFilterQuickOption.TOMORROW
+    MDVFilterQuickOption.LastWeek -> DVFilterQuickOption.LAST_WEEK
+    MDVFilterQuickOption.CurrentWeek -> DVFilterQuickOption.CURRENT_WEEK
+    MDVFilterQuickOption.NextWeek -> DVFilterQuickOption.NEXT_WEEK
+    MDVFilterQuickOption.LastMonth -> DVFilterQuickOption.LAST_MONTH
+    MDVFilterQuickOption.CurrentMonth -> DVFilterQuickOption.CURRENT_MONTH
+    MDVFilterQuickOption.NextMonth -> DVFilterQuickOption.NEXT_MONTH
+    MDVFilterQuickOption.NumberOfDaysAgo -> DVFilterQuickOption.DAYS_AGO
+    MDVFilterQuickOption.NumberOfDaysNow -> DVFilterQuickOption.DAYS_AHEAD
 }
 
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {

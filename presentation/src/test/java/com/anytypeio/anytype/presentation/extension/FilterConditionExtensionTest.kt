@@ -113,6 +113,7 @@ class FilterConditionExtensionTest {
 
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedDate = Viewer.Filter.Condition.Date.None()
         val expectedSelected = Viewer.Filter.Condition.Selected.In()
         val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
 
@@ -148,7 +149,7 @@ class FilterConditionExtensionTest {
         )
         asserter.assertEquals(
             message = "Condition should be Number Equal",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = null)
         )
         asserter.assertEquals(
@@ -219,6 +220,7 @@ class FilterConditionExtensionTest {
 
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedDate = Viewer.Filter.Condition.Date.Equal()
         val expectedSelected = Viewer.Filter.Condition.Selected.Equal()
         val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
 
@@ -254,7 +256,7 @@ class FilterConditionExtensionTest {
         )
         asserter.assertEquals(
             message = "Condition should be Number Equal",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.EQUAL)
         )
         asserter.assertEquals(
@@ -357,11 +359,9 @@ class FilterConditionExtensionTest {
             expected = expectedNumber,
             actual = relationNumber.toConditionView(condition = DVFilterCondition.NOT_EQUAL)
         )
-        asserter.assertEquals(
-            message = "Condition should be Number Not Equal",
-            expected = expectedNumber,
-            actual = relationDate.toConditionView(condition = DVFilterCondition.NOT_EQUAL)
-        )
+        assertFails {
+            relationDate.toConditionView(condition = DVFilterCondition.NOT_EQUAL)
+        }
         assertFails {
             relationTag.toConditionView(condition = DVFilterCondition.NOT_EQUAL)
         }
@@ -423,6 +423,7 @@ class FilterConditionExtensionTest {
         )
 
         val expectedNumber = Viewer.Filter.Condition.Number.Greater()
+        val expectedDate = Viewer.Filter.Condition.Date.Greater()
 
         assertFails {
             relationTextLong.toConditionView(condition = DVFilterCondition.GREATER)
@@ -446,7 +447,7 @@ class FilterConditionExtensionTest {
         )
         asserter.assertEquals(
             message = "Condition should be Number Greater",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.GREATER)
         )
         assertFails {
@@ -508,6 +509,7 @@ class FilterConditionExtensionTest {
         )
 
         val expectedNumber = Viewer.Filter.Condition.Number.Less()
+        val expectedDate = Viewer.Filter.Condition.Date.Less()
 
         assertFails {
             relationTextLong.toConditionView(condition = DVFilterCondition.LESS)
@@ -531,7 +533,7 @@ class FilterConditionExtensionTest {
         )
         asserter.assertEquals(
             message = "Condition should be Number Less",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.LESS)
         )
         assertFails {
@@ -593,6 +595,7 @@ class FilterConditionExtensionTest {
         )
 
         val expectedNumber = Viewer.Filter.Condition.Number.GreaterOrEqual()
+        val expectedDate = Viewer.Filter.Condition.Date.GreaterOrEqual()
 
         assertFails {
             relationTextLong.toConditionView(condition = DVFilterCondition.GREATER_OR_EQUAL)
@@ -616,7 +619,7 @@ class FilterConditionExtensionTest {
         )
         asserter.assertEquals(
             message = "Condition should be Number Greater or Equal",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.GREATER_OR_EQUAL)
         )
         assertFails {
@@ -678,6 +681,7 @@ class FilterConditionExtensionTest {
         )
 
         val expectedNumber = Viewer.Filter.Condition.Number.LessOrEqual()
+        val expectedDate = Viewer.Filter.Condition.Date.LessOrEqual()
 
         assertFails {
             relationTextLong.toConditionView(condition = DVFilterCondition.LESS_OR_EQUAL)
@@ -701,7 +705,7 @@ class FilterConditionExtensionTest {
         )
         asserter.assertEquals(
             message = "Condition should be Number Less or Equal",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.LESS_OR_EQUAL)
         )
         assertFails {
@@ -903,7 +907,7 @@ class FilterConditionExtensionTest {
     }
 
     @Test
-    fun `test in condition`() {
+    fun `relation - should have or should not have in condition`() {
         val relationTextLong = Relation(
             key = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
@@ -966,9 +970,13 @@ class FilterConditionExtensionTest {
         assertFails {
             relationNumber.toConditionView(condition = DVFilterCondition.IN)
         }
-        assertFails {
-            relationDate.toConditionView(condition = DVFilterCondition.IN)
-        }
+
+        asserter.assertEquals(
+            message = "Condition should be Selected In",
+            expected = Viewer.Filter.Condition.Date.In(),
+            actual = relationDate.toConditionView(condition = DVFilterCondition.IN)
+        )
+
         asserter.assertEquals(
             message = "Condition should be Selected In",
             expected = expectedSelected,
@@ -1289,6 +1297,7 @@ class FilterConditionExtensionTest {
         val expectedText = Viewer.Filter.Condition.Text.Empty()
         val expectedSelected = Viewer.Filter.Condition.Selected.Empty()
         val expectedNumber = Viewer.Filter.Condition.Number.Empty()
+        val expectedDate = Viewer.Filter.Condition.Date.Empty()
 
         asserter.assertEquals(
             message = "Condition should be Text Empty",
@@ -1324,7 +1333,7 @@ class FilterConditionExtensionTest {
 
         asserter.assertEquals(
             message = "Condition should be Date Empty",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.EMPTY)
         )
 
@@ -1395,6 +1404,7 @@ class FilterConditionExtensionTest {
         val expectedText = Viewer.Filter.Condition.Text.NotEmpty()
         val expectedSelected = Viewer.Filter.Condition.Selected.NotEmpty()
         val expectedNumber = Viewer.Filter.Condition.Number.NotEmpty()
+        val expectedDate = Viewer.Filter.Condition.Date.NotEmpty()
 
         asserter.assertEquals(
             message = "Condition should be Text Not Empty",
@@ -1430,7 +1440,7 @@ class FilterConditionExtensionTest {
 
         asserter.assertEquals(
             message = "Condition should be Date Not Empty",
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.NOT_EMPTY)
         )
 
@@ -1501,6 +1511,7 @@ class FilterConditionExtensionTest {
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedSelected = Viewer.Filter.Condition.Selected.In()
         val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedDate = Viewer.Filter.Condition.Date.None()
         val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
 
         asserter.assertEquals(
@@ -1537,7 +1548,7 @@ class FilterConditionExtensionTest {
 
         asserter.assertEquals(
             message = null,
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.EXACT_IN)
         )
 
@@ -1610,6 +1621,7 @@ class FilterConditionExtensionTest {
         val expectedText = Viewer.Filter.Condition.Text.Equal()
         val expectedSelected = Viewer.Filter.Condition.Selected.In()
         val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedDate = Viewer.Filter.Condition.Date.None()
         val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
 
         asserter.assertEquals(
@@ -1646,7 +1658,7 @@ class FilterConditionExtensionTest {
 
         asserter.assertEquals(
             message = null,
-            expected = expectedNumber,
+            expected = expectedDate,
             actual = relationDate.toConditionView(condition = DVFilterCondition.NOT_EXACT_IN)
         )
 

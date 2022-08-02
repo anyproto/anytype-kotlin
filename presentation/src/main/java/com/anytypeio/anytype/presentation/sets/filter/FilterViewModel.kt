@@ -4,18 +4,35 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_utils.ext.EMPTY_TIMESTAMP
+import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.dataview.interactor.SearchObjects
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.extension.*
+import com.anytypeio.anytype.presentation.extension.checkboxFilter
+import com.anytypeio.anytype.presentation.extension.hasValue
+import com.anytypeio.anytype.presentation.extension.index
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddFilterEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeFilterValueEvent
+import com.anytypeio.anytype.presentation.extension.toConditionView
+import com.anytypeio.anytype.presentation.extension.type
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.objects.toCreateFilterObjectView
-import com.anytypeio.anytype.presentation.relations.*
+import com.anytypeio.anytype.presentation.relations.FilterInputValueParser
+import com.anytypeio.anytype.presentation.relations.toCreateFilterCheckboxView
+import com.anytypeio.anytype.presentation.relations.toCreateFilterDateView
+import com.anytypeio.anytype.presentation.relations.toCreateFilterStatusView
+import com.anytypeio.anytype.presentation.relations.toCreateFilterTagView
+import com.anytypeio.anytype.presentation.relations.toFilterValue
+import com.anytypeio.anytype.presentation.relations.toViewRelation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -25,7 +42,10 @@ import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -112,7 +132,7 @@ open class FilterViewModel(
     }
 
     private fun updateUi(format: Relation.Format, condition: Viewer.Filter.Condition) {
-        when(format) {
+        when (format) {
             Relation.Format.SHORT_TEXT,
             Relation.Format.LONG_TEXT,
             Relation.Format.URL,
@@ -200,7 +220,8 @@ open class FilterViewModel(
             proceedWithFilterValueList(
                 relation = relation,
                 filter = null,
-                objectTypes = objectTypesProvider.get()
+                objectTypes = objectTypesProvider.get(),
+                condition = condition
             )
         } else {
             val filter = viewer.filters[index]
@@ -213,7 +234,8 @@ open class FilterViewModel(
             proceedWithFilterValueList(
                 relation = relation,
                 filter = filter,
-                objectTypes = objectTypesProvider.get()
+                objectTypes = objectTypesProvider.get(),
+                condition = condition
             )
         }
     }
@@ -221,11 +243,16 @@ open class FilterViewModel(
     private fun proceedWithFilterValueList(
         relation: Relation,
         filter: DVFilter?,
-        objectTypes: List<ObjectType>
+        objectTypes: List<ObjectType>,
+        condition: Viewer.Filter.Condition
     ) = when (relation.format) {
         Relation.Format.DATE -> {
-            val timestamp = (filter?.value as? Double)?.toLong() ?: EMPTY_TIMESTAMP
-            filterValueListState.value = relation.toCreateFilterDateView(timestamp)
+            val value = (filter?.value as? Double)?.toLong() ?: 0L
+            filterValueListState.value = relation.toCreateFilterDateView(
+                quickOption = filter?.quickOption,
+                condition = condition.toDomain(),
+                value = value
+            )
         }
         Relation.Format.TAG -> {
             val ids = filter?.value as? List<*>
@@ -382,11 +409,15 @@ open class FilterViewModel(
     }
 
     fun onExactDayPicked(timeInSeconds: Long) {
+        setFilterState(DVFilterQuickOption.EXACT_DATE, timeInSeconds)
+    }
+
+    private fun setFilterState(quickOption: DVFilterQuickOption, value: Long) {
         filterValueListState.value = filterValueListState.value.map { view ->
             if (view is CreateFilterView.Date) {
-                if (view.type == DateDescription.EXACT_DAY) {
+                if (view.type == quickOption) {
                     view.copy(
-                        timeInMillis = timeInSeconds * 1000,
+                        value = value,
                         isSelected = true
                     )
                 } else {
@@ -396,6 +427,10 @@ open class FilterViewModel(
                 view
             }
         }
+    }
+
+    fun onExactNumberOfDays(quickOption: DVFilterQuickOption, numberOfDays: Long) {
+        setFilterState(quickOption, numberOfDays)
     }
 
     fun onCreateFilterFromSelectedValueClicked(ctx: Id, relation: Id) {
@@ -439,7 +474,7 @@ open class FilterViewModel(
                             ctx = ctx,
                             filter = DVFilter(
                                 relationKey = relation,
-                                value = selected?.timeInMillis?.toTimeSeconds(),
+                                value = selected?.value?.toDouble(),
                                 condition = condition.toDomain()
                             )
                         )
@@ -574,11 +609,9 @@ open class FilterViewModel(
                         )
                     }
                     ColumnView.Format.DATE -> {
-                        val value = filterValueListState.value
+                        val date = filterValueListState.value
                             .filterIsInstance<CreateFilterView.Date>()
-                            .filter { it.isSelected }
-                            .map { date -> date.timeInMillis.toTimeSeconds() }
-                            .firstOrNull()
+                            .firstOrNull { it.isSelected }
                         proceedWithUpdatingFilter(
                             ctx = ctx,
                             target = block.id,
@@ -587,7 +620,8 @@ open class FilterViewModel(
                             updatedFilter = DVFilter(
                                 relationKey = relation,
                                 condition = condition.toDomain(),
-                                value = value
+                                quickOption = date?.type ?: DVFilterQuickOption.EXACT_DATE,
+                                value = date?.value?.toDouble()
                             )
                         )
                         sendAnalyticsChangeFilterValueEvent(
@@ -694,15 +728,30 @@ open class FilterViewModel(
     }
 
     private fun onFilterDateItemClicked(dateItem: CreateFilterView.Date) {
-        if (dateItem.type == DateDescription.EXACT_DAY) {
-            viewModelScope.launch { proceedWithDatePickerScreen(dateItem.timeInMillis) }
-        } else {
-            filterValueListState.value = updateSelectedState(dateItem)
+        when (dateItem.type) {
+            DVFilterQuickOption.EXACT_DATE -> {
+                viewModelScope.launch { proceedWithDatePickerScreen(dateItem.value) }
+            }
+            DVFilterQuickOption.DAYS_AGO, DVFilterQuickOption.DAYS_AHEAD -> {
+                viewModelScope.launch {
+                    proceedWithNumberPickerScreen(
+                        dateItem.type,
+                        if (dateItem.isSelected) dateItem.value else null
+                    )
+                }
+            }
+            else -> {
+                filterValueListState.value = updateSelectedState(dateItem)
+            }
         }
     }
 
-    private suspend fun proceedWithDatePickerScreen(timeInMillis: Long) {
-        commands.emit(Commands.OpenDatePicker(timeInSeconds = timeInMillis / 1000))
+    private suspend fun proceedWithDatePickerScreen(timeInSeconds: Long) {
+        commands.emit(Commands.OpenDatePicker(timeInSeconds))
+    }
+
+    private suspend fun proceedWithNumberPickerScreen(option: DVFilterQuickOption, value: Long?) {
+        commands.emit(Commands.OpenNumberPicker(option, value))
     }
 
     private suspend fun proceedWithConditionPickerScreen(type: Viewer.Filter.Type, index: Int) {
@@ -713,16 +762,13 @@ open class FilterViewModel(
         selectedItem: CreateFilterView.Date
     ): List<CreateFilterView> = filterValueListState.value.map { view ->
         if (view is CreateFilterView.Date) {
-            if (view.type == DateDescription.EXACT_DAY) {
-                view.copy(
-                    isSelected = false,
-                    timeInMillis = EMPTY_TIMESTAMP
-                )
+            if (view.type == DVFilterQuickOption.EXACT_DATE) {
+                view.copy(isSelected = false, value = CreateFilterView.Date.NO_VALUE)
             } else {
                 if (view.type == selectedItem.type) {
                     view.copy(isSelected = true)
                 } else {
-                    view.copy(isSelected = false)
+                    view.copy(isSelected = false, value = CreateFilterView.Date.NO_VALUE)
                 }
             }
         } else {
@@ -756,16 +802,17 @@ open class FilterViewModel(
     }
 
     sealed class Commands {
-        object ShowInput: Commands()
-        object HideInput: Commands()
-        object ShowSearchbar: Commands()
-        object HideSearchbar: Commands()
-        object ShowCount: Commands()
-        object HideCount: Commands()
+        object ShowInput : Commands()
+        object HideInput : Commands()
+        object ShowSearchbar : Commands()
+        object HideSearchbar : Commands()
+        object ShowCount : Commands()
+        object HideCount : Commands()
         data class OpenDatePicker(val timeInSeconds: Long) : Commands()
+        data class OpenNumberPicker(val option: DVFilterQuickOption, val value: Long?) : Commands()
         data class OpenConditionPicker(val type: Viewer.Filter.Type, val index: Int) : Commands()
-        object TagDivider: Commands()
-        object ObjectDivider: Commands()
-        object DateDivider: Commands()
+        object TagDivider : Commands()
+        object ObjectDivider : Commands()
+        object DateDivider : Commands()
     }
 }

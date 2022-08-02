@@ -49,12 +49,6 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
             subscribe(binding.addButton.clicks()) { vm.onAddNewFilterClicked() }
             subscribe(binding.doneBtn.clicks()) { vm.onDoneButtonClicked() }
             subscribe(binding.editBtn.clicks()) { vm.onEditButtonClicked() }
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        with(lifecycleScope) {
             subscribe(vm.views) { filterAdapter.update(it) }
             subscribe(vm.screenState) { render(it) }
         }

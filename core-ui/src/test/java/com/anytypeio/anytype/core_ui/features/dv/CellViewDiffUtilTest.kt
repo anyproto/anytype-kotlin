@@ -103,12 +103,12 @@ class CellViewDiffUtilTest {
         val oldCell = CellView.Date(
             id = MockDataFactory.randomString(),
             key = MockDataFactory.randomString(),
-            timeInMillis = MockDataFactory.randomLong(),
+            timeInSecs = MockDataFactory.randomLong(),
             dateFormat = MockDataFactory.randomString()
         )
 
         val newCell = oldCell.copy(
-            timeInMillis = MockDataFactory.randomLong()
+            timeInSecs = MockDataFactory.randomLong()
         )
 
         val old = listOf(oldCell)

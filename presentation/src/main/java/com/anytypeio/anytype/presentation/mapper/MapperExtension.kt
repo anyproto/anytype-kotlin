@@ -533,6 +533,20 @@ fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
     else -> throw IllegalStateException("Unexpected filter condition $this for Text relations")
 }
 
+
+fun DVFilterCondition.toDateView(): Viewer.Filter.Condition.Date = when (this) {
+    DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Date.Equal()
+    DVFilterCondition.GREATER -> Viewer.Filter.Condition.Date.Greater()
+    DVFilterCondition.LESS -> Viewer.Filter.Condition.Date.Less()
+    DVFilterCondition.GREATER_OR_EQUAL -> Viewer.Filter.Condition.Date.GreaterOrEqual()
+    DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Date.LessOrEqual()
+    DVFilterCondition.IN -> Viewer.Filter.Condition.Date.In()
+    DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Date.Empty()
+    DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Date.NotEmpty()
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Date.None()
+    else -> throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
+}
+
 fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (this) {
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Number.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Number.NotEqual()
@@ -600,6 +614,14 @@ fun Viewer.FilterOperator.toDomain(): DVFilterOperator = when (this) {
 fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
     is Viewer.Filter.Condition.Checkbox.Equal -> DVFilterCondition.EQUAL
     is Viewer.Filter.Condition.Checkbox.NotEqual -> DVFilterCondition.NOT_EQUAL
+    is Viewer.Filter.Condition.Date.Equal -> DVFilterCondition.EQUAL
+    is Viewer.Filter.Condition.Date.Greater -> DVFilterCondition.GREATER
+    is Viewer.Filter.Condition.Date.GreaterOrEqual -> DVFilterCondition.GREATER_OR_EQUAL
+    is Viewer.Filter.Condition.Date.Less -> DVFilterCondition.LESS
+    is Viewer.Filter.Condition.Date.LessOrEqual -> DVFilterCondition.LESS_OR_EQUAL
+    is Viewer.Filter.Condition.Date.In -> DVFilterCondition.IN
+    is Viewer.Filter.Condition.Date.Empty -> DVFilterCondition.EMPTY
+    is Viewer.Filter.Condition.Date.NotEmpty -> DVFilterCondition.NOT_EMPTY
     is Viewer.Filter.Condition.Number.Equal -> DVFilterCondition.EQUAL
     is Viewer.Filter.Condition.Number.Greater -> DVFilterCondition.GREATER
     is Viewer.Filter.Condition.Number.GreaterOrEqual -> DVFilterCondition.GREATER_OR_EQUAL
@@ -621,6 +643,7 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
     is Viewer.Filter.Condition.Text.NotEqual -> DVFilterCondition.NOT_EQUAL
     is Viewer.Filter.Condition.Text.NotLike -> DVFilterCondition.NOT_LIKE
     is Viewer.Filter.Condition.Checkbox.None -> DVFilterCondition.NONE
+    is Viewer.Filter.Condition.Date.None -> DVFilterCondition.NONE
     is Viewer.Filter.Condition.Number.None -> DVFilterCondition.NONE
     is Viewer.Filter.Condition.Selected.None -> DVFilterCondition.NONE
     is Viewer.Filter.Condition.Text.None -> DVFilterCondition.NONE

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 fun List<Relation>.views(
     details: Block.Details,
@@ -67,9 +68,10 @@ fun Relation.view(
             // see {SetsExtension:buildGridRow()}
             val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
             val value = values[relation.key]
-            val timeInMillis = DateParser.parse(value)
-            val formattedDate = if (timeInMillis != null) {
-                format.format(Date(timeInMillis))
+
+            val timeInSec = DateParser.parse(value)
+            val formattedDate = if (timeInSec != null) {
+                format.format(Date(TimeUnit.SECONDS.toMillis(timeInSec)))
             } else {
                 null
             }
@@ -187,13 +189,13 @@ object FilterInputValueParser {
  */
 object DateParser {
     fun parse(value: Any?): Long? {
-        val timeInMillis: Long? = when (value) {
+        val result: Long? = when (value) {
             is String -> value.toLongOrNull()
             is Double -> value.toLong()
             is Long -> value
             else -> null
         }
-        return timeInMillis?.times(1000)
+        return result
     }
 }
 

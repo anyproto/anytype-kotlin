@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.model
 
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_utils.ui.ViewType
 
 sealed class FilterView : ViewType {
@@ -9,6 +10,7 @@ sealed class FilterView : ViewType {
         abstract val title: String
         abstract val operator: Viewer.FilterOperator
         abstract val condition: Viewer.Filter.Condition
+        open val quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE
         abstract val filterValue: FilterValue
         abstract val format: ColumnView.Format
         abstract val isValueRequired: Boolean
@@ -122,7 +124,8 @@ sealed class FilterView : ViewType {
             override val key: String,
             override val title: String,
             override val operator: Viewer.FilterOperator,
-            override val condition: Viewer.Filter.Condition.Number,
+            override val condition: Viewer.Filter.Condition.Date,
+            override val quickOption: DVFilterQuickOption,
             override val filterValue: FilterValue.Date,
             override val format: ColumnView.Format,
             override val isValueRequired: Boolean,

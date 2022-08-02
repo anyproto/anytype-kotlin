@@ -22,6 +22,7 @@ import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment.DatePickerReceiver
 import com.anytypeio.anytype.ui.sets.modals.PickFilterConditionFragment
@@ -34,10 +35,13 @@ import javax.inject.Inject
 open class CreateFilterFromSelectedValueFragment :
     BaseFragment<FragmentCreateOrUpdateFilterBinding>(R.layout.fragment_create_or_update_filter),
     UpdateConditionActionReceiver,
-    DatePickerReceiver {
+    DatePickerReceiver,
+    RelationTextValueFragment.TextValueEditReceiver {
 
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
+
+    private val helper = FilterHelper()
 
     private lateinit var searchRelationInput: EditText
     lateinit var clearSearchText: View
@@ -114,6 +118,12 @@ open class CreateFilterFromSelectedValueFragment :
         }
     }
 
+    override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationId: Id) {}
+
+    override fun onNumberValueChanged(ctx: Id, number: Double?, objectId: Id, relationId: Id) {
+        helper.handleNumberValueChanged(this, number, vm)
+    }
+
     override fun onStart() {
         super.onStart()
         vm.onStart(relationId = relation, filterIndex = FILTER_INDEX_EMPTY)
@@ -147,6 +157,13 @@ open class CreateFilterFromSelectedValueFragment :
             FilterViewModel.Commands.TagDivider -> setDivider(R.drawable.divider_relation_tag)
             FilterViewModel.Commands.ShowInput -> {}
             FilterViewModel.Commands.HideInput -> {}
+            is FilterViewModel.Commands.OpenNumberPicker -> {
+                helper.handleOpenNumberPicker(
+                    fragment = this,
+                    command = commands,
+                    ctx = ctx
+                )
+            }
         }
     }
 

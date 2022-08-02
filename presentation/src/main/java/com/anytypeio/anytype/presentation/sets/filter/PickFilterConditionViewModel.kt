@@ -23,6 +23,10 @@ class PickFilterConditionViewModel : BaseViewModel() {
                 conditions.addAll(Viewer.Filter.Condition.Number.numberConditions())
                 conditions[index]
             }
+            Viewer.Filter.Type.DATE -> {
+                conditions.addAll(Viewer.Filter.Condition.Date.dateConditions())
+                conditions[index]
+            }
             Viewer.Filter.Type.SELECTED -> {
                 conditions.addAll(Viewer.Filter.Condition.Selected.selectConditions())
                 conditions[index]

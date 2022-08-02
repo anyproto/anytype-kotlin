@@ -75,7 +75,7 @@ fun List<ColumnView>.buildGridRow(
                         CellView.Date(
                             id = record[ObjectSetConfig.ID_KEY] as String,
                             key = column.key,
-                            timeInMillis = DateParser.parse(value),
+                            timeInSecs = DateParser.parse(value),
                             dateFormat = column.getDateRelationFormat()
                         )
                     }

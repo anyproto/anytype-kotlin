@@ -1,8 +1,9 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.DateDescription
 
 sealed class CreateFilterView {
 
@@ -32,12 +33,17 @@ sealed class CreateFilterView {
     data class Date(
         val id: Id,
         val description: String,
-        val type: DateDescription,
-        val timeInMillis: Long,
+        val type: DVFilterQuickOption,
+        val condition: DVFilterCondition,
+        val value: Long,
         override val isSelected: Boolean
     ) : CreateFilterView() {
         override val text: String
             get() = description
+
+        companion object {
+            const val NO_VALUE = 0L
+        }
     }
 
     data class Object(

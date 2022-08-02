@@ -11,7 +11,7 @@ fun Calendar.isSameDay(compare: Calendar): Boolean =
 
 fun Calendar.timeInSeconds() = this.timeInMillis / 1000
 
-fun getTodayTimeUnit() = Calendar.getInstance()
+fun getTodayTimeUnit(): Calendar = Calendar.getInstance()
 fun getTomorrowTimeUnit(): Calendar = Calendar.getInstance().apply { add(Calendar.DATE, 1) }
 fun getYesterdayTimeUnit(): Calendar = Calendar.getInstance().apply { add(Calendar.DATE, -1) }
 fun getWeekAheadTimeUnit(): Calendar =
@@ -47,9 +47,9 @@ fun Long.formatTimestamp(isMillis: Boolean, format: String? = null): String {
     val isYesterday = filterTime.isSameDay(yesterday)
     if (isYesterday) return YESTERDAY
     val isWeekAgo = filterTime.isSameDay(weekAgo)
-    if (isWeekAgo) return WEEK_AGO
+    if (isWeekAgo) return LAST_WEEK
     val isWeekAhead = filterTime.isSameDay(weekForward)
-    if (isWeekAhead) return WEEK_AHEAD
+    if (isWeekAhead) return NEXT_WEEK
     val isMonthAgo = filterTime.isSameDay(monthAgo)
     if (isMonthAgo) return MONTH_AGO
     val isMonthAhead = filterTime.isSameDay(monthForward)
@@ -77,10 +77,13 @@ const val NO_DATE = "No date"
 const val TODAY = "Today"
 const val TOMORROW = "Tomorrow"
 const val YESTERDAY = "Yesterday"
-const val WEEK_AGO = "One week ago"
-const val WEEK_AHEAD = "One week from now"
+const val LAST_WEEK = "One week ago"
+const val CURRENT_WEEK = "Current week"
+const val NEXT_WEEK = "One week from now"
 const val MONTH_AGO = "One month ago"
+const val CURRENT_MONTH = "Current month"
 const val MONTH_AHEAD = "One month from now"
 const val EXACT_DAY = "Exact day"
+const val NUMBER_OF_DAYS_AGO = "Number of days ago"
+const val NUMBER_OF_DAYS_FROM_NOW = "Number of days from now"
 
-const val EMPTY_TIMESTAMP = 0L

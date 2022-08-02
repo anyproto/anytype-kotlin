@@ -133,7 +133,7 @@ sealed class Viewer {
     sealed class Filter {
 
         @Parcelize
-        enum class Type : Parcelable { TEXT, NUMBER, SELECTED, CHECKBOX }
+        enum class Type : Parcelable { TEXT, NUMBER, DATE, SELECTED, CHECKBOX }
 
         sealed class Condition : Filter() {
             abstract val title: String
@@ -247,6 +247,70 @@ sealed class Viewer {
                             Empty(),
                             NotEmpty(),
                             None()
+                        )
+                }
+
+            }
+
+            sealed class Date : Condition() {
+
+                data class None(val name: String = "All") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class Equal(val name: String = "Is") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class Greater(val name: String = "Is after") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class Less(val name: String = "Is before") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class GreaterOrEqual(val name: String = "Is on or after") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class LessOrEqual(val name: String = "Is on or before") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class In(val name: String = "Is within") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class Empty(val name: String = "Is empty") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                data class NotEmpty(val name: String = "Is not empty") : Date() {
+                    override val title: String
+                        get() = name
+                }
+
+                companion object {
+                    fun dateConditions() =
+                        listOf(
+                            None(),
+                            Equal(),
+                            Greater(),
+                            Less(),
+                            GreaterOrEqual(),
+                            LessOrEqual(),
+                            In(),
+                            Empty(),
+                            NotEmpty(),
                         )
                 }
 

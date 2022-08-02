@@ -26,7 +26,7 @@ sealed class CellView {
     data class Date(
         override val id: String,
         override val key: String,
-        val timeInMillis: Long? = null,
+        val timeInSecs: Long? = null,
         override val dateFormat: String,
     ) : CellView(), DateFormat
 

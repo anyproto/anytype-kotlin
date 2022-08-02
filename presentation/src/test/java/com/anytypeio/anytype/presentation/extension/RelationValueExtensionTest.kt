@@ -35,13 +35,13 @@ class RelationValueExtensionTest {
     }
 
     @Test
-    fun `should return time in millis when Any is numbered string`() {
+    fun `should return time in secs when Any is numbered string`() {
 
         val value: Any = "1621596602"
 
         val result: Long? = DateParser.parse(value)
 
-        val expected: Long = 1621596602000L
+        val expected: Long = 1621596602L
 
         assertNotNull(result)
 
@@ -52,13 +52,13 @@ class RelationValueExtensionTest {
     }
 
     @Test
-    fun `should return time in millis when Any is Double`() {
+    fun `should return time in secs when Any is Double`() {
 
         val value: Any = 1621596602.0
 
         val result: Long? = DateParser.parse(value)
 
-        val expected: Long = 1621596602000L
+        val expected: Long = 1621596602L
 
         assertNotNull(result)
 
@@ -69,13 +69,13 @@ class RelationValueExtensionTest {
     }
 
     @Test
-    fun `should return time in millis when Any is Long`() {
+    fun `should return time in secs when Any is Long`() {
 
         val value: Any = 1621596602L
 
         val result: Long? = DateParser.parse(value)
 
-        val expected: Long = 1621596602000L
+        val expected: Long = 1621596602L
 
         assertNotNull(result)
 

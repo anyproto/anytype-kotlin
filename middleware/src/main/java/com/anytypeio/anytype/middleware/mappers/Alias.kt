@@ -36,6 +36,7 @@ typealias MDVSort = anytype.model.Block.Content.Dataview.Sort
 typealias MDVSortType = anytype.model.Block.Content.Dataview.Sort.Type
 typealias MDVFilter = anytype.model.Block.Content.Dataview.Filter
 typealias MDVFilterCondition = anytype.model.Block.Content.Dataview.Filter.Condition
+typealias MDVFilterQuickOption = anytype.model.Block.Content.Dataview.Filter.QuickOption
 typealias MDVFilterOperator = anytype.model.Block.Content.Dataview.Filter.Operator
 typealias MDVRelation = anytype.model.Block.Content.Dataview.Relation
 typealias MDVDateFormat = anytype.model.Block.Content.Dataview.Relation.DateFormat

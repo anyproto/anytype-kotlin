@@ -10,8 +10,8 @@ import com.anytypeio.anytype.presentation.sets.model.CellView
 class DVGridCellDateHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(cell: CellView.Date) {
-        itemView.findViewById<TextView>(R.id.tvText).text = cell.timeInMillis?.formatTimestamp(
-            isMillis = true,
+        itemView.findViewById<TextView>(R.id.tvText).text = cell.timeInSecs?.formatTimestamp(
+            isMillis = false,
             format = cell.dateFormat
         )
     }

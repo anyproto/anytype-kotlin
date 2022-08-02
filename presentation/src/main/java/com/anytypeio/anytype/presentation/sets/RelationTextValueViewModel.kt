@@ -26,6 +26,18 @@ class RelationTextValueViewModel(
 
     private val jobs = mutableListOf<Job>()
 
+    fun onDateStart(
+        name: String,
+        value: Long?,
+    ) {
+        title.value = name
+        views.value = listOf(
+            RelationTextValueView.Number(
+                value = NumberParser.parse(value)
+            )
+        )
+    }
+
     fun onStart(
         relationId: Id,
         recordId: String,
@@ -36,48 +48,43 @@ class RelationTextValueViewModel(
                 relations.observe(relationId),
                 values.subscribe(recordId)
             ) { relation, values ->
-                title.value = relation.name
+                val value = values[relationId]?.toString()
                 val isValueReadOnly = values[Relations.IS_READ_ONLY] as? Boolean ?: false
                 val isValueEditable = !(isValueReadOnly || isLocked)
+                title.value = relation.name
                 views.value = listOf(
                     when (relation.format) {
                         Relation.Format.SHORT_TEXT -> {
-                            val value = values[relationId] as? String
                             RelationTextValueView.TextShort(
                                 value = value,
                                 isEditable = isValueEditable
                             )
                         }
                         Relation.Format.LONG_TEXT -> {
-                            val value = values[relationId] as? String
                             RelationTextValueView.Text(
                                 value = value,
                                 isEditable = isValueEditable
                             )
                         }
                         Relation.Format.NUMBER -> {
-                            val value = NumberParser.parse(values[relationId])
                             RelationTextValueView.Number(
-                                value = value,
+                                value = NumberParser.parse(value),
                                 isEditable = isValueEditable
                             )
                         }
                         Relation.Format.URL -> {
-                            val value = values[relationId] as? String
                             RelationTextValueView.Url(
                                 value = value,
                                 isEditable = isValueEditable
                             )
                         }
                         Relation.Format.EMAIL -> {
-                            val value = values[relationId] as? String
                             RelationTextValueView.Email(
                                 value = value,
                                 isEditable = isValueEditable
                             )
                         }
                         Relation.Format.PHONE -> {
-                            val value = values[relationId] as? String
                             RelationTextValueView.Phone(
                                 value = value,
                                 isEditable = isValueEditable

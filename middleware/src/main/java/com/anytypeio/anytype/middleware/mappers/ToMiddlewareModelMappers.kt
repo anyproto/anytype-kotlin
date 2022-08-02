@@ -339,12 +339,28 @@ fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =
         RelationKey = relationKey,
         operator_ = operator.toMiddlewareModel(),
         condition = condition.toMiddlewareModel(),
+        quickOption = quickOption.toMiddlewareModel(),
         value_ = value
     )
 
 fun Block.Content.DataView.Filter.Operator.toMiddlewareModel(): MDVFilterOperator = when (this) {
     Block.Content.DataView.Filter.Operator.AND -> MDVFilterOperator.And
     Block.Content.DataView.Filter.Operator.OR -> MDVFilterOperator.Or
+}
+
+fun Block.Content.DataView.Filter.QuickOption.toMiddlewareModel(): MDVFilterQuickOption = when (this) {
+    Block.Content.DataView.Filter.QuickOption.EXACT_DATE -> MDVFilterQuickOption.ExactDate
+    Block.Content.DataView.Filter.QuickOption.YESTERDAY -> MDVFilterQuickOption.Yesterday
+    Block.Content.DataView.Filter.QuickOption.TODAY -> MDVFilterQuickOption.Today
+    Block.Content.DataView.Filter.QuickOption.TOMORROW -> MDVFilterQuickOption.Tomorrow
+    Block.Content.DataView.Filter.QuickOption.LAST_WEEK -> MDVFilterQuickOption.LastWeek
+    Block.Content.DataView.Filter.QuickOption.CURRENT_WEEK -> MDVFilterQuickOption.CurrentWeek
+    Block.Content.DataView.Filter.QuickOption.NEXT_WEEK -> MDVFilterQuickOption.NextWeek
+    Block.Content.DataView.Filter.QuickOption.LAST_MONTH -> MDVFilterQuickOption.LastMonth
+    Block.Content.DataView.Filter.QuickOption.CURRENT_MONTH -> MDVFilterQuickOption.CurrentMonth
+    Block.Content.DataView.Filter.QuickOption.NEXT_MONTH -> MDVFilterQuickOption.NextMonth
+    Block.Content.DataView.Filter.QuickOption.DAYS_AGO -> MDVFilterQuickOption.NumberOfDaysAgo
+    Block.Content.DataView.Filter.QuickOption.DAYS_AHEAD -> MDVFilterQuickOption.NumberOfDaysNow
 }
 
 fun Block.Content.DataView.Filter.Condition.toMiddlewareModel(): MDVFilterCondition = when (this) {

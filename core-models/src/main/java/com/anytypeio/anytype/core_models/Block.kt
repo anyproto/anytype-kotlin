@@ -329,6 +329,7 @@ data class Block(
                 val relationKey: String,
                 val operator: Operator = Operator.AND,
                 val condition: Condition,
+                val quickOption: QuickOption = QuickOption.EXACT_DATE,
                 val value: Any?
             ) {
                 enum class Operator { AND, OR }
@@ -336,6 +337,11 @@ data class Block(
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,
                     LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE,
                     EXACT_IN, NOT_EXACT_IN
+                }
+
+                enum class QuickOption {
+                    EXACT_DATE, YESTERDAY, TODAY, TOMORROW, LAST_WEEK, CURRENT_WEEK, NEXT_WEEK,
+                    LAST_MONTH, CURRENT_MONTH, NEXT_MONTH, DAYS_AGO, DAYS_AHEAD,
                 }
             }
         }

@@ -45,6 +45,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="12dp"
         app:layout_goneMarginEnd="@dimen/dp_20"
+        android:maxLines="2"
         style="@style/ViewerFilterTextValueStyle"
         app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
         app:layout_constraintEnd_toStartOf="@+id/iconArrow"

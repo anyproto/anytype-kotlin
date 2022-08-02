@@ -11,6 +11,7 @@ fun Viewer.Filter.Condition.index(): Int = this.getConditions().indexOf(this)
 fun Viewer.Filter.Condition.getConditions(): List<Viewer.Filter.Condition> = when (this) {
     is Viewer.Filter.Condition.Checkbox -> Viewer.Filter.Condition.Checkbox.checkboxConditions()
     is Viewer.Filter.Condition.Number -> Viewer.Filter.Condition.Number.numberConditions()
+    is Viewer.Filter.Condition.Date -> Viewer.Filter.Condition.Date.dateConditions()
     is Viewer.Filter.Condition.Selected -> Viewer.Filter.Condition.Selected.selectConditions()
     is Viewer.Filter.Condition.Text -> Viewer.Filter.Condition.Text.textConditions()
 }
@@ -18,6 +19,7 @@ fun Viewer.Filter.Condition.getConditions(): List<Viewer.Filter.Condition> = whe
 fun Viewer.Filter.Condition.type(): Viewer.Filter.Type = when (this) {
     is Viewer.Filter.Condition.Checkbox -> Viewer.Filter.Type.CHECKBOX
     is Viewer.Filter.Condition.Number -> Viewer.Filter.Type.NUMBER
+    is Viewer.Filter.Condition.Date -> Viewer.Filter.Type.DATE
     is Viewer.Filter.Condition.Selected -> Viewer.Filter.Type.SELECTED
     is Viewer.Filter.Condition.Text -> Viewer.Filter.Type.TEXT
 }
@@ -32,10 +34,13 @@ fun Relation.toConditionView(condition: DVFilterCondition?): Viewer.Filter.Condi
             condition?.toView(category = DVFilterConditionCategory.TEXT)
                 ?: Viewer.Filter.Condition.Text.textConditions().first()
         }
-        Relation.Format.NUMBER,
-        Relation.Format.DATE -> {
+        Relation.Format.NUMBER -> {
             condition?.toView(category = DVFilterConditionCategory.NUMBER)
                 ?: Viewer.Filter.Condition.Number.numberConditions().first()
+        }
+        Relation.Format.DATE -> {
+            condition?.toView(category = DVFilterConditionCategory.DATE)
+                ?: Viewer.Filter.Condition.Date.dateConditions().first()
         }
         Relation.Format.STATUS,
         Relation.Format.TAG,
@@ -57,6 +62,7 @@ private fun DVFilterCondition.toView(
         when (category) {
             DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.Equal()
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Equal()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.Equal()
             DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.Equal()
             DVFilterConditionCategory.CHECKBOX -> Viewer.Filter.Condition.Checkbox.Equal()
         }
@@ -72,24 +78,28 @@ private fun DVFilterCondition.toView(
     DVFilterCondition.GREATER -> {
         when (category) {
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Greater()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.Greater()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.LESS -> {
         when (category) {
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Less()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.Less()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.GREATER_OR_EQUAL -> {
         when (category) {
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.GreaterOrEqual()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.GreaterOrEqual()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
     DVFilterCondition.LESS_OR_EQUAL -> {
         when (category) {
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.LessOrEqual()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.LessOrEqual()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
@@ -108,6 +118,7 @@ private fun DVFilterCondition.toView(
     DVFilterCondition.IN -> {
         when (category) {
             DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.In()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.In()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
@@ -121,6 +132,7 @@ private fun DVFilterCondition.toView(
         when (category) {
             DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.Empty()
             DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.Empty()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.Empty()
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.Empty()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
@@ -130,6 +142,7 @@ private fun DVFilterCondition.toView(
             DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.NotEmpty()
             DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.NotEmpty()
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.NotEmpty()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.NotEmpty()
             else -> throw IllegalArgumentException("Condition ${this.name} is not present in $category")
         }
     }
@@ -146,6 +159,7 @@ private fun DVFilterCondition.toView(
         when (category) {
             DVFilterConditionCategory.TEXT -> Viewer.Filter.Condition.Text.None()
             DVFilterConditionCategory.NUMBER -> Viewer.Filter.Condition.Number.None()
+            DVFilterConditionCategory.DATE -> Viewer.Filter.Condition.Date.None()
             DVFilterConditionCategory.SELECT -> Viewer.Filter.Condition.Selected.None()
             DVFilterConditionCategory.CHECKBOX -> Viewer.Filter.Condition.Checkbox.None()
         }

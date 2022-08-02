@@ -1,6 +1,10 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.relations.toView
@@ -18,6 +22,9 @@ fun Viewer.Filter.Condition.hasValue(): Boolean = when (this) {
     is Viewer.Filter.Condition.Number.None,
     is Viewer.Filter.Condition.Number.Empty,
     is Viewer.Filter.Condition.Number.NotEmpty,
+    is Viewer.Filter.Condition.Date.None,
+    is Viewer.Filter.Condition.Date.Empty,
+    is Viewer.Filter.Condition.Date.NotEmpty,
     is Viewer.Filter.Condition.Selected.None,
     is Viewer.Filter.Condition.Text.None -> false
     else -> true

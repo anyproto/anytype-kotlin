@@ -133,13 +133,13 @@ abstract class ObjectMenuViewModelBase(
                 )
             ).process(
                 failure = {
-                    Timber.e(it, ARCHIVE_OBJECT_ERR_MSG)
-                    _toasts.emit(ARCHIVE_OBJECT_ERR_MSG)
+                    Timber.e(it, MOVE_OBJECT_TO_BIN_ERR_MSG)
+                    _toasts.emit(MOVE_OBJECT_TO_BIN_ERR_MSG)
                 },
                 success = {
                     if (isArchived) {
                         sendAnalyticsMoveToBinEvent(analytics)
-                        _toasts.emit(ARCHIVE_OBJECT_SUCCESS_MSG)
+                        _toasts.emit(MOVE_OBJECT_TO_BIN_SUCCESS_MSG)
                     } else {
                         _toasts.emit(RESTORE_OBJECT_SUCCESS_MSG)
                     }
@@ -161,13 +161,12 @@ abstract class ObjectMenuViewModelBase(
     }
 
     companion object {
-        const val ARCHIVE_OBJECT_SUCCESS_MSG = "Object archived!"
+        const val MOVE_OBJECT_TO_BIN_SUCCESS_MSG = "Moved to bin!"
         const val RESTORE_OBJECT_SUCCESS_MSG = "Object restored!"
-        const val ARCHIVE_OBJECT_ERR_MSG =
-            "Error while changing is-archived status for this object. Please, try again later."
+        const val MOVE_OBJECT_TO_BIN_ERR_MSG =
+            "Error while moving object to bin. Please, try again later."
         const val ADD_TO_FAVORITE_SUCCESS_MSG = "Object added to favorites."
         const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
-        const val COMING_SOON_MSG = "Coming soon..."
         const val NOT_ALLOWED = "Not allowed for this object"
         const val OBJECT_IS_LOCKED_MSG = "Your object is locked"
         const val OBJECT_IS_UNLOCKED_MSG = "Your object is locked"

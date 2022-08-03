@@ -32,6 +32,7 @@ class OtherSettingsViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
     val isClearFileCacheInProgress = MutableStateFlow(false)
+    val defaultObjectTypeName = MutableStateFlow<String?>(null)
 
     init {
         viewModelScope.launch {
@@ -40,7 +41,7 @@ class OtherSettingsViewModel(
                     Timber.e(e, "Error while getting user settings")
                 },
                 onSuccess = {
-                    commands.emit(Command.SetObjectType(name = it.name))
+                    defaultObjectTypeName.value = it.name
                 }
             )
         }
@@ -104,7 +105,7 @@ class OtherSettingsViewModel(
                     commands.emit(Command.Toast(msg = "Error while setting default object type"))
                 },
                 success = {
-                    commands.emit(Command.SetObjectType(name = name))
+                    defaultObjectTypeName.value = name
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
@@ -118,7 +119,6 @@ class OtherSettingsViewModel(
     }
 
     sealed class Command {
-        data class SetObjectType(val name: String?) : Command()
         data class Toast(val msg: String) : Command()
         data class NavigateToObjectTypesScreen(
             val smartBlockType: SmartBlockType,

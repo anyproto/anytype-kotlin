@@ -47,6 +47,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
         super.onStart()
         with(lifecycleScope) {
             jobs += subscribe(vm.commands) { observe(it) }
+            jobs += subscribe(vm.defaultObjectTypeName) { binding.objectType.text = it }
         }
     }
 
@@ -62,11 +63,8 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
                     )
                 )
             }
-            is OtherSettingsViewModel.Command.SetObjectType -> {
-                binding.objectType.text = command.name
-            }
             is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
-            OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
+            is OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
                 val dialog = ClearCacheAlertFragment.new()
                 dialog.onClearAccepted = { vm.proceedWithClearCache() }
                 dialog.show(childFragmentManager, null)

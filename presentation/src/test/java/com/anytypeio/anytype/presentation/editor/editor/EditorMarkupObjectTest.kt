@@ -120,7 +120,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                                     param = linkObject
                                 )
                             ),
-                            backgroundColor = null,
                             color = null,
                             indent = 0,
                             text = "Start Foobar End",
@@ -279,7 +278,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                         ),
 
                         ),
-                    backgroundColor = null,
                     color = null,
                     indent = 0,
                     text = "Start Link Object Mention End",
@@ -446,7 +444,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                             param = newObjectId
                         ),
                     ),
-                    backgroundColor = null,
                     color = null,
                     indent = 0,
                     text = "Start Link Object Mention End",

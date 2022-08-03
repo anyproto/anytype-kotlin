@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.MarkupColorAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 
 class MarkupColorToolbarWidget @JvmOverloads constructor(

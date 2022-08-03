@@ -116,7 +116,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         } else {
             logo.gone()
         }
-        applyBackground(item.backgroundColor)
+        applyBackground(item.background)
         applyRootMargins(item)
     }
 
@@ -180,7 +180,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
                 applySearchHighlight(item)
             }
             if (payload.isBackgroundColorChanged) {
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
             }
         }
     }

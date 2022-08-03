@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import android.text.Spannable
+import com.anytypeio.anytype.core_models.ThemeColor
 
 /**
  * Classes implementing this interface should support markup rendering.

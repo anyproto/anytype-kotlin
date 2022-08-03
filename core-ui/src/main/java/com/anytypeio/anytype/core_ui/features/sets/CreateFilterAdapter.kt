@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterDateBinding
@@ -17,7 +18,6 @@ import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 
 class CreateFilterAdapter(

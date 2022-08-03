@@ -19,7 +19,6 @@ import com.anytypeio.anytype.presentation.BuildConfig.NESTED_DECORATION_ENABLED
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
@@ -800,7 +799,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             marks = normalizedMarks,
             isFocused = block.id == focus.id,
             color = content.color,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
@@ -855,7 +854,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             color = content.color,
             isFocused = block.id == focus.id,
             marks = normalizedMarks,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
@@ -890,7 +889,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             color = content.color,
             isFocused = block.id == focus.id,
             marks = normalizedMarks,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
@@ -925,7 +924,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             color = content.color,
             isFocused = block.id == focus.id,
             marks = normalizedMarks,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
@@ -960,7 +959,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             marks = normalizedMarks,
             isChecked = content.isChecked == true,
             color = content.color,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isFocused = block.id == focus.id,
             indent = indent,
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
@@ -996,7 +995,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             marks = normalizedMarks,
             isFocused = block.id == focus.id,
             color = content.color,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
@@ -1019,7 +1018,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
         id = block.id,
         text = content.text,
-        backgroundColor = block.backgroundColor,
+        background = block.parseThemeBackgroundColor(),
         color = content.color,
         isFocused = block.id == focus.id,
         indent = indent,
@@ -1065,7 +1064,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             marks = normalizedMarks,
             indent = indent,
             alignment = content.align?.toView(), color = content.color,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
@@ -1106,7 +1105,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             marks = normalizedMarks,
             indent = indent,
             color = content.color,
-            backgroundColor = block.backgroundColor ?: ThemeColor.GREY.code,
+            background = block.parseThemeBackgroundColor(),
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,
@@ -1140,7 +1139,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             text = normalizedText,
             marks = normalizedMarks,
             color = content.color,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             indent = indent,
             isFocused = block.id == focus.id,
             toggled = toggleStateHolder.isToggled(block.id),
@@ -1178,7 +1177,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             number = number,
             isFocused = block.id == focus.id,
             color = content.color,
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             indent = indent,
             marks = normalizedMarks,
             cursor = if (block.id == focus.id) setCursor(focus, content) else null,
@@ -1215,7 +1214,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     block = block,
                     selection = selection
                 ),
-                backgroundColor = block.backgroundColor,
+                background = block.parseThemeBackgroundColor(),
                 isPreviousBlockMedia = isPreviousBlockMedia,
                 decorations = schema.toBlockViewDecoration(block)
             )
@@ -1231,7 +1230,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     block = block,
                     selection = selection
                 ),
-                decorations = schema.toBlockViewDecoration(block)
+                decorations = schema.toBlockViewDecoration(block),
+                background = block.parseThemeBackgroundColor()
             )
         }
     } ?: BlockView.MediaPlaceholder.Bookmark(
@@ -1243,7 +1243,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             block = block,
             selection = selection
         ),
-        backgroundColor = block.backgroundColor,
+        background = block.parseThemeBackgroundColor(),
         isPreviousBlockMedia = isPreviousBlockMedia,
         decorations = schema.toBlockViewDecoration(block)
     )
@@ -1264,7 +1264,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             decorations = schema.toBlockViewDecoration(block)
         )
         Content.Divider.Style.DOTS -> BlockView.DividerDots(
@@ -1275,7 +1275,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             decorations = schema.toBlockViewDecoration(block)
         )
     }
@@ -1299,7 +1299,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isPreviousBlockMedia = isPreviousBlockMedia,
             decorations = schema.toBlockViewDecoration(block)
         )
@@ -1313,7 +1313,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
             decorations = schema.toBlockViewDecoration(block)
         )
@@ -1327,7 +1327,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
             decorations = schema.toBlockViewDecoration(block)
         )
@@ -1341,7 +1341,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
             decorations = schema.toBlockViewDecoration(block)
         )
@@ -1355,7 +1355,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
             decorations = schema.toBlockViewDecoration(block)
         )
@@ -1369,7 +1369,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
             decorations = schema.toBlockViewDecoration(block)
         )
@@ -1470,7 +1470,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverColor = coverColor,
                     coverImage = coverImage,
                     coverGradient = coverGradient,
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
             }
@@ -1485,7 +1485,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverImage = coverImage,
                     coverGradient = coverGradient,
                     isChecked = content.isChecked == true,
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
             }
@@ -1505,7 +1505,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverColor = coverColor,
                     coverImage = coverImage,
                     coverGradient = coverGradient,
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
             }
@@ -1529,7 +1529,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverColor = coverColor,
                     coverImage = coverImage,
                     coverGradient = coverGradient,
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 )
             }
@@ -1671,7 +1671,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 coverColor = coverColor,
                 coverImage = coverImage,
                 coverGradient = coverGradient,
-                backgroundColor = block.backgroundColor,
+                background = block.parseThemeBackgroundColor(),
                 isPreviousBlockMedia = isPreviousBlockMedia,
                 objectTypeName = type,
                 decorations = buildNestedDecorationData(
@@ -1694,7 +1694,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     block = block,
                     selection = selection
                 ),
-                backgroundColor = block.backgroundColor,
+                background = block.parseThemeBackgroundColor(),
                 decorations = buildNestedDecorationData(
                     block = block,
                     parentScheme = parentSchema,
@@ -1792,7 +1792,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         id = block.id,
         indent = indent,
         latex = content.latex,
-        backgroundColor = block.backgroundColor,
+        background = block.parseThemeBackgroundColor(),
         isSelected = checkIfSelected(
             mode = mode,
             block = block,
@@ -1808,7 +1808,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         return BlockView.TableOfContents(
             id = block.id,
             items = listOf(),
-            backgroundColor = block.backgroundColor,
+            background = block.parseThemeBackgroundColor(),
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -1862,7 +1862,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 block = block,
                 selection = selection
             ),
-            backgroundColor = block.backgroundColor
+            background = block.parseThemeBackgroundColor()
         )
     }
 
@@ -1954,7 +1954,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     private fun tableColumn(block: Block): BlockView.Table.Column {
         return BlockView.Table.Column(
             id = block.id,
-            backgroundColor = block.backgroundColor
+            background = block.parseThemeBackgroundColor()
         )
     }
 
@@ -1987,7 +1987,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         id = block.id,
                         view = view,
                         indent = indent,
-                        background = block.backgroundColor,
+                        background = block.parseThemeBackgroundColor(),
                         decorations = schema.toBlockViewDecoration(block)
                     )
                 } else {

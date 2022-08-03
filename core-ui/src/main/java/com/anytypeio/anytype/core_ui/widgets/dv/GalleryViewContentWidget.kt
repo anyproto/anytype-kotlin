@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView

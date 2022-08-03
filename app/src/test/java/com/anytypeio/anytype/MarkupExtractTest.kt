@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_ui.common.toSpannable
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.ext.isSpanInRange
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
 import org.junit.Test

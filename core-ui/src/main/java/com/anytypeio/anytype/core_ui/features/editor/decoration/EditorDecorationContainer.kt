@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.veryLight
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Decoration
 
 class EditorDecorationContainer @JvmOverloads constructor(

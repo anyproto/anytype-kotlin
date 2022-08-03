@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.clipboard.Copy
@@ -194,7 +195,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = true,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 0,
             text = parent.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -205,7 +205,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = true,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 1,
             text = child1.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -216,7 +215,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = true,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 1,
             text = child2.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -227,7 +225,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = true,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 2,
             text = grandchild1.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -238,7 +235,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = true,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 2,
             text = grandchild2.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -409,7 +405,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = false,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 0,
             text = parent.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -420,7 +415,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = false,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 1,
             text = child1.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ
@@ -431,7 +425,6 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             isSelected = false,
             isFocused = false,
             marks = emptyList(),
-            backgroundColor = null,
             indent = 1,
             text = child2.content<Block.Content.Text>().text,
             mode = BlockView.Mode.READ

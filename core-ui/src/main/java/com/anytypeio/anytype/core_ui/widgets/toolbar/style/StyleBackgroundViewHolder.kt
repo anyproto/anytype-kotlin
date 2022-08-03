@@ -2,7 +2,7 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.style
 
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.databinding.BlockStyleToolbarBackgroundBinding
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 
 class StyleBackgroundViewHolder(

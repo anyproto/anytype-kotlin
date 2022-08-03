@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor.styling
 import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.TextStyle
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Assert
 import org.junit.Test

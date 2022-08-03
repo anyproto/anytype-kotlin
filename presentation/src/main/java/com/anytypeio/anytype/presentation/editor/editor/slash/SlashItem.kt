@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.const.SlashConst
 import com.anytypeio.anytype.core_utils.const.SlashConst.SLASH_OTHER_TOC_ABBREVIATION
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ObjectType.Layout as ObjectTypeLayout
 
 sealed class SlashWidgetState {

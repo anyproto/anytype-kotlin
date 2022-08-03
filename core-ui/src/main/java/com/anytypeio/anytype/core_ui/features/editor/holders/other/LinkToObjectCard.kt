@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -78,7 +79,7 @@ class LinkToObjectCard(
 
         applyCover(item)
 
-        applyBackground(item.backgroundColor)
+        applyBackground(item.background)
 
         applySearchHighlight(item)
 
@@ -196,7 +197,7 @@ class LinkToObjectCard(
             if (payload.isObjectCoverChanged)
                 applyCover(item)
             if (payload.isBackgroundColorChanged)
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
         }
     }
 
@@ -251,7 +252,7 @@ class LinkToObjectCard(
         }
     }
 
-    private fun applyBackground(background: String?) {
+    private fun applyBackground(background: ThemeColor) {
         container.setBlockBackgroundColor(background)
     }
 

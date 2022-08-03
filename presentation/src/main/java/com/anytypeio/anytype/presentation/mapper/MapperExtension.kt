@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.dashboard.DashboardView
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -40,7 +41,7 @@ fun Block.Content.File.toPictureView(
     indent: Int,
     mode: BlockView.Mode,
     isSelected: Boolean = false,
-    backgroundColor: String?,
+    background: ThemeColor,
     isPreviousBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>
 ): BlockView = when (state) {
@@ -49,7 +50,7 @@ fun Block.Content.File.toPictureView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         isPreviousBlockMedia = isPreviousBlockMedia,
         decorations = decorations
     )
@@ -58,7 +59,7 @@ fun Block.Content.File.toPictureView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     Block.Content.File.State.DONE -> BlockView.Media.Picture(
@@ -71,7 +72,7 @@ fun Block.Content.File.toPictureView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     Block.Content.File.State.ERROR -> BlockView.Error.Picture(
@@ -79,7 +80,7 @@ fun Block.Content.File.toPictureView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     else -> throw IllegalStateException("Unexpected state: $state")
@@ -91,7 +92,7 @@ fun Block.Content.File.toVideoView(
     indent: Int,
     mode: BlockView.Mode,
     isSelected: Boolean = false,
-    backgroundColor: String?,
+    background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>
 ): BlockView = when (state) {
@@ -100,7 +101,7 @@ fun Block.Content.File.toVideoView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         isPreviousBlockMedia = isPrevBlockMedia,
         decorations = decorations
     )
@@ -109,7 +110,7 @@ fun Block.Content.File.toVideoView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     Block.Content.File.State.DONE -> BlockView.Media.Video(
@@ -122,7 +123,7 @@ fun Block.Content.File.toVideoView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     Block.Content.File.State.ERROR -> BlockView.Error.Video(
@@ -130,7 +131,7 @@ fun Block.Content.File.toVideoView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations
     )
     else -> throw IllegalStateException("Unexpected state: $state")
@@ -142,7 +143,7 @@ fun Block.Content.File.toFileView(
     indent: Int,
     mode: BlockView.Mode,
     isSelected: Boolean = false,
-    backgroundColor: String?,
+    background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>
 ): BlockView = when (state) {
@@ -151,7 +152,7 @@ fun Block.Content.File.toFileView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         isPreviousBlockMedia = isPrevBlockMedia,
         decorations = decorations
     )
@@ -160,7 +161,7 @@ fun Block.Content.File.toFileView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     Block.Content.File.State.DONE -> BlockView.Media.File(
@@ -173,7 +174,7 @@ fun Block.Content.File.toFileView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     Block.Content.File.State.ERROR -> BlockView.Error.File(
@@ -181,7 +182,7 @@ fun Block.Content.File.toFileView(
         indent = indent,
         mode = mode,
         isSelected = isSelected,
-        backgroundColor = backgroundColor,
+        background = background,
         decorations = decorations
     )
     else -> throw IllegalStateException("Unexpected state: $state")

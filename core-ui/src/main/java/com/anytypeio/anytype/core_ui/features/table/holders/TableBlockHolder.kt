@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_ui.features.table.TableBlockAdapter
 import com.anytypeio.anytype.core_ui.features.table.TableCellsDiffUtil
 import com.anytypeio.anytype.core_ui.layout.TableHorizontalItemDivider
 import com.anytypeio.anytype.core_ui.layout.TableVerticalItemDivider
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -70,12 +71,12 @@ class TableBlockHolder(
                 selected.isSelected = item.isSelected
             }
             if (payload.changes.contains(BlockViewDiffUtil.BACKGROUND_COLOR_CHANGED)) {
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
             }
         }
     }
 
-    private fun applyBackground(background: String?) {
+    private fun applyBackground(background: ThemeColor) {
         root.setBlockBackgroundColor(background)
     }
 }

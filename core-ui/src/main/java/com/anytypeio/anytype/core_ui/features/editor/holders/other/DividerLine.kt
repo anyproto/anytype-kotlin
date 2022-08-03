@@ -28,7 +28,7 @@ class DividerLine(
             item = item,
             isItemSelected = item.isSelected,
             clicked = clicked,
-            background = item.backgroundColor
+            background = item.background
         )
     }
 

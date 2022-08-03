@@ -2,8 +2,8 @@ package com.anytypeio.anytype.presentation.editor.render
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.BuildConfig
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 /**

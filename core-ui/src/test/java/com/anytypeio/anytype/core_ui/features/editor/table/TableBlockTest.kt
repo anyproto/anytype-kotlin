@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.uitests.givenAdapter
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -128,10 +129,10 @@ class TableBlockTest {
         )
 
         val columns = listOf(
-            BlockView.Table.Column(id = columnId1, backgroundColor = null),
-            BlockView.Table.Column(id = columnId2, backgroundColor = null),
-            BlockView.Table.Column(id = columnId3, backgroundColor = null),
-            BlockView.Table.Column(id = columnId4, backgroundColor = null)
+            BlockView.Table.Column(id = columnId1, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId2, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId3, background = ThemeColor.DEFAULT),
+            BlockView.Table.Column(id = columnId4, background = ThemeColor.DEFAULT)
         )
 
         scenario.onFragment {

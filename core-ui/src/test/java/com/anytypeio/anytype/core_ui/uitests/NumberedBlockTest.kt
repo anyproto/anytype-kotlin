@@ -11,7 +11,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.TestFragment
 import com.anytypeio.anytype.test_utils.utils.checkHasTextColor

@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
@@ -83,7 +84,7 @@ class LinkToObject(
 
         applyImageOrEmoji(item)
 
-        applyBackground(item.backgroundColor)
+        applyBackground(item.background)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
@@ -176,11 +177,11 @@ class LinkToObject(
             if (payload.isObjectIconChanged)
                 applyImageOrEmoji(item)
             if (payload.isBackgroundColorChanged)
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
         }
     }
 
-    private fun applyBackground(background: String?) {
+    private fun applyBackground(background: ThemeColor) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             root.setBlockBackgroundColor(background)
         }

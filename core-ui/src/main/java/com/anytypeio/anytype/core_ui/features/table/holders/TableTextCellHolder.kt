@@ -19,7 +19,7 @@ import com.anytypeio.anytype.core_ui.features.table.TableCellsDiffUtil
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -59,7 +59,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                 is BlockView.Table.Cell.Empty -> {
                     setBorders(cell.settings)
                     textContent.text = null
-                    setBackground(null, cell.settings)
+                    setBackground(settings = cell.settings)
                 }
                 is BlockView.Table.Cell.Text -> {
                     setBorders(cell.settings)
@@ -69,7 +69,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                         color = cell.block.color
                     )
                     setTextColor(cell.block.color)
-                    setBackground(cell.block.backgroundColor, cell.settings)
+                    setBackground(cell.block.background, cell.settings)
                     setAlignment(cell.block.alignment)
                 }
             }
@@ -107,7 +107,7 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
                 setTextColor(block.color)
             }
             if (payloads.isBackgroundChanged) {
-                setBackground(block.backgroundColor, settings)
+                setBackground(block.background, settings)
             }
             if (payloads.isMarkupChanged) {
                 setBlockSpannableText(block, resolveTextBlockThemedColor(block.color))
@@ -183,21 +183,23 @@ sealed class TableCellHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
 
-        private fun setBackground(background: String?, settings: BlockView.Table.CellSettings) {
+        private fun setBackground(
+            background: ThemeColor = ThemeColor.DEFAULT,
+            settings: BlockView.Table.CellSettings
+        ) {
             setTableCellBackgroundColor(background, root, settings.isHeader)
         }
 
         /**
-         * @param [color] color code, @see [ThemeColor]
+         * @param [bg] color code, @see [ThemeColor]
          */
-        private fun setTableCellBackgroundColor(color: String?, view: View, isHeader: Boolean) {
-            if (!color.isNullOrEmpty()) {
-                val value = ThemeColor.values().find { value -> value.code == color }
-                if (value != null && value != ThemeColor.DEFAULT) {
-                    view.setBackgroundColor(view.resources.veryLight(value, 0))
-                } else {
-                    setTableCellHeaderOrEmptyBackground(view, isHeader)
-                }
+        private fun setTableCellBackgroundColor(
+            bg: ThemeColor,
+            view: View,
+            isHeader: Boolean
+        ) {
+            if (bg != ThemeColor.DEFAULT) {
+                view.setBackgroundColor(view.resources.veryLight(bg, 0))
             } else {
                 setTableCellHeaderOrEmptyBackground(view, isHeader)
             }

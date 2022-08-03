@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -64,7 +63,7 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
         val mimeIcon = item.mime.getMimeIcon(item.name)
         icon.setImageResource(mimeIcon)
 
-        applyBackground(item.backgroundColor)
+        applyBackground(item.background)
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {
@@ -120,7 +119,7 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root) {
                 applySearchHighlight(item)
             }
             if (payload.isBackgroundColorChanged) {
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
             }
         }
     }

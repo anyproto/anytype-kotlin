@@ -33,7 +33,7 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
@@ -380,7 +380,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyBackground(item: BlockView.Title) {
-            content.setBlockBackgroundColor(item.backgroundColor)
+            content.setBlockBackgroundColor(item.background)
         }
     }
 
@@ -502,7 +502,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyBackground(item: BlockView.Title) {
-            binding.title.setBlockBackgroundColor(item.backgroundColor)
+            binding.title.setBlockBackgroundColor(item.background)
         }
     }
 
@@ -571,7 +571,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         override fun applyBackground(item: BlockView.Title) {
-            binding.titleContainer.setBlockBackgroundColor(item.backgroundColor)
+            binding.titleContainer.setBlockBackgroundColor(item.background)
         }
     }
 }

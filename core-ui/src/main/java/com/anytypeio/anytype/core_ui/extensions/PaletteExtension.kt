@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 
 @ColorInt
 fun Resources.text(
@@ -98,6 +98,14 @@ fun View.setBlockBackgroundColor(color: String?) {
         } else {
             background = null
         }
+    } else {
+        background = null
+    }
+}
+
+fun View.setBlockBackgroundColor(bg: ThemeColor) {
+    if (bg != ThemeColor.DEFAULT) {
+        setBackgroundColor(resources.veryLight(bg, 0))
     } else {
         background = null
     }

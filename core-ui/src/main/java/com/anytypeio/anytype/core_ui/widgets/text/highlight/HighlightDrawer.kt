@@ -10,7 +10,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.extensions.veryLight
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import timber.log.Timber
 
 /**

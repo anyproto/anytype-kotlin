@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockStyleToolbarBackgroundBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import kotlinx.coroutines.flow.Flow

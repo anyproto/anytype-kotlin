@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_COLUMN_C
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_COLUMN_COUNT
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_ROW_COUNT
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_ROW_COUNT
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem.Other.Table.Companion.DEFAULT_PATTERN

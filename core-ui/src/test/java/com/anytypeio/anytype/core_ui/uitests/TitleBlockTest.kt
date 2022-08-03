@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.veryLight
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.TestFragment
@@ -79,7 +79,7 @@ class TitleBlockTest {
             val redBackground = ThemeColor.RED
 
             val title = givenTitleBlock(
-                backgroundColor = redBackground.code
+                backgroundColor = redBackground
             )
 
             val recycler = givenRecycler(it)
@@ -105,13 +105,13 @@ class TitleBlockTest {
     private fun givenTitleBlock(
         isFocused: Boolean = false,
         mode: BlockView.Mode = BlockView.Mode.EDIT,
-        backgroundColor: String = ThemeColor.DEFAULT.code
+        backgroundColor: ThemeColor = ThemeColor.DEFAULT
     ) = BlockView.Title.Basic(
         text = MockDataFactory.randomString(),
         id = MockDataFactory.randomUuid(),
         mode = mode,
         isFocused = isFocused,
-        backgroundColor = backgroundColor
+        background = backgroundColor
     )
 
     private fun givenRecycler(fr: Fragment): RecyclerView {

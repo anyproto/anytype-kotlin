@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -47,7 +48,7 @@ abstract class Media(view: View) : BlockViewHolder(view),
         }
     }
 
-    protected fun applyBackground(background: String?) {
+    protected fun applyBackground(background: ThemeColor) {
         container.setBlockBackgroundColor(background)
     }
 }

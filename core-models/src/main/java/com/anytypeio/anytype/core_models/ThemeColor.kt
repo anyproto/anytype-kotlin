@@ -1,6 +1,5 @@
-package com.anytypeio.anytype.presentation.editor.editor
+package com.anytypeio.anytype.core_models
 
-import android.content.res.Resources.Theme
 
 /**
  * @property code color code name

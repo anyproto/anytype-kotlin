@@ -54,7 +54,6 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultEditorType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateDocument
 import com.anytypeio.anytype.domain.page.CreateNewDocument
@@ -85,7 +84,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.InternalDetailModificationManager
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -98,6 +97,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.DefaultSimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
@@ -440,7 +440,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content<Block.Content.Text>().text,
-                    backgroundColor = paragraph.backgroundColor
+                    background = paragraph.parseThemeBackgroundColor()
                 )
             )
         )
@@ -659,12 +659,12 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content.asText().text,
-                        backgroundColor = paragraph.backgroundColor
+                        background = paragraph.parseThemeBackgroundColor()
                     ),
                     BlockView.Text.Paragraph(
                         id = added.id,
                         text = added.content.asText().text,
-                        backgroundColor = added.backgroundColor
+                        background = added.parseThemeBackgroundColor()
                     )
                 )
             )
@@ -795,7 +795,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.backgroundColor
+                    background = paragraph.parseThemeBackgroundColor()
                 )
             )
         )
@@ -910,7 +910,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.backgroundColor,
+                    background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = firstTimeRange.first(),
@@ -948,7 +948,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.backgroundColor,
+                    background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = firstTimeRange.first(),
@@ -1050,7 +1050,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.backgroundColor,
+                    background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = firstTimeRange.first(),
@@ -1095,7 +1095,7 @@ open class EditorViewModelTest {
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
                     color = paragraph.content<Block.Content.Text>().color,
-                    backgroundColor = paragraph.backgroundColor,
+                    background = paragraph.parseThemeBackgroundColor(),
                     marks = listOf(
                         Markup.Mark.Bold(
                             from = secondTimeRange.first(),
@@ -1270,7 +1270,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
                     text = paragraph.content.asText().text,
-                    backgroundColor = paragraph.backgroundColor
+                    background = paragraph.parseThemeBackgroundColor()
                 )
             )
         )
@@ -1590,7 +1590,7 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.backgroundColor
+                        background = paragraph.parseThemeBackgroundColor()
                     )
                 )
             )
@@ -1609,12 +1609,12 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
                         text = paragraph.content<Block.Content.Text>().text,
-                        backgroundColor = paragraph.backgroundColor
+                        background = paragraph.parseThemeBackgroundColor()
                     ),
                     BlockView.Text.Header.One(
                         id = new.id,
                         text = new.content<Block.Content.Text>().text,
-                        backgroundColor = new.backgroundColor,
+                        background = new.parseThemeBackgroundColor(),
                         indent = 0
                     )
                 )
@@ -1827,12 +1827,12 @@ open class EditorViewModelTest {
                     BlockView.Text.Paragraph(
                         id = firstChild.id,
                         text = firstChild.content<Block.Content.Text>().text,
-                        backgroundColor = firstChild.backgroundColor
+                        background = firstChild.parseThemeBackgroundColor()
                     ),
                     BlockView.Text.Paragraph(
                         id = secondChild.id,
                         text = secondChild.content<Block.Content.Text>().text,
-                        backgroundColor = secondChild.backgroundColor
+                        background = secondChild.parseThemeBackgroundColor()
                     )
                 )
             )
@@ -1861,7 +1861,7 @@ open class EditorViewModelTest {
                 BlockView.Text.Paragraph(
                     id = secondChild.id,
                     text = secondChild.content<Block.Content.Text>().text,
-                    backgroundColor = secondChild.backgroundColor
+                    background = secondChild.parseThemeBackgroundColor()
                 )
             )
         )

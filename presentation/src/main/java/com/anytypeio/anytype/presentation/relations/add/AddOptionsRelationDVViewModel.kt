@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewRelationOption
 import com.anytypeio.anytype.domain.dataview.interactor.AddStatusToDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SmartBlockType
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -288,7 +289,6 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.LinkToObject.Default.Text(
                 id = link.id,
                 icon = ObjectIcon.Basic.Avatar(""),
-                backgroundColor = null
             )
         )
 

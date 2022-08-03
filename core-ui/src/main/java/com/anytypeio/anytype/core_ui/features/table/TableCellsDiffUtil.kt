@@ -66,7 +66,7 @@ object TableCellsDiffUtil : DiffUtil.ItemCallback<BlockView.Table.Cell>() {
             if (newBlock.color != oldBlock.color) {
                 changes.add(TEXT_COLOR_CHANGED)
             }
-            if (newBlock.backgroundColor != oldBlock.backgroundColor) {
+            if (newBlock.background != oldBlock.background) {
                 changes.add(BACKGROUND_COLOR_CHANGED)
             }
             if (newBlock.marks != oldBlock.marks) {

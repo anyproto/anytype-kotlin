@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -22,7 +23,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddTagToDataViewRecord
 import com.anytypeio.anytype.domain.dataview.interactor.RemoveTagFromDataViewRecord
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.relations.AddObjectRelationOption
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider

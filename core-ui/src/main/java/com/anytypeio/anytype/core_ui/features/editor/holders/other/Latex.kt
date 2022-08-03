@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.judemanutd.katexview.KatexView
 
@@ -28,7 +29,7 @@ class Latex(
         indentize(item)
         setIsSelected(item)
         setLatex(item.latex)
-        setBackground(item.backgroundColor)
+        setBackground(item.background)
     }
 
     private fun setIsSelected(item: BlockView.Latex) {
@@ -40,7 +41,7 @@ class Latex(
         binding.latexView.setText(encode)
     }
 
-    private fun setBackground(backgroundColor: String?) {
+    private fun setBackground(backgroundColor: ThemeColor) {
         itemView.setBlockBackgroundColor(backgroundColor)
     }
 
@@ -51,7 +52,7 @@ class Latex(
         payloads.forEach { payload ->
             if (payload.isLatexChanged) setLatex(item.latex)
             if (payload.isSelectionChanged) setIsSelected(item)
-            if (payload.isBackgroundColorChanged) setBackground(item.backgroundColor)
+            if (payload.isBackgroundColorChanged) setBackground(item.background)
         }
     }
 

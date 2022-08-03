@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.SmartBlockType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -224,7 +225,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     id = block.id,
                     marks = emptyList(),
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.content<Block.Content.Text>().color,
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
@@ -329,7 +330,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     id = block.id,
                     marks = emptyList(),
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.content<Block.Content.Text>().color,
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),
@@ -442,7 +443,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     id = block.id,
                     marks = emptyList(),
-                    backgroundColor = block.backgroundColor,
+                    background = block.parseThemeBackgroundColor(),
                     color = block.content<Block.Content.Text>().color,
                     text = block.content<Block.Content.Text>().text,
                     alignment = block.content<Block.Content.Text>().align?.toView(),

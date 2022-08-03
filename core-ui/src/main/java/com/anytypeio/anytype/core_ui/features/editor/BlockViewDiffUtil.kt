@@ -75,7 +75,7 @@ class BlockViewDiffUtil(
                 changes.add(TEXT_CHANGED)
             if (newBlock.color != oldBlock.color)
                 changes.add(TEXT_COLOR_CHANGED)
-            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+            if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
@@ -151,7 +151,7 @@ class BlockViewDiffUtil(
                 changes.add(OBJECT_ICON_CHANGED)
             if (newBlock.description != oldBlock.description)
                 changes.add(OBJECT_DESCRIPTION_CHANGED)
-            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+            if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
@@ -160,19 +160,19 @@ class BlockViewDiffUtil(
                 newBlock.coverColor != oldBlock.coverColor
             )
                 changes.add(OBJECT_COVER_CHANGED)
-            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+            if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
         if (newBlock is BlockView.Latex && oldBlock is BlockView.Latex) {
             if (newBlock.latex != oldBlock.latex)
                 changes.add(LATEX_CHANGED)
-            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+            if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
         if (newBlock is BlockView.TableOfContents && oldBlock is BlockView.TableOfContents) {
-            if (newBlock.backgroundColor != oldBlock.backgroundColor)
+            if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 

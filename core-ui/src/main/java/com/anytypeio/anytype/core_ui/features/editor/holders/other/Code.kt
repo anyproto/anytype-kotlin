@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
@@ -69,7 +69,7 @@ class Code(
             content.setText(item.text)
             content.enableReadMode()
             select(item)
-            setBackgroundColor(item.backgroundColor)
+            setBackgroundColor(item.background)
         } else {
             content.enableEditMode()
 
@@ -79,7 +79,7 @@ class Code(
 
             content.setText(item.text)
 
-            setBackgroundColor(item.backgroundColor)
+            setBackgroundColor(item.background)
 
             setCursor(item)
             setFocus(item)
@@ -176,7 +176,7 @@ class Code(
         }
 
         if (payload.backgroundColorChanged()) {
-            setBackgroundColor(item.backgroundColor)
+            setBackgroundColor(item.background)
         }
 
         if (payload.isIndentChanged) {
@@ -225,10 +225,9 @@ class Code(
         }
     }
 
-    private fun setBackgroundColor(color: String? = null) {
-        val value = ThemeColor.values().find { value -> value.code == color }
-        if (value != null && value != ThemeColor.DEFAULT) {
-            (binding.content.background as? ColorDrawable)?.color = root.resources.veryLight(value, 0)
+    private fun setBackgroundColor(background: ThemeColor) {
+        if (background != ThemeColor.DEFAULT) {
+            (binding.content.background as? ColorDrawable)?.color = root.resources.veryLight(background, 0)
         } else {
             val defaultBackgroundColor =
                 content.context.resources.getColor(R.color.shape_tertiary, null)

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor.styling
 
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 
 
 sealed class StylingEvent {

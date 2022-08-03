@@ -121,7 +121,7 @@ abstract class Text(
         } else {
             setTextColor(content.context.color(R.color.text_primary))
         }
-        setBackgroundColor(color = item.backgroundColor)
+        setBackgroundColor(background = item.background)
     }
 
     fun observe(

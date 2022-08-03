@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
@@ -56,7 +57,6 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.hexColorCode
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
@@ -268,7 +268,7 @@ class BlockAdapterTest {
         )
 
         val updated = paragraph.copy(
-            backgroundColor = ThemeColor.PURPLE.code
+            background = ThemeColor.PURPLE
         )
 
         val views = listOf(paragraph)
@@ -970,7 +970,6 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             toggled = MockDataFactory.randomBoolean(),
-            backgroundColor = null,
             color = null,
             isFocused = false,
             marks = emptyList()
@@ -1213,8 +1212,7 @@ class BlockAdapterTest {
         val view = BlockView.LinkToObject.Default.Text(
             id = MockDataFactory.randomUuid(),
             indent = MockDataFactory.randomInt(),
-            icon = ObjectIcon.None,
-            backgroundColor = null
+            icon = ObjectIcon.None
         )
 
         val views = listOf(view)
@@ -2397,8 +2395,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.READ,
             indent = 0,
-            color = null,
-            backgroundColor = null
+            color = null
         )
 
         val views = listOf(highlight)
@@ -2437,8 +2434,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            color = null,
-            backgroundColor = null
+            color = null
         )
 
         val updated = highlight.copy(
@@ -2495,8 +2491,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            color = null,
-            backgroundColor = null
+            color = null
         )
 
         val views = listOf(highlight)
@@ -2535,8 +2530,7 @@ class BlockAdapterTest {
             text = MockDataFactory.randomString(),
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
-            color = null,
-            backgroundColor = null
+            color = null
         )
 
         val updated = highlight.copy(
@@ -3083,7 +3077,6 @@ class BlockAdapterTest {
             id = MockDataFactory.randomUuid(),
             mode = BlockView.Mode.EDIT,
             indent = 0,
-            backgroundColor = null,
             color = null,
             isFocused = false,
             marks = emptyList()
@@ -3292,8 +3285,7 @@ class BlockAdapterTest {
             id = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            icon = ObjectIcon.None,
-            backgroundColor = null
+            icon = ObjectIcon.None
         )
 
         val updated = file.copy(isSelected = true)

@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridCellDescriptionBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.sets.model.CellView
 
 class DVGridCellStatusHolder(val binding: ItemViewerGridCellDescriptionBinding) : RecyclerView.ViewHolder(binding.root) {

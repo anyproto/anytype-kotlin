@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_ui.StubNumberedView
 import com.anytypeio.anytype.core_ui.StubToggleView
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.uitests.givenAdapter
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.TestFragment
 import com.anytypeio.anytype.test_utils.utils.checkHasChildViewCount
@@ -74,7 +74,7 @@ class EditorNestedDecorationListBlockTest {
                         background = bg2
                     )
                 ),
-                backgroundColor = bg2.code
+                backgroundColor = bg2
             )
 
             val recycler = givenRecycler(it)
@@ -126,7 +126,7 @@ class EditorNestedDecorationListBlockTest {
                         background = bg2
                     )
                 ),
-                backgroundColor = bg2.code
+                backgroundColor = bg2
             )
 
             val recycler = givenRecycler(it)
@@ -178,7 +178,7 @@ class EditorNestedDecorationListBlockTest {
                         background = bg2
                     )
                 ),
-                backgroundColor = bg2.code
+                backgroundColor = bg2
             )
 
             val recycler = givenRecycler(it)
@@ -230,7 +230,7 @@ class EditorNestedDecorationListBlockTest {
                         background = bg2
                     )
                 ),
-                backgroundColor = bg2.code
+                backgroundColor = bg2
             )
 
             val recycler = givenRecycler(it)

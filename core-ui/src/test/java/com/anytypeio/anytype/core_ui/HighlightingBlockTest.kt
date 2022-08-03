@@ -48,8 +48,7 @@ class HighlightingBlockTest {
             mode = BlockView.Mode.EDIT,
             marks = listOf(Markup.Mark.Bold(from = 3, to = 10)),
             indent = 0,
-            color = null,
-            backgroundColor = null
+            color = null
         )
 
         val views = listOf(headerOne)

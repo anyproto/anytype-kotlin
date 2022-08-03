@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -37,7 +38,7 @@ abstract class Divider(view: View) : BlockViewHolder(view),
         item: BlockView.Indentable,
         isItemSelected: Boolean,
         clicked: (ListenerType) -> Unit,
-        background: String?
+        background: ThemeColor
     ) = with(itemView) {
         indentize(item)
         container.isSelected = isItemSelected
@@ -53,7 +54,7 @@ abstract class Divider(view: View) : BlockViewHolder(view),
         }
     }
 
-    private fun applyBackground(background: String?) {
+    private fun applyBackground(background: ThemeColor) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             root.setBlockBackgroundColor(background)
         }

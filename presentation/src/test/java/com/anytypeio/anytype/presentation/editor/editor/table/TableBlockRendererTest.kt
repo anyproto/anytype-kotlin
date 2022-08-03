@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -206,7 +207,7 @@ class TableBlockRendererTest {
             columnViews.add(
                 BlockView.Table.Column(
                     id = column.id,
-                    backgroundColor = column.backgroundColor
+                    background = ThemeColor.DEFAULT
                 )
             )
         }
@@ -338,7 +339,7 @@ class TableBlockRendererTest {
             columnViews.add(
                 BlockView.Table.Column(
                     id = column.id,
-                    backgroundColor = column.backgroundColor
+                    background = ThemeColor.DEFAULT
                 )
             )
         }
@@ -548,7 +549,7 @@ class TableBlockRendererTest {
             columnViews.add(
                 BlockView.Table.Column(
                     id = column.id,
-                    backgroundColor = column.backgroundColor
+                    background = ThemeColor.DEFAULT
                 )
             )
         }

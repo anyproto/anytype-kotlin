@@ -201,8 +201,7 @@ class BlockAdapterCursorBindingTest {
             isFocused = true,
             indent = 0,
             cursor = 3,
-            color = null,
-            backgroundColor = null
+            color = null
         )
 
         val views = listOf(block)

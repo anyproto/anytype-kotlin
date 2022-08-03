@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListViewRelationObjectValueView
 import com.anytypeio.anytype.core_ui.widgets.ListViewRelationTagValueView
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView

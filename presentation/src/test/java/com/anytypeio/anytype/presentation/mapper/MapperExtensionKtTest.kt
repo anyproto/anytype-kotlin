@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
@@ -60,7 +61,7 @@ class MapperExtensionKtTest {
             indent = indent,
             decorations = emptyList()
         )
-        val actual = block.toFileView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -83,7 +84,7 @@ class MapperExtensionKtTest {
 
         val expected =
             BlockView.MediaPlaceholder.File(id = id, indent = indent, isPreviousBlockMedia = false)
-        val actual = block.toFileView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -106,7 +107,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Error.File(id = id, indent = indent, decorations = emptyList())
-        val actual = block.toFileView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -128,7 +129,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Upload.File(id = id, indent = indent)
-        val actual = block.toFileView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -169,7 +170,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -196,7 +197,7 @@ class MapperExtensionKtTest {
             indent = indent,
             isPreviousBlockMedia = false
         )
-        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -224,7 +225,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -246,7 +247,7 @@ class MapperExtensionKtTest {
         )
 
         val expected = BlockView.Upload.Picture(id = id, indent = indent)
-        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -286,7 +287,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -323,7 +324,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -354,7 +355,7 @@ class MapperExtensionKtTest {
             isPreviousBlockMedia = false
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -384,7 +385,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -415,7 +416,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -439,7 +440,7 @@ class MapperExtensionKtTest {
             type = type
         )
 
-        block.toVideoView(id, urlBuilder, indent, mode, false, null, false, emptyList())
+        block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
     }
 
     @Test

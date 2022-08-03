@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.block.interactor.UpdateBackgroundColor
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextColor
 import com.anytypeio.anytype.domain.editor.Editor

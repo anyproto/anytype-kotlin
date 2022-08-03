@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardV
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.google.android.material.card.MaterialCardView
@@ -71,7 +71,7 @@ abstract class MediaPlaceholder(
         applyRootMargins(item)
         indentize(item)
         select(item.isSelected)
-        applyBackground(item.backgroundColor)
+        applyBackground(item.background)
         with(itemView) {
             setOnClickListener { placeholderClick(item.id, clicked) }
         }
@@ -84,7 +84,7 @@ abstract class MediaPlaceholder(
                 select(item.isSelected)
             }
             if (payload.isBackgroundColorChanged) {
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
             }
         }
     }
@@ -116,16 +116,11 @@ abstract class MediaPlaceholder(
     }
 
     private fun applyBackground(
-        background: String?
+        bg: ThemeColor
     ) {
         if (BuildConfig.NESTED_DECORATION_ENABLED) return
-        if (!background.isNullOrEmpty()) {
-            val value = ThemeColor.values().find { value -> value.code == background }
-            if (value != null && value != ThemeColor.DEFAULT) {
-                card.setCardBackgroundColor(card.resources.veryLight(value, 0))
-            } else {
-                card.setCardBackgroundColor(0)
-            }
+        if (bg != ThemeColor.DEFAULT) {
+            card.setCardBackgroundColor(card.resources.veryLight(bg, 0))
         } else {
             card.setCardBackgroundColor(0)
         }

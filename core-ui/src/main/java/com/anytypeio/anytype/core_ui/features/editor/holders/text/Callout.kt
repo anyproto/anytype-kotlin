@@ -6,10 +6,12 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundTintColor
+import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
@@ -20,7 +22,6 @@ import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -134,11 +135,13 @@ class Callout(
         }
     }
 
-    override fun setBackgroundColor(color: String?) {
+    override fun setBackgroundColor(color: ThemeColor) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
             binding.calloutCardContainer.setBlockBackgroundTintColor(
                 color = color,
-                default = ThemeColor.GREY
+                default = itemView.resources.veryLight(
+                    color = ThemeColor.GREY
+                )
             )
         }
     }

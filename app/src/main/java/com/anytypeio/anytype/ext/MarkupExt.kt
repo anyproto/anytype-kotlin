@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 
 fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).mapNotNull { span ->
     when (span) {

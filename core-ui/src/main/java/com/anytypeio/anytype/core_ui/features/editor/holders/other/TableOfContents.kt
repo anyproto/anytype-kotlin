@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.widgets.text.TableOfContentsItemWidget
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -51,10 +52,10 @@ class TableOfContents(
             }
             container.addView(textview)
         }
-        applyBackground(item.backgroundColor)
+        applyBackground(item.background)
     }
 
-    private fun applyBackground(background: String?) {
+    private fun applyBackground(background: ThemeColor) {
         root.setBlockBackgroundColor(background)
     }
 
@@ -81,7 +82,7 @@ class TableOfContents(
                 selected.isSelected = item.isSelected
             }
             if (payload.changes.contains(BACKGROUND_COLOR_CHANGED)) {
-                applyBackground(item.backgroundColor)
+                applyBackground(item.background)
             }
         }
     }

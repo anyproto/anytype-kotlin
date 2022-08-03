@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_ui.tools.SlashTextWatcherState
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -121,9 +121,9 @@ interface TextBlockHolder : TextHolder {
      * @see [DecoratableViewHolder]
      * @see [EditorDecorationContainer]
      */
-    fun setBackgroundColor(color: String? = null) {
+    fun setBackgroundColor(background: ThemeColor = ThemeColor.DEFAULT) {
         if (!BuildConfig.NESTED_DECORATION_ENABLED) {
-            root.setBlockBackgroundColor(color)
+            root.setBlockBackgroundColor(background)
         }
     }
 
@@ -331,7 +331,7 @@ interface TextBlockHolder : TextHolder {
         }
 
         if (payload.backgroundColorChanged()) {
-            setBackgroundColor(item.backgroundColor)
+            setBackgroundColor(item.background)
         }
 
         if (payload.alignmentChanged()) {

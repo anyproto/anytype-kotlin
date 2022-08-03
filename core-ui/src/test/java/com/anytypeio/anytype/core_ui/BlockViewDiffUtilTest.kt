@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui
 
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.CALLOUT_ICON_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.DECORATION_CHANGED
@@ -8,7 +9,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
@@ -307,12 +307,11 @@ class BlockViewDiffUtilTest {
             id = id,
             text = text,
             marks = emptyList(),
-            isFocused = MockDataFactory.randomBoolean(),
-            backgroundColor = null
+            isFocused = MockDataFactory.randomBoolean()
         )
 
         val newBlock: BlockView = oldBlock.copy(
-            backgroundColor = MockDataFactory.randomString()
+            background = ThemeColor.BLUE
         )
 
         val old = listOf(oldBlock)
@@ -348,7 +347,6 @@ class BlockViewDiffUtilTest {
             marks = emptyList(),
             indent = 0,
             isFocused = MockDataFactory.randomBoolean(),
-            backgroundColor = null,
             color = null
         )
 
@@ -389,7 +387,6 @@ class BlockViewDiffUtilTest {
             marks = emptyList(),
             indent = 0,
             isFocused = MockDataFactory.randomBoolean(),
-            backgroundColor = null,
             color = null,
             isEmpty = true
         )
@@ -690,8 +687,7 @@ class BlockViewDiffUtilTest {
             id = id,
             indent = MockDataFactory.randomInt(),
             isSelected = false,
-            icon = ObjectIcon.None,
-            backgroundColor = null
+            icon = ObjectIcon.None
         )
 
         val newBlock: BlockView = oldBlock.copy(

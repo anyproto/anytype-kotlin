@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -241,7 +242,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.TableOfContents(
                     id = blockToC.id,
-                    backgroundColor = blockToC.backgroundColor,
+                    background = blockToC.parseThemeBackgroundColor(),
                     isSelected = false,
                     items = listOf(
                         BlockView.TableOfContentsItem(
@@ -465,7 +466,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.TableOfContents(
                     id = blockToC.id,
-                    backgroundColor = blockToC.backgroundColor,
+                    background = blockToC.parseThemeBackgroundColor(),
                     isSelected = false,
                     items = listOf(
                         BlockView.TableOfContentsItem(
@@ -542,7 +543,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.TableOfContents(
                     id = blockToC.id,
-                    backgroundColor = blockToC.backgroundColor,
+                    background = blockToC.parseThemeBackgroundColor(),
                     isSelected = false,
                     items = listOf(
                         BlockView.TableOfContentsItem(
@@ -716,7 +717,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.TableOfContents(
                     id = blockToC.id,
-                    backgroundColor = blockToC.backgroundColor,
+                    background = blockToC.parseThemeBackgroundColor(),
                     isSelected = false,
                     items = listOf(
                         BlockView.TableOfContentsItem(
@@ -912,7 +913,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.TableOfContents(
                     id = blockToC.id,
-                    backgroundColor = blockToC.backgroundColor,
+                    background = blockToC.parseThemeBackgroundColor(),
                     isSelected = false,
                     items = listOf(
                         BlockView.TableOfContentsItem(

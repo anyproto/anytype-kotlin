@@ -17,7 +17,6 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -220,7 +219,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = mentionHash
                                 )
                             ),
-                            backgroundColor = null,
                             color = null,
                             indent = 0,
                             text = "page about Avant-Garde Jazz  music",
@@ -382,7 +380,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = newPageId
                                 )
                             ),
-                            backgroundColor = null,
                             color = null,
                             indent = 0,
                             text = "page about Jazz  music",
@@ -544,7 +541,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     param = newPageId
                                 )
                             ),
-                            backgroundColor = null,
                             color = null,
                             indent = 0,
                             text = "page about Untitled  music",
@@ -905,7 +901,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             to = 14
                         )
                     ),
-                    backgroundColor = null,
                     color = null,
                     indent = 0,
                     text = "Start Foob end",
@@ -1044,7 +1039,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             to = 18
                         )
                     ),
-                    backgroundColor = null,
                     color = null,
                     indent = 0,
                     text = "Start Untitled end",

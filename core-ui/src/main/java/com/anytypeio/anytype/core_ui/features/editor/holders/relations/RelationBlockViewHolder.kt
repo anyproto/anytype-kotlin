@@ -27,7 +27,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.TagWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.editor.editor.ThemeColor
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.DocumentRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -39,8 +39,8 @@ sealed class RelationBlockViewHolder(
     BlockViewHolder.IndentableHolder,
     DecoratableViewHolder {
 
-    fun setBackgroundColor(color: String? = null) {
-        itemView.setBlockBackgroundColor(color)
+    fun setBackgroundColor(background: ThemeColor) {
+        itemView.setBlockBackgroundColor(background)
     }
 
     fun indent(item: BlockView.Indentable, view: View) {
